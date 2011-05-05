@@ -2,7 +2,7 @@
  * JepilogApp.java
  */
 
-package com.t_oster.jepilog;
+package com.t_oster.jepilog.gui;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;

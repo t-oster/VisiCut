@@ -42,7 +42,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="importMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="com.t_oster.jepilog.JepilogView" id="showImportDialog" methodName="showImportDialog"/>
+                  <action class="com.t_oster.jepilog.gui.JepilogView" id="showImportDialog" methodName="showImportDialog"/>
                 </Property>
                 <Property name="mnemonic" type="int" value="73"/>
                 <Property name="text" type="java.lang.String" resourceKey="importMenuItem.text"/>
@@ -80,7 +80,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="aboutMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="com.t_oster.jepilog.JepilogView" id="showAboutBox" methodName="showAboutBox"/>
+                  <action class="com.t_oster.jepilog.gui.JepilogView" id="showAboutBox" methodName="showAboutBox"/>
                 </Property>
                 <Property name="name" type="java.lang.String" value="aboutMenuItem" noResource="true"/>
               </Properties>

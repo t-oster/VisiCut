@@ -2,7 +2,7 @@
  * JepilogView.java
  */
 
-package com.t_oster.jepilog;
+package com.t_oster.jepilog.gui;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
@@ -128,11 +128,11 @@ public class JepilogView extends FrameView {
 
         menuBar.setName("menuBar"); // NOI18N
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.jepilog.JepilogApp.class).getContext().getResourceMap(JepilogView.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.jepilog.gui.JepilogApp.class).getContext().getResourceMap(JepilogView.class);
         fileMenu.setText(resourceMap.getString("fileMenu.text")); // NOI18N
         fileMenu.setName("fileMenu"); // NOI18N
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.jepilog.JepilogApp.class).getContext().getActionMap(JepilogView.class, this);
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.jepilog.gui.JepilogApp.class).getContext().getActionMap(JepilogView.class, this);
         importMenuItem.setAction(actionMap.get("showImportDialog")); // NOI18N
         importMenuItem.setMnemonic('I');
         importMenuItem.setText(resourceMap.getString("importMenuItem.text")); // NOI18N
