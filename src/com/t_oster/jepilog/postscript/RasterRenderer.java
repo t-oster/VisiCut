@@ -65,6 +65,9 @@ public class RasterRenderer extends AbstractRemoteRenderer {
         //create display callback
         PageRasterDisplayCallback displayCallback = new PageRasterDisplayCallback();
         
+        int imgwidth = (177*resolution)/72+1;
+        int imgheight = (25*resolution)/72+1;
+        
         //prepare args
         String[] gsArgs = {
         		"-dQUIET",
@@ -73,11 +76,11 @@ public class RasterRenderer extends AbstractRemoteRenderer {
         		"-dSAFER",
         		"-dFirstPage=" + (begin + 1),
         		"-dLastPage=" + (end + 1),
-                        "-g177x25",
+                        "-g"+imgwidth+"x"+imgheight,
         		"-sDEVICE=display",
         		"-dDisplayHandle=0",
         		"-dDisplayFormat=16#804",
-        		//"-r" + this.getResolution(),
+        		"-r" + this.getResolution(),
         		"-f",
         		diskStore.getFile(inputDiskStoreKey).getAbsolutePath()};
 		
