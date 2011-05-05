@@ -4,6 +4,7 @@
 
 package com.t_oster.jepilog.gui;
 
+import java.awt.Image;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
@@ -11,10 +12,13 @@ import org.jdesktop.application.FrameView;
 import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import javax.swing.Timer;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  * The application's main frame.
@@ -101,6 +105,7 @@ public class JepilogView extends FrameView {
     private void initComponents() {
 
         mainPanel = new javax.swing.JPanel();
+        previewPanel = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem importMenuItem = new javax.swing.JMenuItem();
@@ -112,29 +117,39 @@ public class JepilogView extends FrameView {
         statusMessageLabel = new javax.swing.JLabel();
         statusAnimationLabel = new javax.swing.JLabel();
         progressBar = new javax.swing.JProgressBar();
+        importFileChooser = new javax.swing.JFileChooser();
 
         mainPanel.setName("mainPanel"); // NOI18N
+
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.jepilog.gui.JepilogApp.class).getContext().getResourceMap(JepilogView.class);
+        previewPanel.setText(resourceMap.getString("previewPanel.text")); // NOI18N
+        previewPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        previewPanel.setName("previewPanel"); // NOI18N
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(mainPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(previewPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(232, Short.MAX_VALUE))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 246, Short.MAX_VALUE)
+            .addGroup(mainPanelLayout.createSequentialGroup()
+                .addGap(31, 31, 31)
+                .addComponent(previewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
+                .addGap(37, 37, 37))
         );
 
         menuBar.setName("menuBar"); // NOI18N
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.jepilog.gui.JepilogApp.class).getContext().getResourceMap(JepilogView.class);
         fileMenu.setText(resourceMap.getString("fileMenu.text")); // NOI18N
         fileMenu.setName("fileMenu"); // NOI18N
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.jepilog.gui.JepilogApp.class).getContext().getActionMap(JepilogView.class, this);
         importMenuItem.setAction(actionMap.get("showImportDialog")); // NOI18N
-        importMenuItem.setMnemonic('I');
         importMenuItem.setText(resourceMap.getString("importMenuItem.text")); // NOI18N
         importMenuItem.setName("importMenuItem"); // NOI18N
         fileMenu.add(importMenuItem);
@@ -191,6 +206,8 @@ public class JepilogView extends FrameView {
                 .addGap(3, 3, 3))
         );
 
+        importFileChooser.setName("importFileChooser"); // NOI18N
+
         setComponent(mainPanel);
         setMenuBar(menuBar);
         setStatusBar(statusPanel);
@@ -198,12 +215,22 @@ public class JepilogView extends FrameView {
 
     @Action
     public void showImportDialog() {
-        System.out.println("Would import stuff..");
+        importFileChooser.showOpenDialog(mainPanel);
+        File toImport = importFileChooser.getSelectedFile();
+        if (JepilogApp.getApplication().importFile(toImport)==false){
+            JOptionPane.showMessageDialog(mainPanel, "Datei konnte nicht importiert werden", "Fehler", JOptionPane.WARNING_MESSAGE);
+        }
+        else{
+            Image raster = JepilogApp.getApplication().getRasterPreview();
+            previewPanel.setIcon(new ImageIcon(raster));
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JFileChooser importFileChooser;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JLabel previewPanel;
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JLabel statusAnimationLabel;
     private javax.swing.JLabel statusMessageLabel;

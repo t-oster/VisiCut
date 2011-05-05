@@ -4,6 +4,15 @@
 
 package com.t_oster.jepilog.gui;
 
+import com.t_oster.jepilog.postscript.InputFile;
+import com.t_oster.jepilog.postscript.PostscriptInterpreter;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.sf.ghost4j.document.DocumentException;
+import net.sf.ghost4j.renderer.RendererException;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
@@ -12,6 +21,9 @@ import org.jdesktop.application.SingleFrameApplication;
  */
 public class JepilogApp extends SingleFrameApplication {
 
+    private PostscriptInterpreter psi = new PostscriptInterpreter();
+    private InputFile inputFile;
+    
     /**
      * At startup create and show the main frame of the application.
      */
@@ -40,5 +52,24 @@ public class JepilogApp extends SingleFrameApplication {
      */
     public static void main(String[] args) {
         launch(JepilogApp.class, args);
+    }
+    
+    public boolean importFile(File file){
+        try {
+            this.inputFile = InputFile.importFile(file);
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(JepilogApp.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    
+    public Image getRasterPreview(){
+        try {
+            return psi.rasterizeFile(inputFile);
+        } catch (Exception ex) {
+            Logger.getLogger(JepilogApp.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 }

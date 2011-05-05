@@ -13,7 +13,7 @@
             </test-roots>
         </data>
         <swingapp xmlns="http://www.netbeans.org/ns/form-swingapp/1">
-            <application-class name="com.t_oster.jepilog.JepilogApp"/>
+            <application-class name="com.t_oster.jepilog.gui.JepilogApp"/>
         </swingapp>
     </configuration>
 </project>
