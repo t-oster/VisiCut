@@ -32,7 +32,7 @@ public class PostscriptInterpreter {
 	RasterRenderer renderer = new RasterRenderer();
 			
 	// set resolution (in DPI)
-	renderer.setResolution(300);
+	renderer.setResolution(600);
 
 	// render
 	List<Image> images = renderer.render(f.getDocument(), 1, 1);

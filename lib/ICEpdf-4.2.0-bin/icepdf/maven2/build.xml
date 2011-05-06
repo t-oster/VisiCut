@@ -1,0 +1,68 @@
+<!--
+  ~ Version: MPL 1.1
+  ~
+  ~ The contents of this file are subject to the Mozilla Public License
+  ~ Version 1.1 (the "License"); you may not use this file except in
+  ~ compliance with the License. You may obtain a copy of the License at
+  ~ http://www.mozilla.org/MPL/
+  ~
+  ~ Software distributed under the License is distributed on an "AS IS"
+  ~ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+  ~ License for the specific language governing rights and limitations under
+  ~ the License.
+  ~
+  ~ The Original Code is ICEfaces 1.5 open source software code, released
+  ~ November 5, 2006. The Initial Developer of the Original Code is ICEsoft
+  ~ Technologies Canada, Corp. Portions created by ICEsoft are Copyright (C)
+  ~ 2004-2011 ICEsoft Technologies Canada, Corp. All Rights Reserved.
+  ~
+  ~ Contributor(s): _____________________.
+  -->
+
+<project name="icepdf-maven" default="install" xmlns:artifact="antlib:org.apache.maven.artifact.ant"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="antlib:org.apache.maven.artifact.ant ">
+
+    <property file="./build.properties"/>
+    <property name="lib.dir" location="../lib"/>
+
+
+    <path id="maven-ant-tasks.classpath" path="${lib.dir}/maven-ant-tasks-2.1.10.jar"/>
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+             uri="antlib:org.apache.maven.artifact.ant"
+             classpathref="maven-ant-tasks.classpath"/>
+
+    <target name="install" depends="get-maven">
+        <artifact:localRepository id="local.repository"
+                                  path="${local.repository}" layout="default"/>
+        <artifact:pom id="icepdfCorePom" file="icepdf-core.pom">
+            <localRepository refid="local.repository"/>
+        </artifact:pom>
+        <echo>installing icepdf-core${icepdfCorePom.version} to local
+            repository
+        </echo>
+        <artifact:install file="${lib.dir}/icepdf-core.jar">
+            <localRepository refid="local.repository"/>
+            <pom refid="icepdfCorePom"/>
+        </artifact:install>
+
+        <artifact:pom id="icepdfViewerPom" file="icepdf-viewer.pom">
+            <localRepository refid="local.repository"/>
+        </artifact:pom>
+        <echo>installing icepdf-viewer${icepdfViewerPom.version} to local
+            repository
+        </echo>
+        <artifact:install file="${lib.dir}/icepdf-viewer.jar">
+            <localRepository refid="local.repository"/>
+            <pom refid="icepdfViewerPom"/>
+        </artifact:install>
+
+    </target>
+
+    <target name="get-maven">
+        <echo message="lib.dir is ${lib.dir}"/>
+        <get src="http://repo1.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.0.10/maven-ant-tasks-2.0.10.jar"
+             dest="${lib.dir}/maven-ant-tasks-2.1.10.jar"/>
+    </target>
+</project>
+

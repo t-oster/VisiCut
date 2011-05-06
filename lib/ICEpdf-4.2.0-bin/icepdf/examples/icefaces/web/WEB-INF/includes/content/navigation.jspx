@@ -1,0 +1,122 @@
+<!--
+~ Version: MPL 1.1/GPL 2.0/LGPL 2.1
+~
+~ "The contents of this file are subject to the Mozilla Public License
+~ Version 1.1 (the "License"); you may not use this file except in
+~ compliance with the License. You may obtain a copy of the License at
+~ http://www.mozilla.org/MPL/
+~
+~ Software distributed under the License is distributed on an "AS IS"
+~ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+~ License for the specific language governing rights and limitations under
+~ the License.
+~
+~ The Original Code is ICEfaces 1.5 open source software code, released
+~ November 5, 2006. The Initial Developer of the Original Code is ICEsoft
+~ Technologies Canada, Corp. Portions created by ICEsoft are Copyright (C)
+~ 2004-2006 ICEsoft Technologies Canada, Corp. All Rights Reserved.
+~
+~ Contributor(s): _____________________.
+~
+~ Alternatively, the contents of this file may be used under the terms of
+~ the GNU Lesser General Public License Version 2.1 or later (the "LGPL"
+~ License), in which case the provisions of the LGPL License are
+~ applicable instead of those above. If you wish to allow use of your
+~ version of this file only under the terms of the LGPL License and not to
+~ allow others to use your version of this file under the MPL, indicate
+~ your decision by deleting the provisions above and replace them with
+~ the notice and other provisions required by the LGPL License. If you do
+~ not delete the provisions above, a recipient may use your version of
+~ this file under either the MPL or the LGPL License."
+~
+-->
+
+<ice:form xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:ice="http://www.icesoft.com/icefaces/component"
+          xmlns:ui="http://java.sun.com/jsf/facelets">
+    <ice:panelGroup style="" >
+        <!-- Sample Files -->
+        <ice:panelCollapsible expanded="true"
+                              styleClass="navPnlClpsbl">
+            <f:facet name="header">
+                <ice:panelGroup>
+                    <ice:outputText value="#{msgs['navigation.files.title']}"/>
+                </ice:panelGroup>
+            </f:facet>
+            <ice:panelGroup style="overflow:auto;height:120px;" >
+            <!-- files loaded from ./demos/ if present -->
+            <ui:repeat value="#{documentManager.demoFilePaths}"
+                       var="path">
+                <li class="fileLink"><ice:commandLink value="#{path.documentName}"
+                                 styleClass="#{path.documentName eq documentManager.currentDocumentState.documentName?'selectedFile':''}"
+                                 actionListener="#{documentManager.openDocument}">
+                    <f:param name="documentPath" value="#{path.documentEncodedPath}"/>
+                </ice:commandLink></li>
+            </ui:repeat>
+            </ice:panelGroup>
+        </ice:panelCollapsible>
+        <!-- Document Outline Panel -->
+        <ice:panelCollapsible expanded="#{documentManager.currentDocumentState.outlineExpanded}"
+                              styleClass="navPnlClpsbl" style="overflow:hidden;">
+            
+            <f:facet name="header">
+                <ice:panelGroup>
+                    <ice:outputText
+                            value="#{msgs['navigation.outline.title']}"/>
+                </ice:panelGroup>
+            </f:facet>
+            
+            <ice:panelGroup styleClass="documentOutlineContainer">
+                <ice:tree rendered="#{documentManager.currentDocumentState.outline != null}"
+                          value="#{documentManager.currentDocumentState.outline}"
+                          var="node"
+                          hideRootNode="true"
+                          hideNavigation="false"
+                          imageDir="./xmlhttp/css/xp/css-images/">
+                    <ice:treeNode>
+                        <f:facet name="icon">
+                            <ice:panelGroup
+                                    style="display: inline" >
+                                <ice:graphicImage
+                                     value="./xmlhttp/css/rime/css-images/#{node.userObject.icon}"/>
+                            </ice:panelGroup>
+                        </f:facet>
+                        <f:facet name="content">
+                            <ice:panelGroup
+                                    style="display: inline" >
+                                <ice:commandLink
+                                        actionListener="#{documentManager.goToDestination}">
+                                    <f:param name="pageNumber" value="#{node.userObject.goToPage}" />
+                                    <ice:outputText value="#{node.userObject.text}" nospan="true"/>
+                                </ice:commandLink>
+                            </ice:panelGroup>
+                        </f:facet>
+                    </ice:treeNode>
+                </ice:tree>
+            </ice:panelGroup>
+
+        </ice:panelCollapsible>
+        <!-- History -->
+        <ice:panelCollapsible expanded="true"
+                              styleClass="navPnlClpsbl">
+            <f:facet name="header">
+                <ice:panelGroup>
+                    <ice:outputText value="#{msgs['navigtaion.history.title']}"/>
+                </ice:panelGroup>
+            </f:facet>
+            <!-- files loaded from ./demos/ if present -->
+
+            <ice:panelGroup style="overflow:auto;height:160px;" >
+            <ui:repeat value="#{documentManager.documentStateHistory}"
+                             var="path">
+                <li class="fileLink" >
+                    <ice:commandLink value="#{path.documentName}"
+                                     actionListener="#{documentManager.openDocument}">
+                        <f:param name="documentPath" value="#{path.documentEncodedPath}"/>
+                    </ice:commandLink></li>
+            </ui:repeat>
+            </ice:panelGroup>
+        </ice:panelCollapsible>
+    </ice:panelGroup>
+</ice:form>

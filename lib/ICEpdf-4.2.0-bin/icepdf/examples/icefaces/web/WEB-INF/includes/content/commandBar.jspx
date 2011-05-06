@@ -1,0 +1,184 @@
+<!--
+~ Version: MPL 1.1/GPL 2.0/LGPL 2.1
+~
+~ "The contents of this file are subject to the Mozilla Public License
+~ Version 1.1 (the "License"); you may not use this file except in
+~ compliance with the License. You may obtain a copy of the License at
+~ http://www.mozilla.org/MPL/
+~
+~ Software distributed under the License is distributed on an "AS IS"
+~ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+~ License for the specific language governing rights and limitations under
+~ the License.
+~
+~ The Original Code is ICEfaces 1.5 open source software code, released
+~ November 5, 2006. The Initial Developer of the Original Code is ICEsoft
+~ Technologies Canada, Corp. Portions created by ICEsoft are Copyright (C)
+~ 2004-2006 ICEsoft Technologies Canada, Corp. All Rights Reserved.
+~
+~ Contributor(s): _____________________.
+~
+~ Alternatively, the contents of this file may be used under the terms of
+~ the GNU Lesser General Public License Version 2.1 or later (the "LGPL"
+~ License), in which case the provisions of the LGPL License are
+~ applicable instead of those above. If you wish to allow use of your
+~ version of this file only under the terms of the LGPL License and not to
+~ allow others to use your version of this file under the MPL, indicate
+~ your decision by deleting the provisions above and replace them with
+~ the notice and other provisions required by the LGPL License. If you do
+~ not delete the provisions above, a recipient may use your version of
+~ this file under either the MPL or the LGPL License."
+~
+-->
+
+<ui:composition
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:ice="http://www.icesoft.com/icefaces/component">
+    <!-- show document controls, if no document they are disabled. -->
+    <!-- open document -->
+    <ice:form>
+        <ice:panelGroup styleClass="floatLeft" style="margin-bottom:10px;">
+            <!-- spacer -->
+            <ice:panelGroup styleClass="floatLeft" style="width:5px">
+                &amp;nbsp;
+            </ice:panelGroup>
+            <ice:panelGroup styleClass="floatLeft">
+                <ice:commandLink
+                        styleClass="command openCommand"
+                        actionListener="#{documentManager.uploadDocument}">
+                    <ice:graphicImage value="./css/images/spacer.gif"
+                                      alt="#{msgs['command.open.label']}"
+                                      title="#{msgs['command.open.label']}"
+                                      width="30" height="25"/>
+                </ice:commandLink>
+            </ice:panelGroup>
+            <ice:panelGroup styleClass="floatLeft" style="padding-top:8px;padding-left:10px;">
+                <ice:commandLink
+                        styleClass="downloadUploadLink"
+                        actionListener="#{documentManager.uploadDocument}">
+                <ice:outputLabel value="#{msgs['command.open.label']}"/>
+                </ice:commandLink>
+            </ice:panelGroup>
+
+
+            <!-- spacer -->
+            <ice:panelGroup styleClass="floatLeft" style="width:145px">
+                &amp;nbsp;
+            </ice:panelGroup>
+
+            <!-- previous page -->
+            <ice:panelGroup styleClass="floatLeft">
+                <ice:commandLink
+                        styleClass="command previousCommand"
+                        disabled="#{documentManager.currentDocumentState == null}"
+                        actionListener="#{documentManager.previousPage}">
+                    <ice:graphicImage
+                            value="./css/images/spacer.gif"
+                            alt="#{msgs['command.navigation.previous.label']}"
+                            title="#{msgs['command.navigation.previous.label']}"
+                            width="30" height="25"/>
+                </ice:commandLink>
+            </ice:panelGroup>
+
+            <!-- manual page entry-->
+            <ice:panelGroup styleClass="floatLeft" style="padding-top:3px;padding-left:8px;padding-right:8px;">
+                <ice:outputLabel value="#{msgs['command.page.entry.label']}"/>
+                <ice:inputText maxlength="5" size="2" partialSubmit="true"
+                               actionListener="#{documentManager.goToPage}"
+                               disabled="#{documentManager.currentDocumentState == null}"
+                               value="#{documentManager.currentDocumentState.pageCursor}"/>
+                <ice:outputLabel
+                        value="#{msgs['command.page.display.label']} #{documentManager.currentDocumentState.documentLength}"/>
+            </ice:panelGroup>
+
+            <!-- next page -->
+            <ice:panelGroup styleClass="floatLeft">
+                <ice:commandLink
+                        styleClass="command forwardCommand"
+                        disabled="#{documentManager.currentDocumentState == null}"
+                        actionListener="#{documentManager.nextPage}">
+                    <ice:graphicImage value="./css/images/spacer.gif"
+                                      alt="#{msgs['command.navigation.next.label']}"
+                                      title="#{msgs['command.navigation.next.label']}"
+                                      width="30" height="25"/>
+                </ice:commandLink>
+            </ice:panelGroup>
+
+            <!-- spacer -->
+            <ice:panelGroup styleClass="floatLeft" style="width:10px">
+                &amp;nbsp;
+            </ice:panelGroup>
+
+            <!-- document zoom -->
+            <ice:panelGroup styleClass="floatLeft">
+                <ice:graphicImage
+                        value="./css/images/zoom-no-button.gif"
+                        alt="#{msgs['command.zoom.label']}"
+                        title="#{msgs['command.zoom.label']}"
+                        width="30" height="25"/>
+            </ice:panelGroup>
+            <ice:panelGroup styleClass="floatLeft">
+                <ice:selectOneMenu partialSubmit="true"
+                                   disabled="#{documentManager.currentDocumentState == null}"
+                                   value="#{documentManager.currentDocumentState.zoom}"
+                                   valueChangeListener="#{documentManager.documentZoomLevelChange}">
+                    <f:selectItems
+                            value="#{documentManager.currentDocumentState.zoomLevels}"/>
+                </ice:selectOneMenu>
+            </ice:panelGroup>
+
+             <!-- spacer -->
+            <ice:panelGroup styleClass="floatLeft" style="width:10px">
+                &amp;nbsp;
+            </ice:panelGroup>
+
+            <!-- rotate left -->
+            <ice:panelGroup styleClass="floatLeft" style="padding-left:20px;padding-right:10px">
+                <ice:commandLink
+                        styleClass="command leftCommand"
+                        disabled="#{documentManager.currentDocumentState == null}"
+                        actionListener="#{documentManager.rotateDocumentLeft}">
+                    <ice:graphicImage
+                            value="./css/images/spacer.gif"
+                            alt="#{msgs['command.rotation.left.label']}"
+                            title="#{msgs['command.rotation.left.label']}"
+                            width="30" height="25"/>
+                </ice:commandLink>
+            </ice:panelGroup>
+            <!-- rotate right -->
+            <ice:panelGroup styleClass="floatLeft">
+                <ice:commandLink
+                        styleClass="command rightCommand"
+                        disabled="#{documentManager.currentDocumentState == null}"
+                        actionListener="#{documentManager.rotateDocumentRight}">
+                    <ice:graphicImage
+                            value="./css/images/spacer.gif"
+                            alt="#{msgs['command.rotation.right.label']}"
+                            title="#{msgs['command.rotation.right.label']}"
+                            width="30" height="25"/>
+                </ice:commandLink>
+            </ice:panelGroup>
+
+            <!-- spacer -->
+            <ice:panelGroup styleClass="floatLeft" style="width:60px">
+                &amp;nbsp;
+            </ice:panelGroup>
+
+
+            <!-- enable/disable font engine -->
+            <ice:panelGroup styleClass="floatLeft"
+                            rendered="#{documentManager.demo}">
+                <ice:commandLink
+                        actionListener="#{documentManager.toggleFontEngine}">
+                    <ice:graphicImage
+                            value="./css/images/font-engine_#{documentManager.fontEngine}.gif"
+                            width="112" height="25"
+                            alt="#{msgs['command.fontengine.label']}"
+                            title="#{msgs['command.fontengine.label']}"/>
+                </ice:commandLink>
+            </ice:panelGroup>
+        </ice:panelGroup>
+    </ice:form>
+</ui:composition>

@@ -4,6 +4,7 @@
 
 package com.t_oster.jepilog.gui;
 
+import java.awt.Dimension;
 import java.awt.Image;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
@@ -132,15 +133,15 @@ public class JepilogView extends FrameView {
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(previewPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(232, Short.MAX_VALUE))
+                .addComponent(previewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
+                .addContainerGap())
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addGap(31, 31, 31)
-                .addComponent(previewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
-                .addGap(37, 37, 37))
+                .addContainerGap()
+                .addComponent(previewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -223,6 +224,7 @@ public class JepilogView extends FrameView {
         else{
             Image raster = JepilogApp.getApplication().getRasterPreview();
             previewPanel.setIcon(new ImageIcon(raster));
+            previewPanel.setText(null);
         }
     }
 

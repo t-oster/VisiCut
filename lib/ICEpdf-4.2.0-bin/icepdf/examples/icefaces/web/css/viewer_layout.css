@@ -1,0 +1,400 @@
+/*
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * "The contents of this file are subject to the Mozilla Public License
+ * Version 1.1 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations under
+ * the License.
+ *
+ * The Original Code is ICEfaces 1.5 open source software code, released
+ * November 5, 2006. The Initial Developer of the Original Code is ICEsoft
+ * Technologies Canada, Corp. Portions created by ICEsoft are Copyright (C)
+ * 2004-2006 ICEsoft Technologies Canada, Corp. All Rights Reserved.
+ *
+ * Contributor(s): _____________________.
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"
+ * License), in which case the provisions of the LGPL License are
+ * applicable instead of those above. If you wish to allow use of your
+ * version of this file only under the terms of the LGPL License and not to
+ * allow others to use your version of this file under the MPL, indicate
+ * your decision by deleting the provisions above and replace them with
+ * the notice and other provisions required by the LGPL License. If you do
+ * not delete the provisions above, a recipient may use your version of
+ * this file under either the MPL or the LGPL License."
+ *
+ */
+/*
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * "The contents of this file are subject to the Mozilla Public License
+ * Version 1.1 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations under
+ * the License.
+ *
+ * The Original Code is ICEfaces 1.5 open source software code, released
+ * November 5, 2006. The Initial Developer of the Original Code is ICEsoft
+ * Technologies Canada, Corp. Portions created by ICEsoft are Copyright (C)
+ * 2004-2006 ICEsoft Technologies Canada, Corp. All Rights Reserved.
+ *
+ * Contributor(s): _____________________.
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"
+ * License), in which case the provisions of the LGPL License are
+ * applicable instead of those above. If you wish to allow use of your
+ * version of this file only under the terms of the LGPL License and not to
+ * allow others to use your version of this file under the MPL, indicate
+ * your decision by deleting the provisions above and replace them with
+ * the notice and other provisions required by the LGPL License. If you do
+ * not delete the provisions above, a recipient may use your version of
+ * this file under either the MPL or the LGPL License."
+ *
+ */
+
+html, body, div, table, img, fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 11px;
+}
+
+html {
+    overflow: scroll;
+
+}
+
+body, pre, span, pre, {
+    font-family: Tahoma, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #484848;
+    background-color: #ffffff;
+}
+
+/* for some reson IE things a form should have dimensions, */
+form {
+    padding: 0;
+    margin: 0;
+}
+
+table {
+    font-size: 11px;
+}
+
+ul {
+    margin-left: 15px;
+    padding: 0;
+}
+
+h2 {
+    font: 18px tahoma;
+    color: #646464;
+}
+
+.commandSpacer {
+    float: left;
+    width: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    background-color: #333;
+}
+
+.floatLeft {
+    float: left;
+}
+
+.floatright {
+    float: right;
+}
+
+div.clearer {
+    clear: both;
+    height: 0px;
+    visibility: hidden;
+    line-height: .01em;
+    padding: 0;
+    margin: 0;
+}
+
+/* header begin */
+
+div.header_container {
+    width: 100%;
+    height: 159px;
+    min-width: 730px;
+    background-image: url('./images/banner_bg.png');
+    background-repeat: repeat-x;
+    background-position: left top;
+    float: left;
+    width: 100%;
+}
+
+div.header_content {
+    height: 159px;
+    background-image: url('./images/banner_icepdf_logo.png');
+    background-repeat: no-repeat;
+    background-position: right top;
+    float: left;
+    width: 100%;
+}
+
+/* header end */
+
+/* body start */
+
+/* provides a continer to center a child div in */
+div.body_container {
+    float: left;
+    margin-top: -60px;
+    width: 100%;
+}
+
+/* centers in parent as long as parent is larger then child*/
+div.body_content {
+    margin: 0 auto;
+    width: 980px;
+    padding-left: 25px;
+}
+
+div.body_content div {
+/*height: 100px;*/
+}
+
+div.navigationContainer {
+    border: none;
+    float: left;
+    width: 275px;
+    border-bottom: 1px solid #d9d9d9;
+}
+
+.commandBarContainer {
+    height: 35px;
+}
+
+/* margin-left should be updated along with the relative position of */
+div.contentContainer {
+    background: none;
+    border: none;
+    float: left;
+    padding-left: 30px;
+    width: 660px;
+}
+
+table.componentTabSetContainer {
+    width: 99%;
+}
+
+/* footer begin */
+div.footer_container {
+    float: left;
+    width: 100%;
+    height: 181px;
+    min-width: 705px;
+    background-image: url('./images/footer_bg.gif');
+    background-repeat: repeat-x;
+    background-position: top left;
+    background-color:#06416A;
+}
+
+div.footer_content {
+    height: 181px;
+    background-image: url('./images/footer_snowflake.gif');
+    background-repeat: no-repeat;
+    background-position: bottom right;
+
+}
+
+div.footer_content div{
+   float:left;
+   padding-top:120px;
+   padding-left:20px;
+   color: white;
+}
+div.footer_content a, div.footer_content a:hover{
+   color: #49C3E9;
+   font-weight:bold;
+   text-decoration: none;
+}
+
+div.footer_content a {
+
+}
+
+div.footer_content a:hover {
+    color: white;
+}
+
+/* footer end */
+
+/* controls the appearance of links throughout the application */
+a:link, a:hover, a:visited, a:active {
+    font-family: Tahoma, Helvetica, sans-serif;
+    font-weight: normal;
+    text-decoration: none;
+    color: #1E5F89;
+}
+
+a:hover {
+    color: #E50000;
+    text-decoration: underline
+}
+
+a:visited {
+/*color: #104e5b;*/
+}
+
+a:active {
+    color: #318496;
+}
+
+a.downloadUploadLink, a.downloadUploadLink:hover{
+    color:#484848;
+    font-weight:bold;
+}
+
+li.fileLink {
+    list-style: none;
+    background: url('./images/icepdf-bullet.gif') no-repeat 0 3px;
+    padding-left: 15px;
+    padding-bottom: 3px;
+    line-height: 16px;
+}
+
+/* expanble menu */
+.icePnlClpsblHdr {
+    background-image: url('./images/table_col_header.gif');
+}
+
+.icePnlClpsblColpsdHdr {
+    background-image: url('./images/table_col_header.gif');
+}
+
+.icePnlClpsblHdr div {
+    background-image: url('./images/PnlHdr_down.gif');
+}
+
+.icePnlClpsblColpsdHdr div {
+    background-image: url('./images/PnlHdr_collapsed.gif');
+}
+
+.icePnlClpsblCnt {
+    background-color: white;
+}
+
+.icePnlClpsblCnt, .icePnlClpsblCnt-dis {
+    line-height: 16px;
+}
+
+/* connection status style for tabbed template */
+.navConnectionStatus {
+    left: 932px;
+    position: relative;
+    top: 33px;
+}
+
+.documentPageView {
+    float: left;
+    overflow: auto;
+    width: 650px;
+    height: 675px;
+    border: 1px solid #999999;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.documentOutlineContainer {
+    overflow: auto;
+    height: 284px;
+}
+
+.documentUpload {
+/*width:400px;*/
+    height: 150px;
+}
+
+.popupHeaderWrapper {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.popupHeaderImage {
+    float: right;
+    margin-right: 2px;
+    margin-top: 2px;
+}
+
+.popupHeaderText {
+    float: left;
+}
+
+.selectedFile {
+    background-color: #cccccc;
+}
+
+.icePnlPopHdr {
+    background-image: url('./images/table_col_header.gif');
+    background-repeat: repeat-x;
+    background-position: top right;
+    background-color: transparent;
+    height:30px;
+}
+
+.icePnlPop {
+    background-color: white; /*border: 1px solid */
+}
+
+/* rollover commands */
+a.command {
+    background-position: top;
+    display: block;
+}
+
+a.openCommand {
+    background-image: url('./images/open-standard.gif');
+}
+
+a.openCommand:hover {
+    background-image: url('./images/open-rollover.gif');
+}
+
+a.previousCommand {
+    background-image: url('./images/back-standard.gif');
+}
+
+a.previousCommand:hover {
+    background-image: url('./images/back-rollover.gif');
+}
+
+a.forwardCommand {
+    background-image: url('./images/forward-standard.gif');
+}
+
+a.forwardCommand:hover {
+    background-image: url('./images/forward-rollover.gif');
+}
+
+a.leftCommand {
+    background-image: url('./images/rotate-ccw-standard.gif');
+}
+
+a.leftCommand:hover {
+    background-image: url('./images/rotate-ccw-rollover.gif');
+}
+
+a.rightCommand {
+    background-image: url('./images/rotate-cw-standard.gif');
+}
+
+a.rightCommand:hover {
+    background-image: url('./images/rotate-cw-rollover.gif');

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Version: MPL 1.1/GPL 2.0/LGPL 2.1
+  ~
+  ~ "The contents of this file are subject to the Mozilla Public License
+  ~ Version 1.1 (the "License"); you may not use this file except in
+  ~ compliance with the License. You may obtain a copy of the License at
+  ~ http://www.mozilla.org/MPL/
+  ~
+  ~ Software distributed under the License is distributed on an "AS IS"
+  ~ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+  ~ License for the specific language governing rights and limitations under
+  ~ the License.
+  ~
+  ~ The Original Code is ICEfaces 1.5 open source software code, released
+  ~ November 5, 2006. The Initial Developer of the Original Code is ICEsoft
+  ~ Technologies Canada, Corp. Portions created by ICEsoft are Copyright (C)
+  ~ 2004-2006 ICEsoft Technologies Canada, Corp. All Rights Reserved.
+  ~
+  ~ Contributor(s): _____________________.
+  ~
+  ~ Alternatively, the contents of this file may be used under the terms of
+  ~ the GNU Lesser General Public License Version 2.1 or later (the "LGPL"
+  ~ License), in which case the provisions of the LGPL License are
+  ~ applicable instead of those above. If you wish to allow use of your
+  ~ version of this file only under the terms of the LGPL License and not to
+  ~ allow others to use your version of this file under the MPL, indicate
+  ~ your decision by deleting the provisions above and replace them with
+  ~ the notice and other provisions required by the LGPL License. If you do
+  ~ not delete the provisions above, a recipient may use your version of
+  ~ this file under either the MPL or the LGPL License."
+  ~
+  -->
+<faces-config version="1.2"
+              xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd">
+
+    <application>
+
+        <!-- JSF 1.2 allows for resource bundles to be declared in faces config instead of <f:loadBundle />-->
+        <resource-bundle>
+            <base-name>org.icepdf.examples.jsf.viewer.resources.messages</base-name>
+            <var>msgs</var>
+        </resource-bundle>
+
+        <view-handler>
+            com.icesoft.faces.facelets.D2DFaceletViewHandler
+        </view-handler>
+
+        <locale-config>
+            <default-locale>en</default-locale>
+            <supported-locale>en</supported-locale>
+        </locale-config>
+    </application>
+
+    <managed-bean>
+        <managed-bean-name>documentCache</managed-bean-name>
+        <managed-bean-class>
+            org.icepdf.examples.jsf.viewer.view.DocumentCache
+        </managed-bean-class>
+        <managed-bean-scope>application</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>documentManager</managed-bean-name>
+        <managed-bean-class>
+            org.icepdf.examples.jsf.viewer.view.DocumentManager
+        </managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+        <!-- set default demo file to load,  file must be present in demo folder -->
+        <managed-property>
+            <property-name>documentDemoFile</property-name>
+            <value>ICEpdf Developers Guide.pdf</value>
+        </managed-property>
+        <!-- demo version has configurable font engine -->
+        <managed-property>
+            <property-name>demo</property-name>
+            <value>true</value>
+        </managed-property>
+    </managed-bean>
+
+</faces-config>

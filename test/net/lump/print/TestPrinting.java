@@ -1,5 +1,6 @@
 package net.lump.print;
 
+import org.junit.Test;
 import java.util.*;
 
 import net.lump.print.jetdirect.SocketClient;
@@ -17,7 +18,6 @@ import net.lump.print.jetdirect.pjl.ustatustypes.UnsolicitedStatusType;
 import net.lump.print.snmp.JobInfoOutcome;
 import net.lump.print.snmp.JobInfoState;
 import net.lump.print.snmp.PrinterSnmpUtil;
-import org.testng.annotations.Test;
 
 import static net.lump.print.PrintConstants.*;
 
