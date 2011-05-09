@@ -33,6 +33,7 @@ public class EpilogPrinter {
         connection.close();
     }
     private void initJob(String user, String title, String name, String hostname){
+    /**
         // talk to printer
         out.write("\002"+queue+"\n");
     sprintf(buf, "\002%s\n", queue);
@@ -61,13 +62,14 @@ public class EpilogPrinter {
         fprintf(stderr, "Bad response from %s, %u\n", host, lpdres);
         return false;
     }
+     */
     }
     
     public void sendToPrinter(PJLFile pjl) throws UnknownHostException, IOException{
         String hostname =  java.net.InetAddress.getLocalHost().getHostName();
         this.connect();
         this.initJob("john", "testjob", "test1",  hostname);
-        
+       /* 
     
     {
         {
@@ -94,6 +96,6 @@ public class EpilogPrinter {
     // dont wait for a response...
     printer_disconnect(socket_descriptor);
     return true;
-}
+    }*/
     }
 }
