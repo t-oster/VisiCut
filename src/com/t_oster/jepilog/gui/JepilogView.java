@@ -20,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import org.apache.batik.swing.JSVGCanvas;
 
 /**
  * The application's main frame.
@@ -106,7 +107,7 @@ public class JepilogView extends FrameView {
     private void initComponents() {
 
         mainPanel = new javax.swing.JPanel();
-        previewPanel = new javax.swing.JLabel();
+        svgCanvas = new org.apache.batik.swing.JSVGCanvas();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem importMenuItem = new javax.swing.JMenuItem();
@@ -122,10 +123,18 @@ public class JepilogView extends FrameView {
 
         mainPanel.setName("mainPanel"); // NOI18N
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.jepilog.gui.JepilogApp.class).getContext().getResourceMap(JepilogView.class);
-        previewPanel.setText(resourceMap.getString("previewPanel.text")); // NOI18N
-        previewPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        previewPanel.setName("previewPanel"); // NOI18N
+        svgCanvas.setName("svgCanvas"); // NOI18N
+
+        javax.swing.GroupLayout svgCanvasLayout = new javax.swing.GroupLayout(svgCanvas);
+        svgCanvas.setLayout(svgCanvasLayout);
+        svgCanvasLayout.setHorizontalGroup(
+            svgCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 376, Short.MAX_VALUE)
+        );
+        svgCanvasLayout.setVerticalGroup(
+            svgCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 234, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
@@ -133,19 +142,19 @@ public class JepilogView extends FrameView {
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(previewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
+                .addComponent(svgCanvas, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
                 .addContainerGap())
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(previewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(svgCanvas, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
 
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.jepilog.gui.JepilogApp.class).getContext().getResourceMap(JepilogView.class);
         fileMenu.setText(resourceMap.getString("fileMenu.text")); // NOI18N
         fileMenu.setName("fileMenu"); // NOI18N
 
@@ -207,6 +216,8 @@ public class JepilogView extends FrameView {
                 .addGap(3, 3, 3))
         );
 
+        importFileChooser.setCurrentDirectory(new java.io.File("/home/thommy/null"));
+        importFileChooser.setFileFilter(new MySvgFilter());
         importFileChooser.setName("importFileChooser"); // NOI18N
 
         setComponent(mainPanel);
@@ -214,17 +225,37 @@ public class JepilogView extends FrameView {
         setStatusBar(statusPanel);
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    class MySvgFilter extends javax.swing.filechooser.FileFilter {
+
+        @Override
+        public boolean accept(File file) {
+            // Allow just directories and files with ".txt" extension...
+            return file.isDirectory() || file.getAbsolutePath().endsWith(".svg");
+        }
+
+        @Override
+        public String getDescription() {
+            // This description will be displayed in the dialog,
+            // hard-coded = ugly, should be done via I18N
+            return "SVG Documents (*.svg)";
+        }
+
+    }
+    
     @Action
     public void showImportDialog() {
         importFileChooser.showOpenDialog(mainPanel);
         File toImport = importFileChooser.getSelectedFile();
+        if (toImport == null || !toImport.exists()){
+            return;
+        }
         if (JepilogApp.getApplication().importFile(toImport)==false){
             JOptionPane.showMessageDialog(mainPanel, "Datei konnte nicht importiert werden", "Fehler", JOptionPane.WARNING_MESSAGE);
         }
         else{
-            Image raster = JepilogApp.getApplication().getRasterPreview();
-            previewPanel.setIcon(new ImageIcon(raster));
-            previewPanel.setText(null);
+            svgCanvas.setDocumentState(JSVGCanvas.ALWAYS_DYNAMIC);
+            svgCanvas.setDocument(JepilogApp.getApplication().getController().getDocument());
         }
     }
 
@@ -232,11 +263,11 @@ public class JepilogView extends FrameView {
     private javax.swing.JFileChooser importFileChooser;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
-    private javax.swing.JLabel previewPanel;
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JLabel statusAnimationLabel;
     private javax.swing.JLabel statusMessageLabel;
     private javax.swing.JPanel statusPanel;
+    private org.apache.batik.swing.JSVGCanvas svgCanvas;
     // End of variables declaration//GEN-END:variables
 
     private final Timer messageTimer;

@@ -1,11 +1,14 @@
 /*
  * JepilogApp.java
  */
-
 package com.t_oster.jepilog.gui;
 
+import com.t_oster.jepilog.controller.SvgController;
 import java.awt.Image;
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
@@ -13,11 +16,15 @@ import org.jdesktop.application.SingleFrameApplication;
  * The main class of the application.
  */
 public class JepilogApp extends SingleFrameApplication {
-    
+
+    private SvgController controller;
+
     /**
      * At startup create and show the main frame of the application.
      */
-    @Override protected void startup() {
+    @Override
+    protected void startup() {
+        controller = new SvgController();
         show(new JepilogView(this));
     }
 
@@ -26,7 +33,8 @@ public class JepilogApp extends SingleFrameApplication {
      * Windows shown in our application come fully initialized from the GUI
      * builder, so this additional configuration is not needed.
      */
-    @Override protected void configureWindow(java.awt.Window root) {
+    @Override
+    protected void configureWindow(java.awt.Window root) {
     }
 
     /**
@@ -43,12 +51,18 @@ public class JepilogApp extends SingleFrameApplication {
     public static void main(String[] args) {
         launch(JepilogApp.class, args);
     }
-    
-    public boolean importFile(File file){
-       return false;
+
+    public boolean importFile(File file) {
+        try {
+            controller.importSvg(file);
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(JepilogApp.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
-    
-    public Image getRasterPreview(){
-        return null;
+
+    public SvgController getController() {
+        return controller;
     }
 }
