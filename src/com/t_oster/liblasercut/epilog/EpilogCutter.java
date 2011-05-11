@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  */
 public class EpilogCutter implements LaserCutter {
 
-    public static final boolean SIMULATE_COMMUNICATION = false;
+    public static boolean SIMULATE_COMMUNICATION = false;
     private static final int[] RESOLUTIONS = new int[]{500};
     private static final int BED_WIDTH = 1000;
     private static final int BED_HEIGHT = 500;
@@ -43,36 +43,35 @@ public class EpilogCutter implements LaserCutter {
         this.hostname = hostname;
     }
 
-    private void waitForResponse(int expected) throws IOException, Exception{
+    private void waitForResponse(int expected) throws IOException, Exception {
         waitForResponse(expected, 3);
     }
-    
+
     private void waitForResponse(int expected, int timeout) throws IOException, Exception {
         if (SIMULATE_COMMUNICATION) {
             System.out.println("Response simulated");
             return;
         }
-        int result=-1;
+        int result = -1;
         out.flush();
         System.out.println("Waiting for response...");
-        for( int i=0;i<timeout;i++){
-            if (in.available() > 0){
+        for (int i = 0; i < timeout; i++) {
+            if (in.available() > 0) {
                 result = in.read();
-                System.out.println("Got Response: "+result);
+                System.out.println("Got Response: " + result);
                 if (result == -1) {
                     throw new IOException("End of Stream");
                 }
                 if (result != expected) {
-                    throw new Exception("unexpected Response: "+result);
+                    throw new Exception("unexpected Response: " + result);
                 }
                 return;
-            }
-            else{
-                Thread.sleep(100*timeout);
+            } else {
+                Thread.sleep(100 * timeout);
             }
         }
         throw new Exception("Timeout");
-        
+
     }
 
     private void initJob(LaserJob job) throws Exception {
@@ -163,22 +162,24 @@ public class EpilogCutter implements LaserCutter {
         /* Generate complete PJL Job */
         ByteArrayOutputStream pjlJob = new ByteArrayOutputStream();
         PrintStream wrt = new PrintStream(pjlJob, true, "US-ASCII");
-        
+
         wrt.append(generatePjlHeader(job));
         if (job.containsRaster()) {
             wrt.append(generateRasterPCL(job.getRasterPart()));
-        
+        }
         if (job.containsVector()) {
             wrt.append(generateVectorPCL(job.getVectorPart()));
         }
         wrt.append(generatePjlFooter());
-        
-        //dump pjl into file for debugging
-        new PrintStream(new FileOutputStream(new File("/tmp/last.pjl")),true,"US-ASCII").print(pjlJob.toString("US-ASCII"));
         /* Pad out the remainder of the file with 0 characters. */
-        for(int i = 0; i < 4096; i++) {
+        for (int i = 0; i < 4096; i++) {
             wrt.append((char) 0);
-       }
+        }
+        wrt.flush();
+
+        //dump pjl into file for debugging
+        new PrintStream(new FileOutputStream(new File("/tmp/last.pjl")), true, "US-ASCII").print(pjlJob.toString("US-ASCII"));
+
         //Use PrintStream for getting prinf methotd
         //and autoflush because we're watiting for responses
         PrintStream out = new PrintStream(this.out, true, "US-ASCII");
@@ -271,8 +272,8 @@ public class EpilogCutter implements LaserCutter {
         out.printf("\033E@PJL ENTER LANGUAGE=PCL\r\n");
         /* Page Orientation */
         out.printf("\033*r0F");
-        out.printf("\033*r%dT", 7016);// if not dummy, then job.getHeight());
-        out.printf("\033*r%dS", 4958);// if not dummy then job.getWidth());
+        out.printf("\033*r%dT", 1001);// if not dummy, then job.getHeight());
+        out.printf("\033*r%dS", 501);// if not dummy then job.getWidth());
         out.printf("\033*r1A");
         out.printf("\033*rC");
         out.printf("\033%%1B");// Start HLGL
@@ -288,16 +289,12 @@ public class EpilogCutter implements LaserCutter {
         fprintf(pjl_file, "ZS%03d;", vector_speed);
          * PU = Pen up, PD = Pen Down
          */
-        
+
         //Dummy Data from captured printjob
-        out.print("IN;XR5000;YP100;ZS060;PU1224,6476;"
-                + "PD1944,6476,1944,5116,1224,5116,1224,6476;PU1652,5625;PD1641,5624,1631,5621,1622"
-                + ",5618,1614,5613,1607,5607,1602,5600,1599,5592,1598,5584,1599,5575,1602,5568,1607"
-                + ",5561,1614,5555,1622,5549,1631,5546,1641,5543,1652,5542,1663,5543,1673,5546,1683"
-                + ",5549,1691,5555,1697,5561,1702,5568,1705,5575,1706,5584,1705,5592,1702,5600,1697"
-                + ",5607,1691,5613,1683,5618,1673,5621,1663,5624,1652,5625;");
+        out.print("IN;XR5000;YP100;ZS060;PU0,0;"
+                + "PD1000,0,1000,500,0,500,0,0;PU500,250;PD0,0;");
 
-
+        //TODO: Shouldn't be any need to first exit HLGL and then get back in..
         out.printf("\033%%0B");// end HLGL
         out.printf("\033%%1BPU");  // start HLGL, and pen up, end
         try {

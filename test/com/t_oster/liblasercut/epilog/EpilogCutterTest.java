@@ -19,8 +19,18 @@ public class EpilogCutterTest {
      */
     @Test
     public void testSendJob() {
+        EpilogCutter.SIMULATE_COMMUNICATION = false;
         System.out.println("sendJob");
         LaserJob job = new LaserJob("jepilog", "666", "bla", 500);
+        EpilogCutter instance = new EpilogCutter("137.226.56.228");
+        instance.sendJob(job);
+    }
+    
+    @Test
+    public void testSendJobSimulated() {
+        EpilogCutter.SIMULATE_COMMUNICATION = true;
+        System.out.println("sendJob  (simulation)");
+        LaserJob job = new LaserJob("Drucken Neues Dokument 1", "666", "bla", 500);
         EpilogCutter instance = new EpilogCutter("137.226.56.228");
         instance.sendJob(job);
     }
