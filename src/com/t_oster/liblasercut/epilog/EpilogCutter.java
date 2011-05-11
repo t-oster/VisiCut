@@ -37,6 +37,7 @@ public class EpilogCutter implements LaserCutter {
     private OutputStream out;
 
     public EpilogCutter(String hostname) {
+        this.hostname = hostname;
     }
 
     public void waitForResponse(int expected) throws IOException, Exception {
@@ -95,13 +96,13 @@ public class EpilogCutter implements LaserCutter {
          */
         out.printf("\027&l0Z");
 
-        /* Resolution of the print. */
+        /* Resolution of the print. Number of Units/Inch*/
         out.printf("\027&u%dD", job.getResolution());
         /* X position = 0 */
         out.printf("\027*p0X");
         /* Y position = 0 */
         out.printf("\027*p0Y");
-        /* PCL resolution. */
+        /* PCL/RasterGraphics resolution. */
         out.printf("\027*t%dR", job.getResolution());
         try {
             return result.toString("US-ASCII");
@@ -133,6 +134,7 @@ public class EpilogCutter implements LaserCutter {
     private void sendPjlJob(LaserJob job) throws UnknownHostException {
 
         String localhost = java.net.InetAddress.getLocalHost().getHostName();
+        /* Generate complete PJL Job */
         StringBuffer pjlJob = new StringBuffer();
         pjlJob.append(generatePjlHeader(job));
         if (job.containsRaster()) {
@@ -145,7 +147,9 @@ public class EpilogCutter implements LaserCutter {
         //Use PrintStream for getting prinf methotd
         //and autoflush because we're watiting for responses
         PrintStream out = new PrintStream(this.out, true);
+        /* Send the Job length and name to the queue */
         out.printf("\003%d dfA%s%s\n", pjlJob.length(), job.getName(), localhost);
+        /* Send the real PJL Job */
         out.print(pjlJob);
     }
 
@@ -167,7 +171,7 @@ public class EpilogCutter implements LaserCutter {
     }
 
     private boolean isConnected() {
-        return false;
+        return connection.isConnected();
     }
 
     public void sendJob(LaserJob job) {
@@ -229,12 +233,20 @@ public class EpilogCutter implements LaserCutter {
         out.printf("\027*r%dS", 4958);// if not dummy then job.getWidth());
         out.printf("\027*r1A");
         out.printf("\027*rC");
-        out.printf("\027%%1B");
+        out.printf("\027%%1B");// Start HLGL
 
         /* We're going to perform a vector print. */
         //TODO: Translate Method
         //generate_vector(pjl_file, vector_file);
 
+        /*
+        fprintf(pjl_file, "IN;");
+        fprintf(pjl_file, "XR%04d;", vector_freq);
+        fprintf(pjl_file, "YP%03d;", vector_power);
+        fprintf(pjl_file, "ZS%03d;", vector_speed);
+         * PU = Pen up, PD = Pen Down
+         */
+        
         //Dummy Data from captured printjob
         out.print("IN;XR5000;YP100;ZS010;PU1224,6476;"
                 + "PD1944,6476,1944,5116,1224,5116,1224,6476;PU1652,5625;PD1641,5624,1631,5621,1622"
