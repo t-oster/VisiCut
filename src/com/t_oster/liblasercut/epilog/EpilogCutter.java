@@ -12,11 +12,12 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -30,7 +31,7 @@ import java.util.logging.Logger;
 public class EpilogCutter implements LaserCutter {
 
     public static final boolean SIMULATE_COMMUNICATION = false;
-    private static final int[] RESOLUTIONS = new int[]{300, 600};
+    private static final int[] RESOLUTIONS = new int[]{500};
     private static final int BED_WIDTH = 1000;
     private static final int BED_HEIGHT = 500;
     private String hostname;
@@ -108,27 +109,27 @@ public class EpilogCutter implements LaserCutter {
         PrintStream out = new PrintStream(result, true, "US-ASCII");
 
         /* Print the printer job language header. */
-        out.printf("\027%%-12345X@PJL JOB NAME=%s\r\n", job.getTitle());
-        out.printf("\027E@PJL ENTER LANGUAGE=PCL\r\n");
+        out.printf("\033%%-12345X@PJL JOB NAME=%s\r\n", job.getTitle());
+        out.printf("\033E@PJL ENTER LANGUAGE=PCL\r\n");
         /* Set autofocus off. */
-        out.printf("\027&y0A");
+        out.printf("\033&y0A");
         /* Left (long-edge) offset registration.  Adjusts the position of the
          * logical page across the width of the page.
          */
-        out.printf("\027&l0U");
+        out.printf("\033&l0U");
         /* Top (short-edge) offset registration.  Adjusts the position of the
          * logical page across the length of the page.
          */
-        out.printf("\027&l0Z");
+        out.printf("\033&l0Z");
 
         /* Resolution of the print. Number of Units/Inch*/
-        out.printf("\027&u%dD", job.getResolution());
+        out.printf("\033&u%dD", job.getResolution());
         /* X position = 0 */
-        out.printf("\027*p0X");
+        out.printf("\033*p0X");
         /* Y position = 0 */
-        out.printf("\027*p0Y");
+        out.printf("\033*p0Y");
         /* PCL/RasterGraphics resolution. */
-        out.printf("\027*t%dR", job.getResolution());
+        out.printf("\033*t%dR", job.getResolution());
         try {
             return result.toString("US-ASCII");
         } catch (UnsupportedEncodingException ex) {
@@ -143,9 +144,9 @@ public class EpilogCutter implements LaserCutter {
 
         /* Footer for printer job language. */
         /* Reset */
-        out.printf("\027E");
+        out.printf("\033E");
         /* Exit language. */
-        out.printf("\027%%-12345X");
+        out.printf("\033%%-12345X");
         /* End job. */
         out.printf("@PJL EOJ \r\n");
         try {
@@ -162,26 +163,22 @@ public class EpilogCutter implements LaserCutter {
         /* Generate complete PJL Job */
         ByteArrayOutputStream pjlJob = new ByteArrayOutputStream();
         PrintStream wrt = new PrintStream(pjlJob, true, "US-ASCII");
-        /*
+        
         wrt.append(generatePjlHeader(job));
         if (job.containsRaster()) {
             wrt.append(generateRasterPCL(job.getRasterPart()));
-        }
+        
         if (job.containsVector()) {
             wrt.append(generateVectorPCL(job.getVectorPart()));
         }
         wrt.append(generatePjlFooter());
-         */
-        //dummy pjl
-        FileInputStream is = new FileInputStream(new File("/tmp/epilog-19498.pjl"));
-        while (is.available()>0){
-            wrt.append((char) is.read());
-        }
-        is.close();
+        
+        //dump pjl into file for debugging
+        new PrintStream(new FileOutputStream(new File("/tmp/last.pjl")),true,"US-ASCII").print(pjlJob.toString("US-ASCII"));
         /* Pad out the remainder of the file with 0 characters. */
-        //for(int i = 0; i < 4096; i++) {
-          //  wrt.append((char) 0);
-       //}
+        for(int i = 0; i < 4096; i++) {
+            wrt.append((char) 0);
+       }
         //Use PrintStream for getting prinf methotd
         //and autoflush because we're watiting for responses
         PrintStream out = new PrintStream(this.out, true, "US-ASCII");
@@ -252,7 +249,7 @@ public class EpilogCutter implements LaserCutter {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(result, true, "US-ASCII");
         /* FIXME unknown purpose. */
-        out.printf("\027&y0C");
+        out.printf("\033&y0C");
 
         /* We're going to perform a raster print. */
 
@@ -271,14 +268,14 @@ public class EpilogCutter implements LaserCutter {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(result, true, "US-ASCII");
 
-        out.printf("\027E@PJL ENTER LANGUAGE=PCL\r\n");
+        out.printf("\033E@PJL ENTER LANGUAGE=PCL\r\n");
         /* Page Orientation */
-        out.printf("\027*r0F");
-        out.printf("\027*r%dT", 7016);// if not dummy, then job.getHeight());
-        out.printf("\027*r%dS", 4958);// if not dummy then job.getWidth());
-        out.printf("\027*r1A");
-        out.printf("\027*rC");
-        out.printf("\027%%1B");// Start HLGL
+        out.printf("\033*r0F");
+        out.printf("\033*r%dT", 7016);// if not dummy, then job.getHeight());
+        out.printf("\033*r%dS", 4958);// if not dummy then job.getWidth());
+        out.printf("\033*r1A");
+        out.printf("\033*rC");
+        out.printf("\033%%1B");// Start HLGL
 
         /* We're going to perform a vector print. */
         //TODO: Translate Method
@@ -293,7 +290,7 @@ public class EpilogCutter implements LaserCutter {
          */
         
         //Dummy Data from captured printjob
-        out.print("IN;XR5000;YP100;ZS010;PU1224,6476;"
+        out.print("IN;XR5000;YP100;ZS060;PU1224,6476;"
                 + "PD1944,6476,1944,5116,1224,5116,1224,6476;PU1652,5625;PD1641,5624,1631,5621,1622"
                 + ",5618,1614,5613,1607,5607,1602,5600,1599,5592,1598,5584,1599,5575,1602,5568,1607"
                 + ",5561,1614,5555,1622,5549,1631,5546,1641,5543,1652,5542,1663,5543,1673,5546,1683"
@@ -301,8 +298,8 @@ public class EpilogCutter implements LaserCutter {
                 + ",5607,1691,5613,1683,5618,1673,5621,1663,5624,1652,5625;");
 
 
-        out.printf("\027%%0B");// end HLGL
-        out.printf("\027%%1BPU");  // start HLGL, and pen up, end
+        out.printf("\033%%0B");// end HLGL
+        out.printf("\033%%1BPU");  // start HLGL, and pen up, end
         try {
             return result.toString("US-ASCII");
         } catch (UnsupportedEncodingException ex) {
