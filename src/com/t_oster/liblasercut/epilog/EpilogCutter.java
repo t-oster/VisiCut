@@ -11,6 +11,8 @@ import com.t_oster.liblasercut.VectorPart;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,7 +29,7 @@ import java.util.logging.Logger;
  */
 public class EpilogCutter implements LaserCutter {
 
-    public static final boolean SIMULATE_COMMUNICATION = true;
+    public static final boolean SIMULATE_COMMUNICATION = false;
     private static final int[] RESOLUTIONS = new int[]{300, 600};
     private static final int BED_WIDTH = 1000;
     private static final int BED_HEIGHT = 500;
@@ -40,19 +42,36 @@ public class EpilogCutter implements LaserCutter {
         this.hostname = hostname;
     }
 
-    public void waitForResponse(int expected) throws IOException, Exception {
+    private void waitForResponse(int expected) throws IOException, Exception{
+        waitForResponse(expected, 3);
+    }
+    
+    private void waitForResponse(int expected, int timeout) throws IOException, Exception {
         if (SIMULATE_COMMUNICATION) {
-            System.out.println("Response: 0");
+            System.out.println("Response simulated");
             return;
         }
-        int result;
-        result = in.read();
-        if (result == -1) {
-            throw new IOException("End of Stream");
+        int result=-1;
+        out.flush();
+        System.out.println("Waiting for response...");
+        for( int i=0;i<timeout;i++){
+            if (in.available() > 0){
+                result = in.read();
+                System.out.println("Got Response: "+result);
+                if (result == -1) {
+                    throw new IOException("End of Stream");
+                }
+                if (result != expected) {
+                    throw new Exception("unexpected Response: "+result);
+                }
+                return;
+            }
+            else{
+                Thread.sleep(100*timeout);
+            }
         }
-        if (result != expected) {
-            throw new Exception("unexpected Response");
-        }
+        throw new Exception("Timeout");
+        
     }
 
     private void initJob(LaserJob job) throws Exception {
@@ -60,11 +79,13 @@ public class EpilogCutter implements LaserCutter {
         String localhost = java.net.InetAddress.getLocalHost().getHostName();
         //Use PrintStream for getting prinf methotd
         //and autoflush because we're watiting for responses
-        PrintStream out = new PrintStream(this.out, true);
+        PrintStream out = new PrintStream(this.out, true, "US-ASCII");
         out.print("\002\n");
+        System.out.println("sending init");
         waitForResponse(0);
+        System.out.println("got response");
         ByteArrayOutputStream tmp = new ByteArrayOutputStream();
-        PrintStream stmp = new PrintStream(tmp, true);
+        PrintStream stmp = new PrintStream(tmp, true, "US-ASCII");
         stmp.printf("H%s\n", localhost);
         stmp.printf("P%s\n", job.getUser());
         stmp.printf("J%s\n", job.getTitle());
@@ -73,14 +94,18 @@ public class EpilogCutter implements LaserCutter {
         stmp.printf("N%s\n", job.getTitle());
 
         out.printf("\002%d cfA%s%s\n", tmp.toString("US-ASCII").length(), job.getName(), localhost);
+        System.out.println("sending jobheader");
         waitForResponse(0);
         out.print(tmp.toString("US-ASCII"));
+        out.append((char) 0);
+        System.out.println("sending job");
         waitForResponse(0);
+        System.out.println("got jobresponse");
     }
 
-    private String generatePjlHeader(LaserJob job) {
+    private String generatePjlHeader(LaserJob job) throws UnsupportedEncodingException {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
-        PrintStream out = new PrintStream(result);
+        PrintStream out = new PrintStream(result, true, "US-ASCII");
 
         /* Print the printer job language header. */
         out.printf("\027%%-12345X@PJL JOB NAME=%s\r\n", job.getTitle());
@@ -112,9 +137,9 @@ public class EpilogCutter implements LaserCutter {
         }
     }
 
-    private String generatePjlFooter() {
+    private String generatePjlFooter() throws UnsupportedEncodingException {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
-        PrintStream out = new PrintStream(result);
+        PrintStream out = new PrintStream(result, true, "US-ASCII");
 
         /* Footer for printer job language. */
         /* Reset */
@@ -131,26 +156,45 @@ public class EpilogCutter implements LaserCutter {
         }
     }
 
-    private void sendPjlJob(LaserJob job) throws UnknownHostException {
+    private void sendPjlJob(LaserJob job) throws UnknownHostException, UnsupportedEncodingException, IOException, Exception {
 
         String localhost = java.net.InetAddress.getLocalHost().getHostName();
         /* Generate complete PJL Job */
-        StringBuffer pjlJob = new StringBuffer();
-        pjlJob.append(generatePjlHeader(job));
+        ByteArrayOutputStream pjlJob = new ByteArrayOutputStream();
+        PrintStream wrt = new PrintStream(pjlJob, true, "US-ASCII");
+        /*
+        wrt.append(generatePjlHeader(job));
         if (job.containsRaster()) {
-            pjlJob.append(generateRasterPCL(job.getRasterPart()));
+            wrt.append(generateRasterPCL(job.getRasterPart()));
         }
         if (job.containsVector()) {
-            pjlJob.append(generateVectorPCL(job.getVectorPart()));
+            wrt.append(generateVectorPCL(job.getVectorPart()));
         }
-        pjlJob.append(generatePjlFooter());
+        wrt.append(generatePjlFooter());
+         */
+        //dummy pjl
+        FileInputStream is = new FileInputStream(new File("/tmp/epilog-19498.pjl"));
+        while (is.available()>0){
+            wrt.append((char) is.read());
+        }
+        is.close();
+        /* Pad out the remainder of the file with 0 characters. */
+        //for(int i = 0; i < 4096; i++) {
+          //  wrt.append((char) 0);
+       //}
         //Use PrintStream for getting prinf methotd
         //and autoflush because we're watiting for responses
-        PrintStream out = new PrintStream(this.out, true);
+        PrintStream out = new PrintStream(this.out, true, "US-ASCII");
         /* Send the Job length and name to the queue */
-        out.printf("\003%d dfA%s%s\n", pjlJob.length(), job.getName(), localhost);
+        out.printf("\003%d dfA%s%s\n", pjlJob.toString("US-ASCII").length(), job.getName(), localhost);
+        System.out.println("Sending dataFileHeader");
+        waitForResponse(0);
+        System.out.println("Accepted. Sending Data File");
         /* Send the real PJL Job */
-        out.print(pjlJob);
+        out.print(pjlJob.toString("US-ASCII"));
+        //out.append((char) 0);
+        System.out.println("Data file sent");
+        waitForResponse(0);
     }
 
     private void connect() throws IOException {
@@ -171,7 +215,7 @@ public class EpilogCutter implements LaserCutter {
     }
 
     private boolean isConnected() {
-        return connection.isConnected();
+        return (connection != null && connection.isConnected());
     }
 
     public void sendJob(LaserJob job) {
@@ -185,6 +229,7 @@ public class EpilogCutter implements LaserCutter {
             if (!wasConnected) {
                 disconnect();
             }
+            System.out.println("Successfully disconnected");
         } catch (Exception ex) {
             Logger.getLogger(EpilogCutter.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -202,10 +247,10 @@ public class EpilogCutter implements LaserCutter {
         return BED_HEIGHT;
     }
 
-    private String generateRasterPCL(RasterPart job) {
+    private String generateRasterPCL(RasterPart job) throws UnsupportedEncodingException {
 
         ByteArrayOutputStream result = new ByteArrayOutputStream();
-        PrintStream out = new PrintStream(result);
+        PrintStream out = new PrintStream(result, true, "US-ASCII");
         /* FIXME unknown purpose. */
         out.printf("\027&y0C");
 
@@ -221,10 +266,10 @@ public class EpilogCutter implements LaserCutter {
         }
     }
 
-    private String generateVectorPCL(VectorPart job) {
+    private String generateVectorPCL(VectorPart job) throws UnsupportedEncodingException {
 
         ByteArrayOutputStream result = new ByteArrayOutputStream();
-        PrintStream out = new PrintStream(result);
+        PrintStream out = new PrintStream(result, true, "US-ASCII");
 
         out.printf("\027E@PJL ENTER LANGUAGE=PCL\r\n");
         /* Page Orientation */

@@ -20,8 +20,8 @@ public class EpilogCutterTest {
     @Test
     public void testSendJob() {
         System.out.println("sendJob");
-        LaserJob job = new LaserJob("peter", "parker", "bla", 600);
-        EpilogCutter instance = new EpilogCutter("localhost");
+        LaserJob job = new LaserJob("peter", "124", "bla", 600);
+        EpilogCutter instance = new EpilogCutter("137.226.56.228");
         instance.sendJob(job);
     }
     
