@@ -4,10 +4,7 @@
  */
 package com.t_oster.liblasercut.epilog;
 
-import com.t_oster.liblasercut.LaserCutter;
-import com.t_oster.liblasercut.LaserJob;
-import com.t_oster.liblasercut.RasterPart;
-import com.t_oster.liblasercut.VectorPart;
+import com.t_oster.liblasercut.*;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -229,21 +226,31 @@ public class EpilogCutter implements LaserCutter {
         return (connection != null && connection.isConnected());
     }
 
-    public void sendJob(LaserJob job) {
-        try {
-            boolean wasConnected = isConnected();
-            if (!wasConnected) {
-                connect();
+    private void checkJob(LaserJob job) throws IllegalJobException{
+        boolean pass=false;
+        for (int i:this.getResolutions()){
+            if (i==job.getResolution()){
+                pass=true;
+                break;
             }
-            initJob(job);
-            sendPjlJob(job);
-            if (!wasConnected) {
-                disconnect();
-            }
-            System.out.println("Successfully disconnected");
-        } catch (Exception ex) {
-            Logger.getLogger(EpilogCutter.class.getName()).log(Level.SEVERE, null, ex);
         }
+        if (!pass){
+            throw new IllegalJobException("Resoluiton of "+job.getResolution()+" is not supported");
+        }
+    }
+    
+    public void sendJob(LaserJob job) throws IllegalJobException, Exception{
+        checkJob(job);
+        boolean wasConnected = isConnected();
+        if (!wasConnected) {
+            connect();
+        }
+        initJob(job);
+        sendPjlJob(job);
+        if (!wasConnected) {
+            disconnect();
+        }
+        System.out.println("Successfully disconnected");
     }
 
     public int[] getResolutions() {
@@ -264,10 +271,6 @@ public class EpilogCutter implements LaserCutter {
         PrintStream out = new PrintStream(result, true, "US-ASCII");
         /* FIXME unknown purpose. */
         out.printf("\033&y0C");
-
-        /* We're going to perform a raster print. */
-
-        //TODO: translate method
         /* Raster Orientation */
         out.printf("\033*r0F");
         /* Raster power */
@@ -309,22 +312,14 @@ public class EpilogCutter implements LaserCutter {
         out.printf("\033*r1A");
         out.printf("\033*rC");
         out.printf("\033%%1B");// Start HLGL
-
-        /* We're going to perform a vector print. */
-        //TODO: Translate Method
-        //generate_vector(pjl_file, vector_file);
-
-        /*
-        fprintf(pjl_file, "IN;");
-        fprintf(pjl_file, "XR%04d;", vector_freq);
-        fprintf(pjl_file, "YP%03d;", vector_power);
-        fprintf(pjl_file, "ZS%03d;", vector_speed);
-         * PU = Pen up, PD = Pen Down
-         */
+        out.printf("IN;");
+        out.printf("XR%04d;", 5000);//Vector freq
+        out.printf("YP%03d;", 80);//Vector power
+        out.printf("ZS%03d;", 100);//Vector speed
+         /* PU = Pen up, PD = Pen Down*/
 
         //Dummy Data from captured printjob
-        out.print("IN;XR5000;YP100;ZS060;PU0,0;"
-                + "PD1000,0,1000,500,0,500,0,0;PU500,250;PD0,0;");
+        out.print("PU0,0;PD-200,0,1000,0,-200,0;PU0,0;");
 
         //TODO: Shouldn't be any need to first exit HLGL and then get back in..
         out.printf("\033%%0B");// end HLGL

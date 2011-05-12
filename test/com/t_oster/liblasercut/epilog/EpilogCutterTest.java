@@ -4,6 +4,7 @@
  */
 package com.t_oster.liblasercut.epilog;
 
+import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserJob;
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ public class EpilogCutterTest {
      * Test of sendJob method, of class EpilogCutter.
      */
     @Test
-    public void testSendJob() {
+    public void testSendJob() throws IllegalJobException, Exception {
         EpilogCutter.SIMULATE_COMMUNICATION = false;
         System.out.println("sendJob");
         LaserJob job = new LaserJob("jepilog", "666", "bla", 500);
@@ -27,7 +28,7 @@ public class EpilogCutterTest {
     }
     
     @Test
-    public void testSendJobSimulated() {
+    public void testSendJobSimulated() throws IllegalJobException, Exception {
         EpilogCutter.SIMULATE_COMMUNICATION = true;
         System.out.println("sendJob  (simulation)");
         LaserJob job = new LaserJob("Drucken Neues Dokument 1", "666", "bla", 500);

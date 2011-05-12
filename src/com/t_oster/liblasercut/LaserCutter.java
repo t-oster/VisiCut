@@ -9,7 +9,7 @@ package com.t_oster.liblasercut;
  * @author thommy
  */
 public interface LaserCutter {
-    public void sendJob(LaserJob job);
+    public void sendJob(LaserJob job) throws IllegalJobException, Exception;
     public int[] getResolutions();
     public int getBedWidth();
     public int getBedHeight();
