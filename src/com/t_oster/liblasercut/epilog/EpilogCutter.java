@@ -12,6 +12,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -129,6 +130,9 @@ public class EpilogCutter implements LaserCutter {
         out.printf("\033*p0Y");
         /* PCL/RasterGraphics resolution. */
         out.printf("\033*t%dR", job.getResolution());
+        
+        /* FIXME unknown purpose. */
+        out.printf("\033&y0C");
         try {
             return result.toString("US-ASCII");
         } catch (UnsupportedEncodingException ex) {
@@ -164,9 +168,9 @@ public class EpilogCutter implements LaserCutter {
         PrintStream wrt = new PrintStream(pjlJob, true, "US-ASCII");
 
         wrt.append(generatePjlHeader(job));
-        if (job.containsRaster()) {
+        //if (job.containsRaster()) {
             wrt.append(generateRasterPCL(job.getRasterPart()));
-        }
+        //}
         if (job.containsVector()) {
             wrt.append(generateVectorPCL(job.getVectorPart()));
         }
@@ -180,6 +184,15 @@ public class EpilogCutter implements LaserCutter {
         //dump pjl into file for debugging
         new PrintStream(new FileOutputStream(new File("/tmp/last.pjl")), true, "US-ASCII").print(pjlJob.toString("US-ASCII"));
 
+        /*
+        pjlJob = new ByteArrayOutputStream();
+        FileInputStream is = new FileInputStream(new File("/tmp/working.pjl"));
+        while(is.available()>0){
+            pjlJob.write(is.read());
+        }
+        is.close
+         * 
+         */
         //Use PrintStream for getting prinf methotd
         //and autoflush because we're watiting for responses
         PrintStream out = new PrintStream(this.out, true, "US-ASCII");
@@ -255,7 +268,26 @@ public class EpilogCutter implements LaserCutter {
         /* We're going to perform a raster print. */
 
         //TODO: translate method
-        //generate_raster(pjl_file, bitmap_file);
+        /* Raster Orientation */
+        out.printf("\033*r0F");
+        /* Raster power */
+        out.printf("\033&y%dP", 100);//TODO real rasterpower
+        /* Raster speed */
+        out.printf("\033&z%dS", 50);//TODO real raster_speed);
+        out.printf("\033*r%dT", 501);//height * y_repeat);
+        out.printf("\033*r%dS", 1000);//width * x_repeat);
+        /* Raster compression */
+        out.printf("\033*b%dM", 2);
+        /* Raster direction (1 = up) */
+        out.printf("\033&y1O");
+        /* start at current position */
+        out.printf("\033*r1A");
+        
+        //TODO: raster image
+        
+        out.printf("\033*rC");       // end raster
+        out.write((char) 26);
+        out.write((char) 4); // some end of file markers
         try {
             return result.toString("US-ASCII");
         } catch (UnsupportedEncodingException ex) {
