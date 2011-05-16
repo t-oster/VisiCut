@@ -169,7 +169,7 @@ public class EpilogCutter implements LaserCutter {
             wrt.append(generateRasterPCL(job.getRasterPart()));
         //}
         if (job.containsVector()) {
-            wrt.append(generateVectorPCL(job.getVectorPart()));
+            wrt.append(generateVectorPCL(job, job.getVectorPart()));
         }
         wrt.append(generatePjlFooter());
         /* Pad out the remainder of the file with 0 characters. */
@@ -299,7 +299,7 @@ public class EpilogCutter implements LaserCutter {
         }
     }
 
-    private String generateVectorPCL(VectorPart job) throws UnsupportedEncodingException {
+    private String generateVectorPCL(LaserJob job, VectorPart vp) throws UnsupportedEncodingException {
 
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(result, true, "US-ASCII");
@@ -307,23 +307,48 @@ public class EpilogCutter implements LaserCutter {
         out.printf("\033E@PJL ENTER LANGUAGE=PCL\r\n");
         /* Page Orientation */
         out.printf("\033*r0F");
-        out.printf("\033*r%dT", 1001);// if not dummy, then job.getHeight());
-        out.printf("\033*r%dS", 501);// if not dummy then job.getWidth());
+        out.printf("\033*r%dT", vp.getHeight());// if not dummy, then job.getHeight());
+        out.printf("\033*r%dS", vp.getWidth());// if not dummy then job.getWidth());
         out.printf("\033*r1A");
         out.printf("\033*rC");
         out.printf("\033%%1B");// Start HLGL
-        out.printf("IN;");
-        out.printf("XR%04d;", 5000);//Vector freq
-        out.printf("YP%03d;", 80);//Vector power
-        out.printf("ZS%03d;", 100);//Vector speed
-         /* PU = Pen up, PD = Pen Down*/
-
-        //Dummy Data from captured printjob
-        out.print("PU0,0;PD-200,0,1000,0,-200,0;PU0,0;");
-
-        //TODO: Shouldn't be any need to first exit HLGL and then get back in..
-        out.printf("\033%%0B");// end HLGL
-        out.printf("\033%%1BPU");  // start HLGL, and pen up, end
+        out.printf("IN;PU0,0;");
+        int curX = 0;
+        int curY = 0;
+        for (VectorCommand cmd:vp.getCommandList()){
+            switch (cmd.getType()){
+                case SETFREQUENCY:{
+                    out.printf("XR%04d;", cmd.getFrequency());
+                    break;
+                }
+                case SETPOWER:{
+                    out.printf("YP%03d;", cmd.getPower());
+                    break;
+                }
+                case SETSPEED:{
+                    out.printf("ZS%03d;", cmd.getSpeed());
+                    break;
+                }
+                case POLYGON:{
+                    if (curX != cmd.getX(0) || curY != cmd.getY(0)){
+                        out.printf("PU%d,%d;", cmd.getX(0), cmd.getY(0));
+                    }
+                    out.printf("PD%d,%d", cmd.getX(1), cmd.getY(1));
+                    for (int i=2;i<cmd.getLength();i++){
+                        out.printf(",%d,%d", cmd.getX(i), cmd.getY(i));
+                    }
+                    curX = cmd.getX(cmd.getLength()-1);
+                    curY = cmd.getY(cmd.getLength()-1);
+                    out.print(";");
+                    break;
+                }
+            }
+        }
+        
+        //Pen up and goto 0,0
+        out.printf("PU0,0;");  // start HLGL, and pen up, end
+        
+        System.out.append(result.toString());
         try {
             return result.toString("US-ASCII");
         } catch (UnsupportedEncodingException ex) {

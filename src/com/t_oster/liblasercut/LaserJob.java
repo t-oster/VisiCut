@@ -14,12 +14,15 @@ public class LaserJob {
     private String name;
     private String user;
     private int resolution;
+    private VectorPart vPart;
+    private RasterPart rPart;
     
-    public LaserJob(String title, String name, String user, int resolution){
+    public LaserJob(String title, String name, String user, int resolution, VectorPart vp){
         this.title = title;
         this.name = name;
         this.user = user;
         this.resolution = resolution;
+        this.vPart = vp;
     }
     
     public String getTitle(){
@@ -35,11 +38,11 @@ public class LaserJob {
     }
 
     public boolean containsRaster(){
-        return false;
+        return rPart!=null;
     }
 
     public boolean containsVector(){
-        return true;
+        return vPart!=null;
     }
 
     public int getResolution(){
@@ -47,10 +50,10 @@ public class LaserJob {
     }
     
     public VectorPart getVectorPart(){
-        return null;
+        return vPart;
     }
     
     public RasterPart getRasterPart(){
-        return null;
+        return rPart;
     }
 }
