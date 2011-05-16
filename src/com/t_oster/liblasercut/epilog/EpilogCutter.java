@@ -9,13 +9,11 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -237,6 +235,14 @@ public class EpilogCutter implements LaserCutter {
         if (!pass){
             throw new IllegalJobException("Resoluiton of "+job.getResolution()+" is not supported");
         }
+        if (job.containsVector()){
+            int w = job.getVectorPart().getWidth();
+            int h = job.getVectorPart().getHeight();
+            
+            if (w > this.getBedWidth() || h > this.getBedHeight()){
+                throw new IllegalJobException("The Job is too big ("+w+"x"+h+") for the Laser bed ("+this.getBedHeight()+"x"+this.getBedHeight()+")");
+            }
+        }
     }
     
     public void sendJob(LaserJob job) throws IllegalJobException, Exception{
@@ -313,9 +319,11 @@ public class EpilogCutter implements LaserCutter {
         out.printf("\033*rC");
         out.printf("\033%%1B");// Start HLGL
         out.printf("IN;PU0,0;");
-        int curX = 0;
-        int curY = 0;
+        VectorCommand.CmdType lastType = null;
         for (VectorCommand cmd:vp.getCommandList()){
+            if (lastType!=null && lastType == VectorCommand.CmdType.LINETO && cmd.getType() != VectorCommand.CmdType.LINETO){
+                out.print(";");
+            }
             switch (cmd.getType()){
                 case SETFREQUENCY:{
                     out.printf("XR%04d;", cmd.getFrequency());
@@ -329,20 +337,21 @@ public class EpilogCutter implements LaserCutter {
                     out.printf("ZS%03d;", cmd.getSpeed());
                     break;
                 }
-                case POLYGON:{
-                    if (curX != cmd.getX(0) || curY != cmd.getY(0)){
-                        out.printf("PU%d,%d;", cmd.getX(0), cmd.getY(0));
+                case MOVETO:{
+                    out.printf("PU%d,%d;", cmd.getX(), cmd.getY());
+                    break;
+                }
+                case LINETO:{
+                    if (lastType == null || lastType != VectorCommand.CmdType.LINETO){
+                        out.printf("PD%d,%d", cmd.getX(), cmd.getY());
                     }
-                    out.printf("PD%d,%d", cmd.getX(1), cmd.getY(1));
-                    for (int i=2;i<cmd.getLength();i++){
-                        out.printf(",%d,%d", cmd.getX(i), cmd.getY(i));
+                    else{
+                        out.printf(",%d,%d", cmd.getX(), cmd.getY());
                     }
-                    curX = cmd.getX(cmd.getLength()-1);
-                    curY = cmd.getY(cmd.getLength()-1);
-                    out.print(";");
                     break;
                 }
             }
+            lastType = cmd.getType();
         }
         
         //Pen up and goto 0,0

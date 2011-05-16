@@ -73,16 +73,16 @@ public class VectorPart {
         }
     }
     
-    public void polygon(int[] x, int[] y){
-        commands.add(new VectorCommand(VectorCommand.CmdType.POLYGON, x, y));
-        for (int i=0;i<x.length;i++){
-            checkMin(x[i],y[i]);
-            checkMax(x[i],y[i]);
-        }
+    public void moveto(int x, int y){
+        commands.add(new VectorCommand(VectorCommand.CmdType.MOVETO, x, y));
+        checkMin(x,y);
+        checkMax(x,y);
     }
     
-    public void line(int x1, int y1, int x2, int y2){
-        this.polygon(new int[]{x1,x2}, new int[]{y1,y2});
+    public void lineto(int x, int y){
+        commands.add(new VectorCommand(VectorCommand.CmdType.LINETO, x, y));
+        checkMin(x,y);
+        checkMax(x,y);
     }
     
     public int getWidth(){

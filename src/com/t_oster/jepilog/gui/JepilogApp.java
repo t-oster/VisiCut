@@ -3,7 +3,7 @@
  */
 package com.t_oster.jepilog.gui;
 
-import com.t_oster.jepilog.controller.SvgController;
+import com.t_oster.jepilog.controller.JepilogController;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -17,14 +17,14 @@ import org.jdesktop.application.SingleFrameApplication;
  */
 public class JepilogApp extends SingleFrameApplication {
 
-    private SvgController controller;
+    private JepilogController controller;
 
     /**
      * At startup create and show the main frame of the application.
      */
     @Override
     protected void startup() {
-        controller = new SvgController();
+        controller = new JepilogController();
         show(new JepilogView(this));
     }
 
@@ -62,7 +62,7 @@ public class JepilogApp extends SingleFrameApplication {
         }
     }
 
-    public SvgController getController() {
+    public JepilogController getController() {
         return controller;
     }
 }

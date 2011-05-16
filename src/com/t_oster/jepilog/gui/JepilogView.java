@@ -4,8 +4,11 @@
 
 package com.t_oster.jepilog.gui;
 
+import com.t_oster.liblasercut.IllegalJobException;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
@@ -16,11 +19,9 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.Timer;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import org.apache.batik.swing.JSVGCanvas;
 
 /**
  * The application's main frame.
@@ -108,7 +109,6 @@ public class JepilogView extends FrameView {
 
         mainPanel = new javax.swing.JPanel();
         jSplitPane1 = new javax.swing.JSplitPane();
-        svgCanvas = new org.apache.batik.swing.JSVGCanvas();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jComboBox1 = new javax.swing.JComboBox();
@@ -116,6 +116,9 @@ public class JepilogView extends FrameView {
         jComboBox2 = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        cbShowEngrave = new javax.swing.JCheckBox();
+        cbShowCut = new javax.swing.JCheckBox();
+        sVGPanel1 = new com.t_oster.jepilog.gui.SVGPanel();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -140,21 +143,6 @@ public class JepilogView extends FrameView {
 
         jSplitPane1.setName("jSplitPane1"); // NOI18N
 
-        svgCanvas.setName("svgCanvas"); // NOI18N
-
-        javax.swing.GroupLayout svgCanvasLayout = new javax.swing.GroupLayout(svgCanvas);
-        svgCanvas.setLayout(svgCanvasLayout);
-        svgCanvasLayout.setHorizontalGroup(
-            svgCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 200, Short.MAX_VALUE)
-        );
-        svgCanvasLayout.setVerticalGroup(
-            svgCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 285, Short.MAX_VALUE)
-        );
-
-        jSplitPane1.setLeftComponent(svgCanvas);
-
         jTabbedPane1.setName("jTabbedPane1"); // NOI18N
 
         jPanel1.setName("jPanel1"); // NOI18N
@@ -172,25 +160,40 @@ public class JepilogView extends FrameView {
         jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
         jLabel2.setName("jLabel2"); // NOI18N
 
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.jepilog.gui.JepilogApp.class).getContext().getActionMap(JepilogView.class, this);
+        jButton1.setAction(actionMap.get("sendToCutter")); // NOI18N
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
         jButton1.setName("jButton1"); // NOI18N
+
+        cbShowEngrave.setAction(actionMap.get("showRaster")); // NOI18N
+        cbShowEngrave.setSelected(true);
+        cbShowEngrave.setText(resourceMap.getString("cbShowEngrave.text")); // NOI18N
+        cbShowEngrave.setName("cbShowEngrave"); // NOI18N
+
+        cbShowCut.setAction(actionMap.get("showVector")); // NOI18N
+        cbShowCut.setSelected(true);
+        cbShowCut.setText(resourceMap.getString("cbShowCut.text")); // NOI18N
+        cbShowCut.setName("cbShowCut"); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(92, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(157, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jComboBox2, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(cbShowCut)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel1)
+                                .addComponent(jLabel2))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jComboBox2, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jComboBox1, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(cbShowEngrave)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -204,7 +207,11 @@ public class JepilogView extends FrameView {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 135, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cbShowEngrave)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cbShowCut)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addContainerGap())
         );
@@ -212,6 +219,21 @@ public class JepilogView extends FrameView {
         jTabbedPane1.addTab(resourceMap.getString("jPanel1.TabConstraints.tabTitle"), jPanel1); // NOI18N
 
         jSplitPane1.setRightComponent(jTabbedPane1);
+
+        sVGPanel1.setName("sVGPanel1"); // NOI18N
+
+        javax.swing.GroupLayout sVGPanel1Layout = new javax.swing.GroupLayout(sVGPanel1);
+        sVGPanel1.setLayout(sVGPanel1Layout);
+        sVGPanel1Layout.setHorizontalGroup(
+            sVGPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        sVGPanel1Layout.setVerticalGroup(
+            sVGPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 283, Short.MAX_VALUE)
+        );
+
+        jSplitPane1.setLeftComponent(sVGPanel1);
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
@@ -226,7 +248,7 @@ public class JepilogView extends FrameView {
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE))
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -247,7 +269,6 @@ public class JepilogView extends FrameView {
         jMenuItem3.setName("jMenuItem3"); // NOI18N
         fileMenu.add(jMenuItem3);
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.jepilog.gui.JepilogApp.class).getContext().getActionMap(JepilogView.class, this);
         importMenuItem.setAction(actionMap.get("showImportDialog")); // NOI18N
         importMenuItem.setText(resourceMap.getString("importMenuItem.text")); // NOI18N
         importMenuItem.setName("importMenuItem"); // NOI18N
@@ -351,6 +372,29 @@ public class JepilogView extends FrameView {
     }
     
     @Action
+    public void showRaster(){
+        sVGPanel1.setShowRaster(cbShowEngrave.isSelected());
+    }
+    
+    @Action
+    public void showVector(){
+        sVGPanel1.setShowVector(cbShowCut.isSelected());
+    }
+    
+    @Action
+    public void sendToCutter(){
+        try {
+            JepilogApp.getApplication().getController().sendToCutter();
+        } catch (IllegalJobException ex) {
+            Logger.getLogger(JepilogView.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(mainPanel, "Der gewählte Lasercutter kann diesen Job nicht ausführen\nFehler:"+ex.getMessage(), "Fehler", JOptionPane.WARNING_MESSAGE);
+        } catch (Exception ex) {
+            Logger.getLogger(JepilogView.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(mainPanel, "Beim Senden des Jobs ist ein Fehler aufgetreten:\n"+ex.getMessage(), "Fehler", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    @Action
     public void showImportDialog() {
         importFileChooser.showOpenDialog(mainPanel);
         File toImport = importFileChooser.getSelectedFile();
@@ -361,12 +405,14 @@ public class JepilogView extends FrameView {
             JOptionPane.showMessageDialog(mainPanel, "Datei konnte nicht importiert werden", "Fehler", JOptionPane.WARNING_MESSAGE);
         }
         else{
-            svgCanvas.setDocumentState(JSVGCanvas.ALWAYS_DYNAMIC);
-            svgCanvas.setDocument(JepilogApp.getApplication().getController().getDocument());
+            sVGPanel1.setSvgUri(JepilogApp.getApplication().getController().getUri());
+            sVGPanel1.repaint();
         }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox cbShowCut;
+    private javax.swing.JCheckBox cbShowEngrave;
     private javax.swing.JFileChooser importFileChooser;
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox jComboBox1;
@@ -386,10 +432,10 @@ public class JepilogView extends FrameView {
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JProgressBar progressBar;
+    private com.t_oster.jepilog.gui.SVGPanel sVGPanel1;
     private javax.swing.JLabel statusAnimationLabel;
     private javax.swing.JLabel statusMessageLabel;
     private javax.swing.JPanel statusPanel;
-    private org.apache.batik.swing.JSVGCanvas svgCanvas;
     // End of variables declaration//GEN-END:variables
 
     private final Timer messageTimer;
