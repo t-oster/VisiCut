@@ -16,7 +16,6 @@ public class VectorCommand {
         SETPOWER,
         SETFREQUENCY,
         POLYGON,
-        CIRCLE,
     }
     
     private CmdType type;
@@ -38,16 +37,6 @@ public class VectorCommand {
         }
     }
    
-    public VectorCommand(CmdType type, int x, int y, int radius){
-        if (type == CmdType.CIRCLE){
-            this.type = type;
-            operands = new int[]{x,y,radius};
-        }
-        else{
-            throw new IllegalArgumentException("Wrong number of Parameters for "+type.toString());
-        }
-    }
-    
     public CmdType getType(){
         return type;
     }
@@ -87,27 +76,6 @@ public class VectorCommand {
             return operands[1+2*index];
         }
         throw new UnsupportedOperationException("getX not supported for "+type.toString());
-    }
-    
-    public int getX(){
-        switch (type){
-            case CIRCLE: return operands[0];
-            default: throw new UnsupportedOperationException("getX not supported for "+type.toString());
-        }
-    }
-    
-    public int getY(){
-        switch (type){
-            case CIRCLE: return operands[1];
-            default: throw new UnsupportedOperationException("getX not supported for "+type.toString());
-        }
-    }
-    
-    public int getRadius(){
-        switch (type){
-            case CIRCLE: return operands[2];
-            default: throw new UnsupportedOperationException("getX not supported for "+type.toString());
-        }
     }
     
     public VectorCommand(CmdType type, int operand1){
