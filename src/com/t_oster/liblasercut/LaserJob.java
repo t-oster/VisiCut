@@ -14,6 +14,8 @@ public class LaserJob {
     private String name;
     private String user;
     private int resolution;
+    private int startX = 0;
+    private int startY = 0;
     private VectorPart vPart;
     private RasterPart rPart;
     
@@ -23,6 +25,19 @@ public class LaserJob {
         this.user = user;
         this.resolution = resolution;
         this.vPart = vp;
+    }
+    
+    public void setStartPoint(int x, int y){
+        startX = x;
+        startY = y;
+    }
+    
+    public int getStartX(){
+        return startX;
+    }
+    
+    public int getStartY(){
+        return startY;
     }
     
     public String getTitle(){

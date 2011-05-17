@@ -319,6 +319,8 @@ public class EpilogCutter implements LaserCutter {
         out.printf("\033*rC");
         out.printf("\033%%1B");// Start HLGL
         out.printf("IN;PU0,0;");
+        int sx = job.getStartX();
+        int sy = job.getStartY();
         VectorCommand.CmdType lastType = null;
         for (VectorCommand cmd:vp.getCommandList()){
             if (lastType!=null && lastType == VectorCommand.CmdType.LINETO && cmd.getType() != VectorCommand.CmdType.LINETO){
@@ -338,15 +340,15 @@ public class EpilogCutter implements LaserCutter {
                     break;
                 }
                 case MOVETO:{
-                    out.printf("PU%d,%d;", cmd.getX(), cmd.getY());
+                    out.printf("PU%d,%d;", cmd.getX()-sx, cmd.getY()-sy);
                     break;
                 }
                 case LINETO:{
                     if (lastType == null || lastType != VectorCommand.CmdType.LINETO){
-                        out.printf("PD%d,%d", cmd.getX(), cmd.getY());
+                        out.printf("PD%d,%d", cmd.getX()-sx, cmd.getY()-sy);
                     }
                     else{
-                        out.printf(",%d,%d", cmd.getX(), cmd.getY());
+                        out.printf(",%d,%d", cmd.getX()-sx, cmd.getY()-sy);
                     }
                     break;
                 }

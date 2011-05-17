@@ -20,12 +20,10 @@ public class VectorPart {
     private int maxY;
     private int minX;
     private int minY;
-    private int startX;
-    private int startY;
     
     private List<VectorCommand> commands;
     
-    public VectorPart(int initialFRQ,int initialPWR, int initialSPD, int startX, int startY){
+    public VectorPart(int initialFRQ,int initialPWR, int initialSPD){
         curFRQ = initialFRQ;
         curPWR = initialPWR;
         curSPD = initialSPD;
@@ -33,10 +31,6 @@ public class VectorPart {
         this.setPower(curPWR);
         this.setSpeed(curSPD);
         this.setFrequency(curFRQ);
-    }
-    
-    public VectorPart(int initialFRQ,int initialPWR, int initialSPD){
-        this(initialFRQ,initialPWR,initialSPD,0,0);
     }
     
     public VectorCommand[] getCommandList(){

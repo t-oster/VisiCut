@@ -4,9 +4,11 @@
 
 package com.t_oster.jepilog.gui;
 
+import com.t_oster.jepilog.controller.JepilogController;
 import com.t_oster.liblasercut.IllegalJobException;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jdesktop.application.Action;
@@ -16,6 +18,7 @@ import org.jdesktop.application.FrameView;
 import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import javax.swing.Timer;
 import javax.swing.Icon;
@@ -86,6 +89,16 @@ public class JepilogView extends FrameView {
                 }
             }
         });
+        
+        JepilogApp.getApplication().getController().addPoropertyChangeListener(
+                JepilogController.Property.STARTING_POINT.toString(), new PropertyChangeListener(){
+
+            public void propertyChange(PropertyChangeEvent pce) {
+                //TODO: Do not set combobox if change was started by combobox
+                jComboBox2.setSelectedIndex(5);
+            }
+                    
+                });
     }
 
     @Action
@@ -148,6 +161,7 @@ public class JepilogView extends FrameView {
         jPanel1.setName("jPanel1"); // NOI18N
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Plexiglass 1,5mm", "Plexiglass 3mm", "Wood 4mm" }));
+        jComboBox1.setEnabled(false);
         jComboBox1.setName("jComboBox1"); // NOI18N
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.jepilog.gui.JepilogApp.class).getContext().getResourceMap(JepilogView.class);
@@ -156,6 +170,11 @@ public class JepilogView extends FrameView {
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "top left", "top right", "bottom left", "bottom right", "center", "custom" }));
         jComboBox2.setName("jComboBox2"); // NOI18N
+        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox2ActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
         jLabel2.setName("jLabel2"); // NOI18N
@@ -257,15 +276,18 @@ public class JepilogView extends FrameView {
         fileMenu.setName("fileMenu"); // NOI18N
 
         jMenuItem1.setText(resourceMap.getString("jMenuItem1.text")); // NOI18N
+        jMenuItem1.setEnabled(false);
         jMenuItem1.setName("jMenuItem1"); // NOI18N
         fileMenu.add(jMenuItem1);
 
         jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem2.setText(resourceMap.getString("jMenuItem2.text")); // NOI18N
+        jMenuItem2.setEnabled(false);
         jMenuItem2.setName("jMenuItem2"); // NOI18N
         fileMenu.add(jMenuItem2);
 
         jMenuItem3.setText(resourceMap.getString("jMenuItem3.text")); // NOI18N
+        jMenuItem3.setEnabled(false);
         jMenuItem3.setName("jMenuItem3"); // NOI18N
         fileMenu.add(jMenuItem3);
 
@@ -283,16 +305,18 @@ public class JepilogView extends FrameView {
         laserMenu.setText(resourceMap.getString("laserMenu.text")); // NOI18N
         laserMenu.setName("laserMenu"); // NOI18N
 
-        jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem4.setAction(actionMap.get("sendToCutter")); // NOI18N
         jMenuItem4.setText(resourceMap.getString("jMenuItem4.text")); // NOI18N
         jMenuItem4.setName("jMenuItem4"); // NOI18N
         laserMenu.add(jMenuItem4);
 
         jMenuItem5.setText(resourceMap.getString("jMenuItem5.text")); // NOI18N
+        jMenuItem5.setEnabled(false);
         jMenuItem5.setName("jMenuItem5"); // NOI18N
         laserMenu.add(jMenuItem5);
 
         jMenuItem6.setText(resourceMap.getString("jMenuItem6.text")); // NOI18N
+        jMenuItem6.setEnabled(false);
         jMenuItem6.setName("jMenuItem6"); // NOI18N
         laserMenu.add(jMenuItem6);
 
@@ -352,6 +376,28 @@ public class JepilogView extends FrameView {
         setMenuBar(menuBar);
         setStatusBar(statusPanel);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+        switch (jComboBox2.getSelectedIndex())
+        {
+            case 0: //top left
+                JepilogApp.getApplication().getController().setStartingPosition(JepilogController.StartingPosition.TOP_LEFT);
+                break;
+            case 1: //top right
+                JepilogApp.getApplication().getController().setStartingPosition(JepilogController.StartingPosition.TOP_RIGHT);
+                break;
+            case 2: //bottom left
+                JepilogApp.getApplication().getController().setStartingPosition(JepilogController.StartingPosition.BOTTOM_LEFT);
+                break;
+            case 3: //bottom right
+                JepilogApp.getApplication().getController().setStartingPosition(JepilogController.StartingPosition.BOTTOM_RIGHT);
+                break;
+            case 4:
+                JepilogApp.getApplication().getController().setStartingPosition(JepilogController.StartingPosition.CENTER);
+                break;
+        }
+        sVGPanel1.repaint();
+    }//GEN-LAST:event_jComboBox2ActionPerformed
 
     
     class MySvgFilter extends javax.swing.filechooser.FileFilter {
