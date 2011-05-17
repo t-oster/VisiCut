@@ -4,11 +4,6 @@
 package com.t_oster.jepilog.gui;
 
 import com.t_oster.jepilog.controller.JepilogController;
-import java.awt.Image;
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
@@ -24,9 +19,6 @@ public class JepilogApp extends SingleFrameApplication {
      */
     @Override
     protected void startup() {
-        //Mac Specific
-        System.setProperty("apple.laf.useScreenMenuBar", "true");
-        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Jepilog");
         controller = new JepilogController();
         show(new JepilogView(this));
     }
@@ -52,17 +44,16 @@ public class JepilogApp extends SingleFrameApplication {
      * Main method launching the application.
      */
     public static void main(String[] args) {
+        //Mac Specific
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Jepilog");
+        System.setProperty("apple.awt.brushMetalLook", "true");
+        System.setProperty("apple.awt.antialiasing", "on");
+        System.setProperty("apple.awt.textantialiasing", "on");
+        System.setProperty("com.apple.mrj.application.growbox.intrudes", "false");
+        System.setProperty("com.apple.mrj.application.live-resize", "true");
+        System.setProperty("com.apple.macos.smallTabs", "true");
         launch(JepilogApp.class, args);
-    }
-
-    public boolean importFile(File file) {
-        try {
-            controller.importSvg(file);
-            return true;
-        } catch (IOException ex) {
-            Logger.getLogger(JepilogApp.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
     }
 
     public JepilogController getController() {

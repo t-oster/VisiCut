@@ -32,26 +32,29 @@ import java.util.Observable;
 public class JepilogController extends Observable{
 
     private SVGUniverse universe = SVGCache.getSVGUniverse();
-    private SVGDiagram diagram;
     private URI uri;
     private String jobname = "testjob";
     private List<Shape> vectorShapes = new LinkedList<Shape>();
     private Point startPoint = new Point(0,0);
+    private int resolution = 500;
+    
     public static enum StartingPosition{
         TOP_LEFT,
         TOP_RIGHT,
         BOTTOM_LEFT,
         BOTTOM_RIGHT,
-        CENTER
+        CENTER,
+        CUSTOM
     }
     
     public static enum Property{
         STARTING_POINT,
-        SVG_FILE
+        SVG_FILE,
+        RESOLUTION
     }
     
     private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-    public void addPropertyChangeListener( PropertyChangeListener listener )
+    public void addPropertyChangeListener(PropertyChangeListener listener)
     {
         this.pcs.addPropertyChangeListener( listener );
     }
@@ -61,7 +64,7 @@ public class JepilogController extends Observable{
      * @param property a value of one of the Property enum elements' toString() method
      * @param listener the listener to be registered
      */
-    public void addPoropertyChangeListener(String property, PropertyChangeListener listener)
+    public void addPropertyChangeListener(String property, PropertyChangeListener listener)
     {
         this.pcs.addPropertyChangeListener(property, listener);
     }
@@ -111,6 +114,29 @@ public class JepilogController extends Observable{
         return this.startPoint;
     }
     
+    public StartingPosition getStartingPosition(){
+        Rectangle2D rect = universe.getDiagram(uri).getViewRect();
+        Point sp = this.getStartPoint();
+        if (sp.x==(int) rect.getX() && sp.y==(int) rect.getY()){
+            return StartingPosition.TOP_LEFT;
+        }
+        else if (sp.x==(int) (rect.getX()+rect.getWidth()) && sp.y==(int) rect.getY()){
+            return StartingPosition.TOP_RIGHT;
+        }
+        else if (sp.x==(int) rect.getX() && sp.y==(int) (rect.getY()+rect.getHeight())){
+            return StartingPosition.BOTTOM_LEFT;
+        }
+        else if (sp.x==(int) (rect.getX()+rect.getWidth()) && sp.y==(int) (rect.getY()+rect.getHeight())){
+            return StartingPosition.BOTTOM_RIGHT;
+        }
+        else if (sp.x==(int) rect.getCenterX() && sp.y==(int) rect.getCenterY()){
+            return StartingPosition.CENTER;
+        }
+        else{
+            return StartingPosition.CUSTOM;
+        }
+    }
+    
     public void setStartingPosition(StartingPosition p){
         if (uri != null){
             Rectangle2D rect = universe.getDiagram(uri).getViewRect();
@@ -130,6 +156,8 @@ public class JepilogController extends Observable{
                 case CENTER:
                     this.setStartPoint((int) (rect.getX()+rect.getWidth()/2), (int) (rect.getY()+rect.getHeight()/2));
                     break;
+                case CUSTOM:
+                    throw new IllegalArgumentException("To set Cusom StartPoint use the mehtod with Point or int values");
             }
         }
     }
@@ -156,13 +184,21 @@ public class JepilogController extends Observable{
         return vp;
     }
 
-    private LaserCutter getSelectedLaserCutter() {
+    public LaserCutter getSelectedLaserCutter() {
         EpilogCutter.SIMULATE_COMMUNICATION = false;
         return new EpilogCutter("137.226.56.228");
     }
     
-    private int getSelectedResolution(){
-        return 500;
+    public int getResolution(){
+        return resolution;
+    }
+    
+    public void setResolution(int resolution){
+        if (resolution != this.resolution){
+            int old = this.resolution;
+            this.resolution = resolution;
+            pcs.firePropertyChange(Property.RESOLUTION.toString(), old, this.resolution);
+        }
     }
 
     public void sendToCutter() throws IllegalJobException, Exception {
@@ -173,7 +209,7 @@ public class JepilogController extends Observable{
         if (this.getVectorShapes().length==0){
             throw new Exception("Nothing selected for cutting");
         }
-        LaserJob job = new LaserJob(jobname, "123", "bla", getSelectedResolution(), generateVectorPart());
+        LaserJob job = new LaserJob(jobname, "123", "bla", getResolution(), generateVectorPart());
         job.setStartPoint((int) this.getStartPoint().getX(), (int) this.getStartPoint().getY());
         cutter.sendJob(job);
     }
