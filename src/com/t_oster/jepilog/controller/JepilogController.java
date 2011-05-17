@@ -157,7 +157,7 @@ public class JepilogController extends Observable{
     }
 
     private LaserCutter getSelectedLaserCutter() {
-        EpilogCutter.SIMULATE_COMMUNICATION = true;
+        EpilogCutter.SIMULATE_COMMUNICATION = false;
         return new EpilogCutter("137.226.56.228");
     }
     

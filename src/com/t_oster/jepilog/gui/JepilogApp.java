@@ -24,6 +24,9 @@ public class JepilogApp extends SingleFrameApplication {
      */
     @Override
     protected void startup() {
+        //Mac Specific
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Jepilog");
         controller = new JepilogController();
         show(new JepilogView(this));
     }
