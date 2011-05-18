@@ -79,9 +79,17 @@ public class VectorPart {
         checkMax(x,y);
     }
     
+    /**
+     * Returns the Width of the CuttingPart in Pixels
+     * @return 
+     */
     public int getWidth(){
         return maxX-minX;
     }
+    /**
+     * Returns the height of the CuttingPart in Pixels
+     * @return 
+     */
     public int getHeight(){
         return maxY-minY;
     }

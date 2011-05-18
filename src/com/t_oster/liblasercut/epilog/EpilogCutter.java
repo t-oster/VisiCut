@@ -5,6 +5,7 @@
 package com.t_oster.liblasercut.epilog;
 
 import com.t_oster.liblasercut.*;
+import com.t_oster.util.Convert;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,6 +20,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.List;
+import java.util.LinkedList;
 
 /**
  *
@@ -27,9 +30,10 @@ import java.util.logging.Logger;
 public class EpilogCutter implements LaserCutter {
 
     public static boolean SIMULATE_COMMUNICATION = false;
-    private static final int[] RESOLUTIONS = new int[]{500};
-    private static final int BED_WIDTH = 1000;
-    private static final int BED_HEIGHT = 500;
+    /* Resolutions in DPI */
+    private static final int[] RESOLUTIONS = new int[]{300, 500, 600, 1000};
+    private static final double BED_WIDTH = 600;//Bed width in mm
+    private static final double BED_HEIGHT = 300;//Bed height in mm
     private String hostname;
     private Socket connection;
     private InputStream in;
@@ -236,8 +240,8 @@ public class EpilogCutter implements LaserCutter {
             throw new IllegalJobException("Resoluiton of "+job.getResolution()+" is not supported");
         }
         if (job.containsVector()){
-            int w = job.getVectorPart().getWidth();
-            int h = job.getVectorPart().getHeight();
+            double w = Convert.px2mm(job.getVectorPart().getWidth(), job.getResolution());
+            double h = Convert.px2mm(job.getVectorPart().getHeight(), job.getResolution());
             
             if (w > this.getBedWidth() || h > this.getBedHeight()){
                 throw new IllegalJobException("The Job is too big ("+w+"x"+h+") for the Laser bed ("+this.getBedHeight()+"x"+this.getBedHeight()+")");
@@ -259,15 +263,19 @@ public class EpilogCutter implements LaserCutter {
         System.out.println("Successfully disconnected");
     }
 
-    public int[] getResolutions() {
-        return RESOLUTIONS;
+    public List<Integer> getResolutions() {
+        List<Integer> result = new LinkedList();
+        for (int r:RESOLUTIONS){
+            result.add(r);
+        }
+        return result;
     }
 
-    public int getBedWidth() {
+    public double getBedWidth() {
         return BED_WIDTH;
     }
 
-    public int getBedHeight() {
+    public double getBedHeight() {
         return BED_HEIGHT;
     }
 

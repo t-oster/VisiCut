@@ -2,10 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.jepilog.controller;
+package com.t_oster.jepilog.model;
 
 import com.kitfox.svg.SVGCache;
-import com.kitfox.svg.SVGDiagram;
 import com.kitfox.svg.SVGUniverse;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserCutter;
@@ -23,13 +22,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Observable;
 
 /**
  *
  * @author thommy
  */
-public class JepilogController extends Observable{
+public class JepilogModel {
 
     private SVGUniverse universe = SVGCache.getSVGUniverse();
     private URI uri;
@@ -38,20 +36,12 @@ public class JepilogController extends Observable{
     private Point startPoint = new Point(0,0);
     private int resolution = 500;
     
-    public static enum StartingPosition{
-        TOP_LEFT,
-        TOP_RIGHT,
-        BOTTOM_LEFT,
-        BOTTOM_RIGHT,
-        CENTER,
-        CUSTOM
-    }
-    
-    public static enum Property{
-        STARTING_POINT,
-        SVG_FILE,
-        RESOLUTION
-    }
+    public static final String PROPERTY_STARTINGPOINT = "startingpoint";
+    public static final String PROPERTY_STARTINGPOSITION = "startingposition";
+    public static final String PROPERTY_SVG = "svg";
+    public static final String PROPERTY_RESOLUTION = "resolution";
+    public static final String PROPERTY_CUTTER = "cutter";
+    public static final String PROPERTY_CUTTINGSHAPES = "cuttingshapes";
     
     private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     public void addPropertyChangeListener(PropertyChangeListener listener)
@@ -78,31 +68,45 @@ public class JepilogController extends Observable{
     }
     
     
-    public void importSvg(File svgDocument) throws IOException {
-        URI old = uri;
-        uri = universe.loadSVG(svgDocument.toURI().toURL());
+    public void setSvg(URI uri) {
+        if (uri!= null && !uri.equals(this.uri)){
+            URI old = this.uri;
+            this.uri = uri;
+            vectorShapes = new LinkedList<Shape>();
+            this.pcs.firePropertyChange(PROPERTY_SVG, old, uri);
+        }
+    }
+    
+    public URI getSvg(){
+        return this.uri;
+    }
+    
+    public void importSVG(File svgDocument) throws IOException{
+        setSvg(universe.loadSVG(svgDocument.toURI().toURL()));
         jobname = svgDocument.getName();
-        vectorShapes = new LinkedList<Shape>();
-        this.pcs.firePropertyChange(Property.SVG_FILE.toString(), old, uri);
     }
 
-    public URI getUri() {
-        return uri;
+    public void addCuttingShape(Shape s) {
+        if (!vectorShapes.contains(s)){
+            vectorShapes.add(s);
+            this.pcs.firePropertyChange(PROPERTY_CUTTINGSHAPES, null, s);
+        }
     }
 
-    public void addVectorShape(Shape s) {
-        vectorShapes.add(s);
-    }
-
-    public Shape[] getVectorShapes() {
+    public Shape[] getCuttingShapes() {
         return vectorShapes.toArray(new Shape[0]);
     }
 
     public void setStartPoint(Point p){
         if (!this.startPoint.equals(p)){
             Point old = this.startPoint;
+            String oldsp = this.getStartingPosition();
             this.startPoint = p;
-            this.pcs.firePropertyChange(Property.STARTING_POINT.toString(), old, this.startPoint);
+            this.pcs.firePropertyChange(PROPERTY_STARTINGPOINT, old, this.startPoint);
+            String newsp = this.getStartingPosition();
+            if (!oldsp.equals(newsp)){
+                pcs.firePropertyChange(PROPERTY_STARTINGPOSITION, oldsp, newsp);
+            }
         }
     }
     
@@ -114,51 +118,52 @@ public class JepilogController extends Observable{
         return this.startPoint;
     }
     
-    public StartingPosition getStartingPosition(){
+    public String getStartingPosition(){
+        if (universe == null || uri == null){
+            return "custom";
+        }
         Rectangle2D rect = universe.getDiagram(uri).getViewRect();
         Point sp = this.getStartPoint();
         if (sp.x==(int) rect.getX() && sp.y==(int) rect.getY()){
-            return StartingPosition.TOP_LEFT;
+            return "top left";
         }
         else if (sp.x==(int) (rect.getX()+rect.getWidth()) && sp.y==(int) rect.getY()){
-            return StartingPosition.TOP_RIGHT;
+            return "top right";
         }
         else if (sp.x==(int) rect.getX() && sp.y==(int) (rect.getY()+rect.getHeight())){
-            return StartingPosition.BOTTOM_LEFT;
+            return "bottom left";
         }
         else if (sp.x==(int) (rect.getX()+rect.getWidth()) && sp.y==(int) (rect.getY()+rect.getHeight())){
-            return StartingPosition.BOTTOM_RIGHT;
+            return "bottom right";
         }
         else if (sp.x==(int) rect.getCenterX() && sp.y==(int) rect.getCenterY()){
-            return StartingPosition.CENTER;
+            return "center";
         }
         else{
-            return StartingPosition.CUSTOM;
+            return "custom";
         }
     }
     
-    public void setStartingPosition(StartingPosition p){
-        if (uri != null){
+    public void setStartingPosition(String p){
+        if (uri != null && !p.equals(this.getStartingPosition())){
+            String old = this.getStartingPosition();
             Rectangle2D rect = universe.getDiagram(uri).getViewRect();
-            switch (p){
-                case TOP_LEFT:
-                    this.setStartPoint((int) rect.getX(), (int) rect.getY());
-                    break;
-                case TOP_RIGHT:
-                    this.setStartPoint((int) (rect.getX()+rect.getWidth()), (int) rect.getY());
-                    break;
-                case BOTTOM_LEFT:
-                    this.setStartPoint((int) rect.getX(), (int) (rect.getY()+rect.getHeight()));
-                    break;
-                case BOTTOM_RIGHT:
-                    this.setStartPoint((int) (rect.getX()+rect.getWidth()), (int) (int) (rect.getY()+rect.getHeight()));
-                    break;
-                case CENTER:
-                    this.setStartPoint((int) (rect.getX()+rect.getWidth()/2), (int) (rect.getY()+rect.getHeight()/2));
-                    break;
-                case CUSTOM:
-                    throw new IllegalArgumentException("To set Cusom StartPoint use the mehtod with Point or int values");
+            if (p.equals("top left")){
+                this.setStartPoint((int) rect.getX(), (int) rect.getY());
             }
+            else if (p.equals("top_right")){
+                this.setStartPoint((int) (rect.getX()+rect.getWidth()), (int) rect.getY());
+            }
+            else if (p.equals("bottom left")){
+                this.setStartPoint((int) rect.getX(), (int) (rect.getY()+rect.getHeight()));
+            }
+            else if (p.equals("bottom right")){
+                this.setStartPoint((int) (rect.getX()+rect.getWidth()), (int) (int) (rect.getY()+rect.getHeight()));
+            }
+            else if (p.equals("center")){
+                this.setStartPoint((int) (rect.getX()+rect.getWidth()/2), (int) (rect.getY()+rect.getHeight()/2));
+            }
+            pcs.firePropertyChange(PROPERTY_STARTINGPOSITION, old, p);
         }
     }
     
@@ -178,7 +183,7 @@ public class JepilogController extends Observable{
 
     private VectorPart generateVectorPart() {
         VectorPart vp = new VectorPart(5000, 20, 100);
-        for (Shape s:this.getVectorShapes()){
+        for (Shape s:this.getCuttingShapes()){
             this.addShape(vp, s);
         }
         return vp;
@@ -197,7 +202,7 @@ public class JepilogController extends Observable{
         if (resolution != this.resolution){
             int old = this.resolution;
             this.resolution = resolution;
-            pcs.firePropertyChange(Property.RESOLUTION.toString(), old, this.resolution);
+            pcs.firePropertyChange(PROPERTY_RESOLUTION, old, this.resolution);
         }
     }
 
@@ -206,7 +211,7 @@ public class JepilogController extends Observable{
         if (cutter == null){
             throw new Exception("No Lasercutter selected");
         }
-        if (this.getVectorShapes().length==0){
+        if (this.getCuttingShapes().length==0){
             throw new Exception("Nothing selected for cutting");
         }
         LaserJob job = new LaserJob(jobname, "123", "bla", getResolution(), generateVectorPart());

@@ -3,23 +3,21 @@
  */
 package com.t_oster.jepilog.gui;
 
-import com.t_oster.jepilog.controller.JepilogController;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
 /**
  * The main class of the application.
+ * This class implements the Controller which bridges the model and the view
  */
-public class JepilogApp extends SingleFrameApplication {
+public class JepilogApp extends SingleFrameApplication{
 
-    private JepilogController controller;
 
     /**
      * At startup create and show the main frame of the application.
      */
     @Override
     protected void startup() {
-        controller = new JepilogController();
         show(new JepilogView(this));
     }
 
@@ -47,7 +45,7 @@ public class JepilogApp extends SingleFrameApplication {
         //Mac Specific
         System.setProperty("apple.laf.useScreenMenuBar", "true");
         System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Jepilog");
-        System.setProperty("apple.awt.brushMetalLook", "true");
+        //System.setProperty("apple.awt.brushMetalLook", "true");
         System.setProperty("apple.awt.antialiasing", "on");
         System.setProperty("apple.awt.textantialiasing", "on");
         System.setProperty("com.apple.mrj.application.growbox.intrudes", "false");
@@ -56,7 +54,4 @@ public class JepilogApp extends SingleFrameApplication {
         launch(JepilogApp.class, args);
     }
 
-    public JepilogController getController() {
-        return controller;
-    }
 }

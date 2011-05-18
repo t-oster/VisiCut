@@ -12,7 +12,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jSplitPane1" pref="787" max="32767" attributes="0"/>
+                  <Component id="jSplitPane1" pref="771" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -62,7 +62,7 @@
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace pref="483" max="32767" attributes="0"/>
+                              <EmptySpace pref="167" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="cbShowCut" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="cbShowEngrave" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -109,7 +109,7 @@
                               <Component id="cbShowEngrave" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="cbShowCut" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="57" max="32767" attributes="0"/>
+                              <EmptySpace pref="54" max="32767" attributes="0"/>
                               <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -150,9 +150,9 @@
                         </Property>
                         <Property name="name" type="java.lang.String" value="jComboBox2" noResource="true"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jComboBox2ActionPerformed"/>
-                      </Events>
+                      <BindingProperties>
+                        <BindingProperty name="selectedItem" source="jpModel" sourcePath="${startingPosition}" target="jComboBox2" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
+                      </BindingProperties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel2">
                       <Properties>
@@ -171,37 +171,30 @@
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="cbShowEngrave">
                       <Properties>
-                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                          <action class="com.t_oster.jepilog.gui.JepilogView" id="showRaster" methodName="showRaster"/>
-                        </Property>
-                        <Property name="selected" type="boolean" value="true"/>
                         <Property name="text" type="java.lang.String" resourceKey="cbShowEngrave.text"/>
                         <Property name="name" type="java.lang.String" value="cbShowEngrave" noResource="true"/>
                       </Properties>
+                      <BindingProperties>
+                        <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showRaster}" target="cbShowEngrave" targetPath="selected" updateStrategy="0" immediately="false"/>
+                      </BindingProperties>
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="cbShowCut">
                       <Properties>
-                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                          <action class="com.t_oster.jepilog.gui.JepilogView" id="showVector" methodName="showVector"/>
-                        </Property>
-                        <Property name="selected" type="boolean" value="true"/>
                         <Property name="text" type="java.lang.String" resourceKey="cbShowCut.text"/>
                         <Property name="name" type="java.lang.String" value="cbShowCut" noResource="true"/>
                       </Properties>
+                      <BindingProperties>
+                        <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showVector}" target="cbShowCut" targetPath="selected" updateStrategy="0" immediately="false"/>
+                      </BindingProperties>
                     </Component>
                     <Component class="javax.swing.JComboBox" name="cbResolution">
                       <Properties>
-                        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                          <StringArray count="2">
-                            <StringItem index="0" value="300 DPI"/>
-                            <StringItem index="1" value="500 DPI"/>
-                          </StringArray>
-                        </Property>
                         <Property name="name" type="java.lang.String" value="cbResolution" noResource="true"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbResolutionActionPerformed"/>
-                      </Events>
+                      <BindingProperties>
+                        <BindingProperty name="elements" source="jpModel" sourcePath="${selectedLaserCutter.resolutions}" target="cbResolution" targetPath="elements" updateStrategy="1" immediately="false"/>
+                        <BindingProperty name="selectedItem" source="jpModel" sourcePath="${resolution}" target="cbResolution" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
+                      </BindingProperties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel3">
                       <Properties>
@@ -217,6 +210,9 @@
               <Properties>
                 <Property name="name" type="java.lang.String" value="sVGPanel1" noResource="true"/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="sVGPanel1MouseClicked"/>
+              </Events>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
                   <JSplitPaneConstraints position="left"/>
@@ -226,12 +222,12 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="300" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="386" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="382" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -379,7 +375,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusMessageLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="627" max="32767" attributes="0"/>
+                  <EmptySpace pref="615" max="32767" attributes="0"/>
                   <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusAnimationLabel" min="-2" max="-2" attributes="0"/>
@@ -452,6 +448,31 @@
         </Property>
         <Property name="name" type="java.lang.String" value="importFileChooser" noResource="true"/>
       </Properties>
+    </Component>
+    <Container class="javax.swing.JPopupMenu" name="shapeMenu">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="shapeMenu" noResource="true"/>
+      </Properties>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
+        <Property name="useNullLayout" type="boolean" value="true"/>
+      </Layout>
+      <SubComponents>
+        <MenuItem class="javax.swing.JMenuItem" name="meAddToCutting">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+              <action class="com.t_oster.jepilog.gui.JepilogView" id="addSelectedShapeToCuttingPart" methodName="addSelectedShapeToCuttingPart"/>
+            </Property>
+            <Property name="text" type="java.lang.String" resourceKey="meAddToCutting.text"/>
+            <Property name="name" type="java.lang.String" value="meAddToCutting" noResource="true"/>
+          </Properties>
+        </MenuItem>
+      </SubComponents>
+    </Container>
+    <Component class="com.t_oster.jepilog.model.JepilogModel" name="jpModel">
+      <BindingProperties>
+        <BindingProperty name="svg" source="sVGPanel1" sourcePath="${svgUri}" target="jpModel" targetPath="svg" updateStrategy="0" immediately="false"/>
+      </BindingProperties>
     </Component>
   </NonVisualComponents>
   <Properties>

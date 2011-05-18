@@ -4,7 +4,7 @@
 
 package com.t_oster.jepilog.gui;
 
-import com.t_oster.jepilog.controller.JepilogController;
+import com.t_oster.jepilog.model.JepilogModel;
 import com.t_oster.liblasercut.IllegalJobException;
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
@@ -16,6 +16,7 @@ import org.jdesktop.application.FrameView;
 import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Point;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,7 @@ import javax.swing.JOptionPane;
 /**
  * The application's main frame.
  */
-public class JepilogView extends FrameView implements PropertyChangeListener{
+public class JepilogView extends FrameView{
 
     public JepilogView(SingleFrameApplication app) {
         super(app);
@@ -88,17 +89,7 @@ public class JepilogView extends FrameView implements PropertyChangeListener{
                 }
             }
         });
-        
-        controller.addPropertyChangeListener(this);
-    }
-
-    public void propertyChange(PropertyChangeEvent e){
-        if (e.getPropertyName().equals(JepilogController.Property.STARTING_POINT.toString())){
-            jComboBox2.setSelectedIndex(controller.getStartingPosition().ordinal());
-        }
-        else if (e.getPropertyName().equals(JepilogController.Property.RESOLUTION.toString())){
-            cbResolution.setSelectedItem(controller.getResolution()+" DPI");
-        }
+       
     }
     
     @Action
@@ -119,6 +110,7 @@ public class JepilogView extends FrameView implements PropertyChangeListener{
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         mainPanel = new javax.swing.JPanel();
         jSplitPane1 = new javax.swing.JSplitPane();
@@ -153,6 +145,9 @@ public class JepilogView extends FrameView implements PropertyChangeListener{
         statusAnimationLabel = new javax.swing.JLabel();
         progressBar = new javax.swing.JProgressBar();
         importFileChooser = new javax.swing.JFileChooser();
+        shapeMenu = new javax.swing.JPopupMenu();
+        meAddToCutting = new javax.swing.JMenuItem();
+        jpModel = new com.t_oster.jepilog.model.JepilogModel();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -172,11 +167,9 @@ public class JepilogView extends FrameView implements PropertyChangeListener{
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "top left", "top right", "bottom left", "bottom right", "center", "custom" }));
         jComboBox2.setName("jComboBox2"); // NOI18N
-        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox2ActionPerformed(evt);
-            }
-        });
+
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jpModel, org.jdesktop.beansbinding.ELProperty.create("${startingPosition}"), jComboBox2, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
+        bindingGroup.addBinding(binding);
 
         jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
         jLabel2.setName("jLabel2"); // NOI18N
@@ -186,23 +179,25 @@ public class JepilogView extends FrameView implements PropertyChangeListener{
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
         jButton1.setName("jButton1"); // NOI18N
 
-        cbShowEngrave.setAction(actionMap.get("showRaster")); // NOI18N
-        cbShowEngrave.setSelected(true);
         cbShowEngrave.setText(resourceMap.getString("cbShowEngrave.text")); // NOI18N
         cbShowEngrave.setName("cbShowEngrave"); // NOI18N
 
-        cbShowCut.setAction(actionMap.get("showVector")); // NOI18N
-        cbShowCut.setSelected(true);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, sVGPanel1, org.jdesktop.beansbinding.ELProperty.create("${showRaster}"), cbShowEngrave, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+        bindingGroup.addBinding(binding);
+
         cbShowCut.setText(resourceMap.getString("cbShowCut.text")); // NOI18N
         cbShowCut.setName("cbShowCut"); // NOI18N
 
-        cbResolution.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "300 DPI", "500 DPI" }));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, sVGPanel1, org.jdesktop.beansbinding.ELProperty.create("${showVector}"), cbShowCut, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+        bindingGroup.addBinding(binding);
+
         cbResolution.setName("cbResolution"); // NOI18N
-        cbResolution.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbResolutionActionPerformed(evt);
-            }
-        });
+
+        org.jdesktop.beansbinding.ELProperty eLProperty = org.jdesktop.beansbinding.ELProperty.create("${selectedLaserCutter.resolutions}");
+        org.jdesktop.swingbinding.JComboBoxBinding jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, jpModel, eLProperty, cbResolution);
+        bindingGroup.addBinding(jComboBoxBinding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jpModel, org.jdesktop.beansbinding.ELProperty.create("${resolution}"), cbResolution, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
+        bindingGroup.addBinding(binding);
 
         jLabel3.setText(resourceMap.getString("jLabel3.text")); // NOI18N
         jLabel3.setName("jLabel3"); // NOI18N
@@ -212,7 +207,7 @@ public class JepilogView extends FrameView implements PropertyChangeListener{
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(483, Short.MAX_VALUE)
+                .addContainerGap(167, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cbShowCut)
                     .addComponent(cbShowEngrave)
@@ -249,7 +244,7 @@ public class JepilogView extends FrameView implements PropertyChangeListener{
                 .addComponent(cbShowEngrave)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cbShowCut)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 54, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addContainerGap())
         );
@@ -259,16 +254,21 @@ public class JepilogView extends FrameView implements PropertyChangeListener{
         jSplitPane1.setRightComponent(jTabbedPane1);
 
         sVGPanel1.setName("sVGPanel1"); // NOI18N
+        sVGPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                sVGPanel1MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout sVGPanel1Layout = new javax.swing.GroupLayout(sVGPanel1);
         sVGPanel1.setLayout(sVGPanel1Layout);
         sVGPanel1Layout.setHorizontalGroup(
             sVGPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 300, Short.MAX_VALUE)
         );
         sVGPanel1Layout.setVerticalGroup(
             sVGPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 386, Short.MAX_VALUE)
+            .addGap(0, 382, Short.MAX_VALUE)
         );
 
         jSplitPane1.setLeftComponent(sVGPanel1);
@@ -279,14 +279,14 @@ public class JepilogView extends FrameView implements PropertyChangeListener{
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 787, Short.MAX_VALUE)
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 771, Short.MAX_VALUE)
                 .addContainerGap())
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 386, Short.MAX_VALUE))
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 386, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -369,7 +369,7 @@ public class JepilogView extends FrameView implements PropertyChangeListener{
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(statusMessageLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 627, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 615, Short.MAX_VALUE)
                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(statusAnimationLabel)
@@ -387,25 +387,32 @@ public class JepilogView extends FrameView implements PropertyChangeListener{
                 .addGap(3, 3, 3))
         );
 
-        importFileChooser.setCurrentDirectory(new java.io.File("/home/thommy/null"));
+        importFileChooser.setCurrentDirectory(new java.io.File("/null"));
         importFileChooser.setFileFilter(new MySvgFilter());
         importFileChooser.setName("importFileChooser"); // NOI18N
+
+        shapeMenu.setName("shapeMenu"); // NOI18N
+
+        meAddToCutting.setAction(actionMap.get("addSelectedShapeToCuttingPart")); // NOI18N
+        meAddToCutting.setText(resourceMap.getString("meAddToCutting.text")); // NOI18N
+        meAddToCutting.setName("meAddToCutting"); // NOI18N
+        shapeMenu.add(meAddToCutting);
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, sVGPanel1, org.jdesktop.beansbinding.ELProperty.create("${svgUri}"), jpModel, org.jdesktop.beansbinding.BeanProperty.create("svg"));
+        bindingGroup.addBinding(binding);
 
         setComponent(mainPanel);
         setMenuBar(menuBar);
         setStatusBar(statusPanel);
+
+        bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
-        int idx = jComboBox2.getSelectedIndex();
-        if (idx <= 4){
-            controller.setStartingPosition(JepilogController.StartingPosition.values()[idx]);
+    private void sVGPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sVGPanel1MouseClicked
+        if (sVGPanel1.getSelectedShape()!= null && evt.getButton()== evt.BUTTON3){
+            shapeMenu.show(sVGPanel1, evt.getX(), evt.getY());
         }
-    }//GEN-LAST:event_jComboBox2ActionPerformed
-
-    private void cbResolutionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbResolutionActionPerformed
-        controller.setResolution(Integer.parseInt(cbResolution.getSelectedItem().toString().split(" ")[0]));
-    }//GEN-LAST:event_cbResolutionActionPerformed
+    }//GEN-LAST:event_sVGPanel1MouseClicked
 
     
     class MySvgFilter extends javax.swing.filechooser.FileFilter {
@@ -438,7 +445,7 @@ public class JepilogView extends FrameView implements PropertyChangeListener{
     @Action
     public void sendToCutter(){
         try {
-            controller.sendToCutter();
+            jpModel.sendToCutter();
         } catch (IllegalJobException ex) {
             Logger.getLogger(JepilogView.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(mainPanel, "Der gewählte Lasercutter kann diesen Job nicht ausführen\nFehler:"+ex.getMessage(), "Fehler", JOptionPane.WARNING_MESSAGE);
@@ -454,12 +461,17 @@ public class JepilogView extends FrameView implements PropertyChangeListener{
         File toImport = importFileChooser.getSelectedFile();
         if (toImport != null){
             try{
-                controller.importSvg(toImport);
+                jpModel.importSVG(toImport);
             }
             catch (IOException e){
                 JOptionPane.showMessageDialog(mainPanel, "Datei konnte nicht importiert werden\nFehler:"+e.getMessage(), "Fehler", JOptionPane.WARNING_MESSAGE);
             }
         }
+    }
+
+    @Action
+    public void addSelectedShapeToCuttingPart() {
+        jpModel.addCuttingShape(sVGPanel1.getSelectedShape());
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -482,14 +494,18 @@ public class JepilogView extends FrameView implements PropertyChangeListener{
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private com.t_oster.jepilog.model.JepilogModel jpModel;
     private javax.swing.JMenu laserMenu;
     private javax.swing.JPanel mainPanel;
+    private javax.swing.JMenuItem meAddToCutting;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JProgressBar progressBar;
     private com.t_oster.jepilog.gui.SVGPanel sVGPanel1;
+    private javax.swing.JPopupMenu shapeMenu;
     private javax.swing.JLabel statusAnimationLabel;
     private javax.swing.JLabel statusMessageLabel;
     private javax.swing.JPanel statusPanel;
+    private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
     private final Timer messageTimer;
@@ -500,5 +516,4 @@ public class JepilogView extends FrameView implements PropertyChangeListener{
 
     private JDialog aboutBox;
     
-    private JepilogController controller = JepilogApp.getApplication().getController();
 }
