@@ -5,7 +5,7 @@
 package com.t_oster.liblasercut.epilog;
 
 import com.t_oster.liblasercut.*;
-import com.t_oster.util.Convert;
+import com.t_oster.util.Util;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -240,8 +240,8 @@ public class EpilogCutter implements LaserCutter {
             throw new IllegalJobException("Resoluiton of "+job.getResolution()+" is not supported");
         }
         if (job.containsVector()){
-            double w = Convert.px2mm(job.getVectorPart().getWidth(), job.getResolution());
-            double h = Convert.px2mm(job.getVectorPart().getHeight(), job.getResolution());
+            double w = Util.px2mm(job.getVectorPart().getWidth(), job.getResolution());
+            double h = Util.px2mm(job.getVectorPart().getHeight(), job.getResolution());
             
             if (w > this.getBedWidth() || h > this.getBedHeight()){
                 throw new IllegalJobException("The Job is too big ("+w+"x"+h+") for the Laser bed ("+this.getBedHeight()+"x"+this.getBedHeight()+")");

@@ -8,6 +8,7 @@ import com.kitfox.svg.SVGDiagram;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.ShapeElement;
 import com.kitfox.svg.app.beans.SVGIcon;
+import com.t_oster.util.Util;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -35,17 +36,19 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     /**
      * Propertys
      */
-    public static final String PROPERTY_STARTINGPOINT = "startingPoint";
+    public static final String PROPERTY_STARTPOINT = "startPoint";
     public static final String PROPERTY_SELECTED_SHAPE = "selectedShape";
+    public static final String PROPERTY_SHOWENGRAVINGPART = "showEngravingPart";
+    public static final String PROPERTY_SHOWCUTTINGPART = "showCuttingPart";
     
     private SVGIcon icon;
     private URI svgUri = null;
     private SVGDiagram svgDiagramm = null;
     private Shape[] cuttingShapes;
     private Shape selectedShape;
-    private boolean showRaster = true;
-    private boolean showVector = true;
-    private Point startingPoint = new Point(0, 0);
+    private boolean showEngravingPart = true;
+    private boolean showCuttingPart = true;
+    private Point startPoint = new Point(0, 0);
     
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener){
@@ -69,16 +72,18 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     public Dimension getMinimumSize() {
         return new Dimension(300, 500);
     }
-
-    public void setStartingPoint(Point p) {
-        Point old = this.startingPoint;
-        this.startingPoint = p;
-        repaint();
-        this.firePropertyChange(PROPERTY_STARTINGPOINT, old, p);
+    
+    public void setStartPoint(Point p) {
+        if (Util.differ(p,this.startPoint)){
+            Point old = this.startPoint;
+            this.startPoint = p;
+            repaint();
+            this.firePropertyChange(PROPERTY_STARTPOINT, old, p);
+        }
     }
 
-    public Point getStartingPoint() {
-        return this.startingPoint;
+    public Point getStartPoint() {
+        return this.startPoint;
     }
     
     private void sizeToFit() {
@@ -97,30 +102,32 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         this.cuttingShapes = null;
     }
 
-    public void setShowRaster(boolean show) {
-        if (show != showRaster) {
-            showRaster = show;
+    public void setShowEngravingPart(boolean show) {
+        if (show != showEngravingPart) {
+            showEngravingPart = show;
             repaint();
+            firePropertyChange(PROPERTY_SHOWENGRAVINGPART, !showEngravingPart, showEngravingPart);
         }
     }
     
-    public boolean isShowRaster(){
-        return showRaster;
+    public boolean isShowEngravingPart(){
+        return showEngravingPart;
     }
 
-    public void setShowVector(boolean show) {
-        if (show != showVector) {
-            showVector = show;
+    public void setShowCuttingPart(boolean show) {
+        if (show != showCuttingPart) {
+            showCuttingPart = show;
             repaint();
+            firePropertyChange(PROPERTY_SHOWCUTTINGPART, !showCuttingPart, showCuttingPart);
         }
     }
     
-    public boolean isShowVector(){
-        return showVector;
+    public boolean isShowCuttingPart(){
+        return showCuttingPart;
     }
 
     public void setSvgUri(URI diag) {
-        if (diag != null && !diag.equals(this.svgUri)){
+        if (Util.differ(diag, this.svgUri)){
             URI old = this.svgUri;
             this.icon = new SVGIcon();
             icon.setSvgURI(diag);
@@ -147,7 +154,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     }
     
     public void setSelectedShape(Shape s){
-        if (!s.equals(selectedShape)){
+        if (Util.differ(s, selectedShape)){
             Shape old = selectedShape;
             this.selectedShape = s;
             this.repaint();
@@ -200,11 +207,11 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
 
 
 
-        if (showRaster) {
+        if (showEngravingPart) {
             icon.paintIcon(this, g, 0, 0);
         }
         g.setColor(Color.RED);
-        if (cuttingShapes!=null && showVector) {
+        if (cuttingShapes!=null && showCuttingPart) {
             for (Shape shape : cuttingShapes) {
                 drawShape(g, shape);
             }
@@ -216,7 +223,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
 
         //Draw StartingPoint
 
-        Point sp = movingStartPoint ? this.getMousePosition() : startingPoint;
+        Point sp = movingStartPoint ? this.getMousePosition() : startPoint;
         if (sp != null) {
             g.setColor(Color.white);
             g.drawOval(sp.x - 6, sp.y - 6, 12, 12);
@@ -238,6 +245,9 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
                         this.setSelectedShape(shape);
                     }
                 }
+                else{
+                    this.setSelectedShape(null);
+                }
             }
 
         } catch (SVGException ex) {
@@ -247,7 +257,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     private boolean movingStartPoint = false;
 
     public void mousePressed(MouseEvent me) {
-        if (me.getPoint().distance(startingPoint) <= 10) {
+        if (me.getPoint().distance(startPoint) <= 10) {
             movingStartPoint = true;
         }
     }
@@ -255,7 +265,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     public void mouseReleased(MouseEvent me) {
         if (movingStartPoint) {
             movingStartPoint = false;
-            setStartingPoint(me.getPoint());
+            setStartPoint(me.getPoint());
         }
     }
 

@@ -4,6 +4,7 @@
  */
 package com.t_oster.jepilog.controller;
 
+import java.awt.Point;
 import com.t_oster.jepilog.model.JepilogModel;
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class JepilogModelTest {
         assertEquals("bottom left", instance.getStartPosition());
         instance.setStartPosition("center");
         assertEquals("center", instance.getStartPosition());
-        instance.setStartPoint(10,10);
+        instance.setStartPoint(new Point(10,10));
         assertEquals("custom", instance.getStartPosition());
     }
 

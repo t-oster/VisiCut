@@ -174,12 +174,18 @@
                         <Property name="text" type="java.lang.String" resourceKey="cbShowEngrave.text"/>
                         <Property name="name" type="java.lang.String" value="cbShowEngrave" noResource="true"/>
                       </Properties>
+                      <BindingProperties>
+                        <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showEngravingPart}" target="cbShowEngrave" targetPath="selected" updateStrategy="0" immediately="false"/>
+                      </BindingProperties>
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="cbShowCut">
                       <Properties>
                         <Property name="text" type="java.lang.String" resourceKey="cbShowCut.text"/>
                         <Property name="name" type="java.lang.String" value="cbShowCut" noResource="true"/>
                       </Properties>
+                      <BindingProperties>
+                        <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showCuttingPart}" target="cbShowCut" targetPath="selected" updateStrategy="0" immediately="false"/>
+                      </BindingProperties>
                     </Component>
                     <Component class="javax.swing.JComboBox" name="cbResolution">
                       <Properties>
@@ -211,9 +217,7 @@
               </Properties>
               <BindingProperties>
                 <BindingProperty name="cuttingShapes" source="jpModel" sourcePath="${cuttingShapes}" target="sVGPanel1" targetPath="cuttingShapes" updateStrategy="1" immediately="false"/>
-                <BindingProperty name="showRaster" source="cbShowEngrave" sourcePath="${selected}" target="sVGPanel1" targetPath="showRaster" updateStrategy="1" immediately="false"/>
-                <BindingProperty name="showVector" source="cbShowCut" sourcePath="${selected}" target="sVGPanel1" targetPath="showVector" updateStrategy="1" immediately="false"/>
-                <BindingProperty name="startingPoint" source="jpModel" sourcePath="${startPoint}" target="sVGPanel1" targetPath="startingPoint" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="startPoint" source="jpModel" sourcePath="${startPoint}" target="sVGPanel1" targetPath="startPoint" updateStrategy="0" immediately="false"/>
               </BindingProperties>
               <Events>
                 <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="sVGPanel1MouseClicked"/>
@@ -338,6 +342,38 @@
                 <Property name="text" type="java.lang.String" resourceKey="jMenuItem6.text"/>
                 <Property name="enabled" type="boolean" value="false"/>
                 <Property name="name" type="java.lang.String" value="jMenuItem6" noResource="true"/>
+              </Properties>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="jMenu1">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jMenu1.text"/>
+            <Property name="name" type="java.lang.String" value="jMenu1" noResource="true"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="menuShowEngrave">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="menuShowEngrave.text"/>
+                <Property name="name" type="java.lang.String" value="menuShowEngrave" noResource="true"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showEngravingPart}" target="menuShowEngrave" targetPath="selected" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="jCheckBoxMenuItem1">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="jCheckBoxMenuItem1.text"/>
+                <Property name="name" type="java.lang.String" value="jCheckBoxMenuItem1" noResource="true"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showCuttingPart}" target="jCheckBoxMenuItem1" targetPath="selected" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem7">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItem7.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItem7" noResource="true"/>
               </Properties>
             </MenuItem>
           </SubComponents>

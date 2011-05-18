@@ -11,6 +11,7 @@ import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.liblasercut.epilog.EpilogCutter;
+import com.t_oster.util.Util;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.PathIterator;
@@ -19,8 +20,8 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ import java.util.List;
  *
  * @author thommy
  */
-public class JepilogModel {
+public class JepilogModel implements Serializable{
 
     private SVGUniverse universe = SVGCache.getSVGUniverse();
     private URI uri;
@@ -70,10 +71,10 @@ public class JepilogModel {
     
     
     public void setSvg(URI uri) {
-        if (uri!= null && !uri.equals(this.uri)){
+        if (Util.differ(uri, this.uri)){
             URI old = this.uri;
             this.uri = uri;
-            this.setCuttingShapes(new Shape[0]);
+            this.clearCuttingShapes();
             this.pcs.firePropertyChange(PROPERTY_SVG, old, uri);
         }
     }
@@ -89,24 +90,34 @@ public class JepilogModel {
 
     public void addCuttingShape(Shape s) {
         if (!vectorShapes.contains(s)){
+            Shape[] old = this.getCuttingShapes();
             vectorShapes.add(s);
-            this.pcs.firePropertyChange(PROPERTY_CUTTINGSHAPES, null, s);
+            this.pcs.firePropertyChange(PROPERTY_CUTTINGSHAPES, old, this.getCuttingShapes());
+        }
+    }
+    
+    public void removeCuttingShape(Shape s){
+        if (vectorShapes.contains(s)){
+            Shape[] old = this.getCuttingShapes();
+            vectorShapes.remove(s);
+            this.pcs.firePropertyChange(PROPERTY_CUTTINGSHAPES, old, this.getCuttingShapes());
+        }
+    }
+    
+    public void clearCuttingShapes(){
+        if (vectorShapes.size() > 0){
+            Shape[] old = this.getCuttingShapes();
+            vectorShapes.clear();
+            this.pcs.firePropertyChange(PROPERTY_CUTTINGSHAPES, old, this.getCuttingShapes());
         }
     }
 
     public Shape[] getCuttingShapes() {
         return vectorShapes.toArray(new Shape[0]);
     }
-    
-    public void setCuttingShapes(Shape[] shapes){
-        Shape[] old = this.vectorShapes.toArray(new Shape[0]);
-        this.vectorShapes.clear();
-        this.vectorShapes.addAll(Arrays.asList(shapes));
-        this.pcs.firePropertyChange(PROPERTY_CUTTINGSHAPES, old, this.vectorShapes.toArray(new Shape[0]));
-    }
 
     public void setStartPoint(Point p){
-        if (!this.startPoint.equals(p)){
+        if (Util.differ(this.startPoint, p)){
             Point old = this.startPoint;
             String oldsp = this.getStartPosition();
             this.startPoint = p;
@@ -118,8 +129,8 @@ public class JepilogModel {
         }
     }
     
-    public void setStartPoint(int x, int y){
-        this.setStartPoint(new Point(x,y));
+    private void setStartPoint(int x, int y){
+        setStartPoint(new Point(x, y));
     }
     
     public Point getStartPoint(){
@@ -130,21 +141,22 @@ public class JepilogModel {
         if (universe == null || uri == null){
             return "custom";
         }
-        Rectangle2D rect = universe.getDiagram(uri).getViewRect();
+        int w = (int) universe.getDiagram(uri).getWidth();
+        int h = (int) universe.getDiagram(uri).getHeight();
         Point sp = this.getStartPoint();
-        if (sp.x==(int) rect.getX() && sp.y==(int) rect.getY()){
+        if (sp.equals(new Point(0,0))){
             return "top left";
         }
-        else if (sp.x==(int) (rect.getX()+rect.getWidth()) && sp.y==(int) rect.getY()){
+        else if (sp.equals(new Point(w,0))){
             return "top right";
         }
-        else if (sp.x==(int) rect.getX() && sp.y==(int) (rect.getY()+rect.getHeight())){
+        else if (sp.equals(new Point(0,h))){
             return "bottom left";
         }
-        else if (sp.x==(int) (rect.getX()+rect.getWidth()) && sp.y==(int) (rect.getY()+rect.getHeight())){
+        else if (sp.equals(new Point(w,h))){
             return "bottom right";
         }
-        else if (sp.x==(int) rect.getCenterX() && sp.y==(int) rect.getCenterY()){
+        else if (sp.equals(new Point(w/2,h/2))){
             return "center";
         }
         else{
@@ -153,23 +165,24 @@ public class JepilogModel {
     }
     
     public void setStartPosition(String p){
-        if (uri != null && !p.equals(this.getStartPosition())){
+        if (Util.differ(p, this.getStartPosition())){
             String old = this.getStartPosition();
-            Rectangle2D rect = universe.getDiagram(uri).getViewRect();
+            int w = (int) (universe != null && uri != null ? universe.getDiagram(uri).getWidth() : 100);
+            int h = (int) (universe != null && uri != null ? universe.getDiagram(uri).getHeight() : 100);
             if (p.equals("top left")){
-                this.setStartPoint((int) rect.getX(), (int) rect.getY());
+                this.setStartPoint(0, 0);
             }
-            else if (p.equals("top_right")){
-                this.setStartPoint((int) (rect.getX()+rect.getWidth()), (int) rect.getY());
+            else if (p.equals("top right")){
+                this.setStartPoint(w, 0);
             }
             else if (p.equals("bottom left")){
-                this.setStartPoint((int) rect.getX(), (int) (rect.getY()+rect.getHeight()));
+                this.setStartPoint(0, h);
             }
             else if (p.equals("bottom right")){
-                this.setStartPoint((int) (rect.getX()+rect.getWidth()), (int) (int) (rect.getY()+rect.getHeight()));
+                this.setStartPoint(w, h);
             }
             else if (p.equals("center")){
-                this.setStartPoint((int) (rect.getX()+rect.getWidth()/2), (int) (rect.getY()+rect.getHeight()/2));
+                this.setStartPoint(w/2, h/2);
             }
             pcs.firePropertyChange(PROPERTY_STARTPOSITION, old, p);
         }
