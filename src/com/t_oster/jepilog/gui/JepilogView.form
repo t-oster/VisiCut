@@ -12,7 +12,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jSplitPane1" pref="771" max="32767" attributes="0"/>
+                  <Component id="jSplitPane1" pref="787" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -62,7 +62,7 @@
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace pref="167" max="32767" attributes="0"/>
+                              <EmptySpace pref="183" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="cbShowCut" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="cbShowEngrave" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -109,7 +109,7 @@
                               <Component id="cbShowEngrave" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="cbShowCut" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="54" max="32767" attributes="0"/>
+                              <EmptySpace pref="57" max="32767" attributes="0"/>
                               <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -151,7 +151,7 @@
                         <Property name="name" type="java.lang.String" value="jComboBox2" noResource="true"/>
                       </Properties>
                       <BindingProperties>
-                        <BindingProperty name="selectedItem" source="jpModel" sourcePath="${startingPosition}" target="jComboBox2" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
+                        <BindingProperty name="selectedItem" source="jpModel" sourcePath="${startPosition}" target="jComboBox2" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
                       </BindingProperties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel2">
@@ -174,18 +174,12 @@
                         <Property name="text" type="java.lang.String" resourceKey="cbShowEngrave.text"/>
                         <Property name="name" type="java.lang.String" value="cbShowEngrave" noResource="true"/>
                       </Properties>
-                      <BindingProperties>
-                        <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showRaster}" target="cbShowEngrave" targetPath="selected" updateStrategy="0" immediately="false"/>
-                      </BindingProperties>
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="cbShowCut">
                       <Properties>
                         <Property name="text" type="java.lang.String" resourceKey="cbShowCut.text"/>
                         <Property name="name" type="java.lang.String" value="cbShowCut" noResource="true"/>
                       </Properties>
-                      <BindingProperties>
-                        <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showVector}" target="cbShowCut" targetPath="selected" updateStrategy="0" immediately="false"/>
-                      </BindingProperties>
                     </Component>
                     <Component class="javax.swing.JComboBox" name="cbResolution">
                       <Properties>
@@ -208,8 +202,19 @@
             </Container>
             <Container class="com.t_oster.jepilog.gui.SVGPanel" name="sVGPanel1">
               <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
+                    <EtchetBorder/>
+                  </Border>
+                </Property>
                 <Property name="name" type="java.lang.String" value="sVGPanel1" noResource="true"/>
               </Properties>
+              <BindingProperties>
+                <BindingProperty name="cuttingShapes" source="jpModel" sourcePath="${cuttingShapes}" target="sVGPanel1" targetPath="cuttingShapes" updateStrategy="1" immediately="false"/>
+                <BindingProperty name="showRaster" source="cbShowEngrave" sourcePath="${selected}" target="sVGPanel1" targetPath="showRaster" updateStrategy="1" immediately="false"/>
+                <BindingProperty name="showVector" source="cbShowCut" sourcePath="${selected}" target="sVGPanel1" targetPath="showVector" updateStrategy="1" immediately="false"/>
+                <BindingProperty name="startingPoint" source="jpModel" sourcePath="${startPoint}" target="sVGPanel1" targetPath="startingPoint" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
               <Events>
                 <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="sVGPanel1MouseClicked"/>
               </Events>
@@ -222,7 +227,7 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="300" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="296" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
@@ -375,7 +380,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusMessageLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="615" max="32767" attributes="0"/>
+                  <EmptySpace pref="627" max="32767" attributes="0"/>
                   <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusAnimationLabel" min="-2" max="-2" attributes="0"/>

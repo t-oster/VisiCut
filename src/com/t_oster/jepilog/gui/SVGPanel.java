@@ -20,7 +20,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.PathIterator;
 import java.beans.PropertyChangeListener;
 import java.net.URI;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,11 +35,8 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     /**
      * Propertys
      */
-    public static final String PROPERTY_STARTINGPOINT = "startingpoint";
-    public static final String PROPERTY_SELECTED_SHAPE = "selected_shape";
-    public static final String PROPERTY_SHOWRASTER = "show_raster";
-    public static final String PROPERTY_SHOWVECTOR = "show vector";
-    public static final String PROPERTY_SVG = "svgfile";
+    public static final String PROPERTY_STARTINGPOINT = "startingPoint";
+    public static final String PROPERTY_SELECTED_SHAPE = "selectedShape";
     
     private SVGIcon icon;
     private URI svgUri = null;
@@ -81,6 +77,10 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         this.firePropertyChange(PROPERTY_STARTINGPOINT, old, p);
     }
 
+    public Point getStartingPoint() {
+        return this.startingPoint;
+    }
+    
     private void sizeToFit() {
         Dimension d = getPreferredSize();
         setSize(d.width, d.height);
@@ -89,10 +89,6 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
             p.invalidate();
             p.doLayout();
         }
-    }
-
-    public Point getStartingPoint() {
-        return this.startingPoint;
     }
 
     public SVGPanel() {
@@ -105,7 +101,6 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         if (show != showRaster) {
             showRaster = show;
             repaint();
-            firePropertyChange(PROPERTY_SHOWRASTER, !showRaster, showRaster);
         }
     }
     
@@ -117,7 +112,6 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         if (show != showVector) {
             showVector = show;
             repaint();
-            firePropertyChange(PROPERTY_SHOWVECTOR, !showVector, showVector);
         }
     }
     
@@ -137,16 +131,33 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
             this.selectedShape = null;
             this.cuttingShapes = null;
             this.sizeToFit();
-            firePropertyChange(PROPERTY_SVG, old, this.svgUri);
         }
     }
 
+    public URI getSvgUri(){
+        return this.svgUri;
+    }
+    
     public void setCuttingShapes(Shape[] cuttingShapes){
         this.cuttingShapes = cuttingShapes;
     }
     
-    public URI getSvgUri(){
-        return this.svgUri;
+    public Shape[] getCuttingShapes(){
+        return this.cuttingShapes;
+    }
+    
+    public void setSelectedShape(Shape s){
+        if (!s.equals(selectedShape)){
+            Shape old = selectedShape;
+            this.selectedShape = s;
+            this.repaint();
+            firePropertyChange(PROPERTY_SELECTED_SHAPE, old, s);
+        }
+        
+    }
+    
+    public Shape getSelectedShape(){
+        return selectedShape;
     }
     
     /**
@@ -213,20 +224,6 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
             g.drawLine(sp.x - 4, sp.y - 4, sp.x + 4, sp.y + 4);
             g.drawLine(sp.x - 4, sp.y + 4, sp.x + 4, sp.y - 4);
         }
-    }
-
-    public void setSelectedShape(Shape s){
-        if (!s.equals(selectedShape)){
-            Shape old = selectedShape;
-            this.selectedShape = s;
-            this.repaint();
-            firePropertyChange(PROPERTY_SELECTED_SHAPE, old, s);
-        }
-        
-    }
-    
-    public Shape getSelectedShape(){
-        return selectedShape;
     }
     
     public void mouseClicked(MouseEvent me) {

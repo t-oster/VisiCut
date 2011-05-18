@@ -4,7 +4,7 @@
  */
 package com.t_oster.jepilog.controller;
 
-import com.t_oster.jepilog.controller.JepilogController.StartingPosition;
+import com.t_oster.jepilog.model.JepilogModel;
 import java.io.File;
 import java.io.IOException;
 import org.junit.AfterClass;
@@ -16,9 +16,9 @@ import static org.junit.Assert.*;
  *
  * @author thommy
  */
-public class JepilogControllerTest {
+public class JepilogModelTest {
     
-    public JepilogControllerTest() {
+    public JepilogModelTest() {
     }
 
     @BeforeClass
@@ -35,14 +35,14 @@ public class JepilogControllerTest {
     @Test
     public void testSetStartingPosition() throws IOException {
         System.out.println("setStartingPosition");
-        JepilogController instance = new JepilogController();
-        instance.importSvg(new File("butterfly.svg"));
-        instance.setStartingPosition(JepilogController.StartingPosition.BOTTOM_LEFT);
-        assertEquals(JepilogController.StartingPosition.BOTTOM_LEFT, instance.getStartingPosition());
-        instance.setStartingPosition(JepilogController.StartingPosition.CENTER);
-        assertEquals(JepilogController.StartingPosition.CENTER, instance.getStartingPosition());
+        JepilogModel instance = new JepilogModel();
+        instance.importSVG(new File("butterfly.svg"));
+        instance.setStartPosition("bottom left");
+        assertEquals("bottom left", instance.getStartPosition());
+        instance.setStartPosition("center");
+        assertEquals("center", instance.getStartPosition());
         instance.setStartPoint(10,10);
-        assertEquals(JepilogController.StartingPosition.CUSTOM, instance.getStartingPosition());
+        assertEquals("custom", instance.getStartPosition());
     }
 
 }

@@ -20,6 +20,7 @@ import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,12 +37,12 @@ public class JepilogModel {
     private Point startPoint = new Point(0,0);
     private int resolution = 500;
     
-    public static final String PROPERTY_STARTINGPOINT = "startingpoint";
-    public static final String PROPERTY_STARTINGPOSITION = "startingposition";
+    public static final String PROPERTY_STARTPOINT = "startPoint";
+    public static final String PROPERTY_STARTPOSITION = "startPosition";
     public static final String PROPERTY_SVG = "svg";
     public static final String PROPERTY_RESOLUTION = "resolution";
     public static final String PROPERTY_CUTTER = "cutter";
-    public static final String PROPERTY_CUTTINGSHAPES = "cuttingshapes";
+    public static final String PROPERTY_CUTTINGSHAPES = "cuttingShapes";
     
     private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     public void addPropertyChangeListener(PropertyChangeListener listener)
@@ -72,7 +73,7 @@ public class JepilogModel {
         if (uri!= null && !uri.equals(this.uri)){
             URI old = this.uri;
             this.uri = uri;
-            vectorShapes = new LinkedList<Shape>();
+            this.setCuttingShapes(new Shape[0]);
             this.pcs.firePropertyChange(PROPERTY_SVG, old, uri);
         }
     }
@@ -96,16 +97,23 @@ public class JepilogModel {
     public Shape[] getCuttingShapes() {
         return vectorShapes.toArray(new Shape[0]);
     }
+    
+    public void setCuttingShapes(Shape[] shapes){
+        Shape[] old = this.vectorShapes.toArray(new Shape[0]);
+        this.vectorShapes.clear();
+        this.vectorShapes.addAll(Arrays.asList(shapes));
+        this.pcs.firePropertyChange(PROPERTY_CUTTINGSHAPES, old, this.vectorShapes.toArray(new Shape[0]));
+    }
 
     public void setStartPoint(Point p){
         if (!this.startPoint.equals(p)){
             Point old = this.startPoint;
-            String oldsp = this.getStartingPosition();
+            String oldsp = this.getStartPosition();
             this.startPoint = p;
-            this.pcs.firePropertyChange(PROPERTY_STARTINGPOINT, old, this.startPoint);
-            String newsp = this.getStartingPosition();
+            this.pcs.firePropertyChange(PROPERTY_STARTPOINT, old, this.startPoint);
+            String newsp = this.getStartPosition();
             if (!oldsp.equals(newsp)){
-                pcs.firePropertyChange(PROPERTY_STARTINGPOSITION, oldsp, newsp);
+                pcs.firePropertyChange(PROPERTY_STARTPOSITION, oldsp, newsp);
             }
         }
     }
@@ -118,7 +126,7 @@ public class JepilogModel {
         return this.startPoint;
     }
     
-    public String getStartingPosition(){
+    public String getStartPosition(){
         if (universe == null || uri == null){
             return "custom";
         }
@@ -144,9 +152,9 @@ public class JepilogModel {
         }
     }
     
-    public void setStartingPosition(String p){
-        if (uri != null && !p.equals(this.getStartingPosition())){
-            String old = this.getStartingPosition();
+    public void setStartPosition(String p){
+        if (uri != null && !p.equals(this.getStartPosition())){
+            String old = this.getStartPosition();
             Rectangle2D rect = universe.getDiagram(uri).getViewRect();
             if (p.equals("top left")){
                 this.setStartPoint((int) rect.getX(), (int) rect.getY());
@@ -163,7 +171,7 @@ public class JepilogModel {
             else if (p.equals("center")){
                 this.setStartPoint((int) (rect.getX()+rect.getWidth()/2), (int) (rect.getY()+rect.getHeight()/2));
             }
-            pcs.firePropertyChange(PROPERTY_STARTINGPOSITION, old, p);
+            pcs.firePropertyChange(PROPERTY_STARTPOSITION, old, p);
         }
     }
     
