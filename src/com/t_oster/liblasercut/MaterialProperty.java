@@ -12,14 +12,16 @@ public class MaterialProperty {
     private String name = "Default Material";
     private double height = 1;
     private CuttingProperty cuttingProperty = new CuttingProperty();
+    private EngravingProperty engravingProperty = new EngravingProperty();
     
     public MaterialProperty(){
         
     }
     
-    public MaterialProperty(String name, double height, int cuttingPower, int cuttingSpeed, int cuttingFrequency){
+    public MaterialProperty(String name, double height, int engravingPower, int engravingSpeed, int cuttingPower, int cuttingSpeed, int cuttingFrequency){
         this.name = name;
         this.height = height;
+        this.engravingProperty = new EngravingProperty(engravingPower, engravingSpeed);
         this.cuttingProperty = new CuttingProperty(cuttingPower, cuttingSpeed, cuttingFrequency);
     }
     
@@ -29,6 +31,10 @@ public class MaterialProperty {
     
     public double getHeight(){
         return this.height;
+    }
+    
+    public EngravingProperty getEngravingProperty(){
+        return this.engravingProperty;
     }
     
     /**

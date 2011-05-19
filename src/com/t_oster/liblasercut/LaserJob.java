@@ -19,12 +19,13 @@ public class LaserJob {
     private VectorPart vPart;
     private RasterPart rPart;
     
-    public LaserJob(String title, String name, String user, int resolution, VectorPart vp){
+    public LaserJob(String title, String name, String user, int resolution, RasterPart rp, VectorPart vp){
         this.title = title;
         this.name = name;
         this.user = user;
         this.resolution = resolution;
         this.vPart = vp;
+        this.rPart = rp;
     }
     
     public void setStartPoint(int x, int y){

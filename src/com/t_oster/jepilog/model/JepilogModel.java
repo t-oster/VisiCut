@@ -13,9 +13,12 @@ import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.liblasercut.epilog.EpilogCutter;
 import com.t_oster.liblasercut.MaterialProperty;
 import com.t_oster.liblasercut.CuttingProperty;
+import com.t_oster.liblasercut.EngravingProperty;
+import com.t_oster.liblasercut.RasterPart;
 import com.t_oster.util.Util;
 import java.awt.Point;
 import java.awt.Shape;
+import java.awt.image.RenderedImage;
 import java.awt.geom.PathIterator;
 import java.io.File;
 import java.io.IOException;
@@ -29,11 +32,13 @@ import java.util.List;
  * @author thommy
  */
 public class JepilogModel extends AbstractModel implements Serializable{
+    private static final long serialVersionUID = 1L;
 
     private SVGUniverse universe = SVGCache.getSVGUniverse();
     private URI uri;
     private String jobname = "testjob";
     private List<CuttingShape> vectorShapes = new LinkedList<CuttingShape>();
+    private List<EngravingImage> rasterImages = new LinkedList<EngravingImage>();
     private Point startPoint = new Point(0,0);
     private int resolution = 500;
     private MaterialProperty material = null;
@@ -45,6 +50,7 @@ public class JepilogModel extends AbstractModel implements Serializable{
     public static final String PROPERTY_CUTTER = "cutter";
     public static final String PROPERTY_CUTTINGSHAPES = "cuttingShapes";
     public static final String PROPERTY_MATERIAL = "material";
+    public static final String PROPERTY_ENGRAVINGIMAGES = "engravingImages";
     
     public void setMaterial(MaterialProperty p){
         if (Util.differ(p, this.material)){
@@ -119,6 +125,40 @@ public class JepilogModel extends AbstractModel implements Serializable{
     
     public CuttingShape[] getCuttingShapes() {
         return vectorShapes.toArray(new CuttingShape[0]);
+    }
+    
+    public EngravingImage[] getEngravingImages(){
+        return rasterImages.toArray(new EngravingImage[0]);
+    }
+    
+    public EngravingImage getEngravingImage(int idx){
+        return rasterImages.get(idx);
+    }
+    
+    public void setEngravingImage(int idx, EngravingImage s){
+        rasterImages.set(idx, s);
+        this.pcs.firePropertyChange(PROPERTY_ENGRAVINGIMAGES, null, null);
+    }
+    
+    public void addEngravingImage(EngravingImage s){
+        if (!rasterImages.contains(s)){
+            rasterImages.add(s);
+            this.pcs.firePropertyChange(PROPERTY_ENGRAVINGIMAGES, null, s);
+        }
+    }
+    
+    public void removeEngravingImage(EngravingImage s){
+        if (rasterImages.contains(s)){
+            rasterImages.remove(s);
+            this.pcs.firePropertyChange(PROPERTY_ENGRAVINGIMAGES, s, null);
+        }
+    }
+    
+    public void clearEngravingImages(){
+        if (this.rasterImages.size()>0){
+            rasterImages.clear();
+            this.pcs.firePropertyChange(PROPERTY_ENGRAVINGIMAGES, null, null);
+        }
     }
 
     public void setStartPoint(Point p){
@@ -207,6 +247,26 @@ public class JepilogModel extends AbstractModel implements Serializable{
         }
     }
 
+    private RenderedImage getRenderedImage(EngravingImage i){
+        throw new UnsupportedOperationException();
+    }
+    
+    private RasterPart generateRasterPart() throws IllegalJobException {
+        if (this.material == null){
+            throw new IllegalJobException("No material selected");
+        }
+        EngravingProperty defaultep = material.getEngravingProperty();
+        
+        RasterPart rp = new RasterPart(defaultep);
+        
+        for (EngravingImage i:this.getEngravingImages()){
+            EngravingProperty ep = i.getEngravingProperty();
+            rp.addImage(getRenderedImage(i), ep != null ? ep : defaultep);
+        }
+        
+        return rp;
+    }
+    
     private VectorPart generateVectorPart() throws IllegalJobException {
         if (this.material == null){
             throw new IllegalJobException("No material selected");
@@ -248,7 +308,7 @@ public class JepilogModel extends AbstractModel implements Serializable{
         if (this.getCuttingShapes().length==0){
             throw new Exception("Nothing selected for cutting");
         }
-        LaserJob job = new LaserJob(jobname, "123", "bla", getResolution(), generateVectorPart());
+        LaserJob job = new LaserJob(jobname, "123", "bla", getResolution(), generateRasterPart(), generateVectorPart());
         job.setStartPoint((int) this.getStartPoint().getX(), (int) this.getStartPoint().getY());
         cutter.sendJob(job);
     }
