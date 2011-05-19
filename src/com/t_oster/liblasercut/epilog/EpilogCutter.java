@@ -6,6 +6,8 @@ package com.t_oster.liblasercut.epilog;
 
 import com.t_oster.liblasercut.*;
 import com.t_oster.util.Util;
+import java.awt.image.RenderedImage;
+import java.awt.Dimension;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -22,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.LinkedList;
+import org.apache.fop.render.pcl.PCLGenerator;
 
 /**
  *
@@ -170,9 +173,9 @@ public class EpilogCutter extends LaserCutter {
         //if (job.containsRaster()) {
             wrt.append(generateRasterPCL(job.getRasterPart()));
         //}
-        if (job.containsVector()) {
+        //if (job.containsVector()) {
             wrt.append(generateVectorPCL(job, job.getVectorPart()));
-        }
+        //}
         wrt.append(generatePjlFooter());
         /* Pad out the remainder of the file with 0 characters. */
         for (int i = 0; i < 4096; i++) {
@@ -279,7 +282,7 @@ public class EpilogCutter extends LaserCutter {
         return BED_HEIGHT;
     }
 
-    private String generateRasterPCL(RasterPart job) throws UnsupportedEncodingException {
+    private String generateRasterPCL(RasterPart job) throws UnsupportedEncodingException, IOException {
 
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(result, true, "US-ASCII");
@@ -300,11 +303,19 @@ public class EpilogCutter extends LaserCutter {
         /* start at current position */
         out.printf("\033*r1A");
         
-        //TODO: raster image
-        
+        if (job!=null){
+            PCLGenerator gen = new PCLGenerator(out);
+            RenderedImage[] img = job.getImages();
+            EngravingProperty[] prop = job.getPropertys();
+            for (int i=0;i<img.length;i++){
+                gen.paintBitmap(img[i], new Dimension(img[i].getWidth(), img[i].getHeight()), false);
+            }
+        }
         out.printf("\033*rC");       // end raster
         out.write((char) 26);
         out.write((char) 4); // some end of file markers
+
+        System.out.println(result.toString());
         try {
             return result.toString("US-ASCII");
         } catch (UnsupportedEncodingException ex) {
@@ -321,51 +332,54 @@ public class EpilogCutter extends LaserCutter {
         out.printf("\033E@PJL ENTER LANGUAGE=PCL\r\n");
         /* Page Orientation */
         out.printf("\033*r0F");
-        out.printf("\033*r%dT", vp.getHeight());// if not dummy, then job.getHeight());
-        out.printf("\033*r%dS", vp.getWidth());// if not dummy then job.getWidth());
+        out.printf("\033*r%dT", vp==null ? 500 : vp.getHeight());// if not dummy, then job.getHeight());
+        out.printf("\033*r%dS", vp==null ? 500 : vp.getWidth());// if not dummy then job.getWidth());
         out.printf("\033*r1A");
         out.printf("\033*rC");
         out.printf("\033%%1B");// Start HLGL
         out.printf("IN;PU0,0;");
-        int sx = job.getStartX();
-        int sy = job.getStartY();
-        VectorCommand.CmdType lastType = null;
-        for (VectorCommand cmd:vp.getCommandList()){
-            if (lastType!=null && lastType == VectorCommand.CmdType.LINETO && cmd.getType() != VectorCommand.CmdType.LINETO){
-                out.print(";");
-            }
-            switch (cmd.getType()){
-                case SETFREQUENCY:{
-                    out.printf("XR%04d;", cmd.getFrequency());
-                    break;
+
+        if (vp!=null){
+            int sx = job.getStartX();
+            int sy = job.getStartY();
+            VectorCommand.CmdType lastType = null;
+            for (VectorCommand cmd:vp.getCommandList()){
+                if (lastType!=null && lastType == VectorCommand.CmdType.LINETO && cmd.getType() != VectorCommand.CmdType.LINETO){
+                    out.print(";");
                 }
-                case SETPOWER:{
-                    out.printf("YP%03d;", cmd.getPower());
-                    break;
-                }
-                case SETSPEED:{
-                    out.printf("ZS%03d;", cmd.getSpeed());
-                    break;
-                }
-                case MOVETO:{
-                    out.printf("PU%d,%d;", cmd.getX()-sx, cmd.getY()-sy);
-                    break;
-                }
-                case LINETO:{
-                    if (lastType == null || lastType != VectorCommand.CmdType.LINETO){
-                        out.printf("PD%d,%d", cmd.getX()-sx, cmd.getY()-sy);
+                switch (cmd.getType()){
+                    case SETFREQUENCY:{
+                        out.printf("XR%04d;", cmd.getFrequency());
+                        break;
                     }
-                    else{
-                        out.printf(",%d,%d", cmd.getX()-sx, cmd.getY()-sy);
+                    case SETPOWER:{
+                        out.printf("YP%03d;", cmd.getPower());
+                        break;
                     }
-                    break;
+                    case SETSPEED:{
+                        out.printf("ZS%03d;", cmd.getSpeed());
+                        break;
+                    }
+                    case MOVETO:{
+                        out.printf("PU%d,%d;", cmd.getX()-sx, cmd.getY()-sy);
+                        break;
+                    }
+                    case LINETO:{
+                        if (lastType == null || lastType != VectorCommand.CmdType.LINETO){
+                            out.printf("PD%d,%d", cmd.getX()-sx, cmd.getY()-sy);
+                        }
+                        else{
+                            out.printf(",%d,%d", cmd.getX()-sx, cmd.getY()-sy);
+                        }
+                        break;
+                    }
                 }
+                lastType = cmd.getType();
             }
-            lastType = cmd.getType();
+
+            //Pen up and goto 0,0
+            out.printf("PU0,0;");  // start HLGL, and pen up, end
         }
-        
-        //Pen up and goto 0,0
-        out.printf("PU0,0;");  // start HLGL, and pen up, end
         
         System.out.append(result.toString());
         try {
