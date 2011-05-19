@@ -13,9 +13,7 @@ import java.util.List;
  */
 public class VectorPart {
   
-    private int curFRQ;
-    private int curPWR;
-    private int curSPD;
+    private CuttingProperty currentCuttingProperty;
     private int maxX;
     private int maxY;
     private int minX;
@@ -23,14 +21,22 @@ public class VectorPart {
     
     private List<VectorCommand> commands;
     
-    public VectorPart(int initialFRQ,int initialPWR, int initialSPD){
-        curFRQ = initialFRQ;
-        curPWR = initialPWR;
-        curSPD = initialSPD;
+    public VectorPart(CuttingProperty initialProperty){
+        this.currentCuttingProperty = initialProperty;
         commands = new LinkedList<VectorCommand>();
-        this.setPower(curPWR);
-        this.setSpeed(curSPD);
-        this.setFrequency(curFRQ);
+        commands.add(new VectorCommand(VectorCommand.CmdType.SETPOWER, currentCuttingProperty.getPower()));
+        commands.add(new VectorCommand(VectorCommand.CmdType.SETSPEED, currentCuttingProperty.getSpeed()));
+        commands.add(new VectorCommand(VectorCommand.CmdType.SETFREQUENCY, currentCuttingProperty.getFrequency()));
+    }
+    
+    public CuttingProperty getCurrentCuttingProperty(){
+        return currentCuttingProperty;
+    }
+    
+    public void setCurrentCuttingProperty(CuttingProperty cp){
+        this.setFrequency(cp.getFrequency());
+        this.setPower(cp.getPower());
+        this.setSpeed(cp.getSpeed());
     }
     
     public VectorCommand[] getCommandList(){
@@ -38,15 +44,24 @@ public class VectorPart {
     }
     
     public void setSpeed(int speed){
-        commands.add(new VectorCommand(VectorCommand.CmdType.SETSPEED, speed));
+        if (speed != this.currentCuttingProperty.getSpeed()){
+            commands.add(new VectorCommand(VectorCommand.CmdType.SETSPEED, speed));
+            this.currentCuttingProperty.setSpeed(speed);
+        }
     }
     
     public void setPower(int power){
-        commands.add(new VectorCommand(VectorCommand.CmdType.SETPOWER, power));
+        if (power != this.currentCuttingProperty.getPower()){
+            commands.add(new VectorCommand(VectorCommand.CmdType.SETPOWER, power));
+            this.currentCuttingProperty.setPower(power);
+        }
     }
     
     public void setFrequency(int frequency){
-        commands.add(new VectorCommand(VectorCommand.CmdType.SETFREQUENCY, frequency));
+        if (frequency != this.currentCuttingProperty.getFrequency()){
+            commands.add(new VectorCommand(VectorCommand.CmdType.SETFREQUENCY, frequency));
+            this.currentCuttingProperty.setFrequency(frequency);
+        }
     }
     
     private void checkMin(int x, int y)

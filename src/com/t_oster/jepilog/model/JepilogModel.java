@@ -11,13 +11,12 @@ import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.liblasercut.epilog.EpilogCutter;
+import com.t_oster.liblasercut.MaterialProperty;
+import com.t_oster.liblasercut.CuttingProperty;
 import com.t_oster.util.Util;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.PathIterator;
-import java.awt.geom.Rectangle2D;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -29,14 +28,15 @@ import java.util.List;
  *
  * @author thommy
  */
-public class JepilogModel implements Serializable{
+public class JepilogModel extends AbstractModel implements Serializable{
 
     private SVGUniverse universe = SVGCache.getSVGUniverse();
     private URI uri;
     private String jobname = "testjob";
-    private List<Shape> vectorShapes = new LinkedList<Shape>();
+    private List<CuttingShape> vectorShapes = new LinkedList<CuttingShape>();
     private Point startPoint = new Point(0,0);
     private int resolution = 500;
+    private MaterialProperty material = null;
     
     public static final String PROPERTY_STARTPOINT = "startPoint";
     public static final String PROPERTY_STARTPOSITION = "startPosition";
@@ -44,31 +44,19 @@ public class JepilogModel implements Serializable{
     public static final String PROPERTY_RESOLUTION = "resolution";
     public static final String PROPERTY_CUTTER = "cutter";
     public static final String PROPERTY_CUTTINGSHAPES = "cuttingShapes";
+    public static final String PROPERTY_MATERIAL = "material";
     
-    private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-    public void addPropertyChangeListener(PropertyChangeListener listener)
-    {
-        this.pcs.addPropertyChangeListener( listener );
-    }
-    /**
-     * This method adds a PoropertyChangeListener, which only gets informed
-     * about Property changes of the given property
-     * @param property a value of one of the Property enum elements' toString() method
-     * @param listener the listener to be registered
-     */
-    public void addPropertyChangeListener(String property, PropertyChangeListener listener)
-    {
-        this.pcs.addPropertyChangeListener(property, listener);
-    }
-    public void removePropertyChangeListener(String property, PropertyChangeListener listener)
-    {
-        this.pcs.removePropertyChangeListener(property, listener);
-    }
-    public void removePropertyChangeListener( PropertyChangeListener listener )
-    {
-        this.pcs.removePropertyChangeListener( listener );
+    public void setMaterial(MaterialProperty p){
+        if (Util.differ(p, this.material)){
+            MaterialProperty old = this.material;
+            this.material = p;
+            this.pcs.firePropertyChange(PROPERTY_MATERIAL, old, this.material);
+        }
     }
     
+    public MaterialProperty getMaterial(){
+        return this.material;
+    }
     
     public void setSvg(URI uri) {
         if (Util.differ(uri, this.uri)){
@@ -89,6 +77,14 @@ public class JepilogModel implements Serializable{
     }
 
     public void addCuttingShape(Shape s) {
+        this.addCuttingShape(new CuttingShape(s,null));
+    }
+    
+    public void addCuttingShape(Shape s, CuttingProperty p){
+        this.addCuttingShape(new CuttingShape(s, p));
+    }
+    
+    public void addCuttingShape(CuttingShape s){
         if (!vectorShapes.contains(s)){
             Shape[] old = this.getCuttingShapes();
             vectorShapes.add(s);
@@ -112,8 +108,8 @@ public class JepilogModel implements Serializable{
         }
     }
 
-    public Shape[] getCuttingShapes() {
-        return vectorShapes.toArray(new Shape[0]);
+    public CuttingShape[] getCuttingShapes() {
+        return vectorShapes.toArray(new CuttingShape[0]);
     }
 
     public void setStartPoint(Point p){
@@ -202,9 +198,17 @@ public class JepilogModel implements Serializable{
         }
     }
 
-    private VectorPart generateVectorPart() {
-        VectorPart vp = new VectorPart(5000, 20, 100);
-        for (Shape s:this.getCuttingShapes()){
+    private VectorPart generateVectorPart() throws IllegalJobException {
+        if (this.material == null){
+            throw new IllegalJobException("No material selected");
+        }
+        CuttingProperty defaultcp = material.getCuttingProperty();
+        
+        VectorPart vp = new VectorPart(defaultcp);
+        
+        for (CuttingShape s:this.getCuttingShapes()){
+            CuttingProperty cp = s.getCuttingProperty();
+            vp.setCurrentCuttingProperty(cp != null ? cp : defaultcp);
             this.addShape(vp, s);
         }
         return vp;

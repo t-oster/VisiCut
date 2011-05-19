@@ -27,7 +27,7 @@ import java.util.LinkedList;
  *
  * @author thommy
  */
-public class EpilogCutter implements LaserCutter {
+public class EpilogCutter extends LaserCutter {
 
     public static boolean SIMULATE_COMMUNICATION = false;
     /* Resolutions in DPI */
@@ -55,7 +55,7 @@ public class EpilogCutter implements LaserCutter {
         int result = -1;
         out.flush();
         System.out.println("Waiting for response...");
-        for (int i = 0; i < timeout; i++) {
+        for (int i = 0; i < timeout*10; i++) {
             if (in.available() > 0) {
                 result = in.read();
                 System.out.println("Got Response: " + result);
