@@ -25,6 +25,7 @@ public class CuttingShape implements Shape{
     
     private CuttingProperty cuttingProperty;
     private Shape shape = null;
+    private String name = "unnamed Shape";
     
     public CuttingShape(Shape s, CuttingProperty cp){
         this.shape = s;
@@ -66,6 +67,14 @@ public class CuttingShape implements Shape{
         return this.cuttingProperty;
     }
 
+    public void setName(String name){
+        this.name = name;
+    }
+    
+    public String getName(){
+        return this.name;
+    }
+    
     public Rectangle getBounds() {
         return shape.getBounds();
     }

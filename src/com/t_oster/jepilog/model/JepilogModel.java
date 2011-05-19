@@ -108,6 +108,14 @@ public class JepilogModel extends AbstractModel implements Serializable{
         }
     }
 
+    public CuttingShape getCuttingShape(int idx){
+        return vectorShapes.get(idx);
+    }
+    
+    public void setCuttingShape(int idx, CuttingShape s){
+        vectorShapes.set(idx, s);
+    }
+    
     public CuttingShape[] getCuttingShapes() {
         return vectorShapes.toArray(new CuttingShape[0]);
     }

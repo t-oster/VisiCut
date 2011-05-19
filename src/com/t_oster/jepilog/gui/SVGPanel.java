@@ -53,16 +53,6 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     private boolean showCuttingPart = true;
     private boolean showGrid = true;
     private Point startPoint = new Point(0, 0);
-    
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener){
-        super.addPropertyChangeListener(listener);
-    }
-    
-    @Override
-    public void addPropertyChangeListener(String property, PropertyChangeListener listener){
-        super.addPropertyChangeListener(property, listener);
-    }
 
     @Override
     public Dimension getPreferredSize() {

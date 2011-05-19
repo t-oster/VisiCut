@@ -58,6 +58,23 @@ public class MaterialProperty {
         }
     }
     
+    /**
+     * Tries to guess how deep the cutting will be with the given cutting property
+     * This should give at least the same value when the property is generated
+     * via getCuttingProperty(depth). If it is unknown it can either guess
+     * or return -1
+     * @param cp
+     * @return estimated cutting depth or -1
+     */
+    public double getCuttingPropertyDepth(CuttingProperty cp){
+        if (cp.getFrequency() == this.cuttingProperty.getFrequency() && cp.getSpeed() == this.cuttingProperty.getSpeed()){
+            return cp.getPower()*this.height/this.cuttingProperty.getPower();
+        }
+        else {
+            return -1;
+        }
+    }
+    
     @Override
     public String toString(){
         return this.getName()+" ("+this.getHeight()+" mm)";
