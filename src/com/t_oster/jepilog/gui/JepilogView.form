@@ -263,12 +263,18 @@
                     </Component>
                     <Component class="javax.swing.JButton" name="jButton2">
                       <Properties>
+                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                          <action class="com.t_oster.jepilog.gui.JepilogView" id="moveSelectedShapeUp" methodName="moveSelectedShapeUp"/>
+                        </Property>
                         <Property name="text" type="java.lang.String" resourceKey="jButton2.text"/>
                         <Property name="name" type="java.lang.String" value="jButton2" noResource="true"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JButton" name="jButton3">
                       <Properties>
+                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                          <action class="com.t_oster.jepilog.gui.JepilogView" id="moveSelectedShapeDown" methodName="moveSelectedShapeDown"/>
+                        </Property>
                         <Property name="text" type="java.lang.String" resourceKey="jButton3.text"/>
                         <Property name="name" type="java.lang.String" value="jButton3" noResource="true"/>
                       </Properties>

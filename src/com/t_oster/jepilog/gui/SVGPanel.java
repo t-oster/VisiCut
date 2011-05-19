@@ -42,6 +42,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     public static final String PROPERTY_SHOWENGRAVINGPART = "showEngravingPart";
     public static final String PROPERTY_SHOWCUTTINGPART = "showCuttingPart";
     public static final String PROPERTY_SHOWGRID = "showGrid";
+    private static final long serialVersionUID = 1L;
     
     private SVGIcon icon;
     private URI svgUri = null;
@@ -306,7 +307,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     
     public void mouseClicked(MouseEvent me) {
         try {
-            if (svgDiagramm != null) {
+            if (me.getButton()==MouseEvent.BUTTON1 && svgDiagramm != null) {
                 List pickedElements = svgDiagramm.pick(me.getPoint(), null);
                 if (pickedElements.size() > 0) {
                     List first = (List) pickedElements.get(pickedElements.size() - 1);

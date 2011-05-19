@@ -114,10 +114,28 @@ public class CuttingShape implements Shape{
     public PathIterator getPathIterator(AffineTransform at, double d) {
         return shape.getPathIterator(at, d);
     }
-    public boolean equals(Shape s){
-        return this.shape.equals(s);
+    
+    @Override
+    public boolean equals(Object o){
+        if (o instanceof CuttingShape){
+            CuttingShape cs = (CuttingShape) o;
+            return this.shape.equals(((CuttingShape) o).shape) && !Util.differ(cs.cuttingProperty, this.cuttingProperty);
+        }
+        else if (o instanceof Shape){
+            return this.shape.equals((Shape) o);
+        }
+        else{
+            return super.equals(o);
+        }
+        
     }
-    public boolean equals(CuttingShape s){
-        return this.shape.equals(s.shape) && this.cuttingProperty.equals(s.cuttingProperty);
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + (this.cuttingProperty != null ? this.cuttingProperty.hashCode() : 0);
+        hash = 79 * hash + (this.shape != null ? this.shape.hashCode() : 0);
+        hash = 79 * hash + (this.name != null ? this.name.hashCode() : 0);
+        return hash;
     }
 }

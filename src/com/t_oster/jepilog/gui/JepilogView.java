@@ -24,6 +24,7 @@ import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import com.t_oster.jepilog.model.CuttingShape;
 import javax.swing.table.DefaultTableModel;
 import java.beans.PropertyChangeListener;
 import java.util.Scanner;
@@ -273,9 +274,11 @@ public class JepilogView extends FrameView{
         jLabel4.setText(resourceMap.getString("jLabel4.text")); // NOI18N
         jLabel4.setName("jLabel4"); // NOI18N
 
+        jButton2.setAction(actionMap.get("moveSelectedShapeUp")); // NOI18N
         jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
         jButton2.setName("jButton2"); // NOI18N
 
+        jButton3.setAction(actionMap.get("moveSelectedShapeDown")); // NOI18N
         jButton3.setText(resourceMap.getString("jButton3.text")); // NOI18N
         jButton3.setName("jButton3"); // NOI18N
 
@@ -500,7 +503,7 @@ public class JepilogView extends FrameView{
                 .addGap(3, 3, 3))
         );
 
-        importFileChooser.setCurrentDirectory(new java.io.File("/null"));
+        importFileChooser.setCurrentDirectory(new java.io.File("/Network/Servers/oliver.informatik.rwth-aachen.de/Volumes/Raid1/Users/oster/null"));
         importFileChooser.setFileFilter(new MySvgFilter());
         importFileChooser.setName("importFileChooser"); // NOI18N
 
@@ -575,12 +578,36 @@ public class JepilogView extends FrameView{
     @Action
     public void addSelectedShapeToCuttingPart() {
         jpModel.addCuttingShape(sVGPanel1.getSelectedShape());
+        sVGPanel1.setSelectedShape(null);
     }
 
     @Action
     public void removeSelectedCuttingShape() {
         jpModel.removeCuttingShape(sVGPanel1.getSelectedShape());
     }
+
+    @Action
+    public void moveSelectedShapeUp() {
+        int idx = cuttingShapesTable1.getSelectedRow();
+        if (idx>0){
+            CuttingShape tmp = jpModel.getCuttingShape(idx);
+            jpModel.setCuttingShape(idx, jpModel.getCuttingShape(idx-1));
+            jpModel.setCuttingShape(idx-1, tmp);
+            cuttingShapesTable1.setSelectedShape(tmp);
+        }
+    }
+    
+    @Action
+    public void moveSelectedShapeDown() {
+        int idx = cuttingShapesTable1.getSelectedRow();
+        if (jpModel.getCuttingShapes().length>idx){
+            CuttingShape tmp = jpModel.getCuttingShape(idx);
+            jpModel.setCuttingShape(idx, jpModel.getCuttingShape(idx+1));
+            jpModel.setCuttingShape(idx+1, tmp);
+            cuttingShapesTable1.setSelectedShape(tmp);
+        }
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox cbResolution;

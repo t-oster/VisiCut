@@ -5,6 +5,7 @@
 package com.t_oster.jepilog.gui;
 
 
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
@@ -12,6 +13,7 @@ import javax.swing.JTable;
 import java.util.Scanner;
 import java.awt.Shape;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionListener;
 import com.t_oster.jepilog.model.JepilogModel;
 /**
  *
@@ -34,10 +36,16 @@ public class CuttingShapesTable extends JTable{
     
     public void setSelectedShape(Shape selectedShape){
         Shape old = this.getSelectedShape();
-        Shape[] shapes = jpModel.getCuttingShapes();
-        for(int idx=0;idx<shapes.length;idx++){
-            if (shapes[idx].equals(selectedShape)){
-                this.getSelectionModel().setSelectionInterval(idx, idx);
+        if (selectedShape == null){
+            this.getSelectionModel().clearSelection();
+        }
+        else{
+            Shape[] shapes = jpModel.getCuttingShapes();
+            for(int idx=0;idx<shapes.length;idx++){
+                if (shapes[idx].equals(selectedShape)){
+                    this.getSelectionModel().setSelectionInterval(idx, idx);
+                    break;
+                }
             }
         }
         firePropertyChange("selectedShape", old, selectedShape);
@@ -55,6 +63,12 @@ public class CuttingShapesTable extends JTable{
         this.jpModel = new JepilogModel();
         this.setModel(new CuttingShapesTableModel());
         this.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        this.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+            public void valueChanged(ListSelectionEvent lse) {
+                CuttingShapesTable.this.firePropertyChange("selectedShape", null, CuttingShapesTable.this.getSelectedShape());
+            }
+            
+        });
     }
    
     class CuttingShapesTableModel extends DefaultTableModel implements PropertyChangeListener {

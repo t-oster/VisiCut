@@ -114,6 +114,7 @@ public class JepilogModel extends AbstractModel implements Serializable{
     
     public void setCuttingShape(int idx, CuttingShape s){
         vectorShapes.set(idx, s);
+        this.pcs.firePropertyChange(PROPERTY_CUTTINGSHAPES, null, null);
     }
     
     public CuttingShape[] getCuttingShapes() {
