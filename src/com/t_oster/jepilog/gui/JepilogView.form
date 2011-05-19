@@ -62,7 +62,7 @@
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace pref="183" max="32767" attributes="0"/>
+                              <EmptySpace pref="231" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="cbShowCut" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="cbShowEngrave" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -109,7 +109,7 @@
                               <Component id="cbShowEngrave" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="cbShowCut" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="57" max="32767" attributes="0"/>
+                              <EmptySpace pref="86" max="32767" attributes="0"/>
                               <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -217,7 +217,7 @@
               </Properties>
               <BindingProperties>
                 <BindingProperty name="cuttingShapes" source="jpModel" sourcePath="${cuttingShapes}" target="sVGPanel1" targetPath="cuttingShapes" updateStrategy="1" immediately="false"/>
-                <BindingProperty name="rasterDPI" source="jpModel" sourcePath="${resolution}" target="sVGPanel1" targetPath="rasterDPI" updateStrategy="1" immediately="false"/>
+                <BindingProperty name="gridDPI" source="jpModel" sourcePath="${resolution}" target="sVGPanel1" targetPath="gridDPI" updateStrategy="0" immediately="false"/>
                 <BindingProperty name="startPoint" source="jpModel" sourcePath="${startPoint}" target="sVGPanel1" targetPath="startPoint" updateStrategy="0" immediately="false"/>
               </BindingProperties>
               <Events>
@@ -377,7 +377,7 @@
                 <Property name="name" type="java.lang.String" value="jCheckBoxMenuItem2" noResource="true"/>
               </Properties>
               <BindingProperties>
-                <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showRaster}" target="jCheckBoxMenuItem2" targetPath="selected" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showGrid}" target="jCheckBoxMenuItem2" targetPath="selected" updateStrategy="0" immediately="false"/>
               </BindingProperties>
             </MenuItem>
           </SubComponents>
@@ -420,7 +420,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusMessageLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="627" max="32767" attributes="0"/>
+                  <EmptySpace pref="625" max="32767" attributes="0"/>
                   <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusAnimationLabel" min="-2" max="-2" attributes="0"/>
