@@ -1,5 +1,5 @@
 Whishlist:
-- Free choosable startpoint
+- Free choosable startpoint (X)
 - Select Material instead of Power+Speed
 - Calibrate for new Materials through Testpage
 - Select Shapes to cut from different criterias (Color, linewidth, custom)
@@ -7,4 +7,7 @@ Whishlist:
 - Select Order of Cutting shapes
 - Multiple Engraving and Cutting steps
 - Save complete job for later execution (on different machine)
-- Sanity Check of Job (maybe with plugins?!)
+- Sanity Check of Job (maybe with plugins?!) (~)
+- Zoom into View, 100% matches display size
+- Scale Image freely to meet dimension specified by 2 selected Points
+- Set cuttingpropertys per shape
