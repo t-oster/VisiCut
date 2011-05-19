@@ -217,6 +217,7 @@
               </Properties>
               <BindingProperties>
                 <BindingProperty name="cuttingShapes" source="jpModel" sourcePath="${cuttingShapes}" target="sVGPanel1" targetPath="cuttingShapes" updateStrategy="1" immediately="false"/>
+                <BindingProperty name="rasterDPI" source="jpModel" sourcePath="${resolution}" target="sVGPanel1" targetPath="rasterDPI" updateStrategy="1" immediately="false"/>
                 <BindingProperty name="startPoint" source="jpModel" sourcePath="${startPoint}" target="sVGPanel1" targetPath="startPoint" updateStrategy="0" immediately="false"/>
               </BindingProperties>
               <Events>
@@ -370,11 +371,14 @@
                 <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showCuttingPart}" target="jCheckBoxMenuItem1" targetPath="selected" updateStrategy="0" immediately="false"/>
               </BindingProperties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem7">
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="jCheckBoxMenuItem2">
               <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="jMenuItem7.text"/>
-                <Property name="name" type="java.lang.String" value="jMenuItem7" noResource="true"/>
+                <Property name="text" type="java.lang.String" resourceKey="jCheckBoxMenuItem2.text"/>
+                <Property name="name" type="java.lang.String" value="jCheckBoxMenuItem2" noResource="true"/>
               </Properties>
+              <BindingProperties>
+                <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showRaster}" target="jCheckBoxMenuItem2" targetPath="selected" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
             </MenuItem>
           </SubComponents>
         </Menu>

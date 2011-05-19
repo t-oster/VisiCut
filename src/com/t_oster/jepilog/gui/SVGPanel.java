@@ -4,6 +4,7 @@
  */
 package com.t_oster.jepilog.gui;
 
+import java.awt.Font;
 import com.kitfox.svg.SVGDiagram;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.ShapeElement;
@@ -40,14 +41,17 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     public static final String PROPERTY_SELECTED_SHAPE = "selectedShape";
     public static final String PROPERTY_SHOWENGRAVINGPART = "showEngravingPart";
     public static final String PROPERTY_SHOWCUTTINGPART = "showCuttingPart";
+    public static final String PROPERTY_SHOWRASTER = "showRaster";
     
     private SVGIcon icon;
     private URI svgUri = null;
     private SVGDiagram svgDiagramm = null;
     private Shape[] cuttingShapes;
     private Shape selectedShape;
+    private int rasterDPI = 500;
     private boolean showEngravingPart = true;
     private boolean showCuttingPart = true;
+    private boolean showRaster = true;
     private Point startPoint = new Point(0, 0);
     
     @Override
@@ -125,6 +129,18 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     public boolean isShowCuttingPart(){
         return showCuttingPart;
     }
+    
+    public void setShowRaster(boolean show){
+        if (show != this.showRaster){
+            this.showRaster = show;
+            this.repaint();
+            firePropertyChange(PROPERTY_SHOWRASTER, !showRaster, showRaster);
+        }
+    }
+    
+    public boolean isShowRaster(){
+        return this.showRaster;
+    }
 
     public void setSvgUri(URI diag) {
         if (Util.differ(diag, this.svgUri)){
@@ -132,7 +148,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
             this.icon = new SVGIcon();
             icon.setSvgURI(diag);
             icon.setAntiAlias(true);
-            icon.setClipToViewbox(true);
+            icon.setClipToViewbox(false);
             icon.setScaleToFit(false);
             this.svgDiagramm = icon.getSvgUniverse().getDiagram(icon.getSvgURI());
             this.selectedShape = null;
@@ -167,6 +183,17 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         return selectedShape;
     }
     
+    public void setRasterDPI(int dpi){
+        if (this.rasterDPI != dpi){
+            this.rasterDPI = dpi;
+            this.repaint();
+        }
+    }
+    
+    public int getRasterDPI(){
+        return this.rasterDPI;
+    }
+    
     /**
      * Draws a given Shape on a Graphics g but just using the line
      * operation (to simulate behavior on lasercutters)
@@ -192,6 +219,50 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         }
     }
 
+    private void drawRaster(Graphics g, int rasterDPI, int rasterWidth){
+        int width = getWidth();
+        int height = getHeight();
+        g.setColor(Color.BLACK);
+        Point sp = this.getStartPoint();
+        for (int mm = 0;mm < Util.px2mm(width-sp.x, rasterDPI);mm+=rasterWidth){
+            int lx = sp.x+(int) Util.mm2px(mm, rasterDPI);
+            g.drawLine(lx, 0, lx, height);
+            String txt = mm+" mm";
+            int w = g.getFontMetrics().stringWidth(txt);
+            int h = g.getFontMetrics().getHeight();
+            g.setColor(getBackground());
+            g.fillRect(lx-w/2, (int) (height-1.8*h), w, h);
+            g.setColor(Color.BLACK);
+            g.drawString(txt, lx-w/2, height-h);
+        }
+        for (int mm = rasterWidth;mm < Util.px2mm(sp.x, rasterDPI);mm+=rasterWidth){
+            int lx = sp.x-(int) Util.mm2px(mm, rasterDPI);
+            g.drawLine(lx, 0, lx, height);
+            String txt = "-"+mm+" mm";
+            int w = g.getFontMetrics().stringWidth(txt);
+            int h = g.getFontMetrics().getHeight();
+            g.setColor(getBackground());
+            g.fillRect(lx-w/2, (int) (height-1.8*h), w, h);
+            g.setColor(Color.BLACK);
+            g.drawString(txt, lx-w/2, height-h);
+        }
+        for (int mm = 0;mm < Util.px2mm(height-sp.y, rasterDPI);mm+=rasterWidth){
+            g.drawLine(0, sp.y+(int) Util.mm2px(mm, rasterDPI), width, sp.y+(int) Util.mm2px(mm, rasterDPI));
+            int ly = sp.y+(int) Util.mm2px(mm, rasterDPI);
+            g.drawLine(0, ly, width, ly);
+            String txt = mm+" mm";
+            int w = g.getFontMetrics().stringWidth(txt);
+            int h = g.getFontMetrics().getHeight();
+            g.setColor(getBackground());
+            g.fillRect(width-w, ly-h/2, w, h);
+            g.setColor(Color.BLACK);
+            g.drawString(txt, width-w, ly+h/3);
+        }
+        for (int mm = rasterWidth;mm < Util.px2mm(sp.y, rasterDPI);mm+=rasterWidth){
+            g.drawLine(0, sp.y-(int) Util.mm2px(mm, rasterDPI), width, sp.y-(int) Util.mm2px(mm, rasterDPI));
+        }
+    }
+    
     @Override
     public void paintComponent(Graphics g) {
         if (icon == null) {
@@ -205,19 +276,22 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         g.setColor(getBackground());
         g.fillRect(0, 0, width, height);
 
+        if (showRaster && rasterDPI != 0){
+           drawRaster(g, rasterDPI, 10);
+        }
 
 
         if (showEngravingPart) {
             icon.paintIcon(this, g, 0, 0);
         }
-        g.setColor(Color.RED);
         if (cuttingShapes!=null && showCuttingPart) {
+            g.setColor(Color.RED);
             for (Shape shape : cuttingShapes) {
                 drawShape(g, shape);
             }
         }
-        g.setColor(Color.yellow);
         if (selectedShape != null) {
+            g.setColor(Color.yellow);
             drawShape(g, selectedShape);
         }
 

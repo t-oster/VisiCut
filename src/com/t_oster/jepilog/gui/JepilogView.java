@@ -136,7 +136,7 @@ public class JepilogView extends FrameView{
         jMenu1 = new javax.swing.JMenu();
         menuShowEngrave = new javax.swing.JCheckBoxMenuItem();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
-        jMenuItem7 = new javax.swing.JMenuItem();
+        jCheckBoxMenuItem2 = new javax.swing.JCheckBoxMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
         statusPanel = new javax.swing.JPanel();
@@ -258,6 +258,8 @@ public class JepilogView extends FrameView{
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, jpModel, org.jdesktop.beansbinding.ELProperty.create("${cuttingShapes}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("cuttingShapes"));
         bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, jpModel, org.jdesktop.beansbinding.ELProperty.create("${resolution}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("rasterDPI"));
+        bindingGroup.addBinding(binding);
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jpModel, org.jdesktop.beansbinding.ELProperty.create("${startPoint}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("startPoint"));
         bindingGroup.addBinding(binding);
 
@@ -367,9 +369,13 @@ public class JepilogView extends FrameView{
 
         jMenu1.add(jCheckBoxMenuItem1);
 
-        jMenuItem7.setText(resourceMap.getString("jMenuItem7.text")); // NOI18N
-        jMenuItem7.setName("jMenuItem7"); // NOI18N
-        jMenu1.add(jMenuItem7);
+        jCheckBoxMenuItem2.setText(resourceMap.getString("jCheckBoxMenuItem2.text")); // NOI18N
+        jCheckBoxMenuItem2.setName("jCheckBoxMenuItem2"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, sVGPanel1, org.jdesktop.beansbinding.ELProperty.create("${showRaster}"), jCheckBoxMenuItem2, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+        bindingGroup.addBinding(binding);
+
+        jMenu1.add(jCheckBoxMenuItem2);
 
         menuBar.add(jMenu1);
 
@@ -513,6 +519,7 @@ public class JepilogView extends FrameView{
     private javax.swing.JFileChooser importFileChooser;
     private javax.swing.JButton jButton1;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem2;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JComboBox jComboBox2;
     private javax.swing.JLabel jLabel1;
@@ -525,7 +532,6 @@ public class JepilogView extends FrameView{
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
-    private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
