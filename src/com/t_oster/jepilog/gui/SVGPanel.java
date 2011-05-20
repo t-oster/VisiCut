@@ -349,6 +349,8 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
                     //FIXME: this is not found as equal, so the 
                     //List synchronization and adding only once
                     //doesn't work anymore
+                    //TODO: Change Program to track cuttingRenderableElements!
+                    //or selectedRenderableElement and cuttingShapeElements...
                     return tr.createTransformedShape(shape);
                 }
             }
