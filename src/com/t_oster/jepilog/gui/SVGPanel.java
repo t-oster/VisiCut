@@ -6,9 +6,11 @@ package com.t_oster.jepilog.gui;
 
 import java.awt.Font;
 import com.kitfox.svg.SVGDiagram;
+import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.ShapeElement;
 import com.kitfox.svg.app.beans.SVGIcon;
+import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.util.Util;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -19,6 +21,7 @@ import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.beans.PropertyChangeListener;
 import java.net.URI;
@@ -27,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  *
@@ -305,25 +309,59 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         }
     }
     
-    public void mouseClicked(MouseEvent me) {
+    /**
+     * Should return the picked shape, but transformed as it is drawn
+     * when rendered.
+     * Maybe it should iterate throug available Shapes when called
+     * multiple times on the same coordinates/shapes
+     * @param x
+     * @param y
+     * @return 
+     */
+    private Shape pickShape(int x, int y){
         try {
-            if (me.getButton()==MouseEvent.BUTTON1 && svgDiagramm != null) {
-                List pickedElements = svgDiagramm.pick(me.getPoint(), null);
-                if (pickedElements.size() > 0) {
-                    List first = (List) pickedElements.get(pickedElements.size() - 1);
-                    Object elem = first.get(first.size() - 1);
-                    if (elem instanceof ShapeElement) {
-                        Shape shape = ((ShapeElement) elem).getShape();
-                        this.setSelectedShape(shape);
+            List pickedElements = svgDiagramm.pick(new Point(x,y), null);
+            if (pickedElements.size() > 0) {
+                List first = (List) pickedElements.get(pickedElements.size() - 1);
+                //Track all Transformations on the Path of the Elemenent
+                AffineTransform tr = new AffineTransform();
+                Object elem = first.get(first.size() - 1);
+                for (Object o:first){
+                    if (o instanceof SVGElement){
+                        Object sty = ((SVGElement) o).getPresAbsolute("transform");
+                        if (sty != null && sty instanceof StyleAttribute){
+                            StyleAttribute style = (StyleAttribute) sty;
+                            tr.concatenate(SVGElement.parseSingleTransform(style.getStringValue()));
+                        }
                     }
                 }
-                else{
-                    this.setSelectedShape(null);
+                if (elem instanceof ShapeElement) {
+                    Shape shape = ((ShapeElement) elem).getShape();
+                    /**
+                     * We do return the transformed Shape here, 
+                     * however the equals method doesn't work anymore
+                     * and we aren't be able to track the shape anymore.
+                     * 
+                     * So we will change to managing ShapeElements or even RenderableElements
+                     * instead of just Shapes.
+                     * 
+                     */
+                    //FIXME: this is not found as equal, so the 
+                    //List synchronization and adding only once
+                    //doesn't work anymore
+                    return tr.createTransformedShape(shape);
                 }
             }
-
+            return null;
         } catch (SVGException ex) {
             Logger.getLogger(SVGPanel.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+    
+    public void mouseClicked(MouseEvent me) {
+        if (me.getButton()==MouseEvent.BUTTON1 && svgDiagramm != null) {
+            this.setSelectedShape(pickShape(me.getX(), me.getY()));
         }
     }
     private boolean movingStartPoint = false;
