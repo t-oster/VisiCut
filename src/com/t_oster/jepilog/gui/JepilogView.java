@@ -523,6 +523,7 @@ public class JepilogView extends FrameView{
 
         shapeMenu.add(meAddToCutting);
 
+        meRemoveFromCutting.setAction(actionMap.get("removeSelectedCuttingShape")); // NOI18N
         meRemoveFromCutting.setText(resourceMap.getString("meRemoveFromCutting.text")); // NOI18N
         meRemoveFromCutting.setName("meRemoveFromCutting"); // NOI18N
 
@@ -628,14 +629,6 @@ public class JepilogView extends FrameView{
             jpModel.setCuttingShape(idx, jpModel.getCuttingShape(idx+1));
             jpModel.setCuttingShape(idx+1, tmp);
             cuttingShapesTable1.setSelectedShape(tmp);
-        }
-    }
-
-    @Action
-    public void removeSelectedShapeFromCuttingPart() {
-        SVGElement sel = sVGPanel1.getSelectedSVGElement();
-        if (sel != null && sel instanceof ShapeElement){
-            jpModel.removeCuttingShape((ShapeElement) sel);
         }
     }
     

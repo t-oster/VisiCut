@@ -625,6 +625,9 @@
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="meRemoveFromCutting">
           <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+              <action class="com.t_oster.jepilog.gui.JepilogView" id="removeSelectedCuttingShape" methodName="removeSelectedCuttingShape"/>
+            </Property>
             <Property name="text" type="java.lang.String" resourceKey="meRemoveFromCutting.text"/>
             <Property name="name" type="java.lang.String" value="meRemoveFromCutting" noResource="true"/>
           </Properties>
