@@ -325,7 +325,7 @@
               <BindingProperties>
                 <BindingProperty name="cuttingShapes" source="jpModel" sourcePath="${cuttingShapes}" target="sVGPanel1" targetPath="cuttingShapes" updateStrategy="1" immediately="false"/>
                 <BindingProperty name="gridDPI" source="jpModel" sourcePath="${resolution}" target="sVGPanel1" targetPath="gridDPI" updateStrategy="0" immediately="false"/>
-                <BindingProperty name="selectedShape" source="cuttingShapesTable1" sourcePath="${selectedShape}" target="sVGPanel1" targetPath="selectedShape" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="selectedSVGElement" source="cuttingShapesTable1" sourcePath="${selectedSVGElement}" target="sVGPanel1" targetPath="selectedSVGElement" updateStrategy="0" immediately="false"/>
                 <BindingProperty name="startPoint" source="jpModel" sourcePath="${startPoint}" target="sVGPanel1" targetPath="startPoint" updateStrategy="0" immediately="false"/>
               </BindingProperties>
               <Events>
@@ -619,6 +619,18 @@
             <Property name="text" type="java.lang.String" resourceKey="meAddToCutting.text"/>
             <Property name="name" type="java.lang.String" value="meAddToCutting" noResource="true"/>
           </Properties>
+          <BindingProperties>
+            <BindingProperty name="enabled" source="sVGPanel1" sourcePath="${!cuttingShapeSelected}" target="meAddToCutting" targetPath="enabled" updateStrategy="0" immediately="false"/>
+          </BindingProperties>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="meRemoveFromCutting">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="meRemoveFromCutting.text"/>
+            <Property name="name" type="java.lang.String" value="meRemoveFromCutting" noResource="true"/>
+          </Properties>
+          <BindingProperties>
+            <BindingProperty name="enabled" source="sVGPanel1" sourcePath="${cuttingShapeSelected}" target="meRemoveFromCutting" targetPath="enabled" updateStrategy="0" immediately="false"/>
+          </BindingProperties>
         </MenuItem>
       </SubComponents>
     </Container>

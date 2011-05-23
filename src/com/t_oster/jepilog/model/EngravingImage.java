@@ -4,32 +4,19 @@
  */
 package com.t_oster.jepilog.model;
 
-import java.awt.Rectangle;
-import java.awt.image.RenderedImage;
+import com.kitfox.svg.RenderableElement;
 import com.t_oster.liblasercut.EngravingProperty;
+import com.t_oster.util.Tuple;
 
 /**
  *
- * @author oster
+ * @author thommy
  */
-public class EngravingImage {
-    private Rectangle rect;
-    private EngravingProperty prop = null;
-    
-    public EngravingImage(Rectangle rect, EngravingProperty prop){
-        this.rect = rect;
-        this.prop = prop;
+public class EngravingImage extends Tuple<RenderableElement, EngravingProperty>{
+    public EngravingProperty getProperty(){
+        return this.getB();
     }
-   
-    public EngravingImage(Rectangle rect){
-        this(rect, null);
-    }
-    
-    public Rectangle getRectangle(){
-        return this.rect;
-    }
-    
-    public EngravingProperty getEngravingProperty(){
-        return this.prop;
+    public RenderableElement getElement(){
+        return this.getA();
     }
 }

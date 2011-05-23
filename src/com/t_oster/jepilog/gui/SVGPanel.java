@@ -11,6 +11,7 @@ import com.kitfox.svg.SVGException;
 import com.kitfox.svg.ShapeElement;
 import com.kitfox.svg.app.beans.SVGIcon;
 import com.kitfox.svg.xml.StyleAttribute;
+import com.t_oster.jepilog.model.CuttingShape;
 import com.t_oster.util.Util;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -42,7 +43,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
      * Propertys
      */
     public static final String PROPERTY_STARTPOINT = "startPoint";
-    public static final String PROPERTY_SELECTED_SHAPE = "selectedShape";
+    public static final String PROPERTY_SELECTED_SVGELEMENT = "selectedSVGElement";
     public static final String PROPERTY_SHOWENGRAVINGPART = "showEngravingPart";
     public static final String PROPERTY_SHOWCUTTINGPART = "showCuttingPart";
     public static final String PROPERTY_SHOWGRID = "showGrid";
@@ -51,8 +52,8 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     private SVGIcon icon;
     private URI svgUri = null;
     private SVGDiagram svgDiagramm = null;
-    private Shape[] cuttingShapes;
-    private Shape selectedShape;
+    private CuttingShape[] cuttingShapes;
+    private SVGElement selectedSVGElement;
     private int gridDPI = 500;
     private boolean showEngravingPart = true;
     private boolean showCuttingPart = true;
@@ -146,7 +147,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
             icon.setClipToViewbox(false);
             icon.setScaleToFit(false);
             this.svgDiagramm = icon.getSvgUniverse().getDiagram(icon.getSvgURI());
-            this.selectedShape = null;
+            this.selectedSVGElement = null;
             this.cuttingShapes = null;
             this.sizeToFit();
         }
@@ -156,26 +157,40 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         return this.svgUri;
     }
     
-    public void setCuttingShapes(Shape[] cuttingShapes){
+    public void setCuttingShapes(CuttingShape[] cuttingShapes){
         this.cuttingShapes = cuttingShapes;
     }
     
-    public Shape[] getCuttingShapes(){
+    public CuttingShape[] getCuttingShapes(){
         return this.cuttingShapes;
     }
     
-    public void setSelectedShape(Shape s){
-        if (Util.differ(s, selectedShape)){
-            Shape old = selectedShape;
-            this.selectedShape = s;
+    public boolean isCuttingShapeSelected(){
+        SVGElement sel = this.getSelectedSVGElement();
+        if (sel != null && this.cuttingShapes != null && sel instanceof ShapeElement){
+            for (CuttingShape cs:this.cuttingShapes){
+                if (cs.getShapeElement().equals((ShapeElement) sel)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    public void setSelectedSVGElement(SVGElement s){
+        if (Util.differ(s, selectedSVGElement)){
+            SVGElement old = selectedSVGElement;
+            this.selectedSVGElement = s;
             this.repaint();
-            firePropertyChange(PROPERTY_SELECTED_SHAPE, old, s);
+            firePropertyChange(PROPERTY_SELECTED_SVGELEMENT, old, s);
+            boolean cse = this.isCuttingShapeSelected();
+            firePropertyChange("cuttingShapeSelected", !cse, cse);
         }
         
     }
     
-    public Shape getSelectedShape(){
-        return selectedShape;
+    public SVGElement getSelectedSVGElement(){
+        return selectedSVGElement;
     }
     
     public void setGridDPI(int dpi){
@@ -288,13 +303,21 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         }
         if (cuttingShapes!=null && showCuttingPart) {
             g.setColor(Color.RED);
-            for (Shape shape : cuttingShapes) {
-                drawShape(g, shape);
+            for (CuttingShape shape : cuttingShapes) {
+                try {
+                    drawShape(g, shape.getTransformedShape());
+                } catch (SVGException ex) {
+                    Logger.getLogger(SVGPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
-        if (selectedShape != null) {
-            g.setColor(Color.GREEN);
-            drawShape(g, selectedShape);
+        if (selectedSVGElement != null && selectedSVGElement instanceof ShapeElement) {
+            try {
+                g.setColor(Color.GREEN);
+                drawShape(g, Util.extractTransformedShape((ShapeElement) selectedSVGElement));
+            } catch (SVGException ex) {
+                Logger.getLogger(SVGPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         //Draw StartingPoint
@@ -318,40 +341,18 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
      * @param y
      * @return 
      */
-    private Shape pickShape(int x, int y){
+    private SVGElement pickSVGElement(int x, int y){
         try {
             List pickedElements = svgDiagramm.pick(new Point(x,y), null);
             if (pickedElements.size() > 0) {
-                List first = (List) pickedElements.get(pickedElements.size() - 1);
-                //Track all Transformations on the Path of the Elemenent
-                AffineTransform tr = new AffineTransform();
-                Object elem = first.get(first.size() - 1);
-                for (Object o:first){
-                    if (o instanceof SVGElement){
-                        Object sty = ((SVGElement) o).getPresAbsolute("transform");
-                        if (sty != null && sty instanceof StyleAttribute){
-                            StyleAttribute style = (StyleAttribute) sty;
-                            tr.concatenate(SVGElement.parseSingleTransform(style.getStringValue()));
-                        }
+                //TODO: don't always select last element, but toggle between
+                Object o = pickedElements.get(pickedElements.size()-1);
+                if (o instanceof List){
+                    List l = (List) o;
+                    Object o2 = l.get(l.size()-1);
+                    if (o2 instanceof SVGElement){
+                        return (SVGElement) o2;
                     }
-                }
-                if (elem instanceof ShapeElement) {
-                    Shape shape = ((ShapeElement) elem).getShape();
-                    /**
-                     * We do return the transformed Shape here, 
-                     * however the equals method doesn't work anymore
-                     * and we aren't be able to track the shape anymore.
-                     * 
-                     * So we will change to managing ShapeElements or even RenderableElements
-                     * instead of just Shapes.
-                     * 
-                     */
-                    //FIXME: this is not found as equal, so the 
-                    //List synchronization and adding only once
-                    //doesn't work anymore
-                    //TODO: Change Program to track cuttingRenderableElements!
-                    //or selectedRenderableElement and cuttingShapeElements...
-                    return tr.createTransformedShape(shape);
                 }
             }
             return null;
@@ -363,7 +364,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     
     public void mouseClicked(MouseEvent me) {
         if (me.getButton()==MouseEvent.BUTTON1 && svgDiagramm != null) {
-            this.setSelectedShape(pickShape(me.getX(), me.getY()));
+            this.setSelectedSVGElement(pickSVGElement(me.getX(), me.getY()));
         }
     }
     private boolean movingStartPoint = false;

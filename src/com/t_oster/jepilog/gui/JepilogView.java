@@ -4,6 +4,9 @@
 
 package com.t_oster.jepilog.gui;
 
+import com.kitfox.svg.SVGElement;
+import com.kitfox.svg.SVGException;
+import com.kitfox.svg.ShapeElement;
 import com.t_oster.jepilog.model.JepilogModel;
 import com.t_oster.liblasercut.IllegalJobException;
 import java.beans.PropertyChangeEvent;
@@ -25,6 +28,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import com.t_oster.jepilog.model.CuttingShape;
+import com.t_oster.util.Util;
 import javax.swing.table.DefaultTableModel;
 import java.beans.PropertyChangeListener;
 import java.util.Scanner;
@@ -161,6 +165,7 @@ public class JepilogView extends FrameView{
         importFileChooser = new javax.swing.JFileChooser();
         shapeMenu = new javax.swing.JPopupMenu();
         meAddToCutting = new javax.swing.JMenuItem();
+        meRemoveFromCutting = new javax.swing.JMenuItem();
         jpModel = new com.t_oster.jepilog.model.JepilogModel();
 
         mainPanel.setName("mainPanel"); // NOI18N
@@ -336,7 +341,7 @@ public class JepilogView extends FrameView{
         bindingGroup.addBinding(binding);
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jpModel, org.jdesktop.beansbinding.ELProperty.create("${resolution}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("gridDPI"));
         bindingGroup.addBinding(binding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, cuttingShapesTable1, org.jdesktop.beansbinding.ELProperty.create("${selectedShape}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("selectedShape"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, cuttingShapesTable1, org.jdesktop.beansbinding.ELProperty.create("${selectedSVGElement}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("selectedSVGElement"));
         bindingGroup.addBinding(binding);
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jpModel, org.jdesktop.beansbinding.ELProperty.create("${startPoint}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("startPoint"));
         bindingGroup.addBinding(binding);
@@ -512,7 +517,19 @@ public class JepilogView extends FrameView{
         meAddToCutting.setAction(actionMap.get("addSelectedShapeToCuttingPart")); // NOI18N
         meAddToCutting.setText(resourceMap.getString("meAddToCutting.text")); // NOI18N
         meAddToCutting.setName("meAddToCutting"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, sVGPanel1, org.jdesktop.beansbinding.ELProperty.create("${!cuttingShapeSelected}"), meAddToCutting, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
+
         shapeMenu.add(meAddToCutting);
+
+        meRemoveFromCutting.setText(resourceMap.getString("meRemoveFromCutting.text")); // NOI18N
+        meRemoveFromCutting.setName("meRemoveFromCutting"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, sVGPanel1, org.jdesktop.beansbinding.ELProperty.create("${cuttingShapeSelected}"), meRemoveFromCutting, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
+
+        shapeMenu.add(meRemoveFromCutting);
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, sVGPanel1, org.jdesktop.beansbinding.ELProperty.create("${svgUri}"), jpModel, org.jdesktop.beansbinding.BeanProperty.create("svg"));
         bindingGroup.addBinding(binding);
@@ -525,7 +542,7 @@ public class JepilogView extends FrameView{
     }// </editor-fold>//GEN-END:initComponents
 
     private void sVGPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sVGPanel1MouseClicked
-        if (sVGPanel1.getSelectedShape()!= null && evt.getButton()== evt.BUTTON3){
+        if (sVGPanel1.getSelectedSVGElement()!= null && evt.getButton()== evt.BUTTON3){
             shapeMenu.show(sVGPanel1, evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_sVGPanel1MouseClicked
@@ -569,7 +586,7 @@ public class JepilogView extends FrameView{
             try{
                 jpModel.importSVG(toImport);
             }
-            catch (IOException e){
+            catch (Exception e){
                 JOptionPane.showMessageDialog(mainPanel, "Datei konnte nicht importiert werden\nFehler:"+e.getMessage(), "Fehler", JOptionPane.WARNING_MESSAGE);
             }
         }
@@ -577,13 +594,19 @@ public class JepilogView extends FrameView{
 
     @Action
     public void addSelectedShapeToCuttingPart() {
-        jpModel.addCuttingShape(sVGPanel1.getSelectedShape());
-        sVGPanel1.setSelectedShape(null);
+        SVGElement selected = sVGPanel1.getSelectedSVGElement();
+        if (selected instanceof ShapeElement){
+            jpModel.addCuttingShape((ShapeElement) selected);
+            sVGPanel1.setSelectedSVGElement(null);
+        }
     }
 
     @Action
     public void removeSelectedCuttingShape() {
-        jpModel.removeCuttingShape(sVGPanel1.getSelectedShape());
+        SVGElement sel = sVGPanel1.getSelectedSVGElement();
+        if (sel instanceof ShapeElement){
+            jpModel.removeCuttingShape((ShapeElement) sel);
+        }
     }
 
     @Action
@@ -605,6 +628,14 @@ public class JepilogView extends FrameView{
             jpModel.setCuttingShape(idx, jpModel.getCuttingShape(idx+1));
             jpModel.setCuttingShape(idx+1, tmp);
             cuttingShapesTable1.setSelectedShape(tmp);
+        }
+    }
+
+    @Action
+    public void removeSelectedShapeFromCuttingPart() {
+        SVGElement sel = sVGPanel1.getSelectedSVGElement();
+        if (sel != null && sel instanceof ShapeElement){
+            jpModel.removeCuttingShape((ShapeElement) sel);
         }
     }
     
@@ -643,6 +674,7 @@ public class JepilogView extends FrameView{
     private javax.swing.JMenu laserMenu;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuItem meAddToCutting;
+    private javax.swing.JMenuItem meRemoveFromCutting;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JCheckBoxMenuItem menuShowEngrave;
     private javax.swing.JProgressBar progressBar;

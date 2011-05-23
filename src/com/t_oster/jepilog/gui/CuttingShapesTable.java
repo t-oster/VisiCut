@@ -5,6 +5,9 @@
 package com.t_oster.jepilog.gui;
 
 
+import com.kitfox.svg.SVGElement;
+import com.kitfox.svg.ShapeElement;
+import com.t_oster.jepilog.model.CuttingShape;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
 import java.beans.PropertyChangeListener;
@@ -24,7 +27,7 @@ public class CuttingShapesTable extends JTable{
     
     private JepilogModel jpModel;
     
-    public Shape getSelectedShape(){
+    public CuttingShape getSelectedShape(){
         int idx = this.getSelectedRow();
         if (idx==-1){
             return null;
@@ -34,13 +37,35 @@ public class CuttingShapesTable extends JTable{
         }
     }
     
-    public void setSelectedShape(Shape selectedShape){
-        Shape old = this.getSelectedShape();
+    public void setSelectedSVGElement(SVGElement e){
+        if (e instanceof ShapeElement){
+            for (CuttingShape c:jpModel.getCuttingShapes()){
+                if (c.getShapeElement().equals((ShapeElement) e)){
+                    this.setSelectedShape(c);
+                    return;
+                }
+            }
+        }
+        this.setSelectedShape(null);
+    }
+    
+    public SVGElement getSelectedSVGElement(){
+        CuttingShape cs = this.getSelectedShape();
+        if (cs != null){
+            return cs.getShapeElement();
+        }
+        else{
+            return null;
+        }
+    }
+    
+    public void setSelectedShape(CuttingShape selectedShape){
+        CuttingShape old = this.getSelectedShape();
         if (selectedShape == null){
             this.getSelectionModel().clearSelection();
         }
         else{
-            Shape[] shapes = jpModel.getCuttingShapes();
+            CuttingShape[] shapes = jpModel.getCuttingShapes();
             for(int idx=0;idx<shapes.length;idx++){
                 if (shapes[idx].equals(selectedShape)){
                     this.getSelectionModel().setSelectionInterval(idx, idx);
@@ -49,6 +74,7 @@ public class CuttingShapesTable extends JTable{
             }
         }
         firePropertyChange("selectedShape", old, selectedShape);
+        firePropertyChange("selectedSVGElement", old, selectedShape);
     }
     
     public void setJpModel(JepilogModel m){
@@ -66,6 +92,7 @@ public class CuttingShapesTable extends JTable{
         this.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
             public void valueChanged(ListSelectionEvent lse) {
                 CuttingShapesTable.this.firePropertyChange("selectedShape", null, CuttingShapesTable.this.getSelectedShape());
+                CuttingShapesTable.this.firePropertyChange("selectedSVGElement", null, CuttingShapesTable.this.getSelectedSVGElement());
             }
             
         });
@@ -94,8 +121,8 @@ public class CuttingShapesTable extends JTable{
         @Override
         public void setValueAt(Object value, int row, int column){
             if (column == 1){
-                double val = new Scanner(value.toString()).nextDouble();
-                jpModel.getCuttingShapes()[row].setCuttingProperty(jpModel.getMaterial().getCuttingProperty(val));
+                double val = new Scanner(value.toString().replace(".",",")).nextDouble();
+                jpModel.getCuttingShape(row).setProperty(jpModel.getMaterial().getCuttingProperty(val));
             }
             else {
                 throw new IllegalArgumentException("Wrong column or datatype");
@@ -105,16 +132,16 @@ public class CuttingShapesTable extends JTable{
         @Override
         public Object getValueAt(int row, int column){
             if (column==0){
-                return jpModel.getCuttingShapes()[row].getName();
+                return jpModel.getCuttingShape(row).getShapeElement().getId();
             }
             else if (column == 1){
                 if (jpModel.getMaterial()==null){//Unable to calculate Depth
                     return "no Material selected";
                 }
-                else if (jpModel.getCuttingShapes()[row].getCuttingProperty()==null){// Default depth is Materialdepth
+                else if (jpModel.getCuttingShape(row).getProperty()==null){// Default depth is Materialdepth
                     return jpModel.getMaterial().getHeight()+ " mm";
                 }
-                return jpModel.getMaterial().getCuttingPropertyDepth(jpModel.getCuttingShapes()[row].getCuttingProperty())+ " mm";
+                return jpModel.getMaterial().getCuttingPropertyDepth(jpModel.getCuttingShapes()[row].getProperty())+ " mm";
             }
             else{
                 throw new IllegalArgumentException("Column doesn't exist");

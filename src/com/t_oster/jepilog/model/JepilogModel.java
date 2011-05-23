@@ -5,7 +5,9 @@
 package com.t_oster.jepilog.model;
 
 import com.kitfox.svg.SVGCache;
+import com.kitfox.svg.SVGException;
 import com.kitfox.svg.SVGUniverse;
+import com.kitfox.svg.ShapeElement;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
@@ -77,30 +79,34 @@ public class JepilogModel extends AbstractModel implements Serializable{
         return this.uri;
     }
     
-    public void importSVG(File svgDocument) throws IOException{
-        setSvg(universe.loadSVG(svgDocument.toURI().toURL()));
-        jobname = svgDocument.getName();
+    public void importSVG(File svgDocument) throws IOException, Exception{
+        try{
+            setSvg(universe.loadSVG(svgDocument.toURI().toURL()));
+            jobname = svgDocument.getName();
+        } catch (Exception e){
+            throw e;
+        }
     }
 
-    public void addCuttingShape(Shape s) {
+    public void addCuttingShape(ShapeElement s) {
         this.addCuttingShape(new CuttingShape(s,null));
     }
     
-    public void addCuttingShape(Shape s, CuttingProperty p){
+    public void addCuttingShape(ShapeElement s, CuttingProperty p){
         this.addCuttingShape(new CuttingShape(s, p));
     }
     
     public void addCuttingShape(CuttingShape s){
         if (!vectorShapes.contains(s)){
-            Shape[] old = this.getCuttingShapes();
+            CuttingShape[] old = this.getCuttingShapes();
             vectorShapes.add(s);
             this.pcs.firePropertyChange(PROPERTY_CUTTINGSHAPES, old, this.getCuttingShapes());
         }
     }
     
-    public void removeCuttingShape(Shape s){
+    public void removeCuttingShape(CuttingShape s){
         if (vectorShapes.contains(s)){
-            Shape[] old = this.getCuttingShapes();
+            CuttingShape[] old = this.getCuttingShapes();
             vectorShapes.remove(s);
             this.pcs.firePropertyChange(PROPERTY_CUTTINGSHAPES, old, this.getCuttingShapes());
         }
@@ -108,7 +114,7 @@ public class JepilogModel extends AbstractModel implements Serializable{
     
     public void clearCuttingShapes(){
         if (vectorShapes.size() > 0){
-            Shape[] old = this.getCuttingShapes();
+            CuttingShape[] old = this.getCuttingShapes();
             vectorShapes.clear();
             this.pcs.firePropertyChange(PROPERTY_CUTTINGSHAPES, old, this.getCuttingShapes());
         }
@@ -260,14 +266,14 @@ public class JepilogModel extends AbstractModel implements Serializable{
         RasterPart rp = new RasterPart(defaultep);
         
         for (EngravingImage i:this.getEngravingImages()){
-            EngravingProperty ep = i.getEngravingProperty();
+            EngravingProperty ep = i.getProperty();
             rp.addImage(getRenderedImage(i), ep != null ? ep : defaultep);
         }
         
         return rp;
     }
     
-    private VectorPart generateVectorPart() throws IllegalJobException {
+    private VectorPart generateVectorPart() throws IllegalJobException, SVGException {
         if (this.material == null){
             throw new IllegalJobException("No material selected");
         }
@@ -276,9 +282,9 @@ public class JepilogModel extends AbstractModel implements Serializable{
         VectorPart vp = new VectorPart(defaultcp);
         
         for (CuttingShape s:this.getCuttingShapes()){
-            CuttingProperty cp = s.getCuttingProperty();
+            CuttingProperty cp = s.getProperty();
             vp.setCurrentCuttingProperty(cp != null ? cp : defaultcp);
-            this.addShape(vp, s);
+            this.addShape(vp, s.getTransformedShape());
         }
         return vp;
     }
@@ -311,5 +317,18 @@ public class JepilogModel extends AbstractModel implements Serializable{
         LaserJob job = new LaserJob(jobname, "123", "bla", getResolution(), generateRasterPart(), generateVectorPart());
         job.setStartPoint((int) this.getStartPoint().getX(), (int) this.getStartPoint().getY());
         cutter.sendJob(job);
+    }
+
+    /**
+     * Removes every cutting shape, which is based
+     * on the given ShapeElement (no matter which property)
+     * @param shapeElement 
+     */
+    public void removeCuttingShape(ShapeElement shapeElement) {
+        for (CuttingShape cs:this.getCuttingShapes()){
+            if (cs.getShapeElement().equals(shapeElement)){
+                this.removeCuttingShape(cs);
+            }
+        }
     }
 }
