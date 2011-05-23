@@ -22,7 +22,7 @@ public class VectorPart {
     private List<VectorCommand> commands;
     
     public VectorPart(CuttingProperty initialProperty){
-        this.currentCuttingProperty = initialProperty;
+        this.currentCuttingProperty = initialProperty.clone();
         commands = new LinkedList<VectorCommand>();
         commands.add(new VectorCommand(VectorCommand.CmdType.SETPOWER, currentCuttingProperty.getPower()));
         commands.add(new VectorCommand(VectorCommand.CmdType.SETSPEED, currentCuttingProperty.getSpeed()));

@@ -64,6 +64,7 @@
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace pref="141" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="jCheckBox1" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="cbShowCut" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="cbShowEngrave" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Group type="103" alignment="0" groupAlignment="0" attributes="0">
@@ -105,7 +106,9 @@
                                   <Component id="cbResolution" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace min="-2" pref="85" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="62" max="-2" attributes="0"/>
+                              <Component id="jCheckBox1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
                               <Component id="cbShowEngrave" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="cbShowCut" min="-2" max="-2" attributes="0"/>
@@ -197,6 +200,15 @@
                         <Property name="text" type="java.lang.String" resourceKey="jLabel3.text"/>
                         <Property name="name" type="java.lang.String" value="jLabel3" noResource="true"/>
                       </Properties>
+                    </Component>
+                    <Component class="javax.swing.JCheckBox" name="jCheckBox1">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" resourceKey="jCheckBox1.text"/>
+                        <Property name="name" type="java.lang.String" value="jCheckBox1" noResource="true"/>
+                      </Properties>
+                      <BindingProperties>
+                        <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showImage}" target="jCheckBox1" targetPath="selected" updateStrategy="0" immediately="false"/>
+                      </BindingProperties>
                     </Component>
                   </SubComponents>
                 </Container>
@@ -329,6 +341,7 @@
                 <BindingProperty name="startPoint" source="jpModel" sourcePath="${startPoint}" target="sVGPanel1" targetPath="startPoint" updateStrategy="0" immediately="false"/>
               </BindingProperties>
               <Events>
+                <EventHandler event="mouseWheelMoved" listener="java.awt.event.MouseWheelListener" parameters="java.awt.event.MouseWheelEvent" handler="sVGPanel1MouseWheelMoved"/>
                 <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="sVGPanel1MouseClicked"/>
               </Events>
               <Constraints>
@@ -457,6 +470,9 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenu1">
           <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+              <action class="com.t_oster.jepilog.gui.JepilogView" id="zoomIn" methodName="zoomIn"/>
+            </Property>
             <Property name="text" type="java.lang.String" resourceKey="jMenu1.text"/>
             <Property name="name" type="java.lang.String" value="jMenu1" noResource="true"/>
           </Properties>
@@ -643,9 +659,6 @@
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="meRemoveFromCutting">
           <Properties>
-            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-              <action class="com.t_oster.jepilog.gui.JepilogView" id="removeSelectedCuttingShape" methodName="removeSelectedCuttingShape"/>
-            </Property>
             <Property name="text" type="java.lang.String" resourceKey="meRemoveFromCutting.text"/>
             <Property name="name" type="java.lang.String" value="meRemoveFromCutting" noResource="true"/>
           </Properties>

@@ -8,7 +8,7 @@ package com.t_oster.liblasercut;
  *
  * @author oster
  */
-public class CuttingProperty {
+public class CuttingProperty implements Cloneable{
     private int power = 20;
     private int speed = 100;
     private int frequency = 5000;
@@ -45,5 +45,10 @@ public class CuttingProperty {
     
     public int getFrequency(){
         return frequency;
+    }
+
+    @Override
+    public CuttingProperty clone(){
+        return new CuttingProperty(power, speed, frequency);
     }
 }

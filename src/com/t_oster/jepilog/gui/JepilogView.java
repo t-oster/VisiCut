@@ -9,6 +9,7 @@ import com.kitfox.svg.SVGException;
 import com.kitfox.svg.ShapeElement;
 import com.t_oster.jepilog.model.JepilogModel;
 import com.t_oster.liblasercut.IllegalJobException;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +30,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import com.t_oster.jepilog.model.CuttingShape;
 import com.t_oster.util.Util;
+import java.awt.Point;
 import javax.swing.table.DefaultTableModel;
 import java.beans.PropertyChangeListener;
 import java.util.Scanner;
@@ -142,6 +144,7 @@ public class JepilogView extends FrameView{
         cbShowCut = new javax.swing.JCheckBox();
         cbResolution = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
+        jCheckBox1 = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
@@ -237,6 +240,12 @@ public class JepilogView extends FrameView{
         jLabel3.setText(resourceMap.getString("jLabel3.text")); // NOI18N
         jLabel3.setName("jLabel3"); // NOI18N
 
+        jCheckBox1.setText(resourceMap.getString("jCheckBox1.text")); // NOI18N
+        jCheckBox1.setName("jCheckBox1"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, sVGPanel1, org.jdesktop.beansbinding.ELProperty.create("${showImage}"), jCheckBox1, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+        bindingGroup.addBinding(binding);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -244,6 +253,7 @@ public class JepilogView extends FrameView{
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(141, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jCheckBox1)
                     .addComponent(cbShowCut)
                     .addComponent(cbShowEngrave)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -275,7 +285,9 @@ public class JepilogView extends FrameView{
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbResolution, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
-                .addGap(85, 85, 85)
+                .addGap(62, 62, 62)
+                .addComponent(jCheckBox1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cbShowEngrave)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cbShowCut)
@@ -358,6 +370,11 @@ public class JepilogView extends FrameView{
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jpModel, org.jdesktop.beansbinding.ELProperty.create("${startPoint}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("startPoint"));
         bindingGroup.addBinding(binding);
 
+        sVGPanel1.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+                sVGPanel1MouseWheelMoved(evt);
+            }
+        });
         sVGPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 sVGPanel1MouseClicked(evt);
@@ -445,6 +462,7 @@ public class JepilogView extends FrameView{
 
         menuBar.add(laserMenu);
 
+        jMenu1.setAction(actionMap.get("zoomIn")); // NOI18N
         jMenu1.setText(resourceMap.getString("jMenu1.text")); // NOI18N
         jMenu1.setName("jMenu1"); // NOI18N
 
@@ -545,7 +563,6 @@ public class JepilogView extends FrameView{
 
         shapeMenu.add(meAddToCutting);
 
-        meRemoveFromCutting.setAction(actionMap.get("removeSelectedCuttingShape")); // NOI18N
         meRemoveFromCutting.setText(resourceMap.getString("meRemoveFromCutting.text")); // NOI18N
         meRemoveFromCutting.setName("meRemoveFromCutting"); // NOI18N
 
@@ -565,10 +582,21 @@ public class JepilogView extends FrameView{
     }// </editor-fold>//GEN-END:initComponents
 
     private void sVGPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sVGPanel1MouseClicked
-        if (sVGPanel1.getSelectedSVGElement()!= null && evt.getButton()== evt.BUTTON3){
+        if (sVGPanel1.getSelectedSVGElement()!= null && evt.getButton()== MouseEvent.BUTTON3){
             shapeMenu.show(sVGPanel1, evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_sVGPanel1MouseClicked
+
+    private void sVGPanel1MouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_sVGPanel1MouseWheelMoved
+        if (evt.isMetaDown()){
+            if (evt.getWheelRotation()<0){
+                this.zoomIn();
+            }
+            else if (evt.getWheelRotation() > 0){
+                this.zoomOut();
+            }
+        }
+    }//GEN-LAST:event_sVGPanel1MouseWheelMoved
        
     
     class MySvgFilter extends javax.swing.filechooser.FileFilter {
@@ -665,6 +693,7 @@ public class JepilogView extends FrameView{
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem2;
     private javax.swing.JComboBox jComboBox1;

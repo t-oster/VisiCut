@@ -23,6 +23,7 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.PathIterator;
@@ -40,7 +41,7 @@ import java.util.Set;
  *
  * @author thommy
  */
-public class SVGPanel extends JPanel implements MouseListener, MouseMotionListener, Serializable {
+public class SVGPanel extends JPanel implements MouseListener, MouseMotionListener, Serializable{
 
     /**
      * Propertys
@@ -49,6 +50,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     public static final String PROPERTY_SELECTED_SVGELEMENT = "selectedSVGElement";
     public static final String PROPERTY_SHOWENGRAVINGPART = "showEngravingPart";
     public static final String PROPERTY_SHOWCUTTINGPART = "showCuttingPart";
+    public static final String PROPERTY_SHOWIMAGE = "showImage";
     public static final String PROPERTY_SHOWGRID = "showGrid";
     public static final String PROPERTY_ZOOMFACTOR = "zoomFactor";
     public static final String PROPERTY_VIEWOFFSET = "viewOffset";
@@ -80,6 +82,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
      * (used for calculating the vector)
      */
     private Point mouseStart = null;
+    private boolean showImage = true;
 
     @Override
     public Dimension getPreferredSize() {
@@ -165,6 +168,18 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         this.cuttingShapes = null;
+    }
+
+    public void setShowImage(boolean image){
+        if (this.showImage != image){
+            this.showImage = image;
+            repaint();
+            firePropertyChange(PROPERTY_SHOWIMAGE, !showImage, showImage);
+        }
+    }
+
+    public boolean getShowImage(){
+        return this.showImage;
     }
 
     public void setShowEngravingPart(boolean show) {
@@ -366,7 +381,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
 
         //Shapes and Icon have to be drawn zoomed
         g.transform(viewTransform);
-        if (icon != null && showEngravingPart) {
+        if (icon != null && showImage) {
             icon.paintIcon(this, g, 0, 0);
         }
         if (cuttingShapes!=null && showCuttingPart) {

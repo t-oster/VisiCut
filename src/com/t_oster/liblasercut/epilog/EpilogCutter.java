@@ -251,7 +251,8 @@ public class EpilogCutter extends LaserCutter {
             }
         }
     }
-    
+
+    //TODO: Add Timeout
     public void sendJob(LaserJob job) throws IllegalJobException, Exception{
         checkJob(job);
         boolean wasConnected = isConnected();

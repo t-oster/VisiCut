@@ -18,6 +18,7 @@ import java.awt.Shape;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 import com.t_oster.jepilog.model.JepilogModel;
+import java.text.DecimalFormat;
 /**
  *
  * @author oster
@@ -121,7 +122,7 @@ public class CuttingShapesTable extends JTable{
         @Override
         public void setValueAt(Object value, int row, int column){
             if (column == 1){
-                double val = new Scanner(value.toString().replace(".",",")).nextDouble();
+                double val = Double.parseDouble(value.toString().replace(",",".").split(" ")[0]);
                 jpModel.getCuttingShape(row).setProperty(jpModel.getMaterial().getCuttingProperty(val));
             }
             else {
@@ -136,13 +137,15 @@ public class CuttingShapesTable extends JTable{
                 return name == null || name.equals("") ? jpModel.getCuttingShape(row).getShapeElement().toString() : name;
             }
             else if (column == 1){
+                DecimalFormat format = new DecimalFormat("#.### mm");
                 if (jpModel.getMaterial()==null){//Unable to calculate Depth
                     return "no Material selected";
                 }
                 else if (jpModel.getCuttingShape(row).getProperty()==null){// Default depth is Materialdepth
-                    return jpModel.getMaterial().getHeight()+ " mm";
+
+                    return format.format(jpModel.getMaterial().getHeight());
                 }
-                return jpModel.getMaterial().getCuttingPropertyDepth(jpModel.getCuttingShapes()[row].getProperty())+ " mm";
+                return format.format(jpModel.getMaterial().getCuttingPropertyDepth(jpModel.getCuttingShapes()[row].getProperty()));
             }
             else{
                 throw new IllegalArgumentException("Column doesn't exist");
