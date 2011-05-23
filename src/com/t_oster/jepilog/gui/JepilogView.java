@@ -100,6 +100,16 @@ public class JepilogView extends FrameView{
     }
     
     @Action
+    public void zoomIn(){
+        sVGPanel1.setZoomFactor(sVGPanel1.getZoomFactor()*1.5);
+    }
+    
+    @Action
+    public void zoomOut(){
+        sVGPanel1.setZoomFactor(sVGPanel1.getZoomFactor()/1.5);
+    }
+    
+    @Action
     public void showAboutBox() {
         if (aboutBox == null) {
             JFrame mainFrame = JepilogApp.getApplication().getMainFrame();
@@ -155,6 +165,8 @@ public class JepilogView extends FrameView{
         menuShowEngrave = new javax.swing.JCheckBoxMenuItem();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
         jCheckBoxMenuItem2 = new javax.swing.JCheckBoxMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
+        jMenuItem8 = new javax.swing.JMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
         statusPanel = new javax.swing.JPanel();
@@ -460,6 +472,16 @@ public class JepilogView extends FrameView{
 
         jMenu1.add(jCheckBoxMenuItem2);
 
+        jMenuItem7.setAction(actionMap.get("zoomIn")); // NOI18N
+        jMenuItem7.setText(resourceMap.getString("jMenuItem7.text")); // NOI18N
+        jMenuItem7.setName("jMenuItem7"); // NOI18N
+        jMenu1.add(jMenuItem7);
+
+        jMenuItem8.setAction(actionMap.get("zoomOut")); // NOI18N
+        jMenuItem8.setText(resourceMap.getString("jMenuItem8.text")); // NOI18N
+        jMenuItem8.setName("jMenuItem8"); // NOI18N
+        jMenu1.add(jMenuItem8);
+
         menuBar.add(jMenu1);
 
         helpMenu.setText(resourceMap.getString("helpMenu.text")); // NOI18N
@@ -523,7 +545,6 @@ public class JepilogView extends FrameView{
 
         shapeMenu.add(meAddToCutting);
 
-        meRemoveFromCutting.setAction(actionMap.get("removeSelectedCuttingShape")); // NOI18N
         meRemoveFromCutting.setText(resourceMap.getString("meRemoveFromCutting.text")); // NOI18N
         meRemoveFromCutting.setName("meRemoveFromCutting"); // NOI18N
 
@@ -658,6 +679,8 @@ public class JepilogView extends FrameView{
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

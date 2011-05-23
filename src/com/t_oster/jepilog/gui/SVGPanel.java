@@ -19,6 +19,7 @@ import java.awt.Point;
 import java.awt.Component;
 import java.awt.Shape;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -47,6 +48,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     public static final String PROPERTY_SHOWENGRAVINGPART = "showEngravingPart";
     public static final String PROPERTY_SHOWCUTTINGPART = "showCuttingPart";
     public static final String PROPERTY_SHOWGRID = "showGrid";
+    public static final String PROPERTY_ZOOMFACTOR = "zoomFactor";
     private static final long serialVersionUID = 1L;
     
     private SVGIcon icon;
@@ -54,6 +56,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     private SVGDiagram svgDiagramm = null;
     private CuttingShape[] cuttingShapes;
     private SVGElement selectedSVGElement;
+    private double zoomFactor = 1;
     private int gridDPI = 500;
     private boolean showEngravingPart = true;
     private boolean showCuttingPart = true;
@@ -71,6 +74,19 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     @Override
     public Dimension getMinimumSize() {
         return new Dimension(300, 500);
+    }
+    
+    public void setZoomFactor(double zf){
+        if (zf != this.zoomFactor){
+            double old = this.zoomFactor;
+            this.zoomFactor = zf;
+            this.repaint();
+            firePropertyChange(PROPERTY_ZOOMFACTOR, old, this.zoomFactor);
+        }
+    }
+    
+    public double getZoomFactor(){
+        return this.zoomFactor;
     }
     
     public void setStartPoint(Point p) {
@@ -281,13 +297,15 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     }
     
     @Override
-    public void paintComponent(Graphics g) {
-        if (icon == null) {
-            super.paintComponent(g);
-            return;
-        }
-        final int width = getWidth();
-        final int height = getHeight();
+    public void paintComponent(Graphics gg) {
+        Graphics2D g = (Graphics2D) gg;
+        g.scale(zoomFactor, zoomFactor);
+        //if (icon == null) {
+         //   super.paintComponent(g);
+          //  return;
+        //}
+        final int width = (int) (getWidth()/zoomFactor);
+        final int height = (int) (getHeight()/zoomFactor);
 
         //Background
         g.setColor(getBackground());
@@ -298,7 +316,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         }
 
 
-        if (showEngravingPart) {
+        if (icon != null && showEngravingPart) {
             icon.paintIcon(this, g, 0, 0);
         }
         if (cuttingShapes!=null && showCuttingPart) {
