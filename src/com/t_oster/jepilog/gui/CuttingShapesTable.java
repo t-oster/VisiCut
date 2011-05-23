@@ -132,7 +132,8 @@ public class CuttingShapesTable extends JTable{
         @Override
         public Object getValueAt(int row, int column){
             if (column==0){
-                return jpModel.getCuttingShape(row).getShapeElement().getId();
+                String name = jpModel.getCuttingShape(row).getShapeElement().getId();
+                return name == null || name.equals("") ? jpModel.getCuttingShape(row).getShapeElement().toString() : name;
             }
             else if (column == 1){
                 if (jpModel.getMaterial()==null){//Unable to calculate Depth

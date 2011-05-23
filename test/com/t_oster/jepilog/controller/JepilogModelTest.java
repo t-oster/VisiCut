@@ -34,7 +34,7 @@ public class JepilogModelTest {
      * Test of setStartingPosition method, of class JepilogController.
      */
     @Test
-    public void testSetStartingPosition() throws IOException {
+    public void testSetStartingPosition() throws IOException, Exception {
         System.out.println("setStartingPosition");
         JepilogModel instance = new JepilogModel();
         instance.importSVG(new File("butterfly.svg"));

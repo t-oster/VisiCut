@@ -51,6 +51,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     public static final String PROPERTY_SHOWCUTTINGPART = "showCuttingPart";
     public static final String PROPERTY_SHOWGRID = "showGrid";
     public static final String PROPERTY_ZOOMFACTOR = "zoomFactor";
+    public static final String PROPERTY_VIEWOFFSET = "viewOffset";
     private static final long serialVersionUID = 1L;
     
     private SVGIcon icon;
@@ -59,14 +60,26 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     private SVGDiagram svgDiagramm = null;
     private CuttingShape[] cuttingShapes;
     private SVGElement selectedSVGElement;
+
     private double zoomFactor = 1;
-    private AffineTransform viewTransform = AffineTransform.getScaleInstance(zoomFactor, zoomFactor);
-    private AffineTransform inverseTransform = AffineTransform.getScaleInstance(1/zoomFactor, 1/zoomFactor);
+    private Point viewOffset = new Point(0,0);
+    private AffineTransform viewTransform = new AffineTransform();
+    private AffineTransform inverseTransform = new AffineTransform();
     private int gridDPI = 500;
     private boolean showEngravingPart = true;
     private boolean showCuttingPart = true;
     private boolean showGrid = true;
     private Point startPoint = new Point(0, 0);
+    /**
+     * True iff moving view Point with mouse pressed
+     */
+    private boolean movingViewPoint = false;
+    /**
+     * Contains the Point where the mouse
+     * was when initializing the moving
+     * (used for calculating the vector)
+     */
+    private Point mouseStart = null;
 
     @Override
     public Dimension getPreferredSize() {
@@ -81,16 +94,27 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         return new Dimension(300, 500);
     }
     
+    /**
+     * Refreshes the viewTransform
+     * and inverseTransform to
+     * reflect the current
+     * zoomFactor and viewOffset
+     */
+    private void setTransform(){
+        try {
+            this.viewTransform = AffineTransform.getScaleInstance(zoomFactor, zoomFactor);
+            this.viewTransform.concatenate(AffineTransform.getTranslateInstance(viewOffset.getX(), viewOffset.getY()));
+            this.inverseTransform = this.viewTransform.createInverse();
+        } catch (NoninvertibleTransformException ex) {
+            Logger.getLogger(SVGPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public void setZoomFactor(double zf){
         if (zf != this.zoomFactor){
             double old = this.zoomFactor;
             this.zoomFactor = zf;
-            viewTransform = AffineTransform.getScaleInstance(zoomFactor, zoomFactor);
-            try {
-                inverseTransform = viewTransform.createInverse();
-            } catch (NoninvertibleTransformException ex) {
-                Logger.getLogger(SVGPanel.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            this.setTransform();
             this.repaint();
             firePropertyChange(PROPERTY_ZOOMFACTOR, old, this.zoomFactor);
         }
@@ -98,6 +122,20 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     
     public double getZoomFactor(){
         return this.zoomFactor;
+    }
+
+    public void setViewOffset(Point p){
+        if (Util.differ(p, this.viewOffset)){
+            Point old = this.viewOffset;
+            this.viewOffset = p;
+            this.setTransform();
+            this.repaint();
+            firePropertyChange(PROPERTY_VIEWOFFSET, old, this.viewOffset);
+        }
+    }
+
+    public Point getViewOffset(){
+        return this.viewOffset;
     }
     
     public void setStartPoint(Point p) {
@@ -261,7 +299,8 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         int height = getHeight();
         g.setColor(Color.BLACK);
         Point sp = this.getStartPoint();
-        sp = new Point((int) (sp.x*zoomFactor), (int) (sp.y*zoomFactor));
+        Point2D tmp = viewTransform.transform(sp, null);
+        sp = new Point((int) (tmp.getX()), (int) (tmp.getY()));
         rasterDPI*=zoomFactor;
         for (int mm = 0;mm < Util.px2mm(width-sp.x, rasterDPI);mm+=rasterWidth){
             int lx = sp.x+(int) Util.mm2px(mm, rasterDPI);
@@ -405,7 +444,8 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     
     public void mouseClicked(MouseEvent me) {
         if (me.getButton()==MouseEvent.BUTTON1 && svgDiagramm != null) {
-            this.setSelectedSVGElement(pickSVGElement(me.getX(), me.getY()));
+            Point2D tmp = inverseTransform.transform(me.getPoint(), null);
+            this.setSelectedSVGElement(pickSVGElement((int) tmp.getX(), (int) tmp.getY()));
         }
     }
     private boolean movingStartPoint = false;
@@ -415,6 +455,10 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         if (me.getPoint().distance(viewTransform.transform(startPoint, null)) <= 10) {
             movingStartPoint = true;
         }
+        else {
+            movingViewPoint = true;
+            mouseStart = me.getPoint();
+        }
     }
 
     public void mouseReleased(MouseEvent me) {
@@ -423,6 +467,10 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
             Point2D tmp = inverseTransform.transform(me.getPoint(), null);
             setStartPoint(new Point((int) tmp.getX(), (int) tmp.getY()));
         }
+         else if (movingViewPoint){
+            Point moved = new Point((int)(me.getX()-mouseStart.getX()),(int) (me.getY()-mouseStart.getY()));
+            this.setViewOffset(new Point(this.viewOffset.x+moved.x, this.viewOffset.y+moved.y));
+         }
     }
 
     public void mouseEntered(MouseEvent me) {
