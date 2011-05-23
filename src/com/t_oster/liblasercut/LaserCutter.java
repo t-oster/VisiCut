@@ -70,6 +70,7 @@ PS Polystyrol (Mon Cherie, Rocher, etc.) 1mm ?? ?? 100 45 500
         result.add(new MaterialProperty("Papier", 0.2, -1, -1, 10, 100, 1000));
         
         result.add(new MaterialProperty("Bastelpappe",3, -1, -1, 90, 100, 5000));
+        result.add(new MaterialProperty("Plexiglass XT (blau)",6, -1, -1, 85, 20, 5000));
             //TODO rest of list
         return result;
     }
