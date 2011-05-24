@@ -176,7 +176,7 @@ public class EpilogCutter extends LaserCutter {
 
         wrt.append(generatePjlHeader(job));
         //if (job.containsRaster()) {
-        wrt.append(generateRasterPCL(job, job.getRasterPart()));
+        wrt.write(generateRasterPCL(job, job.getRasterPart()));
         //}
         //if (job.containsVector()) {
         wrt.append(generateVectorPCL(job, job.getVectorPart()));
@@ -289,40 +289,39 @@ public class EpilogCutter extends LaserCutter {
     }
 
     /**
-     * //TODO: Doesnt work....
      * Encodes the given line of the given image in TIFF Packbyte encoding
      * l is always the lower index so if !leftToRight l=2 means
      * start at the 2nd byte from right site
      */
-    private List<Short> encode(Short[] buf) {
+    public List<Byte> encode(List<Byte> line) {
         int idx=0;
-        int r=buf.length;
-        List<Short> result = new LinkedList<Short>();
+        int r=line.size();
+        List<Byte> result = new LinkedList<Byte>();
         while (idx < r) {
             int p;
             p=idx;
-            while(p < r && p < idx + 128 && buf[p] == buf[idx]) p++;
+            while(p < r && p < idx + 128 && line.get(p) == line.get(idx)) p++;
             if (p - idx >= 2) {
                 // run length
-                result.add((short) (257 - (p - idx)));
-                result.add((short) buf[idx]);
+                result.add((byte) (257 - (p - idx)));
+                result.add((byte) line.get(idx));
                 idx = p;
             } else {
                 p = idx;
                 while(p < r && p < idx + 127 &&
-                         (p + 1 == r || buf[p] !=
-                          buf[p + 1]))
+                         (p + 1 == r || line.get(p) !=
+                          line.get(p + 1)))
                      p++;
-                result.add((short) (p - idx - 1));
+                result.add((byte) (p - idx - 1));
                 while (idx < p) {
-                    result.add((short) (buf[idx++]));
+                    result.add((byte) (line.get(idx++)));
                 }
             }
         }
         return result;
     }
 
-    private String generateRasterPCL(LaserJob job, RasterPart rp) throws UnsupportedEncodingException, IOException {
+    private byte[] generateRasterPCL(LaserJob job, RasterPart rp) throws UnsupportedEncodingException, IOException {
 
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(result, true, "US-ASCII");
@@ -363,40 +362,27 @@ public class EpilogCutter extends LaserCutter {
                 out.printf("\033*b%dA", -(r - l));
             }
             //byte[] line = encode(img[i], y, leftToRight, l, r);
-            List<Short> line = new LinkedList<Short>();
-            if (leftToRight){
-                for (int i=0;i<50;i++){
-                    line.add((short) 100);
-                }
-                for (int i=0;i<100;i++){
-                    line.add((short) 0);
-                }
-                for (int i=0;i<50;i++){
-                    line.add((short) 255);
-                }
+            List<Byte> line = new LinkedList<Byte>();
+            for (int i=0;i<50;i++){
+                line.add((byte) -110);
             }
-             else {
-                for (int i=0;i<50;i++){
-                    line.add((short) 255);
-                }
-                for (int i=0;i<100;i++){
-                    line.add((short) 0);
-                }
-                for (int i=0;i<50;i++){
-                    line.add((short) 100);
-                }
+            for (int i=0;i<100;i++){
+                line.add((byte) 0);
             }
-            line = encode(line.toArray(new Short[0]));
+            for (int i=0;i<50;i++){
+                line.add((byte) i);
+            }
+            line = encode(line);
             int len = line.size();
             int pcks = len/8;
             if (len%8 > 0)
                 pcks++;
             out.printf("\033*b%dW", pcks*8);
-            for (short s : line) {
+            for (byte s : line) {
                 out.write((int) s);
             }
             for (int k=0;k<8-(len%8);k++){
-                out.write((int) 0x80);
+                out.write((byte) 0x80);
             }
             //r = line.size();
             //while ((r & 7) != 0) {
@@ -410,14 +396,10 @@ public class EpilogCutter extends LaserCutter {
         out.printf("\033*rC");       // end raster
         out.write((char) 26);
         out.write((char) 4); // some end of file markers
-        new PrintStream((new FileOutputStream(new File("rasterdump.hex")))).append(result.toString("US-ASCII"));
-        System.out.println(result.toString());
-        try {
-            return result.toString("US-ASCII");
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(EpilogCutter.class.getName()).log(Level.SEVERE, null, ex);
-            return result.toString();
-        }
+        //PrintStream ps = new PrintStream((new FileOutputStream(new File("/tmp/rasterdump.hex"))));
+        //ps.write(result.toByteArray());
+        //ps.close();
+        return result.toByteArray();
     }
 
     private String generateVectorPCL(LaserJob job, VectorPart vp) throws UnsupportedEncodingException {
