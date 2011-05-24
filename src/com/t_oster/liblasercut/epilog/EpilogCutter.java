@@ -6,8 +6,12 @@ package com.t_oster.liblasercut.epilog;
 
 import com.t_oster.liblasercut.*;
 import com.t_oster.util.Util;
+import java.awt.Color;
 import java.awt.image.RenderedImage;
 import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -283,22 +287,41 @@ public class EpilogCutter extends LaserCutter {
         return BED_HEIGHT;
     }
 
-    private String generateRasterPCL(RasterPart job) throws UnsupportedEncodingException, IOException {
+    /**
+     * Encodes the given line of the given image in 128 RLE ?!?!
+     * l is always the lower index so if !leftToRight l=2 means
+     * start at the 2nd byte from right site
+     * @param img
+     * @param line
+     * @param leftToRight
+     * @param l
+     * @param r
+     * @return 
+     */
+    private byte[] encode(BufferedImage img, int line, 
+            boolean leftToRight, int l, int r){
+        for (int x=l;x<r;x++){
+            Color c = new Color(img.getRGB(x, line));
+        }
+        return null;
+    }
+    
+    private String generateRasterPCL(LaserJob job, RasterPart rp) throws UnsupportedEncodingException, IOException {
 
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(result, true, "US-ASCII");
         /* FIXME unknown purpose. */
         out.printf("\033&y0C");
-        /* Raster Orientation */
+        /* Raster Orientation: Printed in current direction */
         out.printf("\033*r0F");
         /* Raster power */
-        out.printf("\033&y%dP", 100);//TODO real rasterpower
+        out.printf("\033&y%dP", 100);//Full power, scaling is done seperate
         /* Raster speed */
-        out.printf("\033&z%dS", 50);//TODO real raster_speed);
-        out.printf("\033*r%dT", 501);//height * y_repeat);
-        out.printf("\033*r%dS", 1000);//width * x_repeat);
-        /* Raster compression */
-        out.printf("\033*b%dM", 2);
+        out.printf("\033&z%dS", 50);//TODO real speed
+        out.printf("\033*r%dT", 5847);//height);
+        out.printf("\033*r%dS", 4131);//width);
+        /* Raster compression 7: unspecified by PCL but found in cups-epilog.c*/
+        out.printf("\033*b%dM", 7);
         /* Raster direction (1 = up) */
         out.printf("\033&y1O");
         /* start at current position */
@@ -306,10 +329,35 @@ public class EpilogCutter extends LaserCutter {
         
         if (job!=null){
             PCLGenerator gen = new PCLGenerator(out);
-            RenderedImage[] img = job.getImages();
-            EngravingProperty[] prop = job.getPropertys();
+            BufferedImage[] img = rp.getImages();
+            EngravingProperty[] prop = rp.getPropertys();
             for (int i=0;i<img.length;i++){
-                gen.paintBitmap(img[i], new Dimension(img[i].getWidth(), img[i].getHeight()), false);
+                boolean leftToRight = true;
+                for (int y=img[i].getHeight()-1; y>=0; y--){
+                    //TODO: set l/r to the first/last pixel in line which is not 0
+                    int l = 1000;
+                    int r = 3000;
+                    //Cursor positioning
+                    out.printf("\033*p%dY", y);
+                    out.printf("\033*p%dX", l);
+                    if (leftToRight){
+                        out.printf("\033*b%dA", (r - l));
+                    }
+                    else{
+                        out.printf("\033*b%dA", -(r - l));
+                        byte[] line = encode(img[i], y, leftToRight, l, r);
+                        out.printf("\033*b%dW", (line.length + 7) / 8 * 8);
+                        
+                        out.write(line);
+                        r = line.length;
+                        while ((r & 7)!=0)
+                        {
+                            r++;
+                            out.write(0x80);
+                        }
+                    }
+                    leftToRight=!leftToRight;
+                }
             }
         }
         out.printf("\033*rC");       // end raster

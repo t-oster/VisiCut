@@ -4,9 +4,9 @@
  */
 package com.t_oster.liblasercut;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.LinkedList;
-import java.awt.image.RenderedImage;
 
 /**
  *
@@ -16,7 +16,7 @@ public class RasterPart {
     
     private EngravingProperty curProp;
     
-    private List<RenderedImage> images = new LinkedList<RenderedImage>();
+    private List<BufferedImage> images = new LinkedList<BufferedImage>();
     private List<EngravingProperty> properties = new LinkedList<EngravingProperty>();
     
     public RasterPart(EngravingProperty initialEngravingProperty){
@@ -39,18 +39,18 @@ public class RasterPart {
         this.curProp.setSpeed(speed);
     }
     
-    public void addImage(RenderedImage img){
+    public void addImage(BufferedImage img){
         this.images.add(img);
         this.properties.add(curProp);
     }
     
-    public void addImage(RenderedImage img, EngravingProperty prop){
+    public void addImage(BufferedImage img, EngravingProperty prop){
         this.images.add(img);
         this.properties.add(prop);
     }
     
-    public RenderedImage[] getImages(){
-        return this.images.toArray(new RenderedImage[0]);
+    public BufferedImage[] getImages(){
+        return this.images.toArray(new BufferedImage[0]);
     }
     
     public EngravingProperty[] getPropertys(){
