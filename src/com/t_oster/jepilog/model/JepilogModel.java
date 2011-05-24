@@ -22,6 +22,7 @@ import java.awt.Point;
 import java.awt.Shape;
 import java.awt.image.RenderedImage;
 import java.awt.geom.PathIterator;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -253,7 +254,7 @@ public class JepilogModel extends AbstractModel implements Serializable{
         }
     }
 
-    private RenderedImage getRenderedImage(EngravingImage i){
+    private BufferedImage getBufferedImage(EngravingImage i){
         throw new UnsupportedOperationException();
     }
     
@@ -267,7 +268,7 @@ public class JepilogModel extends AbstractModel implements Serializable{
         
         for (EngravingImage i:this.getEngravingImages()){
             EngravingProperty ep = i.getProperty();
-            rp.addImage(getRenderedImage(i), ep != null ? ep : defaultep);
+            rp.addImage(getBufferedImage(i), ep != null ? ep : defaultep);
         }
         
         return rp;

@@ -28,6 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Vector;
 import org.apache.fop.render.pcl.PCLGenerator;
 
 /**
@@ -62,7 +63,7 @@ public class EpilogCutter extends LaserCutter {
         int result = -1;
         out.flush();
         System.out.println("Waiting for response...");
-        for (int i = 0; i < timeout*10; i++) {
+        for (int i = 0; i < timeout * 10; i++) {
             if (in.available() > 0) {
                 result = in.read();
                 System.out.println("Got Response: " + result);
@@ -136,7 +137,7 @@ public class EpilogCutter extends LaserCutter {
         out.printf("\033*p0Y");
         /* PCL/RasterGraphics resolution. */
         out.printf("\033*t%dR", job.getResolution());
-        
+
         /* FIXME unknown purpose. */
         out.printf("\033&y0C");
         try {
@@ -175,10 +176,10 @@ public class EpilogCutter extends LaserCutter {
 
         wrt.append(generatePjlHeader(job));
         //if (job.containsRaster()) {
-            wrt.append(generateRasterPCL(job.getRasterPart()));
+        wrt.append(generateRasterPCL(job, job.getRasterPart()));
         //}
         //if (job.containsVector()) {
-            wrt.append(generateVectorPCL(job, job.getVectorPart()));
+        wrt.append(generateVectorPCL(job, job.getVectorPart()));
         //}
         wrt.append(generatePjlFooter());
         /* Pad out the remainder of the file with 0 characters. */
@@ -194,7 +195,7 @@ public class EpilogCutter extends LaserCutter {
         pjlJob = new ByteArrayOutputStream();
         FileInputStream is = new FileInputStream(new File("/tmp/working.pjl"));
         while(is.available()>0){
-            pjlJob.write(is.read());
+        pjlJob.write(is.read());
         }
         is.close
          * 
@@ -235,29 +236,29 @@ public class EpilogCutter extends LaserCutter {
         return (connection != null && connection.isConnected());
     }
 
-    private void checkJob(LaserJob job) throws IllegalJobException{
-        boolean pass=false;
-        for (int i:this.getResolutions()){
-            if (i==job.getResolution()){
-                pass=true;
+    private void checkJob(LaserJob job) throws IllegalJobException {
+        boolean pass = false;
+        for (int i : this.getResolutions()) {
+            if (i == job.getResolution()) {
+                pass = true;
                 break;
             }
         }
-        if (!pass){
-            throw new IllegalJobException("Resoluiton of "+job.getResolution()+" is not supported");
+        if (!pass) {
+            throw new IllegalJobException("Resoluiton of " + job.getResolution() + " is not supported");
         }
-        if (job.containsVector()){
+        if (job.containsVector()) {
             double w = Util.px2mm(job.getVectorPart().getWidth(), job.getResolution());
             double h = Util.px2mm(job.getVectorPart().getHeight(), job.getResolution());
-            
-            if (w > this.getBedWidth() || h > this.getBedHeight()){
-                throw new IllegalJobException("The Job is too big ("+w+"x"+h+") for the Laser bed ("+this.getBedHeight()+"x"+this.getBedHeight()+")");
+
+            if (w > this.getBedWidth() || h > this.getBedHeight()) {
+                throw new IllegalJobException("The Job is too big (" + w + "x" + h + ") for the Laser bed (" + this.getBedHeight() + "x" + this.getBedHeight() + ")");
             }
         }
     }
 
     //TODO: Add Timeout
-    public void sendJob(LaserJob job) throws IllegalJobException, Exception{
+    public void sendJob(LaserJob job) throws IllegalJobException, Exception {
         checkJob(job);
         boolean wasConnected = isConnected();
         if (!wasConnected) {
@@ -273,7 +274,7 @@ public class EpilogCutter extends LaserCutter {
 
     public List<Integer> getResolutions() {
         List<Integer> result = new LinkedList();
-        for (int r:RESOLUTIONS){
+        for (int r : RESOLUTIONS) {
             result.add(r);
         }
         return result;
@@ -288,24 +289,39 @@ public class EpilogCutter extends LaserCutter {
     }
 
     /**
-     * Encodes the given line of the given image in 128 RLE ?!?!
+     * //TODO: Doesnt work....
+     * Encodes the given line of the given image in TIFF Packbyte encoding
      * l is always the lower index so if !leftToRight l=2 means
      * start at the 2nd byte from right site
-     * @param img
-     * @param line
-     * @param leftToRight
-     * @param l
-     * @param r
-     * @return 
      */
-    private byte[] encode(BufferedImage img, int line, 
-            boolean leftToRight, int l, int r){
-        for (int x=l;x<r;x++){
-            Color c = new Color(img.getRGB(x, line));
+    private List<Short> encode(Short[] buf) {
+        int idx=0;
+        int r=buf.length;
+        List<Short> result = new LinkedList<Short>();
+        while (idx < r) {
+            int p;
+            p=idx;
+            while(p < r && p < idx + 128 && buf[p] == buf[idx]) p++;
+            if (p - idx >= 2) {
+                // run length
+                result.add((short) (257 - (p - idx)));
+                result.add((short) buf[idx]);
+                idx = p;
+            } else {
+                p = idx;
+                while(p < r && p < idx + 127 &&
+                         (p + 1 == r || buf[p] !=
+                          buf[p + 1]))
+                     p++;
+                result.add((short) (p - idx - 1));
+                while (idx < p) {
+                    result.add((short) (buf[idx++]));
+                }
+            }
         }
-        return null;
+        return result;
     }
-    
+
     private String generateRasterPCL(LaserJob job, RasterPart rp) throws UnsupportedEncodingException, IOException {
 
         ByteArrayOutputStream result = new ByteArrayOutputStream();
@@ -317,53 +333,84 @@ public class EpilogCutter extends LaserCutter {
         /* Raster power */
         out.printf("\033&y%dP", 100);//Full power, scaling is done seperate
         /* Raster speed */
-        out.printf("\033&z%dS", 50);//TODO real speed
-        out.printf("\033*r%dT", 5847);//height);
-        out.printf("\033*r%dS", 4131);//width);
+        out.printf("\033&z%dS", 20);//TODO real speed
+        out.printf("\033*r%dT", 200);//height);
+        out.printf("\033*r%dS", 200);//width);
         /* Raster compression 7: unspecified by PCL but found in cups-epilog.c*/
+        //TODO: Using uncompressed for now
         out.printf("\033*b%dM", 7);
-        /* Raster direction (1 = up) */
-        out.printf("\033&y1O");
+        /* Raster direction (1 = up, 0=down) */
+        out.printf("\033&y%dO", 0);
         /* start at current position */
         out.printf("\033*r1A");
-        
-        if (job!=null){
-            PCLGenerator gen = new PCLGenerator(out);
-            BufferedImage[] img = rp.getImages();
-            EngravingProperty[] prop = rp.getPropertys();
-            for (int i=0;i<img.length;i++){
-                boolean leftToRight = true;
-                for (int y=img[i].getHeight()-1; y>=0; y--){
-                    //TODO: set l/r to the first/last pixel in line which is not 0
-                    int l = 1000;
-                    int r = 3000;
-                    //Cursor positioning
-                    out.printf("\033*p%dY", y);
-                    out.printf("\033*p%dX", l);
-                    if (leftToRight){
-                        out.printf("\033*b%dA", (r - l));
-                    }
-                    else{
-                        out.printf("\033*b%dA", -(r - l));
-                        byte[] line = encode(img[i], y, leftToRight, l, r);
-                        out.printf("\033*b%dW", (line.length + 7) / 8 * 8);
-                        
-                        out.write(line);
-                        r = line.length;
-                        while ((r & 7)!=0)
-                        {
-                            r++;
-                            out.write(0x80);
-                        }
-                    }
-                    leftToRight=!leftToRight;
+
+        //if (job!=null){
+        PCLGenerator gen = new PCLGenerator(out);
+        BufferedImage[] img = rp.getImages();
+        EngravingProperty[] prop = rp.getPropertys();
+        //for (int i=0;i<img.length;i++){
+        boolean leftToRight = true;
+        for (int y = 199; y >= 0; y--) {
+            //TODO: set l/r to the first/last pixel in line which is not 0
+            int l = 0;
+            int r = 200;
+            //Cursor positioning
+            out.printf("\033*p%dY", y);
+            out.printf("\033*p%dX", l);
+            if (leftToRight) {
+                out.printf("\033*b%dA", (r - l));
+            } else {
+                out.printf("\033*b%dA", -(r - l));
+            }
+            //byte[] line = encode(img[i], y, leftToRight, l, r);
+            List<Short> line = new LinkedList<Short>();
+            if (leftToRight){
+                for (int i=0;i<50;i++){
+                    line.add((short) 100);
+                }
+                for (int i=0;i<100;i++){
+                    line.add((short) 0);
+                }
+                for (int i=0;i<50;i++){
+                    line.add((short) 255);
                 }
             }
+             else {
+                for (int i=0;i<50;i++){
+                    line.add((short) 255);
+                }
+                for (int i=0;i<100;i++){
+                    line.add((short) 0);
+                }
+                for (int i=0;i<50;i++){
+                    line.add((short) 100);
+                }
+            }
+            line = encode(line.toArray(new Short[0]));
+            int len = line.size();
+            int pcks = len/8;
+            if (len%8 > 0)
+                pcks++;
+            out.printf("\033*b%dW", pcks*8);
+            for (short s : line) {
+                out.write((int) s);
+            }
+            for (int k=0;k<8-(len%8);k++){
+                out.write((int) 0x80);
+            }
+            //r = line.size();
+            //while ((r & 7) != 0) {
+             //   r++;
+              //  out.write((int) 0x80);
+            //}
+            leftToRight = !leftToRight;
         }
+        //}
+        //}
         out.printf("\033*rC");       // end raster
         out.write((char) 26);
         out.write((char) 4); // some end of file markers
-
+        new PrintStream((new FileOutputStream(new File("rasterdump.hex")))).append(result.toString("US-ASCII"));
         System.out.println(result.toString());
         try {
             return result.toString("US-ASCII");
@@ -381,44 +428,43 @@ public class EpilogCutter extends LaserCutter {
         out.printf("\033E@PJL ENTER LANGUAGE=PCL\r\n");
         /* Page Orientation */
         out.printf("\033*r0F");
-        out.printf("\033*r%dT", vp==null ? 500 : vp.getHeight());// if not dummy, then job.getHeight());
-        out.printf("\033*r%dS", vp==null ? 500 : vp.getWidth());// if not dummy then job.getWidth());
+        out.printf("\033*r%dT", vp == null ? 500 : vp.getHeight());// if not dummy, then job.getHeight());
+        out.printf("\033*r%dS", vp == null ? 500 : vp.getWidth());// if not dummy then job.getWidth());
         out.printf("\033*r1A");
         out.printf("\033*rC");
         out.printf("\033%%1B");// Start HLGL
         out.printf("IN;PU0,0;");
 
-        if (vp!=null){
+        if (vp != null) {
             int sx = job.getStartX();
             int sy = job.getStartY();
             VectorCommand.CmdType lastType = null;
-            for (VectorCommand cmd:vp.getCommandList()){
-                if (lastType!=null && lastType == VectorCommand.CmdType.LINETO && cmd.getType() != VectorCommand.CmdType.LINETO){
+            for (VectorCommand cmd : vp.getCommandList()) {
+                if (lastType != null && lastType == VectorCommand.CmdType.LINETO && cmd.getType() != VectorCommand.CmdType.LINETO) {
                     out.print(";");
                 }
-                switch (cmd.getType()){
-                    case SETFREQUENCY:{
+                switch (cmd.getType()) {
+                    case SETFREQUENCY: {
                         out.printf("XR%04d;", cmd.getFrequency());
                         break;
                     }
-                    case SETPOWER:{
+                    case SETPOWER: {
                         out.printf("YP%03d;", cmd.getPower());
                         break;
                     }
-                    case SETSPEED:{
+                    case SETSPEED: {
                         out.printf("ZS%03d;", cmd.getSpeed());
                         break;
                     }
-                    case MOVETO:{
-                        out.printf("PU%d,%d;", cmd.getX()-sx, cmd.getY()-sy);
+                    case MOVETO: {
+                        out.printf("PU%d,%d;", cmd.getX() - sx, cmd.getY() - sy);
                         break;
                     }
-                    case LINETO:{
-                        if (lastType == null || lastType != VectorCommand.CmdType.LINETO){
-                            out.printf("PD%d,%d", cmd.getX()-sx, cmd.getY()-sy);
-                        }
-                        else{
-                            out.printf(",%d,%d", cmd.getX()-sx, cmd.getY()-sy);
+                    case LINETO: {
+                        if (lastType == null || lastType != VectorCommand.CmdType.LINETO) {
+                            out.printf("PD%d,%d", cmd.getX() - sx, cmd.getY() - sy);
+                        } else {
+                            out.printf(",%d,%d", cmd.getX() - sx, cmd.getY() - sy);
                         }
                         break;
                     }
@@ -429,7 +475,7 @@ public class EpilogCutter extends LaserCutter {
             //Pen up and goto 0,0
             out.printf("PU0,0;");  // start HLGL, and pen up, end
         }
-        
+
         System.out.append(result.toString());
         try {
             return result.toString("US-ASCII");

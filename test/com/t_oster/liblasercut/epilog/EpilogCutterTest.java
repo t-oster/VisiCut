@@ -34,7 +34,7 @@ public class EpilogCutterTest {
         vp.lineto(100,100);
         vp.lineto(0,100);
         vp.lineto(0,0);
-        LaserJob job = new LaserJob("testpilog", "666", "bla", 500, null, vp);
+        LaserJob job = new LaserJob("vector", "666", "bla", 500, null, vp);
         instance.sendJob(job);
     }
     
@@ -52,8 +52,13 @@ public class EpilogCutterTest {
         BufferedImage test = new BufferedImage((int) diag.getWidth(), (int) diag.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
         diag.render(test.createGraphics());
         rp.addImage(test);
-        
-        LaserJob job = new LaserJob("testpilog", "666", "bla", 500, rp, null);
+        VectorPart vp = new VectorPart(new CuttingProperty(5000,20,100));
+        vp.moveto(0, 0);
+        vp.lineto(200, 0);
+        vp.lineto(200,200);
+        vp.lineto(0,200);
+        vp.lineto(0,0);
+        LaserJob job = new LaserJob("raster", "666", "bla", 500, rp, vp);
         instance.sendJob(job);
     }
     
