@@ -20,6 +20,7 @@ public class RasterPart {
     
     private List<BufferedImage> images = new LinkedList<BufferedImage>();
     private List<EngravingProperty> properties = new LinkedList<EngravingProperty>();
+    private List<Point> starts = new LinkedList<Point>();
     
     public RasterPart(EngravingProperty initialEngravingProperty){
         this.curProp = initialEngravingProperty;
@@ -48,14 +49,14 @@ public class RasterPart {
      * current engraving property)
      * @param img 
      */
-    public void addImage(BufferedImage img){
-        this.images.add(img);
-        this.properties.add(curProp);
+    public void addImage(BufferedImage img, Point start){
+        this.addImage(img, curProp, start);
     }
     
-    public void addImage(BufferedImage img, EngravingProperty prop){
+    public void addImage(BufferedImage img, EngravingProperty prop, Point start){
         this.images.add(img);
         this.properties.add(prop);
+        this.starts.add(start);
     }
     
     /**
@@ -66,6 +67,36 @@ public class RasterPart {
         return this.images.size();
     }
     
+    /**
+     * Returns the full width of the complete raster Part
+     * @return
+     */
+    public int getWidth(){
+        int minx = 0;
+        int maxx = 0;
+        for (int i=0;i<this.getRasterCount();i++){
+            Point start = this.getRasterStart(i);
+            minx = Math.min(minx, start.x);
+            maxx = Math.max(maxx, start.x+this.getRasterWidth(i));
+        }
+        return maxx-minx;
+    }
+
+    /**
+     * Returns the full height of the complete raster Part
+     * @return
+     */
+    public int getHeight(){
+        int miny = 0;
+        int maxy = 0;
+        for (int i=0;i<this.getRasterCount();i++){
+            Point start = this.getRasterStart(i);
+            miny = Math.min(miny, start.y);
+            maxy = Math.max(maxy, start.y+this.getRasterHeight(i));
+        }
+        return maxy-miny;
+    }
+
     /**
      * Returns the upper left point of the given raster
      * @param raster the raster which upper left corner is to determine
@@ -89,11 +120,19 @@ public class RasterPart {
         List<Byte> result = new LinkedList<Byte>();
         for (int x=0;x<img.getWidth();x++){
             Color c = new Color(img.getRGB(x, line));
-            result.add((byte) ((c.getRed()+c.getGreen()+c.getBlue())/3));
+            result.add((byte) ((100*((c.getRed()+c.getGreen()+c.getBlue())/3))/255));
         }
         return result;
     }
-    
+
+    public int getRasterWidth(int raster){
+        return this.images.get(raster).getWidth();
+    }
+
+    public int getRasterHeight(int raster){
+        return this.images.get(raster).getHeight();
+    }
+
     public BufferedImage[] getImages(){
         return this.images.toArray(new BufferedImage[0]);
     }

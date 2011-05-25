@@ -3,6 +3,7 @@
  * and open the template in the editor.
  */
 package com.t_oster.liblasercut.epilog;
+import java.awt.Point;
 import com.kitfox.svg.SVGDiagram;
 import com.kitfox.svg.SVGUniverse;
 import com.t_oster.liblasercut.*;
@@ -61,29 +62,7 @@ public class EpilogCutterTest {
         instance.sendJob(job);
     }
     
-    @Test
-    public void testRasterJob() throws IllegalJobException, Exception{
-        EpilogCutter.SIMULATE_COMMUNICATION = false;
-        System.out.println("sendJob");
-        
-        EpilogCutter instance = new EpilogCutter("137.226.56.228");
-        RasterPart rp = new RasterPart(new EngravingProperty(50,50));
-        
-        SVGUniverse univ = new SVGUniverse();
-        //URI svg = univ.loadSVG(new File("test/files/butterfly.svg").toURI().toURL());
-        //SVGDiagram diag = univ.getDiagram(svg);
-        //BufferedImage test = new BufferedImage((int) diag.getWidth(), (int) diag.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
-        //diag.render(test.createGraphics());
-        //rp.addImage(test);
-        VectorPart vp = new VectorPart(new CuttingProperty(5000,20,100));
-        vp.moveto(0, 0);
-        vp.lineto(200, 0);
-        vp.lineto(200,200);
-        vp.lineto(0,200);
-        vp.lineto(0,0);
-        LaserJob job = new LaserJob("raster", "666", "bla", 500, rp, vp);
-        instance.sendJob(job);
-    }
+    
     
     
 }

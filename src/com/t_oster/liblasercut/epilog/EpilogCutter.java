@@ -9,6 +9,7 @@ import com.t_oster.util.Util;
 import java.awt.Color;
 import java.awt.image.RenderedImage;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
@@ -121,6 +122,12 @@ public class EpilogCutter extends LaserCutter {
         out.printf("\033E@PJL ENTER LANGUAGE=PCL\r\n");
         /* Set autofocus off. */
         out.printf("\033&y0A");
+        /* FIXME unknown purpose. */
+        out.printf("\033&y0C");
+
+        /* ALSO UNKNOWN */
+        out.printf("\033&y0Z");
+
         /* Left (long-edge) offset registration.  Adjusts the position of the
          * logical page across the width of the page.
          */
@@ -139,8 +146,7 @@ public class EpilogCutter extends LaserCutter {
         /* PCL/RasterGraphics resolution. */
         out.printf("\033*t%dR", job.getResolution());
 
-        /* FIXME unknown purpose. */
-        out.printf("\033&y0C");
+        
         try {
             return result.toString("US-ASCII");
         } catch (UnsupportedEncodingException ex) {
@@ -295,13 +301,15 @@ public class EpilogCutter extends LaserCutter {
      * start at the 2nd byte from right site
      */
     public List<Byte> encode(List<Byte> line) {
-        int idx=0;
-        int r=line.size();
+        int idx = 0;
+        int r = line.size();
         List<Byte> result = new LinkedList<Byte>();
         while (idx < r) {
             int p;
-            p=idx;
-            while(p < r && p < idx + 128 && line.get(p) == line.get(idx)) p++;
+            p = idx;
+            while (p < r && p < idx + 128 && line.get(p) == line.get(idx)) {
+                p++;
+            }
             if (p - idx >= 2) {
                 // run length
                 result.add((byte) (257 - (p - idx)));
@@ -309,10 +317,11 @@ public class EpilogCutter extends LaserCutter {
                 idx = p;
             } else {
                 p = idx;
-                while(p < r && p < idx + 127 &&
-                         (p + 1 == r || line.get(p) !=
-                          line.get(p + 1)))
-                     p++;
+                while (p < r && p < idx + 127
+                        && (p + 1 == r || line.get(p)
+                        != line.get(p + 1))) {
+                    p++;
+                }
                 result.add((byte) (p - idx - 1));
                 while (idx < p) {
                     result.add((byte) (line.get(idx++)));
@@ -326,71 +335,65 @@ public class EpilogCutter extends LaserCutter {
 
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(result, true, "US-ASCII");
-        /* FIXME unknown purpose. */
-        out.printf("\033&y0C");
         /* Raster Orientation: Printed in current direction */
         out.printf("\033*r0F");
         /* Raster power */
         out.printf("\033&y%dP", 100);//Full power, scaling is done seperate
         /* Raster speed */
         out.printf("\033&z%dS", 100);//TODO real speed
-        out.printf("\033*r%dT", 200);//height);
-        out.printf("\033*r%dS", 200);//width);
+        /* unknown */
+        out.printf("\033&y0A");
+
+        out.printf("\033*r%dT", rp != null ? rp.getHeight() : 10);//height);
+        out.printf("\033*r%dS", rp != null ? rp.getWidth() : 10);//width);
         /* Raster compression:
          *  2 = TIFF encoding (see encode()) (Windows driver uses it)
          *  7 = unknown, but cups-epilog.c generates it
+         *
+         * Wahrscheinlich:
+         * 2M = Bitweise, also 1=dot 0=nodot (standard raster)
+         * 7MLT = Byteweise 0= no power 100=full power (3d raster)
+         * ABER Encoding geht nicht... warum auch immer
          */
-        out.printf("\033*b%dM", 7);
+        out.printf("\033*b%dMLT", 7);
         /* Raster direction (1 = up, 0=down) */
-        out.printf("\033&y%dO", 1);
+        out.printf("\033&y%dO", 0);
         /* start at current position */
         out.printf("\033*r1A");
 
-        //if (job!=null){
-        //for (int i=0;i<img.length;i++){
-        boolean leftToRight = true;
-        for (int y = 199; y >= 0; y--) {
-            //TODO: set l/r to the first/last pixel in line which is not 0
-            int l = 0;
-            int r = 200;
-            //Cursor positioning
-            out.printf("\033*p%dY", y);
-            out.printf("\033*p%dX", l);
-            if (leftToRight) {
-                out.printf("\033*b%dA", (r - l));
-            } else {
-                out.printf("\033*b%dA", -(r - l));
+        for (int i = 0; rp != null && i < rp.getRasterCount(); i++) {
+            Point sp = rp.getRasterStart(i);
+            boolean leftToRight = true;
+            for (int y = 0; y < rp.getRasterHeight(i); y++) {
+                out.printf("\033*p%dX", sp.x);
+                out.printf("\033*p%dY", sp.y + y);
+                if (leftToRight) {
+                    out.printf("\033*b%dA", rp.getRasterWidth(i));
+                } else {
+                    out.printf("\033*b%dA", -rp.getRasterWidth(i));
+                }
+                List<Byte> line = rp.getRasterLine(i, y);
+                if (!leftToRight) {
+                    Collections.reverse(line);
+                }
+                //TODO: encoding does not work
+                line = encode(line);
+                int len = line.size();
+                int pcks = len / 8;
+                if (len % 8 > 0) {
+                    pcks++;
+                }
+                out.printf("\033*b%dW", pcks * 8);
+                for (byte s : line) {
+                    out.write(s);
+                }
+                for (int k = 0; k < 8 - (len % 8); k++) {
+                    out.write((byte) 0x80);
+                }
+                leftToRight = !leftToRight;
             }
-            //byte[] line = encode(img[i], y, leftToRight, l, r);
-            List<Byte> line = new LinkedList<Byte>();
-            for (int i=0;i<200;i++){
-              line.add((byte) (i/2));
-            }
-            //line = rp.getRasterLine(0, y);
-            if (!leftToRight){
-                Collections.reverse(line);
-            }
-            line = encode(line);
-            int len = line.size();
-            int pcks = len/8;
-            if (len%8 > 0)
-                pcks++;
-            out.printf("\033*b%dW", pcks*8);
-            for (byte s : line) {
-                out.write((int) s);
-            }
-            for (int k=0;k<8-(len%8);k++){
-                out.write((byte) 0x80);
-            }
-            //r = line.size();
-            //while ((r & 7) != 0) {
-             //   r++;
-              //  out.write((int) 0x80);
-            //}
-            leftToRight = !leftToRight;
+
         }
-        //}
-        //}
         out.printf("\033*rC");       // end raster
         out.write((char) 26);
         out.write((char) 4); // some end of file markers
