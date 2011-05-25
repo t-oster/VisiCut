@@ -63,7 +63,7 @@ public class EpilogCutterTest {
     
     @Test
     public void testRasterJob() throws IllegalJobException, Exception{
-        EpilogCutter.SIMULATE_COMMUNICATION = true;
+        EpilogCutter.SIMULATE_COMMUNICATION = false;
         System.out.println("sendJob");
         
         EpilogCutter instance = new EpilogCutter("137.226.56.228");

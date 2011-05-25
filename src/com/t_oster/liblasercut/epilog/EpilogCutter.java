@@ -24,6 +24,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
@@ -332,16 +333,16 @@ public class EpilogCutter extends LaserCutter {
         /* Raster power */
         out.printf("\033&y%dP", 100);//Full power, scaling is done seperate
         /* Raster speed */
-        out.printf("\033&z%dS", 20);//TODO real speed
+        out.printf("\033&z%dS", 100);//TODO real speed
         out.printf("\033*r%dT", 200);//height);
         out.printf("\033*r%dS", 200);//width);
         /* Raster compression:
          *  2 = TIFF encoding (see encode()) (Windows driver uses it)
          *  7 = unknown, but cups-epilog.c generates it
          */
-        out.printf("\033*b%dM", 2);
+        out.printf("\033*b%dM", 7);
         /* Raster direction (1 = up, 0=down) */
-        out.printf("\033&y%dO", 0);
+        out.printf("\033&y%dO", 1);
         /* start at current position */
         out.printf("\033*r1A");
 
@@ -362,16 +363,13 @@ public class EpilogCutter extends LaserCutter {
             }
             //byte[] line = encode(img[i], y, leftToRight, l, r);
             List<Byte> line = new LinkedList<Byte>();
-            for (int i=0;i<50;i++){
-                line.add((byte) -110);
-            }
-            for (int i=0;i<100;i++){
-                line.add((byte) 0);
-            }
-            for (int i=0;i<50;i++){
-                line.add((byte) i);
+            for (int i=0;i<200;i++){
+              line.add((byte) (i/2));
             }
             //line = rp.getRasterLine(0, y);
+            if (!leftToRight){
+                Collections.reverse(line);
+            }
             line = encode(line);
             int len = line.size();
             int pcks = len/8;
@@ -396,9 +394,9 @@ public class EpilogCutter extends LaserCutter {
         out.printf("\033*rC");       // end raster
         out.write((char) 26);
         out.write((char) 4); // some end of file markers
-        //PrintStream ps = new PrintStream((new FileOutputStream(new File("/tmp/rasterdump.hex"))));
-        //ps.write(result.toByteArray());
-        //ps.close();
+        PrintStream ps = new PrintStream((new FileOutputStream(new File("/tmp/rasterdump.hex"))));
+        ps.write(result.toByteArray());
+        ps.close();
         return result.toByteArray();
     }
 
