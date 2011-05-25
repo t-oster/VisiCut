@@ -362,31 +362,39 @@ public class EpilogCutter extends LaserCutter {
             Point sp = rp.getRasterStart(i);
             boolean leftToRight = true;
             for (int y = 0; y < rp.getRasterHeight(i); y++) {
-                out.printf("\033*p%dX", sp.x);
-                out.printf("\033*p%dY", sp.y + y);
-                if (leftToRight) {
-                    out.printf("\033*b%dA", rp.getRasterWidth(i));
-                } else {
-                    out.printf("\033*b%dA", -rp.getRasterWidth(i));
-                }
+                
                 List<Byte> line = rp.getRasterLine(i, y);
-                if (!leftToRight) {
-                    Collections.reverse(line);
+                //Remove leading zeroes, but keep track of the offset
+                int jump = 0;
+                
+                while (line.size() > 0 && line.get(0) == 0){
+                    line.remove(0);
+                    jump++;
                 }
-                line = encode(line);
-                int len = line.size();
-                int pcks = len / 8;
-                if (len % 8 > 0) {
-                    pcks++;
+                if (line.size()>0){
+                    out.printf("\033*p%dX", sp.x + jump);
+                    out.printf("\033*p%dY", sp.y + y);
+                    if (leftToRight) {
+                        out.printf("\033*b%dA", line.size());
+                    } else {
+                        out.printf("\033*b%dA", -line.size());
+                        Collections.reverse(line);
+                    }
+                    line = encode(line);
+                    int len = line.size();
+                    int pcks = len / 8;
+                    if (len % 8 > 0) {
+                        pcks++;
+                    }
+                    out.printf("\033*b%dW", pcks * 8);
+                    for (byte s : line) {
+                        out.write(s);
+                    }
+                    for (int k = 0; k < 8 - (len % 8); k++) {
+                        out.write((byte) 128);
+                    }
+                    leftToRight = !leftToRight;
                 }
-                out.printf("\033*b%dW", pcks * 8);
-                for (byte s : line) {
-                    out.write(s);
-                }
-                for (int k = 0; k < 8 - (len % 8); k++) {
-                    out.write((byte) 128);
-                }
-                leftToRight = !leftToRight;
             }
 
         }
