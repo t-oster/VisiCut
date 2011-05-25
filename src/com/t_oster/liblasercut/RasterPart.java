@@ -120,7 +120,7 @@ public class RasterPart {
         List<Byte> result = new LinkedList<Byte>();
         for (int x=0;x<img.getWidth();x++){
             Color c = new Color(img.getRGB(x, line));
-            result.add((byte) ((100*((c.getRed()+c.getGreen()+c.getBlue())/3))/255));
+            result.add((byte) ((c.getRed()+c.getGreen()+c.getBlue())/3));
         }
         return result;
     }

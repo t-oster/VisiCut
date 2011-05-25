@@ -90,7 +90,7 @@ public class RasterModeTest {
             public List<Byte> getRasterLine(int raster, int y) {
                 List<Byte> result = new LinkedList<Byte>();
                 if (y < 100) {
-                    for (int x = 0; x <= 100; x++) {
+                    for (int x = 0; x <= 200; x++) {
                         result.add((byte) x);
                     }
                 } else {
@@ -104,7 +104,7 @@ public class RasterModeTest {
                         result.add((byte) 100);
                     }
                     for (int i = 0; i < 50; i++) {
-                        result.add((byte) 0);
+                        result.add((byte) -30);
                     }
                 }
                 return result;
@@ -121,7 +121,7 @@ public class RasterModeTest {
         RasterPart rp = new RasterPart(new EngravingProperty(100,100));
 
         SVGUniverse univ = new SVGUniverse();
-        URI svg = univ.loadSVG(new File("test/files/butterfly.svg").toURI().toURL());
+        URI svg = univ.loadSVG(new File("test/files/tux.svg").toURI().toURL());
         SVGIcon icon = new SVGIcon();
         icon.setSvgURI(svg);
         icon.setAntiAlias(false);

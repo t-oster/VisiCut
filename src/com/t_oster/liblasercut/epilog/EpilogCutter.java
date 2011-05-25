@@ -196,7 +196,7 @@ public class EpilogCutter extends LaserCutter {
         wrt.flush();
 
         //dump pjl into file for debugging
-        new PrintStream(new FileOutputStream(new File("/tmp/last.pjl")), true, "US-ASCII").print(pjlJob.toString("US-ASCII"));
+        //new PrintStream(new FileOutputStream(new File("/tmp/last.pjl")), true, "US-ASCII").print(pjlJob.toString("US-ASCII"));
 
         /*
         pjlJob = new ByteArrayOutputStream();
@@ -216,7 +216,7 @@ public class EpilogCutter extends LaserCutter {
         waitForResponse(0);
         System.out.println("Accepted. Sending Data File");
         /* Send the real PJL Job */
-        out.print(pjlJob.toString("US-ASCII"));
+        out.write(pjlJob.toByteArray());
         //out.append((char) 0);
         System.out.println("Data file sent");
         waitForResponse(0);
@@ -297,8 +297,6 @@ public class EpilogCutter extends LaserCutter {
 
     /**
      * Encodes the given line of the given image in TIFF Packbyte encoding
-     * l is always the lower index so if !leftToRight l=2 means
-     * start at the 2nd byte from right site
      */
     public List<Byte> encode(List<Byte> line) {
         int idx = 0;
@@ -306,13 +304,13 @@ public class EpilogCutter extends LaserCutter {
         List<Byte> result = new LinkedList<Byte>();
         while (idx < r) {
             int p;
-            p = idx;
+            p = idx+1;
             while (p < r && p < idx + 128 && line.get(p) == line.get(idx)) {
                 p++;
             }
             if (p - idx >= 2) {
                 // run length
-                result.add((byte) (257 - (p - idx)));
+                result.add((byte) (1-(p - idx)));
                 result.add((byte) line.get(idx));
                 idx = p;
             } else {
@@ -347,13 +345,12 @@ public class EpilogCutter extends LaserCutter {
         out.printf("\033*r%dT", rp != null ? rp.getHeight() : 10);//height);
         out.printf("\033*r%dS", rp != null ? rp.getWidth() : 10);//width);
         /* Raster compression:
-         *  2 = TIFF encoding (see encode()) (Windows driver uses it)
-         *  7 = unknown, but cups-epilog.c generates it
+         *  2 = TIFF encoding
+         *  7 = TIFF encoding, 3d-mode,
          *
          * Wahrscheinlich:
          * 2M = Bitweise, also 1=dot 0=nodot (standard raster)
          * 7MLT = Byteweise 0= no power 100=full power (3d raster)
-         * ABER Encoding geht nicht... warum auch immer
          */
         out.printf("\033*b%dMLT", 7);
         /* Raster direction (1 = up, 0=down) */
@@ -376,7 +373,6 @@ public class EpilogCutter extends LaserCutter {
                 if (!leftToRight) {
                     Collections.reverse(line);
                 }
-                //TODO: encoding does not work
                 line = encode(line);
                 int len = line.size();
                 int pcks = len / 8;
@@ -388,7 +384,7 @@ public class EpilogCutter extends LaserCutter {
                     out.write(s);
                 }
                 for (int k = 0; k < 8 - (len % 8); k++) {
-                    out.write((byte) 0x80);
+                    out.write((byte) 128);
                 }
                 leftToRight = !leftToRight;
             }
@@ -397,9 +393,9 @@ public class EpilogCutter extends LaserCutter {
         out.printf("\033*rC");       // end raster
         out.write((char) 26);
         out.write((char) 4); // some end of file markers
-        PrintStream ps = new PrintStream((new FileOutputStream(new File("/tmp/rasterdump.hex"))));
-        ps.write(result.toByteArray());
-        ps.close();
+        //PrintStream ps = new PrintStream((new FileOutputStream(new File("/tmp/rasterdump.hex"))));
+        //ps.write(result.toByteArray());
+        //ps.close();
         return result.toByteArray();
     }
 

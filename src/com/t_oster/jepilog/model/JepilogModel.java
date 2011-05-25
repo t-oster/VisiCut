@@ -268,7 +268,7 @@ public class JepilogModel extends AbstractModel implements Serializable{
         
         for (EngravingImage i:this.getEngravingImages()){
             EngravingProperty ep = i.getProperty();
-            rp.addImage(getBufferedImage(i), ep != null ? ep : defaultep);
+            //rp.addImage(getBufferedImage(i), ep != null ? ep : defaultep);
         }
         
         return rp;
