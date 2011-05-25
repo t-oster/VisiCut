@@ -335,18 +335,17 @@ public class EpilogCutter extends LaserCutter {
         out.printf("\033&z%dS", 20);//TODO real speed
         out.printf("\033*r%dT", 200);//height);
         out.printf("\033*r%dS", 200);//width);
-        /* Raster compression 7: unspecified by PCL but found in cups-epilog.c*/
-        //TODO: Using uncompressed for now
-        out.printf("\033*b%dM", 7);
+        /* Raster compression:
+         *  2 = TIFF encoding (see encode()) (Windows driver uses it)
+         *  7 = unknown, but cups-epilog.c generates it
+         */
+        out.printf("\033*b%dM", 2);
         /* Raster direction (1 = up, 0=down) */
         out.printf("\033&y%dO", 0);
         /* start at current position */
         out.printf("\033*r1A");
 
         //if (job!=null){
-        PCLGenerator gen = new PCLGenerator(out);
-        BufferedImage[] img = rp.getImages();
-        EngravingProperty[] prop = rp.getPropertys();
         //for (int i=0;i<img.length;i++){
         boolean leftToRight = true;
         for (int y = 199; y >= 0; y--) {
@@ -372,6 +371,7 @@ public class EpilogCutter extends LaserCutter {
             for (int i=0;i<50;i++){
                 line.add((byte) i);
             }
+            //line = rp.getRasterLine(0, y);
             line = encode(line);
             int len = line.size();
             int pcks = len/8;
