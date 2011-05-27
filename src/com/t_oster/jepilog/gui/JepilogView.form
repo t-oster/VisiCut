@@ -12,7 +12,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jSplitPane1" pref="828" max="32767" attributes="0"/>
+                  <Component id="jSplitPane1" pref="844" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -62,8 +62,10 @@
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace pref="141" max="32767" attributes="0"/>
+                              <EmptySpace pref="131" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="jCheckBox3" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jCheckBox2" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="jCheckBox1" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="cbShowCut" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="cbShowEngrave" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -112,7 +114,11 @@
                               <Component id="cbShowEngrave" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="cbShowCut" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="111" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jCheckBox2" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jCheckBox3" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace pref="53" max="32767" attributes="0"/>
                               <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -125,8 +131,8 @@
                         <Property name="name" type="java.lang.String" value="jComboBox1" noResource="true"/>
                       </Properties>
                       <BindingProperties>
-                        <BindingProperty name="elements" source="jpModel" sourcePath="${selectedLaserCutter.materialPropertys}" target="jComboBox1" targetPath="elements" updateStrategy="1" immediately="false"/>
-                        <BindingProperty name="selectedItem" source="jpModel" sourcePath="${material}" target="jComboBox1" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
+                        <BindingProperty name="elements" source="jobModel" sourcePath="${selectedLaserCutter.materialPropertys}" target="jComboBox1" targetPath="elements" updateStrategy="1" immediately="false"/>
+                        <BindingProperty name="selectedItem" source="jobModel" sourcePath="${material}" target="jComboBox1" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
                       </BindingProperties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel1">
@@ -150,7 +156,7 @@
                         <Property name="name" type="java.lang.String" value="jComboBox2" noResource="true"/>
                       </Properties>
                       <BindingProperties>
-                        <BindingProperty name="selectedItem" source="jpModel" sourcePath="${startPosition}" target="jComboBox2" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
+                        <BindingProperty name="selectedItem" source="jobModel" sourcePath="${startPosition}" target="jComboBox2" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
                       </BindingProperties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel2">
@@ -174,7 +180,7 @@
                         <Property name="name" type="java.lang.String" value="cbShowEngrave" noResource="true"/>
                       </Properties>
                       <BindingProperties>
-                        <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showEngravingPart}" target="cbShowEngrave" targetPath="selected" updateStrategy="0" immediately="false"/>
+                        <BindingProperty name="selected" source="viewModel" sourcePath="${showRaster}" target="cbShowEngrave" targetPath="selected" updateStrategy="0" immediately="false"/>
                       </BindingProperties>
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="cbShowCut">
@@ -183,7 +189,7 @@
                         <Property name="name" type="java.lang.String" value="cbShowCut" noResource="true"/>
                       </Properties>
                       <BindingProperties>
-                        <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showCuttingPart}" target="cbShowCut" targetPath="selected" updateStrategy="0" immediately="false"/>
+                        <BindingProperty name="selected" source="viewModel" sourcePath="${showCut}" target="cbShowCut" targetPath="selected" updateStrategy="0" immediately="false"/>
                       </BindingProperties>
                     </Component>
                     <Component class="javax.swing.JComboBox" name="cbResolution">
@@ -191,8 +197,8 @@
                         <Property name="name" type="java.lang.String" value="cbResolution" noResource="true"/>
                       </Properties>
                       <BindingProperties>
-                        <BindingProperty name="elements" source="jpModel" sourcePath="${selectedLaserCutter.resolutions}" target="cbResolution" targetPath="elements" updateStrategy="1" immediately="false"/>
-                        <BindingProperty name="selectedItem" source="jpModel" sourcePath="${resolution}" target="cbResolution" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
+                        <BindingProperty name="elements" source="jobModel" sourcePath="${selectedLaserCutter.resolutions}" target="cbResolution" targetPath="elements" updateStrategy="1" immediately="false"/>
+                        <BindingProperty name="selectedItem" source="jobModel" sourcePath="${resolution}" target="cbResolution" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
                       </BindingProperties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel3">
@@ -207,7 +213,25 @@
                         <Property name="name" type="java.lang.String" value="jCheckBox1" noResource="true"/>
                       </Properties>
                       <BindingProperties>
-                        <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showImage}" target="jCheckBox1" targetPath="selected" updateStrategy="0" immediately="false"/>
+                        <BindingProperty name="selected" source="viewModel" sourcePath="${showImage}" target="jCheckBox1" targetPath="selected" updateStrategy="0" immediately="false"/>
+                      </BindingProperties>
+                    </Component>
+                    <Component class="javax.swing.JCheckBox" name="jCheckBox2">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" resourceKey="jCheckBox2.text"/>
+                        <Property name="name" type="java.lang.String" value="jCheckBox2" noResource="true"/>
+                      </Properties>
+                      <BindingProperties>
+                        <BindingProperty name="selected" source="viewModel" sourcePath="${show3dRaster}" target="jCheckBox2" targetPath="selected" updateStrategy="0" immediately="false"/>
+                      </BindingProperties>
+                    </Component>
+                    <Component class="javax.swing.JCheckBox" name="jCheckBox3">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" resourceKey="jCheckBox3.text"/>
+                        <Property name="name" type="java.lang.String" value="jCheckBox3" noResource="true"/>
+                      </Properties>
+                      <BindingProperties>
+                        <BindingProperty name="selected" source="viewModel" sourcePath="${showGrid}" target="jCheckBox3" targetPath="selected" updateStrategy="0" immediately="false"/>
                       </BindingProperties>
                     </Component>
                   </SubComponents>
@@ -240,7 +264,7 @@
                                   </Group>
                                   <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace pref="53" max="32767" attributes="0"/>
+                              <EmptySpace pref="107" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -257,7 +281,7 @@
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="jButton4" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="jScrollPane1" pref="349" max="32767" attributes="0"/>
+                                  <Component id="jScrollPane1" pref="363" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -315,8 +339,11 @@
                               <Dimension value="[300, 400]"/>
                             </Property>
                           </Properties>
+                          <BindingProperties>
+                            <BindingProperty name="selectedSVGElement" source="viewModel" sourcePath="${selectedSVGElement}" target="cuttingShapesTable1" targetPath="selectedSVGElement" updateStrategy="0" immediately="false"/>
+                          </BindingProperties>
                           <AuxValues>
-                            <AuxValue name="JavaCodeGenerator_AddingCodePre" type="java.lang.String" value="cuttingShapesTable1.setJpModel(jpModel);"/>
+                            <AuxValue name="JavaCodeGenerator_AddingCodePre" type="java.lang.String" value="cuttingShapesTable1.setJpModel(jobModel);"/>
                           </AuxValues>
                         </Component>
                       </SubComponents>
@@ -335,10 +362,15 @@
                 <Property name="name" type="java.lang.String" value="sVGPanel1" noResource="true"/>
               </Properties>
               <BindingProperties>
-                <BindingProperty name="cuttingShapes" source="jpModel" sourcePath="${cuttingShapes}" target="sVGPanel1" targetPath="cuttingShapes" updateStrategy="1" immediately="false"/>
-                <BindingProperty name="gridDPI" source="jpModel" sourcePath="${resolution}" target="sVGPanel1" targetPath="gridDPI" updateStrategy="0" immediately="false"/>
-                <BindingProperty name="selectedSVGElement" source="cuttingShapesTable1" sourcePath="${selectedSVGElement}" target="sVGPanel1" targetPath="selectedSVGElement" updateStrategy="0" immediately="false"/>
-                <BindingProperty name="startPoint" source="jpModel" sourcePath="${startPoint}" target="sVGPanel1" targetPath="startPoint" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="cuttingShapes" source="jobModel" sourcePath="${cuttingShapes}" target="sVGPanel1" targetPath="cuttingShapes" updateStrategy="1" immediately="false"/>
+                <BindingProperty name="gridDPI" source="jobModel" sourcePath="${resolution}" target="sVGPanel1" targetPath="gridDPI" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="selectedSVGElement" source="viewModel" sourcePath="${selectedSVGElement}" target="sVGPanel1" targetPath="selectedSVGElement" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="showCuttingPart" source="viewModel" sourcePath="${showCut}" target="sVGPanel1" targetPath="showCuttingPart" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="showEngravingPart" source="viewModel" sourcePath="${showRaster}" target="sVGPanel1" targetPath="showEngravingPart" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="showGrid" source="viewModel" sourcePath="${showGrid}" target="sVGPanel1" targetPath="showGrid" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="showImage" source="viewModel" sourcePath="${showImage}" target="sVGPanel1" targetPath="showImage" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="startPoint" source="jobModel" sourcePath="${startPoint}" target="sVGPanel1" targetPath="startPoint" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="svgUri" source="jobModel" sourcePath="${svg}" target="sVGPanel1" targetPath="svgUri" updateStrategy="0" immediately="false"/>
               </BindingProperties>
               <Events>
                 <EventHandler event="mouseWheelMoved" listener="java.awt.event.MouseWheelListener" parameters="java.awt.event.MouseWheelEvent" handler="sVGPanel1MouseWheelMoved"/>
@@ -358,7 +390,7 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="435" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="439" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -483,7 +515,16 @@
                 <Property name="name" type="java.lang.String" value="menuShowEngrave" noResource="true"/>
               </Properties>
               <BindingProperties>
-                <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showEngravingPart}" target="menuShowEngrave" targetPath="selected" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="selected" source="viewModel" sourcePath="${showRaster}" target="menuShowEngrave" targetPath="selected" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="jCheckBoxMenuItem3">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="jCheckBoxMenuItem3.text"/>
+                <Property name="name" type="java.lang.String" value="jCheckBoxMenuItem3" noResource="true"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="selected" source="viewModel" sourcePath="${show3dRaster}" target="jCheckBoxMenuItem3" targetPath="selected" updateStrategy="0" immediately="false"/>
               </BindingProperties>
             </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="jCheckBoxMenuItem1">
@@ -492,7 +533,7 @@
                 <Property name="name" type="java.lang.String" value="jCheckBoxMenuItem1" noResource="true"/>
               </Properties>
               <BindingProperties>
-                <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showCuttingPart}" target="jCheckBoxMenuItem1" targetPath="selected" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="selected" source="viewModel" sourcePath="${showCut}" target="jCheckBoxMenuItem1" targetPath="selected" updateStrategy="0" immediately="false"/>
               </BindingProperties>
             </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="jCheckBoxMenuItem2">
@@ -501,7 +542,7 @@
                 <Property name="name" type="java.lang.String" value="jCheckBoxMenuItem2" noResource="true"/>
               </Properties>
               <BindingProperties>
-                <BindingProperty name="selected" source="sVGPanel1" sourcePath="${showGrid}" target="jCheckBoxMenuItem2" targetPath="selected" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="selected" source="viewModel" sourcePath="${showGrid}" target="jCheckBoxMenuItem2" targetPath="selected" updateStrategy="0" immediately="false"/>
               </BindingProperties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem7">
@@ -562,7 +603,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusMessageLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="672" max="32767" attributes="0"/>
+                  <EmptySpace pref="684" max="32767" attributes="0"/>
                   <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusAnimationLabel" min="-2" max="-2" attributes="0"/>
@@ -659,7 +700,9 @@
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="meRemoveFromCutting">
           <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="meRemoveFromCutting.text"/>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+              <action class="com.t_oster.jepilog.gui.JepilogView" id="removeSelectedCuttingShape" methodName="removeSelectedCuttingShape"/>
+            </Property>
             <Property name="name" type="java.lang.String" value="meRemoveFromCutting" noResource="true"/>
           </Properties>
           <BindingProperties>
@@ -668,10 +711,12 @@
         </MenuItem>
       </SubComponents>
     </Container>
-    <Component class="com.t_oster.jepilog.model.JepilogModel" name="jpModel">
+    <Component class="com.t_oster.jepilog.model.JepilogModel" name="jobModel">
       <BindingProperties>
-        <BindingProperty name="svg" source="sVGPanel1" sourcePath="${svgUri}" target="jpModel" targetPath="svg" updateStrategy="0" immediately="false"/>
+        <BindingProperty name="svg" source="sVGPanel1" sourcePath="${svgUri}" target="jobModel" targetPath="svg" updateStrategy="0" immediately="false"/>
       </BindingProperties>
+    </Component>
+    <Component class="com.t_oster.jepilog.gui.ViewModel" name="viewModel">
     </Component>
   </NonVisualComponents>
   <Properties>

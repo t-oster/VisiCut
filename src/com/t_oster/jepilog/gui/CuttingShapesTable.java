@@ -4,7 +4,6 @@
  */
 package com.t_oster.jepilog.gui;
 
-
 import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.ShapeElement;
 import com.t_oster.jepilog.model.CuttingShape;
@@ -13,157 +12,136 @@ import javax.swing.table.DefaultTableModel;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import javax.swing.JTable;
-import java.util.Scanner;
-import java.awt.Shape;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 import com.t_oster.jepilog.model.JepilogModel;
+import com.t_oster.util.Util;
 import java.text.DecimalFormat;
+
 /**
  *
  * @author oster
  */
-public class CuttingShapesTable extends JTable{
+public class CuttingShapesTable extends JTable {
+
     private static final long serialVersionUID = 1L;
-    
     private JepilogModel jpModel;
+
+    public void setSelectedSVGElement(SVGElement e) {
+        SVGElement old = this.getSelectedSVGElement();
+        if (Util.differ(old, e)) {
+            if (e == null) {
+                this.getSelectionModel().clearSelection();
+                firePropertyChange("selectedSVGElement", old, null);
+            } else if (e instanceof ShapeElement) {
+                int idx = 0;
+                for (CuttingShape c : jpModel.getCuttingShapes()) {
+                    if (c.getShapeElement().equals((ShapeElement) e)) {
+                        this.getSelectionModel().setSelectionInterval(idx, idx);
+                        firePropertyChange("selectedSVGElement", old, e);
+                        return;
+                    }
+                    idx++;
+                }
+                this.getSelectionModel().clearSelection();
+            }
+
+        }
+    }
     
-    public CuttingShape getSelectedShape(){
-        int idx = this.getSelectedRow();
-        if (idx==-1){
+    public SVGElement getSelectedSVGElement() {
+        int idx = this.getSelectionModel().getMinSelectionIndex();
+        if (idx >= 0){
+            return this.jpModel.getCuttingShape(idx).getShapeElement();
+        }
+        else{
             return null;
         }
-        else{
-            return jpModel.getCuttingShape(idx);
-        }
     }
     
-    public void setSelectedSVGElement(SVGElement e){
-        if (e instanceof ShapeElement){
-            for (CuttingShape c:jpModel.getCuttingShapes()){
-                if (c.getShapeElement().equals((ShapeElement) e)){
-                    this.setSelectedShape(c);
-                    return;
-                }
-            }
-        }
-        this.setSelectedShape(null);
-    }
-    
-    public SVGElement getSelectedSVGElement(){
-        CuttingShape cs = this.getSelectedShape();
-        if (cs != null){
-            return cs.getShapeElement();
-        }
-        else{
-            return null;
-        }
-    }
-    
-    public void setSelectedShape(CuttingShape selectedShape){
-        CuttingShape old = this.getSelectedShape();
-        if (selectedShape == null){
-            this.getSelectionModel().clearSelection();
-        }
-        else{
-            CuttingShape[] shapes = jpModel.getCuttingShapes();
-            for(int idx=0;idx<shapes.length;idx++){
-                if (shapes[idx].equals(selectedShape)){
-                    this.getSelectionModel().setSelectionInterval(idx, idx);
-                    break;
-                }
-            }
-        }
-        firePropertyChange("selectedShape", old, selectedShape);
-        firePropertyChange("selectedSVGElement", old, selectedShape);
-    }
-    
-    public void setJpModel(JepilogModel m){
+    public void setJpModel(JepilogModel m) {
         this.jpModel = m;
         this.setModel(new CuttingShapesTableModel());
     }
-    public JepilogModel getJpModel(){
+
+    public JepilogModel getJpModel() {
         return this.jpModel;
     }
-    
-    public CuttingShapesTable(){
+
+    public CuttingShapesTable() {
         this.jpModel = new JepilogModel();
         this.setModel(new CuttingShapesTableModel());
         this.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        this.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+        this.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
             public void valueChanged(ListSelectionEvent lse) {
-                CuttingShapesTable.this.firePropertyChange("selectedShape", null, CuttingShapesTable.this.getSelectedShape());
                 CuttingShapesTable.this.firePropertyChange("selectedSVGElement", null, CuttingShapesTable.this.getSelectedSVGElement());
             }
-            
         });
     }
-   
+
     class CuttingShapesTableModel extends DefaultTableModel implements PropertyChangeListener {
+
         private static final long serialVersionUID = 1L;
         private Class[] classes = new Class[]{String.class, String.class};
         private String[] title = new String[]{"Shape Name", "Cutting Depth"};
-        
-        public CuttingShapesTableModel(){
+
+        public CuttingShapesTableModel() {
             jpModel.addPropertyChangeListener(JepilogModel.PROPERTY_CUTTINGSHAPES, this);
             jpModel.addPropertyChangeListener(JepilogModel.PROPERTY_MATERIAL, this);
         }
-        
+
         @Override
-        public Class getColumnClass(int column){
+        public Class getColumnClass(int column) {
             return classes[column];
         }
-        
+
         @Override
-        public boolean isCellEditable(int row, int column){
-            return column==1 && getValueAt(row, column).toString().endsWith("mm");
+        public boolean isCellEditable(int row, int column) {
+            return column == 1 && getValueAt(row, column).toString().endsWith("mm");
         }
-        
+
         @Override
-        public void setValueAt(Object value, int row, int column){
-            if (column == 1){
-                double val = Double.parseDouble(value.toString().replace(",",".").split(" ")[0]);
+        public void setValueAt(Object value, int row, int column) {
+            if (column == 1) {
+                double val = Double.parseDouble(value.toString().replace(",", ".").split(" ")[0]);
                 jpModel.getCuttingShape(row).setProperty(jpModel.getMaterial().getCuttingProperty(val));
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("Wrong column or datatype");
             }
         }
-        
+
         @Override
-        public Object getValueAt(int row, int column){
-            if (column==0){
+        public Object getValueAt(int row, int column) {
+            if (column == 0) {
                 String name = jpModel.getCuttingShape(row).getShapeElement().getId();
                 return name == null || name.equals("") ? jpModel.getCuttingShape(row).getShapeElement().toString() : name;
-            }
-            else if (column == 1){
+            } else if (column == 1) {
                 DecimalFormat format = new DecimalFormat("#.### mm");
-                if (jpModel.getMaterial()==null){//Unable to calculate Depth
+                if (jpModel.getMaterial() == null) {//Unable to calculate Depth
                     return "no Material selected";
-                }
-                else if (jpModel.getCuttingShape(row).getProperty()==null){// Default depth is Materialdepth
+                } else if (jpModel.getCuttingShape(row).getProperty() == null) {// Default depth is Materialdepth
 
                     return format.format(jpModel.getMaterial().getHeight());
                 }
                 return format.format(jpModel.getMaterial().getCuttingPropertyDepth(jpModel.getCuttingShapes()[row].getProperty()));
-            }
-            else{
+            } else {
                 throw new IllegalArgumentException("Column doesn't exist");
             }
         }
-        
+
         @Override
-        public int getColumnCount(){
+        public int getColumnCount() {
             return title.length;
         }
-        
+
         @Override
-        public String getColumnName(int column){
+        public String getColumnName(int column) {
             return title[column];
         }
-        
+
         @Override
-        public int getRowCount(){
+        public int getRowCount() {
             return jpModel.getCuttingShapes().length;
         }
 
