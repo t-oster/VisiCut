@@ -48,16 +48,16 @@ public class EpilogCutterTest {
      */
     @Test
     public void testVectorJob() throws IllegalJobException, Exception {
-        EpilogCutter.SIMULATE_COMMUNICATION = true;
+        EpilogCutter.SIMULATE_COMMUNICATION = false;
         System.out.println("sendJob");
         
         EpilogCutter instance = new EpilogCutter("137.226.56.228");
-        VectorPart vp = new VectorPart(new CuttingProperty(5000,20,100));
+        VectorPart vp = new VectorPart(new CuttingProperty(50,100,5000));
         vp.moveto(0, 0);
-        vp.lineto(100, 0);
-        vp.lineto(100,100);
-        vp.lineto(0,100);
-        vp.lineto(0,0);
+        for (int i=0;i<=500;i++){
+            vp.setFocus(i);
+            vp.lineto(2*i, 0);
+        }
         LaserJob job = new LaserJob("vector", "666", "bla", 500, null, vp);
         instance.sendJob(job);
     }

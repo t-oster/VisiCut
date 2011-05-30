@@ -17,6 +17,7 @@ public class VectorCommand {
         SETSPEED,
         SETPOWER,
         SETFREQUENCY,
+        SETFOCUS,
         MOVETO,
         LINETO
     }
@@ -51,7 +52,7 @@ public class VectorCommand {
     }
 
     public VectorCommand(CmdType type, int operand1) {
-        if (type == CmdType.SETSPEED || type == CmdType.SETPOWER || type == CmdType.SETFREQUENCY) {
+        if (type == CmdType.SETSPEED || type == CmdType.SETPOWER || type == CmdType.SETFREQUENCY || type == CmdType.SETFOCUS) {
             this.type = type;
             operands = new int[]{operand1};
         } else {
@@ -70,13 +71,20 @@ public class VectorCommand {
         if (type == CmdType.SETSPEED) {
             return operands[0];
         }
-        throw new UnsupportedOperationException("getPower is not Applicable for " + type.toString());
+        throw new UnsupportedOperationException("getSpeed is not Applicable for " + type.toString());
     }
 
     public int getFrequency() {
         if (type == CmdType.SETFREQUENCY) {
             return operands[0];
         }
-        throw new UnsupportedOperationException("getPower is not Applicable for " + type.toString());
+        throw new UnsupportedOperationException("getFrequency is not Applicable for " + type.toString());
+    }
+
+    public int getFocus() {
+        if (type == CmdType.SETFOCUS) {
+            return operands[0];
+        }
+        throw new UnsupportedOperationException("getFocus is not Applicable for " + type.toString());
     }
 }

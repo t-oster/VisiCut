@@ -399,8 +399,8 @@ public class EpilogCutter extends LaserCutter {
 
         }
         out.printf("\033*rC");       // end raster
-        out.write((char) 26);
-        out.write((char) 4); // some end of file markers
+        //out.write((char) 26);
+        //out.write((char) 4); // some end of file markers
         //PrintStream ps = new PrintStream((new FileOutputStream(new File("/tmp/rasterdump.hex"))));
         //ps.write(result.toByteArray());
         //ps.close();
@@ -412,7 +412,7 @@ public class EpilogCutter extends LaserCutter {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(result, true, "US-ASCII");
 
-        out.printf("\033E@PJL ENTER LANGUAGE=PCL\r\n");
+        //out.printf("\033E@PJL ENTER LANGUAGE=PCL\r\n");
         /* Page Orientation */
         out.printf("\033*r0F");
         out.printf("\033*r%dT", vp == null ? 500 : vp.getHeight());// if not dummy, then job.getHeight());
@@ -431,6 +431,10 @@ public class EpilogCutter extends LaserCutter {
                     out.print(";");
                 }
                 switch (cmd.getType()) {
+                    case SETFOCUS: {
+                        out.printf("WF%d;", cmd.getFocus());
+                        break;
+                    }
                     case SETFREQUENCY: {
                         out.printf("XR%04d;", cmd.getFrequency());
                         break;

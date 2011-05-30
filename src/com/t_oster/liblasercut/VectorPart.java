@@ -63,6 +63,13 @@ public class VectorPart {
             this.currentCuttingProperty.setFrequency(frequency);
         }
     }
+
+    public void setFocus(int focus){
+        if (focus != this.currentCuttingProperty.getFocus()){
+            commands.add(new VectorCommand(VectorCommand.CmdType.SETFOCUS, focus));
+            this.currentCuttingProperty.setFocus(focus);
+        }
+    }
     
     private void checkMin(int x, int y)
     {

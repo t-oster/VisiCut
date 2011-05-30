@@ -103,8 +103,7 @@ public class RasterPart {
      * @return 
      */
     public Point getRasterStart(int raster){
-        //TODO
-        return new Point(0,0);
+        return this.starts.get(raster);
     }
     
     /**

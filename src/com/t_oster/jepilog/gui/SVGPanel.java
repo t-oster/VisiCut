@@ -4,44 +4,40 @@
  */
 package com.t_oster.jepilog.gui;
 
-import java.awt.Font;
 import com.kitfox.svg.SVGDiagram;
 import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.ShapeElement;
 import com.kitfox.svg.app.beans.SVGIcon;
-import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.jepilog.model.CuttingShape;
 import com.t_oster.util.Util;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Shape;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
-import java.beans.PropertyChangeListener;
 import java.net.URI;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
 import java.io.Serializable;
-import java.util.Set;
 
 /**
  *
  * @author thommy
  */
-public class SVGPanel extends JPanel implements MouseListener, MouseMotionListener, Serializable{
+public class SVGPanel extends JPanel implements MouseListener, MouseMotionListener, Serializable {
 
     /**
      * Propertys
@@ -55,16 +51,13 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     public static final String PROPERTY_ZOOMFACTOR = "zoomFactor";
     public static final String PROPERTY_VIEWOFFSET = "viewOffset";
     private static final long serialVersionUID = 1L;
-    
     private SVGIcon icon;
-
     private URI svgUri = null;
     private SVGDiagram svgDiagramm = null;
     private CuttingShape[] cuttingShapes;
     private SVGElement selectedSVGElement;
-
     private double zoomFactor = 1;
-    private Point viewOffset = new Point(0,0);
+    private Point viewOffset = new Point(0, 0);
     private AffineTransform viewTransform = new AffineTransform();
     private AffineTransform inverseTransform = new AffineTransform();
     private int gridDPI = 500;
@@ -96,14 +89,14 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     public Dimension getMinimumSize() {
         return new Dimension(300, 500);
     }
-    
+
     /**
      * Refreshes the viewTransform
      * and inverseTransform to
      * reflect the current
      * zoomFactor and viewOffset
      */
-    private void setTransform(){
+    private void setTransform() {
         try {
             this.viewTransform = AffineTransform.getScaleInstance(zoomFactor, zoomFactor);
             this.viewTransform.concatenate(AffineTransform.getTranslateInstance(viewOffset.getX(), viewOffset.getY()));
@@ -113,8 +106,8 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         }
     }
 
-    public void setZoomFactor(double zf){
-        if (zf != this.zoomFactor){
+    public void setZoomFactor(double zf) {
+        if (zf != this.zoomFactor) {
             double old = this.zoomFactor;
             this.zoomFactor = zf;
             this.setTransform();
@@ -122,13 +115,13 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
             firePropertyChange(PROPERTY_ZOOMFACTOR, old, this.zoomFactor);
         }
     }
-    
-    public double getZoomFactor(){
+
+    public double getZoomFactor() {
         return this.zoomFactor;
     }
 
-    public void setViewOffset(Point p){
-        if (Util.differ(p, this.viewOffset)){
+    public void setViewOffset(Point p) {
+        if (Util.differ(p, this.viewOffset)) {
             Point old = this.viewOffset;
             this.viewOffset = p;
             this.setTransform();
@@ -137,12 +130,12 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         }
     }
 
-    public Point getViewOffset(){
+    public Point getViewOffset() {
         return this.viewOffset;
     }
-    
+
     public void setStartPoint(Point p) {
-        if (Util.differ(p,this.startPoint)){
+        if (Util.differ(p, this.startPoint)) {
             Point old = this.startPoint;
             this.startPoint = p;
             repaint();
@@ -153,7 +146,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     public Point getStartPoint() {
         return this.startPoint;
     }
-    
+
     private void sizeToFit() {
         Dimension d = getPreferredSize();
         setSize(d.width, d.height);
@@ -170,15 +163,15 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         this.cuttingShapes = null;
     }
 
-    public void setShowImage(boolean image){
-        if (this.showImage != image){
+    public void setShowImage(boolean image) {
+        if (this.showImage != image) {
             this.showImage = image;
             repaint();
             firePropertyChange(PROPERTY_SHOWIMAGE, !showImage, showImage);
         }
     }
 
-    public boolean getShowImage(){
+    public boolean getShowImage() {
         return this.showImage;
     }
 
@@ -189,8 +182,8 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
             firePropertyChange(PROPERTY_SHOWENGRAVINGPART, !showEngravingPart, showEngravingPart);
         }
     }
-    
-    public boolean isShowEngravingPart(){
+
+    public boolean isShowEngravingPart() {
         return showEngravingPart;
     }
 
@@ -201,25 +194,25 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
             firePropertyChange(PROPERTY_SHOWCUTTINGPART, !showCuttingPart, showCuttingPart);
         }
     }
-    
-    public boolean isShowCuttingPart(){
+
+    public boolean isShowCuttingPart() {
         return showCuttingPart;
     }
-    
-    public void setShowGrid(boolean show){
-        if (show != this.showGrid){
+
+    public void setShowGrid(boolean show) {
+        if (show != this.showGrid) {
             this.showGrid = show;
             this.repaint();
             firePropertyChange(PROPERTY_SHOWGRID, !showGrid, showGrid);
         }
     }
-    
-    public boolean isShowGrid(){
+
+    public boolean isShowGrid() {
         return this.showGrid;
     }
 
     public void setSvgUri(URI diag) {
-        if (Util.differ(diag, this.svgUri)){
+        if (Util.differ(diag, this.svgUri)) {
             URI old = this.svgUri;
             this.icon = new SVGIcon();
             icon.setSvgURI(diag);
@@ -233,32 +226,32 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         }
     }
 
-    public URI getSvgUri(){
+    public URI getSvgUri() {
         return this.svgUri;
     }
-    
-    public void setCuttingShapes(CuttingShape[] cuttingShapes){
+
+    public void setCuttingShapes(CuttingShape[] cuttingShapes) {
         this.cuttingShapes = cuttingShapes;
     }
-    
-    public CuttingShape[] getCuttingShapes(){
+
+    public CuttingShape[] getCuttingShapes() {
         return this.cuttingShapes;
     }
-    
-    public boolean isCuttingShapeSelected(){
+
+    public boolean isCuttingShapeSelected() {
         SVGElement sel = this.getSelectedSVGElement();
-        if (sel != null && this.cuttingShapes != null && sel instanceof ShapeElement){
-            for (CuttingShape cs:this.cuttingShapes){
-                if (cs.getShapeElement().equals((ShapeElement) sel)){
+        if (sel != null && this.cuttingShapes != null && sel instanceof ShapeElement) {
+            for (CuttingShape cs : this.cuttingShapes) {
+                if (cs.getShapeElement().equals((ShapeElement) sel)) {
                     return true;
                 }
             }
         }
         return false;
     }
-    
-    public void setSelectedSVGElement(SVGElement s){
-        if (Util.differ(s, selectedSVGElement)){
+
+    public void setSelectedSVGElement(SVGElement s) {
+        if (Util.differ(s, selectedSVGElement)) {
             SVGElement old = selectedSVGElement;
             this.selectedSVGElement = s;
             this.repaint();
@@ -266,24 +259,24 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
             boolean cse = this.isCuttingShapeSelected();
             firePropertyChange("cuttingShapeSelected", !cse, cse);
         }
-        
+
     }
-    
-    public SVGElement getSelectedSVGElement(){
+
+    public SVGElement getSelectedSVGElement() {
         return selectedSVGElement;
     }
-    
-    public void setGridDPI(int dpi){
-        if (this.gridDPI != dpi){
+
+    public void setGridDPI(int dpi) {
+        if (this.gridDPI != dpi) {
             this.gridDPI = dpi;
             this.repaint();
         }
     }
-    
-    public int getGridDPI(){
+
+    public int getGridDPI() {
         return this.gridDPI;
     }
-    
+
     /**
      * Draws a given Shape on a Graphics g but just using the line
      * operation (to simulate behavior on lasercutters)
@@ -309,60 +302,60 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         }
     }
 
-    private void drawGrid(Graphics g, int rasterDPI, int rasterWidth){
+    private void drawGrid(Graphics g, int rasterDPI, int rasterWidth) {
         int width = getWidth();
         int height = getHeight();
         g.setColor(Color.BLACK);
         Point sp = this.getStartPoint();
         Point2D tmp = viewTransform.transform(sp, null);
         sp = new Point((int) (tmp.getX()), (int) (tmp.getY()));
-        rasterDPI*=zoomFactor;
-        for (int mm = 0;mm < Util.px2mm(width-sp.x, rasterDPI);mm+=rasterWidth){
-            int lx = sp.x+(int) Util.mm2px(mm, rasterDPI);
+        rasterDPI *= zoomFactor;
+        for (int mm = 0; mm < Util.px2mm(width - sp.x, rasterDPI); mm += rasterWidth) {
+            int lx = sp.x + (int) Util.mm2px(mm, rasterDPI);
             g.drawLine(lx, 0, lx, height);
-            String txt = mm+" mm";
+            String txt = mm + " mm";
             int w = g.getFontMetrics().stringWidth(txt);
             int h = g.getFontMetrics().getHeight();
             g.setColor(getBackground());
-            g.fillRect(lx-w/2, (int) (height-1.8*h), w, h);
+            g.fillRect(lx - w / 2, (int) (height - 1.8 * h), w, h);
             g.setColor(Color.BLACK);
-            g.drawString(txt, lx-w/2, height-h);
+            g.drawString(txt, lx - w / 2, height - h);
         }
-        for (int mm = rasterWidth;mm < Util.px2mm(sp.x, rasterDPI);mm+=rasterWidth){
-            int lx = sp.x-(int) Util.mm2px(mm, rasterDPI);
+        for (int mm = rasterWidth; mm < Util.px2mm(sp.x, rasterDPI); mm += rasterWidth) {
+            int lx = sp.x - (int) Util.mm2px(mm, rasterDPI);
             g.drawLine(lx, 0, lx, height);
-            String txt = "-"+mm+" mm";
+            String txt = "-" + mm + " mm";
             int w = g.getFontMetrics().stringWidth(txt);
             int h = g.getFontMetrics().getHeight();
             g.setColor(getBackground());
-            g.fillRect(lx-w/2, (int) (height-1.8*h), w, h);
+            g.fillRect(lx - w / 2, (int) (height - 1.8 * h), w, h);
             g.setColor(Color.BLACK);
-            g.drawString(txt, lx-w/2, height-h);
+            g.drawString(txt, lx - w / 2, height - h);
         }
-        for (int mm = 0;mm < Util.px2mm(height-sp.y, rasterDPI);mm+=rasterWidth){
-            int ly = sp.y+(int) Util.mm2px(mm, rasterDPI);
+        for (int mm = 0; mm < Util.px2mm(height - sp.y, rasterDPI); mm += rasterWidth) {
+            int ly = sp.y + (int) Util.mm2px(mm, rasterDPI);
             g.drawLine(0, ly, width, ly);
-            String txt = mm+" mm";
+            String txt = mm + " mm";
             int w = g.getFontMetrics().stringWidth(txt);
             int h = g.getFontMetrics().getHeight();
             g.setColor(getBackground());
-            g.fillRect(width-w, ly-h/2, w, h);
+            g.fillRect(width - w, ly - h / 2, w, h);
             g.setColor(Color.BLACK);
-            g.drawString(txt, width-w, ly+h/3);
+            g.drawString(txt, width - w, ly + h / 3);
         }
-        for (int mm = rasterWidth;mm < Util.px2mm(sp.y, rasterDPI);mm+=rasterWidth){
-            int ly = sp.y-(int) Util.mm2px(mm, rasterDPI);
+        for (int mm = rasterWidth; mm < Util.px2mm(sp.y, rasterDPI); mm += rasterWidth) {
+            int ly = sp.y - (int) Util.mm2px(mm, rasterDPI);
             g.drawLine(0, ly, width, ly);
-            String txt = "-"+mm+" mm";
+            String txt = "-" + mm + " mm";
             int w = g.getFontMetrics().stringWidth(txt);
             int h = g.getFontMetrics().getHeight();
             g.setColor(getBackground());
-            g.fillRect(width-w, ly-h/2, w, h);
+            g.fillRect(width - w, ly - h / 2, w, h);
             g.setColor(Color.BLACK);
-            g.drawString(txt, width-w, ly+h/3);
+            g.drawString(txt, width - w, ly + h / 3);
         }
     }
-    
+
     @Override
     public void paintComponent(Graphics gg) {
         super.paintComponent(gg);
@@ -375,8 +368,8 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         g.setColor(getBackground());
         g.fillRect(0, 0, width, height);
 
-        if (showGrid && gridDPI != 0){
-           drawGrid(g, gridDPI, (int) Math.max(10/zoomFactor, 1));
+        if (showGrid && gridDPI != 0) {
+            drawGrid(g, gridDPI, (int) Math.max(10 / zoomFactor, 1));
         }
 
         //Shapes and Icon have to be drawn zoomed
@@ -384,7 +377,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         if (icon != null && showImage) {
             icon.paintIcon(this, g, 0, 0);
         }
-        if (cuttingShapes!=null && showCuttingPart) {
+        if (cuttingShapes != null && showCuttingPart) {
             g.setColor(Color.RED);
             for (CuttingShape shape : cuttingShapes) {
                 try {
@@ -411,10 +404,9 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         //Draw StartingPoint
 
         Point sp = startPoint;
-        if (movingStartPoint){
+        if (movingStartPoint) {
             sp = this.getMousePosition();
-        }
-        else{
+        } else {
             Point2D tmp = viewTransform.transform(sp, null);
             sp = new Point((int) tmp.getX(), (int) tmp.getY());
         }
@@ -426,7 +418,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
             g.drawLine(sp.x - 4, sp.y + 4, sp.x + 4, sp.y - 4);
         }
     }
-    
+
     /**
      * Should return the picked shape, but transformed as it is drawn
      * when rendered.
@@ -436,16 +428,16 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
      * @param y
      * @return 
      */
-    private SVGElement pickSVGElement(int x, int y){
+    private SVGElement pickSVGElement(int x, int y) {
         try {
-            List pickedElements = svgDiagramm.pick(new Point(x,y), null);
+            List pickedElements = svgDiagramm.pick(new Point(x, y), null);
             if (pickedElements.size() > 0) {
                 //TODO: don't always select last element, but toggle between
-                Object o = pickedElements.get(pickedElements.size()-1);
-                if (o instanceof List){
+                Object o = pickedElements.get(pickedElements.size() - 1);
+                if (o instanceof List) {
                     List l = (List) o;
-                    Object o2 = l.get(l.size()-1);
-                    if (o2 instanceof SVGElement){
+                    Object o2 = l.get(l.size() - 1);
+                    if (o2 instanceof SVGElement) {
                         return (SVGElement) o2;
                     }
                 }
@@ -456,9 +448,9 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
             return null;
         }
     }
-    
+
     public void mouseClicked(MouseEvent me) {
-        if (me.getButton()==MouseEvent.BUTTON1 && svgDiagramm != null) {
+        if (me.getButton() == MouseEvent.BUTTON1 && svgDiagramm != null) {
             Point2D tmp = inverseTransform.transform(me.getPoint(), null);
             this.setSelectedSVGElement(pickSVGElement((int) tmp.getX(), (int) tmp.getY()));
         }
@@ -469,8 +461,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
 
         if (me.getPoint().distance(viewTransform.transform(startPoint, null)) <= 10) {
             movingStartPoint = true;
-        }
-        else {
+        } else {
             movingViewPoint = true;
             mouseStart = me.getPoint();
         }
@@ -481,11 +472,10 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
             movingStartPoint = false;
             Point2D tmp = inverseTransform.transform(me.getPoint(), null);
             setStartPoint(new Point((int) tmp.getX(), (int) tmp.getY()));
+        } else if (movingViewPoint) {
+            Point moved = new Point((int) (me.getX() - mouseStart.getX()), (int) (me.getY() - mouseStart.getY()));
+            this.setViewOffset(new Point(this.viewOffset.x + moved.x, this.viewOffset.y + moved.y));
         }
-         else if (movingViewPoint){
-            Point moved = new Point((int)(me.getX()-mouseStart.getX()),(int) (me.getY()-mouseStart.getY()));
-            this.setViewOffset(new Point(this.viewOffset.x+moved.x, this.viewOffset.y+moved.y));
-         }
     }
 
     public void mouseEntered(MouseEvent me) {
@@ -501,6 +491,10 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     }
 
     public void mouseMoved(MouseEvent me) {
+        if (me.getPoint().distance(viewTransform.transform(startPoint, null)) <= 10) {
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        } else {
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
     }
-
 }

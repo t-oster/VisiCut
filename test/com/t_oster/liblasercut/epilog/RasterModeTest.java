@@ -4,6 +4,7 @@
  */
 package com.t_oster.liblasercut.epilog;
 
+import com.t_oster.liblasercut.VectorPart;
 import java.awt.Graphics2D;
 import com.kitfox.svg.app.beans.SVGIcon;
 import com.t_oster.liblasercut.CuttingProperty;
@@ -121,7 +122,7 @@ public class RasterModeTest {
         RasterPart rp = new RasterPart(new EngravingProperty(100,100));
 
         SVGUniverse univ = new SVGUniverse();
-        URI svg = univ.loadSVG(new File("test/files/tux.svg").toURI().toURL());
+        URI svg = univ.loadSVG(new File("test/files/TweetyMerged.svg").toURI().toURL());
         SVGIcon icon = new SVGIcon();
         icon.setSvgURI(svg);
         icon.setAntiAlias(false);
