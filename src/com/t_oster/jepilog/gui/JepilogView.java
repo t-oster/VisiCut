@@ -4,15 +4,11 @@
 package com.t_oster.jepilog.gui;
 
 import com.kitfox.svg.SVGElement;
-import com.kitfox.svg.SVGException;
 import com.kitfox.svg.ShapeElement;
-import com.t_oster.jepilog.model.JepilogModel;
 import com.t_oster.liblasercut.IllegalJobException;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.event.ListSelectionListener;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
@@ -21,18 +17,12 @@ import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import javax.swing.Timer;
 import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import com.t_oster.jepilog.model.CuttingShape;
-import com.t_oster.util.Util;
-import java.awt.Point;
-import javax.swing.table.DefaultTableModel;
-import java.beans.PropertyChangeListener;
-import java.util.Scanner;
 
 /**
  * The application's main frame.
@@ -105,12 +95,12 @@ public class JepilogView extends FrameView {
 
     @Action
     public void zoomIn() {
-        sVGPanel1.setZoomFactor(sVGPanel1.getZoomFactor() * 1.5);
+        viewModel.setZoomFactor(viewModel.getZoomFactor() * 1.5);
     }
 
     @Action
     public void zoomOut() {
-        sVGPanel1.setZoomFactor(sVGPanel1.getZoomFactor() / 1.5);
+        viewModel.setZoomFactor(viewModel.getZoomFactor() / 1.5);
     }
 
     @Action
@@ -156,6 +146,8 @@ public class JepilogView extends FrameView {
         jButton4 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         cuttingShapesTable1 = new com.t_oster.jepilog.gui.CuttingShapesTable();
+        jPanel3 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
         sVGPanel1 = new com.t_oster.jepilog.gui.SVGPanel();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
@@ -315,7 +307,7 @@ public class JepilogView extends FrameView {
                 .addComponent(jCheckBox2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jCheckBox3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 110, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addContainerGap())
         );
@@ -335,7 +327,6 @@ public class JepilogView extends FrameView {
         jButton3.setText(resourceMap.getString("jButton3.text")); // NOI18N
         jButton3.setName("jButton3"); // NOI18N
 
-        jButton4.setAction(actionMap.get("removeSelectedCuttingShape")); // NOI18N
         jButton4.setText(resourceMap.getString("jButton4.text")); // NOI18N
         jButton4.setName("jButton4"); // NOI18N
 
@@ -378,11 +369,41 @@ public class JepilogView extends FrameView {
                         .addComponent(jButton3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton4))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
         jTabbedPane1.addTab(resourceMap.getString("jPanel2.TabConstraints.tabTitle"), jPanel2); // NOI18N
+
+        jPanel3.setName("jPanel3"); // NOI18N
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 526, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 456, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab(resourceMap.getString("jPanel3.TabConstraints.tabTitle"), jPanel3); // NOI18N
+
+        jPanel4.setName("jPanel4"); // NOI18N
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 526, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 456, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab(resourceMap.getString("jPanel4.TabConstraints.tabTitle"), jPanel4); // NOI18N
 
         jSplitPane1.setRightComponent(jTabbedPane1);
 
@@ -407,6 +428,10 @@ public class JepilogView extends FrameView {
         bindingGroup.addBinding(binding);
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jobModel, org.jdesktop.beansbinding.ELProperty.create("${svg}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("svgUri"));
         bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, viewModel, org.jdesktop.beansbinding.ELProperty.create("${viewPoint}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("viewOffset"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, viewModel, org.jdesktop.beansbinding.ELProperty.create("${zoomFactor}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("zoomFactor"));
+        bindingGroup.addBinding(binding);
 
         sVGPanel1.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
             public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
@@ -427,7 +452,7 @@ public class JepilogView extends FrameView {
         );
         sVGPanel1Layout.setVerticalGroup(
             sVGPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 439, Short.MAX_VALUE)
+            .addGap(0, 496, Short.MAX_VALUE)
         );
 
         jSplitPane1.setLeftComponent(sVGPanel1);
@@ -445,7 +470,7 @@ public class JepilogView extends FrameView {
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 443, Short.MAX_VALUE))
+                .addComponent(jSplitPane1))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -609,7 +634,6 @@ public class JepilogView extends FrameView {
 
         shapeMenu.add(meAddToCutting);
 
-        meRemoveFromCutting.setAction(actionMap.get("removeSelectedCuttingShape")); // NOI18N
         meRemoveFromCutting.setName("meRemoveFromCutting"); // NOI18N
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, sVGPanel1, org.jdesktop.beansbinding.ELProperty.create("${cuttingShapeSelected}"), meRemoveFromCutting, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
@@ -695,7 +719,7 @@ public class JepilogView extends FrameView {
     }
 
     @Action
-    public void removeSelectedCuttingShape() {
+    public void removeSelectedShape() {
         SVGElement sel = viewModel.getSelectedSVGElement();
         if (sel instanceof ShapeElement) {
             jobModel.removeCuttingShape((ShapeElement) sel);
@@ -768,6 +792,8 @@ public class JepilogView extends FrameView {
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
