@@ -44,7 +44,9 @@ public class JepilogModel extends AbstractModel implements Serializable{
     private List<EngravingImage> rasterImages = new LinkedList<EngravingImage>();
     private Point startPoint = new Point(0,0);
     private int resolution = 500;
-    private MaterialProperty material = null;
+    private MaterialProperty material = this.getSelectedLaserCutter() != null ? 
+                this.getSelectedLaserCutter().getMaterialPropertys().get(0) 
+                : null;
     
     public static final String PROPERTY_STARTPOINT = "startPoint";
     public static final String PROPERTY_STARTPOSITION = "startPosition";

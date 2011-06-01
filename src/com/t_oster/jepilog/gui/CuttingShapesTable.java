@@ -83,8 +83,8 @@ public class CuttingShapesTable extends JTable {
     class CuttingShapesTableModel extends DefaultTableModel implements PropertyChangeListener {
 
         private static final long serialVersionUID = 1L;
-        private Class[] classes = new Class[]{String.class, String.class};
-        private String[] title = new String[]{"Shape Name", "Cutting Depth"};
+        private Class[] classes = new Class[]{String.class, String.class, String.class};
+        private String[] title = new String[]{"Shape Name", "Cutting Depth", "Z-Position"};
 
         public CuttingShapesTableModel() {
             jpModel.addPropertyChangeListener(JepilogModel.PROPERTY_CUTTINGSHAPES, this);
@@ -98,15 +98,30 @@ public class CuttingShapesTable extends JTable {
 
         @Override
         public boolean isCellEditable(int row, int column) {
-            return column == 1 && getValueAt(row, column).toString().endsWith("mm");
+            return (column == 1 && getValueAt(row, column).toString().endsWith("mm"))||column==2;
         }
 
         @Override
         public void setValueAt(Object value, int row, int column) {
             if (column == 1) {
                 double val = Double.parseDouble(value.toString().replace(",", ".").split(" ")[0]);
+                int oldfoc = jpModel.getCuttingShape(row).getProperty() == null
+                        ? 0
+                        : jpModel.getCuttingShape(row).getProperty().getFocus();
                 jpModel.getCuttingShape(row).setProperty(jpModel.getMaterial().getCuttingProperty(val));
-            } else {
+                jpModel.getCuttingShape(row).getProperty().setFocus(oldfoc);
+            } 
+            else if (column == 2)
+            {
+                int val = Integer.parseInt(value.toString());
+                if (jpModel.getCuttingShape(row).getProperty() == null)
+                {
+                    jpModel.getCuttingShape(row).setProperty(jpModel.getMaterial().getCuttingProperty().clone());
+                }
+                jpModel.getCuttingShape(row).getProperty().setFocus(val);
+            }
+            else 
+            {
                 throw new IllegalArgumentException("Wrong column or datatype");
             }
         }
@@ -125,6 +140,10 @@ public class CuttingShapesTable extends JTable {
                     return format.format(jpModel.getMaterial().getHeight());
                 }
                 return format.format(jpModel.getMaterial().getCuttingPropertyDepth(jpModel.getCuttingShapes()[row].getProperty()));
+            } else if (column == 2) {
+                return jpModel.getCuttingShape(row).getProperty() == null
+                        ? 0
+                        : jpModel.getCuttingShape(row).getProperty().getFocus();
             } else {
                 throw new IllegalArgumentException("Column doesn't exist");
             }
