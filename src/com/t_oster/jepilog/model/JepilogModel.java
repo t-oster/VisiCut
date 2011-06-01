@@ -20,6 +20,7 @@ import com.t_oster.liblasercut.RasterPart;
 import com.t_oster.util.Util;
 import java.awt.Point;
 import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
@@ -47,6 +48,8 @@ public class JepilogModel extends AbstractModel implements Serializable{
     private MaterialProperty material = this.getSelectedLaserCutter() != null ? 
                 this.getSelectedLaserCutter().getMaterialPropertys().get(0) 
                 : null;
+    private double scaleX = 1;
+    private double scaleY = 1;
     
     public static final String PROPERTY_STARTPOINT = "startPoint";
     public static final String PROPERTY_STARTPOSITION = "startPosition";
@@ -56,6 +59,37 @@ public class JepilogModel extends AbstractModel implements Serializable{
     public static final String PROPERTY_CUTTINGSHAPES = "cuttingShapes";
     public static final String PROPERTY_MATERIAL = "material";
     public static final String PROPERTY_ENGRAVINGIMAGES = "engravingImages";
+    public static final String PROPERTY_SCALEX = "scaleX";
+    public static final String PROPERTY_SCALEY = "scaleY";
+
+    public void setScaleX(Double x){
+        if (x!= 0 && x != this.scaleX)
+        {
+            Double old = this.scaleX;
+            this.scaleX = x;
+            this.pcs.firePropertyChange(PROPERTY_SCALEX, old, x);
+        }
+    }
+
+    public Double getScaleX()
+    {
+        return this.scaleX;
+    }
+
+     public void setScaleY(Double y){
+        if (y!=0 && y != this.scaleY)
+        {
+            System.out.println("Scaley set to "+y);
+            Double old = this.scaleY;
+            this.scaleY = y;
+            this.pcs.firePropertyChange(PROPERTY_SCALEY, old, y);
+        }
+    }
+
+    public Double getScaleY()
+    {
+        return this.scaleY;
+    }
     
     public void setMaterial(MaterialProperty p){
         if (Util.differ(p, this.material)){
@@ -243,7 +277,8 @@ public class JepilogModel extends AbstractModel implements Serializable{
     }
     
     private void addShape(VectorPart vp, Shape s) {
-        PathIterator iter = s.getPathIterator(null, 1);
+        AffineTransform scale = AffineTransform.getScaleInstance(scaleX, scaleY);
+        PathIterator iter = s.getPathIterator(scale, 1);
         while (!iter.isDone()) {
             double[] test = new double[8];
             int result = iter.currentSegment(test);

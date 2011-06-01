@@ -50,6 +50,9 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     public static final String PROPERTY_SHOWGRID = "showGrid";
     public static final String PROPERTY_ZOOMFACTOR = "zoomFactor";
     public static final String PROPERTY_VIEWOFFSET = "viewOffset";
+    public static final String PROPERTY_SCALEX = "scaleX";
+    public static final String PROPERTY_SCALEY = "scaleY";
+
     private static final long serialVersionUID = 1L;
     private SVGIcon icon;
     private URI svgUri = null;
@@ -57,6 +60,8 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
     private CuttingShape[] cuttingShapes;
     private SVGElement selectedSVGElement;
     private double zoomFactor = 1;
+    private double scaleX = 1;
+    private double scaleY = 1;
     private Point viewOffset = new Point(0, 0);
     private AffineTransform viewTransform = new AffineTransform();
     private AffineTransform inverseTransform = new AffineTransform();
@@ -90,6 +95,38 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         return new Dimension(300, 500);
     }
 
+    public void setScaleX(Double x){
+        if (x!= 0 && x != this.scaleX)
+        {
+            Double old = this.scaleX;
+            this.scaleX = x;
+            this.setTransform();
+            this.repaint();
+            this.firePropertyChange(PROPERTY_SCALEX, old, x);
+        }
+    }
+
+    public Double getScaleX()
+    {
+        return this.scaleX;
+    }
+
+     public void setScaleY(Double y){
+        if (y!= 0 && y != this.scaleY)
+        {
+            Double old = this.scaleY;
+            this.scaleY = y;
+            this.setTransform();
+            this.repaint();
+            this.firePropertyChange(PROPERTY_SCALEY, old, y);
+        }
+    }
+
+    public Double getScaleY()
+    {
+        return this.scaleY;
+    }
+
     /**
      * Refreshes the viewTransform
      * and inverseTransform to
@@ -98,7 +135,8 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
      */
     private void setTransform() {
         try {
-            this.viewTransform = AffineTransform.getScaleInstance(zoomFactor, zoomFactor);
+            this.viewTransform = AffineTransform.getScaleInstance(scaleX, scaleY);
+            this.viewTransform.concatenate(AffineTransform.getScaleInstance(zoomFactor, zoomFactor));
             this.viewTransform.concatenate(AffineTransform.getTranslateInstance(viewOffset.getX(), viewOffset.getY()));
             this.inverseTransform = this.viewTransform.createInverse();
         } catch (NoninvertibleTransformException ex) {
@@ -223,6 +261,8 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
             this.selectedSVGElement = null;
             this.cuttingShapes = null;
             this.sizeToFit();
+            this.setTransform();
+            this.repaint();
         }
     }
 

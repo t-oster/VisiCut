@@ -12,7 +12,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jSplitPane1" pref="844" max="32767" attributes="0"/>
+                  <Component id="jSplitPane1" pref="828" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -62,12 +62,9 @@
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace pref="149" max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
+                              <EmptySpace pref="72" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Component id="cbShowCut" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="cbShowEngrave" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jCheckBox3" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jCheckBox2" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="jCheckBox1" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Group type="103" alignment="0" groupAlignment="0" attributes="0">
                                       <Group type="102" alignment="1" attributes="0">
@@ -86,6 +83,18 @@
                                           </Group>
                                       </Group>
                                       <Component id="jButton1" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="cbShowEngrave" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jCheckBox3" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jCheckBox2" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="jSlider2" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jSlider1" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -119,13 +128,27 @@
                               <Component id="jCheckBox1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="cbShowCut" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="cbShowEngrave" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jCheckBox2" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jCheckBox3" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="76" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="102" attributes="0">
+                                              <Component id="cbShowEngrave" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="jCheckBox2" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace min="-2" pref="102" max="-2" attributes="0"/>
+                                              <Component id="jCheckBox3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Component id="jSlider2" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace pref="7" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jSlider1" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
                               <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -261,6 +284,37 @@
                         <Property name="name" type="java.lang.String" value="jLabel5" noResource="true"/>
                       </Properties>
                     </Component>
+                    <Component class="javax.swing.JSlider" name="jSlider1">
+                      <Properties>
+                        <Property name="maximum" type="int" value="200"/>
+                        <Property name="minimum" type="int" value="1"/>
+                        <Property name="name" type="java.lang.String" value="jSlider1" noResource="true"/>
+                      </Properties>
+                      <BindingProperties>
+                        <BindingProperty name="value" source="jobModel" sourcePath="${scaleX}" target="jSlider1" targetPath="value" updateStrategy="0" immediately="false">
+                          <BindingParameter name="IGNORE_ADJUSTING" value="N"/>
+                          <Property name="converter" type="org.jdesktop.beansbinding.Converter" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                            <Connection code="new Double100IntConverter()" type="code"/>
+                          </Property>
+                        </BindingProperty>
+                      </BindingProperties>
+                    </Component>
+                    <Component class="javax.swing.JSlider" name="jSlider2">
+                      <Properties>
+                        <Property name="maximum" type="int" value="200"/>
+                        <Property name="minimum" type="int" value="1"/>
+                        <Property name="orientation" type="int" value="1"/>
+                        <Property name="name" type="java.lang.String" value="jSlider2" noResource="true"/>
+                      </Properties>
+                      <BindingProperties>
+                        <BindingProperty name="value" source="jobModel" sourcePath="${scaleY}" target="jSlider2" targetPath="value" updateStrategy="0" immediately="false">
+                          <BindingParameter name="IGNORE_ADJUSTING" value="N"/>
+                          <Property name="converter" type="org.jdesktop.beansbinding.Converter" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                            <Connection code="new Double100IntConverter()" type="code"/>
+                          </Property>
+                        </BindingProperty>
+                      </BindingProperties>
+                    </Component>
                   </SubComponents>
                 </Container>
                 <Container class="javax.swing.JPanel" name="jPanel2">
@@ -291,7 +345,7 @@
                                   </Group>
                                   <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace pref="113" max="32767" attributes="0"/>
+                              <EmptySpace pref="53" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -308,7 +362,7 @@
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="jButton4" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="jScrollPane1" pref="418" max="32767" attributes="0"/>
+                                  <Component id="jScrollPane1" pref="406" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -392,12 +446,12 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <EmptySpace min="0" pref="530" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="494" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <EmptySpace min="0" pref="458" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="450" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -420,7 +474,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jScrollPane2" min="-2" pref="452" max="-2" attributes="0"/>
-                              <EmptySpace pref="66" max="32767" attributes="0"/>
+                              <EmptySpace pref="22" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -429,7 +483,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jScrollPane2" min="-2" pref="402" max="-2" attributes="0"/>
-                              <EmptySpace pref="44" max="32767" attributes="0"/>
+                              <EmptySpace pref="28" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -476,6 +530,8 @@
               <BindingProperties>
                 <BindingProperty name="cuttingShapes" source="jobModel" sourcePath="${cuttingShapes}" target="sVGPanel1" targetPath="cuttingShapes" updateStrategy="1" immediately="false"/>
                 <BindingProperty name="gridDPI" source="jobModel" sourcePath="${resolution}" target="sVGPanel1" targetPath="gridDPI" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="scaleX" source="jobModel" sourcePath="${scaleX}" target="sVGPanel1" targetPath="scaleX" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="scaleY" source="jobModel" sourcePath="${scaleY}" target="sVGPanel1" targetPath="scaleY" updateStrategy="0" immediately="false"/>
                 <BindingProperty name="selectedSVGElement" source="viewModel" sourcePath="${selectedSVGElement}" target="sVGPanel1" targetPath="selectedSVGElement" updateStrategy="0" immediately="false"/>
                 <BindingProperty name="showCuttingPart" source="viewModel" sourcePath="${showCut}" target="sVGPanel1" targetPath="showCuttingPart" updateStrategy="0" immediately="false"/>
                 <BindingProperty name="showEngravingPart" source="viewModel" sourcePath="${showRaster}" target="sVGPanel1" targetPath="showEngravingPart" updateStrategy="0" immediately="false"/>
@@ -504,7 +560,7 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="496" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="492" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -717,7 +773,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusMessageLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="684" max="32767" attributes="0"/>
+                  <EmptySpace pref="672" max="32767" attributes="0"/>
                   <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusAnimationLabel" min="-2" max="-2" attributes="0"/>

@@ -37,6 +37,7 @@ public class VectorPart {
         this.setFrequency(cp.getFrequency());
         this.setPower(cp.getPower());
         this.setSpeed(cp.getSpeed());
+        this.setFocus(cp.getFocus());
     }
     
     public VectorCommand[] getCommandList(){

@@ -23,6 +23,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import com.t_oster.jepilog.model.CuttingShape;
+import org.jdesktop.beansbinding.Converter;
 
 /**
  * The application's main frame.
@@ -141,6 +142,8 @@ public class JepilogView extends FrameView {
         jCheckBox3 = new javax.swing.JCheckBox();
         jComboBox3 = new javax.swing.JComboBox();
         jLabel5 = new javax.swing.JLabel();
+        jSlider1 = new javax.swing.JSlider();
+        jSlider2 = new javax.swing.JSlider();
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
@@ -266,17 +269,31 @@ public class JepilogView extends FrameView {
         jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
         jLabel5.setName("jLabel5"); // NOI18N
 
+        jSlider1.setMaximum(200);
+        jSlider1.setMinimum(1);
+        jSlider1.setName("jSlider1"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jobModel, org.jdesktop.beansbinding.ELProperty.create("${scaleX}"), jSlider1, org.jdesktop.beansbinding.BeanProperty.create("value"));
+        binding.setConverter(new Double100IntConverter());
+        bindingGroup.addBinding(binding);
+
+        jSlider2.setMaximum(200);
+        jSlider2.setMinimum(1);
+        jSlider2.setOrientation(javax.swing.JSlider.VERTICAL);
+        jSlider2.setName("jSlider2"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jobModel, org.jdesktop.beansbinding.ELProperty.create("${scaleY}"), jSlider2, org.jdesktop.beansbinding.BeanProperty.create("value"));
+        binding.setConverter(new Double100IntConverter());
+        bindingGroup.addBinding(binding);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(149, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addContainerGap(72, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(cbShowCut)
-                    .addComponent(cbShowEngrave)
-                    .addComponent(jCheckBox3)
-                    .addComponent(jCheckBox2)
                     .addComponent(jCheckBox1)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
@@ -291,7 +308,17 @@ public class JepilogView extends FrameView {
                                 .addComponent(jComboBox1, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(cbResolution, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jComboBox3, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING)))
+                        .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cbShowEngrave)
+                            .addComponent(jCheckBox3)
+                            .addComponent(jCheckBox2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jSlider2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(22, 22, 22)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -317,13 +344,22 @@ public class JepilogView extends FrameView {
                 .addComponent(jCheckBox1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cbShowCut)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbShowEngrave)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBox2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBox3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 76, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(cbShowEngrave)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jCheckBox2)
+                                .addGap(102, 102, 102)
+                                .addComponent(jCheckBox3))
+                            .addComponent(jSlider2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)))
                 .addComponent(jButton1)
                 .addContainerGap())
         );
@@ -376,7 +412,7 @@ public class JepilogView extends FrameView {
                             .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jLabel4))
-                .addContainerGap(113, Short.MAX_VALUE))
+                .addContainerGap(53, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -390,7 +426,7 @@ public class JepilogView extends FrameView {
                         .addComponent(jButton3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton4))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 418, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 406, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -402,11 +438,11 @@ public class JepilogView extends FrameView {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 530, Short.MAX_VALUE)
+            .addGap(0, 494, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 458, Short.MAX_VALUE)
+            .addGap(0, 450, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab(resourceMap.getString("jPanel4.TabConstraints.tabTitle"), jPanel4); // NOI18N
@@ -436,14 +472,14 @@ public class JepilogView extends FrameView {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(66, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(44, Short.MAX_VALUE))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab(resourceMap.getString("jPanel3.TabConstraints.tabTitle"), jPanel3); // NOI18N
@@ -456,6 +492,10 @@ public class JepilogView extends FrameView {
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, jobModel, org.jdesktop.beansbinding.ELProperty.create("${cuttingShapes}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("cuttingShapes"));
         bindingGroup.addBinding(binding);
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jobModel, org.jdesktop.beansbinding.ELProperty.create("${resolution}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("gridDPI"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jobModel, org.jdesktop.beansbinding.ELProperty.create("${scaleX}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("scaleX"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jobModel, org.jdesktop.beansbinding.ELProperty.create("${scaleY}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("scaleY"));
         bindingGroup.addBinding(binding);
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, viewModel, org.jdesktop.beansbinding.ELProperty.create("${selectedSVGElement}"), sVGPanel1, org.jdesktop.beansbinding.BeanProperty.create("selectedSVGElement"));
         bindingGroup.addBinding(binding);
@@ -495,7 +535,7 @@ public class JepilogView extends FrameView {
         );
         sVGPanel1Layout.setVerticalGroup(
             sVGPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 496, Short.MAX_VALUE)
+            .addGap(0, 492, Short.MAX_VALUE)
         );
 
         jSplitPane1.setLeftComponent(sVGPanel1);
@@ -506,14 +546,14 @@ public class JepilogView extends FrameView {
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 844, Short.MAX_VALUE)
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 828, Short.MAX_VALUE)
                 .addContainerGap())
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE))
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 500, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -644,7 +684,7 @@ public class JepilogView extends FrameView {
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(statusMessageLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 684, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 672, Short.MAX_VALUE)
                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(statusAnimationLabel)
@@ -662,7 +702,7 @@ public class JepilogView extends FrameView {
                 .addGap(3, 3, 3))
         );
 
-        importFileChooser.setCurrentDirectory(new java.io.File("/home/thommy/null"));
+        importFileChooser.setCurrentDirectory(new java.io.File("/Network/Servers/oliver.informatik.rwth-aachen.de/Volumes/Raid1/Users/oster/null"));
         importFileChooser.setFileFilter(new MySvgFilter());
         importFileChooser.setName("importFileChooser"); // NOI18N
 
@@ -818,6 +858,33 @@ public class JepilogView extends FrameView {
             }
         }
     }
+
+    private class Double100IntConverter extends Converter
+    {
+
+        @Override
+        public Integer convertForward(Object value) {
+            if (value instanceof Double){
+                double d = (Double) value;
+                int result = (int) (d*100);
+                return (Integer) result;
+            }
+            return null;
+        }
+
+        @Override
+        public Double convertReverse(Object value) {
+            if (value instanceof Integer)
+            {
+                int i = (Integer) value;
+                double result = i/(double) 100;
+                return (Double) result;
+            }
+            return null;
+        }
+
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox cbResolution;
     private javax.swing.JCheckBox cbShowCut;
@@ -857,6 +924,8 @@ public class JepilogView extends FrameView {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSlider jSlider1;
+    private javax.swing.JSlider jSlider2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
