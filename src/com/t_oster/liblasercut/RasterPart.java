@@ -4,9 +4,7 @@
  */
 package com.t_oster.liblasercut;
 
-import java.awt.Color;
 import java.awt.Point;
-import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -18,7 +16,7 @@ public class RasterPart {
     
     private EngravingProperty curProp;
     
-    private List<BufferedImage> images = new LinkedList<BufferedImage>();
+    private List<GreyscaleRaster> images = new LinkedList<GreyscaleRaster>();
     private List<EngravingProperty> properties = new LinkedList<EngravingProperty>();
     private List<Point> starts = new LinkedList<Point>();
     
@@ -49,11 +47,11 @@ public class RasterPart {
      * current engraving property)
      * @param img 
      */
-    public void addImage(BufferedImage img, Point start){
+    public void addImage(GreyscaleRaster img, Point start){
         this.addImage(img, curProp, start);
     }
     
-    public void addImage(BufferedImage img, EngravingProperty prop, Point start){
+    public void addImage(GreyscaleRaster img, EngravingProperty prop, Point start){
         this.images.add(img);
         this.properties.add(prop);
         this.starts.add(start);
@@ -115,11 +113,10 @@ public class RasterPart {
      * @return 
      */
     public List<Byte> getRasterLine(int raster, int line){
-        BufferedImage img = this.images.get(raster);
+        GreyscaleRaster img = this.images.get(raster);
         List<Byte> result = new LinkedList<Byte>();
         for (int x=0;x<img.getWidth();x++){
-            Color c = new Color(img.getRGB(x, line));
-            result.add((byte) ((c.getRed()+c.getGreen()+c.getBlue())/3));
+            result.add(img.getGreyScale(x, line));
         }
         return result;
     }
@@ -132,8 +129,8 @@ public class RasterPart {
         return this.images.get(raster).getHeight();
     }
 
-    public BufferedImage[] getImages(){
-        return this.images.toArray(new BufferedImage[0]);
+    public GreyscaleRaster[] getImages(){
+        return this.images.toArray(new GreyscaleRaster[0]);
     }
     
     public EngravingProperty[] getPropertys(){

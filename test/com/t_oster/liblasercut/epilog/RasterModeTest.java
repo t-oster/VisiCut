@@ -4,6 +4,7 @@
  */
 package com.t_oster.liblasercut.epilog;
 
+import com.t_oster.util.GreyScaleAdapter;
 import com.t_oster.liblasercut.VectorPart;
 import java.awt.Graphics2D;
 import com.kitfox.svg.app.beans.SVGIcon;
@@ -129,7 +130,7 @@ public class RasterModeTest {
         icon.setClipToViewbox(false);
         icon.setScaleToFit(false);
 
-        BufferedImage test = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+        GreyScaleAdapter test = new GreyScaleAdapter(icon.getIconWidth(), icon.getIconHeight());
         icon.paintIcon(null, test.getGraphics(), 0, 0);
         rp.addImage(test, new Point(0,0));
 
