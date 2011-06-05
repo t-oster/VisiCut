@@ -74,26 +74,36 @@ public class BlackWhiteRaster {
          * alter the pixels during dither process and don't want
          * to destroy the input image
          */
-        Byte[][] input = new Byte[src.getWidth()][src.getHeight()];
+        int[][] input = new int[src.getWidth()][2];
         for (int x = 0; x < src.getWidth(); x++) {
-            for (int y = 0; y < src.getHeight(); y++) {
-                input[x][y] = src.getGreyScale(x, y);
+            for (int y = 0; y < 1; y++) {
+                input[x][y+1] = (src.getGreyScale(x, y) & 0xFF);
             }
         }
-        for (int y = 0; y < raster[0].length; y++) {
-            for (int x = 0; x < raster.length; x++) {
-                this.setBlack(x, y, (input[x][y] & 0xFF) <= 127);
-                int error = input[x][y] - (((input[x][y] & 0xFF) <= 127) ? 0 : 255);
-                if (x + 1 < raster.length) {
-                    input[x + 1][y] = (byte) (input[x + 1][y] + 7 * error / 16);
-                    if (y + 1 < raster[0].length) {
-                        input[x + 1][y + 1] = (byte) (input[x + 1][y + 1] + 1 * error / 16);
+        for (int y = 0; y < input[0].length; y++) {
+            // copy lower line to upper line
+            // and read in next line from picture
+            for (int x = 0; x< input.length;x++)
+            {
+                input[x][0] = input[x][1];
+                if (y+1 < src.getHeight()){
+                    input[x][1] = (src.getGreyScale(x, y+1));
+                }
+            }
+            
+            for (int x = 0; x < input.length; x++) {
+                this.setBlack(x, y, input[x][0] <= 127);
+                int error = input[x][0] - ((input[x][0] <= 127) ? 0 : 255);
+                if (x + 1 < input.length) {
+                    input[x + 1][0] = (input[x + 1][0] + 7 * error / 16);
+                    if (y + 1 < src.getHeight()) {
+                        input[x + 1][1] = (input[x + 1][1] + 1 * error / 16);
                     }
                 }
-                if (y + 1 < raster[0].length) {
-                    input[x][y + 1] = (byte) (input[x][y + 1] + 5 * error / 16);
+                if (y + 1 < src.getHeight()) {
+                    input[x][1] = (input[x][1] + 5 * error / 16);
                     if (x > 0) {
-                        input[x - 1][y + 1] = (byte) (input[x - 1][y + 1] + 3 * error / 16);
+                        input[x - 1][1] = (input[x - 1][1] + 3 * error / 16);
                     }
                 }
             }
