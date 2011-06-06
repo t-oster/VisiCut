@@ -48,32 +48,4 @@ public class Util {
             return !a.equals(b);
         }
     }
-
-    /**
-     * This 
-     * applies all transformations in the Path of the SVGShape
-     * and returns the Transformed Shape, which can be displayed
-     * or printed on the position it appears in the original image.
-     * @param selectedSVGElement
-     * @return 
-     */
-    public static Shape extractTransformedShape(ShapeElement s) throws SVGException {
-        if (s != null){
-            List first = s.getPath(null); 
-            //Track all Transformations on the Path of the Elemenent
-            AffineTransform tr = new AffineTransform();
-            Object elem = first.get(first.size() - 1);
-            for (Object o:first){
-                if (o instanceof SVGElement){
-                    Object sty = ((SVGElement) o).getPresAbsolute("transform");
-                    if (sty != null && sty instanceof StyleAttribute){
-                        StyleAttribute style = (StyleAttribute) sty;
-                        tr.concatenate(SVGElement.parseSingleTransform(style.getStringValue()));
-                    }
-                }
-            }
-            return tr.createTransformedShape(s.getShape());
-        }
-        return null;
-    }
 }

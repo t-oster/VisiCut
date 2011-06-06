@@ -430,7 +430,7 @@ public class SVGPanel extends JPanel implements MouseListener, MouseMotionListen
         if (selectedSVGElement != null && selectedSVGElement instanceof ShapeElement) {
             try {
                 g.setColor(Color.GREEN);
-                drawShape(g, Util.extractTransformedShape((ShapeElement) selectedSVGElement));
+                drawShape(g, CuttingShape.extractTransformedShape((ShapeElement) selectedSVGElement));
             } catch (SVGException ex) {
                 Logger.getLogger(SVGPanel.class.getName()).log(Level.SEVERE, null, ex);
             }

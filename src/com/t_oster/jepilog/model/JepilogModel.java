@@ -62,7 +62,7 @@ public class JepilogModel extends AbstractModel implements Serializable{
     public static final String PROPERTY_ENGRAVINGIMAGES = "engravingImages";
     public static final String PROPERTY_SCALEX = "scaleX";
     public static final String PROPERTY_SCALEY = "scaleY";
-
+    
     public void setScaleX(Double x){
         if (x!= 0 && x != this.scaleX)
         {
