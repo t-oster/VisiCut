@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<parser class="org.kabeja.parser.DXFParser" xmlns="http://kabeja.org/parser/1.0">
+   <handler class="org.kabeja.parser.DXFHeaderSectionHandler"/>
+   <handler class="org.kabeja.parser.DXFTableSectionHandler">
+     <handlers>
+       <handler class="org.kabeja.parser.table.DXFLayerTableHandler"/>
+       <handler class="org.kabeja.parser.table.DXFLineTypeTableHandler"/>
+       <handler class="org.kabeja.parser.table.DXFViewTableHandler"/>
+       <handler class="org.kabeja.parser.table.DXFViewportTableHandler"/>
+       <handler class="org.kabeja.parser.table.DXFStyleTableHandler"/>
+       <handler class="org.kabeja.parser.table.DXFDimensionStyleTableHandler"/>
+     </handlers>
+   </handler>
+
+   <!--+
+       | The block and the entities handler use the same sub handlers.
+       | If you have create a parser for an entity add the parser in
+       | both sections.
+       +-->
+
+   <handler class="org.kabeja.parser.DXFBlocksSectionHandler">
+      <handlers>
+         <handler class="org.kabeja.parser.entities.DXFArcHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFCircleHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFEllipseHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFInsertHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFLineHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFPolylineHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFLWPolylineHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFSolidHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFTextHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFAttribHandler"/>
+		 <handler class="org.kabeja.parser.entities.DXFMTextHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFTraceHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFDimensionHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFImageHandler"/>
+         <handler class="org.kabeja.parser.entities.DXF3DFaceHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFRayHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFXLineHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFRegionHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFBodyHandler"/>
+         <handler class="org.kabeja.parser.entities.DXF3DSolidHandler"/>
+         <handler class="org.kabeja.parser.entities.DXFSplineHandler"/>
+      </handlers>
+   </handler>
+
+  <!--+
+      |The entity section parser part
+      |
+      +-->
+
+
+   <handler class="org.kabeja.parser.DXFEntitiesSectionHandler">
+      <handlers>
+        <handler class="org.kabeja.parser.entities.DXFArcHandler"/>
+        <handler class="org.kabeja.parser.entities.DXFCircleHandler"/>
+        <handler class="org.kabeja.parser.entities.DXFEllipseHandler"/>
+        <handler class="org.kabeja.parser.entities.DXFInsertHandler"/>
+        <handler class="org.kabeja.parser.entities.DXFLineHandler"/>
+        <handler class="org.kabeja.parser.entities.DXFPolylineHandler"/>
+		<handler class="org.kabeja.parser.entities.DXFLWPolylineHandler"/>
+        <handler class="org.kabeja.parser.entities.DXFSolidHandler"/>
+        <handler class="org.kabeja.parser.entities.DXFTextHandler"/>
+		<handler class="org.kabeja.parser.entities.DXFAttribHandler"/>
+		<handler class="org.kabeja.parser.entities.DXFMTextHandler"/>
+        <handler class="org.kabeja.parser.entities.DXFTraceHandler"/>
+        <handler class="org.kabeja.parser.entities.DXFDimensionHandler"/>
+        <handler class="org.kabeja.parser.entities.DXFImageHandler"/>
+        <handler class="org.kabeja.parser.entities.DXF3DFaceHandler"/>
+        <handler class="org.kabeja.parser.entities.DXFRayHandler"/>
+        <handler class="org.kabeja.parser.entities.DXFXLineHandler"/>
+        <handler class="org.kabeja.parser.entities.DXFRegionHandler"/>
+        <handler class="org.kabeja.parser.entities.DXFBodyHandler"/>
+        <handler class="org.kabeja.parser.entities.DXF3DSolidHandler"/>
+        <handler class="org.kabeja.parser.entities.DXFSplineHandler"/>
+      </handlers>
+   </handler>
+
+
+   <!--+
+       |The objects section parser part
+       |
+       +-->
+
+
+   <handler class="org.kabeja.parser.DXFObjectsSectionHandler">
+     <handlers>
+         <handler class="org.kabeja.parser.objects.DXFImageDefHandler"/>
+     </handlers>
+   </handler>
+
+</parser>

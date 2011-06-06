@@ -1,0 +1,26 @@
+Binary-package:
+---------------
+
+Windows: 
+		* double-click "kabeja.exe"
+
+Linux/Unix: 
+   		* sh kabeja.sh
+   		or:
+   		* chmod a=rx kabeja.sh (only ones)
+   		* ./kabeja.sh
+
+Other:
+       * java -jar launcher.jar
+
+Buidling:
+---------
+
+You need Ant for building (http://ant.apache.org). 
+
+If you want to build the Cocoon-block you have to copy blocks.propterties
+to local.blocks.properties and edit this file (set the path to the Cocoon-libraries).
+
+try:
+
+ant

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uiconfiguration xmlns="http://kabeja.org/processing/ui/1.0">
+ <components>
+    <component class="org.kabeja.ui.impl.ProcessingUI"/>
+    <component class="org.kabeja.ui.impl.ProcessingRunViewComponent"/>
+   <!-- <component class="org.kabeja.ui.impl.ProcessingEditorViewComponent"/> -->
+ <component class="org.kabeja.svg.ui.SVGViewUIComponent"/>
+<component class="org.kabeja.processing.scripting.impl.JavaScriptShell"/>
+<component class="org.kabeja.svg.ui.OutputSettingsUI"/>
+<component class="dk.abj.svg.action.ZoomSelectionActionInterceptor"/>
+<component class="dk.abj.svg.action.ZoomImageActionInteractor"/>
+<component class="dk.abj.svg.action.PanActionInterceptor"/>
+<component class="dk.abj.svg.action.CenterAction"/>
+<component class="dk.abj.svg.action.RotateActionInteractor"/>
+<component class="org.kabeja.svg.action.LayoutSwitchAction"/>
+<component class="org.kabeja.svg.action.PrintAction"/>
+</components>
+</uiconfiguration>

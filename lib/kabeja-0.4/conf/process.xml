@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<processing xmlns="http://kabeja.org/processing/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<!--+
+	    | The processing configuration  
+	    +-->
+	<configuration>
+	    <!--+
+	        | If you want to configure the parser you can change the parser.xml and use it here or
+                | register your own parser for other input formats
+                |  <parsers>
+	        |   <xi:include href="conf/parser.xml"/>
+	        |  </parsers>
+	        +-->
+		<postprocessors>
+			<postprocessor class="org.kabeja.processing.BoundsDebugger" name="bounds.debugger"/>
+			<!--  removes all image entities if the images file does not exists -->
+			<postprocessor class="org.kabeja.processing.ImageFilter" name="image.filter"/>
+			<postprocessor class="org.kabeja.processing.BoundsFilter" name="bounds.filter"/>
+			 <!-- allows you to remove layers from the draft and merge all layers to one -->
+			<postprocessor class="org.kabeja.processing.LayerFilter" name="layer.filter"/>
+                         <!--  converts lines,arcs and polylines to a single polyline, if they have the same points -->
+			<postprocessor class="org.kabeja.processing.PolylineConverter" name="polyline.converter"/>
+			<!-- removes invisible entities -->		
+			<postprocessor class="org.kabeja.processing.VisibilityFilter" name="visibility.filter"/>
+
+			
+
+		<postprocessor class="org.kabeja.processing.ScriptablePostProcessor" name="js"/>
+</postprocessors>
+		
+		<filters>
+
+	    <filter class="org.kabeja.batik.tools.ImageBase64Encoder" name="image"/>
+<filter class="org.kabeja.svg.FixedStrokeWidthFilter" name="fixed-stroke-width"/>
+<filter class="org.kabeja.svg.RootLayerFilter" name="rootlayer.filter"/>
+<filter class="org.kabeja.svg.StyleAttributeFilter" name="styleattribute.filter"/>
+<filter class="org.kabeja.xslt.SAXXSLTFilter" name="xslt">
+				<property name="http://xml.org/sax/features/is-standalone/" value="true"/>
+			</filter>
+</filters>
+		
+		<serializers>
+			<serializer class="org.kabeja.xml.SAXPrettyOutputter" name="svg"/>
+		<serializer class="org.kabeja.batik.tools.SAXJPEGSerializer" name="jpeg"/>
+<serializer class="org.kabeja.batik.tools.SAXPNGSerializer" name="png"/>
+<serializer class="org.kabeja.batik.tools.SAXTIFFSerializer" name="tiff"/>
+<serializer class="org.kabeja.batik.tools.SAXPDFSerializer" name="pdf">
+                           <!--+
+                               | *example configuration works with jpeg/png/tiff also
+                               | 
+                               | * setup a paper sizes A0-A6
+                               |   <property name="paper" value="A1"/>
+                               |
+                               | * setup own paper size by mm/in/px/cm
+                               |   <property name="width" value="100mm"/>
+                               |   <property name="height" value="50mm"/> 
+                               |
+                               | * dpi setting
+                               |   <property name="dpi" value="300"/>    
+                               |
+                               | * change the orientation
+                               |   <property name="orientation" value="landscape"/>
+                               +-->  
+                        </serializer>
+<serializer class="org.kabeja.xslt.SAXXMLSerializer" name="xml"/>
+</serializers>
+		
+		<generators>
+	
+		<generator class="org.kabeja.svg.SVGGenerator" name="svg">
+                            <!--+
+                                | possible values are:
+                                | *) modelspace
+                                | *) paperspace
+                                | *) kabeja   -> the default
+                                +--> 
+                            <property name="bounds-rule" value="kabeja"/>
+
+                            <!--+
+                                | * you can choose a layout
+                                |   by name:
+                                |   <property name="output-style-name" value="myLayout2"/>
+                                |   or the default "Model"-layout will be used
+                                +-->
+			    <property name="output-style" value="layout"/>
+
+                            <!--+
+                                | you can setup an own stroke width for the draft
+                                | this will override the draft line weight
+                                | <property name="stroke-width" value="0.02%"/>
+                                +-->
+                         </generator>
+</generators>
+		
+	</configuration>
+	
+	<!--+
+	    | The processing pipelines 
+	    +-->
+	
+	<pipelines>
+	
+	
+	<pipeline name="Inkscape" description="Converts the draft to SVG using the inkscape import filter settings.">
+		    <generate name="svg"/>
+		    <filter name="rootlayer.filter"/>
+		    <filter name="styleattribute.filter"/>
+		    <serialize name="svg"/>
+		</pipeline>
+<pipeline name="svg" description="Converts the draft to SVG">
+		    <generate name="svg"/>
+		    <serialize name="svg"/>
+		</pipeline>
+<pipeline name="debug" description="Helps to debug false bounds">
+			<postprocess name="bounds.debugger"/>
+			<generate name="svg"/>
+			<filter name="image"/>
+			<serialize name="svg"/>
+		</pipeline>
+<pipeline name="jpeg">
+			<generate name="svg"/>
+			<serialize name="jpeg">
+			   <property name="width" value="1024"/>
+			   <property name="height" value="768"/>
+			</serialize>
+		</pipeline>
+<pipeline name="png">
+			<generate name="svg"/>
+			<serialize name="png">
+			   <property name="width" value="1024"/>
+			   <property name="height" value="768"/>
+			</serialize>
+		</pipeline>
+<pipeline name="tiff">
+			<generate name="svg"/>
+			<serialize name="tiff">
+			  <property name="width" value="1024"/>
+			  <property name="height" value="768"/>
+			</serialize>
+		</pipeline>
+<pipeline name="pdf">
+		  	<generate name="svg"/>
+			<serialize name="pdf"/>
+		</pipeline>
+<pipeline name="font" description="Convert to SVG and tries to embed fonts">
+		  	<generate name="svg"/>
+			<filter name="xslt">
+			  <property name="stylesheet" value="../tools/xsl/embedfont.xsl"/>
+			</filter>
+			<serialize name="svg"/>
+		</pipeline>
+<pipeline name="embed" description="Convert to SVG and tries to embed fonts and images">
+            <generate name="svg"/>
+			<postprocess name="image.filter"/>
+			<generate name="svg"/>
+			<filter name="image"/>
+			<filter name="xslt">
+				<property name="stylesheet" value="../tools/xsl/embedfont.xsl"/>
+				<property name="http://xml.org/sax/features/is-standalone/" value="true"/>
+				<property name="http://xml.org/sax/features/external-general-entities" value="false"/>
+			</filter>
+			<serialize name="svg"/>
+		</pipeline>
+<pipeline name="mozilla" description="Generate a Mozilla 1.5.X compatible SVG (change all to a fixed stoke-width)">
+	        <generate name="svg"/>
+	        <!--  Mozilla based browser only render svg with a 
+	              fixed stroke-width, a percent value will cause a
+	              crashing Mozilla -->
+	        <filter name="fixed-stroke-width"/>
+	        <serialize name="svg"/>
+	   </pipeline>
+<pipeline name="scripting" desription="Invokes the javascipt postprocessor before converting to SVG">
+                <generate name="svg"/>
+                <postprocess name="js">
+                    <property name="src" value="scripts/layoutDebug.js"/>
+                 </postprocess>
+                <serialize name="pdf"/>
+          </pipeline>
+</pipelines>
+</processing>

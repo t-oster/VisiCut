@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project name="font-import" default="import" basedir=".">
+    <property name="main.class" value="org.kabeja.batik.tools.FontImport"/>
+    <property name="font.dir"   value="fonts"/>
+    <property name="font.properties" value="conf/font.properties"/>
+    <property name="font.source"  value=""/>
+
+
+<target name="import">
+ <mkdir dir="${font.dir}"/>
+
+ <java classname="${main.class}">
+    <classpath>
+	<fileset dir="lib">
+		<include name="**/*.jar" />
+	</fileset>
+    </classpath>
+    <arg line="${font.source} ${font.dir} ${font.properties}"/>
+</java>
+
+
+</target>
+
+
+
+
+</project>
