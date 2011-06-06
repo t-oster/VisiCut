@@ -4,8 +4,6 @@
  */
 package com.t_oster.liblasercut;
 
-import java.util.Arrays;
-
 /**
  *
  * @author thommy

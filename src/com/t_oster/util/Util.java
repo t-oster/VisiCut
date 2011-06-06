@@ -4,15 +4,6 @@
  */
 package com.t_oster.util;
 
-import com.kitfox.svg.SVGElement;
-import com.kitfox.svg.SVGException;
-import com.kitfox.svg.ShapeElement;
-import com.kitfox.svg.xml.StyleAttribute;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  *
  * @author oster
