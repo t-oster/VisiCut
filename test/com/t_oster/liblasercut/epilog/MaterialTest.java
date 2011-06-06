@@ -37,7 +37,7 @@ public class MaterialTest {
             }
             x++;
         }
-        LaserJob job = new LaserJob("rects40-10", "bla", "bla", 500, null, vp);
+        LaserJob job = new LaserJob("rects40-10", "bla", "bla", 500, null, vp, null);
         EpilogCutter instance = new EpilogCutter("137.226.56.228");
         //instance.sendJob(job);
         JOptionPane.showConfirmDialog(null, "Please start the job with the name 'rects100-50' and STOP when cut through");
@@ -56,7 +56,7 @@ public class MaterialTest {
             vp.lineto(300*x, 0);
             x++;
         }
-        job = new LaserJob("cutout", "bla", "bla", 500, null, vp);
+        job = new LaserJob("cutout", "bla", "bla", 500, null, vp, null);
         instance.sendJob(job);
         JOptionPane.showConfirmDialog(null, "please cut out");
     }
@@ -77,7 +77,7 @@ public class MaterialTest {
             }
             x++;
         }
-        LaserJob job = new LaserJob("rects100-50", "bla", "bla", 500, null, vp);
+        LaserJob job = new LaserJob("rects100-50", "bla", "bla", 500, null, vp, null);
         EpilogCutter instance = new EpilogCutter("137.226.56.228");
         instance.sendJob(job);
         JOptionPane.showConfirmDialog(null, "Please start the job with the name 'rects100-50' and STOP when cut through");
@@ -96,7 +96,7 @@ public class MaterialTest {
             vp.lineto(300*x, 0);
             x++;
         }
-        job = new LaserJob("cutout", "bla", "bla", 500, null, vp);
+        job = new LaserJob("cutout", "bla", "bla", 500, null, vp, null);
         JOptionPane.showConfirmDialog(null, "please cut out");
     }
 }

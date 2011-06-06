@@ -58,7 +58,7 @@ public class EpilogCutterTest {
             vp.setFocus(i);
             vp.lineto(2*i, 0);
         }
-        LaserJob job = new LaserJob("vector", "666", "bla", 500, null, vp);
+        LaserJob job = new LaserJob("vector", "666", "bla", 500, null, vp, null);
         instance.sendJob(job);
     }
     

@@ -16,7 +16,8 @@ import com.t_oster.liblasercut.epilog.EpilogCutter;
 import com.t_oster.liblasercut.MaterialProperty;
 import com.t_oster.liblasercut.CuttingProperty;
 import com.t_oster.liblasercut.EngravingProperty;
-import com.t_oster.liblasercut.RasterPart;
+import com.t_oster.liblasercut.Raster3dPart;
+import com.t_oster.util.BufferedImageAdapter;
 import com.t_oster.util.Util;
 import java.awt.Point;
 import java.awt.Shape;
@@ -295,17 +296,17 @@ public class JepilogModel extends AbstractModel implements Serializable{
         throw new UnsupportedOperationException();
     }
     
-    private RasterPart generateRasterPart() throws IllegalJobException {
+    private Raster3dPart generateRaster3dPart() throws IllegalJobException {
         if (this.material == null){
             throw new IllegalJobException("No material selected");
         }
         EngravingProperty defaultep = material.getEngravingProperty();
         
-        RasterPart rp = new RasterPart(defaultep);
+        Raster3dPart rp = new Raster3dPart(defaultep);
         
         for (EngravingImage i:this.getEngravingImages()){
             EngravingProperty ep = i.getProperty();
-            //rp.addImage(getBufferedImage(i), ep != null ? ep : defaultep);
+            rp.addImage(new BufferedImageAdapter(getBufferedImage(i)), ep != null ? ep : defaultep, i.getStartPoint());
         }
         
         return rp;
@@ -352,7 +353,7 @@ public class JepilogModel extends AbstractModel implements Serializable{
         if (this.getCuttingShapes().length==0){
             throw new Exception("Nothing selected for cutting");
         }
-        LaserJob job = new LaserJob(jobname, "123", "bla", getResolution(), generateRasterPart(), generateVectorPart());
+        LaserJob job = new LaserJob(jobname, "123", "bla", getResolution(), generateRaster3dPart(), generateVectorPart(), null);
         job.setStartPoint((int) this.getStartPoint().getX(), (int) this.getStartPoint().getY());
         cutter.sendJob(job);
     }

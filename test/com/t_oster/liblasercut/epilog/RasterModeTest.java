@@ -4,29 +4,26 @@
  */
 package com.t_oster.liblasercut.epilog;
 
-import com.t_oster.util.GreyScaleAdapter;
-import com.t_oster.liblasercut.VectorPart;
-import java.awt.Graphics2D;
+import com.t_oster.util.BufferedImageAdapter;
 import com.kitfox.svg.app.beans.SVGIcon;
-import com.t_oster.liblasercut.CuttingProperty;
-import java.awt.image.BufferedImage;
-import com.kitfox.svg.SVGDiagram;
 import java.net.URI;
 import java.io.File;
 import com.kitfox.svg.SVGUniverse;
+import com.t_oster.liblasercut.BlackWhiteRaster;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserJob;
 import java.awt.Point;
 import java.util.List;
 import java.util.LinkedList;
-import com.t_oster.liblasercut.RasterPart;
+import com.t_oster.liblasercut.Raster3dPart;
 import com.t_oster.liblasercut.EngravingProperty;
+import com.t_oster.liblasercut.RasterPart;
+import java.awt.image.BufferedImage;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -54,9 +51,9 @@ public class RasterModeTest {
     }
 
     @Test
-    public void testRasterRaw() throws IllegalJobException, Exception {
+    public void testRaster3dRaw() throws IllegalJobException, Exception {
         EpilogCutter instance = new EpilogCutter("137.226.56.228");
-        RasterPart testraster = new RasterPart(new EngravingProperty(100, 100)) {
+        Raster3dPart testraster = new Raster3dPart(new EngravingProperty(100, 100)) {
 
             @Override
             public int getRasterCount() {
@@ -112,10 +109,32 @@ public class RasterModeTest {
                 return result;
             }
         };
-        LaserJob job = new LaserJob("rastertest", "123", "456", 500, testraster, null);
+        LaserJob job = new LaserJob("raster3draw", "123", "456", 500, testraster, null, null);
         instance.sendJob(job);
     }
 
+    @Test
+    public void testRaster3dImage() throws IllegalJobException, Exception{
+
+        EpilogCutter instance = new EpilogCutter("137.226.56.228");
+        Raster3dPart rp = new Raster3dPart(new EngravingProperty(100,100));
+
+        SVGUniverse univ = new SVGUniverse();
+        URI svg = univ.loadSVG(new File("test/files/TweetyMerged.svg").toURI().toURL());
+        SVGIcon icon = new SVGIcon();
+        icon.setSvgURI(svg);
+        icon.setAntiAlias(false);
+        icon.setClipToViewbox(false);
+        icon.setScaleToFit(false);
+
+        BufferedImage test = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+        icon.paintIcon(null, test.getGraphics(), 0, 0);
+        rp.addImage(new BufferedImageAdapter(test), new Point(0,0));
+
+        LaserJob job = new LaserJob("raster3dImage", "666", "bla", 500, rp, null, null);
+        instance.sendJob(job);
+    }
+    
     @Test
     public void testRasterImage() throws IllegalJobException, Exception{
 
@@ -130,11 +149,14 @@ public class RasterModeTest {
         icon.setClipToViewbox(false);
         icon.setScaleToFit(false);
 
-        GreyScaleAdapter test = new GreyScaleAdapter(icon.getIconWidth(), icon.getIconHeight());
+        BufferedImage test = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
         icon.paintIcon(null, test.getGraphics(), 0, 0);
-        rp.addImage(test, new Point(0,0));
+        rp.addImage(new BlackWhiteRaster(
+                     new BufferedImageAdapter(test)
+                    , BlackWhiteRaster.DITHER_FLOYD_STEINBERG)
+                , new Point(0,0));
 
-        LaserJob job = new LaserJob("image", "666", "bla", 500, rp, null);
+        LaserJob job = new LaserJob("raster3dImage", "666", "bla", 500, null, null, rp);
         instance.sendJob(job);
     }
 }

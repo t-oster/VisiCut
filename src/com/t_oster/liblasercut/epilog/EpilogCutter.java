@@ -6,18 +6,10 @@ package com.t_oster.liblasercut.epilog;
 
 import com.t_oster.liblasercut.*;
 import com.t_oster.util.Util;
-import java.awt.Color;
-import java.awt.image.RenderedImage;
-import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,8 +22,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Vector;
-import org.apache.fop.render.pcl.PCLGenerator;
 
 /**
  *
@@ -182,10 +172,8 @@ public class EpilogCutter extends LaserCutter {
         PrintStream wrt = new PrintStream(pjlJob, true, "US-ASCII");
 
         wrt.append(generatePjlHeader(job));
-        //if (job.containsRaster()) {
         wrt.write(generateRasterPCL(job, job.getRasterPart()));
-        //}
-        //if (job.containsVector()) {
+        wrt.write(generateRaster3dPCL(job, job.getRaster3dPart()));
         wrt.append(generateVectorPCL(job, job.getVectorPart()));
         //}
         wrt.append(generatePjlFooter());
@@ -329,6 +317,81 @@ public class EpilogCutter extends LaserCutter {
         return result;
     }
 
+    private byte[] generateRaster3dPCL(LaserJob job, Raster3dPart rp) throws UnsupportedEncodingException, IOException {
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        PrintStream out = new PrintStream(result, true, "US-ASCII");
+        if (rp != null)
+        {
+            /* Raster Orientation: Printed in current direction */
+            out.printf("\033*r0F");
+            /* Raster power */
+            out.printf("\033&y%dP", 100);//Full power, scaling is done seperate
+            /* Raster speed */
+            out.printf("\033&z%dS", 100);//TODO real speed
+            /* unknown */
+            out.printf("\033&y0A");
+
+            out.printf("\033*r%dT", rp != null ? rp.getHeight() : 10);//height);
+            out.printf("\033*r%dS", rp != null ? rp.getWidth() : 10);//width);
+            /* Raster compression:
+             *  2 = TIFF encoding
+             *  7 = TIFF encoding, 3d-mode,
+             *
+             * Wahrscheinlich:
+             * 2M = Bitweise, also 1=dot 0=nodot (standard raster)
+             * 7MLT = Byteweise 0= no power 100=full power (3d raster)
+             */
+            out.printf("\033*b%dMLT", 7);
+            /* Raster direction (1 = up, 0=down) */
+            out.printf("\033&y%dO", 0);
+            /* start at current position */
+            out.printf("\033*r1A");
+
+            for (int i = 0; rp != null && i < rp.getRasterCount(); i++) {
+                Point sp = rp.getRasterStart(i);
+                boolean leftToRight = true;
+                for (int y = 0; y < rp.getRasterHeight(i); y++) {
+
+                    List<Byte> line = rp.getRasterLine(i, y);
+                    //Remove leading zeroes, but keep track of the offset
+                    int jump = 0;
+
+                    while (line.size() > 0 && line.get(0) == 0){
+                        line.remove(0);
+                        jump++;
+                    }
+                    if (line.size()>0){
+                        out.printf("\033*p%dX", sp.x + jump);
+                        out.printf("\033*p%dY", sp.y + y);
+                        if (leftToRight) {
+                            out.printf("\033*b%dA", line.size());
+                        } else {
+                            out.printf("\033*b%dA", -line.size());
+                            Collections.reverse(line);
+                        }
+                        line = encode(line);
+                        int len = line.size();
+                        int pcks = len / 8;
+                        if (len % 8 > 0) {
+                            pcks++;
+                        }
+                        out.printf("\033*b%dW", pcks * 8);
+                        for (byte s : line) {
+                            out.write(s);
+                        }
+                        for (int k = 0; k < 8 - (len % 8); k++) {
+                            out.write((byte) 128);
+                        }
+                        leftToRight = !leftToRight;
+                    }
+                }
+
+            }
+            out.printf("\033*rC");       // end raster
+        }
+        return result.toByteArray();
+    }
+    
     private byte[] generateRasterPCL(LaserJob job, RasterPart rp) throws UnsupportedEncodingException, IOException {
 
         ByteArrayOutputStream result = new ByteArrayOutputStream();
@@ -352,7 +415,7 @@ public class EpilogCutter extends LaserCutter {
          * 2M = Bitweise, also 1=dot 0=nodot (standard raster)
          * 7MLT = Byteweise 0= no power 100=full power (3d raster)
          */
-        out.printf("\033*b%dMLT", 7);
+        out.printf("\033*b2M");
         /* Raster direction (1 = up, 0=down) */
         out.printf("\033&y%dO", 0);
         /* start at current position */
@@ -372,8 +435,9 @@ public class EpilogCutter extends LaserCutter {
                     jump++;
                 }
                 if (line.size()>0){
-                    out.printf("\033*p%dX", sp.x + jump);
+                    out.printf("\033*p%dX", sp.x + jump*8);
                     out.printf("\033*p%dY", sp.y + y);
+                    //TODO: vielleicht jump nach reverse???
                     if (leftToRight) {
                         out.printf("\033*b%dA", line.size());
                     } else {
@@ -399,11 +463,6 @@ public class EpilogCutter extends LaserCutter {
 
         }
         out.printf("\033*rC");       // end raster
-        //out.write((char) 26);
-        //out.write((char) 4); // some end of file markers
-        //PrintStream ps = new PrintStream((new FileOutputStream(new File("/tmp/rasterdump.hex"))));
-        //ps.write(result.toByteArray());
-        //ps.close();
         return result.toByteArray();
     }
 

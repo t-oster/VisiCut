@@ -12,15 +12,15 @@ import java.util.LinkedList;
  *
  * @author thommy
  */
-public class RasterPart {
+public class Raster3dPart {
     
     private EngravingProperty curProp;
     
-    private List<BlackWhiteRaster> images = new LinkedList<BlackWhiteRaster>();
+    private List<GreyscaleRaster> images = new LinkedList<GreyscaleRaster>();
     private List<EngravingProperty> properties = new LinkedList<EngravingProperty>();
     private List<Point> starts = new LinkedList<Point>();
     
-    public RasterPart(EngravingProperty initialEngravingProperty){
+    public Raster3dPart(EngravingProperty initialEngravingProperty){
         this.curProp = initialEngravingProperty;
     }
     
@@ -47,11 +47,11 @@ public class RasterPart {
      * current engraving property)
      * @param img 
      */
-    public void addImage(BlackWhiteRaster img, Point start){
+    public void addImage(GreyscaleRaster img, Point start){
         this.addImage(img, curProp, start);
     }
     
-    public void addImage(BlackWhiteRaster img, EngravingProperty prop, Point start){
+    public void addImage(GreyscaleRaster img, EngravingProperty prop, Point start){
         this.images.add(img);
         this.properties.add(prop);
         this.starts.add(start);
@@ -106,17 +106,17 @@ public class RasterPart {
     
     /**
      * Returns one line of the given rasterpart
-     * every byte represents 8 pixel and the value corresponds to
-     * 1 when black or 0 when white
+     * every byte represents one pixel and the value corresponds to
+     * the raster power
      * @param raster
      * @param line
      * @return 
      */
     public List<Byte> getRasterLine(int raster, int line){
-        BlackWhiteRaster img = this.images.get(raster);
+        GreyscaleRaster img = this.images.get(raster);
         List<Byte> result = new LinkedList<Byte>();
-        for (int x=0;x<(img.getWidth()+7)/8;x++){
-            result.add(img.getByte(x, line));
+        for (int x=0;x<img.getWidth();x++){
+            result.add(img.getGreyScale(x, line));
         }
         return result;
     }
