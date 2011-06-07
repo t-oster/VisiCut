@@ -177,7 +177,7 @@ public class RasterModeTest
     BufferedImage test = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
     icon.paintIcon(null, test.getGraphics(), 0, 0);
     rp.addImage(new BlackWhiteRaster(
-      new BufferedImageAdapter(test), BlackWhiteRaster.DITHER_FLOYD_STEINBERG), new Point(0, 0));
+      new BufferedImageAdapter(test), BlackWhiteRaster.DitherAlgorithm.FLOYD_STEINBERG), new Point(0, 0));
 
     LaserJob job = new LaserJob("raster3dImage", "666", "bla", 500, null, null, rp);
     instance.sendJob(job);

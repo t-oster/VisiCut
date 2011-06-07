@@ -1,5 +1,7 @@
 package com.t_oster.liblasercut;
 
+import java.util.Random;
+
 /**
  *
  * @author thommy
@@ -7,20 +9,37 @@ package com.t_oster.liblasercut;
 public class BlackWhiteRaster
 {
 
-  public static final int DITHER_FLOYD_STEINBERG = 1;
+  public static enum DitherAlgorithm
+  {
+
+    FLOYD_STEINBERG,
+    AVERAGE,
+    RANDOM,
+    ORDERED,
+  }
   int width;
   int height;
   private byte[][] raster;
 
-  public BlackWhiteRaster(GreyscaleRaster src, int dither_algorithm)
+  public BlackWhiteRaster(GreyscaleRaster src, DitherAlgorithm dither_algorithm)
   {
     this.width = src.getWidth();
     this.height = src.getHeight();
     raster = new byte[(src.getWidth() + 7) / 8][src.getHeight()];
     switch (dither_algorithm)
     {
-      case DITHER_FLOYD_STEINBERG:
+      case FLOYD_STEINBERG:
         ditherFloydSteinberg(src);
+        break;
+      case AVERAGE:
+        ditherAverage(src);
+        break;
+      case RANDOM:
+        ditherRandom(src);
+        break;
+      case ORDERED:
+        ditherOrdered(src);
+        break;
     }
   }
 
@@ -117,6 +136,107 @@ public class BlackWhiteRaster
           if (x > 0)
           {
             input[x - 1][1] = (input[x - 1][1] + 3 * error / 16);
+          }
+        }
+      }
+    }
+  }
+
+  private void ditherAverage(GreyscaleRaster src)
+  {
+    int lumTotal = 0;
+
+    for (int y = 0; y < height; y++)
+    {
+      for (int x = 0; x < width; x++)
+      {
+        lumTotal += src.getGreyScale(x, y);
+      }
+    }
+
+    float thresh = lumTotal / height / width;
+    for (int y = 0; y < height; y++)
+    {
+      for (int x = 0; x < width; x++)
+      {
+        this.setBlack(x, y, src.getGreyScale(x, y) < thresh);
+      }
+    }
+  }
+
+  private void ditherRandom(GreyscaleRaster src)
+  {
+    int lum;
+    Random r = new Random();
+
+    for (int y = 0; y < height; y++)
+    {
+      for (int x = 0; x < width; x++)
+      {
+        this.setBlack(x, y, src.getGreyScale(x, y) < r.nextInt(256));
+      }
+    }
+  }
+
+  private void ditherOrdered(GreyscaleRaster src)
+  {
+    int nPatWid = 4;
+    int[][] filter =
+    {
+      {
+        16, 144, 48, 176
+      },
+      {
+        208, 80, 240, 112
+      },
+      {
+        64, 192, 32, 160
+      },
+      {
+        256, 128, 224, 96
+      },
+    };
+
+    int x = 0;
+    int y = 0;
+
+    for (y = 0; y < (height - nPatWid); y = y + nPatWid)
+    {
+      for (x = 0; x < (width - nPatWid); x = x + nPatWid)
+      {
+
+        for (int xdelta = 0; xdelta < nPatWid; xdelta++)
+        {
+          for (int ydelta = 0; ydelta < nPatWid; ydelta++)
+          {
+            this.setBlack(x + xdelta, y + ydelta, src.getGreyScale(x + xdelta, y + ydelta) < filter[xdelta][ydelta]);
+          }
+        }
+      }
+      for (int xdelta = 0; xdelta < nPatWid; xdelta++)
+      {
+        for (int ydelta = 0; ydelta < nPatWid; ydelta++)
+        {
+
+          if (((x + xdelta) < width) && ((y + ydelta) < height))
+          {
+            this.setBlack(x + xdelta, y + ydelta, src.getGreyScale(x + xdelta, y + ydelta) < filter[xdelta][ydelta]);
+          }
+        }
+      }
+    }
+
+    // y is at max; loop through x
+    for (x = 0; x < (width); x = x + nPatWid)
+    {
+      for (int xdelta = 0; xdelta < nPatWid; xdelta++)
+      {
+        for (int ydelta = 0; ydelta < nPatWid; ydelta++)
+        {
+
+          if (((x + xdelta) < width) && ((y + ydelta) < height))
+          {
+            this.setBlack(x + xdelta, y + ydelta, src.getGreyScale(x + xdelta, y + ydelta) < filter[xdelta][ydelta]);
           }
         }
       }
