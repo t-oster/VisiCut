@@ -28,98 +28,128 @@ import org.jdesktop.beansbinding.Converter;
 /**
  * The application's main frame.
  */
-public class JepilogView extends FrameView {
+public class JepilogView extends FrameView
+{
 
-    public JepilogView(SingleFrameApplication app) {
-        super(app);
+  public JepilogView(SingleFrameApplication app)
+  {
+    super(app);
 
-        initComponents();
+    initComponents();
 
-        // status bar initialization - message timeout, idle icon and busy animation, etc
-        ResourceMap resourceMap = getResourceMap();
-        int messageTimeout = resourceMap.getInteger("StatusBar.messageTimeout");
-        messageTimer = new Timer(messageTimeout, new ActionListener() {
+    // status bar initialization - message timeout, idle icon and busy animation, etc
+    ResourceMap resourceMap = getResourceMap();
+    int messageTimeout = resourceMap.getInteger("StatusBar.messageTimeout");
+    messageTimer = new Timer(messageTimeout, new ActionListener()
+    {
 
-            public void actionPerformed(ActionEvent e) {
-                statusMessageLabel.setText("");
-            }
-        });
-        messageTimer.setRepeats(false);
-        int busyAnimationRate = resourceMap.getInteger("StatusBar.busyAnimationRate");
-        for (int i = 0; i < busyIcons.length; i++) {
-            busyIcons[i] = resourceMap.getIcon("StatusBar.busyIcons[" + i + "]");
+      public void actionPerformed(ActionEvent e)
+      {
+        statusMessageLabel.setText("");
+      }
+    });
+    messageTimer.setRepeats(false);
+    int busyAnimationRate = resourceMap.getInteger("StatusBar.busyAnimationRate");
+    for (int i = 0; i < busyIcons.length; i++)
+    {
+      busyIcons[i] = resourceMap.getIcon("StatusBar.busyIcons[" + i + "]");
+    }
+    busyIconTimer = new Timer(busyAnimationRate, new ActionListener()
+    {
+
+      public void actionPerformed(ActionEvent e)
+      {
+        busyIconIndex = (busyIconIndex + 1) % busyIcons.length;
+        statusAnimationLabel.setIcon(busyIcons[busyIconIndex]);
+      }
+    });
+    idleIcon = resourceMap.getIcon("StatusBar.idleIcon");
+    statusAnimationLabel.setIcon(idleIcon);
+    progressBar.setVisible(false);
+
+    // connecting action tasks to status bar via TaskMonitor
+    TaskMonitor taskMonitor = new TaskMonitor(getApplication().getContext());
+    taskMonitor.addPropertyChangeListener(new java.beans.PropertyChangeListener()
+    {
+
+      public void propertyChange(java.beans.PropertyChangeEvent evt)
+      {
+        String propertyName = evt.getPropertyName();
+        if ("started".equals(propertyName))
+        {
+          if (!busyIconTimer.isRunning())
+          {
+            statusAnimationLabel.setIcon(busyIcons[0]);
+            busyIconIndex = 0;
+            busyIconTimer.start();
+          }
+          progressBar.setVisible(true);
+          progressBar.setIndeterminate(true);
         }
-        busyIconTimer = new Timer(busyAnimationRate, new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                busyIconIndex = (busyIconIndex + 1) % busyIcons.length;
-                statusAnimationLabel.setIcon(busyIcons[busyIconIndex]);
+        else
+        {
+          if ("done".equals(propertyName))
+          {
+            busyIconTimer.stop();
+            statusAnimationLabel.setIcon(idleIcon);
+            progressBar.setVisible(false);
+            progressBar.setValue(0);
+          }
+          else
+          {
+            if ("message".equals(propertyName))
+            {
+              String text = (String) (evt.getNewValue());
+              statusMessageLabel.setText((text == null) ? "" : text);
+              messageTimer.restart();
             }
-        });
-        idleIcon = resourceMap.getIcon("StatusBar.idleIcon");
-        statusAnimationLabel.setIcon(idleIcon);
-        progressBar.setVisible(false);
-
-        // connecting action tasks to status bar via TaskMonitor
-        TaskMonitor taskMonitor = new TaskMonitor(getApplication().getContext());
-        taskMonitor.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                String propertyName = evt.getPropertyName();
-                if ("started".equals(propertyName)) {
-                    if (!busyIconTimer.isRunning()) {
-                        statusAnimationLabel.setIcon(busyIcons[0]);
-                        busyIconIndex = 0;
-                        busyIconTimer.start();
-                    }
-                    progressBar.setVisible(true);
-                    progressBar.setIndeterminate(true);
-                } else if ("done".equals(propertyName)) {
-                    busyIconTimer.stop();
-                    statusAnimationLabel.setIcon(idleIcon);
-                    progressBar.setVisible(false);
-                    progressBar.setValue(0);
-                } else if ("message".equals(propertyName)) {
-                    String text = (String) (evt.getNewValue());
-                    statusMessageLabel.setText((text == null) ? "" : text);
-                    messageTimer.restart();
-                } else if ("progress".equals(propertyName)) {
-                    int value = (Integer) (evt.getNewValue());
-                    progressBar.setVisible(true);
-                    progressBar.setIndeterminate(false);
-                    progressBar.setValue(value);
-                }
+            else
+            {
+              if ("progress".equals(propertyName))
+              {
+                int value = (Integer) (evt.getNewValue());
+                progressBar.setVisible(true);
+                progressBar.setIndeterminate(false);
+                progressBar.setValue(value);
+              }
             }
-        });
-
-    }
-
-    @Action
-    public void zoomIn() {
-        viewModel.setZoomFactor(viewModel.getZoomFactor() * 1.5);
-    }
-
-    @Action
-    public void zoomOut() {
-        viewModel.setZoomFactor(viewModel.getZoomFactor() / 1.5);
-    }
-
-    @Action
-    public void showAboutBox() {
-        if (aboutBox == null) {
-            JFrame mainFrame = JepilogApp.getApplication().getMainFrame();
-            aboutBox = new JepilogAboutBox(mainFrame);
-            aboutBox.setLocationRelativeTo(mainFrame);
+          }
         }
-        JepilogApp.getApplication().show(aboutBox);
-    }
+      }
+    });
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
+  }
+
+  @Action
+  public void zoomIn()
+  {
+    viewModel.setZoomFactor(viewModel.getZoomFactor() * 1.5);
+  }
+
+  @Action
+  public void zoomOut()
+  {
+    viewModel.setZoomFactor(viewModel.getZoomFactor() / 1.5);
+  }
+
+  @Action
+  public void showAboutBox()
+  {
+    if (aboutBox == null)
+    {
+      JFrame mainFrame = JepilogApp.getApplication().getMainFrame();
+      aboutBox = new JepilogAboutBox(mainFrame);
+      aboutBox.setLocationRelativeTo(mainFrame);
+    }
+    JepilogApp.getApplication().show(aboutBox);
+  }
+
+  /** This method is called from within the constructor to
+   * initialize the form.
+   * WARNING: Do NOT modify this code. The content of this method is
+   * always regenerated by the Form Editor.
+   */
+  @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
@@ -741,150 +771,185 @@ public class JepilogView extends FrameView {
     }// </editor-fold>//GEN-END:initComponents
 
     private void sVGPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sVGPanel1MouseClicked
-        if (sVGPanel1.getSelectedSVGElement() != null && evt.getButton() == MouseEvent.BUTTON3) {
-            shapeMenu.show(sVGPanel1, evt.getX(), evt.getY());
-        }
+      if (sVGPanel1.getSelectedSVGElement() != null && evt.getButton() == MouseEvent.BUTTON3)
+      {
+        shapeMenu.show(sVGPanel1, evt.getX(), evt.getY());
+      }
     }//GEN-LAST:event_sVGPanel1MouseClicked
 
     private void sVGPanel1MouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_sVGPanel1MouseWheelMoved
-        if (evt.isMetaDown()) {
-            if (evt.getWheelRotation() < 0) {
-                this.zoomIn();
-            } else if (evt.getWheelRotation() > 0) {
-                this.zoomOut();
-            }
+      if (evt.isMetaDown())
+      {
+        if (evt.getWheelRotation() < 0)
+        {
+          this.zoomIn();
         }
+        else
+        {
+          if (evt.getWheelRotation() > 0)
+          {
+            this.zoomOut();
+          }
+        }
+      }
     }//GEN-LAST:event_sVGPanel1MouseWheelMoved
 
     private void meRemoveFromCuttingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_meRemoveFromCuttingActionPerformed
-        //workaround: directly assigning this action causes Mantisse to crash
-        this.removeSelectedShape();
+      //workaround: directly assigning this action causes Mantisse to crash
+      this.removeSelectedShape();
     }//GEN-LAST:event_meRemoveFromCuttingActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        //workaround: directly assigning this action causes Mantisse to crash
-        this.removeSelectedShape();
+      //workaround: directly assigning this action causes Mantisse to crash
+      this.removeSelectedShape();
     }//GEN-LAST:event_jButton4ActionPerformed
 
-    class MySvgFilter extends javax.swing.filechooser.FileFilter {
+  class MySvgFilter extends javax.swing.filechooser.FileFilter
+  {
 
-        @Override
-        public boolean accept(File file) {
-            // Allow just directories and files with ".txt" extension...
-            return file.isDirectory() || file.getAbsolutePath().endsWith(".svg");
-        }
-
-        @Override
-        public String getDescription() {
-            // This description will be displayed in the dialog,
-            // hard-coded = ugly, should be done via I18N
-            return "SVG Documents (*.svg)";
-        }
-    }
-
-    @Action
-    public void sendToCutter() {
-        try {
-            jobModel.sendToCutter();
-        } catch (IllegalJobException ex) {
-            Logger.getLogger(JepilogView.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(mainPanel, "Der gewählte Lasercutter kann diesen Job nicht ausführen\nFehler:" + ex.getMessage(), "Fehler", JOptionPane.WARNING_MESSAGE);
-        } catch (Exception ex) {
-            Logger.getLogger(JepilogView.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(mainPanel, "Beim Senden des Jobs ist ein Fehler aufgetreten:\n" + ex.getMessage(), "Fehler", JOptionPane.WARNING_MESSAGE);
-        }
-    }
-
-    @Action
-    public void showImportDialog() {
-        importFileChooser.showOpenDialog(mainPanel);
-        File toImport = importFileChooser.getSelectedFile();
-        if (toImport != null) {
-            try {
-                jobModel.importSVG(toImport);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(mainPanel, "Datei konnte nicht importiert werden\nFehler:" + e.getMessage(), "Fehler", JOptionPane.WARNING_MESSAGE);
-            }
-        }
-    }
-
-    @Action
-    public void addSelectedShapeToCuttingPart() {
-        SVGElement selected = viewModel.getSelectedSVGElement();
-        if (selected instanceof ShapeElement) {
-            jobModel.addCuttingShape((ShapeElement) selected);
-            viewModel.setSelectedSVGElement(null);
-        }
-    }
-
-    @Action
-    public void removeSelectedShape() {
-        SVGElement sel = viewModel.getSelectedSVGElement();
-        if (sel instanceof ShapeElement) {
-            jobModel.removeCuttingShape((ShapeElement) sel);
-        }
-    }
-
-    @Action
-    public void moveSelectedShapeUp() {
-        SVGElement selected = viewModel.getSelectedSVGElement();
-        if (selected != null) {
-            CuttingShape[] cs = jobModel.getCuttingShapes();
-            for (int idx = 1; idx < cs.length; idx++) {
-                if (selected.equals(cs[idx].getShapeElement())) {
-                    CuttingShape tmp = jobModel.getCuttingShape(idx);
-                    jobModel.setCuttingShape(idx, jobModel.getCuttingShape(idx - 1));
-                    jobModel.setCuttingShape(idx - 1, tmp);
-                    viewModel.setSelectedSVGElement(tmp.getShapeElement());
-                    break;
-                }
-            }
-        }
-    }
-
-    @Action
-    public void moveSelectedShapeDown() {
-        SVGElement selected = viewModel.getSelectedSVGElement();
-        if (selected != null) {
-            CuttingShape[] cs = jobModel.getCuttingShapes();
-            for (int idx = cs.length - 2; idx >= 0; idx--) {
-                if (selected.equals(cs[idx].getShapeElement())) {
-                    CuttingShape tmp = jobModel.getCuttingShape(idx);
-                    jobModel.setCuttingShape(idx, jobModel.getCuttingShape(idx + 1));
-                    jobModel.setCuttingShape(idx + 1, tmp);
-                    viewModel.setSelectedSVGElement(tmp.getShapeElement());
-                    break;
-                }
-            }
-        }
-    }
-
-    private class Double100IntConverter extends Converter
+    @Override
+    public boolean accept(File file)
     {
-
-        @Override
-        public Integer convertForward(Object value) {
-            if (value instanceof Double){
-                double d = (Double) value;
-                int result = (int) (d*100);
-                return (Integer) result;
-            }
-            return null;
-        }
-
-        @Override
-        public Double convertReverse(Object value) {
-            if (value instanceof Integer)
-            {
-                int i = (Integer) value;
-                double result = i/(double) 100;
-                return (Double) result;
-            }
-            return null;
-        }
-
+      // Allow just directories and files with ".txt" extension...
+      return file.isDirectory() || file.getAbsolutePath().endsWith(".svg");
     }
 
+    @Override
+    public String getDescription()
+    {
+      // This description will be displayed in the dialog,
+      // hard-coded = ugly, should be done via I18N
+      return "SVG Documents (*.svg)";
+    }
+  }
+
+  @Action
+  public void sendToCutter()
+  {
+    try
+    {
+      jobModel.sendToCutter();
+    }
+    catch (IllegalJobException ex)
+    {
+      Logger.getLogger(JepilogView.class.getName()).log(Level.SEVERE, null, ex);
+      JOptionPane.showMessageDialog(mainPanel, "Der gewählte Lasercutter kann diesen Job nicht ausführen\nFehler:" + ex.getMessage(), "Fehler", JOptionPane.WARNING_MESSAGE);
+    }
+    catch (Exception ex)
+    {
+      Logger.getLogger(JepilogView.class.getName()).log(Level.SEVERE, null, ex);
+      JOptionPane.showMessageDialog(mainPanel, "Beim Senden des Jobs ist ein Fehler aufgetreten:\n" + ex.getMessage(), "Fehler", JOptionPane.WARNING_MESSAGE);
+    }
+  }
+
+  @Action
+  public void showImportDialog()
+  {
+    importFileChooser.showOpenDialog(mainPanel);
+    File toImport = importFileChooser.getSelectedFile();
+    if (toImport != null)
+    {
+      try
+      {
+        jobModel.importSVG(toImport);
+      }
+      catch (Exception e)
+      {
+        JOptionPane.showMessageDialog(mainPanel, "Datei konnte nicht importiert werden\nFehler:" + e.getMessage(), "Fehler", JOptionPane.WARNING_MESSAGE);
+      }
+    }
+  }
+
+  @Action
+  public void addSelectedShapeToCuttingPart()
+  {
+    SVGElement selected = viewModel.getSelectedSVGElement();
+    if (selected instanceof ShapeElement)
+    {
+      jobModel.addCuttingShape((ShapeElement) selected);
+      viewModel.setSelectedSVGElement(null);
+    }
+  }
+
+  @Action
+  public void removeSelectedShape()
+  {
+    SVGElement sel = viewModel.getSelectedSVGElement();
+    if (sel instanceof ShapeElement)
+    {
+      jobModel.removeCuttingShape((ShapeElement) sel);
+    }
+  }
+
+  @Action
+  public void moveSelectedShapeUp()
+  {
+    SVGElement selected = viewModel.getSelectedSVGElement();
+    if (selected != null)
+    {
+      CuttingShape[] cs = jobModel.getCuttingShapes();
+      for (int idx = 1; idx < cs.length; idx++)
+      {
+        if (selected.equals(cs[idx].getShapeElement()))
+        {
+          CuttingShape tmp = jobModel.getCuttingShape(idx);
+          jobModel.setCuttingShape(idx, jobModel.getCuttingShape(idx - 1));
+          jobModel.setCuttingShape(idx - 1, tmp);
+          viewModel.setSelectedSVGElement(tmp.getShapeElement());
+          break;
+        }
+      }
+    }
+  }
+
+  @Action
+  public void moveSelectedShapeDown()
+  {
+    SVGElement selected = viewModel.getSelectedSVGElement();
+    if (selected != null)
+    {
+      CuttingShape[] cs = jobModel.getCuttingShapes();
+      for (int idx = cs.length - 2; idx >= 0; idx--)
+      {
+        if (selected.equals(cs[idx].getShapeElement()))
+        {
+          CuttingShape tmp = jobModel.getCuttingShape(idx);
+          jobModel.setCuttingShape(idx, jobModel.getCuttingShape(idx + 1));
+          jobModel.setCuttingShape(idx + 1, tmp);
+          viewModel.setSelectedSVGElement(tmp.getShapeElement());
+          break;
+        }
+      }
+    }
+  }
+
+  private class Double100IntConverter extends Converter
+  {
+
+    @Override
+    public Integer convertForward(Object value)
+    {
+      if (value instanceof Double)
+      {
+        double d = (Double) value;
+        int result = (int) (d * 100);
+        return (Integer) result;
+      }
+      return null;
+    }
+
+    @Override
+    public Double convertReverse(Object value)
+    {
+      if (value instanceof Integer)
+      {
+        int i = (Integer) value;
+        double result = i / (double) 100;
+        return (Double) result;
+      }
+      return null;
+    }
+  }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox cbResolution;
     private javax.swing.JCheckBox cbShowCut;
@@ -945,10 +1010,10 @@ public class JepilogView extends FrameView {
     private com.t_oster.jepilog.gui.ViewModel viewModel;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
-    private final Timer messageTimer;
-    private final Timer busyIconTimer;
-    private final Icon idleIcon;
-    private final Icon[] busyIcons = new Icon[15];
-    private int busyIconIndex = 0;
-    private JDialog aboutBox;
+  private final Timer messageTimer;
+  private final Timer busyIconTimer;
+  private final Icon idleIcon;
+  private final Icon[] busyIcons = new Icon[15];
+  private int busyIconIndex = 0;
+  private JDialog aboutBox;
 }

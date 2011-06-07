@@ -12,14 +12,14 @@ package com.t_oster.liblasercut;
  * 
  * @author thommy
  */
-public interface GreyscaleRaster {
+public interface GreyscaleRaster
+{
 
-    public int getWidth();
+  public int getWidth();
 
-    public Byte getGreyScale(int x, int y);
-    
-    public void setGreyScale(int x, int y, Byte grey);
+  public Byte getGreyScale(int x, int y);
 
-    public int getHeight();
-    
+  public void setGreyScale(int x, int y, Byte grey);
+
+  public int getHeight();
 }

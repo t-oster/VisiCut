@@ -8,8 +8,11 @@ package com.t_oster.liblasercut;
  *
  * @author thommy
  */
-public class IllegalJobException extends Exception {
-    public IllegalJobException(String message){
-        super(message);
-    }
+public class IllegalJobException extends Exception
+{
+
+  public IllegalJobException(String message)
+  {
+    super(message);
+  }
 }
