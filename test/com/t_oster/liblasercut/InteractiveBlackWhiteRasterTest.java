@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -29,14 +27,24 @@ import javax.swing.JOptionPane;
 public class InteractiveBlackWhiteRasterTest
 {
 
+  private final ProgressWindow pw = new ProgressWindow();
+  
   public static void main(String[] args) throws MalformedURLException, IOException
   {
+    new InteractiveBlackWhiteRasterTest().runInteractiveTest();
+  }
+
+  private void runInteractiveTest() throws MalformedURLException, IOException
+  {
     JComboBox cb = new JComboBox();
+
     for (DitherAlgorithm da : BlackWhiteRaster.DitherAlgorithm.values())
     {
       cb.addItem(da);
     }
     int image = 0;
+
+
     while (JOptionPane.showConfirmDialog(
       null, cb, "Waehlen Sie einen Algorithmus aus", JOptionPane.OK_CANCEL_OPTION)
       == JOptionPane.OK_OPTION)
@@ -60,8 +68,23 @@ public class InteractiveBlackWhiteRasterTest
       {
         test = ImageIO.read(new File("rastertest.png"));
       }
+      
+      ProgressListener l = new ProgressListener(){
+
+        public void progressChanged(Object source, int percent)
+        {
+          pw.setState(percent);
+        }
+
+        public void taskChanged(Object source, String taskName)
+        {
+          throw new UnsupportedOperationException("Not supported yet.");
+        }
+        
+      };
+      pw.setVisible(true);
       BlackWhiteRaster bwr = new BlackWhiteRaster(
-        new BufferedImageAdapter(test), da);
+        new BufferedImageAdapter(test), da, l);
       for (int x = 0; x < bwr.getWidth(); x++)
       {
         for (int y = 0; y < bwr.getHeight(); y++)
@@ -69,6 +92,7 @@ public class InteractiveBlackWhiteRasterTest
           test.setRGB(x, y, (bwr.isBlack(x, y) ? Color.BLACK : Color.WHITE).getRGB());
         }
       }
+      pw.setVisible(false);
       JOptionPane.showConfirmDialog(null, new JLabel(new ImageIcon(test)), "Tada", JOptionPane.OK_OPTION);
       image = (image + 1) % 2;
     }

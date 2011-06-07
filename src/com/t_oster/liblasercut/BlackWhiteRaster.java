@@ -1,12 +1,14 @@
 package com.t_oster.liblasercut;
 
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author thommy
  */
-public class BlackWhiteRaster
+public class BlackWhiteRaster extends TimeIntensiveOperation
 {
 
   public static enum DitherAlgorithm
@@ -15,14 +17,17 @@ public class BlackWhiteRaster
     FLOYD_STEINBERG,
     AVERAGE,
     RANDOM,
-    ORDERED,
-  }
+    ORDERED,}
   int width;
   int height;
   private byte[][] raster;
 
-  public BlackWhiteRaster(GreyscaleRaster src, DitherAlgorithm dither_algorithm)
+  public BlackWhiteRaster(GreyscaleRaster src, DitherAlgorithm dither_algorithm, ProgressListener listener)
   {
+    if (listener != null)
+    {
+      this.addProgressListener(listener);
+    }
     this.width = src.getWidth();
     this.height = src.getHeight();
     raster = new byte[(src.getWidth() + 7) / 8][src.getHeight()];
@@ -41,6 +46,11 @@ public class BlackWhiteRaster
         ditherOrdered(src);
         break;
     }
+  }
+
+  public BlackWhiteRaster(GreyscaleRaster src, DitherAlgorithm dither_algorithm)
+  {
+    this(src, dither_algorithm, null);
   }
 
   public BlackWhiteRaster(int width, int height, byte[][] raster)
@@ -95,6 +105,7 @@ public class BlackWhiteRaster
 
   private void ditherFloydSteinberg(GreyscaleRaster src)
   {
+    int pixelcount = 0;
     /**
      * We have to copy the input image, because we will
      * alter the pixels during dither process and don't want
@@ -138,6 +149,7 @@ public class BlackWhiteRaster
             input[x - 1][1] = (input[x - 1][1] + 3 * error / 16);
           }
         }
+        this.fireProgressChanged((100 * pixelcount++) / (width * height));
       }
     }
   }
@@ -145,12 +157,14 @@ public class BlackWhiteRaster
   private void ditherAverage(GreyscaleRaster src)
   {
     int lumTotal = 0;
+    int pixelcount = 0;
 
     for (int y = 0; y < height; y++)
     {
       for (int x = 0; x < width; x++)
       {
         lumTotal += src.getGreyScale(x, y);
+        this.fireProgressChanged((100 * pixelcount++) / (2 * width * height));
       }
     }
 
@@ -160,13 +174,14 @@ public class BlackWhiteRaster
       for (int x = 0; x < width; x++)
       {
         this.setBlack(x, y, src.getGreyScale(x, y) < thresh);
+        this.fireProgressChanged((100 * pixelcount++) / (2 * width * height));
       }
     }
   }
 
   private void ditherRandom(GreyscaleRaster src)
   {
-    int lum;
+    int pixelcount = 0;
     Random r = new Random();
 
     for (int y = 0; y < height; y++)
@@ -174,6 +189,7 @@ public class BlackWhiteRaster
       for (int x = 0; x < width; x++)
       {
         this.setBlack(x, y, src.getGreyScale(x, y) < r.nextInt(256));
+        this.fireProgressChanged((100 * pixelcount++) / (width * height));
       }
     }
   }
@@ -199,9 +215,11 @@ public class BlackWhiteRaster
 
     int x = 0;
     int y = 0;
+    int pixelcount = 0;
 
     for (y = 0; y < (height - nPatWid); y = y + nPatWid)
     {
+      this.fireProgressChanged((100 * pixelcount++) / (height));
       for (x = 0; x < (width - nPatWid); x = x + nPatWid)
       {
 
