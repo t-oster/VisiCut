@@ -9,6 +9,7 @@ import com.kitfox.svg.app.beans.SVGIcon;
 import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
 import com.t_oster.util.BufferedImageAdapter;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class InteractiveBlackWhiteRasterTest
       if (image < 1)
       {
         SVGUniverse univ = new SVGUniverse();
-        URI svg = univ.loadSVG(new File("tux.svg").toURI().toURL());
+        URI svg = univ.loadSVG(new File("test/files/tux.svg").toURI().toURL());
         SVGIcon icon = new SVGIcon();
         icon.setSvgURI(svg);
         icon.setAntiAlias(false);
@@ -62,11 +63,14 @@ public class InteractiveBlackWhiteRasterTest
         icon.setScaleToFit(false);
 
         test = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
-        icon.paintIcon(null, test.getGraphics(), 0, 0);
+        Graphics g = test.getGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(0,0,test.getWidth(), test.getHeight());
+        icon.paintIcon(null, g, 0, 0);
       }
       else
       {
-        test = ImageIO.read(new File("rastertest.png"));
+        test = ImageIO.read(new File("test/files/rastertest.png"));
       }
       
       ProgressListener l = new ProgressListener(){

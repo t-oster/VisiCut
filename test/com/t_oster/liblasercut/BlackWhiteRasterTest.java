@@ -45,9 +45,37 @@ public class BlackWhiteRasterTest
   @Test
   public void testByteRepresentation()
   {
-    BlackWhiteRaster ras = new BlackWhiteRaster(15, 23);
-    assertEquals(15, ras.getWidth());
-    assertEquals(23, ras.getHeight());
+    BlackWhiteRaster ras = new BlackWhiteRaster(500, 600);
+    assertEquals(500, ras.getWidth());
+    assertEquals(600, ras.getHeight());
+    for (int x = 0; x < ras.getWidth(); x++)
+    {
+      for (int y = 0; y < ras.getHeight(); y++)
+      {
+        ras.setBlack(x, y, true);
+      }
+    }
+    for (int x = 0; x < ras.getWidth(); x++)
+    {
+      for (int y = 0; y < ras.getHeight(); y++)
+      {
+        assertTrue(ras.isBlack(x,y));
+      }
+    }
+    for (int x = 0; x < ras.getWidth(); x++)
+    {
+      for (int y = 0; y < ras.getHeight(); y++)
+      {
+        ras.setBlack(x, y, false);
+      }
+    }
+    for (int x = 0; x < ras.getWidth(); x++)
+    {
+      for (int y = 0; y < ras.getHeight(); y++)
+      {
+        assertFalse(ras.isBlack(x,y));
+      }
+    }
     for (int x = 0; x < ras.getWidth(); x++)
     {
       for (int y = 0; y < ras.getHeight(); y++)

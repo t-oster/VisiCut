@@ -69,14 +69,14 @@ public class BlackWhiteRaster extends TimeIntensiveOperation
   {
     int bx = x / 8;
     int ix = x % 8;
-    return (raster[bx][y] & (1 << ix)) != 0;
+    return ((raster[bx][y] & 0xFF) & (int) Math.pow(2,ix)) != 0;
   }
 
   public void setBlack(int x, int y, boolean black)
   {
     int bx = x / 8;
     int ix = x % 8;
-    raster[bx][y] = (byte) ((raster[bx][y] & ~(1 << ix)) | (black ? 1 : 0 << ix));
+    raster[bx][y] = (byte) (((raster[bx][y] & 0xFF) & ~((int) Math.pow(2,ix))) | (black ? (int) Math.pow(2,ix) : 0 ));
   }
 
   /**
