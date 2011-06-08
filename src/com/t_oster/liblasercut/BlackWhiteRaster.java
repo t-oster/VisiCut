@@ -1,8 +1,6 @@
 package com.t_oster.liblasercut;
 
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -103,6 +101,14 @@ public class BlackWhiteRaster extends TimeIntensiveOperation
     return height;
   }
 
+  private int progress = 0;
+  private void setProgress(int progress){
+    if (progress != this.progress){
+      this.progress = progress;
+      this.fireProgressChanged(this.progress);
+    }
+  }
+  
   private void ditherFloydSteinberg(GreyscaleRaster src)
   {
     int pixelcount = 0;
@@ -149,8 +155,8 @@ public class BlackWhiteRaster extends TimeIntensiveOperation
             input[x - 1][1] = (input[x - 1][1] + 3 * error / 16);
           }
         }
-        this.fireProgressChanged((100 * pixelcount++) / (width * height));
       }
+      setProgress((100 * pixelcount++) / (height));
     }
   }
 
@@ -164,8 +170,8 @@ public class BlackWhiteRaster extends TimeIntensiveOperation
       for (int x = 0; x < width; x++)
       {
         lumTotal += src.getGreyScale(x, y);
-        this.fireProgressChanged((100 * pixelcount++) / (2 * width * height));
       }
+      setProgress((100 * pixelcount++) / (2 * height));
     }
 
     float thresh = lumTotal / height / width;
@@ -174,8 +180,8 @@ public class BlackWhiteRaster extends TimeIntensiveOperation
       for (int x = 0; x < width; x++)
       {
         this.setBlack(x, y, src.getGreyScale(x, y) < thresh);
-        this.fireProgressChanged((100 * pixelcount++) / (2 * width * height));
       }
+      setProgress((100 * pixelcount++) / (2 * height));
     }
   }
 
@@ -189,8 +195,8 @@ public class BlackWhiteRaster extends TimeIntensiveOperation
       for (int x = 0; x < width; x++)
       {
         this.setBlack(x, y, src.getGreyScale(x, y) < r.nextInt(256));
-        this.fireProgressChanged((100 * pixelcount++) / (width * height));
       }
+      setProgress((100 * pixelcount++) / (height));
     }
   }
 
@@ -219,7 +225,7 @@ public class BlackWhiteRaster extends TimeIntensiveOperation
 
     for (y = 0; y < (height - nPatWid); y = y + nPatWid)
     {
-      this.fireProgressChanged((100 * pixelcount++) / (height));
+      
       for (x = 0; x < (width - nPatWid); x = x + nPatWid)
       {
 
@@ -242,6 +248,7 @@ public class BlackWhiteRaster extends TimeIntensiveOperation
           }
         }
       }
+      setProgress((100 * pixelcount++) / (height));
     }
 
     // y is at max; loop through x
