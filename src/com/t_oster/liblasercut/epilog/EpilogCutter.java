@@ -6,7 +6,7 @@ package com.t_oster.liblasercut.epilog;
 
 import com.t_oster.liblasercut.*;
 import com.t_oster.util.Util;
-import java.awt.Point;
+import com.t_oster.util.Point;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;

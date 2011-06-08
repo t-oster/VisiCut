@@ -19,7 +19,7 @@ import com.t_oster.liblasercut.EngravingProperty;
 import com.t_oster.liblasercut.Raster3dPart;
 import com.t_oster.util.BufferedImageAdapter;
 import com.t_oster.util.Util;
-import java.awt.Point;
+import com.t_oster.util.Point;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
@@ -452,7 +452,7 @@ public class JepilogModel extends AbstractModel implements Serializable
       throw new Exception("Nothing selected for cutting");
     }
     LaserJob job = new LaserJob(jobname, "123", "bla", getResolution(), generateRaster3dPart(), generateVectorPart(), null);
-    job.setStartPoint((int) this.getStartPoint().getX(), (int) this.getStartPoint().getY());
+    job.setStartPoint(this.getStartPoint().x, (int) this.getStartPoint().y);
     cutter.sendJob(job);
   }
 

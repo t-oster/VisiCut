@@ -7,7 +7,7 @@ package com.t_oster.jepilog.model;
 import com.kitfox.svg.RenderableElement;
 import com.t_oster.liblasercut.EngravingProperty;
 import com.t_oster.util.Tuple;
-import java.awt.Point;
+import com.t_oster.util.Point;
 import java.util.List;
 
 /**

@@ -12,7 +12,7 @@ import com.kitfox.svg.SVGUniverse;
 import com.t_oster.liblasercut.BlackWhiteRaster;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserJob;
-import java.awt.Point;
+import com.t_oster.util.Point;
 import java.util.List;
 import java.util.LinkedList;
 import com.t_oster.liblasercut.Raster3dPart;

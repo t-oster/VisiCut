@@ -4,7 +4,7 @@
  */
 package com.t_oster.liblasercut;
 
-import java.awt.Point;
+import com.t_oster.util.Point;
 import java.util.List;
 import java.util.LinkedList;
 

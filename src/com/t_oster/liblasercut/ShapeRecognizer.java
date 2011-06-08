@@ -4,17 +4,13 @@
  */
 package com.t_oster.liblasercut;
 
-import java.awt.Point;
-import java.awt.Shape;
-import java.awt.geom.GeneralPath;
-import java.util.LinkedList;
-import java.util.List;
+import com.t_oster.util.Point;
 
 /**
  *
  * @author oster
  */
-public class ShapeRecognizer {
+public class ShapeRecognizer extends TimeIntensiveOperation{
 
     public int getEdgepoints(BlackWhiteRaster bwr, BlackWhiteRaster result) {
         int count = 0;
@@ -64,25 +60,25 @@ public class ShapeRecognizer {
         return null;
     }
 
-    public List<Shape> getShapes(BlackWhiteRaster bwr) {
+    public void addToVp(VectorPart vp, BlackWhiteRaster bwr){
         BlackWhiteRaster points = new BlackWhiteRaster(bwr.getWidth(), bwr.getHeight());
+        this.fireTaskChanged("finding edges");
         int count = this.getEdgepoints(bwr, points);
-        List<Shape> result = new LinkedList<Shape>();
+        this.fireTaskChanged("calculating paths");
+        int full = count;
         while (count > 0) {
-            GeneralPath current = new GeneralPath();
+            this.setProgress((full-count)*100/full);
             Point cPoint = findBlack(points);
-            current.moveTo(cPoint.x, cPoint.y);
+            vp.moveto(cPoint.x, cPoint.y);
             points.setBlack(cPoint.x, cPoint.y, false);
             cPoint = getFollower(points, cPoint);
             count--;
             while (cPoint != null) {
-                current.lineTo(cPoint.x, cPoint.y);
+                vp.lineto(cPoint.x, cPoint.y);
                 points.setBlack(cPoint.x, cPoint.y, false);
                 count--;
                 cPoint = getFollower(points, cPoint);
             }
-            result.add(current);
         }
-        return result;
     }
 }
