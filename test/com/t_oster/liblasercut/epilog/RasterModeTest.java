@@ -167,7 +167,7 @@ public class RasterModeTest
     RasterPart rp = new RasterPart(new EngravingProperty(100, 100));
 
     SVGUniverse univ = new SVGUniverse();
-    URI svg = univ.loadSVG(new File("test/files/TweetyMerged.svg").toURI().toURL());
+    URI svg = univ.loadSVG(new File("test/files/Tux.svg").toURI().toURL());
     SVGIcon icon = new SVGIcon();
     icon.setSvgURI(svg);
     icon.setAntiAlias(false);
@@ -179,7 +179,7 @@ public class RasterModeTest
     rp.addImage(new BlackWhiteRaster(
       new BufferedImageAdapter(test), BlackWhiteRaster.DitherAlgorithm.FLOYD_STEINBERG), new Point(0, 0));
 
-    LaserJob job = new LaserJob("raster3dImage", "666", "bla", 500, null, null, rp);
+    LaserJob job = new LaserJob("rasterImage", "666", "bla", 500, null, null, rp);
     instance.sendJob(job);
   }
 }

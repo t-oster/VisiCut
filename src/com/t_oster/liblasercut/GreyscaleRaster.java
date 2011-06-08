@@ -17,9 +17,9 @@ public interface GreyscaleRaster
 
   public int getWidth();
 
-  public Byte getGreyScale(int x, int y);
+  public int getGreyScale(int x, int y);
 
-  public void setGreyScale(int x, int y, Byte grey);
+  public void setGreyScale(int x, int y, int grey);
 
   public int getHeight();
 }

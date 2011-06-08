@@ -22,13 +22,13 @@ public class BufferedImageAdapter implements GreyscaleRaster
     this.img = img;
   }
 
-  public Byte getGreyScale(int x, int line)
+  public int getGreyScale(int x, int line)
   {
     Color c = new Color(img.getRGB(x, line));
-    return ((byte) ((0.3 * c.getRed() + 0.59 * c.getGreen() + 0.11 * c.getBlue()) / 3));
+    return (int) (0.3 * c.getRed() + 0.59 * c.getGreen() + 0.11 * c.getBlue());
   }
 
-  public void setGreyScale(int x, int y, Byte grey)
+  public void setGreyScale(int x, int y, int grey)
   {
     Color c = new Color(grey, grey, grey);
     img.setRGB(x, y, c.getRGB());

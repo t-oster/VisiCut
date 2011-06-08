@@ -69,14 +69,14 @@ public class BlackWhiteRaster extends TimeIntensiveOperation
   {
     int bx = x / 8;
     int ix = x % 8;
-    return (raster[bx][y] & (1 << ix)) == 0;
+    return (raster[bx][y] & (1 << ix)) != 0;
   }
 
   public void setBlack(int x, int y, boolean black)
   {
     int bx = x / 8;
     int ix = x % 8;
-    raster[bx][y] = (byte) ((raster[bx][y] & ~(1 << ix)) | (black ? 0 : 1 << ix));
+    raster[bx][y] = (byte) ((raster[bx][y] & ~(1 << ix)) | (black ? 1 : 0 << ix));
   }
 
   /**
@@ -120,7 +120,7 @@ public class BlackWhiteRaster extends TimeIntensiveOperation
     int[][] input = new int[src.getWidth()][2];
     for (int x = 0; x < src.getWidth(); x++)
     {
-      input[x][1] = (src.getGreyScale(x, 0) & 0xFF);
+      input[x][1] = src.getGreyScale(x, 0);
     }
     for (int y = 0; y < src.getHeight(); y++)
     {

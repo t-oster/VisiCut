@@ -131,7 +131,8 @@ public class Raster3dPart
     List<Byte> result = new LinkedList<Byte>();
     for (int x = 0; x < img.getWidth(); x++)
     {
-      result.add(img.getGreyScale(x, line));
+        //TOTEST: Black white (byte converssion)
+      result.add((byte) img.getGreyScale(x, line));
     }
     return result;
   }
