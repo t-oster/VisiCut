@@ -100,14 +100,6 @@ public class BlackWhiteRaster extends TimeIntensiveOperation
   {
     return height;
   }
-
-  private int progress = 0;
-  private void setProgress(int progress){
-    if (progress != this.progress){
-      this.progress = progress;
-      this.fireProgressChanged(this.progress);
-    }
-  }
   
   private void ditherFloydSteinberg(GreyscaleRaster src)
   {

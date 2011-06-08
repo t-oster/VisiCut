@@ -40,4 +40,12 @@ public abstract class TimeIntensiveOperation
       l.taskChanged(this, name);
     }
   }
+
+  private int progress = 0;
+  protected void setProgress(int progress){
+    if (progress != this.progress){
+      this.progress = progress;
+      this.fireProgressChanged(this.progress);
+    }
+  }
 }
