@@ -17,4 +17,30 @@ public class Point
     this.x = x;
     this.y = y;
   }
+
+  @Override
+  public Point clone()
+  {
+    return new Point(x, y);
+  }
+
+  @Override
+  public boolean equals(Object o)
+  {
+    if (o instanceof Point)
+    {
+      Point p = (Point) o;
+      return p.x == x && p.y == y;
+    }
+    return o == this;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    int hash = 7;
+    hash = 29 * hash + this.x;
+    hash = 29 * hash + this.y;
+    return hash;
+  }
 }

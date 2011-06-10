@@ -16,8 +16,8 @@ public class BlackWhiteRaster extends TimeIntensiveOperation
     AVERAGE,
     RANDOM,
     ORDERED,}
-  int width;
-  int height;
+  private int width;
+  private int height;
   private byte[][] raster;
 
   public BlackWhiteRaster(GreyscaleRaster src, DitherAlgorithm dither_algorithm, ProgressListener listener)
