@@ -10,6 +10,7 @@ import java.net.URI;
 import java.io.File;
 import com.kitfox.svg.SVGUniverse;
 import com.t_oster.liblasercut.BlackWhiteRaster;
+import com.t_oster.liblasercut.CuttingProperty;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.util.Point;
@@ -18,7 +19,9 @@ import java.util.LinkedList;
 import com.t_oster.liblasercut.Raster3dPart;
 import com.t_oster.liblasercut.EngravingProperty;
 import com.t_oster.liblasercut.RasterPart;
+import com.t_oster.liblasercut.VectorPart;
 import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -180,6 +183,26 @@ public class RasterModeTest
       new BufferedImageAdapter(test), BlackWhiteRaster.DitherAlgorithm.FLOYD_STEINBERG), new Point(0, 0));
 
     LaserJob job = new LaserJob("rasterImage", "666", "bla", 500, null, null, rp);
+    instance.sendJob(job);
+  }
+
+  @Test
+  public void testRaster2Image() throws IllegalJobException, Exception
+  {
+
+    EpilogCutter instance = new EpilogCutter("137.226.56.228");
+    //RasterPart rp = new RasterPart(new EngravingProperty(100, 100));
+
+    BufferedImage test = ImageIO.read(new File("test/files/jojo.jpg"));
+    //rp.addImage(new BlackWhiteRaster(
+      //new BufferedImageAdapter(test), BlackWhiteRaster.DitherAlgorithm.FLOYD_STEINBERG), new Point(0, 0));
+      VectorPart vp = new VectorPart(new CuttingProperty(100,80,5000));
+      vp.moveto(0,0);
+      vp.lineto(0,test.getHeight());
+      vp.lineto(test.getWidth(), test.getHeight());
+      vp.lineto(test.getWidth(), 0);
+      vp.lineto(0,0);
+    LaserJob job = new LaserJob("jojo", "666", "bla", 500, null, vp, null);
     instance.sendJob(job);
   }
 }

@@ -4,6 +4,7 @@
  */
 package com.t_oster.liblasercut.epilog;
 
+import com.t_oster.util.Point;
 import com.t_oster.liblasercut.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,10 +43,11 @@ public class EpilogCutterTest
   }
 
   /**
-   * Test of sendJob method, of class EpilogCutter.
+   * This method sends a job which contains all three parts (raster,raster3d,vector)
+   * and also tests focus change on every part
    */
   @Test
-  public void testVectorJob() throws IllegalJobException, Exception
+  public void testFullJob() throws IllegalJobException, Exception
   {
     EpilogCutter.SIMULATE_COMMUNICATION = false;
     System.out.println("sendJob");
@@ -53,12 +55,42 @@ public class EpilogCutterTest
     EpilogCutter instance = new EpilogCutter("137.226.56.228");
     VectorPart vp = new VectorPart(new CuttingProperty(50, 100, 5000));
     vp.moveto(0, 0);
-    for (int i = 0; i <= 500; i++)
-    {
-      vp.setFocus(i);
-      vp.lineto(2 * i, 0);
-    }
-    LaserJob job = new LaserJob("vector", "666", "bla", 500, null, vp, null);
+    vp.lineto(100, 0);
+    vp.lineto(100, 100);
+    vp.lineto(0, 100);
+    vp.lineto(0, 0);
+    vp.moveto(200, 0);
+    vp.setFocus(300);
+    vp.lineto(300, 0);
+    vp.lineto(300, 100);
+    vp.lineto(400, 100);
+    vp.lineto(400, 0);
+    vp.lineto(300, 0);
+
+    RasterPart rp = new RasterPart(new EngravingProperty(80, 100));
+    GreyscaleRaster testimage = new GreyscaleRaster(){
+
+            public int getWidth() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public int getGreyScale(int x, int y) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public void setGreyScale(int x, int y, int grey) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public int getHeight() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+    };
+
+    rp.addImage(bwr, new Point(0, 200));
+
+    LaserJob job = new LaserJob("allparts", "666", "bla", 500, null, vp, null);
     instance.sendJob(job);
   }
 }

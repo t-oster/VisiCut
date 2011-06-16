@@ -612,7 +612,7 @@ public class EpilogCutter extends LaserCutter
       }
 
       //Pen up and goto 0,0
-      out.printf("PU0,0;");  // start HLGL, and pen up, end
+      //out.printf("PU0,0;");  // start HLGL, and pen up, end
     }
 
     System.out.append(result.toString());

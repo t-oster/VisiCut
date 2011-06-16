@@ -84,6 +84,7 @@ public class ShapeRecognizer extends TimeIntensiveOperation
       before = current;
       current = next;
     }
+    return null;
   }
   
   private Direction previous = Direction.west;
@@ -107,5 +108,6 @@ public class ShapeRecognizer extends TimeIntensiveOperation
     if (bwr.isBlack(c.x+xdiff, c.y+xdiff)==outerBlack){
       return (new Point(c.x-ydiff, c.y-xdiff));
     }
+    return null;
   }
 }
