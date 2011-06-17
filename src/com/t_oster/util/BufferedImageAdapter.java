@@ -16,16 +16,26 @@ public class BufferedImageAdapter implements GreyscaleRaster
 {
 
   private BufferedImage img;
+  private int colorShift = 0;
 
   public BufferedImageAdapter(BufferedImage img)
   {
     this.img = img;
   }
 
+  public void setColorShift(int cs){
+      this.colorShift = cs;
+  }
+
+  public int getColorShift(){
+      return this.colorShift;
+  }
+
   public int getGreyScale(int x, int line)
   {
     Color c = new Color(img.getRGB(x, line));
-    return (int) (0.3 * c.getRed() + 0.59 * c.getGreen() + 0.11 * c.getBlue());
+    int value = colorShift+(int) (0.3 * c.getRed() + 0.59 * c.getGreen() + 0.11 * c.getBlue());
+    return Math.max(Math.min(value, 255), 0);
   }
 
   public void setGreyScale(int x, int y, int grey)

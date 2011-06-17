@@ -67,15 +67,15 @@ public abstract class LaserCutter
     //TODO: get Propertys for actual Cutter from a subdirectory or similar
     int AUTO = 5000;
     List<MaterialProperty> result = new LinkedList<MaterialProperty>();
-    result.add(new MaterialProperty("Finnpappe", 3, -1, -1, 50, 100, AUTO));
+    result.add(new MaterialProperty("Finnpappe", 3, 50, 100, 50, 100, AUTO));
     result.add(new MaterialProperty("Birkensperrholz", 4, -1, -1, 65, 100, AUTO));
     result.add(new MaterialProperty("Dicke Wellpappe", 5, -1, -1, 50, 100, AUTO));
     result.add(new MaterialProperty("Expo Giveaway Pappe", 3, -1, -1, 12, 100, 500));
 
     result.add(new MaterialProperty("Papier", 0.2, -1, -1, 10, 100, 1000));
 
-    result.add(new MaterialProperty("Bastelpappe", 3, -1, -1, 90, 100, 5000));
-    result.add(new MaterialProperty("Plexiglass XT (blau)", 6, -1, -1, 85, 20, 5000));
+    result.add(new MaterialProperty("Bastelpappe", 3, 50, 100, 90, 100, 5000));
+    result.add(new MaterialProperty("Plexiglass XT (blau)", 6, 20, 100, 85, 20, 5000));
     //TODO rest of list
     return result;
   }
