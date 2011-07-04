@@ -13,6 +13,7 @@ public class EngravingProperty
 
   private int speed = 100;
   private int power = 50;
+  //TODO: Focus
 
   public EngravingProperty()
   {
