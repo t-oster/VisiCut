@@ -75,11 +75,23 @@ public class LaserProperty implements Cloneable
     return frequency;
   }
 
+  /**
+   * Sets the Focus aka moves the Z axis. Values are given in mm/10.
+   * Positive values move the Z axis down aka makes the distance between
+   * laser and object bigger.
+   * The possible range depends on the LaserCutter, so wrong setting
+   * may result in IllegalJobExceptions
+   * @param focus the relative Distance from object to Laser in mm/10
+   */
   public void setFocus(int focus)
   {
     this.focus = focus;
   }
 
+  /**
+   * Returns the relative (to the distance at starting the job) distance
+   * between laser and object in mm/10s
+   */
   public int getFocus()
   {
     return this.focus;

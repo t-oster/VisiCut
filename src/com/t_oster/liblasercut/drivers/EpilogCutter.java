@@ -17,7 +17,6 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Collections;
@@ -38,15 +37,28 @@ public class EpilogCutter extends LaserCutter {
     };
     private static final double BED_WIDTH = 600;//Bed width in mm
     private static final double BED_HEIGHT = 300;//Bed height in mm
+    private static final int MINFOCUS = -500;//Minimal focus value (not mm)
+    private static final int MAXFOCUS = 500;//Maximal focus value (not mm)
+    private static final double FOCUSWIDTH = 0.252;//How much dmm/unit the focus values are
+    
     private String hostname;
     private Socket connection;
     private InputStream in;
     private OutputStream out;
 
+    private int dmm2focus(int dmm)
+    {
+        return (int) (dmm/FOCUSWIDTH);
+    }
+    
+    private int focus2dmm(int focus)
+    {
+        return (int) (focus*FOCUSWIDTH);
+    }
+    
     public EpilogCutter(String hostname) {
         this.hostname = hostname;
     }
-
     private void waitForResponse(int expected) throws IOException, Exception {
         waitForResponse(expected, 3);
     }
@@ -178,6 +190,34 @@ public class EpilogCutter extends LaserCutter {
         if (job.containsVector()) {
             double w = Util.px2mm(job.getVectorPart().getWidth(), job.getResolution());
             double h = Util.px2mm(job.getVectorPart().getHeight(), job.getResolution());
+
+            if (w > this.getBedWidth() || h > this.getBedHeight()) {
+                throw new IllegalJobException("The Job is too big (" + w + "x" + h + ") for the Laser bed (" + this.getBedHeight() + "x" + this.getBedHeight() + ")");
+            }
+            
+            for (VectorCommand cmd:job.getVectorPart().getCommandList())
+            {
+                if (cmd.getType() == VectorCommand.CmdType.SETFOCUS)
+                {
+                    if (dmm2focus(cmd.getFocus()) > MAXFOCUS || (dmm2focus(cmd.getFocus())) < MINFOCUS)
+                    {
+                        throw new IllegalJobException("Illegal Focus value. This Lasercutter supports values between"
+                        +10*focus2dmm(MINFOCUS)+"mm to "+10*focus2dmm(MAXFOCUS)+"mm.");
+                    }
+                }
+            }
+        }
+        if (job.containsRaster()) {
+            double w = Util.px2mm(job.getRasterPart().getWidth(), job.getResolution());
+            double h = Util.px2mm(job.getRasterPart().getHeight(), job.getResolution());
+
+            if (w > this.getBedWidth() || h > this.getBedHeight()) {
+                throw new IllegalJobException("The Job is too big (" + w + "x" + h + ") for the Laser bed (" + this.getBedHeight() + "x" + this.getBedHeight() + ")");
+            }
+        }
+        if (job.contains3dRaster()) {
+            double w = Util.px2mm(job.getRaster3dPart().getWidth(), job.getResolution());
+            double h = Util.px2mm(job.getRaster3dPart().getHeight(), job.getResolution());
 
             if (w > this.getBedWidth() || h > this.getBedHeight()) {
                 throw new IllegalJobException("The Job is too big (" + w + "x" + h + ") for the Laser bed (" + this.getBedHeight() + "x" + this.getBedHeight() + ")");

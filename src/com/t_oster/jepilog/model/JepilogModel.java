@@ -20,6 +20,7 @@ import com.t_oster.liblasercut.Raster3dPart;
 import com.t_oster.liblasercut.utils.BufferedImageAdapter;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.liblasercut.platform.Point;
+import com.t_oster.liblasercut.utils.ShapeConverter;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
@@ -353,29 +354,6 @@ public class JepilogModel extends AbstractModel implements Serializable
     }
   }
 
-  private void addShape(VectorPart vp, Shape s)
-  {
-    AffineTransform scale = AffineTransform.getScaleInstance(scaleX, scaleY);
-    PathIterator iter = s.getPathIterator(scale, 1);
-    while (!iter.isDone())
-    {
-      double[] test = new double[8];
-      int result = iter.currentSegment(test);
-      if (result == PathIterator.SEG_MOVETO)
-      {
-        vp.moveto((int) test[0], (int) test[1]);
-      }
-      else
-      {
-        if (result == PathIterator.SEG_LINETO)
-        {
-          vp.lineto((int) test[0], (int) test[1]);
-        }
-      }
-      iter.next();
-    }
-  }
-
   private BufferedImage getBufferedImage(EngravingImage i)
   {
     throw new UnsupportedOperationException();
@@ -410,11 +388,14 @@ public class JepilogModel extends AbstractModel implements Serializable
 
     VectorPart vp = new VectorPart(defaultcp);
 
+    ShapeConverter sc = new ShapeConverter();
+    
     for (CuttingShape s : this.getCuttingShapes())
     {
       LaserProperty cp = s.getProperty();
       vp.setCurrentCuttingProperty(cp != null ? cp : defaultcp);
-      this.addShape(vp, s.getTransformedShape());
+      //TODO: Check if scaling is broken
+      sc.addShape(s.getTransformedShape(), vp);
     }
     return vp;
   }
