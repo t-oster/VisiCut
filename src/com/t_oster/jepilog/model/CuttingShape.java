@@ -8,8 +8,8 @@ import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.ShapeElement;
 import com.kitfox.svg.xml.StyleAttribute;
-import com.t_oster.liblasercut.CuttingProperty;
-import com.t_oster.util.Tuple;
+import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.platform.Tuple;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @author thommy
  */
-public class CuttingShape extends Tuple<ShapeElement, CuttingProperty>
+public class CuttingShape extends Tuple<ShapeElement, LaserProperty>
 {
 
   /**
@@ -64,12 +64,12 @@ public class CuttingShape extends Tuple<ShapeElement, CuttingProperty>
     this(s, null);
   }
 
-  public CuttingShape(ShapeElement s, CuttingProperty p)
+  public CuttingShape(ShapeElement s, LaserProperty p)
   {
     super(s, p);
   }
 
-  public CuttingProperty getProperty()
+  public LaserProperty getProperty()
   {
     return this.getB();
   }
@@ -84,7 +84,7 @@ public class CuttingShape extends Tuple<ShapeElement, CuttingProperty>
     return extractTransformedShape(this.getA());
   }
 
-  public void setProperty(CuttingProperty p)
+  public void setProperty(LaserProperty p)
   {
     this.setB(p);
   }

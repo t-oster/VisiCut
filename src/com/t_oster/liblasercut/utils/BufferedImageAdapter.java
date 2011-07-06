@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.util;
+package com.t_oster.liblasercut.utils;
 
 import com.t_oster.liblasercut.GreyscaleRaster;
 import java.awt.Color;

@@ -4,13 +4,13 @@ import com.t_oster.liblasercut.BlackWhiteRaster;
 import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserJob;
-import com.t_oster.liblasercut.MaterialProperty;
+import com.t_oster.liblasercut.utils.MaterialProperty;
 import com.t_oster.liblasercut.RasterPart;
 import com.t_oster.liblasercut.VectorPart;
-import com.t_oster.liblasercut.epilog.EpilogCutter;
-import com.t_oster.util.BufferedImageAdapter;
-import com.t_oster.util.Point;
-import com.t_oster.util.Util;
+import com.t_oster.liblasercut.drivers.EpilogCutter;
+import com.t_oster.liblasercut.utils.BufferedImageAdapter;
+import com.t_oster.liblasercut.platform.Point;
+import com.t_oster.liblasercut.platform.Util;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -152,7 +152,7 @@ public class PhotoPrint {
                 material.addItem(mp);
             }
             JOptionPane.showMessageDialog(null, material);
-            RasterPart rp = new RasterPart(((MaterialProperty) material.getSelectedItem()).getEngravingProperty());
+            RasterPart rp = new RasterPart(((MaterialProperty) material.getSelectedItem()).getLaserProperty());
             rp.addImage(new BlackWhiteRaster(new BufferedImageAdapter(outImg), BlackWhiteRaster.DitherAlgorithm.AVERAGE), new Point(0, 0));
             VectorPart vp = null;
             if (cbCut.isSelected()) {

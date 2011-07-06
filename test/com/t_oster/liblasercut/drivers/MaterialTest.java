@@ -2,15 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.liblasercut.epilog;
+package com.t_oster.liblasercut.drivers;
 
-import com.kitfox.svg.SVGDiagram;
-import com.kitfox.svg.SVGUniverse;
 import com.t_oster.liblasercut.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.File;
-import java.net.URI;
 import javax.swing.JOptionPane;
 import org.junit.Test;
 
@@ -24,7 +18,7 @@ public class MaterialTest
   @Test
   public void rects2() throws IllegalJobException, Exception
   {
-    VectorPart vp = new VectorPart(new CuttingProperty(10, 100, 5000));
+    VectorPart vp = new VectorPart(new LaserProperty(10, 100, 5000));
     int x = 0;
     for (int speed = 40; speed >= 10; speed -= 10)
     {
@@ -48,7 +42,7 @@ public class MaterialTest
     int column = Integer.parseInt(JOptionPane.showInputDialog(null, "Please enter column of the first cut through (1...5)"));
     int cutpower = 5 + row * 5;
     int cutspeed = 50 - column * 10;
-    vp = new VectorPart(new CuttingProperty(cutpower, cutspeed, 5000));
+    vp = new VectorPart(new LaserProperty(cutpower, cutspeed, 5000));
     x = 0;
     for (int speed = 40; speed >= 10; speed -= 10)
     {
@@ -68,7 +62,7 @@ public class MaterialTest
   @Test
   public void rects() throws IllegalJobException, Exception
   {
-    VectorPart vp = new VectorPart(new CuttingProperty(10, 100, 5000));
+    VectorPart vp = new VectorPart(new LaserProperty(10, 100, 5000));
     int x = 0;
     for (int speed = 100; speed >= 50; speed -= 10)
     {
@@ -92,7 +86,7 @@ public class MaterialTest
     int column = Integer.parseInt(JOptionPane.showInputDialog(null, "Please enter column of the first cut through (1...5)"));
     int cutpower = 5 + row * 5;
     int cutspeed = 100 - column * 10;
-    vp = new VectorPart(new CuttingProperty(cutpower, cutspeed, 5000));
+    vp = new VectorPart(new LaserProperty(cutpower, cutspeed, 5000));
     x = 0;
     for (int speed = 100; speed >= 50; speed -= 10)
     {

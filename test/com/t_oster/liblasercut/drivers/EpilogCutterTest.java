@@ -2,13 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.liblasercut.epilog;
+package com.t_oster.liblasercut.drivers;
 
 import java.awt.Font;
-import com.t_oster.util.BufferedImageAdapter;
+import com.t_oster.liblasercut.utils.BufferedImageAdapter;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import com.t_oster.util.Point;
+import com.t_oster.liblasercut.platform.Point;
 import com.t_oster.liblasercut.*;
 import java.awt.Color;
 import java.util.LinkedList;
@@ -84,7 +84,7 @@ public class EpilogCutterTest
 
     EpilogCutter instance = new EpilogCutter("137.226.56.228");
     System.out.println("Creating VP");
-    VectorPart vp = new VectorPart(new CuttingProperty(50, 100, 5000));
+    VectorPart vp = new VectorPart(new LaserProperty(50, 100, 5000));
     vp.moveto(0, 0);
     vp.lineto(100, 0);
     vp.lineto(100, 100);
@@ -97,10 +97,10 @@ public class EpilogCutterTest
     vp.lineto(200, 100);
     vp.lineto(200, 0);
     System.out.println("Creating RP");
-    RasterPart rp = new RasterPart(new EngravingProperty(80, 100));
+    RasterPart rp = new RasterPart(new LaserProperty(80, 100));
     rp.addImage(new BlackWhiteRaster(new BufferedImageAdapter(getTestImage()), BlackWhiteRaster.DitherAlgorithm.FLOYD_STEINBERG), new Point(0, 200));
     System.out.println("Creating R3dP");
-    Raster3dPart r3p = new Raster3dPart(new EngravingProperty(80, 100));
+    Raster3dPart r3p = new Raster3dPart(new LaserProperty(80, 100));
     r3p.addImage(new BufferedImageAdapter(getTestImage()), new Point(0, 600));
     System.out.println("Creating Job");
     LaserJob job = new LaserJob("allparts", "666", "bla", 500, r3p, vp, rp);

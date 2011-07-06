@@ -4,7 +4,7 @@
  */
 package com.t_oster.jepilog.controller;
 
-import com.t_oster.util.Point;
+import com.t_oster.liblasercut.platform.Point;
 import com.t_oster.jepilog.model.JepilogModel;
 import java.io.File;
 import java.io.IOException;

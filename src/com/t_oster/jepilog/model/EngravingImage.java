@@ -5,16 +5,16 @@
 package com.t_oster.jepilog.model;
 
 import com.kitfox.svg.RenderableElement;
-import com.t_oster.liblasercut.EngravingProperty;
-import com.t_oster.util.Tuple;
-import com.t_oster.util.Point;
+import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.platform.Tuple;
+import com.t_oster.liblasercut.platform.Point;
 import java.util.List;
 
 /**
  *
  * @author thommy
  */
-public class EngravingImage extends Tuple<List<RenderableElement>, EngravingProperty>
+public class EngravingImage extends Tuple<List<RenderableElement>, LaserProperty>
 {
 
   private Point startPoint = new Point(0, 0);
@@ -29,7 +29,7 @@ public class EngravingImage extends Tuple<List<RenderableElement>, EngravingProp
     return this.startPoint;
   }
 
-  public EngravingProperty getProperty()
+  public LaserProperty getProperty()
   {
     return this.getB();
   }

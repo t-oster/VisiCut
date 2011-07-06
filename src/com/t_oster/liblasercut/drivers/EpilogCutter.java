@@ -2,11 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.liblasercut.epilog;
+package com.t_oster.liblasercut.drivers;
 
 import com.t_oster.liblasercut.*;
-import com.t_oster.util.Util;
-import com.t_oster.util.Point;
+import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.liblasercut.platform.Point;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;

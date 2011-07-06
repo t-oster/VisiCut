@@ -12,14 +12,14 @@ import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.VectorPart;
-import com.t_oster.liblasercut.epilog.EpilogCutter;
-import com.t_oster.liblasercut.MaterialProperty;
-import com.t_oster.liblasercut.CuttingProperty;
-import com.t_oster.liblasercut.EngravingProperty;
+import com.t_oster.liblasercut.drivers.EpilogCutter;
+import com.t_oster.liblasercut.utils.MaterialProperty;
+import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.Raster3dPart;
-import com.t_oster.util.BufferedImageAdapter;
-import com.t_oster.util.Util;
-import com.t_oster.util.Point;
+import com.t_oster.liblasercut.utils.BufferedImageAdapter;
+import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.liblasercut.platform.Point;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
@@ -143,7 +143,7 @@ public class JepilogModel extends AbstractModel implements Serializable
     this.addCuttingShape(new CuttingShape(s, null));
   }
 
-  public void addCuttingShape(ShapeElement s, CuttingProperty p)
+  public void addCuttingShape(ShapeElement s, LaserProperty p)
   {
     this.addCuttingShape(new CuttingShape(s, p));
   }
@@ -387,13 +387,13 @@ public class JepilogModel extends AbstractModel implements Serializable
     {
       throw new IllegalJobException("No material selected");
     }
-    EngravingProperty defaultep = material.getEngravingProperty();
+    LaserProperty defaultep = material.getLaserProperty();
 
     Raster3dPart rp = new Raster3dPart(defaultep);
 
     for (EngravingImage i : this.getEngravingImages())
     {
-      EngravingProperty ep = i.getProperty();
+      LaserProperty ep = i.getProperty();
       rp.addImage(new BufferedImageAdapter(getBufferedImage(i)), ep != null ? ep : defaultep, i.getStartPoint());
     }
 
@@ -406,13 +406,13 @@ public class JepilogModel extends AbstractModel implements Serializable
     {
       throw new IllegalJobException("No material selected");
     }
-    CuttingProperty defaultcp = material.getCuttingProperty();
+    LaserProperty defaultcp = material.getCuttingProperty();
 
     VectorPart vp = new VectorPart(defaultcp);
 
     for (CuttingShape s : this.getCuttingShapes())
     {
-      CuttingProperty cp = s.getProperty();
+      LaserProperty cp = s.getProperty();
       vp.setCurrentCuttingProperty(cp != null ? cp : defaultcp);
       this.addShape(vp, s.getTransformedShape());
     }

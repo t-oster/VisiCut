@@ -4,6 +4,7 @@
  */
 package com.t_oster.liblasercut;
 
+import com.t_oster.liblasercut.utils.MaterialProperty;
 import java.util.List;
 import java.util.LinkedList;
 

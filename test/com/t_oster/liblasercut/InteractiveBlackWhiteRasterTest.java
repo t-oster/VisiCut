@@ -7,7 +7,7 @@ package com.t_oster.liblasercut;
 import com.kitfox.svg.SVGUniverse;
 import com.kitfox.svg.app.beans.SVGIcon;
 import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
-import com.t_oster.util.BufferedImageAdapter;
+import com.t_oster.liblasercut.utils.BufferedImageAdapter;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;

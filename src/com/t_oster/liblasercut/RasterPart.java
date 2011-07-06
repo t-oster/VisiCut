@@ -4,7 +4,7 @@
  */
 package com.t_oster.liblasercut;
 
-import com.t_oster.util.Point;
+import com.t_oster.liblasercut.platform.Point;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -15,22 +15,22 @@ import java.util.LinkedList;
 public class RasterPart
 {
 
-  private EngravingProperty curProp;
+  private LaserProperty curProp;
   private List<BlackWhiteRaster> images = new LinkedList<BlackWhiteRaster>();
-  private List<EngravingProperty> properties = new LinkedList<EngravingProperty>();
+  private List<LaserProperty> properties = new LinkedList<LaserProperty>();
   private List<Point> starts = new LinkedList<Point>();
 
-  public RasterPart(EngravingProperty initialEngravingProperty)
+  public RasterPart(LaserProperty initialLaserProperty)
   {
-    this.curProp = initialEngravingProperty;
+    this.curProp = initialLaserProperty;
   }
 
-  public void setCurrentEngravingProperty(EngravingProperty eng)
+  public void setCurrentLaserProperty(LaserProperty eng)
   {
     this.curProp = eng;
   }
 
-  public EngravingProperty getCurrentEngravingProperty()
+  public LaserProperty getCurrentLaserProperty()
   {
     return this.curProp;
   }
@@ -57,7 +57,7 @@ public class RasterPart
     this.addImage(img, curProp, start);
   }
 
-  public void addImage(BlackWhiteRaster img, EngravingProperty prop, Point start)
+  public void addImage(BlackWhiteRaster img, LaserProperty prop, Point start)
   {
     this.images.add(img);
     this.properties.add(prop);
@@ -151,8 +151,8 @@ public class RasterPart
     return this.images.toArray(new GreyscaleRaster[0]);
   }
 
-  public EngravingProperty[] getPropertys()
+  public LaserProperty[] getPropertys()
   {
-    return this.properties.toArray(new EngravingProperty[0]);
+    return this.properties.toArray(new LaserProperty[0]);
   }
 }

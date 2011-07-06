@@ -2,9 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.liblasercut;
+package com.t_oster.liblasercut.utils;
 
-import com.t_oster.util.Point;
+import com.t_oster.liblasercut.BlackWhiteRaster;
+import com.t_oster.liblasercut.TimeIntensiveOperation;
+import com.t_oster.liblasercut.platform.Point;
 import java.util.LinkedList;
 import java.util.List;
 

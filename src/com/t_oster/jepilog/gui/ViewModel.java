@@ -2,7 +2,7 @@ package com.t_oster.jepilog.gui;
 
 import com.kitfox.svg.SVGElement;
 import com.t_oster.jepilog.model.AbstractModel;
-import com.t_oster.util.Util;
+import com.t_oster.liblasercut.platform.Util;
 import java.awt.Point;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;

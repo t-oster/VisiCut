@@ -15,7 +15,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 import com.t_oster.jepilog.model.JepilogModel;
-import com.t_oster.util.Util;
+import com.t_oster.liblasercut.platform.Util;
 import java.text.DecimalFormat;
 
 /**

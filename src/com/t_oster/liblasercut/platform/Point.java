@@ -1,4 +1,4 @@
-package com.t_oster.util;
+package com.t_oster.liblasercut.platform;
 
 /**
  * This Class is the replacement of the java.awt.Point and android.graphics.Point

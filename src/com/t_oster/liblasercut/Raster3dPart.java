@@ -4,7 +4,7 @@
  */
 package com.t_oster.liblasercut;
 
-import com.t_oster.util.Point;
+import com.t_oster.liblasercut.platform.Point;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -14,20 +14,20 @@ import java.util.LinkedList;
  */
 public class Raster3dPart {
 
-    private EngravingProperty curProp;
+    private LaserProperty curProp;
     private List<GreyscaleRaster> images = new LinkedList<GreyscaleRaster>();
-    private List<EngravingProperty> properties = new LinkedList<EngravingProperty>();
+    private List<LaserProperty> properties = new LinkedList<LaserProperty>();
     private List<Point> starts = new LinkedList<Point>();
 
-    public Raster3dPart(EngravingProperty initialEngravingProperty) {
-        this.curProp = initialEngravingProperty;
+    public Raster3dPart(LaserProperty initialLaserProperty) {
+        this.curProp = initialLaserProperty;
     }
 
-    public void setCurrentEngravingProperty(EngravingProperty eng) {
+    public void setCurrentLaserProperty(LaserProperty eng) {
         this.curProp = eng;
     }
 
-    public EngravingProperty getCurrentEngravingProperty() {
+    public LaserProperty getCurrentLaserProperty() {
         return this.curProp;
     }
 
@@ -50,7 +50,7 @@ public class Raster3dPart {
         this.addImage(img, curProp, start);
     }
 
-    public void addImage(GreyscaleRaster img, EngravingProperty prop, Point start) {
+    public void addImage(GreyscaleRaster img, LaserProperty prop, Point start) {
         this.images.add(img);
         this.properties.add(prop);
         this.starts.add(start);
@@ -133,8 +133,8 @@ public class Raster3dPart {
         return this.images.toArray(new GreyscaleRaster[0]);
     }
 
-    public EngravingProperty[] getPropertys() {
-        return this.properties.toArray(new EngravingProperty[0]);
+    public LaserProperty[] getPropertys() {
+        return this.properties.toArray(new LaserProperty[0]);
     }
 
     public List<Byte> getInvertedRasterLine(int raster, int line) {

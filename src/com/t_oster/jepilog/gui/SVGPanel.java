@@ -10,7 +10,7 @@ import com.kitfox.svg.SVGException;
 import com.kitfox.svg.ShapeElement;
 import com.kitfox.svg.app.beans.SVGIcon;
 import com.t_oster.jepilog.model.CuttingShape;
-import com.t_oster.util.Util;
+import com.t_oster.liblasercut.platform.Util;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;

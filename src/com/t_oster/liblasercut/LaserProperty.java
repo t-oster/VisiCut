@@ -1,14 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.liblasercut;
 
 /**
- *
+ * The LaserProperty holds all the parameters for parts of the LaserJob.
+ * The Frequency value is ignored for Engraving operations
+ * 
  * @author oster
  */
-public class CuttingProperty implements Cloneable
+public class LaserProperty implements Cloneable
 {
 
   private int power = 20;
@@ -16,16 +14,21 @@ public class CuttingProperty implements Cloneable
   private int frequency = 5000;
   private int focus = 0;
 
-  public CuttingProperty()
+  public LaserProperty()
   {
   }
 
-  public CuttingProperty(int power, int speed, int frequency)
+  public LaserProperty(int power, int speed)
+  {
+      this(power, speed, 5000, 0);
+  }
+  
+  public LaserProperty(int power, int speed, int frequency)
   {
     this(power, speed, frequency, 0);
   }
 
-  public CuttingProperty(int power, int speed, int frequency, int focus)
+  public LaserProperty(int power, int speed, int frequency, int focus)
   {
     this.power = power;
     this.speed = speed;
@@ -33,6 +36,11 @@ public class CuttingProperty implements Cloneable
     this.focus = focus;
   }
 
+  /**
+   * Sets the Laserpower. Valid values are from 0 to 100.
+   * In 3d-Raster mode, the intensity is scaled to this power setting
+   * @param power 
+   */
   public void setPower(int power)
   {
     this.power = power;
@@ -43,6 +51,10 @@ public class CuttingProperty implements Cloneable
     return power;
   }
 
+  /**
+   * Sets the speed for the Laser. Valid values is from 0 to 100
+   * @param speed 
+   */
   public void setSpeed(int speed)
   {
     this.speed = speed;
@@ -74,8 +86,8 @@ public class CuttingProperty implements Cloneable
   }
 
   @Override
-  public CuttingProperty clone()
+  public LaserProperty clone()
   {
-    return new CuttingProperty(power, speed, frequency, focus);
+    return new LaserProperty(power, speed, frequency, focus);
   }
 }

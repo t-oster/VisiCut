@@ -3,12 +3,13 @@
  * and open the template in the editor.
  */
 
-package com.t_oster.liblasercut.epilog;
+package com.t_oster.liblasercut.drivers;
 
+import com.t_oster.liblasercut.drivers.EpilogCutter;
 import javax.swing.JOptionPane;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.VectorPart;
-import com.t_oster.liblasercut.CuttingProperty;
+import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.IllegalJobException;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -49,7 +50,7 @@ public class StartPointTest {
     System.out.println("sendJob");
 
     EpilogCutter instance = new EpilogCutter("137.226.56.228");
-    VectorPart vp = new VectorPart(new CuttingProperty(50, 100, 5000));
+    VectorPart vp = new VectorPart(new LaserProperty(50, 100, 5000));
     vp.moveto(2000, 1000);
     vp.setFocus(200);
     vp.setFocus(0);

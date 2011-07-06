@@ -2,7 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.liblasercut;
+package com.t_oster.liblasercut.utils;
+
+import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.LaserProperty;
 
 /**
  *
@@ -13,8 +16,8 @@ public class MaterialProperty
 
   private String name = "Default Material";
   private double height = 1;
-  private CuttingProperty cuttingProperty = new CuttingProperty();
-  private EngravingProperty engravingProperty = new EngravingProperty();
+  private LaserProperty cuttingProperty = new LaserProperty();
+  private LaserProperty LaserProperty = new LaserProperty();
 
   public MaterialProperty()
   {
@@ -24,8 +27,8 @@ public class MaterialProperty
   {
     this.name = name;
     this.height = height;
-    this.engravingProperty = new EngravingProperty(engravingPower, engravingSpeed);
-    this.cuttingProperty = new CuttingProperty(cuttingPower, cuttingSpeed, cuttingFrequency);
+    this.LaserProperty = new LaserProperty(engravingPower, engravingSpeed);
+    this.cuttingProperty = new LaserProperty(cuttingPower, cuttingSpeed, cuttingFrequency);
   }
 
   public String getName()
@@ -38,16 +41,16 @@ public class MaterialProperty
     return this.height;
   }
 
-  public EngravingProperty getEngravingProperty()
+  public LaserProperty getLaserProperty()
   {
-    return this.engravingProperty;
+    return this.LaserProperty;
   }
 
   /**
    * Returns the cuttingProperty to cut completely through the material
    * @return 
    */
-  public CuttingProperty getCuttingProperty()
+  public LaserProperty getCuttingProperty()
   {
     return this.cuttingProperty;
   }
@@ -58,7 +61,7 @@ public class MaterialProperty
    * @param depth
    * @return 
    */
-  public CuttingProperty getCuttingProperty(double depth)
+  public LaserProperty getCuttingProperty(double depth)
   {
     if (depth > height)
     {
@@ -66,7 +69,7 @@ public class MaterialProperty
     }
     else
     {
-      return new CuttingProperty(
+      return new LaserProperty(
         (int) (this.cuttingProperty.getPower() * depth / height),
         this.cuttingProperty.getSpeed(),
         this.cuttingProperty.getFrequency());
@@ -81,7 +84,7 @@ public class MaterialProperty
    * @param cp
    * @return estimated cutting depth or -1
    */
-  public double getCuttingPropertyDepth(CuttingProperty cp)
+  public double getCuttingPropertyDepth(LaserProperty cp)
   {
     if (cp.getFrequency() == this.cuttingProperty.getFrequency() && cp.getSpeed() == this.cuttingProperty.getSpeed())
     {

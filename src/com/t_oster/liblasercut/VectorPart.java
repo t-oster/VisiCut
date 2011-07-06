@@ -14,14 +14,14 @@ import java.util.List;
 public class VectorPart
 {
 
-  private CuttingProperty currentCuttingProperty;
+  private LaserProperty currentCuttingProperty;
   private int maxX;
   private int maxY;
   private int minX;
   private int minY;
   private List<VectorCommand> commands;
 
-  public VectorPart(CuttingProperty initialProperty)
+  public VectorPart(LaserProperty initialProperty)
   {
     this.currentCuttingProperty = initialProperty.clone();
     commands = new LinkedList<VectorCommand>();
@@ -30,12 +30,12 @@ public class VectorPart
     commands.add(new VectorCommand(VectorCommand.CmdType.SETFREQUENCY, currentCuttingProperty.getFrequency()));
   }
 
-  public CuttingProperty getCurrentCuttingProperty()
+  public LaserProperty getCurrentCuttingProperty()
   {
     return currentCuttingProperty;
   }
 
-  public void setCurrentCuttingProperty(CuttingProperty cp)
+  public void setCurrentCuttingProperty(LaserProperty cp)
   {
     this.setFrequency(cp.getFrequency());
     this.setPower(cp.getPower());
