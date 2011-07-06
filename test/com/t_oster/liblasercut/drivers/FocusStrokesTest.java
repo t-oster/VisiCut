@@ -15,8 +15,8 @@ public class FocusStrokesTest
   @Test
   public void focuslines() throws IllegalJobException, Exception
   {
-    int min = -120;
-    int max = 150;
+    int min = -126;
+    int max = 126;
     int step = 20;
     VectorPart vp = new VectorPart(new LaserProperty(10, 100, 5000));
     for (int focus = min; focus <= max; focus+=step)

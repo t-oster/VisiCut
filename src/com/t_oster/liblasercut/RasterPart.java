@@ -151,6 +151,11 @@ public class RasterPart
     return this.images.toArray(new GreyscaleRaster[0]);
   }
 
+  public LaserProperty getLaserProperty(int raster)
+  {
+      return this.properties.get(raster);
+  }
+  
   public LaserProperty[] getPropertys()
   {
     return this.properties.toArray(new LaserProperty[0]);

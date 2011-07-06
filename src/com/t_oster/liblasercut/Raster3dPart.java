@@ -129,6 +129,10 @@ public class Raster3dPart {
         return this.images.get(raster).getHeight();
     }
 
+    public LaserProperty getLaserProperty(int raster) {
+        return this.properties.get(raster);
+    }
+
     public GreyscaleRaster[] getImages() {
         return this.images.toArray(new GreyscaleRaster[0]);
     }
