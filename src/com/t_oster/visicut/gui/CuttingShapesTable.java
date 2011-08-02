@@ -2,11 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.jepilog.gui;
+package com.t_oster.visicut.gui;
 
 import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.ShapeElement;
-import com.t_oster.jepilog.model.CuttingShape;
+import com.t_oster.visicut.model.CuttingShape;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
 import java.beans.PropertyChangeListener;
@@ -14,7 +14,7 @@ import java.beans.PropertyChangeEvent;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
-import com.t_oster.jepilog.model.JepilogModel;
+import com.t_oster.visicut.model.JepilogModel;
 import com.t_oster.liblasercut.platform.Util;
 import java.text.DecimalFormat;
 

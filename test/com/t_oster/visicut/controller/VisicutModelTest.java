@@ -2,10 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.jepilog.controller;
+package com.t_oster.visicut.controller;
 
 import com.t_oster.liblasercut.platform.Point;
-import com.t_oster.jepilog.model.JepilogModel;
+import com.t_oster.visicut.model.JepilogModel;
 import java.io.File;
 import java.io.IOException;
 import org.junit.AfterClass;
@@ -17,10 +17,10 @@ import static org.junit.Assert.*;
  *
  * @author thommy
  */
-public class JepilogModelTest
+public class VisicutModelTest
 {
 
-  public JepilogModelTest()
+  public VisicutModelTest()
   {
   }
 

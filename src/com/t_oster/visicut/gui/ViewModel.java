@@ -1,7 +1,7 @@
-package com.t_oster.jepilog.gui;
+package com.t_oster.visicut.gui;
 
 import com.kitfox.svg.SVGElement;
-import com.t_oster.jepilog.model.AbstractModel;
+import com.t_oster.visicut.model.AbstractModel;
 import com.t_oster.liblasercut.platform.Util;
 import java.awt.Point;
 import java.beans.PropertyChangeSupport;

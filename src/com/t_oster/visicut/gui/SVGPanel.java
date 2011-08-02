@@ -2,14 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.jepilog.gui;
+package com.t_oster.visicut.gui;
 
 import com.kitfox.svg.SVGDiagram;
 import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.ShapeElement;
 import com.kitfox.svg.app.beans.SVGIcon;
-import com.t_oster.jepilog.model.CuttingShape;
+import com.t_oster.visicut.model.CuttingShape;
 import com.t_oster.liblasercut.platform.Util;
 import java.awt.Color;
 import java.awt.Graphics;

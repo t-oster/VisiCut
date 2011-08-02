@@ -198,7 +198,7 @@
                     <Component class="javax.swing.JButton" name="jButton1">
                       <Properties>
                         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                          <action class="com.t_oster.jepilog.gui.JepilogView" id="sendToCutter" methodName="sendToCutter"/>
+                          <action class="com.t_oster.visicut.gui.JepilogView" id="sendToCutter" methodName="sendToCutter"/>
                         </Property>
                         <Property name="text" type="java.lang.String" resourceKey="jButton1.text"/>
                         <Property name="name" type="java.lang.String" value="jButton1" noResource="true"/>
@@ -379,7 +379,7 @@
                     <Component class="javax.swing.JButton" name="jButton2">
                       <Properties>
                         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                          <action class="com.t_oster.jepilog.gui.JepilogView" id="moveSelectedShapeUp" methodName="moveSelectedShapeUp"/>
+                          <action class="com.t_oster.visicut.gui.JepilogView" id="moveSelectedShapeUp" methodName="moveSelectedShapeUp"/>
                         </Property>
                         <Property name="text" type="java.lang.String" resourceKey="jButton2.text"/>
                         <Property name="name" type="java.lang.String" value="jButton2" noResource="true"/>
@@ -388,7 +388,7 @@
                     <Component class="javax.swing.JButton" name="jButton3">
                       <Properties>
                         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                          <action class="com.t_oster.jepilog.gui.JepilogView" id="moveSelectedShapeDown" methodName="moveSelectedShapeDown"/>
+                          <action class="com.t_oster.visicut.gui.JepilogView" id="moveSelectedShapeDown" methodName="moveSelectedShapeDown"/>
                         </Property>
                         <Property name="text" type="java.lang.String" resourceKey="jButton3.text"/>
                         <Property name="name" type="java.lang.String" value="jButton3" noResource="true"/>
@@ -413,7 +413,7 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                       <SubComponents>
-                        <Component class="com.t_oster.jepilog.gui.CuttingShapesTable" name="cuttingShapesTable1">
+                        <Component class="com.t_oster.visicut.gui.CuttingShapesTable" name="cuttingShapesTable1">
                           <Properties>
                             <Property name="name" type="java.lang.String" value="cuttingShapesTable1" noResource="true"/>
                             <Property name="preferredScrollableViewportSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -518,7 +518,7 @@
                 </Container>
               </SubComponents>
             </Container>
-            <Container class="com.t_oster.jepilog.gui.SVGPanel" name="sVGPanel1">
+            <Container class="com.t_oster.visicut.gui.SVGPanel" name="sVGPanel1">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
@@ -615,7 +615,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="importMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="com.t_oster.jepilog.gui.JepilogView" id="showImportDialog" methodName="showImportDialog"/>
+                  <action class="com.t_oster.visicut.gui.JepilogView" id="showImportDialog" methodName="showImportDialog"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="importMenuItem.text"/>
                 <Property name="name" type="java.lang.String" value="importMenuItem" noResource="true"/>
@@ -648,7 +648,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem4">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="com.t_oster.jepilog.gui.JepilogView" id="sendToCutter" methodName="sendToCutter"/>
+                  <action class="com.t_oster.visicut.gui.JepilogView" id="sendToCutter" methodName="sendToCutter"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="jMenuItem4.text"/>
                 <Property name="name" type="java.lang.String" value="jMenuItem4" noResource="true"/>
@@ -673,7 +673,7 @@
         <Menu class="javax.swing.JMenu" name="jMenu1">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-              <action class="com.t_oster.jepilog.gui.JepilogView" id="zoomIn" methodName="zoomIn"/>
+              <action class="com.t_oster.visicut.gui.JepilogView" id="zoomIn" methodName="zoomIn"/>
             </Property>
             <Property name="text" type="java.lang.String" resourceKey="jMenu1.text"/>
             <Property name="name" type="java.lang.String" value="jMenu1" noResource="true"/>
@@ -718,7 +718,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem7">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="com.t_oster.jepilog.gui.JepilogView" id="zoomIn" methodName="zoomIn"/>
+                  <action class="com.t_oster.visicut.gui.JepilogView" id="zoomIn" methodName="zoomIn"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="jMenuItem7.text"/>
                 <Property name="name" type="java.lang.String" value="jMenuItem7" noResource="true"/>
@@ -727,7 +727,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem8">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="com.t_oster.jepilog.gui.JepilogView" id="zoomOut" methodName="zoomOut"/>
+                  <action class="com.t_oster.visicut.gui.JepilogView" id="zoomOut" methodName="zoomOut"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="jMenuItem8.text"/>
                 <Property name="name" type="java.lang.String" value="jMenuItem8" noResource="true"/>
@@ -748,7 +748,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="aboutMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="com.t_oster.jepilog.gui.JepilogView" id="showAboutBox" methodName="showAboutBox"/>
+                  <action class="com.t_oster.visicut.gui.JepilogView" id="showAboutBox" methodName="showAboutBox"/>
                 </Property>
                 <Property name="name" type="java.lang.String" value="aboutMenuItem" noResource="true"/>
               </Properties>
@@ -859,7 +859,7 @@
         <MenuItem class="javax.swing.JMenuItem" name="meAddToCutting">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-              <action class="com.t_oster.jepilog.gui.JepilogView" id="addSelectedShapeToCuttingPart" methodName="addSelectedShapeToCuttingPart"/>
+              <action class="com.t_oster.visicut.gui.JepilogView" id="addSelectedShapeToCuttingPart" methodName="addSelectedShapeToCuttingPart"/>
             </Property>
             <Property name="text" type="java.lang.String" resourceKey="meAddToCutting.text"/>
             <Property name="name" type="java.lang.String" value="meAddToCutting" noResource="true"/>
@@ -882,12 +882,12 @@
         </MenuItem>
       </SubComponents>
     </Container>
-    <Component class="com.t_oster.jepilog.model.JepilogModel" name="jobModel">
+    <Component class="com.t_oster.visicut.model.JepilogModel" name="jobModel">
       <BindingProperties>
         <BindingProperty name="svg" source="sVGPanel1" sourcePath="${svgUri}" target="jobModel" targetPath="svg" updateStrategy="0" immediately="false"/>
       </BindingProperties>
     </Component>
-    <Component class="com.t_oster.jepilog.gui.ViewModel" name="viewModel">
+    <Component class="com.t_oster.visicut.gui.ViewModel" name="viewModel">
     </Component>
   </NonVisualComponents>
   <Properties>

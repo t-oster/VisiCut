@@ -1,7 +1,7 @@
 /*
  * JepilogApp.java
  */
-package com.t_oster.jepilog.gui;
+package com.t_oster.visicut.gui;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
@@ -10,7 +10,7 @@ import org.jdesktop.application.SingleFrameApplication;
  * The main class of the application.
  * This class implements the Controller which bridges the model and the view
  */
-public class JepilogApp extends SingleFrameApplication
+public class VisicutApp extends SingleFrameApplication
 {
 
   /**
@@ -36,9 +36,9 @@ public class JepilogApp extends SingleFrameApplication
    * A convenient static getter for the application instance.
    * @return the instance of JepilogApp
    */
-  public static JepilogApp getApplication()
+  public static VisicutApp getApplication()
   {
-    return Application.getInstance(JepilogApp.class);
+    return Application.getInstance(VisicutApp.class);
   }
 
   /**
@@ -55,6 +55,6 @@ public class JepilogApp extends SingleFrameApplication
     System.setProperty("com.apple.mrj.application.growbox.intrudes", "false");
     System.setProperty("com.apple.mrj.application.live-resize", "true");
     System.setProperty("com.apple.macos.smallTabs", "true");
-    launch(JepilogApp.class, args);
+    launch(VisicutApp.class, args);
   }
 }

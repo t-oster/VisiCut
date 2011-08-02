@@ -1,7 +1,7 @@
 /*
  * JepilogView.java
  */
-package com.t_oster.jepilog.gui;
+package com.t_oster.visicut.gui;
 
 import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.ShapeElement;
@@ -22,7 +22,7 @@ import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import com.t_oster.jepilog.model.CuttingShape;
+import com.t_oster.visicut.model.CuttingShape;
 import org.jdesktop.beansbinding.Converter;
 
 /**
@@ -137,11 +137,11 @@ public class JepilogView extends FrameView
   {
     if (aboutBox == null)
     {
-      JFrame mainFrame = JepilogApp.getApplication().getMainFrame();
-      aboutBox = new JepilogAboutBox(mainFrame);
+      JFrame mainFrame = VisicutApp.getApplication().getMainFrame();
+      aboutBox = new VisicutAboutBox(mainFrame);
       aboutBox.setLocationRelativeTo(mainFrame);
     }
-    JepilogApp.getApplication().show(aboutBox);
+    VisicutApp.getApplication().show(aboutBox);
   }
 
   /** This method is called from within the constructor to
@@ -180,12 +180,12 @@ public class JepilogView extends FrameView
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        cuttingShapesTable1 = new com.t_oster.jepilog.gui.CuttingShapesTable();
+        cuttingShapesTable1 = new com.t_oster.visicut.gui.CuttingShapesTable();
         jPanel4 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        sVGPanel1 = new com.t_oster.jepilog.gui.SVGPanel();
+        sVGPanel1 = new com.t_oster.visicut.gui.SVGPanel();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -215,8 +215,8 @@ public class JepilogView extends FrameView
         shapeMenu = new javax.swing.JPopupMenu();
         meAddToCutting = new javax.swing.JMenuItem();
         meRemoveFromCutting = new javax.swing.JMenuItem();
-        jobModel = new com.t_oster.jepilog.model.JepilogModel();
-        viewModel = new com.t_oster.jepilog.gui.ViewModel();
+        jobModel = new com.t_oster.visicut.model.JepilogModel();
+        viewModel = new com.t_oster.visicut.gui.ViewModel();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -234,7 +234,7 @@ public class JepilogView extends FrameView
         org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jobModel, org.jdesktop.beansbinding.ELProperty.create("${material}"), jComboBox1, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
         bindingGroup.addBinding(binding);
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.jepilog.gui.JepilogApp.class).getContext().getResourceMap(JepilogView.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(JepilogView.class);
         jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
         jLabel1.setName("jLabel1"); // NOI18N
 
@@ -247,7 +247,7 @@ public class JepilogView extends FrameView
         jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
         jLabel2.setName("jLabel2"); // NOI18N
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.jepilog.gui.JepilogApp.class).getContext().getActionMap(JepilogView.class, this);
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(JepilogView.class, this);
         jButton1.setAction(actionMap.get("sendToCutter")); // NOI18N
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
         jButton1.setName("jButton1"); // NOI18N
@@ -954,7 +954,7 @@ public class JepilogView extends FrameView
     private javax.swing.JComboBox cbResolution;
     private javax.swing.JCheckBox cbShowCut;
     private javax.swing.JCheckBox cbShowEngrave;
-    private com.t_oster.jepilog.gui.CuttingShapesTable cuttingShapesTable1;
+    private com.t_oster.visicut.gui.CuttingShapesTable cuttingShapesTable1;
     private javax.swing.JFileChooser importFileChooser;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -994,7 +994,7 @@ public class JepilogView extends FrameView
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
-    private com.t_oster.jepilog.model.JepilogModel jobModel;
+    private com.t_oster.visicut.model.JepilogModel jobModel;
     private javax.swing.JMenu laserMenu;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuItem meAddToCutting;
@@ -1002,12 +1002,12 @@ public class JepilogView extends FrameView
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JCheckBoxMenuItem menuShowEngrave;
     private javax.swing.JProgressBar progressBar;
-    private com.t_oster.jepilog.gui.SVGPanel sVGPanel1;
+    private com.t_oster.visicut.gui.SVGPanel sVGPanel1;
     private javax.swing.JPopupMenu shapeMenu;
     private javax.swing.JLabel statusAnimationLabel;
     private javax.swing.JLabel statusMessageLabel;
     private javax.swing.JPanel statusPanel;
-    private com.t_oster.jepilog.gui.ViewModel viewModel;
+    private com.t_oster.visicut.gui.ViewModel viewModel;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
   private final Timer messageTimer;

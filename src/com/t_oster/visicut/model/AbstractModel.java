@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.jepilog.model;
+package com.t_oster.visicut.model;
 
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
