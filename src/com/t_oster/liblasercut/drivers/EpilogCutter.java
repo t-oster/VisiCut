@@ -375,7 +375,7 @@ public class EpilogCutter extends LaserCutter {
 
     private byte[] generateRasterPCL(LaserJob job, RasterPart rp) throws UnsupportedEncodingException, IOException {
 
-        LaserProperty curprop = new LaserProperty();
+        LaserProperty curprop = rp.getPropertys().length > 0 ? rp.getLaserProperty(0) : new LaserProperty();
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(result, true, "US-ASCII");
         /* Raster Orientation: Printed in current direction */
