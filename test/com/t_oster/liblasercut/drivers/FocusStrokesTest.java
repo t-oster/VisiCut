@@ -18,12 +18,26 @@ public class FocusStrokesTest
     int min = -126;
     int max = 126;
     int step = 20;
-    VectorPart vp = new VectorPart(new LaserProperty(10, 100, 5000));
+    VectorPart vp = new VectorPart(new LaserProperty(20, 100, 5000));
     for (int focus = min; focus <= max; focus+=step)
     {
       vp.setFocus(focus);
-      vp.moveto(0, 30*focus/step);
-      vp.lineto(500, 30*focus/step);
+      vp.moveto(0, 100*focus/step);
+      vp.lineto(500, 100*focus/step);
+    }
+    vp.setPower(50);
+    for (int focus = min; focus <= max; focus+=step)
+    {
+      vp.setFocus(focus);
+      vp.moveto(600, 100*focus/step);
+      vp.lineto(1100, 100*focus/step);
+    }
+    vp.setPower(100);
+    for (int focus = min; focus <= max; focus+=step)
+    {
+      vp.setFocus(focus);
+      vp.moveto(1200, 100*focus/step);
+      vp.lineto(1700, 100*focus/step);
     }
     LaserJob job = new LaserJob("focus", "bla", "bla", 500, null, vp, null);
     EpilogCutter instance = new EpilogCutter("137.226.56.228");
