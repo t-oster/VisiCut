@@ -19,7 +19,7 @@ public class VisicutApp extends SingleFrameApplication
   @Override
   protected void startup()
   {
-    show(new JepilogView(this));
+    show(new MainView(this));
   }
 
   /**
