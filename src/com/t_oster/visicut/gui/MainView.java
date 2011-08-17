@@ -6,9 +6,11 @@
 /*
  * MainView.java
  *
- * Created on 17.08.2011, 20:40:31
+ * Created on 18.08.2011, 01:42:04
  */
 package com.t_oster.visicut.gui;
+
+import org.jdesktop.application.Action;
 
 /**
  *
@@ -22,9 +24,13 @@ public class MainView extends javax.swing.JFrame
   {
     initComponents();
   }
-
-  MainView(VisicutApp aThis)
+  
+  @Action
+  public void importFile()
   {
+    ImportDialog id = new ImportDialog();
+    id.setVisible(true);
+    this.setEnabled(false);
   }
 
   /** This method is called from within the constructor to
@@ -36,8 +42,103 @@ public class MainView extends javax.swing.JFrame
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
+    menuBar = new javax.swing.JMenuBar();
+    fileMenu = new javax.swing.JMenu();
+    openMenuItem = new javax.swing.JMenuItem();
+    saveMenuItem = new javax.swing.JMenuItem();
+    saveAsMenuItem = new javax.swing.JMenuItem();
+    exitMenuItem = new javax.swing.JMenuItem();
+    editMenu = new javax.swing.JMenu();
+    cutMenuItem = new javax.swing.JMenuItem();
+    copyMenuItem = new javax.swing.JMenuItem();
+    pasteMenuItem = new javax.swing.JMenuItem();
+    deleteMenuItem = new javax.swing.JMenuItem();
+    helpMenu = new javax.swing.JMenu();
+    contentsMenuItem = new javax.swing.JMenuItem();
+    aboutMenuItem = new javax.swing.JMenuItem();
+
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setName("Form"); // NOI18N
+
+    menuBar.setName("menuBar"); // NOI18N
+
+    fileMenu.setMnemonic('f');
+    org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(MainView.class);
+    fileMenu.setText(resourceMap.getString("fileMenu.text")); // NOI18N
+    fileMenu.setName("fileMenu"); // NOI18N
+
+    javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(MainView.class, this);
+    openMenuItem.setAction(actionMap.get("importFile")); // NOI18N
+    openMenuItem.setMnemonic('o');
+    openMenuItem.setText(resourceMap.getString("openMenuItem.text")); // NOI18N
+    openMenuItem.setName("openMenuItem"); // NOI18N
+    fileMenu.add(openMenuItem);
+
+    saveMenuItem.setMnemonic('s');
+    saveMenuItem.setText(resourceMap.getString("saveMenuItem.text")); // NOI18N
+    saveMenuItem.setName("saveMenuItem"); // NOI18N
+    fileMenu.add(saveMenuItem);
+
+    saveAsMenuItem.setMnemonic('a');
+    saveAsMenuItem.setText(resourceMap.getString("saveAsMenuItem.text")); // NOI18N
+    saveAsMenuItem.setName("saveAsMenuItem"); // NOI18N
+    fileMenu.add(saveAsMenuItem);
+
+    exitMenuItem.setMnemonic('x');
+    exitMenuItem.setText(resourceMap.getString("exitMenuItem.text")); // NOI18N
+    exitMenuItem.setName("exitMenuItem"); // NOI18N
+    exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        exitMenuItemActionPerformed(evt);
+      }
+    });
+    fileMenu.add(exitMenuItem);
+
+    menuBar.add(fileMenu);
+
+    editMenu.setMnemonic('e');
+    editMenu.setText(resourceMap.getString("editMenu.text")); // NOI18N
+    editMenu.setName("editMenu"); // NOI18N
+
+    cutMenuItem.setMnemonic('t');
+    cutMenuItem.setText(resourceMap.getString("cutMenuItem.text")); // NOI18N
+    cutMenuItem.setName("cutMenuItem"); // NOI18N
+    editMenu.add(cutMenuItem);
+
+    copyMenuItem.setMnemonic('y');
+    copyMenuItem.setText(resourceMap.getString("copyMenuItem.text")); // NOI18N
+    copyMenuItem.setName("copyMenuItem"); // NOI18N
+    editMenu.add(copyMenuItem);
+
+    pasteMenuItem.setMnemonic('p');
+    pasteMenuItem.setText(resourceMap.getString("pasteMenuItem.text")); // NOI18N
+    pasteMenuItem.setName("pasteMenuItem"); // NOI18N
+    editMenu.add(pasteMenuItem);
+
+    deleteMenuItem.setMnemonic('d');
+    deleteMenuItem.setText(resourceMap.getString("deleteMenuItem.text")); // NOI18N
+    deleteMenuItem.setName("deleteMenuItem"); // NOI18N
+    editMenu.add(deleteMenuItem);
+
+    menuBar.add(editMenu);
+
+    helpMenu.setMnemonic('h');
+    helpMenu.setText(resourceMap.getString("helpMenu.text")); // NOI18N
+    helpMenu.setName("helpMenu"); // NOI18N
+
+    contentsMenuItem.setMnemonic('c');
+    contentsMenuItem.setText(resourceMap.getString("contentsMenuItem.text")); // NOI18N
+    contentsMenuItem.setName("contentsMenuItem"); // NOI18N
+    helpMenu.add(contentsMenuItem);
+
+    aboutMenuItem.setMnemonic('a');
+    aboutMenuItem.setText(resourceMap.getString("aboutMenuItem.text")); // NOI18N
+    aboutMenuItem.setName("aboutMenuItem"); // NOI18N
+    helpMenu.add(aboutMenuItem);
+
+    menuBar.add(helpMenu);
+
+    setJMenuBar(menuBar);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -47,26 +148,30 @@ public class MainView extends javax.swing.JFrame
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 300, Short.MAX_VALUE)
+      .addGap(0, 279, Short.MAX_VALUE)
     );
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
 
-  /**
-   * @param args the command line arguments
-   */
-  public static void main(String args[])
-  {
-    java.awt.EventQueue.invokeLater(new Runnable()
-    {
+    private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
+      System.exit(0);
+    }//GEN-LAST:event_exitMenuItemActionPerformed
 
-      public void run()
-      {
-        new MainView().setVisible(true);
-      }
-    });
-  }
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JMenuItem aboutMenuItem;
+  private javax.swing.JMenuItem contentsMenuItem;
+  private javax.swing.JMenuItem copyMenuItem;
+  private javax.swing.JMenuItem cutMenuItem;
+  private javax.swing.JMenuItem deleteMenuItem;
+  private javax.swing.JMenu editMenu;
+  private javax.swing.JMenuItem exitMenuItem;
+  private javax.swing.JMenu fileMenu;
+  private javax.swing.JMenu helpMenu;
+  private javax.swing.JMenuBar menuBar;
+  private javax.swing.JMenuItem openMenuItem;
+  private javax.swing.JMenuItem pasteMenuItem;
+  private javax.swing.JMenuItem saveAsMenuItem;
+  private javax.swing.JMenuItem saveMenuItem;
   // End of variables declaration//GEN-END:variables
 }

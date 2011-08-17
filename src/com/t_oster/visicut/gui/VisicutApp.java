@@ -3,6 +3,10 @@
  */
 package com.t_oster.visicut.gui;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
@@ -19,7 +23,7 @@ public class VisicutApp extends SingleFrameApplication
   @Override
   protected void startup()
   {
-    show(new MainView(this));
+    show(new MainView());
   }
 
   /**
@@ -55,6 +59,27 @@ public class VisicutApp extends SingleFrameApplication
     System.setProperty("com.apple.mrj.application.growbox.intrudes", "false");
     System.setProperty("com.apple.mrj.application.live-resize", "true");
     System.setProperty("com.apple.macos.smallTabs", "true");
+    try
+    {
+      UIManager.setLookAndFeel(
+              UIManager.getSystemLookAndFeelClassName());
+    }
+    catch (ClassNotFoundException ex)
+    {
+      Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    catch (InstantiationException ex)
+    {
+      Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    catch (IllegalAccessException ex)
+    {
+      Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    catch (UnsupportedLookAndFeelException ex)
+    {
+      Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
+    }
     launch(VisicutApp.class, args);
   }
 }
