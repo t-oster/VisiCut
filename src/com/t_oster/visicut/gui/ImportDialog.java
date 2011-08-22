@@ -97,26 +97,22 @@ public class ImportDialog extends javax.swing.JFrame
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 276, Short.MAX_VALUE)
+      .addGap(0, 362, Short.MAX_VALUE)
     );
 
     buttonGroup1.add(jiconRadioButton1);
-    jiconRadioButton1.setText(resourceMap.getString("jiconRadioButton1.text")); // NOI18N
-    jiconRadioButton1.setLabelIcon(new java.io.File("/home/thommy/NetBeansProjects/Visicut/src/visicut/resources/material-icons/cutline.png"));
+    jiconRadioButton1.setLabelIcon(new java.io.File("/home/thommy/NetBeansProjects/jepilog/materials/Fliess/cutline.png"));
     jiconRadioButton1.setName("jiconRadioButton1"); // NOI18N
 
     buttonGroup1.add(jiconRadioButton2);
-    jiconRadioButton2.setText(resourceMap.getString("jiconRadioButton2.text")); // NOI18N
     jiconRadioButton2.setLabelIcon(new java.io.File("/home/thommy/NetBeansProjects/Visicut/src/visicut/resources/material-icons/cutline.png"));
     jiconRadioButton2.setName("jiconRadioButton2"); // NOI18N
 
     buttonGroup1.add(jiconRadioButton3);
-    jiconRadioButton3.setText(resourceMap.getString("jiconRadioButton3.text")); // NOI18N
-    jiconRadioButton3.setLabelIcon(new java.io.File("/home/thommy/NetBeansProjects/Visicut/src/visicut/resources/material-icons/cutline.png"));
+    jiconRadioButton3.setLabelIcon(new java.io.File("/home/thommy/NetBeansProjects/jepilog/materials/Fliess/bigcut.png"));
     jiconRadioButton3.setName("jiconRadioButton3"); // NOI18N
 
     buttonGroup1.add(jiconRadioButton4);
-    jiconRadioButton4.setText(resourceMap.getString("jiconRadioButton4.text")); // NOI18N
     jiconRadioButton4.setLabelIcon(new java.io.File("/home/thommy/NetBeansProjects/Visicut/src/visicut/resources/material-icons/cutline.png"));
     jiconRadioButton4.setName("jiconRadioButton4"); // NOI18N
 
@@ -135,16 +131,12 @@ public class ImportDialog extends javax.swing.JFrame
         .addGap(6, 6, 6)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
           .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-              .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                .addComponent(jiconRadioButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                  .addComponent(jiconRadioButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addComponent(jiconRadioButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-              .addComponent(jiconRadioButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(jiconRadioButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addComponent(jiconRadioButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jiconRadioButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addComponent(jiconRadioButton4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addComponent(jButton1))
         .addContainerGap())
     );
@@ -164,7 +156,7 @@ public class ImportDialog extends javax.swing.JFrame
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 127, Short.MAX_VALUE)
             .addComponent(jButton1))
           .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 303, Short.MAX_VALUE))
+          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE))
         .addGap(36, 36, 36))
     );
 
