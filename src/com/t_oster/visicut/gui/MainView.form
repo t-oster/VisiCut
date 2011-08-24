@@ -11,6 +11,11 @@
       <Properties>
         <Property name="name" type="java.lang.String" value="mappingDialog1" noResource="true"/>
       </Properties>
+      <BindingProperties>
+        <BindingProperty name="SVGRootElement" source="visicutModel1" sourcePath="${SVGRootElement}" target="mappingDialog1" targetPath="SVGRootElement" updateStrategy="1" immediately="false">
+          <Property name="name" type="java.lang.String" value="rootToDialog"/>
+        </BindingProperty>
+      </BindingProperties>
     </Component>
     <Component class="com.t_oster.visicut.VisicutModel" name="visicutModel1">
     </Component>

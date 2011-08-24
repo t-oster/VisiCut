@@ -70,6 +70,9 @@ public class MainView extends javax.swing.JFrame
 
     mappingDialog1.setName("mappingDialog1"); // NOI18N
 
+    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${SVGRootElement}"), mappingDialog1, org.jdesktop.beansbinding.BeanProperty.create("SVGRootElement"), "rootToDialog");
+    bindingGroup.addBinding(binding);
+
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setName("Form"); // NOI18N
 
@@ -144,7 +147,7 @@ public class MainView extends javax.swing.JFrame
     previewPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("previewPanel1.border.title"))); // NOI18N
     previewPanel1.setName("previewPanel1"); // NOI18N
 
-    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${SVGRootElement}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("SVGRootElement"), "rootElement");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${SVGRootElement}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("SVGRootElement"), "rootElement");
     bindingGroup.addBinding(binding);
 
     previewPanel1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
