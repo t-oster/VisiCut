@@ -30,17 +30,19 @@
           <Group type="102" attributes="0">
               <Component id="jScrollPane1" min="-2" pref="133" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jPanel1" max="32767" attributes="0"/>
+              <Component id="matchingPartsPanel1" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <Component id="jButton2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="100" max="32767" attributes="0"/>
+                      <EmptySpace pref="125" max="32767" attributes="0"/>
                       <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="jScrollPane2" min="-2" pref="184" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="jScrollPane2" pref="197" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -50,13 +52,13 @@
               <Component id="jScrollPane2" pref="261" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
-          <Component id="jPanel1" alignment="0" max="32767" attributes="1"/>
           <Component id="jScrollPane1" alignment="1" pref="307" max="32767" attributes="1"/>
+          <Component id="matchingPartsPanel1" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -79,25 +81,28 @@
             <Property name="name" type="java.lang.String" value="jTree1" noResource="true"/>
             <Property name="rootVisible" type="boolean" value="false"/>
           </Properties>
+          <Events>
+            <EventHandler event="valueChanged" listener="javax.swing.event.TreeSelectionListener" parameters="javax.swing.event.TreeSelectionEvent" handler="jTree1ValueChanged"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
-    <Container class="javax.swing.JPanel" name="jPanel1">
+    <Container class="com.t_oster.visicut.gui.beans.MatchingPartsPanel" name="matchingPartsPanel1">
       <Properties>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-            <TitledBorder title="Matching Part">
-              <Property name="titleX" resourceKey="jPanel1.border.title"/>
+            <TitledBorder title="Matching Parts">
+              <Property name="titleX" resourceKey="matchingPartsPanel1.border.title"/>
             </TitledBorder>
           </Border>
         </Property>
-        <Property name="name" type="java.lang.String" value="jPanel1" noResource="true"/>
+        <Property name="name" type="java.lang.String" value="matchingPartsPanel1" noResource="true"/>
       </Properties>
 
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="181" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="198" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
@@ -122,30 +127,23 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="jiconRadioButton3" alignment="0" pref="140" max="32767" attributes="1"/>
-                          <Component id="jiconRadioButton4" alignment="0" pref="140" max="32767" attributes="1"/>
-                          <Component id="jiconRadioButton2" alignment="0" pref="140" max="32767" attributes="1"/>
-                          <Component id="jiconRadioButton1" alignment="0" pref="140" max="32767" attributes="1"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                  </Group>
+                  <Component id="jiconRadioButton3" alignment="0" pref="177" max="32767" attributes="1"/>
+                  <Component id="jiconRadioButton1" alignment="0" pref="177" max="32767" attributes="1"/>
+                  <Component id="jiconRadioButton4" alignment="0" pref="177" max="32767" attributes="1"/>
+                  <Component id="jiconRadioButton2" alignment="0" pref="177" max="32767" attributes="1"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="jiconRadioButton3" min="-2" pref="54" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jiconRadioButton1" min="-2" pref="98" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="jiconRadioButton4" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jiconRadioButton2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -167,6 +165,7 @@
                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                   <ComponentRef name="buttonGroup1"/>
                 </Property>
+                <Property name="text" type="java.lang.String" resourceKey="jiconRadioButton3.text"/>
                 <Property name="labelIcon" type="java.io.File" editor="org.netbeans.beaninfo.editors.FileEditor">
                   <SerializedValue value="-84,-19,0,5,115,114,0,12,106,97,118,97,46,105,111,46,70,105,108,101,4,45,-92,69,14,13,-28,-1,3,0,1,76,0,4,112,97,116,104,116,0,18,76,106,97,118,97,47,108,97,110,103,47,83,116,114,105,110,103,59,120,112,116,0,65,47,104,111,109,101,47,116,104,111,109,109,121,47,78,101,116,66,101,97,110,115,80,114,111,106,101,99,116,115,47,106,101,112,105,108,111,103,47,109,97,116,101,114,105,97,108,115,47,70,108,105,101,115,115,47,98,105,103,99,117,116,46,112,110,103,119,2,0,47,120"/>
                 </Property>
@@ -192,6 +191,7 @@
                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                   <ComponentRef name="buttonGroup1"/>
                 </Property>
+                <Property name="text" type="java.lang.String" resourceKey="jiconRadioButton1.text"/>
                 <Property name="labelIcon" type="java.io.File" editor="org.netbeans.beaninfo.editors.FileEditor">
                   <SerializedValue value="-84,-19,0,5,115,114,0,12,106,97,118,97,46,105,111,46,70,105,108,101,4,45,-92,69,14,13,-28,-1,3,0,1,76,0,4,112,97,116,104,116,0,18,76,106,97,118,97,47,108,97,110,103,47,83,116,114,105,110,103,59,120,112,116,0,66,47,104,111,109,101,47,116,104,111,109,109,121,47,78,101,116,66,101,97,110,115,80,114,111,106,101,99,116,115,47,106,101,112,105,108,111,103,47,109,97,116,101,114,105,97,108,115,47,70,108,105,101,115,115,47,99,117,116,108,105,110,101,46,112,110,103,119,2,0,47,120"/>
                 </Property>
