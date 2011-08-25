@@ -1,12 +1,22 @@
 package com.t_oster.visicut.gui.beans;
 
 import com.kitfox.svg.SVGElement;
+import com.kitfox.svg.SVGElementException;
 import com.kitfox.svg.SVGRoot;
+import com.kitfox.svg.animation.AnimationElement;
+import com.kitfox.svg.xml.StyleAttribute;
+import com.t_oster.liblasercut.platform.Tuple;
+import com.t_oster.visicut.gui.beans.SVGFilter.FilterType;
+import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JTree;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
@@ -14,12 +24,13 @@ import javax.swing.tree.TreePath;
  *
  * @author thommy
  */
-public class SVGElementsTree extends JTree implements TreeModel
+public class SVGElementsTree extends JTree implements TreeModel, TreeSelectionListener
 {
 
   public SVGElementsTree()
   {
     this.setModel(this);
+    this.getSelectionModel().addTreeSelectionListener(this);
   }
   protected SVGRoot SVGRootElement = null;
 
@@ -57,25 +68,79 @@ public class SVGElementsTree extends JTree implements TreeModel
 
   public Object getChild(Object o, int i)
   {
-    if (o instanceof SVGElement)
+    try
     {
-      return ((SVGElement) o).getChild(i);
+      return getChildren(o).get(i);
     }
-    else
+    catch (SVGElementException ex)
     {
-      return (o + "->Child " + i);
+      Logger.getLogger(SVGElementsTree.class.getName()).log(Level.SEVERE, null, ex);
+      return null;
     }
+  }
+
+  private List getChildren(Object o) throws SVGElementException
+  {
+    if (o != null && o == this.SVGRootElement)
+    {
+      List<SVGElement> rootlist = new LinkedList<SVGElement>();
+      rootlist.add(this.SVGRootElement);
+      try
+      {
+        List<Tuple<FilterType, List<SVGElement>>> result = new LinkedList<Tuple<FilterType, List<SVGElement>>>();
+        for (FilterType t : SVGFilter.getOccuringFilterTypes(rootlist))
+        {
+          result.add(new Tuple<FilterType, List<SVGElement>>(t, rootlist));
+        }
+        return result;
+      }
+      catch (SVGElementException ex)
+      {
+        Logger.getLogger(SVGElementsTree.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+    else if (o instanceof Tuple)
+    {
+      List<SVGElement> elements = (List<SVGElement>) ((Tuple) o).getB();
+      FilterType t = (FilterType) ((Tuple) o).getA();
+      try
+      {
+        List<SVGFilter> result = new LinkedList<SVGFilter>();
+        for (Object attribute : SVGFilter.getOccuringFilterAttributes(t, elements))
+        {
+          result.add(new SVGFilter(t, attribute, elements));
+        }
+        return result;
+      }
+      catch (Exception ex)
+      {
+        Logger.getLogger(SVGElementsTree.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+    else if (o instanceof SVGFilter)
+    {
+      SVGFilter f = (SVGFilter) o;
+      List result = new LinkedList();
+      result.addAll(f.getMatchingElements());
+      for (FilterType t : SVGFilter.getOccuringFilterTypes(f.getMatchingElements()))
+      {
+        result.add(new Tuple<FilterType, List<SVGElement>>(t, f.getMatchingElements()));
+      }
+      return result;
+    }
+    return new LinkedList();
   }
 
   public int getChildCount(Object o)
   {
-    if (o instanceof SVGElement)
+    try
     {
-      return ((SVGElement) o).getNumChildren();
+      return getChildren(o).size();
     }
-    else
+    catch (SVGElementException ex)
     {
-      return 5;
+      Logger.getLogger(SVGElementsTree.class.getName()).log(Level.SEVERE, null, ex);
+      return 0;
     }
   }
 
@@ -83,12 +148,9 @@ public class SVGElementsTree extends JTree implements TreeModel
   {
     if (o instanceof SVGElement)
     {
-      return ((SVGElement) o).getNumChildren() == 0;
+      return !this.SVGRootElement.equals(o);
     }
-    else
-    {
-      return o.toString().length() > 100;
-    }
+    return false;
   }
 
   public void valueForPathChanged(TreePath tp, Object o)
@@ -114,5 +176,55 @@ public class SVGElementsTree extends JTree implements TreeModel
   public void removeTreeModelListener(TreeModelListener tl)
   {
     listeners.remove(tl);
+  }
+  protected List<SVGElement> matchingSVGelements = null;
+  public static final String PROP_MATCHINGSVGELEMENTS = "matchingSVGelements";
+
+  /**
+   * Get the value of matchingSVGelements
+   *
+   * @return the value of matchingSVGelements
+   */
+  public List<SVGElement> getMatchingSVGelements()
+  {
+    return matchingSVGelements;
+  }
+
+  /**
+   * Set the value of matchingSVGelements
+   *
+   * @param matchingSVGelements new value of matchingSVGelements
+   */
+  public void setMatchingSVGelements(List<SVGElement> matchingSVGelements)
+  {
+    List<SVGElement> oldMatchingSVGelements = this.matchingSVGelements;
+    this.matchingSVGelements = matchingSVGelements;
+    firePropertyChange(PROP_MATCHINGSVGELEMENTS, oldMatchingSVGelements, matchingSVGelements);
+  }
+
+  public void valueChanged(TreeSelectionEvent tse)
+  {
+    if (tse.getNewLeadSelectionPath() != null && tse.getNewLeadSelectionPath().getPathCount() >= 1)
+    {
+      Object selected = tse.getNewLeadSelectionPath().getLastPathComponent();
+      if (selected != null)
+      {
+        if (selected instanceof SVGElement)
+        {
+          List<SVGElement> matching = new LinkedList<SVGElement>();
+          matching.add((SVGElement) selected);
+          this.setMatchingSVGelements(matching);
+        }
+        else if (selected instanceof Tuple)
+        {
+          List<SVGElement> elements = (List<SVGElement>) ((Tuple) selected).getB();
+          this.setMatchingSVGelements(elements);
+        }
+        else if (selected instanceof SVGFilter)
+        {
+          this.setMatchingSVGelements(((SVGFilter) selected).getMatchingElements());
+        }
+      }
+    }
   }
 }

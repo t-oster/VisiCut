@@ -27,8 +27,8 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
-              <Component id="jScrollPane1" min="-2" pref="156" max="-2" attributes="0"/>
+          <Group type="102" alignment="1" attributes="0">
+              <Component id="jScrollPane1" min="-2" pref="253" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="matchingPartsPanel1" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -46,7 +46,7 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
-              <Component id="jScrollPane2" pref="261" max="32767" attributes="0"/>
+              <Component id="jScrollPane2" pref="352" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -54,8 +54,8 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
-          <Component id="jScrollPane1" alignment="0" pref="307" max="32767" attributes="0"/>
           <Component id="matchingPartsPanel1" alignment="0" max="32767" attributes="0"/>
+          <Component id="jScrollPane1" alignment="0" pref="398" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -71,16 +71,21 @@
         </Property>
         <Property name="name" type="java.lang.String" value="matchingPartsPanel1" noResource="true"/>
       </Properties>
+      <BindingProperties>
+        <BindingProperty name="svgElements" source="sVGElementsTree1" sourcePath="${matchingSVGelements}" target="matchingPartsPanel1" targetPath="svgElements" updateStrategy="1" immediately="false">
+          <Property name="name" type="java.lang.String" value="matchingElementsToPreview"/>
+        </BindingProperty>
+      </BindingProperties>
 
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="239" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="382" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="283" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="375" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
@@ -100,10 +105,10 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jiconRadioButton3" alignment="0" pref="196" max="32767" attributes="1"/>
-                  <Component id="jiconRadioButton1" alignment="0" pref="196" max="32767" attributes="1"/>
-                  <Component id="jiconRadioButton4" alignment="0" pref="196" max="32767" attributes="1"/>
-                  <Component id="jiconRadioButton2" alignment="0" pref="196" max="32767" attributes="1"/>
+                  <Component id="jiconRadioButton3" alignment="0" pref="214" max="32767" attributes="1"/>
+                  <Component id="jiconRadioButton1" alignment="0" pref="214" max="32767" attributes="1"/>
+                  <Component id="jiconRadioButton4" alignment="0" pref="214" max="32767" attributes="1"/>
+                  <Component id="jiconRadioButton2" alignment="0" pref="214" max="32767" attributes="1"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">

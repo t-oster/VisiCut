@@ -65,4 +65,10 @@ public class Tuple<A, B>
     hash = 89 * hash + (this.b != null ? this.b.hashCode() : 0);
     return hash;
   }
+  
+  @Override
+  public String toString()
+  {
+    return a!= null ? a.toString() : b.toString();
+  }
 }
