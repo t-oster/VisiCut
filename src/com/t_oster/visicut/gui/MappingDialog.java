@@ -11,6 +11,10 @@
 package com.t_oster.visicut.gui;
 
 import com.kitfox.svg.SVGRoot;
+import com.t_oster.visicut.model.LineProfile;
+import com.t_oster.visicut.model.MaterialProfile;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 /**
  *
@@ -59,7 +63,11 @@ public class MappingDialog extends javax.swing.JDialog {
     matchingPartsPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("matchingPartsPanel1.border.title"))); // NOI18N
     matchingPartsPanel1.setName("matchingPartsPanel1"); // NOI18N
 
-    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, sVGElementsTree1, org.jdesktop.beansbinding.ELProperty.create("${matchingSVGelements}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("svgElements"), "matchingElementsToPreview");
+    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${selectedLineType}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("lineType"), "LineTypeToPanel");
+    bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${material}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialToPanel");
+    bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, sVGElementsTree1, org.jdesktop.beansbinding.ELProperty.create("${matchingSVGelements}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("svgElements"), "matchingElementsToPreview");
     bindingGroup.addBinding(binding);
 
     javax.swing.GroupLayout matchingPartsPanel1Layout = new javax.swing.GroupLayout(matchingPartsPanel1);
@@ -171,7 +179,83 @@ public class MappingDialog extends javax.swing.JDialog {
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
-  
+  protected LineProfile selectedLineType = null;
+  public static final String PROP_SELECTEDLINETYPE = "selectedLineType";
+  public static final String PROP_MATERIAL = "material";
+  protected MaterialProfile material = null;
+
+  /**
+   * Get the value of material
+   *
+   * @return the value of material
+   */
+  public MaterialProfile getMaterial()
+  {
+    return material;
+  }
+
+  /**
+   * Set the value of material
+   *
+   * @param material new value of material
+   */
+  public void setMaterial(MaterialProfile material)
+  {
+    MaterialProfile oldMaterial = this.material;
+    this.material = material;
+    propertyChangeSupport.firePropertyChange(PROP_MATERIAL, oldMaterial, material);
+    if (this.material != null)
+    {
+      if (this.material.getLineProfile().length > 0)
+      {
+        this.setSelectedLineType(this.material.getLineProfile(0));
+      }
+    }
+  }
+
+  /**
+   * Get the value of selectedLineType
+   *
+   * @return the value of selectedLineType
+   */
+  public LineProfile getSelectedLineType()
+  {
+    return selectedLineType;
+  }
+
+  /**
+   * Set the value of selectedLineType
+   *
+   * @param selectedLineType new value of selectedLineType
+   */
+  public void setSelectedLineType(LineProfile selectedLineType)
+  {
+    LineProfile oldSelectedLineType = this.selectedLineType;
+    this.selectedLineType = selectedLineType;
+    propertyChangeSupport.firePropertyChange(PROP_SELECTEDLINETYPE, oldSelectedLineType, selectedLineType);
+  }
+  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+  /**
+   * Add PropertyChangeListener.
+   *
+   * @param listener
+   */
+  public void addPropertyChangeListener(PropertyChangeListener listener)
+  {
+    propertyChangeSupport.addPropertyChangeListener(listener);
+  }
+
+  /**
+   * Remove PropertyChangeListener.
+   *
+   * @param listener
+   */
+  public void removePropertyChangeListener(PropertyChangeListener listener)
+  {
+    propertyChangeSupport.removePropertyChangeListener(listener);
+  }
+
   /**
    * Get the value of SVGRootElement
    *

@@ -4,7 +4,7 @@ import com.t_oster.liblasercut.BlackWhiteRaster;
 import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserJob;
-import com.t_oster.liblasercut.utils.MaterialProperty;
+import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.RasterPart;
 import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.liblasercut.drivers.EpilogCutter;
@@ -147,16 +147,17 @@ public class PhotoPrint {
                 null, prev, "Waehlen Sie einen Algorithmus aus", JOptionPane.OK_CANCEL_OPTION)
                 == JOptionPane.OK_OPTION) {
             EpilogCutter instance = new EpilogCutter("137.226.56.228");
-            JComboBox material = new JComboBox();
-            for (MaterialProperty mp : instance.getMaterialPropertys()) {
-                material.addItem(mp);
-            }
-            JOptionPane.showMessageDialog(null, material);
-            RasterPart rp = new RasterPart(((MaterialProperty) material.getSelectedItem()).getLaserProperty());
+            //JComboBox material = new JComboBox();
+            //for (MaterialProperty mp : instance.getMaterialPropertys()) {
+            //    material.addItem(mp);
+            //}
+            //JOptionPane.showMessageDialog(null, material);
+            //TODO: repair Material Selection
+            RasterPart rp = new RasterPart(new LaserProperty());
             rp.addImage(new BlackWhiteRaster(new BufferedImageAdapter(outImg), BlackWhiteRaster.DitherAlgorithm.AVERAGE), new Point(0, 0));
             VectorPart vp = null;
             if (cbCut.isSelected()) {
-                vp = new VectorPart(((MaterialProperty) material.getSelectedItem()).getCuttingProperty());
+                vp = new VectorPart(new LaserProperty());
                 vp.moveto(0, 0);
                 vp.lineto(outImg.getWidth(), 0);
                 vp.lineto(outImg.getWidth(), outImg.getHeight());

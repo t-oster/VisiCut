@@ -5,6 +5,8 @@
 package com.t_oster.visicut.gui.beans;
 
 import com.kitfox.svg.Group;
+import com.kitfox.svg.Path;
+import com.kitfox.svg.RenderableElement;
 import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGElementException;
 import com.kitfox.svg.animation.AnimationElement;
@@ -21,11 +23,11 @@ public class SVGFilter
 
   public enum FilterType
   {
-
+    strokewidth,
     strokecolor,
     fillcolor,
-    groupid,
-    id,
+    group,
+    objecttype,
   }
 
   /**
@@ -60,7 +62,7 @@ public class SVGFilter
    * @param elements
    * @return 
    */
-  private static List<SVGElement> expandChildren(List<SVGElement> elements)
+  public static List<SVGElement> expandChildren(List<SVGElement> elements)
   {
     List<SVGElement> result = new LinkedList<SVGElement>();
     for (SVGElement e : elements)
@@ -85,11 +87,20 @@ public class SVGFilter
   {
     switch (type)
     {
-      case id:
+      case strokewidth:
       {
-        return e.getId();
+        if (e.hasAttribute("stroke-width", AnimationElement.AT_CSS))
+        {
+          StyleAttribute sa = e.getStyleAbsolute("stroke-width");
+          return ""+sa.getFloatValue();
+        }
+        break;
       }
-      case groupid:
+      case objecttype:
+      {
+        return (e instanceof RenderableElement) && !(e instanceof Group) ? e.getClass() : null;
+      }
+      case group:
       {
         if (e instanceof Group)
         {
@@ -130,14 +141,18 @@ public class SVGFilter
   public static List<Object> getOccuringFilterAttributes(FilterType type, List<SVGElement> elements) throws SVGElementException
   {
     List<Object> result = new LinkedList<Object>();
-    for (SVGElement e : expandChildren(elements))
+    for (SVGElement leaf : elements)
     {
-      Object match = getOccuringFilterAttribute(type, e);
-      if (match != null && !result.contains(match))
+      for (SVGElement e : getPath(leaf))
       {
-        result.add(match);
+        Object match = getOccuringFilterAttribute(type, e);
+        if (match != null && !result.contains(match))
+        {
+          result.add(match);
+        }
       }
     }
+
     return result;
   }
 
@@ -156,18 +171,35 @@ public class SVGFilter
 
   public final boolean matches(SVGElement e) throws SVGElementException
   {
+    if (!(e instanceof RenderableElement) || e instanceof Group)
+    {//Just matching real renderable Elements
+      return false;
+    }
+    if (this.type == null)
+    {
+      return true;
+    }
     switch (type)
     {
-      case id:
+      case strokewidth:
       {
-        return e.getId().equals(attribute);
+        if (e.hasAttribute("stroke-width", AnimationElement.AT_CSS))
+        {
+          StyleAttribute sa = e.getStyleAbsolute("stroke-width");
+          return (""+sa.getFloatValue()).equals(attribute);
+        }
+        break;
+      }
+      case objecttype:
+      {
+        return e.getClass().equals(attribute);
       }
       case fillcolor:
       {
         if (e.hasAttribute("fill", AnimationElement.AT_CSS))
         {
           StyleAttribute sa = e.getStyleAbsolute("fill");
-          return sa.getColorValue().equals(attribute);
+          return sa.getColorValue() == null ? attribute == null : sa.getColorValue().equals(attribute);
         }
         return false;
       }
@@ -180,7 +212,7 @@ public class SVGFilter
         }
         return false;
       }
-      case groupid:
+      case group:
       {
         for (SVGElement node : getPath(e))
         {
@@ -203,7 +235,7 @@ public class SVGFilter
     this.type = type;
     this.attribute = attribute;
     this.matchedElements = new LinkedList<SVGElement>();
-    for (SVGElement e : expandChildren(elements))
+    for (SVGElement e : elements)
     {
       if (this.matches(e))
       {

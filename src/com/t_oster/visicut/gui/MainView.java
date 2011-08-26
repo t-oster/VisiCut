@@ -42,6 +42,7 @@ public class MainView extends javax.swing.JFrame
     openFileChooser = new javax.swing.JFileChooser();
     mappingDialog1 = new com.t_oster.visicut.gui.MappingDialog();
     visicutModel1 = new com.t_oster.visicut.VisicutModel();
+    profileManager1 = new com.t_oster.visicut.model.ProfileManager();
     jPanel2 = new javax.swing.JPanel();
     jLabel1 = new javax.swing.JLabel();
     jComboBox1 = new javax.swing.JComboBox();
@@ -70,7 +71,9 @@ public class MainView extends javax.swing.JFrame
 
     mappingDialog1.setName("mappingDialog1"); // NOI18N
 
-    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${SVGRootElement}"), mappingDialog1, org.jdesktop.beansbinding.BeanProperty.create("SVGRootElement"), "rootToDialog");
+    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, jComboBox1, org.jdesktop.beansbinding.ELProperty.create("${selectedItem}"), mappingDialog1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialComboBoxToDialog");
+    bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${SVGRootElement}"), mappingDialog1, org.jdesktop.beansbinding.BeanProperty.create("SVGRootElement"), "rootToDialog");
     bindingGroup.addBinding(binding);
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -82,8 +85,11 @@ public class MainView extends javax.swing.JFrame
     jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
     jLabel1.setName("jLabel1"); // NOI18N
 
-    jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Finnpappe 3mm", "Plexiglass 1.5mm", "Filz (rot) 4mm" }));
     jComboBox1.setName("jComboBox1"); // NOI18N
+
+    org.jdesktop.beansbinding.ELProperty eLProperty = org.jdesktop.beansbinding.ELProperty.create("${materials}");
+    org.jdesktop.swingbinding.JComboBoxBinding jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, profileManager1, eLProperty, jComboBox1);
+    bindingGroup.addBinding(jComboBoxBinding);
 
     jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
     jLabel2.setName("jLabel2"); // NOI18N
@@ -160,7 +166,7 @@ public class MainView extends javax.swing.JFrame
     previewPanel1.setLayout(previewPanel1Layout);
     previewPanel1Layout.setHorizontalGroup(
       previewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 303, Short.MAX_VALUE)
+      .addGap(0, 302, Short.MAX_VALUE)
     );
     previewPanel1Layout.setVerticalGroup(
       previewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -321,6 +327,7 @@ if (evt.getPropertyName().equals(PreviewPanel.PROP_DROPPEDFILE))
   private javax.swing.JMenuItem openMenuItem;
   private javax.swing.JMenuItem pasteMenuItem;
   private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel1;
+  private com.t_oster.visicut.model.ProfileManager profileManager1;
   private javax.swing.JMenuItem saveAsMenuItem;
   private javax.swing.JMenuItem saveMenuItem;
   private com.t_oster.visicut.VisicutModel visicutModel1;

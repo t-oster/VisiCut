@@ -43,6 +43,8 @@ public class SVGElementsTree extends JTree implements TreeModel, TreeSelectionLi
   {
     return SVGRootElement;
   }
+  
+  private SVGFilter rootFilter = null;
 
   /**
    * Set the value of SVGRootElement
@@ -53,17 +55,27 @@ public class SVGElementsTree extends JTree implements TreeModel, TreeSelectionLi
   {
     if (SVGRootElement != null)
     {
-      this.SVGRootElement = SVGRootElement;
-      this.valueForPathChanged(new TreePath(new Object[]
-        {
-          SVGRootElement
-        }), SVGRootElement);
+      try
+      {
+        this.SVGRootElement = SVGRootElement;
+        List<SVGElement> rootList = new LinkedList<SVGElement>();
+        rootList.add(this.SVGRootElement);
+        this.rootFilter = new SVGFilter(null, null, SVGFilter.expandChildren(rootList));
+        this.valueForPathChanged(new TreePath(new Object[]
+          {
+            this.rootFilter
+          }), this.rootFilter);
+      }
+      catch (SVGElementException ex)
+      {
+        Logger.getLogger(SVGElementsTree.class.getName()).log(Level.SEVERE, null, ex);
+      }
     }
   }
 
   public Object getRoot()
   {
-    return this.SVGRootElement == null ? "root" : this.SVGRootElement;
+    return this.rootFilter == null ? "root" : this.rootFilter;
   }
 
   public Object getChild(Object o, int i)

@@ -12,12 +12,17 @@
         <Property name="name" type="java.lang.String" value="mappingDialog1" noResource="true"/>
       </Properties>
       <BindingProperties>
+        <BindingProperty name="material" source="jComboBox1" sourcePath="${selectedItem}" target="mappingDialog1" targetPath="material" updateStrategy="1" immediately="false">
+          <Property name="name" type="java.lang.String" value="MaterialComboBoxToDialog"/>
+        </BindingProperty>
         <BindingProperty name="SVGRootElement" source="visicutModel1" sourcePath="${SVGRootElement}" target="mappingDialog1" targetPath="SVGRootElement" updateStrategy="1" immediately="false">
           <Property name="name" type="java.lang.String" value="rootToDialog"/>
         </BindingProperty>
       </BindingProperties>
     </Component>
     <Component class="com.t_oster.visicut.VisicutModel" name="visicutModel1">
+    </Component>
+    <Component class="com.t_oster.visicut.model.ProfileManager" name="profileManager1">
     </Component>
     <Menu class="javax.swing.JMenuBar" name="menuBar">
       <Properties>
@@ -231,15 +236,11 @@
         </Component>
         <Component class="javax.swing.JComboBox" name="jComboBox1">
           <Properties>
-            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="3">
-                <StringItem index="0" value="Finnpappe 3mm"/>
-                <StringItem index="1" value="Plexiglass 1.5mm"/>
-                <StringItem index="2" value="Filz (rot) 4mm"/>
-              </StringArray>
-            </Property>
             <Property name="name" type="java.lang.String" value="jComboBox1" noResource="true"/>
           </Properties>
+          <BindingProperties>
+            <BindingProperty name="elements" source="profileManager1" sourcePath="${materials}" target="jComboBox1" targetPath="elements" updateStrategy="0" immediately="false"/>
+          </BindingProperties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
           <Properties>
@@ -305,7 +306,7 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="303" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="302" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
