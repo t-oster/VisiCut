@@ -1,4 +1,4 @@
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.visicut.gui.mappingdialog;
 
 import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGElementException;
@@ -6,7 +6,8 @@ import com.kitfox.svg.SVGRoot;
 import com.kitfox.svg.animation.AnimationElement;
 import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.liblasercut.platform.Tuple;
-import com.t_oster.visicut.gui.beans.SVGFilter.FilterType;
+import com.t_oster.visicut.gui.beans.MappingFilter;
+import com.t_oster.visicut.gui.beans.MappingFilter.FilterType;
 import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,7 +45,7 @@ public class SVGElementsTree extends JTree implements TreeModel, TreeSelectionLi
     return SVGRootElement;
   }
   
-  private SVGFilter rootFilter = null;
+  private MappingFilter rootFilter = null;
 
   /**
    * Set the value of SVGRootElement
@@ -60,7 +61,7 @@ public class SVGElementsTree extends JTree implements TreeModel, TreeSelectionLi
         this.SVGRootElement = SVGRootElement;
         List<SVGElement> rootList = new LinkedList<SVGElement>();
         rootList.add(this.SVGRootElement);
-        this.rootFilter = new SVGFilter(null, null, SVGFilter.expandChildren(rootList));
+        this.rootFilter = new MappingFilter(null, null, MappingFilter.expandChildren(rootList));
         this.valueForPathChanged(new TreePath(new Object[]
           {
             this.rootFilter
@@ -100,7 +101,7 @@ public class SVGElementsTree extends JTree implements TreeModel, TreeSelectionLi
       try
       {
         List<Tuple<FilterType, List<SVGElement>>> result = new LinkedList<Tuple<FilterType, List<SVGElement>>>();
-        for (FilterType t : SVGFilter.getOccuringFilterTypes(rootlist))
+        for (FilterType t : MappingFilter.getOccuringFilterTypes(rootlist))
         {
           result.add(new Tuple<FilterType, List<SVGElement>>(t, rootlist));
         }
@@ -117,10 +118,10 @@ public class SVGElementsTree extends JTree implements TreeModel, TreeSelectionLi
       FilterType t = (FilterType) ((Tuple) o).getA();
       try
       {
-        List<SVGFilter> result = new LinkedList<SVGFilter>();
-        for (Object attribute : SVGFilter.getOccuringFilterAttributes(t, elements))
+        List<MappingFilter> result = new LinkedList<MappingFilter>();
+        for (Object attribute : MappingFilter.getOccuringFilterAttributes(t, elements))
         {
-          result.add(new SVGFilter(t, attribute, elements));
+          result.add(new MappingFilter(t, attribute, elements));
         }
         return result;
       }
@@ -129,12 +130,12 @@ public class SVGElementsTree extends JTree implements TreeModel, TreeSelectionLi
         Logger.getLogger(SVGElementsTree.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
-    else if (o instanceof SVGFilter)
+    else if (o instanceof MappingFilter)
     {
-      SVGFilter f = (SVGFilter) o;
+      MappingFilter f = (MappingFilter) o;
       List result = new LinkedList();
       result.addAll(f.getMatchingElements());
-      for (FilterType t : SVGFilter.getOccuringFilterTypes(f.getMatchingElements()))
+      for (FilterType t : MappingFilter.getOccuringFilterTypes(f.getMatchingElements()))
       {
         result.add(new Tuple<FilterType, List<SVGElement>>(t, f.getMatchingElements()));
       }
@@ -232,9 +233,9 @@ public class SVGElementsTree extends JTree implements TreeModel, TreeSelectionLi
           List<SVGElement> elements = (List<SVGElement>) ((Tuple) selected).getB();
           this.setMatchingSVGelements(elements);
         }
-        else if (selected instanceof SVGFilter)
+        else if (selected instanceof MappingFilter)
         {
-          this.setMatchingSVGelements(((SVGFilter) selected).getMatchingElements());
+          this.setMatchingSVGelements(((MappingFilter) selected).getMatchingElements());
         }
       }
     }

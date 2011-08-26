@@ -44,17 +44,13 @@ public class MappingDialog extends javax.swing.JDialog {
     bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
     buttonGroup1 = new javax.swing.ButtonGroup();
-    matchingPartsPanel1 = new com.t_oster.visicut.gui.beans.MatchingPartsPanel();
+    matchingPartsPanel1 = new com.t_oster.visicut.gui.mappingdialog.MatchingPartsPanel();
     jScrollPane2 = new javax.swing.JScrollPane();
-    jPanel2 = new javax.swing.JPanel();
-    jiconRadioButton2 = new com.t_oster.visicut.gui.beans.JiconRadioButton();
-    jiconRadioButton3 = new com.t_oster.visicut.gui.beans.JiconRadioButton();
-    jiconRadioButton4 = new com.t_oster.visicut.gui.beans.JiconRadioButton();
-    jiconRadioButton1 = new com.t_oster.visicut.gui.beans.JiconRadioButton();
+    cuttingProfilesPanel1 = new com.t_oster.visicut.gui.mappingdialog.CuttingProfilesPanel();
     jButton1 = new javax.swing.JButton();
     jButton2 = new javax.swing.JButton();
     jScrollPane1 = new javax.swing.JScrollPane();
-    sVGElementsTree1 = new com.t_oster.visicut.gui.beans.SVGElementsTree();
+    sVGElementsTree1 = new com.t_oster.visicut.gui.mappingdialog.SVGElementsTree();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setName("Form"); // NOI18N
@@ -78,57 +74,30 @@ public class MappingDialog extends javax.swing.JDialog {
     );
     matchingPartsPanel1Layout.setVerticalGroup(
       matchingPartsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 375, Short.MAX_VALUE)
+      .addGap(0, 374, Short.MAX_VALUE)
     );
 
     jScrollPane2.setName("jScrollPane2"); // NOI18N
 
-    jPanel2.setName("jPanel2"); // NOI18N
+    cuttingProfilesPanel1.setName("cuttingProfilesPanel1"); // NOI18N
 
-    buttonGroup1.add(jiconRadioButton2);
-    jiconRadioButton2.setLabelIcon(new java.io.File("/home/thommy/NetBeansProjects/Visicut/src/visicut/resources/material-icons/cutline.png"));
-    jiconRadioButton2.setName("jiconRadioButton2"); // NOI18N
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${material}"), cuttingProfilesPanel1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialToProfilesPanel");
+    bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${selectedLineType}"), cuttingProfilesPanel1, org.jdesktop.beansbinding.BeanProperty.create("selectedCuttingProfile"), "LineTypeFormToCuttingPanelAndBack");
+    bindingGroup.addBinding(binding);
 
-    buttonGroup1.add(jiconRadioButton3);
-    jiconRadioButton3.setLabelIcon(new java.io.File("/home/thommy/NetBeansProjects/jepilog/materials/Fliess/bigcut.png"));
-    jiconRadioButton3.setName("jiconRadioButton3"); // NOI18N
-
-    buttonGroup1.add(jiconRadioButton4);
-    jiconRadioButton4.setLabelIcon(new java.io.File("/home/thommy/NetBeansProjects/Visicut/src/visicut/resources/material-icons/cutline.png"));
-    jiconRadioButton4.setName("jiconRadioButton4"); // NOI18N
-    jiconRadioButton4.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jiconRadioButton4ActionPerformed(evt);
-      }
-    });
-
-    buttonGroup1.add(jiconRadioButton1);
-    jiconRadioButton1.setLabelIcon(new java.io.File("/home/thommy/NetBeansProjects/jepilog/materials/Fliess/cutline.png"));
-    jiconRadioButton1.setName("jiconRadioButton1"); // NOI18N
-
-    javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-    jPanel2.setLayout(jPanel2Layout);
-    jPanel2Layout.setHorizontalGroup(
-      jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jiconRadioButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
-      .addComponent(jiconRadioButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
-      .addComponent(jiconRadioButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
-      .addComponent(jiconRadioButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
+    javax.swing.GroupLayout cuttingProfilesPanel1Layout = new javax.swing.GroupLayout(cuttingProfilesPanel1);
+    cuttingProfilesPanel1.setLayout(cuttingProfilesPanel1Layout);
+    cuttingProfilesPanel1Layout.setHorizontalGroup(
+      cuttingProfilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGap(0, 384, Short.MAX_VALUE)
     );
-    jPanel2Layout.setVerticalGroup(
-      jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel2Layout.createSequentialGroup()
-        .addComponent(jiconRadioButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jiconRadioButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(jiconRadioButton4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jiconRadioButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap())
+    cuttingProfilesPanel1Layout.setVerticalGroup(
+      cuttingProfilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGap(0, 332, Short.MAX_VALUE)
     );
 
-    jScrollPane2.setViewportView(jPanel2);
+    jScrollPane2.setViewportView(cuttingProfilesPanel1);
 
     jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
     jButton1.setName("jButton1"); // NOI18N
@@ -204,13 +173,6 @@ public class MappingDialog extends javax.swing.JDialog {
     MaterialProfile oldMaterial = this.material;
     this.material = material;
     propertyChangeSupport.firePropertyChange(PROP_MATERIAL, oldMaterial, material);
-    if (this.material != null)
-    {
-      if (this.material.getLineProfile().length > 0)
-      {
-        this.setSelectedLineType(this.material.getLineProfile(0));
-      }
-    }
   }
 
   /**
@@ -276,27 +238,19 @@ public class MappingDialog extends javax.swing.JDialog {
     this.sVGElementsTree1.setSVGRootElement(SVGRootElement);
   }
 
-private void jiconRadioButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jiconRadioButton4ActionPerformed
-// TODO add your handling code here:
-}//GEN-LAST:event_jiconRadioButton4ActionPerformed
-
 private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 // TODO add your handling code here:
 }//GEN-LAST:event_jButton1ActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.ButtonGroup buttonGroup1;
+  private com.t_oster.visicut.gui.mappingdialog.CuttingProfilesPanel cuttingProfilesPanel1;
   private javax.swing.JButton jButton1;
   private javax.swing.JButton jButton2;
-  private javax.swing.JPanel jPanel2;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
-  private com.t_oster.visicut.gui.beans.JiconRadioButton jiconRadioButton1;
-  private com.t_oster.visicut.gui.beans.JiconRadioButton jiconRadioButton2;
-  private com.t_oster.visicut.gui.beans.JiconRadioButton jiconRadioButton3;
-  private com.t_oster.visicut.gui.beans.JiconRadioButton jiconRadioButton4;
-  private com.t_oster.visicut.gui.beans.MatchingPartsPanel matchingPartsPanel1;
-  private com.t_oster.visicut.gui.beans.SVGElementsTree sVGElementsTree1;
+  private com.t_oster.visicut.gui.mappingdialog.MatchingPartsPanel matchingPartsPanel1;
+  private com.t_oster.visicut.gui.mappingdialog.SVGElementsTree sVGElementsTree1;
   private org.jdesktop.beansbinding.BindingGroup bindingGroup;
   // End of variables declaration//GEN-END:variables
 }

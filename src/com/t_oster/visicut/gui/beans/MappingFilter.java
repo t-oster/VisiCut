@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @author thommy
  */
-public class SVGFilter
+public class MappingFilter
 {
 
   public enum FilterType
@@ -161,7 +161,7 @@ public class SVGFilter
     List<FilterType> result = new LinkedList<FilterType>();
     for (FilterType t : FilterType.values())
     {
-      if (SVGFilter.getOccuringFilterAttributes(t, elements).size() > 0)
+      if (MappingFilter.getOccuringFilterAttributes(t, elements).size() > 0)
       {
         result.add(t);
       }
@@ -230,7 +230,7 @@ public class SVGFilter
   private Object attribute;
   private List<SVGElement> matchedElements;
 
-  public SVGFilter(FilterType type, Object attribute, List<SVGElement> elements) throws SVGElementException
+  public MappingFilter(FilterType type, Object attribute, List<SVGElement> elements) throws SVGElementException
   {
     this.type = type;
     this.attribute = attribute;

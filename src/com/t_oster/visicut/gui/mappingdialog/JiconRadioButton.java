@@ -1,4 +1,4 @@
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.visicut.gui.mappingdialog;
 
 import java.io.File;
 import javax.swing.JRadioButton;

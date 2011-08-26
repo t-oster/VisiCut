@@ -1,4 +1,4 @@
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.visicut.gui.mappingdialog;
 
 import com.kitfox.svg.Path;
 import com.kitfox.svg.RenderableElement;

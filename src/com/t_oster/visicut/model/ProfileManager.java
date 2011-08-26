@@ -36,13 +36,13 @@ public class ProfileManager
     lines[1].setName("broad line");
     lines[1].setWidth(2);
     lines[1].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/jepilog/materials/Fliess/bigline.png"));
-    filz.setLineProfile(lines);
+    filz.setLineProfiles(lines);
     this.materials.add(filz);
     MaterialProfile finnpappe = new MaterialProfile();
     finnpappe.setColor(new Color(209,163,117));
     finnpappe.setName("Finnpappe");
     finnpappe.setHeight(2);
-    finnpappe.setLineProfile(lines);
+    finnpappe.setLineProfiles(lines);
     this.materials.add(finnpappe);
     MaterialProfile plexiglass = new MaterialProfile();
     plexiglass.setColor(new Color(117,163,209));
@@ -54,7 +54,7 @@ public class ProfileManager
     lines[0].setWidth(1.2f);
     lines[0].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/jepilog/materials/Fliess/cutline.png"));
     lines[0].setColor(Color.white);
-    plexiglass.setLineProfile(lines);
+    plexiglass.setLineProfiles(lines);
     this.materials.add(plexiglass);
   }
   

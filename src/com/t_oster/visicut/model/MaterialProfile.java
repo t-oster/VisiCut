@@ -41,7 +41,7 @@ public class MaterialProfile
    *
    * @return the value of lineProfile
    */
-  public LineProfile[] getLineProfile()
+  public LineProfile[] getLineProfiles()
   {
     return lineProfile;
   }
@@ -51,7 +51,7 @@ public class MaterialProfile
    *
    * @param lineProfile new value of lineProfile
    */
-  public void setLineProfile(LineProfile[] lineProfile)
+  public void setLineProfiles(LineProfile[] lineProfile)
   {
     this.lineProfile = lineProfile;
   }
