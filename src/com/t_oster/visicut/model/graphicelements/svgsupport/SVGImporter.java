@@ -4,6 +4,7 @@
  */
 package com.t_oster.visicut.model.graphicelements.svgsupport;
 
+import com.kitfox.svg.Group;
 import com.t_oster.visicut.model.graphicelements.Importer;
 import com.kitfox.svg.ImageSVG;
 import com.kitfox.svg.SVGElement;
@@ -30,7 +31,7 @@ public class SVGImporter implements Importer
   
   private void importNode(SVGElement e, List<GraphicObject> result)
   {
-    if (e instanceof ShapeElement)
+    if (e instanceof ShapeElement && !(e instanceof Group))
     {
       result.add(new SVGShape((ShapeElement) e));
     }

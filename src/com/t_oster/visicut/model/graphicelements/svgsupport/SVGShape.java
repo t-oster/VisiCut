@@ -4,6 +4,7 @@
  */
 package com.t_oster.visicut.model.graphicelements.svgsupport;
 
+import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGElementException;
 import com.kitfox.svg.ShapeElement;
 import com.kitfox.svg.animation.AnimationElement;
@@ -28,51 +29,70 @@ public class SVGShape extends SVGObject implements ShapeObject
     this.decoratee = s;
   }
 
+  /**
+   * Returns the first StyleAttribute with the given name in the
+   * Path from the current Node to the Root node
+   * @param name
+   * @return 
+   */
+  private StyleAttribute getStyleAttributeRecursive(String name)
+  {
+    StyleAttribute sa = null;
+    for (SVGElement node : this.getPathToRoot())
+    {
+      try
+      {
+        if (node.hasAttribute(name, AnimationElement.AT_CSS))
+        {
+          return node.getStyleAbsolute(name);
+        }
+      }
+      catch (SVGElementException ex)
+      {
+        Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+    return null;
+  }
+
   @Override
   public List<Object> getAttributeValues(String a)
   {
     List<Object> result = super.getAttributeValues(a);
-    try
+    switch (Attribute.valueOf(a))
     {
-      switch (Attribute.valueOf(a))
+      case StrokeWidth:
       {
-        case StrokeWidth:
+        StyleAttribute sa = getStyleAttributeRecursive("stroke-width");
+        if (sa != null)
         {
-          if (decoratee.hasAttribute("stroke-width", AnimationElement.AT_CSS))
-          {
-            StyleAttribute sa = decoratee.getStyleAbsolute("stroke-width");
-            result.add("" + sa.getFloatValue());
-          }
-          break;
+          result.add("" + sa.getFloatValue());
         }
-        case ObjectType:
-        {
-          result.add("Shape");
-          break;
-        }
-        case StrokeColor:
-        {
-          if (decoratee.hasAttribute("stroke", AnimationElement.AT_CSS))
-          {
-            StyleAttribute sa = decoratee.getStyleAbsolute("stroke");
-            result.add(sa.getColorValue());
-          }
-          break;
-        }
-        case FillColor:
-        {
-          if (decoratee.hasAttribute("fill", AnimationElement.AT_CSS))
-          {
-            StyleAttribute sa = decoratee.getStyleAbsolute("fill");
-            result.add(sa.getColorValue());
-          }
-          break;
-        }
+        break;
       }
-    }
-    catch (SVGElementException ex)
-    {
-      Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
+      case ObjectType:
+      {
+        result.add("Shape");
+        break;
+      }
+      case StrokeColor:
+      {
+        StyleAttribute sa = getStyleAttributeRecursive("stroke");
+        if (sa != null)
+        {
+          result.add(sa.getColorValue());
+        }
+        break;
+      }
+      case FillColor:
+      {
+        StyleAttribute sa = getStyleAttributeRecursive("fill");
+        if (sa != null)
+        {
+          result.add(sa.getColorValue());
+        }
+        break;
+      }
     }
     return result;
   }

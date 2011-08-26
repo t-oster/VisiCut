@@ -31,11 +31,11 @@ public class ProfileManager
     lines [0] = new VectorProfile();
     lines[0].setName("cut line");
     lines[0].setWidth(2f);
-    lines[0].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/jepilog/materials/Filz/cutline.png"));
+    lines[0].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/Visicut/materials/Filz/cutline.png"));
     lines[1] = new VectorProfile();
     lines[1].setName("broad cut line");
     lines[1].setWidth(6f);
-    lines[1].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/jepilog/materials/Filz/bigcut.png"));
+    lines[1].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/Visicut/materials/Filz/bigcut.png"));
     filz.setLineProfiles(lines);
     this.materials.add(filz);
     MaterialProfile finnpappe = new MaterialProfile();
@@ -46,11 +46,11 @@ public class ProfileManager
     lines [0] = new VectorProfile();
     lines[0].setName("cut line");
     lines[0].setWidth(1f);
-    lines[0].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/jepilog/materials/Finnpappe/cutline.png"));
+    lines[0].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/Visicut/materials/Finnpappe/cutline.png"));
     lines[1] = new VectorProfile();
     lines[1].setName("broad line");
     lines[1].setWidth(3f);
-    lines[1].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/jepilog/materials/Finnpappe/bigline.png"));
+    lines[1].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/Visicut/materials/Finnpappe/bigline.png"));
     finnpappe.setLineProfiles(lines);
     this.materials.add(finnpappe);
     MaterialProfile plexiglass = new MaterialProfile();
@@ -61,11 +61,11 @@ public class ProfileManager
     lines [0] = new VectorProfile();
     lines[0].setName("cut line");
     lines[0].setWidth(1f);
-    lines[0].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/jepilog/materials/Plexiglass/cutline.png"));
+    lines[0].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/Visicut/materials/Plexiglass/cutline.png"));
     lines[1] = new VectorProfile();
     lines[1].setName("broad line");
     lines[1].setWidth(2f);
-    lines[1].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/jepilog/materials/Plexiglass/bigline.png"));
+    lines[1].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/Visicut/materials/Plexiglass/bigline.png"));
     plexiglass.setLineProfiles(lines);
     this.materials.add(plexiglass);
   }
