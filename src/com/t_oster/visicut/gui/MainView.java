@@ -71,9 +71,9 @@ public class MainView extends javax.swing.JFrame
 
     mappingDialog1.setName("mappingDialog1"); // NOI18N
 
-    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, jComboBox1, org.jdesktop.beansbinding.ELProperty.create("${selectedItem}"), mappingDialog1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialComboBoxToDialog");
+    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${graphicObjects}"), mappingDialog1, org.jdesktop.beansbinding.BeanProperty.create("graphicElements"), "GraphicObjectsToMappingDialog");
     bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${SVGRootElement}"), mappingDialog1, org.jdesktop.beansbinding.BeanProperty.create("SVGRootElement"), "rootToDialog");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material}"), mappingDialog1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialToMappingDialog");
     bindingGroup.addBinding(binding);
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -90,6 +90,8 @@ public class MainView extends javax.swing.JFrame
     org.jdesktop.beansbinding.ELProperty eLProperty = org.jdesktop.beansbinding.ELProperty.create("${materials}");
     org.jdesktop.swingbinding.JComboBoxBinding jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, profileManager1, eLProperty, jComboBox1);
     bindingGroup.addBinding(jComboBoxBinding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material}"), jComboBox1, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"), "ComboBoxToModel");
+    bindingGroup.addBinding(binding);
 
     jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
     jLabel2.setName("jLabel2"); // NOI18N
@@ -153,14 +155,10 @@ public class MainView extends javax.swing.JFrame
     previewPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("previewPanel1.border.title"))); // NOI18N
     previewPanel1.setName("previewPanel1"); // NOI18N
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${SVGRootElement}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("SVGRootElement"), "rootElement");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${graphicFile}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("droppedFile"), "DroppedFileToModel");
     bindingGroup.addBinding(binding);
-
-    previewPanel1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-      public void propertyChange(java.beans.PropertyChangeEvent evt) {
-        previewPanel1PropertyChange(evt);
-      }
-    });
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${graphicObjects}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("graphicObjects"), "ModelToPreviewObjects");
+    bindingGroup.addBinding(binding);
 
     javax.swing.GroupLayout previewPanel1Layout = new javax.swing.GroupLayout(previewPanel1);
     previewPanel1.setLayout(previewPanel1Layout);
@@ -293,15 +291,6 @@ int returnVal = openFileChooser.showOpenDialog(this);
 private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
     mappingDialog1.setVisible(true);
 }//GEN-LAST:event_jButton1ActionPerformed
-
-private void previewPanel1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_previewPanel1PropertyChange
-if (evt.getPropertyName().equals(PreviewPanel.PROP_DROPPEDFILE))
-{
-    File f = previewPanel1.getDroppedFile();
-    if (f!=null && f.exists() && f.getAbsolutePath().toLowerCase().endsWith("svg"))
-    visicutModel1.loadSVG(f);
-}
-}//GEN-LAST:event_previewPanel1PropertyChange
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;

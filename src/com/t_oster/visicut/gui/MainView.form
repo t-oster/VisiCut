@@ -12,11 +12,11 @@
         <Property name="name" type="java.lang.String" value="mappingDialog1" noResource="true"/>
       </Properties>
       <BindingProperties>
-        <BindingProperty name="material" source="jComboBox1" sourcePath="${selectedItem}" target="mappingDialog1" targetPath="material" updateStrategy="1" immediately="false">
-          <Property name="name" type="java.lang.String" value="MaterialComboBoxToDialog"/>
+        <BindingProperty name="graphicElements" source="visicutModel1" sourcePath="${graphicObjects}" target="mappingDialog1" targetPath="graphicElements" updateStrategy="1" immediately="false">
+          <Property name="name" type="java.lang.String" value="GraphicObjectsToMappingDialog"/>
         </BindingProperty>
-        <BindingProperty name="SVGRootElement" source="visicutModel1" sourcePath="${SVGRootElement}" target="mappingDialog1" targetPath="SVGRootElement" updateStrategy="1" immediately="false">
-          <Property name="name" type="java.lang.String" value="rootToDialog"/>
+        <BindingProperty name="material" source="visicutModel1" sourcePath="${material}" target="mappingDialog1" targetPath="material" updateStrategy="0" immediately="false">
+          <Property name="name" type="java.lang.String" value="MaterialToMappingDialog"/>
         </BindingProperty>
       </BindingProperties>
     </Component>
@@ -240,6 +240,9 @@
           </Properties>
           <BindingProperties>
             <BindingProperty name="elements" source="profileManager1" sourcePath="${materials}" target="jComboBox1" targetPath="elements" updateStrategy="0" immediately="false"/>
+            <BindingProperty name="selectedItem" source="visicutModel1" sourcePath="${material}" target="jComboBox1" targetPath="selectedItem" updateStrategy="0" immediately="false">
+              <Property name="name" type="java.lang.String" value="ComboBoxToModel"/>
+            </BindingProperty>
           </BindingProperties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
@@ -295,13 +298,13 @@
         <Property name="name" type="java.lang.String" value="previewPanel1" noResource="true"/>
       </Properties>
       <BindingProperties>
-        <BindingProperty name="SVGRootElement" source="visicutModel1" sourcePath="${SVGRootElement}" target="previewPanel1" targetPath="SVGRootElement" updateStrategy="0" immediately="false">
-          <Property name="name" type="java.lang.String" value="rootElement"/>
+        <BindingProperty name="droppedFile" source="visicutModel1" sourcePath="${graphicFile}" target="previewPanel1" targetPath="droppedFile" updateStrategy="0" immediately="false">
+          <Property name="name" type="java.lang.String" value="DroppedFileToModel"/>
+        </BindingProperty>
+        <BindingProperty name="graphicObjects" source="visicutModel1" sourcePath="${graphicObjects}" target="previewPanel1" targetPath="graphicObjects" updateStrategy="1" immediately="false">
+          <Property name="name" type="java.lang.String" value="ModelToPreviewObjects"/>
         </BindingProperty>
       </BindingProperties>
-      <Events>
-        <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="previewPanel1PropertyChange"/>
-      </Events>
 
       <Layout>
         <DimensionLayout dim="0">

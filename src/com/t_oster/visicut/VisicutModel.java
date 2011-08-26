@@ -5,14 +5,16 @@
 package com.t_oster.visicut;
 
 import com.kitfox.svg.SVGRoot;
-import com.kitfox.svg.SVGUniverse;
+import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.model.Mapping;
+import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.ImportException;
+import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 
 /**
  * This class contains the state and business logic of the 
@@ -23,6 +25,30 @@ import java.util.logging.Logger;
 public class VisicutModel
 {
 
+  protected List<GraphicObject> graphicObjects = null;
+  public static final String PROP_GRAPHICOBJECTS = "graphicObjects";
+
+  /**
+   * Get the value of graphicObjects
+   *
+   * @return the value of graphicObjects
+   */
+  public List<GraphicObject> getGraphicObjects()
+  {
+    return graphicObjects;
+  }
+
+  /**
+   * Set the value of graphicObjects
+   *
+   * @param graphicObjects new value of graphicObjects
+   */
+  public void setGraphicObjects(List<GraphicObject> graphicObjects)
+  {
+    List<GraphicObject> oldGraphicObjects = this.graphicObjects;
+    this.graphicObjects = graphicObjects;
+    propertyChangeSupport.firePropertyChange(PROP_GRAPHICOBJECTS, oldGraphicObjects, graphicObjects);
+  }
   protected SVGRoot SVGRootElement = null;
   public static final String PROP_SVGROOTELEMENT = "SVGRootElement";
 
@@ -49,29 +75,35 @@ public class VisicutModel
   }
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   protected File sourceFile = null;
-  public static final String PROP_SOURCEFILE = "sourceFile";
+  protected File graphicFile = null;
+  public static final String PROP_GRAPHICFILE = "graphicFile";
 
   /**
-   * Get the value of sourceFile
+   * Get the value of graphicFile
    *
-   * @return the value of sourceFile
+   * @return the value of graphicFile
    */
-  public File getSourceFile()
+  public File getGraphicFile()
   {
-    return sourceFile;
+    return graphicFile;
   }
 
   /**
-   * Set the value of sourceFile
+   * Set the value of graphicFile
    *
-   * @param sourceFile new value of sourceFile
+   * @param graphicFile new value of graphicFile
    */
-  private void setSourceFile(File sourceFile)
+  public void setGraphicFile(File graphicFile)
   {
-    File oldSourceFile = this.sourceFile;
-    this.sourceFile = sourceFile;
-    propertyChangeSupport.firePropertyChange(PROP_SOURCEFILE, oldSourceFile, sourceFile);
+    File oldGraphicFile = this.graphicFile;
+    this.graphicFile = graphicFile;
+    propertyChangeSupport.firePropertyChange(PROP_GRAPHICFILE, oldGraphicFile, graphicFile);
+    if (Util.differ(graphicFile, oldGraphicFile))
+    {
+      this.loadGraphicFile(graphicFile);
+    }
   }
+
 
   /**
    * Add PropertyChangeListener.
@@ -93,21 +125,73 @@ public class VisicutModel
     propertyChangeSupport.removePropertyChangeListener(listener);
   }
 
-  public void loadSVG(File f)
+  public void loadGraphicFile(File f)
   {
-    if (f != null)
+    if (f != null && f.exists() && f.getAbsolutePath().toLowerCase().endsWith("svg"))
     {
-      SVGUniverse u = new SVGUniverse();
       try
       {
-        URI svg = u.loadSVG(f.toURI().toURL());
-        this.setSVGRootElement(u.getDiagram(svg).getRoot());
-        this.setSourceFile(f);
+        SVGImporter im = new SVGImporter();
+        this.setGraphicFile(f);
+        this.setGraphicObjects(im.importFile(f));
       }
-      catch (MalformedURLException ex)
+      catch (ImportException e)
       {
-        Logger.getLogger(VisicutModel.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
+    else
+    {
+      this.setGraphicFile(null);
+      this.setGraphicObjects(null);
+    }
   }
+  protected MaterialProfile material = new MaterialProfile();
+  public static final String PROP_MATERIAL = "material";
+
+  /**
+   * Get the value of material
+   *
+   * @return the value of material
+   */
+  public MaterialProfile getMaterial()
+  {
+    return material;
+  }
+
+  /**
+   * Set the value of material
+   *
+   * @param material new value of material
+   */
+  public void setMaterial(MaterialProfile material)
+  {
+    MaterialProfile oldMaterial = this.material;
+    this.material = material;
+    propertyChangeSupport.firePropertyChange(PROP_MATERIAL, oldMaterial, material);
+  }
+  protected List<Mapping> mappings = null;
+  public static final String PROP_MAPPINGS = "mappings";
+
+  /**
+   * Get the value of mappings
+   *
+   * @return the value of mappings
+   */
+  public List<Mapping> getMappings()
+  {
+    return mappings;
+  }
+
+  /**
+   * Set the value of mappings
+   *
+   * @param mappings new value of mappings
+   */
+  public void setMappings(List<Mapping> mappings)
+  {
+    List<Mapping> oldMappings = this.mappings;
+    this.mappings = mappings;
+    propertyChangeSupport.firePropertyChange(PROP_MAPPINGS, oldMappings, mappings);
+  }
+
 }

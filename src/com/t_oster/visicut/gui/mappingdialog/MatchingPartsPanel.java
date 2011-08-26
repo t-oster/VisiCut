@@ -1,12 +1,10 @@
 package com.t_oster.visicut.gui.mappingdialog;
 
-import com.kitfox.svg.Path;
-import com.kitfox.svg.RenderableElement;
 import com.kitfox.svg.SVGElement;
-import com.kitfox.svg.SVGException;
-import com.kitfox.svg.ShapeElement;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -14,8 +12,6 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 /**
@@ -28,6 +24,28 @@ import javax.swing.JPanel;
 public class MatchingPartsPanel extends JPanel
 {
 
+  protected List<GraphicObject> graphicElements = null;
+
+  /**
+   * Get the value of graphicElements
+   *
+   * @return the value of graphicElements
+   */
+  public List<GraphicObject> getGraphicElements()
+  {
+    return graphicElements;
+  }
+
+  /**
+   * Set the value of graphicElements
+   *
+   * @param graphicElements new value of graphicElements
+   */
+  public void setGraphicElements(List<GraphicObject> graphicElements)
+  {
+    this.graphicElements = graphicElements;
+    this.repaint();
+  }
   protected List<SVGElement> svgElements = null;
 
   /**
@@ -102,33 +120,23 @@ public class MatchingPartsPanel extends JPanel
   {
     super.paintComponent(g);
     Graphics2D gg = (Graphics2D) g;
-    if (this.svgElements != null)
+    if (this.graphicElements != null)
     {
-      for (SVGElement e : this.svgElements)
+      for (GraphicObject e : this.graphicElements)
       {
-        if (e instanceof RenderableElement)
+        if (this.getLineType() == null)
         {
-          try
+          e.render(gg);
+        }
+        else
+        {
+          if (e instanceof ShapeObject)
           {
-            if (this.getLineType() == null)
-            {
-              ((RenderableElement) e).render(gg);
-            }
-            else
-            {
-              if (e instanceof ShapeElement)
-              {
-                gg.setColor(this.getLineType().getColor());
-                Stroke s = new BasicStroke(this.getLineType().getWidth());
-                gg.setStroke(s);
-                Shape sh = ((ShapeElement) e).getShape();
-                gg.draw(sh);
-              }
-            }
-          }
-          catch (SVGException ex)
-          {
-            Logger.getLogger(MatchingPartsPanel.class.getName()).log(Level.SEVERE, null, ex);
+            gg.setColor(this.getLineType().getColor());
+            Stroke s = new BasicStroke(this.getLineType().getWidth());
+            gg.setStroke(s);
+            Shape sh = ((ShapeObject) e).getShape();
+            gg.draw(sh);
           }
         }
       }

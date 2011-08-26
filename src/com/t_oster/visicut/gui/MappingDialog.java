@@ -13,8 +13,11 @@ package com.t_oster.visicut.gui;
 import com.kitfox.svg.SVGRoot;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -50,7 +53,7 @@ public class MappingDialog extends javax.swing.JDialog {
     jButton1 = new javax.swing.JButton();
     jButton2 = new javax.swing.JButton();
     jScrollPane1 = new javax.swing.JScrollPane();
-    sVGElementsTree1 = new com.t_oster.visicut.gui.mappingdialog.SVGElementsTree();
+    sVGElementsTree1 = new com.t_oster.visicut.gui.mappingdialog.MappingJTree();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setName("Form"); // NOI18N
@@ -59,11 +62,11 @@ public class MappingDialog extends javax.swing.JDialog {
     matchingPartsPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("matchingPartsPanel1.border.title"))); // NOI18N
     matchingPartsPanel1.setName("matchingPartsPanel1"); // NOI18N
 
-    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${selectedLineType}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("lineType"), "LineTypeToPanel");
+    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, sVGElementsTree1, org.jdesktop.beansbinding.ELProperty.create("${matchingElements}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("graphicElements"), "MatchingElementsToPanel");
+    bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${selectedLineType}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("lineType"), "LineTypeToPanel");
     bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${material}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialToPanel");
-    bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, sVGElementsTree1, org.jdesktop.beansbinding.ELProperty.create("${matchingSVGelements}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("svgElements"), "matchingElementsToPreview");
     bindingGroup.addBinding(binding);
 
     javax.swing.GroupLayout matchingPartsPanel1Layout = new javax.swing.GroupLayout(matchingPartsPanel1);
@@ -74,14 +77,14 @@ public class MappingDialog extends javax.swing.JDialog {
     );
     matchingPartsPanel1Layout.setVerticalGroup(
       matchingPartsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 374, Short.MAX_VALUE)
+      .addGap(0, 375, Short.MAX_VALUE)
     );
 
     jScrollPane2.setName("jScrollPane2"); // NOI18N
 
     cuttingProfilesPanel1.setName("cuttingProfilesPanel1"); // NOI18N
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${material}"), cuttingProfilesPanel1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialToProfilesPanel");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${material}"), cuttingProfilesPanel1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialToProfilesPanel");
     bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${selectedLineType}"), cuttingProfilesPanel1, org.jdesktop.beansbinding.BeanProperty.create("selectedCuttingProfile"), "LineTypeFormToCuttingPanelAndBack");
     bindingGroup.addBinding(binding);
@@ -90,11 +93,11 @@ public class MappingDialog extends javax.swing.JDialog {
     cuttingProfilesPanel1.setLayout(cuttingProfilesPanel1Layout);
     cuttingProfilesPanel1Layout.setHorizontalGroup(
       cuttingProfilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 384, Short.MAX_VALUE)
+      .addGap(0, 214, Short.MAX_VALUE)
     );
     cuttingProfilesPanel1Layout.setVerticalGroup(
       cuttingProfilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 332, Short.MAX_VALUE)
+      .addGap(0, 350, Short.MAX_VALUE)
     );
 
     jScrollPane2.setViewportView(cuttingProfilesPanel1);
@@ -113,6 +116,10 @@ public class MappingDialog extends javax.swing.JDialog {
     jScrollPane1.setName("jScrollPane1"); // NOI18N
 
     sVGElementsTree1.setName("sVGElementsTree1"); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${graphicElements}"), sVGElementsTree1, org.jdesktop.beansbinding.BeanProperty.create("graphicObjects"), "GraphicObjectsFormToTree");
+    bindingGroup.addBinding(binding);
+
     jScrollPane1.setViewportView(sVGElementsTree1);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -152,7 +159,7 @@ public class MappingDialog extends javax.swing.JDialog {
   public static final String PROP_SELECTEDLINETYPE = "selectedLineType";
   public static final String PROP_MATERIAL = "material";
   protected MaterialProfile material = null;
-
+  
   /**
    * Get the value of material
    *
@@ -203,6 +210,7 @@ public class MappingDialog extends javax.swing.JDialog {
    *
    * @param listener
    */
+  @Override
   public void addPropertyChangeListener(PropertyChangeListener listener)
   {
     propertyChangeSupport.addPropertyChangeListener(listener);
@@ -213,9 +221,34 @@ public class MappingDialog extends javax.swing.JDialog {
    *
    * @param listener
    */
+  @Override
   public void removePropertyChangeListener(PropertyChangeListener listener)
   {
     propertyChangeSupport.removePropertyChangeListener(listener);
+  }
+  protected List<GraphicObject> graphicElements = new LinkedList<GraphicObject>();
+  public static final String PROP_GRAPHICELEMENTS = "graphicElements";
+
+  /**
+   * Get the value of graphicElements
+   *
+   * @return the value of graphicElements
+   */
+  public List<GraphicObject> getGraphicElements()
+  {
+    return graphicElements;
+  }
+
+  /**
+   * Set the value of graphicElements
+   *
+   * @param graphicElements new value of graphicElements
+   */
+  public void setGraphicElements(List<GraphicObject> graphicElements)
+  {
+    List<GraphicObject> oldGraphicElements = this.graphicElements;
+    this.graphicElements = graphicElements;
+    propertyChangeSupport.firePropertyChange(PROP_GRAPHICELEMENTS, oldGraphicElements, graphicElements);
   }
 
   /**
@@ -225,7 +258,7 @@ public class MappingDialog extends javax.swing.JDialog {
    */
   public SVGRoot getSVGRootElement()
   {
-    return this.sVGElementsTree1.getSVGRootElement();
+    return null;
   }
 
   /**
@@ -235,7 +268,7 @@ public class MappingDialog extends javax.swing.JDialog {
    */
   public void setSVGRootElement(SVGRoot SVGRootElement)
   {
-    this.sVGElementsTree1.setSVGRootElement(SVGRootElement);
+    //
   }
 
 private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -250,7 +283,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
   private com.t_oster.visicut.gui.mappingdialog.MatchingPartsPanel matchingPartsPanel1;
-  private com.t_oster.visicut.gui.mappingdialog.SVGElementsTree sVGElementsTree1;
+  private com.t_oster.visicut.gui.mappingdialog.MappingJTree sVGElementsTree1;
   private org.jdesktop.beansbinding.BindingGroup bindingGroup;
   // End of variables declaration//GEN-END:variables
 }

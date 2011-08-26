@@ -72,14 +72,14 @@
         <Property name="name" type="java.lang.String" value="matchingPartsPanel1" noResource="true"/>
       </Properties>
       <BindingProperties>
+        <BindingProperty name="graphicElements" source="sVGElementsTree1" sourcePath="${matchingElements}" target="matchingPartsPanel1" targetPath="graphicElements" updateStrategy="1" immediately="false">
+          <Property name="name" type="java.lang.String" value="MatchingElementsToPanel"/>
+        </BindingProperty>
         <BindingProperty name="lineType" source="Form" sourcePath="${selectedLineType}" target="matchingPartsPanel1" targetPath="lineType" updateStrategy="1" immediately="false">
           <Property name="name" type="java.lang.String" value="LineTypeToPanel"/>
         </BindingProperty>
         <BindingProperty name="material" source="Form" sourcePath="${material}" target="matchingPartsPanel1" targetPath="material" updateStrategy="1" immediately="false">
           <Property name="name" type="java.lang.String" value="MaterialToPanel"/>
-        </BindingProperty>
-        <BindingProperty name="svgElements" source="sVGElementsTree1" sourcePath="${matchingSVGelements}" target="matchingPartsPanel1" targetPath="svgElements" updateStrategy="1" immediately="false">
-          <Property name="name" type="java.lang.String" value="matchingElementsToPreview"/>
         </BindingProperty>
       </BindingProperties>
 
@@ -91,7 +91,7 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="374" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="375" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
@@ -108,7 +108,7 @@
             <Property name="name" type="java.lang.String" value="cuttingProfilesPanel1" noResource="true"/>
           </Properties>
           <BindingProperties>
-            <BindingProperty name="material" source="Form" sourcePath="${material}" target="cuttingProfilesPanel1" targetPath="material" updateStrategy="1" immediately="false">
+            <BindingProperty name="material" source="Form" sourcePath="${material}" target="cuttingProfilesPanel1" targetPath="material" updateStrategy="0" immediately="false">
               <Property name="name" type="java.lang.String" value="MaterialToProfilesPanel"/>
             </BindingProperty>
             <BindingProperty name="selectedCuttingProfile" source="Form" sourcePath="${selectedLineType}" target="cuttingProfilesPanel1" targetPath="selectedCuttingProfile" updateStrategy="0" immediately="false">
@@ -119,12 +119,12 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="384" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="214" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="332" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="350" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
@@ -153,10 +153,15 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="com.t_oster.visicut.gui.mappingdialog.SVGElementsTree" name="sVGElementsTree1">
+        <Component class="com.t_oster.visicut.gui.mappingdialog.MappingJTree" name="sVGElementsTree1">
           <Properties>
             <Property name="name" type="java.lang.String" value="sVGElementsTree1" noResource="true"/>
           </Properties>
+          <BindingProperties>
+            <BindingProperty name="graphicObjects" source="Form" sourcePath="${graphicElements}" target="sVGElementsTree1" targetPath="graphicObjects" updateStrategy="1" immediately="false">
+              <Property name="name" type="java.lang.String" value="GraphicObjectsFormToTree"/>
+            </BindingProperty>
+          </BindingProperties>
         </Component>
       </SubComponents>
     </Container>
