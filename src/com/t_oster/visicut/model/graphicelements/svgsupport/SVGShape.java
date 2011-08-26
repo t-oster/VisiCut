@@ -48,6 +48,7 @@ public class SVGShape extends SVGObject implements ShapeObject
         case ObjectType:
         {
           result.add("Shape");
+          break;
         }
         case StrokeColor:
         {
@@ -65,7 +66,6 @@ public class SVGShape extends SVGObject implements ShapeObject
             StyleAttribute sa = decoratee.getStyleAbsolute("fill");
             result.add(sa.getColorValue());
           }
-
           break;
         }
       }

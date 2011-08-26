@@ -10,11 +10,8 @@
  */
 package com.t_oster.visicut.gui;
 
-import com.t_oster.visicut.gui.beans.PreviewPanel;
 import java.io.File;
-import java.io.IOException;
 import javax.swing.JFileChooser;
-import org.jdesktop.application.Action;
 
 /**
  *

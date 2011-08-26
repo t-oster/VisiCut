@@ -1,6 +1,5 @@
 package com.t_oster.visicut.gui.mappingdialog;
 
-import com.kitfox.svg.SVGElement;
 import com.t_oster.liblasercut.platform.Tuple;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.mapping.FilterSet;
@@ -115,7 +114,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
         for (String attribute : g.getAttributes())
         {
           AttributeNode node = new AttributeNode(fs, attribute);
-          if (!result.contains(node))
+          if (!result.contains(node) && node.getChildren().size() > 0)
           {
             result.add(node);
           }

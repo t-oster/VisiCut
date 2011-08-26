@@ -4,10 +4,10 @@
  */
 package com.t_oster.visicut;
 
-import com.kitfox.svg.SVGRoot;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.model.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
@@ -49,30 +49,6 @@ public class VisicutModel
     this.graphicObjects = graphicObjects;
     propertyChangeSupport.firePropertyChange(PROP_GRAPHICOBJECTS, oldGraphicObjects, graphicObjects);
   }
-  protected SVGRoot SVGRootElement = null;
-  public static final String PROP_SVGROOTELEMENT = "SVGRootElement";
-
-  /**
-   * Get the value of SVGRootElement
-   *
-   * @return the value of SVGRootElement
-   */
-  public SVGRoot getSVGRootElement()
-  {
-    return SVGRootElement;
-  }
-
-  /**
-   * Set the value of SVGRootElement
-   *
-   * @param SVGRootElement new value of SVGRootElement
-   */
-  public void setSVGRootElement(SVGRoot SVGRootElement)
-  {
-    SVGRoot oldSVGRootElement = this.SVGRootElement;
-    this.SVGRootElement = SVGRootElement;
-    propertyChangeSupport.firePropertyChange(PROP_SVGROOTELEMENT, oldSVGRootElement, SVGRootElement);
-  }
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   protected File sourceFile = null;
   protected File graphicFile = null;
@@ -104,7 +80,6 @@ public class VisicutModel
     }
   }
 
-
   /**
    * Add PropertyChangeListener.
    *
@@ -127,20 +102,15 @@ public class VisicutModel
 
   public void loadGraphicFile(File f)
   {
-    if (f != null && f.exists() && f.getAbsolutePath().toLowerCase().endsWith("svg"))
+    try
     {
-      try
-      {
-        SVGImporter im = new SVGImporter();
-        this.setGraphicFile(f);
-        this.setGraphicObjects(im.importFile(f));
-      }
-      catch (ImportException e)
-      {
-      }
+      GraphicFileImporter im = new GraphicFileImporter();
+      this.setGraphicFile(f);
+      this.setGraphicObjects(im.importFile(f));
     }
-    else
+    catch (ImportException e)
     {
+
       this.setGraphicFile(null);
       this.setGraphicObjects(null);
     }
@@ -193,5 +163,4 @@ public class VisicutModel
     this.mappings = mappings;
     propertyChangeSupport.firePropertyChange(PROP_MAPPINGS, oldMappings, mappings);
   }
-
 }

@@ -4,13 +4,14 @@
  */
 package com.t_oster.visicut.model.graphicelements.svgsupport;
 
+import com.t_oster.visicut.model.graphicelements.Importer;
 import com.kitfox.svg.ImageSVG;
 import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGRoot;
 import com.kitfox.svg.SVGUniverse;
 import com.kitfox.svg.ShapeElement;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
-import com.t_oster.visicut.model.graphicelements.Importer;
+import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -43,6 +44,7 @@ public class SVGImporter implements Importer
     }
   }
   
+  @Override
   public List<GraphicObject> importFile(File inputFile) throws ImportException
   {
     try

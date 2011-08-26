@@ -1,6 +1,5 @@
 package com.t_oster.visicut.gui.mappingdialog;
 
-import com.kitfox.svg.SVGElement;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
@@ -46,28 +45,7 @@ public class MatchingPartsPanel extends JPanel
     this.graphicElements = graphicElements;
     this.repaint();
   }
-  protected List<SVGElement> svgElements = null;
-
-  /**
-   * Get the value of svgElements
-   *
-   * @return the value of svgElements
-   */
-  public List<SVGElement> getSvgElements()
-  {
-    return svgElements;
-  }
-
-  /**
-   * Set the value of svgElements
-   *
-   * @param svgElements new value of svgElements
-   */
-  public void setSvgElements(List<SVGElement> svgElements)
-  {
-    this.svgElements = svgElements;
-    this.repaint();
-  }
+  
   protected VectorProfile lineType = null;
 
   /**

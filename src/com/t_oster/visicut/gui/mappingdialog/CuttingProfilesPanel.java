@@ -12,8 +12,6 @@ import java.util.Enumeration;
 import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
@@ -77,7 +75,7 @@ public class CuttingProfilesPanel extends JPanel implements ActionListener
     firePropertyChange(PROP_SELECTEDCUTTINGPROFILE, oldSelectedCuttingProfile, selectedCuttingProfile);
     if (selectedCuttingProfile == null)
     {
-      for(JRadioButton b:this.buttons)
+      for (JRadioButton b : this.buttons)
       {
         b.setSelected(false);
       }
@@ -96,13 +94,11 @@ public class CuttingProfilesPanel extends JPanel implements ActionListener
 
   private void refresh()
   {
-    Enumeration<AbstractButton> iter = this.group.getElements();
-    while (iter.hasMoreElements())
+    for (JRadioButton b : this.buttons)
     {
-      AbstractButton b = iter.nextElement();
+      this.group.remove(b);
       b.removeActionListener(this);
       this.remove(b);
-      this.group.remove(b);
     }
     this.buttons = new JRadioButton[0];
     if (this.getMaterial() != null && this.getMaterial().getLineProfiles() != null)

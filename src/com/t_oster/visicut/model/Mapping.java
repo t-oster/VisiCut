@@ -1,12 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.visicut.model;
 
-import com.t_oster.visicut.model.mapping.MappingFilter;
-import java.util.LinkedList;
-import java.util.List;
+import com.t_oster.visicut.model.mapping.FilterSet;
 
 /**
  * A Mapping represents a Set of Filters to Match
@@ -17,6 +11,6 @@ import java.util.List;
  */
 public class Mapping
 {
-  private List<MappingFilter> filters = new LinkedList<MappingFilter>();
+  private FilterSet filters = new FilterSet();
   private CuttingProfile target = new VectorProfile();
 }
