@@ -4,7 +4,7 @@
  */
 package com.t_oster.visicut.gui.mappingdialog;
 
-import com.t_oster.visicut.model.LineProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,7 +52,7 @@ public class CuttingProfilesPanel extends JPanel implements ActionListener
     this.material = material;
     this.refresh();
   }
-  protected LineProfile selectedCuttingProfile = null;
+  protected VectorProfile selectedCuttingProfile = null;
   public static final String PROP_SELECTEDCUTTINGPROFILE = "selectedCuttingProfile";
 
   /**
@@ -60,7 +60,7 @@ public class CuttingProfilesPanel extends JPanel implements ActionListener
    *
    * @return the value of selectedCuttingProfile
    */
-  public LineProfile getSelectedCuttingProfile()
+  public VectorProfile getSelectedCuttingProfile()
   {
     return selectedCuttingProfile;
   }
@@ -70,9 +70,9 @@ public class CuttingProfilesPanel extends JPanel implements ActionListener
    *
    * @param selectedCuttingProfile new value of selectedCuttingProfile
    */
-  public void setSelectedCuttingProfile(LineProfile selectedCuttingProfile)
+  public void setSelectedCuttingProfile(VectorProfile selectedCuttingProfile)
   {
-    LineProfile oldSelectedCuttingProfile = this.selectedCuttingProfile;
+    VectorProfile oldSelectedCuttingProfile = this.selectedCuttingProfile;
     this.selectedCuttingProfile = selectedCuttingProfile;
     firePropertyChange(PROP_SELECTEDCUTTINGPROFILE, oldSelectedCuttingProfile, selectedCuttingProfile);
     if (selectedCuttingProfile == null)
@@ -110,7 +110,7 @@ public class CuttingProfilesPanel extends JPanel implements ActionListener
       this.buttons = new JRadioButton[this.getMaterial().getLineProfiles().length];
       this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
       int i = 0;
-      for (LineProfile l : this.getMaterial().getLineProfiles())
+      for (VectorProfile l : this.getMaterial().getLineProfiles())
       {
         JiconRadioButton b = new JiconRadioButton();
         b.setText(l.getName());

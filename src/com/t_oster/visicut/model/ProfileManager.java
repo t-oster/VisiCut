@@ -27,12 +27,12 @@ public class ProfileManager
     this.materials = new LinkedList<MaterialProfile>();
     MaterialProfile filz = new MaterialProfile();
     filz.setName("Filz (rot)");
-    LineProfile[] lines = new LineProfile[2];
-    lines [0] = new LineProfile();
+    VectorProfile[] lines = new VectorProfile[2];
+    lines [0] = new VectorProfile();
     lines[0].setName("cut line");
     lines[0].setWidth(6f);
     lines[0].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/jepilog/materials/Fliess/cutline.png"));
-    lines[1] = new LineProfile();
+    lines[1] = new VectorProfile();
     lines[1].setName("broad line");
     lines[1].setWidth(2);
     lines[1].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/jepilog/materials/Fliess/bigline.png"));
@@ -48,8 +48,8 @@ public class ProfileManager
     plexiglass.setColor(new Color(117,163,209));
     plexiglass.setName("Plexiglass");
     plexiglass.setHeight(3);
-    lines = new LineProfile[1];
-    lines [0] = new LineProfile();
+    lines = new VectorProfile[1];
+    lines [0] = new VectorProfile();
     lines[0].setName("cut line");
     lines[0].setWidth(1.2f);
     lines[0].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/jepilog/materials/Fliess/cutline.png"));

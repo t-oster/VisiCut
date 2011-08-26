@@ -11,7 +11,7 @@
 package com.t_oster.visicut.gui;
 
 import com.kitfox.svg.SVGRoot;
-import com.t_oster.visicut.model.LineProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -148,7 +148,7 @@ public class MappingDialog extends javax.swing.JDialog {
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
-  protected LineProfile selectedLineType = null;
+  protected VectorProfile selectedLineType = null;
   public static final String PROP_SELECTEDLINETYPE = "selectedLineType";
   public static final String PROP_MATERIAL = "material";
   protected MaterialProfile material = null;
@@ -180,7 +180,7 @@ public class MappingDialog extends javax.swing.JDialog {
    *
    * @return the value of selectedLineType
    */
-  public LineProfile getSelectedLineType()
+  public VectorProfile getSelectedLineType()
   {
     return selectedLineType;
   }
@@ -190,9 +190,9 @@ public class MappingDialog extends javax.swing.JDialog {
    *
    * @param selectedLineType new value of selectedLineType
    */
-  public void setSelectedLineType(LineProfile selectedLineType)
+  public void setSelectedLineType(VectorProfile selectedLineType)
   {
-    LineProfile oldSelectedLineType = this.selectedLineType;
+    VectorProfile oldSelectedLineType = this.selectedLineType;
     this.selectedLineType = selectedLineType;
     propertyChangeSupport.firePropertyChange(PROP_SELECTEDLINETYPE, oldSelectedLineType, selectedLineType);
   }

@@ -5,7 +5,7 @@ import com.kitfox.svg.RenderableElement;
 import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.ShapeElement;
-import com.t_oster.visicut.model.LineProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -50,14 +50,14 @@ public class MatchingPartsPanel extends JPanel
     this.svgElements = svgElements;
     this.repaint();
   }
-  protected LineProfile lineType = null;
+  protected VectorProfile lineType = null;
 
   /**
    * Get the value of lineType
    *
    * @return the value of lineType
    */
-  public LineProfile getLineType()
+  public VectorProfile getLineType()
   {
     return lineType;
   }
@@ -67,7 +67,7 @@ public class MatchingPartsPanel extends JPanel
    *
    * @param lineType new value of lineType
    */
-  public void setLineType(LineProfile lineType)
+  public void setLineType(VectorProfile lineType)
   {
     this.lineType = lineType;
     this.setBackground(this.lineType == null || this.material == null ? Color.white : this.material.getColor());

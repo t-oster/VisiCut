@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.visicut.model.mapping;
 
 import com.kitfox.svg.Group;
 import com.kitfox.svg.Path;

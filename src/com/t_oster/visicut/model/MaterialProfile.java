@@ -34,14 +34,14 @@ public class MaterialProfile
   {
     this.color = color;
   }
-  protected LineProfile[] lineProfile = new LineProfile[]{new LineProfile(), new LineProfile()};
+  protected VectorProfile[] lineProfile = new VectorProfile[]{new VectorProfile(), new VectorProfile()};
 
   /**
    * Get the value of lineProfile
    *
    * @return the value of lineProfile
    */
-  public LineProfile[] getLineProfiles()
+  public VectorProfile[] getLineProfiles()
   {
     return lineProfile;
   }
@@ -51,7 +51,7 @@ public class MaterialProfile
    *
    * @param lineProfile new value of lineProfile
    */
-  public void setLineProfiles(LineProfile[] lineProfile)
+  public void setLineProfiles(VectorProfile[] lineProfile)
   {
     this.lineProfile = lineProfile;
   }
@@ -62,7 +62,7 @@ public class MaterialProfile
    * @param index
    * @return the value of lineProfile at specified index
    */
-  public LineProfile getLineProfile(int index)
+  public VectorProfile getLineProfile(int index)
   {
     return this.lineProfile[index];
   }
@@ -73,7 +73,7 @@ public class MaterialProfile
    * @param index
    * @param newLineProfile new value of lineProfile at specified index
    */
-  public void setLineProfile(int index, LineProfile newLineProfile)
+  public void setLineProfile(int index, VectorProfile newLineProfile)
   {
     this.lineProfile[index] = newLineProfile;
   }
