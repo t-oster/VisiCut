@@ -1,6 +1,7 @@
 package com.t_oster.visicut.gui.mappingdialog;
 
 import com.t_oster.liblasercut.platform.Tuple;
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.model.Mapping;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.mapping.FilterSet;
@@ -22,6 +23,124 @@ import javax.swing.tree.TreePath;
 public class MappingJTree extends JTree implements TreeModel, TreeSelectionListener
 {
 
+  protected FilterSet selectedFilterSet = null;
+  private static final String MAPPINGS = "Mappings";
+  public static final String PROP_SELECTEDFILTERSET = "selectedFilterSet";
+
+  /**
+   * Get the value of selectedFilterSet
+   *
+   * @return the value of selectedFilterSet
+   */
+  public FilterSet getSelectedFilterSet()
+  {
+    return selectedFilterSet;
+  }
+
+  /**
+   * Set the value of selectedFilterSet
+   *
+   * @param selectedFilterSet new value of selectedFilterSet
+   */
+  public void setSelectedFilterSet(FilterSet selectedFilterSet)
+  {
+    FilterSet oldSelectedFilterSet = this.selectedFilterSet;
+    this.selectedFilterSet = selectedFilterSet;
+    firePropertyChange(PROP_SELECTEDFILTERSET, oldSelectedFilterSet, selectedFilterSet);
+    if (Util.differ(oldSelectedFilterSet, this.selectedFilterSet))
+    {
+      if (this.selectedFilterSet == null)
+      {
+        this.getSelectionModel().clearSelection();
+      }
+      else
+      {
+        //Generate Tree Path from selected FilterSet
+        TreePath p = new TreePath(new Object[]
+          {
+            this.getRoot()
+          });
+        for (MappingFilter f : this.selectedFilterSet)
+        {
+          AttributeNode a = new AttributeNode((FilterSet) p.getLastPathComponent(), f.getAttribute());
+          p = p.pathByAddingChild(a);
+          FilterSet fs = new FilterSet();
+          fs.addAll(a.getA());
+          fs.add(f);
+          p = p.pathByAddingChild(fs);
+        }
+        this.getSelectionModel().clearSelection();
+        this.getSelectionModel().setSelectionPath(p);
+      }
+    }
+  }
+  protected Mapping selectedMapping = null;
+  public static final String PROP_SELECTEDMAPPING = "selectedMapping";
+
+  /**
+   * Get the value of selectedMapping
+   *
+   * @return the value of selectedMapping
+   */
+  public Mapping getSelectedMapping()
+  {
+    return selectedMapping;
+  }
+
+  /**
+   * Set the value of selectedMapping
+   *
+   * @param selectedMapping new value of selectedMapping
+   */
+  public void setSelectedMapping(Mapping selectedMapping)
+  {
+    Mapping oldSelectedMapping = this.selectedMapping;
+    this.selectedMapping = selectedMapping;
+    firePropertyChange(PROP_SELECTEDMAPPING, oldSelectedMapping, selectedMapping);
+    if (Util.differ(oldSelectedMapping, this.selectedMapping))
+    {
+      if (this.selectedMapping == null)
+      {
+        this.getSelectionModel().clearSelection();
+      }
+      else
+      {
+        this.valueForPathChanged(new TreePath(new Object[]
+          {
+            this.getRoot()
+          }), this.getRoot());
+        TreePath p = new TreePath(new Object[]
+          {
+            this.getRoot(), MAPPINGS, this.selectedMapping
+          });
+        this.getSelectionModel().clearSelection();
+        this.getSelectionModel().setSelectionPath(p);
+      }
+    }
+    this.repaint();
+  }
+
+  public void valueChanged(TreeSelectionEvent evt)
+  {
+    if (evt.getNewLeadSelectionPath() != null && evt.getNewLeadSelectionPath().getPathCount() >= 1)
+    {
+      Object selected = evt.getNewLeadSelectionPath().getLastPathComponent();
+      if (selected != null)
+      {
+        if (selected instanceof FilterSet)
+        {
+          this.setSelectedMapping(null);
+          this.setSelectedFilterSet((FilterSet) selected);
+        }
+        else if (selected instanceof Mapping)
+        {
+          this.setSelectedFilterSet(null);
+          this.setSelectedMapping((Mapping) selected);
+        }
+      }
+    }
+  }
+
   private class AttributeNode extends Tuple<FilterSet, String>
   {
 
@@ -33,7 +152,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     public List<FilterSet> getChildren()
     {
       List<FilterSet> result = new LinkedList<FilterSet>();
-      List<GraphicObject> gos = this.getA().getMatchingObjects(MappingJTree.this.getGraphicObjects());
+      List<GraphicObject> gos = this.getA().getMatchingObjects(MappingJTree.this.getUnmappedObjects());
       for (GraphicObject g : gos)
       {
         for (Object value : g.getAttributeValues(this.getB()))
@@ -67,30 +186,6 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     this.setModel(this);
     this.getSelectionModel().addTreeSelectionListener(this);
   }
-  protected FilterSet selectedFilterSet = null;
-  public static final String PROP_SELECTEDFILTERSET = "selectedFilterSet";
-
-  /**
-   * Get the value of selectedFilterSet
-   *
-   * @return the value of selectedFilterSet
-   */
-  public FilterSet getSelectedFilterSet()
-  {
-    return selectedFilterSet;
-  }
-
-  /**
-   * Set the value of selectedFilterSet
-   *
-   * @param selectedFilterSet new value of selectedFilterSet
-   */
-  public void setSelectedFilterSet(FilterSet selectedFilterSet)
-  {
-    FilterSet oldSelectedFilterSet = this.selectedFilterSet;
-    this.selectedFilterSet = selectedFilterSet;
-    firePropertyChange(PROP_SELECTEDFILTERSET, oldSelectedFilterSet, selectedFilterSet);
-  }
   protected List<GraphicObject> graphicObjects = null;
 
   /**
@@ -101,6 +196,26 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
   public List<GraphicObject> getGraphicObjects()
   {
     return graphicObjects;
+  }
+
+  public List<GraphicObject> getUnmappedObjects()
+  {
+    List<GraphicObject> result = new LinkedList<GraphicObject>();
+    if (this.graphicObjects != null)
+    {
+      result.addAll(this.graphicObjects);
+      if (this.mappings != null)
+      {
+        for (Mapping m : this.getMappings())
+        {
+          for (GraphicObject o : m.getA().getMatchingObjects(result))
+          {
+            result.remove(o);
+          }
+        }
+      }
+    }
+    return result;
   }
 
   /**
@@ -116,10 +231,11 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
         this.getRoot()
       }), this.getRoot());
   }
+  private FilterSet root = new FilterSet();
 
   public Object getRoot()
   {
-    return this.graphicObjects == null ? "root" : new FilterSet();
+    return this.graphicObjects == null ? "root" : root;
   }
 
   public Object getChild(Object o, int i)
@@ -133,7 +249,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     {
       FilterSet fs = (FilterSet) o;
       List<Object> result = new LinkedList<Object>();
-      List<GraphicObject> gos = fs.getMatchingObjects(MappingJTree.this.getGraphicObjects());
+      List<GraphicObject> gos = fs.getMatchingObjects(MappingJTree.this.getUnmappedObjects());
       for (GraphicObject g : gos)
       {
         for (String attribute : g.getAttributes())
@@ -147,7 +263,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
       }
       if (fs.size() == 0)//RootElement
       {
-        result.add("Mappings");
+        result.add(MAPPINGS);
       }
       return result;
     }
@@ -155,7 +271,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     {
       return ((AttributeNode) o).getChildren();
     }
-    else if ("Mappings".equals(o))
+    else if (MAPPINGS.equals(o))
     {
       return this.getMappings() == null ? new LinkedList() : this.getMappings();
     }
@@ -202,28 +318,6 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
   }
   protected List<GraphicObject> matchingElements = null;
   public static final String PROP_MATCHINGELEMENTS = "matchingElements";
-
-  /**
-   * Get the value of matchingSVGelements
-   *
-   * @return the value of matchingSVGelements
-   */
-  public List<GraphicObject> getMatchingElements()
-  {
-    return matchingElements;
-  }
-
-  /**
-   * Set the value of matchingSVGelements
-   *
-   * @param matchingSVGelements new value of matchingSVGelements
-   */
-  public void setMatchingElements(List<GraphicObject> matchingElements)
-  {
-    List<GraphicObject> oldMatchingSVGelements = this.matchingElements;
-    this.matchingElements = matchingElements;
-    firePropertyChange(PROP_MATCHINGELEMENTS, oldMatchingSVGelements, matchingElements);
-  }
   protected List<Mapping> mappings = null;
 
   /**
@@ -244,33 +338,5 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
   public void setMappings(List<Mapping> mappings)
   {
     this.mappings = mappings;
-  }
-
-  public void valueChanged(TreeSelectionEvent tse)
-  {
-    if (tse.getNewLeadSelectionPath() != null && tse.getNewLeadSelectionPath().getPathCount() >= 1)
-    {
-      Object selected = tse.getNewLeadSelectionPath().getLastPathComponent();
-      if (selected != null)
-      {
-        if (selected instanceof FilterSet)
-        {
-          this.setMatchingElements(((FilterSet) selected).getMatchingObjects(this.graphicObjects));
-          this.setSelectedFilterSet((FilterSet) selected);
-        }
-        else if (selected instanceof AttributeNode)
-        {
-          FilterSet fs = ((AttributeNode) selected).getA();
-          this.setMatchingElements(fs.getMatchingObjects(this.graphicObjects));
-          this.setSelectedFilterSet(fs);
-        }
-        else if (selected instanceof Mapping)
-        {
-          FilterSet fs = ((Mapping) selected).getA();
-          this.setMatchingElements(fs.getMatchingObjects(this.graphicObjects));
-          this.setSelectedFilterSet(fs);
-        }
-      }
-    }
   }
 }

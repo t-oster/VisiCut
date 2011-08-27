@@ -18,6 +18,16 @@ public class MappingFilter
   private String attribute;
   private Object value;
 
+  public String getAttribute()
+  {
+    return attribute;
+  }
+  
+  public Object getValue()
+  {
+    return value;
+  }
+  
   public final boolean matches(GraphicObject e)
   {
     return e.getAttributeValues(attribute).contains(value);

@@ -72,14 +72,17 @@
         <Property name="name" type="java.lang.String" value="matchingPartsPanel1" noResource="true"/>
       </Properties>
       <BindingProperties>
-        <BindingProperty name="graphicElements" source="sVGElementsTree1" sourcePath="${matchingElements}" target="matchingPartsPanel1" targetPath="graphicElements" updateStrategy="1" immediately="false">
-          <Property name="name" type="java.lang.String" value="MatchingElementsToPanel"/>
-        </BindingProperty>
-        <BindingProperty name="lineType" source="Form" sourcePath="${selectedLineType}" target="matchingPartsPanel1" targetPath="lineType" updateStrategy="1" immediately="false">
-          <Property name="name" type="java.lang.String" value="LineTypeToPanel"/>
+        <BindingProperty name="graphicElements" source="Form" sourcePath="${graphicElements}" target="matchingPartsPanel1" targetPath="graphicElements" updateStrategy="1" immediately="false">
+          <Property name="name" type="java.lang.String" value="GraphicElementsFromForm"/>
         </BindingProperty>
         <BindingProperty name="material" source="Form" sourcePath="${material}" target="matchingPartsPanel1" targetPath="material" updateStrategy="1" immediately="false">
           <Property name="name" type="java.lang.String" value="MaterialToPanel"/>
+        </BindingProperty>
+        <BindingProperty name="selectedFilterSet" source="Form" sourcePath="${selectedFilterSet}" target="matchingPartsPanel1" targetPath="selectedFilterSet" updateStrategy="1" immediately="false">
+          <Property name="name" type="java.lang.String" value="FilterSetFormPanel"/>
+        </BindingProperty>
+        <BindingProperty name="selectedMapping" source="Form" sourcePath="${selectedMapping}" target="matchingPartsPanel1" targetPath="selectedMapping" updateStrategy="1" immediately="false">
+          <Property name="name" type="java.lang.String" value="MappingFormPanel"/>
         </BindingProperty>
       </BindingProperties>
 
@@ -111,8 +114,8 @@
             <BindingProperty name="material" source="Form" sourcePath="${material}" target="cuttingProfilesPanel1" targetPath="material" updateStrategy="0" immediately="false">
               <Property name="name" type="java.lang.String" value="MaterialToProfilesPanel"/>
             </BindingProperty>
-            <BindingProperty name="selectedCuttingProfile" source="Form" sourcePath="${selectedLineType}" target="cuttingProfilesPanel1" targetPath="selectedCuttingProfile" updateStrategy="0" immediately="false">
-              <Property name="name" type="java.lang.String" value="LineTypeFormToCuttingPanelAndBack"/>
+            <BindingProperty name="selectedLaserProfile" source="Form" sourcePath="${selectedLaserProfile}" target="cuttingProfilesPanel1" targetPath="selectedLaserProfile" updateStrategy="0" immediately="false">
+              <Property name="name" type="java.lang.String" value="LaserProfileFormPanel"/>
             </BindingProperty>
           </BindingProperties>
           <Events>
@@ -168,7 +171,10 @@
               <Property name="name" type="java.lang.String" value="MappingsFromForm"/>
             </BindingProperty>
             <BindingProperty name="selectedFilterSet" source="Form" sourcePath="${selectedFilterSet}" target="sVGElementsTree1" targetPath="selectedFilterSet" updateStrategy="0" immediately="false">
-              <Property name="name" type="java.lang.String" value="FilterSetToForm"/>
+              <Property name="name" type="java.lang.String" value="FilterSetFormTree"/>
+            </BindingProperty>
+            <BindingProperty name="selectedMapping" source="Form" sourcePath="${selectedMapping}" target="sVGElementsTree1" targetPath="selectedMapping" updateStrategy="0" immediately="false">
+              <Property name="name" type="java.lang.String" value="MappingFormTree"/>
             </BindingProperty>
           </BindingProperties>
         </Component>

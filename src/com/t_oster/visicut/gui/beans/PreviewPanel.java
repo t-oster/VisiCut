@@ -1,7 +1,9 @@
 package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.visicut.model.Mapping;
+import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.File;

@@ -1,9 +1,9 @@
 package com.t_oster.visicut.gui.mappingdialog;
 
-import com.t_oster.visicut.model.LaserProfile;
-import com.t_oster.visicut.model.VectorProfile;
+import com.t_oster.visicut.model.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.mapping.FilterSet;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -19,7 +19,7 @@ import javax.swing.JPanel;
  */
 public class MatchingPartsPanel extends JPanel
 {
-  
+
   protected List<GraphicObject> graphicElements = null;
 
   /**
@@ -42,27 +42,48 @@ public class MatchingPartsPanel extends JPanel
     this.graphicElements = graphicElements;
     this.repaint();
   }
-  protected LaserProfile lineType = null;
+  protected FilterSet selectedFilterSet = null;
 
   /**
-   * Get the value of lineType
+   * Get the value of selectedFilterSet
    *
-   * @return the value of lineType
+   * @return the value of selectedFilterSet
    */
-  public LaserProfile getLineType()
+  public FilterSet getSelectedFilterSet()
   {
-    return lineType;
+    return selectedFilterSet;
   }
 
   /**
-   * Set the value of lineType
+   * Set the value of selectedFilterSet
    *
-   * @param lineType new value of lineType
+   * @param selectedFilterSet new value of selectedFilterSet
    */
-  public void setLineType(LaserProfile lineType)
+  public void setSelectedFilterSet(FilterSet selectedFilterSet)
   {
-    this.lineType = lineType;
-    this.setBackground(this.lineType == null || this.material == null ? null : this.material.getColor());
+    this.selectedFilterSet = selectedFilterSet;
+    this.repaint();
+  }
+  protected Mapping selectedMapping = null;
+
+  /**
+   * Get the value of selectedMapping
+   *
+   * @return the value of selectedMapping
+   */
+  public Mapping getSelectedMapping()
+  {
+    return selectedMapping;
+  }
+
+  /**
+   * Set the value of selectedMapping
+   *
+   * @param selectedMapping new value of selectedMapping
+   */
+  public void setSelectedMapping(Mapping selectedMapping)
+  {
+    this.selectedMapping = selectedMapping;
     this.repaint();
   }
   protected MaterialProfile material = null;
@@ -85,10 +106,10 @@ public class MatchingPartsPanel extends JPanel
   public void setMaterial(MaterialProfile material)
   {
     this.material = material;
-    this.setBackground(this.lineType == null || this.material == null ? Color.white : this.material.getColor());
+    this.setBackground(this.material == null ? Color.white : this.material.getColor());
     this.repaint();
   }
-  
+
   @Override
   protected void paintComponent(Graphics g)
   {
@@ -96,17 +117,26 @@ public class MatchingPartsPanel extends JPanel
     Graphics2D gg = (Graphics2D) g;
     if (this.graphicElements != null)
     {
-      if (this.getLineType() == null)
+      if (this.getSelectedMapping() != null)
       {
-        for (GraphicObject e : this.graphicElements)
+        this.getSelectedMapping().getB().renderPreview(
+          gg, this.getSelectedMapping().getA().getMatchingObjects(this.getGraphicElements()));
+      }
+      else if (this.getSelectedFilterSet() != null)
+      {
+        for (GraphicObject e : this.getSelectedFilterSet().getMatchingObjects(graphicElements))
         {
           e.render(gg);
         }
       }
       else
       {
-        this.getLineType().renderPreview(gg, graphicElements);
+        for (GraphicObject e : this.graphicElements)
+        {
+          e.render(gg);
+        }
       }
+
     }
   }
 }

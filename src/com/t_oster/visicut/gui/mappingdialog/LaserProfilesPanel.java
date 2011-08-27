@@ -48,35 +48,31 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
     this.material = material;
     this.refresh();
   }
-  protected LaserProfile selectedCuttingProfile = null;
-  public static final String PROP_SELECTEDCUTTINGPROFILE = "selectedCuttingProfile";
+  protected LaserProfile selectedLaserProfile = null;
+  public static final String PROP_SELECTEDLASERPROFILE = "selectedLaserProfile";
 
   /**
-   * Get the value of selectedCuttingProfile
+   * Get the value of selectedLaserProfile
    *
-   * @return the value of selectedCuttingProfile
+   * @return the value of selectedLaserProfile
    */
-  public LaserProfile getSelectedCuttingProfile()
+  public LaserProfile getSelectedLaserProfile()
   {
-    return selectedCuttingProfile;
+    return selectedLaserProfile;
   }
 
   /**
-   * Set the value of selectedCuttingProfile
+   * Set the value of selectedLaserProfile
    *
-   * @param selectedCuttingProfile new value of selectedCuttingProfile
+   * @param selectedLaserProfile new value of selectedLaserProfile
    */
-  public void setSelectedCuttingProfile(LaserProfile selectedCuttingProfile)
+  public void setSelectedLaserProfile(LaserProfile selectedCuttingProfile)
   {
-    LaserProfile oldSelectedCuttingProfile = this.selectedCuttingProfile;
-    this.selectedCuttingProfile = selectedCuttingProfile;
-    firePropertyChange(PROP_SELECTEDCUTTINGPROFILE, oldSelectedCuttingProfile, selectedCuttingProfile);
+    LaserProfile oldSelectedCuttingProfile = this.selectedLaserProfile;
+    this.selectedLaserProfile = selectedCuttingProfile;
     if (selectedCuttingProfile == null)
     {
-      for (JRadioButton b : this.buttons)
-      {
-        b.setSelected(false);
-      }
+      group.clearSelection();
     }
     else
     {
@@ -85,9 +81,12 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
         if (this.getMaterial().getLaserProfile(i).equals(selectedCuttingProfile))
         {
           this.buttons[i].setSelected(true);
+          break;
         }
       }
     }
+    firePropertyChange(PROP_SELECTEDLASERPROFILE, oldSelectedCuttingProfile, selectedCuttingProfile);
+    this.repaint();
   }
 
   private void refresh()
@@ -131,7 +130,7 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
         {
           if (this.buttons[i].equals(b))
           {
-            this.setSelectedCuttingProfile(this.material.getLaserProfile(i));
+            this.setSelectedLaserProfile(this.material.getLaserProfile(i));
           }
         }
       }
