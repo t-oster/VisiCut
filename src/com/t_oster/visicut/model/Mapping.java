@@ -1,5 +1,6 @@
 package com.t_oster.visicut.model;
 
+import com.t_oster.liblasercut.platform.Tuple;
 import com.t_oster.visicut.model.mapping.FilterSet;
 
 /**
@@ -9,8 +10,10 @@ import com.t_oster.visicut.model.mapping.FilterSet;
  * Elements should be rendered and cut on the LaserCutter
  * @author thommy
  */
-public class Mapping
+public class Mapping extends Tuple<FilterSet,LaserProfile>
 {
-  private FilterSet filters = new FilterSet();
-  private LaserProfile target = new VectorProfile();
+  public Mapping(FilterSet fs, LaserProfile pf)
+  {
+    super(fs,pf);
+  }
 }

@@ -10,9 +10,12 @@
  */
 package com.t_oster.visicut.gui;
 
+import com.t_oster.visicut.gui.mappingdialog.LaserProfilesPanel;
 import com.t_oster.visicut.model.LaserProfile;
+import com.t_oster.visicut.model.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.mapping.FilterSet;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
@@ -90,6 +93,12 @@ public class MappingDialog extends javax.swing.JDialog
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${selectedLineType}"), cuttingProfilesPanel1, org.jdesktop.beansbinding.BeanProperty.create("selectedCuttingProfile"), "LineTypeFormToCuttingPanelAndBack");
     bindingGroup.addBinding(binding);
 
+    cuttingProfilesPanel1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+      public void propertyChange(java.beans.PropertyChangeEvent evt) {
+        cuttingProfilesPanel1PropertyChange(evt);
+      }
+    });
+
     javax.swing.GroupLayout cuttingProfilesPanel1Layout = new javax.swing.GroupLayout(cuttingProfilesPanel1);
     cuttingProfilesPanel1.setLayout(cuttingProfilesPanel1Layout);
     cuttingProfilesPanel1Layout.setHorizontalGroup(
@@ -119,6 +128,10 @@ public class MappingDialog extends javax.swing.JDialog
     sVGElementsTree1.setName("sVGElementsTree1"); // NOI18N
 
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${graphicElements}"), sVGElementsTree1, org.jdesktop.beansbinding.BeanProperty.create("graphicObjects"), "GraphicObjectsFormToTree");
+    bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${mappings}"), sVGElementsTree1, org.jdesktop.beansbinding.BeanProperty.create("mappings"), "MappingsFromForm");
+    bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${selectedFilterSet}"), sVGElementsTree1, org.jdesktop.beansbinding.BeanProperty.create("selectedFilterSet"), "FilterSetToForm");
     bindingGroup.addBinding(binding);
 
     jScrollPane1.setViewportView(sVGElementsTree1);
@@ -160,6 +173,51 @@ public class MappingDialog extends javax.swing.JDialog
   public static final String PROP_SELECTEDLINETYPE = "selectedLineType";
   public static final String PROP_MATERIAL = "material";
   protected MaterialProfile material = null;
+  protected List<Mapping> mappings = null;
+  public static final String PROP_MAPPINGS = "mappings";
+  protected FilterSet selectedFilterSet = null;
+
+  /**
+   * Get the value of selectedFilterSet
+   *
+   * @return the value of selectedFilterSet
+   */
+  public FilterSet getSelectedFilterSet()
+  {
+    return selectedFilterSet;
+  }
+
+  /**
+   * Set the value of selectedFilterSet
+   *
+   * @param selectedFilterSet new value of selectedFilterSet
+   */
+  public void setSelectedFilterSet(FilterSet selectedFilterSet)
+  {
+    this.selectedFilterSet = selectedFilterSet;
+  }
+
+  /**
+   * Get the value of mappings
+   *
+   * @return the value of mappings
+   */
+  public List<Mapping> getMappings()
+  {
+    return mappings;
+  }
+
+  /**
+   * Set the value of mappings
+   *
+   * @param mappings new value of mappings
+   */
+  public void setMappings(List<Mapping> mappings)
+  {
+    List<Mapping> oldMappings = this.mappings;
+    this.mappings = mappings;
+    propertyChangeSupport.firePropertyChange(PROP_MAPPINGS, oldMappings, mappings);
+  }
 
   /**
    * Get the value of material
@@ -255,6 +313,24 @@ public class MappingDialog extends javax.swing.JDialog
 private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 // TODO add your handling code here:
 }//GEN-LAST:event_jButton1ActionPerformed
+
+private void cuttingProfilesPanel1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_cuttingProfilesPanel1PropertyChange
+  if (evt.getPropertyName().equals(LaserProfilesPanel.PROP_SELECTEDCUTTINGPROFILE))
+  {
+    if (evt.getNewValue() instanceof LaserProfile)
+    {
+      if (this.getMappings() == null)
+      {
+        this.setMappings(new LinkedList<Mapping>());
+      }
+      if (this.getSelectedFilterSet() != null)
+      {
+        this.mappings.add(new Mapping(this.getSelectedFilterSet(), (LaserProfile) evt.getNewValue()));
+      }
+    }
+  }
+}//GEN-LAST:event_cuttingProfilesPanel1PropertyChange
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.ButtonGroup buttonGroup1;
   private com.t_oster.visicut.gui.mappingdialog.LaserProfilesPanel cuttingProfilesPanel1;

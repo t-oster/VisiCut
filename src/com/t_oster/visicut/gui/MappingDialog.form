@@ -91,7 +91,7 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="374" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="375" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
@@ -115,6 +115,9 @@
               <Property name="name" type="java.lang.String" value="LineTypeFormToCuttingPanelAndBack"/>
             </BindingProperty>
           </BindingProperties>
+          <Events>
+            <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="cuttingProfilesPanel1PropertyChange"/>
+          </Events>
 
           <Layout>
             <DimensionLayout dim="0">
@@ -160,6 +163,12 @@
           <BindingProperties>
             <BindingProperty name="graphicObjects" source="Form" sourcePath="${graphicElements}" target="sVGElementsTree1" targetPath="graphicObjects" updateStrategy="1" immediately="false">
               <Property name="name" type="java.lang.String" value="GraphicObjectsFormToTree"/>
+            </BindingProperty>
+            <BindingProperty name="mappings" source="Form" sourcePath="${mappings}" target="sVGElementsTree1" targetPath="mappings" updateStrategy="1" immediately="false">
+              <Property name="name" type="java.lang.String" value="MappingsFromForm"/>
+            </BindingProperty>
+            <BindingProperty name="selectedFilterSet" source="Form" sourcePath="${selectedFilterSet}" target="sVGElementsTree1" targetPath="selectedFilterSet" updateStrategy="0" immediately="false">
+              <Property name="name" type="java.lang.String" value="FilterSetToForm"/>
             </BindingProperty>
           </BindingProperties>
         </Component>

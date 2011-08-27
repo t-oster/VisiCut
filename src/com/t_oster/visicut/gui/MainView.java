@@ -70,6 +70,8 @@ public class MainView extends javax.swing.JFrame
 
     org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${graphicObjects}"), mappingDialog1, org.jdesktop.beansbinding.BeanProperty.create("graphicElements"), "GraphicObjectsToMappingDialog");
     bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${mappings}"), mappingDialog1, org.jdesktop.beansbinding.BeanProperty.create("mappings"), "MappingsModelToDialog");
+    bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material}"), mappingDialog1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialToMappingDialog");
     bindingGroup.addBinding(binding);
 
@@ -155,6 +157,8 @@ public class MainView extends javax.swing.JFrame
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${graphicFile}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("droppedFile"), "DroppedFileToModel");
     bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${graphicObjects}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("graphicObjects"), "ModelToPreviewObjects");
+    bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${mappings}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("mappings"), "MappingsFromModelToPreviewPanel");
     bindingGroup.addBinding(binding);
 
     javax.swing.GroupLayout previewPanel1Layout = new javax.swing.GroupLayout(previewPanel1);

@@ -80,44 +80,50 @@ public class RasterProfile extends LaserProfile
   public void renderPreview(Graphics2D gg, List<GraphicObject> objects)
   {
     Rectangle2D bb = this.getBoundingBox(objects);
-    BufferedImage scaledImg = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_RGB);
-    Graphics2D g = scaledImg.createGraphics();
-    g.setColor(Color.white);
-    g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
-    for(GraphicObject o:objects)
+    if (bb.getWidth() > 0 && bb.getHeight() > 0)
     {
-      o.render(g);
-    }
-    BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg);
-    //ad.setColorShift(this.getColorShift());
-    BlackWhiteRaster bw = new BlackWhiteRaster(ad, this.getDitherAlgorithm());
-    gg.setColor(this.getColor());
-    for (int y = 0; y < bw.getHeight(); y++)
-    {
-      for (int x = 0; x < bw.getWidth(); x++)
+      BufferedImage scaledImg = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_RGB);
+      Graphics2D g = scaledImg.createGraphics();
+      g.setColor(Color.white);
+      g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
+      for (GraphicObject o : objects)
       {
-        if (bw.isBlack(x,y))
+        o.render(g);
+      }
+      BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg);
+      //ad.setColorShift(this.getColorShift());
+      BlackWhiteRaster bw = new BlackWhiteRaster(ad, this.getDitherAlgorithm());
+      gg.setColor(this.getColor());
+      for (int y = 0; y < bw.getHeight(); y++)
+      {
+        for (int x = 0; x < bw.getWidth(); x++)
         {
-          gg.drawLine(x, y, x, y);
+          if (bw.isBlack(x, y))
+          {
+            gg.drawLine(x, y, x, y);
+          }
         }
       }
     }
-   
   }
 
   @Override
   public void addToLaserJob(LaserJob job, List<GraphicObject> objects)
   {
     Rectangle2D bb = this.getBoundingBox(objects);
-    BufferedImage scaledImg = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_RGB);
-    Graphics2D g = scaledImg.createGraphics();
-    for(GraphicObject o:objects)
+    if (bb.getWidth() > 0 && bb.getHeight() > 0)
     {
-      o.render(g);
+
+      BufferedImage scaledImg = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_RGB);
+      Graphics2D g = scaledImg.createGraphics();
+      for (GraphicObject o : objects)
+      {
+        o.render(g);
+      }
+      BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg);
+      ad.setColorShift(this.getColorShift());
+      BlackWhiteRaster bw = new BlackWhiteRaster(ad, this.getDitherAlgorithm());
+      job.getRasterPart().addImage(bw, this.getCuttingProperty(), new Point((int) bb.getX(), (int) bb.getY()));
     }
-    BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg);
-    ad.setColorShift(this.getColorShift());
-    BlackWhiteRaster bw = new BlackWhiteRaster(ad, this.getDitherAlgorithm());
-    job.getRasterPart().addImage(bw, this.getCuttingProperty(), new Point((int) bb.getX(), (int) bb.getY()));
   }
 }

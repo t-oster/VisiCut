@@ -13,6 +13,7 @@ import com.t_oster.visicut.model.graphicelements.ImportException;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -138,7 +139,7 @@ public class VisicutModel
     this.material = material;
     propertyChangeSupport.firePropertyChange(PROP_MATERIAL, oldMaterial, material);
   }
-  protected List<Mapping> mappings = null;
+  protected List<Mapping> mappings = new LinkedList<Mapping>();
   public static final String PROP_MAPPINGS = "mappings";
 
   /**
