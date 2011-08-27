@@ -1,15 +1,12 @@
 package com.t_oster.visicut.gui.mappingdialog;
 
+import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
-import com.t_oster.visicut.model.graphicelements.ShapeObject;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.Stroke;
 import java.util.List;
 import javax.swing.JPanel;
 
@@ -22,7 +19,7 @@ import javax.swing.JPanel;
  */
 public class MatchingPartsPanel extends JPanel
 {
-
+  
   protected List<GraphicObject> graphicElements = null;
 
   /**
@@ -45,15 +42,14 @@ public class MatchingPartsPanel extends JPanel
     this.graphicElements = graphicElements;
     this.repaint();
   }
-  
-  protected VectorProfile lineType = null;
+  protected LaserProfile lineType = null;
 
   /**
    * Get the value of lineType
    *
    * @return the value of lineType
    */
-  public VectorProfile getLineType()
+  public LaserProfile getLineType()
   {
     return lineType;
   }
@@ -63,10 +59,10 @@ public class MatchingPartsPanel extends JPanel
    *
    * @param lineType new value of lineType
    */
-  public void setLineType(VectorProfile lineType)
+  public void setLineType(LaserProfile lineType)
   {
     this.lineType = lineType;
-    this.setBackground(this.lineType == null || this.material == null ? Color.white : this.material.getColor());
+    this.setBackground(this.lineType == null || this.material == null ? null : this.material.getColor());
     this.repaint();
   }
   protected MaterialProfile material = null;
@@ -92,7 +88,7 @@ public class MatchingPartsPanel extends JPanel
     this.setBackground(this.lineType == null || this.material == null ? Color.white : this.material.getColor());
     this.repaint();
   }
-
+  
   @Override
   protected void paintComponent(Graphics g)
   {
@@ -100,23 +96,16 @@ public class MatchingPartsPanel extends JPanel
     Graphics2D gg = (Graphics2D) g;
     if (this.graphicElements != null)
     {
-      for (GraphicObject e : this.graphicElements)
+      if (this.getLineType() == null)
       {
-        if (this.getLineType() == null)
+        for (GraphicObject e : this.graphicElements)
         {
           e.render(gg);
         }
-        else
-        {
-          if (e instanceof ShapeObject)
-          {
-            gg.setColor(this.getLineType().getColor());
-            Stroke s = new BasicStroke(this.getLineType().getWidth());
-            gg.setStroke(s);
-            Shape sh = ((ShapeObject) e).getShape();
-            gg.draw(sh);
-          }
-        }
+      }
+      else
+      {
+        this.getLineType().renderPreview(gg, graphicElements);
       }
     }
   }

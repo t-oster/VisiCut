@@ -30,16 +30,16 @@ public class MaterialProfile
   {
     this.color = color;
   }
-  protected VectorProfile[] lineProfile = new VectorProfile[]{new VectorProfile(), new VectorProfile()};
+  protected LaserProfile[] laserProfile = new LaserProfile[]{new VectorProfile(), new VectorProfile()};
 
   /**
    * Get the value of lineProfile
    *
    * @return the value of lineProfile
    */
-  public VectorProfile[] getLineProfiles()
+  public LaserProfile[] getLaserProfiles()
   {
-    return lineProfile;
+    return laserProfile;
   }
 
   /**
@@ -47,9 +47,9 @@ public class MaterialProfile
    *
    * @param lineProfile new value of lineProfile
    */
-  public void setLineProfiles(VectorProfile[] lineProfile)
+  public void setLaserProfiles(LaserProfile[] lineProfile)
   {
-    this.lineProfile = lineProfile;
+    this.laserProfile = lineProfile;
   }
 
   /**
@@ -58,9 +58,9 @@ public class MaterialProfile
    * @param index
    * @return the value of lineProfile at specified index
    */
-  public VectorProfile getLineProfile(int index)
+  public LaserProfile getLaserProfile(int index)
   {
-    return this.lineProfile[index];
+    return this.laserProfile[index];
   }
 
   /**
@@ -69,9 +69,9 @@ public class MaterialProfile
    * @param index
    * @param newLineProfile new value of lineProfile at specified index
    */
-  public void setLineProfile(int index, VectorProfile newLineProfile)
+  public void setLaserProfile(int index, LaserProfile newLineProfile)
   {
-    this.lineProfile[index] = newLineProfile;
+    this.laserProfile[index] = newLineProfile;
   }
   protected String name = "Filz (rot)";
 

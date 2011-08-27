@@ -38,7 +38,7 @@ public class JiconRadioButton extends JRadioButton
     String label = "<html><table cellpadding=0><tr><td>";
     if (icon != null)
     {
-      label +="<img src=file://"+icon.getAbsolutePath()+"/> ";
+      label +="<img width=64 height=64 src=file://"+icon.getAbsolutePath()+"/> ";
     }
     label+="</td><td width=3><td>";
     if (text != null)

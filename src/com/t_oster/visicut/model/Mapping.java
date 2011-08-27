@@ -12,5 +12,5 @@ import com.t_oster.visicut.model.mapping.FilterSet;
 public class Mapping
 {
   private FilterSet filters = new FilterSet();
-  private CuttingProfile target = new VectorProfile();
+  private LaserProfile target = new VectorProfile();
 }

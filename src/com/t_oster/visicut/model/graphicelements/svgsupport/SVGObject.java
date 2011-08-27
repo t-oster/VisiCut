@@ -11,7 +11,9 @@ import com.kitfox.svg.SVGException;
 import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -32,8 +34,7 @@ public abstract class SVGObject implements GraphicObject
     FillColor,
     ObjectType,
     Group,
-    ID,
-  }
+    ID,}
 
   /**
    * Returns a List of SVGElements representing the Path
@@ -44,14 +45,14 @@ public abstract class SVGObject implements GraphicObject
   {
     List<SVGElement> result = new LinkedList<SVGElement>();
     SVGElement current = this.getDecoratee();
-    while(current != null)
+    while (current != null)
     {
       result.add(current);
-      current=current.getParent();
+      current = current.getParent();
     }
     return result;
   }
-  
+
   public abstract RenderableElement getDecoratee();
 
   /**
@@ -66,11 +67,8 @@ public abstract class SVGObject implements GraphicObject
   {
     if (this.getDecoratee() != null)
     {
-      List first = this.getDecoratee().getPath(null);
-      //Track all Transformations on the Path of the Elemenent
       AffineTransform tr = new AffineTransform();
-      Object elem = first.get(first.size() - 1);
-      for (Object o : first)
+      for (Object o : this.getPathToRoot())
       {
         if (o instanceof SVGElement)
         {
@@ -86,12 +84,12 @@ public abstract class SVGObject implements GraphicObject
     }
     return null;
   }
-  
+
   public void render(Graphics2D g)
   {
     try
     {
-      g.setTransform(this.getAbsoluteTransformation());
+      //g.setTransform(this.getAbsoluteTransformation());
       this.getDecoratee().render(g);
     }
     catch (SVGException ex)
@@ -152,5 +150,18 @@ public abstract class SVGObject implements GraphicObject
       e = e.getParent();
     }
     return result;
+  }
+
+  public Rectangle2D getBoundingBox()
+  {
+    try
+    {
+      return getDecoratee().getBoundingBox();
+    }
+    catch (SVGException ex)
+    {
+      Logger.getLogger(SVGObject.class.getName()).log(Level.SEVERE, null, ex);
+      return new Rectangle(0,0,0,0);
+    }
   }
 }

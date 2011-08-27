@@ -4,8 +4,13 @@
  */
 package com.t_oster.visicut.model;
 
+import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.io.File;
+import java.util.List;
 
 /**
  * A cutting Profile represents a specific way of handling Image
@@ -13,7 +18,7 @@ import java.io.File;
  * to generate preview and laser data out of Graphic parts.
  * @author thommy
  */
-abstract class CuttingProfile
+public abstract class LaserProfile
 {
 
   protected LaserProperty cuttingProperty = new LaserProperty();
@@ -36,6 +41,27 @@ abstract class CuttingProfile
   public void setCuttingProperty(LaserProperty cuttingProperty)
   {
     this.cuttingProperty = cuttingProperty;
+  }
+  protected Color color = new Color(0, 0, 0);
+
+  /**
+   * Get the value of color
+   *
+   * @return the value of color
+   */
+  public Color getColor()
+  {
+    return color;
+  }
+
+  /**
+   * Set the value of color
+   *
+   * @param color new value of color
+   */
+  public void setColor(Color color)
+  {
+    this.color = color;
   }
   protected File previewThumbnail = new File("/home/thommy/NetBeansProjects/jepilog/materials/Fliess/bigcut.png");
 
@@ -79,4 +105,8 @@ abstract class CuttingProfile
   {
     this.name = name;
   }
+  
+  public abstract void renderPreview(Graphics2D g, List<GraphicObject> objects);
+  
+  public abstract void addToLaserJob(LaserJob job, List<GraphicObject> objects);
 }

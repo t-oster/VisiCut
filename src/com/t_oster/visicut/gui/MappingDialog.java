@@ -10,7 +10,7 @@
  */
 package com.t_oster.visicut.gui;
 
-import com.t_oster.visicut.model.VectorProfile;
+import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import java.beans.PropertyChangeListener;
@@ -50,7 +50,7 @@ public class MappingDialog extends javax.swing.JDialog
     buttonGroup1 = new javax.swing.ButtonGroup();
     matchingPartsPanel1 = new com.t_oster.visicut.gui.mappingdialog.MatchingPartsPanel();
     jScrollPane2 = new javax.swing.JScrollPane();
-    cuttingProfilesPanel1 = new com.t_oster.visicut.gui.mappingdialog.CuttingProfilesPanel();
+    cuttingProfilesPanel1 = new com.t_oster.visicut.gui.mappingdialog.LaserProfilesPanel();
     jButton1 = new javax.swing.JButton();
     jButton2 = new javax.swing.JButton();
     jScrollPane1 = new javax.swing.JScrollPane();
@@ -156,7 +156,7 @@ public class MappingDialog extends javax.swing.JDialog
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
-  protected VectorProfile selectedLineType = null;
+  protected LaserProfile selectedLineType = null;
   public static final String PROP_SELECTEDLINETYPE = "selectedLineType";
   public static final String PROP_MATERIAL = "material";
   protected MaterialProfile material = null;
@@ -188,7 +188,7 @@ public class MappingDialog extends javax.swing.JDialog
    *
    * @return the value of selectedLineType
    */
-  public VectorProfile getSelectedLineType()
+  public LaserProfile getSelectedLineType()
   {
     return selectedLineType;
   }
@@ -198,9 +198,9 @@ public class MappingDialog extends javax.swing.JDialog
    *
    * @param selectedLineType new value of selectedLineType
    */
-  public void setSelectedLineType(VectorProfile selectedLineType)
+  public void setSelectedLineType(LaserProfile selectedLineType)
   {
-    VectorProfile oldSelectedLineType = this.selectedLineType;
+    LaserProfile oldSelectedLineType = this.selectedLineType;
     this.selectedLineType = selectedLineType;
     propertyChangeSupport.firePropertyChange(PROP_SELECTEDLINETYPE, oldSelectedLineType, selectedLineType);
   }
@@ -257,7 +257,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 }//GEN-LAST:event_jButton1ActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.ButtonGroup buttonGroup1;
-  private com.t_oster.visicut.gui.mappingdialog.CuttingProfilesPanel cuttingProfilesPanel1;
+  private com.t_oster.visicut.gui.mappingdialog.LaserProfilesPanel cuttingProfilesPanel1;
   private javax.swing.JButton jButton1;
   private javax.swing.JButton jButton2;
   private javax.swing.JScrollPane jScrollPane1;

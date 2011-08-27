@@ -4,12 +4,10 @@
  */
 package com.t_oster.visicut.gui.mappingdialog;
 
-import com.t_oster.visicut.model.VectorProfile;
+import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Enumeration;
-import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
@@ -19,14 +17,14 @@ import javax.swing.JRadioButton;
  *
  * @author thommy
  */
-public class CuttingProfilesPanel extends JPanel implements ActionListener
+public class LaserProfilesPanel extends JPanel implements ActionListener
 {
 
   protected MaterialProfile material = new MaterialProfile();
   private ButtonGroup group = new ButtonGroup();
   private JRadioButton[] buttons = new JRadioButton[0];
 
-  public CuttingProfilesPanel()
+  public LaserProfilesPanel()
   {
   }
 
@@ -50,7 +48,7 @@ public class CuttingProfilesPanel extends JPanel implements ActionListener
     this.material = material;
     this.refresh();
   }
-  protected VectorProfile selectedCuttingProfile = null;
+  protected LaserProfile selectedCuttingProfile = null;
   public static final String PROP_SELECTEDCUTTINGPROFILE = "selectedCuttingProfile";
 
   /**
@@ -58,7 +56,7 @@ public class CuttingProfilesPanel extends JPanel implements ActionListener
    *
    * @return the value of selectedCuttingProfile
    */
-  public VectorProfile getSelectedCuttingProfile()
+  public LaserProfile getSelectedCuttingProfile()
   {
     return selectedCuttingProfile;
   }
@@ -68,9 +66,9 @@ public class CuttingProfilesPanel extends JPanel implements ActionListener
    *
    * @param selectedCuttingProfile new value of selectedCuttingProfile
    */
-  public void setSelectedCuttingProfile(VectorProfile selectedCuttingProfile)
+  public void setSelectedCuttingProfile(LaserProfile selectedCuttingProfile)
   {
-    VectorProfile oldSelectedCuttingProfile = this.selectedCuttingProfile;
+    LaserProfile oldSelectedCuttingProfile = this.selectedCuttingProfile;
     this.selectedCuttingProfile = selectedCuttingProfile;
     firePropertyChange(PROP_SELECTEDCUTTINGPROFILE, oldSelectedCuttingProfile, selectedCuttingProfile);
     if (selectedCuttingProfile == null)
@@ -82,9 +80,9 @@ public class CuttingProfilesPanel extends JPanel implements ActionListener
     }
     else
     {
-      for (int i = 0; i < this.getMaterial().getLineProfiles().length; i++)
+      for (int i = 0; i < this.getMaterial().getLaserProfiles().length; i++)
       {
-        if (this.getMaterial().getLineProfile(i).equals(selectedCuttingProfile))
+        if (this.getMaterial().getLaserProfile(i).equals(selectedCuttingProfile))
         {
           this.buttons[i].setSelected(true);
         }
@@ -101,12 +99,12 @@ public class CuttingProfilesPanel extends JPanel implements ActionListener
       this.remove(b);
     }
     this.buttons = new JRadioButton[0];
-    if (this.getMaterial() != null && this.getMaterial().getLineProfiles() != null)
+    if (this.getMaterial() != null && this.getMaterial().getLaserProfiles() != null)
     {
-      this.buttons = new JRadioButton[this.getMaterial().getLineProfiles().length];
+      this.buttons = new JRadioButton[this.getMaterial().getLaserProfiles().length];
       this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
       int i = 0;
-      for (VectorProfile l : this.getMaterial().getLineProfiles())
+      for (LaserProfile l : this.getMaterial().getLaserProfiles())
       {
         JiconRadioButton b = new JiconRadioButton();
         b.setText(l.getName());
@@ -133,7 +131,7 @@ public class CuttingProfilesPanel extends JPanel implements ActionListener
         {
           if (this.buttons[i].equals(b))
           {
-            this.setSelectedCuttingProfile(this.material.getLineProfile(i));
+            this.setSelectedCuttingProfile(this.material.getLaserProfile(i));
           }
         }
       }

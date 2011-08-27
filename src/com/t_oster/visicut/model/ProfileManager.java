@@ -4,6 +4,7 @@
  */
 package com.t_oster.visicut.model;
 
+import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
 import java.awt.Color;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -36,7 +37,7 @@ public class ProfileManager
     lines[1].setName("broad cut line");
     lines[1].setWidth(6f);
     lines[1].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/Visicut/materials/Filz/bigcut.png"));
-    filz.setLineProfiles(lines);
+    filz.setLaserProfiles(lines);
     this.materials.add(filz);
     MaterialProfile finnpappe = new MaterialProfile();
     finnpappe.setColor(new Color(209,163,117));
@@ -51,7 +52,7 @@ public class ProfileManager
     lines[1].setName("broad line");
     lines[1].setWidth(3f);
     lines[1].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/Visicut/materials/Finnpappe/bigline.png"));
-    finnpappe.setLineProfiles(lines);
+    finnpappe.setLaserProfiles(lines);
     this.materials.add(finnpappe);
     MaterialProfile plexiglass = new MaterialProfile();
     plexiglass.setColor(new Color(117,163,209));
@@ -61,12 +62,29 @@ public class ProfileManager
     lines [0] = new VectorProfile();
     lines[0].setName("cut line");
     lines[0].setWidth(1f);
+    lines[0].setColor(Color.white);
     lines[0].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/Visicut/materials/Plexiglass/cutline.png"));
     lines[1] = new VectorProfile();
+    lines[1].setColor(Color.white);
     lines[1].setName("broad line");
     lines[1].setWidth(2f);
     lines[1].setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/Visicut/materials/Plexiglass/bigline.png"));
-    plexiglass.setLineProfiles(lines);
+    RasterProfile raster = new RasterProfile();
+    raster.setColor(Color.white);
+    raster.setName("Floyd Steinberg");
+    raster.setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/Visicut/materials/Plexiglass/floydsteinberg.png"));
+    raster.setDitherAlgorithm(DitherAlgorithm.FLOYD_STEINBERG);
+    LaserProfile[] profiles = new LaserProfile[4];
+    profiles[0] = lines[0];
+    profiles[1] = lines[1];
+    profiles[2] = raster;
+    raster = new RasterProfile();
+    raster.setColor(Color.white);
+    raster.setName("Ordered");
+    raster.setPreviewThumbnail(new File("/home/thommy/NetBeansProjects/Visicut/materials/Plexiglass/rasterordered.png"));
+    raster.setDitherAlgorithm(DitherAlgorithm.ORDERED);
+    profiles[3] = raster;
+    plexiglass.setLaserProfiles(profiles);
     this.materials.add(plexiglass);
   }
   

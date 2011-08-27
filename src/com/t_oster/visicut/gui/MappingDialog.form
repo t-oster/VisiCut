@@ -103,7 +103,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Container class="com.t_oster.visicut.gui.mappingdialog.CuttingProfilesPanel" name="cuttingProfilesPanel1">
+        <Container class="com.t_oster.visicut.gui.mappingdialog.LaserProfilesPanel" name="cuttingProfilesPanel1">
           <Properties>
             <Property name="name" type="java.lang.String" value="cuttingProfilesPanel1" noResource="true"/>
           </Properties>

@@ -5,7 +5,7 @@
 package com.t_oster.visicut.model.graphicelements;
 
 import java.awt.Graphics2D;
-import java.util.LinkedList;
+import java.awt.geom.Rectangle2D;
 import java.util.List;
 
 /**
@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface GraphicObject
 {
-  
+  public Rectangle2D getBoundingBox();
   /**
    * Returns a list of attribute values for the given
    * Attribute.

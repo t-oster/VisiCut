@@ -1,8 +1,14 @@
 package com.t_oster.visicut.model;
 
-import com.t_oster.liblasercut.LaserProperty;
-import java.awt.Color;
-import java.io.File;
+import com.t_oster.liblasercut.LaserJob;
+import com.t_oster.liblasercut.utils.ShapeConverter;
+import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.ShapeObject;
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.util.List;
 
 /**
  * This class represents a Line Profile,
@@ -12,10 +18,9 @@ import java.io.File;
  * 
  * @author thommy
  */
-public class VectorProfile extends CuttingProfile
+public class VectorProfile extends LaserProfile
 {
 
-  
   protected float width = 1;
 
   /**
@@ -37,28 +42,34 @@ public class VectorProfile extends CuttingProfile
   {
     this.width = width;
   }
-  protected Color color = new Color(0,0,0);
 
-  /**
-   * Get the value of color
-   *
-   * @return the value of color
-   */
-  public Color getColor()
+  @Override
+  public void renderPreview(Graphics2D gg, List<GraphicObject> objects)
   {
-    return color;
+    for (GraphicObject e : objects)
+    {
+      if (e instanceof ShapeObject)
+      {
+        gg.setColor(this.getColor());
+        Stroke s = new BasicStroke(this.getWidth());
+        gg.setStroke(s);
+        Shape sh = ((ShapeObject) e).getShape();
+        gg.draw(sh);
+      }
+    }
   }
 
-  /**
-   * Set the value of color
-   *
-   * @param color new value of color
-   */
-  public void setColor(Color color)
+  @Override
+  public void addToLaserJob(LaserJob job, List<GraphicObject> objects)
   {
-    this.color = color;
+    job.getVectorPart().setCurrentCuttingProperty(this.getCuttingProperty());
+    ShapeConverter conv = new ShapeConverter();
+    for (GraphicObject e : objects)
+    {
+      if (e instanceof ShapeObject)
+      {
+        conv.addShape(((ShapeObject) e).getShape(), job.getVectorPart());
+      }
+    }
   }
-  
-  
-
 }

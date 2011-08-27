@@ -6,6 +6,8 @@ package com.t_oster.visicut.model.graphicelements.jpgpngsupport;
 
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,6 +44,11 @@ public class JPGPNGImage implements GraphicObject
   public void render(Graphics2D g)
   {
     g.drawRenderedImage(decoratee, null);
+  }
+
+  public Rectangle2D getBoundingBox()
+  {
+    return new Rectangle(decoratee.getMinX(), decoratee.getMinY(), decoratee.getWidth(), decoratee.getHeight());
   }
   
 }

@@ -10,7 +10,6 @@ import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.ImportException;
-import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
@@ -115,7 +114,7 @@ public class VisicutModel
       this.setGraphicObjects(null);
     }
   }
-  protected MaterialProfile material = new MaterialProfile();
+  protected MaterialProfile material = null;
   public static final String PROP_MATERIAL = "material";
 
   /**

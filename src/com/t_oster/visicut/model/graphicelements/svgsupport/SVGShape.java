@@ -4,13 +4,16 @@
  */
 package com.t_oster.visicut.model.graphicelements.svgsupport;
 
+import com.kitfox.svg.Path;
 import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGElementException;
+import com.kitfox.svg.SVGException;
 import com.kitfox.svg.ShapeElement;
 import com.kitfox.svg.animation.AnimationElement;
 import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -104,6 +107,23 @@ public class SVGShape extends SVGObject implements ShapeObject
 
   public Shape getShape()
   {
+    if (this.getDecoratee() instanceof Path)
+    {
+      try
+      {
+        /**
+         * Seems as if the Transformations for non-Path elements
+         * are already handled correct by Kitfox, but Path has to
+         * be transformed manually
+         */
+        AffineTransform at = this.getAbsoluteTransformation();
+        return at.createTransformedShape(this.getDecoratee().getShape());
+      }
+      catch (SVGException ex)
+      {
+        Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
     return this.getDecoratee().getShape();
   }
 }

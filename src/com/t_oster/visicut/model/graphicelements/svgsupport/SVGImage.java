@@ -6,6 +6,7 @@ package com.t_oster.visicut.model.graphicelements.svgsupport;
 
 import com.kitfox.svg.ImageSVG;
 import com.kitfox.svg.RenderableElement;
+import java.awt.geom.Rectangle2D;
 import java.util.List;
 
 /**
