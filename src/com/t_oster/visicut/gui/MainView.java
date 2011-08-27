@@ -279,6 +279,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 int returnVal = openFileChooser.showOpenDialog(this);
     if (returnVal == JFileChooser.APPROVE_OPTION) {
         File file = openFileChooser.getSelectedFile();
+        this.visicutModel1.loadGraphicFile(file);
         System.out.println("Selected File: "+file);
     } else {
         System.out.println("File access cancelled by user.");
