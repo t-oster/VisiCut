@@ -25,6 +25,52 @@ import java.util.List;
 public class VisicutModel
 {
 
+  protected float materialWidth = 30;
+  public static final String PROP_MATERIALWIDTH = "materialWidth";
+
+  /**
+   * Get the value of materialWidth
+   *
+   * @return the value of materialWidth
+   */
+  public float getMaterialWidth()
+  {
+    return materialWidth;
+  }
+
+  /**
+   * Set the value of materialWidth
+   *
+   * @param materialWidth new value of materialWidth
+   */
+  public void setMaterialWidth(float materialWidth)
+  {
+    float oldMaterialWidth = this.materialWidth;
+    this.materialWidth = materialWidth;
+    propertyChangeSupport.firePropertyChange(PROP_MATERIALWIDTH, oldMaterialWidth, materialWidth);
+  }
+  protected float materialHeight = 30;
+
+  /**
+   * Get the value of materialHeight
+   *
+   * @return the value of materialHeight
+   */
+  public float getMaterialHeight()
+  {
+    return materialHeight;
+  }
+
+  /**
+   * Set the value of materialHeight
+   *
+   * @param materialHeight new value of materialHeight
+   */
+  public void setMaterialHeight(float materialHeight)
+  {
+    this.materialHeight = materialHeight;
+  }
+
   protected List<GraphicObject> graphicObjects = null;
   public static final String PROP_GRAPHICOBJECTS = "graphicObjects";
 

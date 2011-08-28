@@ -1,7 +1,6 @@
 package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.visicut.model.Mapping;
-import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -20,6 +19,28 @@ public class PreviewPanel extends FilesDropPanel
 
   protected File droppedFile = null;
   public static final String PROP_DROPPEDFILE = "droppedFile";
+  protected Color materialColor = null;
+
+  /**
+   * Get the value of materialColor
+   *
+   * @return the value of materialColor
+   */
+  public Color getMaterialColor()
+  {
+    return materialColor;
+  }
+
+  /**
+   * Set the value of materialColor
+   *
+   * @param materialColor new value of materialColor
+   */
+  public void setMaterialColor(Color materialColor)
+  {
+    this.materialColor = materialColor;
+    this.repaint();
+  }
 
   /**
    * Get the value of droppedFile
@@ -94,6 +115,8 @@ public class PreviewPanel extends FilesDropPanel
     if (g instanceof Graphics2D)
     {
       Graphics2D gg = (Graphics2D) g;
+      gg.setColor(this.getMaterialColor());
+      gg.fill(gg.getClip());
       if (this.getGraphicObjects() != null)
       {
         if (this.getMappings() != null)
@@ -134,5 +157,6 @@ public class PreviewPanel extends FilesDropPanel
   public void setMappings(List<Mapping> mappings)
   {
     this.mappings = mappings;
+    this.repaint();
   }
 }

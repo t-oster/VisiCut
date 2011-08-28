@@ -10,14 +10,11 @@
  */
 package com.t_oster.visicut.gui;
 
-import com.t_oster.visicut.gui.mappingdialog.LaserProfilesPanel;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.mapping.FilterSet;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,46 +48,23 @@ public class MappingDialog extends javax.swing.JDialog
     bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
     buttonGroup1 = new javax.swing.ButtonGroup();
-    matchingPartsPanel1 = new com.t_oster.visicut.gui.mappingdialog.MatchingPartsPanel();
     jScrollPane2 = new javax.swing.JScrollPane();
     cuttingProfilesPanel1 = new com.t_oster.visicut.gui.mappingdialog.LaserProfilesPanel();
     jButton1 = new javax.swing.JButton();
     jButton2 = new javax.swing.JButton();
     jScrollPane1 = new javax.swing.JScrollPane();
     sVGElementsTree1 = new com.t_oster.visicut.gui.mappingdialog.MappingJTree();
+    jPanel1 = new javax.swing.JPanel();
+    matchingPartsPanel1 = new com.t_oster.visicut.gui.mappingdialog.MatchingPartsPanel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setName("Form"); // NOI18N
-
-    org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(MappingDialog.class);
-    matchingPartsPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("matchingPartsPanel1.border.title"))); // NOI18N
-    matchingPartsPanel1.setName("matchingPartsPanel1"); // NOI18N
-
-    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${graphicElements}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("graphicElements"), "GraphicElementsFromForm");
-    bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${material}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialToPanel");
-    bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${selectedFilterSet}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("selectedFilterSet"), "FilterSetFormPanel");
-    bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${selectedMapping}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("selectedMapping"), "MappingFormPanel");
-    bindingGroup.addBinding(binding);
-
-    javax.swing.GroupLayout matchingPartsPanel1Layout = new javax.swing.GroupLayout(matchingPartsPanel1);
-    matchingPartsPanel1.setLayout(matchingPartsPanel1Layout);
-    matchingPartsPanel1Layout.setHorizontalGroup(
-      matchingPartsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 382, Short.MAX_VALUE)
-    );
-    matchingPartsPanel1Layout.setVerticalGroup(
-      matchingPartsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 375, Short.MAX_VALUE)
-    );
 
     jScrollPane2.setName("jScrollPane2"); // NOI18N
 
     cuttingProfilesPanel1.setName("cuttingProfilesPanel1"); // NOI18N
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${material}"), cuttingProfilesPanel1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialToProfilesPanel");
+    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${material}"), cuttingProfilesPanel1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialToProfilesPanel");
     bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${selectedLaserProfile}"), cuttingProfilesPanel1, org.jdesktop.beansbinding.BeanProperty.create("selectedLaserProfile"), "LaserProfileFormPanel");
     bindingGroup.addBinding(binding);
@@ -109,11 +83,12 @@ public class MappingDialog extends javax.swing.JDialog
     );
     cuttingProfilesPanel1Layout.setVerticalGroup(
       cuttingProfilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 350, Short.MAX_VALUE)
+      .addGap(0, 422, Short.MAX_VALUE)
     );
 
     jScrollPane2.setViewportView(cuttingProfilesPanel1);
 
+    org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(MappingDialog.class);
     jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
     jButton1.setName("jButton1"); // NOI18N
     jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -140,6 +115,53 @@ public class MappingDialog extends javax.swing.JDialog
 
     jScrollPane1.setViewportView(sVGElementsTree1);
 
+    jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanel1.border.title"))); // NOI18N
+    jPanel1.setName("jPanel1"); // NOI18N
+
+    matchingPartsPanel1.setBorder(null);
+    matchingPartsPanel1.setName("matchingPartsPanel1"); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${graphicElements}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("graphicElements"), "GraphicElementsFromForm");
+    bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${material}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialToPanel");
+    bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${selectedFilterSet}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("selectedFilterSet"), "FilterSetFormPanel");
+    bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${selectedMapping}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("selectedMapping"), "MappingFormPanel");
+    bindingGroup.addBinding(binding);
+
+    javax.swing.GroupLayout matchingPartsPanel1Layout = new javax.swing.GroupLayout(matchingPartsPanel1);
+    matchingPartsPanel1.setLayout(matchingPartsPanel1Layout);
+    matchingPartsPanel1Layout.setHorizontalGroup(
+      matchingPartsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGap(0, 394, Short.MAX_VALUE)
+    );
+    matchingPartsPanel1Layout.setVerticalGroup(
+      matchingPartsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGap(0, 422, Short.MAX_VALUE)
+    );
+
+    javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+    jPanel1.setLayout(jPanel1Layout);
+    jPanel1Layout.setHorizontalGroup(
+      jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGap(0, 418, Short.MAX_VALUE)
+      .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(jPanel1Layout.createSequentialGroup()
+          .addContainerGap()
+          .addComponent(matchingPartsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addContainerGap()))
+    );
+    jPanel1Layout.setVerticalGroup(
+      jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGap(0, 446, Short.MAX_VALUE)
+      .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(jPanel1Layout.createSequentialGroup()
+          .addContainerGap()
+          .addComponent(matchingPartsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addContainerGap()))
+    );
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -147,7 +169,7 @@ public class MappingDialog extends javax.swing.JDialog
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(matchingPartsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -159,14 +181,14 @@ public class MappingDialog extends javax.swing.JDialog
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE)
+        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jButton1)
           .addComponent(jButton2))
         .addContainerGap())
-      .addComponent(matchingPartsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-      .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+      .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
+      .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
     );
 
     bindingGroup.bind();
@@ -352,6 +374,7 @@ private void cuttingProfilesPanel1PropertyChange(java.beans.PropertyChangeEvent 
   private com.t_oster.visicut.gui.mappingdialog.LaserProfilesPanel cuttingProfilesPanel1;
   private javax.swing.JButton jButton1;
   private javax.swing.JButton jButton2;
+  private javax.swing.JPanel jPanel1;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
   private com.t_oster.visicut.gui.mappingdialog.MatchingPartsPanel matchingPartsPanel1;

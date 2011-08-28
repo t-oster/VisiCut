@@ -109,4 +109,10 @@ public abstract class LaserProfile
   public abstract void renderPreview(Graphics2D g, List<GraphicObject> objects);
   
   public abstract void addToLaserJob(LaserJob job, List<GraphicObject> objects);
+  
+  @Override
+  public String toString()
+  {
+    return (this.getName() != null ? this.getName() : super.toString());
+  }
 }
