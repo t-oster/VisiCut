@@ -99,6 +99,11 @@ public class MappingDialog extends javax.swing.JDialog
 
     jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
     jButton2.setName("jButton2"); // NOI18N
+    jButton2.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton2ActionPerformed(evt);
+      }
+    });
 
     jScrollPane1.setName("jScrollPane1"); // NOI18N
 
@@ -106,7 +111,7 @@ public class MappingDialog extends javax.swing.JDialog
 
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${graphicElements}"), sVGElementsTree1, org.jdesktop.beansbinding.BeanProperty.create("graphicObjects"), "GraphicObjectsFormToTree");
     bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${mappings}"), sVGElementsTree1, org.jdesktop.beansbinding.BeanProperty.create("mappings"), "MappingsFromForm");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${currentMappings}"), sVGElementsTree1, org.jdesktop.beansbinding.BeanProperty.create("mappings"), "MappingsFromForm");
     bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${selectedFilterSet}"), sVGElementsTree1, org.jdesktop.beansbinding.BeanProperty.create("selectedFilterSet"), "FilterSetFormTree");
     bindingGroup.addBinding(binding);
@@ -154,7 +159,7 @@ public class MappingDialog extends javax.swing.JDialog
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 446, Short.MAX_VALUE)
+      .addGap(0, 447, Short.MAX_VALUE)
       .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel1Layout.createSequentialGroup()
           .addContainerGap()
@@ -257,6 +262,30 @@ public class MappingDialog extends javax.swing.JDialog
       this.setSelectedLaserProfile(selectedMapping.getB());
     }
   }
+  protected List<Mapping> currentMappings = new LinkedList<Mapping>();
+  public static final String PROP_CURRENTMAPPINGS = "currentMappings";
+
+  /**
+   * Get the value of currentMappings
+   *
+   * @return the value of currentMappings
+   */
+  public List<Mapping> getCurrentMappings()
+  {
+    return currentMappings;
+  }
+
+  /**
+   * Set the value of currentMappings
+   *
+   * @param currentMappings new value of currentMappings
+   */
+  public void setCurrentMappings(List<Mapping> currentMappings)
+  {
+    List<Mapping> oldCurrentMappings = this.currentMappings;
+    this.currentMappings = currentMappings;
+    firePropertyChange(PROP_CURRENTMAPPINGS, oldCurrentMappings, currentMappings);
+  }
 
   /**
    * Get the value of mappings
@@ -278,6 +307,12 @@ public class MappingDialog extends javax.swing.JDialog
     List<Mapping> oldMappings = this.mappings;
     this.mappings = mappings;
     firePropertyChange(PROP_MAPPINGS, oldMappings, mappings);
+    if (mappings != null && mappings.size() > 0)
+    {
+      List<Mapping> copy = new LinkedList<Mapping>();
+      copy.addAll(mappings);
+      this.setCurrentMappings(copy);
+    }
   }
 
   /**
@@ -349,7 +384,9 @@ public class MappingDialog extends javax.swing.JDialog
   }
 
 private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-// TODO add your handling code here:
+  //OK => Move localMappings to global Mappings an dispose
+  this.setMappings(this.getCurrentMappings());
+  this.setVisible(false);
 }//GEN-LAST:event_jButton1ActionPerformed
 
 private void cuttingProfilesPanel1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_cuttingProfilesPanel1PropertyChange
@@ -364,11 +401,17 @@ private void cuttingProfilesPanel1PropertyChange(java.beans.PropertyChangeEvent 
     else if (this.getSelectedFilterSet() != null)
     {//A Filter Set is selected, so we create a new Mapping
       Mapping m = new Mapping(this.getSelectedFilterSet(), lp);
-      this.mappings.add(m);
+      this.getCurrentMappings().add(m);
       this.setSelectedMapping(m);
     }
   }
 }//GEN-LAST:event_cuttingProfilesPanel1PropertyChange
+
+private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+  //Abort => reload the original Settings and dispose
+  this.setCurrentMappings(this.getMappings());
+  this.setVisible(false);
+}//GEN-LAST:event_jButton2ActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.ButtonGroup buttonGroup1;
   private com.t_oster.visicut.gui.mappingdialog.LaserProfilesPanel cuttingProfilesPanel1;

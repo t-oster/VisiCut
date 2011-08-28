@@ -40,6 +40,7 @@ public class MainView extends javax.swing.JFrame
     mappingDialog1 = new com.t_oster.visicut.gui.MappingDialog();
     visicutModel1 = new com.t_oster.visicut.VisicutModel();
     profileManager1 = new com.t_oster.visicut.model.ProfileManager();
+    camCalibrationDialog1 = new com.t_oster.visicut.gui.CamCalibrationDialog();
     jPanel2 = new javax.swing.JPanel();
     jLabel1 = new javax.swing.JLabel();
     jComboBox1 = new javax.swing.JComboBox();
@@ -65,8 +66,8 @@ public class MainView extends javax.swing.JFrame
     copyMenuItem = new javax.swing.JMenuItem();
     pasteMenuItem = new javax.swing.JMenuItem();
     deleteMenuItem = new javax.swing.JMenuItem();
+    jMenuItem1 = new javax.swing.JMenuItem();
     helpMenu = new javax.swing.JMenu();
-    contentsMenuItem = new javax.swing.JMenuItem();
     aboutMenuItem = new javax.swing.JMenuItem();
 
     openFileChooser.setName("openFileChooser"); // NOI18N
@@ -81,6 +82,11 @@ public class MainView extends javax.swing.JFrame
     bindingGroup.addBinding(binding);
 
     this.visicutModel1.setMaterial(this.profileManager1.getMaterials().get(0));
+
+    camCalibrationDialog1.setName("camCalibrationDialog1"); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${previewTransformation}"), camCalibrationDialog1, org.jdesktop.beansbinding.BeanProperty.create("resultingTransformation"), "TransformationCalibDialogModel");
+    bindingGroup.addBinding(binding);
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setName("Form"); // NOI18N
@@ -196,6 +202,7 @@ public class MainView extends javax.swing.JFrame
     jPanel1.setName("jPanel1"); // NOI18N
 
     previewPanel1.setBorder(null);
+    previewPanel1.setBackgroundImageFile(new java.io.File("/home/thommy/NetBeansProjects/Visicut/test/files/lasercutter.jpg"));
     previewPanel1.setName("previewPanel1"); // NOI18N
 
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${graphicFile}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("droppedFile"), "DroppedFileToModel");
@@ -205,6 +212,8 @@ public class MainView extends javax.swing.JFrame
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${mappings}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("mappings"), "MappingsFromModelToPreviewPanel");
     bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material.color}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("materialColor"), "ColorFromModel");
+    bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${previewTransformation}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("previewTransformation"), "TransformFromModel");
     bindingGroup.addBinding(binding);
 
     javax.swing.GroupLayout previewPanel1Layout = new javax.swing.GroupLayout(previewPanel1);
@@ -300,20 +309,30 @@ public class MainView extends javax.swing.JFrame
     deleteMenuItem.setName("deleteMenuItem"); // NOI18N
     editMenu.add(deleteMenuItem);
 
+    jMenuItem1.setText(resourceMap.getString("jMenuItem1.text")); // NOI18N
+    jMenuItem1.setName("jMenuItem1"); // NOI18N
+    jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jMenuItem1ActionPerformed(evt);
+      }
+    });
+    editMenu.add(jMenuItem1);
+
     menuBar.add(editMenu);
 
-    helpMenu.setMnemonic('h');
+    javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(MainView.class, this);
+    helpMenu.setAction(actionMap.get("showAboutDialog")); // NOI18N
     helpMenu.setText(resourceMap.getString("helpMenu.text")); // NOI18N
     helpMenu.setName("helpMenu"); // NOI18N
 
-    contentsMenuItem.setMnemonic('c');
-    contentsMenuItem.setText(resourceMap.getString("contentsMenuItem.text")); // NOI18N
-    contentsMenuItem.setName("contentsMenuItem"); // NOI18N
-    helpMenu.add(contentsMenuItem);
-
-    aboutMenuItem.setMnemonic('a');
+    aboutMenuItem.setAction(actionMap.get("showAboutDialog")); // NOI18N
     aboutMenuItem.setText(resourceMap.getString("aboutMenuItem.text")); // NOI18N
     aboutMenuItem.setName("aboutMenuItem"); // NOI18N
+    aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        aboutMenuItemActionPerformed(evt);
+      }
+    });
     helpMenu.add(aboutMenuItem);
 
     menuBar.add(helpMenu);
@@ -345,25 +364,38 @@ public class MainView extends javax.swing.JFrame
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
       System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
-
+  
 private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
-int returnVal = openFileChooser.showOpenDialog(this);
-    if (returnVal == JFileChooser.APPROVE_OPTION) {
-        File file = openFileChooser.getSelectedFile();
-        this.visicutModel1.loadGraphicFile(file);
-        System.out.println("Selected File: "+file);
-    } else {
-        System.out.println("File access cancelled by user.");
-    }
+  int returnVal = openFileChooser.showOpenDialog(this);
+  if (returnVal == JFileChooser.APPROVE_OPTION)
+  {
+    File file = openFileChooser.getSelectedFile();
+    this.visicutModel1.loadGraphicFile(file);
+    System.out.println("Selected File: " + file);
+  }
+  else
+  {
+    System.out.println("File access cancelled by user.");
+  }
 }//GEN-LAST:event_openMenuItemActionPerformed
-
+  
 private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-    mappingDialog1.setVisible(true);
+  mappingDialog1.setVisible(true);
+  this.previewPanel1.repaint();
 }//GEN-LAST:event_jButton1ActionPerformed
-
+  
+private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
+  VisicutAboutBox box = new VisicutAboutBox(this);
+  box.setModal(true);
+  box.setVisible(true);
+}//GEN-LAST:event_aboutMenuItemActionPerformed
+  
+private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+  this.camCalibrationDialog1.setVisible(true);
+}//GEN-LAST:event_jMenuItem1ActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
-  private javax.swing.JMenuItem contentsMenuItem;
+  private com.t_oster.visicut.gui.CamCalibrationDialog camCalibrationDialog1;
   private javax.swing.JMenuItem copyMenuItem;
   private javax.swing.JMenuItem cutMenuItem;
   private javax.swing.JMenuItem deleteMenuItem;
@@ -380,6 +412,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
+  private javax.swing.JMenuItem jMenuItem1;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JTextField jTextField1;

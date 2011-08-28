@@ -5,8 +5,14 @@ import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 /**
  * This class implements the Panel which provides the Preview
@@ -17,6 +23,65 @@ import java.util.List;
 public class PreviewPanel extends FilesDropPanel
 {
 
+  protected AffineTransform previewTransformation = AffineTransform.getTranslateInstance(40, 150);
+
+  /**
+   * Get the value of previewTransformation
+   *
+   * @return the value of previewTransformation
+   */
+  public AffineTransform getPreviewTransformation()
+  {
+    return previewTransformation;
+  }
+
+  /**
+   * Set the value of previewTransformation
+   *
+   * @param previewTransformation new value of previewTransformation
+   */
+  public void setPreviewTransformation(AffineTransform previewTransformation)
+  {
+    this.previewTransformation = previewTransformation;
+    this.repaint();
+  }
+
+  protected RenderedImage backgroundImage = null;
+
+  /**
+   * Get the value of backgroundImage
+   *
+   * @return the value of backgroundImage
+   */
+  public RenderedImage getBackgroundImage()
+  {
+    return backgroundImage;
+  }
+
+  /**
+   * Set the value of backgroundImage
+   *
+   * @param backgroundImage new value of backgroundImage
+   */
+  public void setBackgroundImage(RenderedImage backgroundImage)
+  {
+    this.backgroundImage = backgroundImage;
+  }
+
+  public void setBackgroundImageFile(File imageFile)
+  {
+    try
+    {
+      if (imageFile.exists())
+      {
+        this.setBackgroundImage(ImageIO.read(imageFile));
+      }
+    }
+    catch (IOException ex)
+    {
+      Logger.getLogger(PreviewPanel.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
   protected File droppedFile = null;
   public static final String PROP_DROPPEDFILE = "droppedFile";
   protected Color materialColor = null;
@@ -115,8 +180,19 @@ public class PreviewPanel extends FilesDropPanel
     if (g instanceof Graphics2D)
     {
       Graphics2D gg = (Graphics2D) g;
-      gg.setColor(this.getMaterialColor());
-      gg.fill(gg.getClip());
+      if (backgroundImage != null)
+      {
+        gg.drawRenderedImage(backgroundImage, null);
+      }
+      else
+      {
+        gg.setColor(this.getMaterialColor());
+        gg.fill(gg.getClip());
+      }
+      if (this.previewTransformation != null)
+      {
+        gg.setTransform(this.getPreviewTransformation());
+      }
       if (this.getGraphicObjects() != null)
       {
         if (this.getMappings() != null)

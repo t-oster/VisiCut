@@ -30,6 +30,16 @@
         <AuxValue name="JavaCodeGenerator_allCodePost" type="java.lang.String" value="this.visicutModel1.setMaterial(this.profileManager1.getMaterials().get(0));"/>
       </AuxValues>
     </Component>
+    <Component class="com.t_oster.visicut.gui.CamCalibrationDialog" name="camCalibrationDialog1">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="camCalibrationDialog1" noResource="true"/>
+      </Properties>
+      <BindingProperties>
+        <BindingProperty name="resultingTransformation" source="visicutModel1" sourcePath="${previewTransformation}" target="camCalibrationDialog1" targetPath="resultingTransformation" updateStrategy="0" immediately="false">
+          <Property name="name" type="java.lang.String" value="TransformationCalibDialogModel"/>
+        </BindingProperty>
+      </BindingProperties>
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="menuBar">
       <Properties>
         <Property name="name" type="java.lang.String" value="menuBar" noResource="true"/>
@@ -112,28 +122,37 @@
                 <Property name="name" type="java.lang.String" value="deleteMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItem1.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItem1" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem1ActionPerformed"/>
+              </Events>
+            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="helpMenu">
           <Properties>
-            <Property name="mnemonic" type="int" value="104"/>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+              <action class="com.t_oster.visicut.gui.MainView" id="showAboutDialog" methodName="showAboutDialog"/>
+            </Property>
             <Property name="text" type="java.lang.String" resourceKey="helpMenu.text"/>
             <Property name="name" type="java.lang.String" value="helpMenu" noResource="true"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="contentsMenuItem">
-              <Properties>
-                <Property name="mnemonic" type="int" value="99"/>
-                <Property name="text" type="java.lang.String" resourceKey="contentsMenuItem.text"/>
-                <Property name="name" type="java.lang.String" value="contentsMenuItem" noResource="true"/>
-              </Properties>
-            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="aboutMenuItem">
               <Properties>
-                <Property name="mnemonic" type="int" value="97"/>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="com.t_oster.visicut.gui.MainView" id="showAboutDialog" methodName="showAboutDialog"/>
+                </Property>
                 <Property name="text" type="java.lang.String" resourceKey="aboutMenuItem.text"/>
                 <Property name="name" type="java.lang.String" value="aboutMenuItem" noResource="true"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="aboutMenuItemActionPerformed"/>
+              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>
@@ -393,6 +412,9 @@
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="null"/>
             </Property>
+            <Property name="backgroundImageFile" type="java.io.File" editor="org.netbeans.beaninfo.editors.FileEditor">
+              <SerializedValue value="-84,-19,0,5,115,114,0,12,106,97,118,97,46,105,111,46,70,105,108,101,4,45,-92,69,14,13,-28,-1,3,0,1,76,0,4,112,97,116,104,116,0,18,76,106,97,118,97,47,108,97,110,103,47,83,116,114,105,110,103,59,120,112,116,0,64,47,104,111,109,101,47,116,104,111,109,109,121,47,78,101,116,66,101,97,110,115,80,114,111,106,101,99,116,115,47,86,105,115,105,99,117,116,47,116,101,115,116,47,102,105,108,101,115,47,108,97,115,101,114,99,117,116,116,101,114,46,106,112,103,119,2,0,47,120"/>
+            </Property>
             <Property name="name" type="java.lang.String" value="previewPanel1" noResource="true"/>
           </Properties>
           <BindingProperties>
@@ -407,6 +429,9 @@
             </BindingProperty>
             <BindingProperty name="materialColor" source="visicutModel1" sourcePath="${material.color}" target="previewPanel1" targetPath="materialColor" updateStrategy="1" immediately="false">
               <Property name="name" type="java.lang.String" value="ColorFromModel"/>
+            </BindingProperty>
+            <BindingProperty name="previewTransformation" source="visicutModel1" sourcePath="${previewTransformation}" target="previewPanel1" targetPath="previewTransformation" updateStrategy="1" immediately="false">
+              <Property name="name" type="java.lang.String" value="TransformFromModel"/>
             </BindingProperty>
           </BindingProperties>
 

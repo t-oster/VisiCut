@@ -10,6 +10,7 @@ import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.ImportException;
+import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
@@ -24,6 +25,31 @@ import java.util.List;
  */
 public class VisicutModel
 {
+
+  protected AffineTransform previewTransformation = AffineTransform.getTranslateInstance(50, 200);
+  public static final String PROP_PREVIEWTRANSFORMATION = "previewTransformation";
+
+  /**
+   * Get the value of previewTransformation
+   *
+   * @return the value of previewTransformation
+   */
+  public AffineTransform getPreviewTransformation()
+  {
+    return previewTransformation;
+  }
+
+  /**
+   * Set the value of previewTransformation
+   *
+   * @param previewTransformation new value of previewTransformation
+   */
+  public void setPreviewTransformation(AffineTransform previewTransformation)
+  {
+    AffineTransform oldPreviewTransformation = this.previewTransformation;
+    this.previewTransformation = previewTransformation;
+    propertyChangeSupport.firePropertyChange(PROP_PREVIEWTRANSFORMATION, oldPreviewTransformation, previewTransformation);
+  }
 
   protected float materialWidth = 30;
   public static final String PROP_MATERIALWIDTH = "materialWidth";
