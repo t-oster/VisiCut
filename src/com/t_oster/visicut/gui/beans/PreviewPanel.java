@@ -7,7 +7,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -23,11 +22,17 @@ import javax.imageio.ImageIO;
  * 
  * @author thommy
  */
-public class PreviewPanel extends FilesDropPanel
+public class PreviewPanel extends GraphicObjectsPanel
 {
   
   protected AffineTransform previewTransformation = AffineTransform.getTranslateInstance(40, 150);
 
+  private AffineTransform lastDrawnTransform = null;
+  
+  public AffineTransform getLastDrawnTransform()
+  {
+    return lastDrawnTransform;
+  }
   /**
    * Get the value of previewTransformation
    *
@@ -85,8 +90,6 @@ public class PreviewPanel extends FilesDropPanel
       Logger.getLogger(PreviewPanel.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
-  protected File droppedFile = null;
-  public static final String PROP_DROPPEDFILE = "droppedFile";
   protected Color materialColor = null;
 
   /**
@@ -110,27 +113,6 @@ public class PreviewPanel extends FilesDropPanel
     this.repaint();
   }
 
-  /**
-   * Get the value of droppedFile
-   *
-   * @return the value of droppedFile
-   */
-  public File getDroppedFile()
-  {
-    return droppedFile;
-  }
-
-  /**
-   * Set the value of droppedFiles
-   *
-   * @param droppedFiles new value of droppedFiles
-   */
-  public void setDroppedFile(File droppedFile)
-  {
-    File oldDroppedFile = this.droppedFile;
-    this.droppedFile = droppedFile;
-    this.firePropertyChange(PROP_DROPPEDFILE, oldDroppedFile, droppedFile);
-  }
   protected GraphicSet graphicObjects = null;
 
   /**
@@ -152,28 +134,6 @@ public class PreviewPanel extends FilesDropPanel
   {
     this.graphicObjects = graphicObjects;
     this.repaint();
-  }
-
-  @Override
-  public void filesDropped(List files)
-  {
-    if (files != null && !files.isEmpty())
-    {
-      Object o = files.get(0);
-      File f = null;
-      if (o instanceof File)
-      {
-        f = (File) o;
-      }
-      else if (o instanceof String)
-      {
-        f = new File((String) o);
-      }
-      if (f != null && f.exists())
-      {
-        this.setDroppedFile(f);
-      }
-    }
   }
 
   @Override
@@ -215,7 +175,7 @@ public class PreviewPanel extends FilesDropPanel
           }
         }
       }
-
+      this.lastDrawnTransform = gg.getTransform();
     }
   }
   protected List<Mapping> mappings = null;

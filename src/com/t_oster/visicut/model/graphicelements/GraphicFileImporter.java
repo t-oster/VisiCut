@@ -4,6 +4,7 @@
  */
 package com.t_oster.visicut.model.graphicelements;
 
+import com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter;
 import com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter;
 import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
 import java.io.File;
@@ -36,6 +37,10 @@ public class GraphicFileImporter implements Importer
     else if (name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg"))
     {
       return (new JPGPNGImporter()).importFile(inputFile);
+    }
+    else if (name.endsWith(".dxf"))
+    {
+      return (new DXFImporter()).importFile(inputFile);
     }
     else
     {

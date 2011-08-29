@@ -5,7 +5,6 @@
 package com.t_oster.visicut.model.graphicelements;
 
 import java.io.File;
-import java.util.List;
 
 /**
  *

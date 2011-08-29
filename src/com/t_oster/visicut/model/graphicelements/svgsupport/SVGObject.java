@@ -156,7 +156,13 @@ public abstract class SVGObject implements GraphicObject
   {
     try
     {
-      return getDecoratee().getBoundingBox();
+      Rectangle2D result = getDecoratee().getBoundingBox();
+      if (result == null)
+      {
+        throw new SVGException("Could not determine BoundingBox of:"
+          +getDecoratee());
+      }
+      return result;
     }
     catch (SVGException ex)
     {

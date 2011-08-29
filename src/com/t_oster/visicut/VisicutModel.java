@@ -32,12 +32,12 @@ public class VisicutModel
 
   public VisicutModel()
   {
-     AffineTransform move = AffineTransform.getTranslateInstance(50, 200);
-     AffineTransform scale = AffineTransform.getScaleInstance(0.01,0.01);
-     scale.concatenate(move);
-     previewTransformation = scale;
+    AffineTransform move = AffineTransform.getTranslateInstance(54, 113);
+    AffineTransform scale = AffineTransform.getScaleInstance(0.048, 0.048);
+    scale.concatenate(move);
+    previewTransformation = scale;
   }
-  
+
   /**
    * Get the value of previewTransformation
    *
@@ -59,7 +59,6 @@ public class VisicutModel
     this.previewTransformation = previewTransformation;
     propertyChangeSupport.firePropertyChange(PROP_PREVIEWTRANSFORMATION, oldPreviewTransformation, previewTransformation);
   }
-
   protected float materialWidth = 30;
   public static final String PROP_MATERIALWIDTH = "materialWidth";
 
@@ -105,7 +104,6 @@ public class VisicutModel
   {
     this.materialHeight = materialHeight;
   }
-
   protected GraphicSet graphicObjects = null;
   public static final String PROP_GRAPHICOBJECTS = "graphicObjects";
 
@@ -131,35 +129,6 @@ public class VisicutModel
     propertyChangeSupport.firePropertyChange(PROP_GRAPHICOBJECTS, oldGraphicObjects, graphicObjects);
   }
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-  protected File sourceFile = null;
-  protected File graphicFile = null;
-  public static final String PROP_GRAPHICFILE = "graphicFile";
-
-  /**
-   * Get the value of graphicFile
-   *
-   * @return the value of graphicFile
-   */
-  public File getGraphicFile()
-  {
-    return graphicFile;
-  }
-
-  /**
-   * Set the value of graphicFile
-   *
-   * @param graphicFile new value of graphicFile
-   */
-  public void setGraphicFile(File graphicFile)
-  {
-    File oldGraphicFile = this.graphicFile;
-    this.graphicFile = graphicFile;
-    propertyChangeSupport.firePropertyChange(PROP_GRAPHICFILE, oldGraphicFile, graphicFile);
-    if (Util.differ(graphicFile, oldGraphicFile))
-    {
-      this.loadGraphicFile(graphicFile);
-    }
-  }
 
   /**
    * Add PropertyChangeListener.
@@ -186,13 +155,10 @@ public class VisicutModel
     try
     {
       GraphicFileImporter im = new GraphicFileImporter();
-      this.setGraphicFile(f);
       this.setGraphicObjects(im.importFile(f));
     }
     catch (ImportException e)
     {
-
-      this.setGraphicFile(null);
       this.setGraphicObjects(null);
     }
   }

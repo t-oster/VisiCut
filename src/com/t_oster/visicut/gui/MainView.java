@@ -10,7 +10,6 @@
  */
 package com.t_oster.visicut.gui;
 
-import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.RasterPart;
@@ -19,16 +18,12 @@ import com.t_oster.liblasercut.drivers.EpilogCutter;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.model.Mapping;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
-import com.t_oster.visicut.model.mapping.MappingFilter;
 import java.awt.Point;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -62,6 +57,7 @@ public class MainView extends javax.swing.JFrame
     visicutModel1 = new com.t_oster.visicut.VisicutModel();
     profileManager1 = new com.t_oster.visicut.model.ProfileManager();
     camCalibrationDialog1 = new com.t_oster.visicut.gui.CamCalibrationDialog();
+    filesDropSupport1 = new com.t_oster.visicut.gui.beans.FilesDropSupport();
     jPanel2 = new javax.swing.JPanel();
     jLabel1 = new javax.swing.JLabel();
     jComboBox1 = new javax.swing.JComboBox();
@@ -108,6 +104,13 @@ public class MainView extends javax.swing.JFrame
 
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${previewTransformation}"), camCalibrationDialog1, org.jdesktop.beansbinding.BeanProperty.create("resultingTransformation"), "TransformationCalibDialogModel");
     bindingGroup.addBinding(binding);
+
+    filesDropSupport1.setComponent(previewPanel1);
+    filesDropSupport1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+      public void propertyChange(java.beans.PropertyChangeEvent evt) {
+        filesDropSupport1PropertyChange(evt);
+      }
+    });
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setName("Form"); // NOI18N
@@ -193,7 +196,7 @@ public class MainView extends javax.swing.JFrame
             .addComponent(jLabel4))
           .addGroup(jPanel2Layout.createSequentialGroup()
             .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
             .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
@@ -231,8 +234,6 @@ public class MainView extends javax.swing.JFrame
     previewPanel1.setBackgroundImageFile(new java.io.File("/home/thommy/NetBeansProjects/Visicut/test/files/lasercutter.jpg"));
     previewPanel1.setName("previewPanel1"); // NOI18N
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${graphicFile}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("droppedFile"), "DroppedFileToModel");
-    bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${graphicObjects}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("graphicObjects"), "ModelToPreviewObjects");
     bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${mappings}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("mappings"), "MappingsFromModelToPreviewPanel");
@@ -242,6 +243,11 @@ public class MainView extends javax.swing.JFrame
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${previewTransformation}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("previewTransformation"), "TransformFromModel");
     bindingGroup.addBinding(binding);
 
+    previewPanel1.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+      public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+        previewPanel1MouseWheelMoved(evt);
+      }
+    });
     previewPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
       public void mousePressed(java.awt.event.MouseEvent evt) {
         previewPanel1MousePressed(evt);
@@ -264,7 +270,7 @@ public class MainView extends javax.swing.JFrame
     );
     previewPanel1Layout.setVerticalGroup(
       previewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 586, Short.MAX_VALUE)
+      .addGap(0, 597, Short.MAX_VALUE)
     );
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -280,7 +286,7 @@ public class MainView extends javax.swing.JFrame
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 610, Short.MAX_VALUE)
+      .addGap(0, 621, Short.MAX_VALUE)
       .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel1Layout.createSequentialGroup()
           .addContainerGap()
@@ -434,33 +440,49 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
   this.camCalibrationDialog1.setVisible(true);
 }//GEN-LAST:event_jMenuItem1ActionPerformed
   private Point movingStart = null;
+  private boolean movingGraphics = false;
 private void previewPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanel1MousePressed
-  Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
-  bb = Util.transform(bb, this.visicutModel1.getPreviewTransformation());
-  if (bb.contains(evt.getPoint()))
+  if (this.visicutModel1.getGraphicObjects() != null)
   {
-    movingStart = evt.getPoint();
+    Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
+    bb = Util.transform(bb, this.previewPanel1.getLastDrawnTransform());
+    movingGraphics = bb.contains(evt.getPoint());
   }
+  movingStart = evt.getPoint();
 }//GEN-LAST:event_previewPanel1MousePressed
 
 private void previewPanel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanel1MouseReleased
   movingStart = null;
+  movingGraphics = false;
 }//GEN-LAST:event_previewPanel1MouseReleased
 
 private void previewPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanel1MouseDragged
   if (movingStart != null)
   {
+
     Point diff = new Point(evt.getPoint().x - movingStart.x, evt.getPoint().y - movingStart.y);
     try
     {
-      this.visicutModel1.getPreviewTransformation().createInverse().deltaTransform(diff, diff);
-      if (this.visicutModel1.getGraphicObjects().getTransform() != null)
+      
+      if (movingGraphics)
       {
-        this.visicutModel1.getGraphicObjects().getTransform().concatenate(AffineTransform.getTranslateInstance(diff.x, diff.y));
+        this.previewPanel1.getLastDrawnTransform().createInverse().deltaTransform(diff, diff);
+        if (this.visicutModel1.getGraphicObjects().getTransform() != null)
+        {
+          AffineTransform tr = AffineTransform.getTranslateInstance(diff.x, diff.y);
+          tr.concatenate(this.visicutModel1.getGraphicObjects().getTransform());
+          this.visicutModel1.getGraphicObjects().setTransform(tr);
+        }
+        else
+        {
+          this.visicutModel1.getGraphicObjects().setTransform(AffineTransform.getTranslateInstance(diff.x, diff.y));
+        }
       }
       else
       {
-        this.visicutModel1.getGraphicObjects().setTransform(AffineTransform.getTranslateInstance(diff.x, diff.y));
+        Point center = this.previewPanel1.getCenter();
+        center.translate(-diff.x, -diff.y);
+        this.previewPanel1.setCenter(center);
       }
       this.repaint();
     }
@@ -478,7 +500,7 @@ private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   VectorPart vp = new VectorPart(new LaserProperty());
   EpilogCutter instance = new EpilogCutter("137.226.56.228");
   LaserJob job = new LaserJob("VisiCut", "666", "bla", 500, null, vp, rp);
-  for (Mapping m :this.visicutModel1.getMappings())
+  for (Mapping m : this.visicutModel1.getMappings())
   {
     GraphicSet set = m.getA().getMatchingObjects(this.visicutModel1.getGraphicObjects());
     m.getB().addToLaserJob(job, set);
@@ -487,13 +509,35 @@ private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   {
     instance.sendJob(job);
     JOptionPane.showMessageDialog(null, "Please press START on the Lasercutter");
+
+
   }
   catch (Exception ex)
   {
     Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-    JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
+    JOptionPane.showMessageDialog(
+      null, "Error: " + ex.getMessage());
   }
 }//GEN-LAST:event_jButton2ActionPerformed
+
+private void previewPanel1MouseWheelMoved(java.awt.event.MouseWheelEvent evt)//GEN-FIRST:event_previewPanel1MouseWheelMoved
+{//GEN-HEADEREND:event_previewPanel1MouseWheelMoved
+  if (evt.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
+  {
+    this.previewPanel1.setZoom(this.previewPanel1.getZoom()-(evt.getUnitsToScroll()*this.previewPanel1.getZoom()/32));
+  }
+}//GEN-LAST:event_previewPanel1MouseWheelMoved
+
+private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)//GEN-FIRST:event_filesDropSupport1PropertyChange
+{//GEN-HEADEREND:event_filesDropSupport1PropertyChange
+  if (this.filesDropSupport1.getDroppedFiles() != null && this.filesDropSupport1.getDroppedFiles().size() > 0)
+  {
+    for (File f : this.filesDropSupport1.getDroppedFiles())
+    {
+      this.visicutModel1.loadGraphicFile(f);
+    }
+  }
+}//GEN-LAST:event_filesDropSupport1PropertyChange
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
   private com.t_oster.visicut.gui.CamCalibrationDialog camCalibrationDialog1;
@@ -503,6 +547,7 @@ private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   private javax.swing.JMenu editMenu;
   private javax.swing.JMenuItem exitMenuItem;
   private javax.swing.JMenu fileMenu;
+  private com.t_oster.visicut.gui.beans.FilesDropSupport filesDropSupport1;
   private javax.swing.JMenu helpMenu;
   private javax.swing.JButton jButton1;
   private javax.swing.JButton jButton2;

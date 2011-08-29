@@ -119,8 +119,10 @@ public class MatchingPartsPanel extends JPanel
     {
       if (this.getSelectedMapping() != null)
       {
+        GraphicSet set = this.getSelectedMapping().getA().getMatchingObjects(this.getGraphicElements());
+        set.setTransform(null);
         this.getSelectedMapping().getB().renderPreview(
-          gg, this.getSelectedMapping().getA().getMatchingObjects(this.getGraphicElements()));
+          gg, set);
       }
       else if (this.getSelectedFilterSet() != null)
       {

@@ -40,6 +40,16 @@
         </BindingProperty>
       </BindingProperties>
     </Component>
+    <Component class="com.t_oster.visicut.gui.beans.FilesDropSupport" name="filesDropSupport1">
+      <Properties>
+        <Property name="component" type="javax.swing.JComponent" editor="org.netbeans.modules.form.ComponentChooserEditor">
+          <ComponentRef name="previewPanel1"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="filesDropSupport1PropertyChange"/>
+      </Events>
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="menuBar">
       <Properties>
         <Property name="name" type="java.lang.String" value="menuBar" noResource="true"/>
@@ -233,7 +243,7 @@
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="jTextField1" min="-2" pref="66" max="-2" attributes="0"/>
-                          <EmptySpace pref="33" max="32767" attributes="0"/>
+                          <EmptySpace pref="36" max="32767" attributes="0"/>
                           <Component id="jTextField2" min="-2" pref="70" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -398,7 +408,7 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="610" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="621" max="32767" attributes="0"/>
               <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
@@ -421,9 +431,6 @@
             <Property name="name" type="java.lang.String" value="previewPanel1" noResource="true"/>
           </Properties>
           <BindingProperties>
-            <BindingProperty name="droppedFile" source="visicutModel1" sourcePath="${graphicFile}" target="previewPanel1" targetPath="droppedFile" updateStrategy="0" immediately="false">
-              <Property name="name" type="java.lang.String" value="DroppedFileToModel"/>
-            </BindingProperty>
             <BindingProperty name="graphicObjects" source="visicutModel1" sourcePath="${graphicObjects}" target="previewPanel1" targetPath="graphicObjects" updateStrategy="1" immediately="false">
               <Property name="name" type="java.lang.String" value="ModelToPreviewObjects"/>
             </BindingProperty>
@@ -438,6 +445,7 @@
             </BindingProperty>
           </BindingProperties>
           <Events>
+            <EventHandler event="mouseWheelMoved" listener="java.awt.event.MouseWheelListener" parameters="java.awt.event.MouseWheelEvent" handler="previewPanel1MouseWheelMoved"/>
             <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="previewPanel1MousePressed"/>
             <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="previewPanel1MouseReleased"/>
             <EventHandler event="mouseDragged" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="previewPanel1MouseDragged"/>
@@ -451,7 +459,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="586" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="597" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
