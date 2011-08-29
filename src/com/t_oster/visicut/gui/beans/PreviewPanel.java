@@ -6,6 +6,8 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -23,7 +25,7 @@ import javax.imageio.ImageIO;
  */
 public class PreviewPanel extends FilesDropPanel
 {
-
+  
   protected AffineTransform previewTransformation = AffineTransform.getTranslateInstance(40, 150);
 
   /**
@@ -237,5 +239,15 @@ public class PreviewPanel extends FilesDropPanel
   {
     this.mappings = mappings;
     this.repaint();
+  }
+
+  public void mouseDragged(MouseEvent me)
+  {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  public void mouseMoved(MouseEvent me)
+  {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

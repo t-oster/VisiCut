@@ -4,7 +4,10 @@
  */
 package com.t_oster.visicut.model.graphicelements;
 
+import com.t_oster.liblasercut.platform.Util;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
@@ -42,6 +45,21 @@ public class GraphicSet extends LinkedList<GraphicObject>
   }
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
+  public Rectangle2D getBoundingBox()
+  {
+    Rectangle2D result = new Rectangle();
+    for (GraphicObject o : this)
+    {
+      Rectangle2D current = o.getBoundingBox();
+      if (this.transform != null)
+      {
+        current = Util.transform(current, this.transform);
+      }
+      Rectangle2D.union(result, current, result);
+    }
+    return result;
+  }
+  
   /**
    * Add PropertyChangeListener.
    *

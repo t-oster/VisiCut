@@ -6,12 +6,10 @@ package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
-import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.File;
-import java.util.List;
 
 /**
  * A cutting Profile represents a specific way of handling Image
