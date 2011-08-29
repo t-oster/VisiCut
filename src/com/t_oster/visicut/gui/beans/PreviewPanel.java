@@ -191,7 +191,9 @@ public class PreviewPanel extends FilesDropPanel
       }
       if (this.previewTransformation != null)
       {
-        gg.setTransform(this.getPreviewTransformation());
+        AffineTransform current = gg.getTransform();
+        current.concatenate(this.getPreviewTransformation());
+        gg.setTransform(current);
       }
       if (this.getGraphicObjects() != null)
       {

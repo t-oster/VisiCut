@@ -26,9 +26,17 @@ import java.util.List;
 public class VisicutModel
 {
 
-  protected AffineTransform previewTransformation = AffineTransform.getTranslateInstance(50, 200);
+  protected AffineTransform previewTransformation = null;
   public static final String PROP_PREVIEWTRANSFORMATION = "previewTransformation";
 
+  public VisicutModel()
+  {
+     AffineTransform move = AffineTransform.getTranslateInstance(50, 200);
+     AffineTransform scale = AffineTransform.getScaleInstance(0.01,0.01);
+     scale.concatenate(move);
+     previewTransformation = scale;
+  }
+  
   /**
    * Get the value of previewTransformation
    *
