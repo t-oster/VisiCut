@@ -14,10 +14,10 @@ import com.kitfox.svg.ShapeElement;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -53,6 +53,7 @@ public class SVGImporter implements Importer
       URI svg = u.loadSVG(inputFile.toURI().toURL());
       SVGRoot root = u.getDiagram(svg).getRoot();
       GraphicSet result = new GraphicSet();
+      result.setTransform(AffineTransform.getScaleInstance(500/96, 500/96));
       importNode(root,result);
       return result;
     }
