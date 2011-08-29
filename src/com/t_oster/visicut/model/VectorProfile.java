@@ -3,6 +3,7 @@ package com.t_oster.visicut.model;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.utils.ShapeConverter;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
@@ -44,7 +45,7 @@ public class VectorProfile extends LaserProfile
   }
 
   @Override
-  public void renderPreview(Graphics2D gg, List<GraphicObject> objects)
+  public void renderPreview(Graphics2D gg, GraphicSet objects)
   {
     for (GraphicObject e : objects)
     {
@@ -54,13 +55,17 @@ public class VectorProfile extends LaserProfile
         Stroke s = new BasicStroke(this.getWidth());
         gg.setStroke(s);
         Shape sh = ((ShapeObject) e).getShape();
+        if (objects.getTransform()!=null)
+        {
+          sh = objects.getTransform().createTransformedShape(sh);
+        }
         gg.draw(sh);
       }
     }
   }
 
   @Override
-  public void addToLaserJob(LaserJob job, List<GraphicObject> objects)
+  public void addToLaserJob(LaserJob job, GraphicSet objects)
   {
     job.getVectorPart().setCurrentCuttingProperty(this.getCuttingProperty());
     ShapeConverter conv = new ShapeConverter();
@@ -68,7 +73,12 @@ public class VectorProfile extends LaserProfile
     {
       if (e instanceof ShapeObject)
       {
-        conv.addShape(((ShapeObject) e).getShape(), job.getVectorPart());
+        Shape sh = ((ShapeObject) e).getShape();
+        if (objects.getTransform() != null)
+        {
+          sh = objects.getTransform().createTransformedShape(sh);
+        }
+        conv.addShape(sh, job.getVectorPart());
       }
     }
   }

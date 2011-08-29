@@ -5,8 +5,8 @@
 package com.t_oster.visicut.model.mapping;
 
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  *
@@ -15,9 +15,10 @@ import java.util.List;
 public class FilterSet extends LinkedList<MappingFilter>
   {
 
-    public List<GraphicObject> getMatchingObjects(List<GraphicObject> elements)
+    public GraphicSet getMatchingObjects(GraphicSet elements)
     {
-      List<GraphicObject> result = new LinkedList<GraphicObject>();
+      GraphicSet result = new GraphicSet();
+      result.setTransform(elements.getTransform());
       for (GraphicObject o : elements)
       {
         boolean passed = true;

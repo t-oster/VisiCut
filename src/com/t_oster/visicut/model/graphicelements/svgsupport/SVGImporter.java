@@ -12,7 +12,7 @@ import com.kitfox.svg.SVGRoot;
 import com.kitfox.svg.SVGUniverse;
 import com.kitfox.svg.ShapeElement;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
-import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -46,13 +46,13 @@ public class SVGImporter implements Importer
   }
   
   @Override
-  public List<GraphicObject> importFile(File inputFile) throws ImportException
+  public GraphicSet importFile(File inputFile) throws ImportException
   {
     try
     {
       URI svg = u.loadSVG(inputFile.toURI().toURL());
       SVGRoot root = u.getDiagram(svg).getRoot();
-      List<GraphicObject> result = new LinkedList<GraphicObject>();
+      GraphicSet result = new GraphicSet();
       importNode(root,result);
       return result;
     }

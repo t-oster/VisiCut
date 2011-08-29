@@ -6,6 +6,7 @@ package com.t_oster.visicut.model.mapping;
 
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,9 +40,10 @@ public class MappingFilter
     this.value = value;
   }
 
-  public List<GraphicObject> getMatchingElements(List<GraphicObject> elements)
+  public GraphicSet getMatchingElements(GraphicSet elements)
   {
-    List<GraphicObject> result = new LinkedList<GraphicObject>();
+    GraphicSet result = new GraphicSet();
+    result.setTransform(elements.getTransform());
     for (GraphicObject e:elements)
     {
       if (this.matches(e))

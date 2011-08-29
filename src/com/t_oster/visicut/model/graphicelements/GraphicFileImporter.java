@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class GraphicFileImporter implements Importer
 {
-  public List<GraphicObject> importFile(File inputFile) throws ImportException
+  public GraphicSet importFile(File inputFile) throws ImportException
   {
     if (inputFile == null)
     {

@@ -3,11 +3,11 @@ package com.t_oster.visicut.gui.mappingdialog;
 import com.t_oster.visicut.model.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.util.List;
 import javax.swing.JPanel;
 
 /**
@@ -20,14 +20,14 @@ import javax.swing.JPanel;
 public class MatchingPartsPanel extends JPanel
 {
 
-  protected List<GraphicObject> graphicElements = null;
+  protected GraphicSet graphicElements = null;
 
   /**
    * Get the value of graphicElements
    *
    * @return the value of graphicElements
    */
-  public List<GraphicObject> getGraphicElements()
+  public GraphicSet getGraphicElements()
   {
     return graphicElements;
   }
@@ -37,7 +37,7 @@ public class MatchingPartsPanel extends JPanel
    *
    * @param graphicElements new value of graphicElements
    */
-  public void setGraphicElements(List<GraphicObject> graphicElements)
+  public void setGraphicElements(GraphicSet graphicElements)
   {
     this.graphicElements = graphicElements;
     this.repaint();

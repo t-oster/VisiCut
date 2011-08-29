@@ -4,8 +4,6 @@
  */
 package com.t_oster.visicut.model.graphicelements;
 
-import com.t_oster.visicut.model.graphicelements.GraphicObject;
-import com.t_oster.visicut.model.graphicelements.ImportException;
 import java.io.File;
 import java.util.List;
 
@@ -16,6 +14,6 @@ import java.util.List;
 public interface Importer
 {
 
-  List<GraphicObject> importFile(File inputFile) throws ImportException;
+  GraphicSet importFile(File inputFile) throws ImportException;
   
 }

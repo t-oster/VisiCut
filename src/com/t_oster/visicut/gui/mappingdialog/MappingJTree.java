@@ -4,6 +4,7 @@ import com.t_oster.liblasercut.platform.Tuple;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.model.Mapping;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingFilter;
 import java.util.LinkedList;
@@ -152,7 +153,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     public List<FilterSet> getChildren()
     {
       List<FilterSet> result = new LinkedList<FilterSet>();
-      List<GraphicObject> gos = this.getA().getMatchingObjects(MappingJTree.this.getUnmappedObjects());
+      GraphicSet gos = this.getA().getMatchingObjects(MappingJTree.this.getUnmappedObjects());
       for (GraphicObject g : gos)
       {
         for (Object value : g.getAttributeValues(this.getB()))
@@ -186,21 +187,22 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     this.setModel(this);
     this.getSelectionModel().addTreeSelectionListener(this);
   }
-  protected List<GraphicObject> graphicObjects = null;
+  protected GraphicSet graphicObjects = null;
 
   /**
    * Get the value of graphicObjects
    *
    * @return the value of graphicObjects
    */
-  public List<GraphicObject> getGraphicObjects()
+  public GraphicSet getGraphicObjects()
   {
     return graphicObjects;
   }
 
-  public List<GraphicObject> getUnmappedObjects()
+  public GraphicSet getUnmappedObjects()
   {
-    List<GraphicObject> result = new LinkedList<GraphicObject>();
+    GraphicSet result = new GraphicSet();
+    result.setTransform(this.graphicObjects.getTransform());
     if (this.graphicObjects != null)
     {
       result.addAll(this.graphicObjects);
@@ -223,7 +225,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
    *
    * @param graphicObjects new value of graphicObjects
    */
-  public void setGraphicObjects(List<GraphicObject> graphicObjects)
+  public void setGraphicObjects(GraphicSet graphicObjects)
   {
     this.graphicObjects = graphicObjects;
     this.valueForPathChanged(new TreePath(new Object[]

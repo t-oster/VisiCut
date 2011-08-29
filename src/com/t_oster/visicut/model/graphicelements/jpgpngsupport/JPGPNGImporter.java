@@ -5,14 +5,13 @@
 package com.t_oster.visicut.model.graphicelements.jpgpngsupport;
 
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.Importer;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 /**
@@ -22,11 +21,11 @@ import javax.imageio.ImageIO;
 public class JPGPNGImporter implements Importer
 {
 
-  public List<GraphicObject> importFile(File inputFile) throws ImportException
+  public GraphicSet importFile(File inputFile) throws ImportException
   {
     try
     {
-      List<GraphicObject> result = new LinkedList<GraphicObject>();
+      GraphicSet result = new GraphicSet();
       result.add(new JPGPNGImage(ImageIO.read(inputFile)));
       return result;
     }

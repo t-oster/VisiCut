@@ -7,6 +7,7 @@ package com.t_oster.visicut.model;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.File;
@@ -106,9 +107,9 @@ public abstract class LaserProfile
     this.name = name;
   }
   
-  public abstract void renderPreview(Graphics2D g, List<GraphicObject> objects);
+  public abstract void renderPreview(Graphics2D g, GraphicSet objects);
   
-  public abstract void addToLaserJob(LaserJob job, List<GraphicObject> objects);
+  public abstract void addToLaserJob(LaserJob job, GraphicSet objects);
   
   @Override
   public String toString()

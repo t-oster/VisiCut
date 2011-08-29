@@ -9,6 +9,7 @@ import com.t_oster.visicut.model.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeListener;
@@ -105,7 +106,7 @@ public class VisicutModel
     this.materialHeight = materialHeight;
   }
 
-  protected List<GraphicObject> graphicObjects = null;
+  protected GraphicSet graphicObjects = null;
   public static final String PROP_GRAPHICOBJECTS = "graphicObjects";
 
   /**
@@ -113,7 +114,7 @@ public class VisicutModel
    *
    * @return the value of graphicObjects
    */
-  public List<GraphicObject> getGraphicObjects()
+  public GraphicSet getGraphicObjects()
   {
     return graphicObjects;
   }
@@ -123,9 +124,9 @@ public class VisicutModel
    *
    * @param graphicObjects new value of graphicObjects
    */
-  public void setGraphicObjects(List<GraphicObject> graphicObjects)
+  public void setGraphicObjects(GraphicSet graphicObjects)
   {
-    List<GraphicObject> oldGraphicObjects = this.graphicObjects;
+    GraphicSet oldGraphicObjects = this.graphicObjects;
     this.graphicObjects = graphicObjects;
     propertyChangeSupport.firePropertyChange(PROP_GRAPHICOBJECTS, oldGraphicObjects, graphicObjects);
   }

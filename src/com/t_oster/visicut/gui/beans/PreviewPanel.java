@@ -2,6 +2,7 @@ package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.visicut.model.Mapping;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -128,14 +129,14 @@ public class PreviewPanel extends FilesDropPanel
     this.droppedFile = droppedFile;
     this.firePropertyChange(PROP_DROPPEDFILE, oldDroppedFile, droppedFile);
   }
-  protected List<GraphicObject> graphicObjects = null;
+  protected GraphicSet graphicObjects = null;
 
   /**
    * Get the value of graphicObjects
    *
    * @return the value of graphicObjects
    */
-  public List<GraphicObject> getGraphicObjects()
+  public GraphicSet getGraphicObjects()
   {
     return graphicObjects;
   }
@@ -145,7 +146,7 @@ public class PreviewPanel extends FilesDropPanel
    *
    * @param graphicObjects new value of graphicObjects
    */
-  public void setGraphicObjects(List<GraphicObject> graphicObjects)
+  public void setGraphicObjects(GraphicSet graphicObjects)
   {
     this.graphicObjects = graphicObjects;
     this.repaint();

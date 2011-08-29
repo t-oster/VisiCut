@@ -14,6 +14,7 @@ import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -358,7 +359,7 @@ public class MappingDialog extends javax.swing.JDialog
     this.selectedLaserProfile = selectedLaserProfile;
     firePropertyChange(PROP_SELECTEDLASERPROFILE, oldSelectedLineType, selectedLaserProfile);
   }
-  protected List<GraphicObject> graphicElements = new LinkedList<GraphicObject>();
+  protected GraphicSet graphicElements = new GraphicSet();
   public static final String PROP_GRAPHICELEMENTS = "graphicElements";
 
   /**
@@ -366,7 +367,7 @@ public class MappingDialog extends javax.swing.JDialog
    *
    * @return the value of graphicElements
    */
-  public List<GraphicObject> getGraphicElements()
+  public GraphicSet getGraphicElements()
   {
     return graphicElements;
   }
@@ -376,9 +377,9 @@ public class MappingDialog extends javax.swing.JDialog
    *
    * @param graphicElements new value of graphicElements
    */
-  public void setGraphicElements(List<GraphicObject> graphicElements)
+  public void setGraphicElements(GraphicSet graphicElements)
   {
-    List<GraphicObject> oldGraphicElements = this.graphicElements;
+    GraphicSet oldGraphicElements = this.graphicElements;
     this.graphicElements = graphicElements;
     firePropertyChange(PROP_GRAPHICELEMENTS, oldGraphicElements, graphicElements);
   }

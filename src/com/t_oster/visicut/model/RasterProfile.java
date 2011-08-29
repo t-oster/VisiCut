@@ -6,9 +6,11 @@ import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.platform.Point;
 import com.t_oster.liblasercut.utils.BufferedImageAdapter;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -66,18 +68,25 @@ public class RasterProfile extends LaserProfile
     this.ditherAlgorithm = ditherAlgorithm;
   }
 
-  private Rectangle2D getBoundingBox(List<GraphicObject> objects)
+  private Rectangle2D getBoundingBox(GraphicSet objects)
   {
     Rectangle2D result = new Rectangle();
+    AffineTransform tr = objects.getTransform();
     for (GraphicObject o : objects)
     {
-      Rectangle2D.union(result, o.getBoundingBox(), result);
+      Rectangle2D current = o.getBoundingBox();
+      if (tr != null)
+      {
+        //TODO: transform BoundingBox
+        //current = new Rectangle(current.getX(),current.getY(),current.getWidth(),current.getHeight());
+      }
+      Rectangle2D.union(result, current, result);
     }
     return result;
   }
 
   @Override
-  public void renderPreview(Graphics2D gg, List<GraphicObject> objects)
+  public void renderPreview(Graphics2D gg, GraphicSet objects)
   {
     Rectangle2D bb = this.getBoundingBox(objects);
     if (bb.getWidth() > 0 && bb.getHeight() > 0)
@@ -86,6 +95,7 @@ public class RasterProfile extends LaserProfile
       Graphics2D g = scaledImg.createGraphics();
       g.setColor(Color.white);
       g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
+      g.setTransform(objects.getTransform());
       for (GraphicObject o : objects)
       {
         o.render(g);
@@ -108,7 +118,7 @@ public class RasterProfile extends LaserProfile
   }
 
   @Override
-  public void addToLaserJob(LaserJob job, List<GraphicObject> objects)
+  public void addToLaserJob(LaserJob job, GraphicSet objects)
   {
     Rectangle2D bb = this.getBoundingBox(objects);
     if (bb.getWidth() > 0 && bb.getHeight() > 0)
@@ -116,6 +126,7 @@ public class RasterProfile extends LaserProfile
 
       BufferedImage scaledImg = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_RGB);
       Graphics2D g = scaledImg.createGraphics();
+      g.setTransform(objects.getTransform());
       for (GraphicObject o : objects)
       {
         o.render(g);
