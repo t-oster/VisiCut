@@ -10,15 +10,29 @@
  */
 package com.t_oster.visicut.gui;
 
+import com.t_oster.liblasercut.IllegalJobException;
+import com.t_oster.liblasercut.LaserJob;
+import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.RasterPart;
+import com.t_oster.liblasercut.VectorPart;
+import com.t_oster.liblasercut.drivers.EpilogCutter;
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.model.Mapping;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import com.t_oster.visicut.model.mapping.MappingFilter;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -131,6 +145,11 @@ public class MainView extends javax.swing.JFrame
 
     jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
     jButton2.setName("jButton2"); // NOI18N
+    jButton2.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton2ActionPerformed(evt);
+      }
+    });
 
     jLabel3.setText(resourceMap.getString("jLabel3.text")); // NOI18N
     jLabel3.setName("jLabel3"); // NOI18N
@@ -431,27 +450,50 @@ private void previewPanel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FI
 private void previewPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanel1MouseDragged
   if (movingStart != null)
   {
-    Point diff = new Point(evt.getPoint().x-movingStart.x, evt.getPoint().y-movingStart.y);
-      try
+    Point diff = new Point(evt.getPoint().x - movingStart.x, evt.getPoint().y - movingStart.y);
+    try
+    {
+      this.visicutModel1.getPreviewTransformation().createInverse().deltaTransform(diff, diff);
+      if (this.visicutModel1.getGraphicObjects().getTransform() != null)
       {
-        this.visicutModel1.getPreviewTransformation().createInverse().deltaTransform(diff, diff);
-        if (this.visicutModel1.getGraphicObjects().getTransform()!=null)
-        {
-          this.visicutModel1.getGraphicObjects().getTransform().concatenate(AffineTransform.getTranslateInstance(diff.x,diff.y));
-        }
-        else
-        {
-          this.visicutModel1.getGraphicObjects().setTransform(AffineTransform.getTranslateInstance(diff.x,diff.y));
-        }
-        this.repaint();
+        this.visicutModel1.getGraphicObjects().getTransform().concatenate(AffineTransform.getTranslateInstance(diff.x, diff.y));
       }
-      catch (NoninvertibleTransformException ex)
+      else
       {
-        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+        this.visicutModel1.getGraphicObjects().setTransform(AffineTransform.getTranslateInstance(diff.x, diff.y));
       }
+      this.repaint();
+    }
+    catch (NoninvertibleTransformException ex)
+    {
+      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+    }
     movingStart = evt.getPoint();
   }
 }//GEN-LAST:event_previewPanel1MouseDragged
+
+private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+
+  RasterPart rp = new RasterPart(new LaserProperty());
+  VectorPart vp = new VectorPart(new LaserProperty());
+  EpilogCutter instance = new EpilogCutter("137.226.56.228");
+  LaserJob job = new LaserJob("VisiCut", "666", "bla", 500, null, vp, rp);
+  for (Mapping m :this.visicutModel1.getMappings())
+  {
+    GraphicSet set = m.getA().getMatchingObjects(this.visicutModel1.getGraphicObjects());
+    m.getB().addToLaserJob(job, set);
+  }
+  try
+  {
+    instance.sendJob(job);
+    JOptionPane.showMessageDialog(null, "Please press START on the Lasercutter");
+  }
+  catch (Exception ex)
+  {
+    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+    JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
+  }
+}//GEN-LAST:event_jButton2ActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
   private com.t_oster.visicut.gui.CamCalibrationDialog camCalibrationDialog1;

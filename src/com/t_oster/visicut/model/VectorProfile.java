@@ -58,7 +58,15 @@ public class VectorProfile extends LaserProfile
         {
           sh = objects.getTransform().createTransformedShape(sh);
         }
-        gg.draw(sh);
+        if (sh == null)
+        {
+          //WTF??
+          System.out.println("Error extracting Shape from: "+((ShapeObject) e).toString());
+        }
+        else
+        {
+          gg.draw(sh);
+        }
       }
     }
   }
