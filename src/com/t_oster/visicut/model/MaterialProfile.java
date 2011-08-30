@@ -74,7 +74,7 @@ public class MaterialProfile
   {
     for (LaserProfile p :this.laserProfile)
     {
-      if (p.getName().equals("name"))
+      if (p.getName().equals(name))
       {
         return p;
       }

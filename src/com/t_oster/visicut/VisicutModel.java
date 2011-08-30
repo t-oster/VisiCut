@@ -16,6 +16,7 @@ import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
+import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -147,7 +148,7 @@ public class VisicutModel
     this.material = material;
     propertyChangeSupport.firePropertyChange(PROP_MATERIAL, oldMaterial, material);
   }
-  protected List<Mapping> mappings = new LinkedList<Mapping>();
+  protected MappingSet mappings = null;
   public static final String PROP_MAPPINGS = "mappings";
 
   /**
@@ -155,7 +156,7 @@ public class VisicutModel
    *
    * @return the value of mappings
    */
-  public List<Mapping> getMappings()
+  public MappingSet getMappings()
   {
     return mappings;
   }
@@ -165,9 +166,9 @@ public class VisicutModel
    *
    * @param mappings new value of mappings
    */
-  public void setMappings(List<Mapping> mappings)
+  public void setMappings(MappingSet mappings)
   {
-    List<Mapping> oldMappings = this.mappings;
+    MappingSet oldMappings = this.mappings;
     this.mappings = mappings;
     propertyChangeSupport.firePropertyChange(PROP_MAPPINGS, oldMappings, mappings);
   }

@@ -35,4 +35,10 @@ public class MappingSet extends LinkedList<Mapping>
     this.name = name;
   }
 
+  @Override
+  public String toString()
+  {
+    return this.name;
+  }
+  
 }

@@ -50,6 +50,8 @@
         <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="filesDropSupport1PropertyChange"/>
       </Events>
     </Component>
+    <Component class="com.t_oster.visicut.model.MappingManager" name="mappingManager1">
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="menuBar">
       <Properties>
         <Property name="name" type="java.lang.String" value="menuBar" noResource="true"/>
@@ -301,10 +303,10 @@
           </Properties>
           <BindingProperties>
             <BindingProperty name="elements" source="profileManager1" sourcePath="${materials}" target="jComboBox1" targetPath="elements" updateStrategy="0" immediately="false"/>
-            <BindingProperty name="selectedItem" source="visicutModel1" sourcePath="${material}" target="jComboBox1" targetPath="selectedItem" updateStrategy="0" immediately="false">
-              <Property name="name" type="java.lang.String" value="ComboBoxToModel"/>
-            </BindingProperty>
           </BindingProperties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jComboBox1ActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
           <Properties>
@@ -314,15 +316,16 @@
         </Component>
         <Component class="javax.swing.JComboBox" name="jComboBox2">
           <Properties>
-            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="3">
-                <StringItem index="0" value="CutAllLines"/>
-                <StringItem index="1" value="cups-epilog"/>
-                <StringItem index="2" value="Windows"/>
-              </StringArray>
-            </Property>
             <Property name="name" type="java.lang.String" value="jComboBox2" noResource="true"/>
           </Properties>
+          <BindingProperties>
+            <BindingProperty name="elements" source="mappingManager1" sourcePath="${mappingSets}" target="jComboBox2" targetPath="elements" updateStrategy="1" immediately="false">
+              <Property name="name" type="java.lang.String" value="MappingSets from Manager"/>
+            </BindingProperty>
+          </BindingProperties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jComboBox2ActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="jButton1">
           <Properties>
@@ -401,7 +404,7 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="386" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="677" max="32767" attributes="0"/>
               <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
@@ -457,7 +460,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="362" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="653" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">

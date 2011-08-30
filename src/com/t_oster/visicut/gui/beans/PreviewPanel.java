@@ -105,14 +105,15 @@ public class PreviewPanel extends GraphicObjectsPanel
   {
     return material;
   }
-
   private PropertyChangeListener materialObserver = new PropertyChangeListener()
   {
+
     public void propertyChange(PropertyChangeEvent pce)
     {
       PreviewPanel.this.repaint();
     }
   };
+
   /**
    * Set the value of material
    *
@@ -131,7 +132,6 @@ public class PreviewPanel extends GraphicObjectsPanel
     }
     this.repaint();
   }
-
   protected GraphicSet graphicObjects = null;
 
   /**
@@ -172,21 +172,23 @@ public class PreviewPanel extends GraphicObjectsPanel
         current.concatenate(this.getPreviewTransformation());
         gg.setTransform(current);
       }
-
+      if (this.material != null)
+      {
         Color c = this.material.getColor();
         if (this.backgroundImage != null)
         {
           gg.setColor(Color.BLACK);
-          gg.drawRect(0, 0, (int) Util.mm2px(material.getWidth(),500), (int) Util.mm2px(material.getHeight(),500));
+          gg.drawRect(0, 0, (int) Util.mm2px(material.getWidth(), 500), (int) Util.mm2px(material.getHeight(), 500));
         }
         else
         {
           gg.setColor(c == null ? Color.BLUE : c);
-          gg.fillRect(0, 0, (int) Util.mm2px(material.getWidth(),500), (int) Util.mm2px(material.getHeight(),500));
+          gg.fillRect(0, 0, (int) Util.mm2px(material.getWidth(), 500), (int) Util.mm2px(material.getHeight(), 500));
         }
+      }
       if (this.getGraphicObjects() != null)
       {
-        if (this.getMappings() != null)
+        if (this.getMaterial() != null && this.getMappings() != null && this.getMappings().size() > 0)
         {
           for (Mapping m : this.getMappings())
           {

@@ -32,7 +32,7 @@ public class MappingManager
     ms.add(new Mapping(fs,"cut line"));
     fs = new FilterSet();
     fs.add(new MappingFilter("ObjectType", "Image"));
-    ms.add(new Mapping(fs, "FloydSteinberg"));
+    ms.add(new Mapping(fs, "Floyd Steinberg"));
     mappingSets.add(ms);
     ms = new MappingSet();
     ms.setName("Epilog");
@@ -42,7 +42,7 @@ public class MappingManager
     fs.add(new MappingFilter("FillColor", "none"));
     ms.add(new Mapping(fs,"cut line"));
     fs = new FilterSet();//Empty Filter matches everything
-    ms.add(new Mapping(fs, "FloydSteinberg"));
+    ms.add(new Mapping(fs, "Floyd Steinberg"));
     mappingSets.add(ms);
     //TODO: Refactor Mapping to Contain just the Name of the LaserProfile
   }

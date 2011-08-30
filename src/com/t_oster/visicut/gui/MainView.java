@@ -20,6 +20,7 @@ import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseWheelEvent;
@@ -62,6 +63,7 @@ public class MainView extends javax.swing.JFrame
     profileManager1 = new com.t_oster.visicut.model.ProfileManager();
     camCalibrationDialog1 = new com.t_oster.visicut.gui.CamCalibrationDialog();
     filesDropSupport1 = new com.t_oster.visicut.gui.beans.FilesDropSupport();
+    mappingManager1 = new com.t_oster.visicut.model.MappingManager();
     jPanel2 = new javax.swing.JPanel();
     jLabel1 = new javax.swing.JLabel();
     jComboBox1 = new javax.swing.JComboBox();
@@ -132,14 +134,27 @@ public class MainView extends javax.swing.JFrame
     org.jdesktop.beansbinding.ELProperty eLProperty = org.jdesktop.beansbinding.ELProperty.create("${materials}");
     org.jdesktop.swingbinding.JComboBoxBinding jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, profileManager1, eLProperty, jComboBox1);
     bindingGroup.addBinding(jComboBoxBinding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material}"), jComboBox1, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"), "ComboBoxToModel");
-    bindingGroup.addBinding(binding);
+
+    jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jComboBox1ActionPerformed(evt);
+      }
+    });
 
     jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
     jLabel2.setName("jLabel2"); // NOI18N
 
-    jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CutAllLines", "cups-epilog", "Windows" }));
     jComboBox2.setName("jComboBox2"); // NOI18N
+
+    eLProperty = org.jdesktop.beansbinding.ELProperty.create("${mappingSets}");
+    jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, mappingManager1, eLProperty, jComboBox2, "MappingSets from Manager");
+    bindingGroup.addBinding(jComboBoxBinding);
+
+    jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jComboBox2ActionPerformed(evt);
+      }
+    });
 
     jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
     jButton1.setName("jButton1"); // NOI18N
@@ -263,7 +278,7 @@ public class MainView extends javax.swing.JFrame
     previewPanel1.setLayout(previewPanel1Layout);
     previewPanel1Layout.setHorizontalGroup(
       previewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 362, Short.MAX_VALUE)
+      .addGap(0, 653, Short.MAX_VALUE)
     );
     previewPanel1Layout.setVerticalGroup(
       previewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -274,7 +289,7 @@ public class MainView extends javax.swing.JFrame
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 386, Short.MAX_VALUE)
+      .addGap(0, 677, Short.MAX_VALUE)
       .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel1Layout.createSequentialGroup()
           .addContainerGap()
@@ -481,7 +496,7 @@ private void previewPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIR
     Point diff = new Point(evt.getPoint().x - movingStart.x, evt.getPoint().y - movingStart.y);
     try
     {
-      
+
       if (movingGraphics)
       {
         this.previewPanel1.getLastDrawnTransform().createInverse().deltaTransform(diff, diff);
@@ -513,22 +528,22 @@ private void previewPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIR
 }//GEN-LAST:event_previewPanel1MouseDragged
 
 private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-    try
-    {
-      this.visicutModel1.sendJob();
-      JOptionPane.showMessageDialog(null, "Please press START on the Lasercutter");
-    }
-    catch (Exception ex)
-    {
-       JOptionPane.showMessageDialog(null, "Error: "+ex.getLocalizedMessage());
-    }
+  try
+  {
+    this.visicutModel1.sendJob();
+    JOptionPane.showMessageDialog(null, "Please press START on the Lasercutter");
+  }
+  catch (Exception ex)
+  {
+    JOptionPane.showMessageDialog(null, "Error: " + ex.getLocalizedMessage());
+  }
 }//GEN-LAST:event_jButton2ActionPerformed
 
 private void previewPanel1MouseWheelMoved(java.awt.event.MouseWheelEvent evt)//GEN-FIRST:event_previewPanel1MouseWheelMoved
 {//GEN-HEADEREND:event_previewPanel1MouseWheelMoved
   if (evt.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
   {
-    this.previewPanel1.setZoom(this.previewPanel1.getZoom()-(evt.getUnitsToScroll()*this.previewPanel1.getZoom()/32));
+    this.previewPanel1.setZoom(this.previewPanel1.getZoom() - (evt.getUnitsToScroll() * this.previewPanel1.getZoom() / 32));
   }
 }//GEN-LAST:event_previewPanel1MouseWheelMoved
 
@@ -542,6 +557,49 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
     }
   }
 }//GEN-LAST:event_filesDropSupport1PropertyChange
+
+private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+  MappingSet ms = (MappingSet) this.jComboBox2.getSelectedItem();
+  if (ms != null && this.visicutModel1.getMaterial() != null)
+  {
+     MaterialProfile m = this.visicutModel1.getMaterial();
+     MappingSet supportedSubset = new MappingSet();
+     supportedSubset.setName(ms.getName()+"*");
+     String mappings = "";
+    //Check if the current Material supports all Mappings in this set
+    for (Mapping map : ms)
+    {
+      if (m.getLaserProfile(map.getProfileName()) == null)
+      {
+        mappings+=map.getProfileName()+"\n";
+      }
+      else
+      {
+        supportedSubset.add(map);
+      }
+    }
+    if (!"".equals(mappings))//there are unsupported Mappings
+    {
+      if (JOptionPane.showConfirmDialog(this, "The Mapping you selected contains the following Profiles: \n"+mappings
+        +"which are not supported by the current Material. If you proceed all Items matching to these Profiles will be unmapped.", "Warning", JOptionPane.OK_CANCEL_OPTION)
+        == JOptionPane.CANCEL_OPTION)
+      {
+        this.jComboBox2.setSelectedItem(this.visicutModel1.getMappings());
+        return;
+      }
+      this.visicutModel1.setMappings(supportedSubset);
+    }
+    else
+    {
+      this.visicutModel1.setMappings(ms);
+    }
+  }
+}//GEN-LAST:event_jComboBox2ActionPerformed
+
+private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+//TODO: Check if Material supports all Mappings
+  this.visicutModel1.setMaterial((MaterialProfile) this.jComboBox1.getSelectedItem());
+}//GEN-LAST:event_jComboBox1ActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
@@ -571,6 +629,7 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
   private javax.swing.JTextField jTextField2;
   private javax.swing.JTextField jTextField3;
   private com.t_oster.visicut.gui.MappingDialog mappingDialog1;
+  private com.t_oster.visicut.model.MappingManager mappingManager1;
   private javax.swing.JMenuBar menuBar;
   private javax.swing.JFileChooser openFileChooser;
   private javax.swing.JMenuItem openMenuItem;
