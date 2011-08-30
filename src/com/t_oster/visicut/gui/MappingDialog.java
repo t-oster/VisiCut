@@ -11,7 +11,7 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.visicut.model.LaserProfile;
-import com.t_oster.visicut.model.Mapping;
+import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
@@ -260,7 +260,7 @@ public class MappingDialog extends javax.swing.JDialog
     firePropertyChange(PROP_SELECTEDMAPPING, oldSelectedMapping, selectedMapping);
     if (selectedMapping != null && !selectedMapping.equals(oldSelectedMapping))
     {
-      this.setSelectedLaserProfile(selectedMapping.getB());
+      this.setSelectedLaserProfile(this.material.getLaserProfile(selectedMapping.getProfileName()));
     }
   }
   protected List<Mapping> currentMappings = new LinkedList<Mapping>();
@@ -396,12 +396,12 @@ private void cuttingProfilesPanel1PropertyChange(java.beans.PropertyChangeEvent 
     LaserProfile lp = (LaserProfile) evt.getNewValue();
     if (this.getSelectedMapping() != null)
     {//A Mapping is selected, thus we change its laser profile
-      this.getSelectedMapping().setB(lp);
+      this.getSelectedMapping().setB(lp.getName());
       this.matchingPartsPanel1.repaint();
     }
     else if (this.getSelectedFilterSet() != null)
     {//A Filter Set is selected, so we create a new Mapping
-      Mapping m = new Mapping(this.getSelectedFilterSet(), lp);
+      Mapping m = new Mapping(this.getSelectedFilterSet(), lp.getName());
       this.getCurrentMappings().add(m);
       this.setSelectedMapping(m);
     }

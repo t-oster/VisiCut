@@ -1,6 +1,7 @@
 package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.LaserJob;
+import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.utils.ShapeConverter;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;

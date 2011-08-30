@@ -1,6 +1,9 @@
 package com.t_oster.visicut.gui.beans;
 
-import com.t_oster.visicut.model.Mapping;
+import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.model.LaserProfile;
+import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
@@ -9,6 +12,8 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -24,15 +29,15 @@ import javax.imageio.ImageIO;
  */
 public class PreviewPanel extends GraphicObjectsPanel
 {
-  
-  protected AffineTransform previewTransformation = AffineTransform.getTranslateInstance(40, 150);
 
+  protected AffineTransform previewTransformation = AffineTransform.getTranslateInstance(40, 150);
   private AffineTransform lastDrawnTransform = null;
-  
+
   public AffineTransform getLastDrawnTransform()
   {
     return lastDrawnTransform;
   }
+
   /**
    * Get the value of previewTransformation
    *
@@ -53,7 +58,6 @@ public class PreviewPanel extends GraphicObjectsPanel
     this.previewTransformation = previewTransformation;
     this.repaint();
   }
-
   protected RenderedImage backgroundImage = null;
 
   /**
@@ -90,26 +94,41 @@ public class PreviewPanel extends GraphicObjectsPanel
       Logger.getLogger(PreviewPanel.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
-  protected Color materialColor = null;
+  protected MaterialProfile material = new MaterialProfile();
 
   /**
-   * Get the value of materialColor
+   * Get the value of material
    *
-   * @return the value of materialColor
+   * @return the value of material
    */
-  public Color getMaterialColor()
+  public MaterialProfile getMaterial()
   {
-    return materialColor;
+    return material;
   }
 
-  /**
-   * Set the value of materialColor
-   *
-   * @param materialColor new value of materialColor
-   */
-  public void setMaterialColor(Color materialColor)
+  private PropertyChangeListener materialObserver = new PropertyChangeListener()
   {
-    this.materialColor = materialColor;
+    public void propertyChange(PropertyChangeEvent pce)
+    {
+      PreviewPanel.this.repaint();
+    }
+  };
+  /**
+   * Set the value of material
+   *
+   * @param material new value of material
+   */
+  public void setMaterial(MaterialProfile material)
+  {
+    if (this.material != null)
+    {
+      this.material.removePropertyChangeListener(materialObserver);
+    }
+    this.material = material;
+    if (this.material != null)
+    {
+      this.material.addPropertyChangeListener(materialObserver);
+    }
     this.repaint();
   }
 
@@ -147,24 +166,33 @@ public class PreviewPanel extends GraphicObjectsPanel
       {
         gg.drawRenderedImage(backgroundImage, null);
       }
-      else
-      {
-        gg.setColor(this.getMaterialColor());
-        gg.fill(gg.getClip());
-      }
       if (this.previewTransformation != null)
       {
         AffineTransform current = gg.getTransform();
         current.concatenate(this.getPreviewTransformation());
         gg.setTransform(current);
       }
+
+        Color c = this.material.getColor();
+        if (this.backgroundImage != null)
+        {
+          gg.setColor(Color.BLACK);
+          gg.drawRect(0, 0, (int) Util.mm2px(material.getWidth(),500), (int) Util.mm2px(material.getHeight(),500));
+        }
+        else
+        {
+          gg.setColor(c == null ? Color.BLUE : c);
+          gg.fillRect(0, 0, (int) Util.mm2px(material.getWidth(),500), (int) Util.mm2px(material.getHeight(),500));
+        }
       if (this.getGraphicObjects() != null)
       {
         if (this.getMappings() != null)
         {
           for (Mapping m : this.getMappings())
           {
-            m.getB().renderPreview(gg, m.getA().getMatchingObjects(this.getGraphicObjects()));
+            GraphicSet set = m.getFilterSet().getMatchingObjects(this.graphicObjects);
+            LaserProfile p = this.getMaterial().getLaserProfile(m.getProfileName());
+            p.renderPreview(gg, set);
           }
         }
         else

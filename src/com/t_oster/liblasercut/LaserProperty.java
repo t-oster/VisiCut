@@ -12,7 +12,7 @@ public class LaserProperty implements Cloneable
   private int power = 20;
   private int speed = 100;
   private int frequency = 5000;
-  private int focus = 0;
+  private float focus = 0;
 
   public LaserProperty()
   {
@@ -28,7 +28,7 @@ public class LaserProperty implements Cloneable
     this(power, speed, frequency, 0);
   }
 
-  public LaserProperty(int power, int speed, int frequency, int focus)
+  public LaserProperty(int power, int speed, int frequency, float focus)
   {
     this.power = power;
     this.speed = speed;
@@ -76,14 +76,14 @@ public class LaserProperty implements Cloneable
   }
 
   /**
-   * Sets the Focus aka moves the Z axis. Values are given in mm/10.
+   * Sets the Focus aka moves the Z axis. Values are given in mm.
    * Positive values move the Z axis down aka makes the distance between
    * laser and object bigger.
    * The possible range depends on the LaserCutter, so wrong setting
    * may result in IllegalJobExceptions
-   * @param focus the relative Distance from object to Laser in mm/10
+   * @param focus the relative Distance from object to Laser in mm
    */
-  public void setFocus(int focus)
+  public void setFocus(float focus)
   {
     this.focus = focus;
   }
@@ -92,7 +92,7 @@ public class LaserProperty implements Cloneable
    * Returns the relative (to the distance at starting the job) distance
    * between laser and object in mm/10s
    */
-  public int getFocus()
+  public float getFocus()
   {
     return this.focus;
   }

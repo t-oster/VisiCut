@@ -39,18 +39,18 @@ public class EpilogCutter extends LaserCutter {
     private static final double BED_HEIGHT = 300;//Bed height in mm
     private static final int MINFOCUS = -500;//Minimal focus value (not mm)
     private static final int MAXFOCUS = 500;//Maximal focus value (not mm)
-    private static final double FOCUSWIDTH = 0.252;//How much dmm/unit the focus values are
+    private static final double FOCUSWIDTH = 0.0252;//How much mm/unit the focus values are
     private String hostname;
     private Socket connection;
     private InputStream in;
     private OutputStream out;
 
-    private int dmm2focus(int dmm) {
-        return (int) (dmm / FOCUSWIDTH);
+    private int mm2focus(float mm) {
+        return (int) (mm / FOCUSWIDTH);
     }
 
-    private int focus2dmm(int focus) {
-        return (int) (focus * FOCUSWIDTH);
+    private float focus2mm(int focus) {
+        return (float) (focus * FOCUSWIDTH);
     }
 
     public EpilogCutter(String hostname) {
@@ -195,9 +195,9 @@ public class EpilogCutter extends LaserCutter {
 
             for (VectorCommand cmd : job.getVectorPart().getCommandList()) {
                 if (cmd.getType() == VectorCommand.CmdType.SETFOCUS) {
-                    if (dmm2focus(cmd.getFocus()) > MAXFOCUS || (dmm2focus(cmd.getFocus())) < MINFOCUS) {
+                    if (mm2focus(cmd.getFocus()) > MAXFOCUS || (mm2focus(cmd.getFocus())) < MINFOCUS) {
                         throw new IllegalJobException("Illegal Focus value. This Lasercutter supports values between"
-                                + 10 * focus2dmm(MINFOCUS) + "mm to " + 10 * focus2dmm(MAXFOCUS) + "mm.");
+                                + focus2mm(MINFOCUS) + "mm to " + focus2mm(MAXFOCUS) + "mm.");
                     }
                 }
             }
@@ -296,7 +296,7 @@ public class EpilogCutter extends LaserCutter {
             /* Raster speed */
             out.printf("\033&z%dS", curprop.getSpeed());
             /* Focus */
-            out.printf("\033&y%dA", dmm2focus(curprop.getFocus()));
+            out.printf("\033&y%dA", mm2focus(curprop.getFocus()));
 
             out.printf("\033*r%dT", rp != null ? rp.getHeight() : 10);//height);
             out.printf("\033*r%dS", rp != null ? rp.getWidth() : 10);//width);
@@ -326,7 +326,7 @@ public class EpilogCutter extends LaserCutter {
                 }
                 if (newprop.getFocus() != curprop.getFocus()) {
                     /* Focus  */
-                    out.printf("\033&y%dA", dmm2focus(curprop.getFocus()));
+                    out.printf("\033&y%dA", mm2focus(curprop.getFocus()));
                 }
                 curprop = newprop;
                 Point sp = rp.getRasterStart(i);
@@ -385,7 +385,7 @@ public class EpilogCutter extends LaserCutter {
         /* Raster speed */
         out.printf("\033&z%dS", curprop.getSpeed());
         /* Focus */
-        out.printf("\033&y%dA", dmm2focus(curprop.getFocus()));
+        out.printf("\033&y%dA", mm2focus(curprop.getFocus()));
 
         out.printf("\033*r%dT", rp != null ? rp.getHeight() : 10);//height);
         out.printf("\033*r%dS", rp != null ? rp.getWidth() : 10);//width);
@@ -415,7 +415,7 @@ public class EpilogCutter extends LaserCutter {
             }
             if (newprop.getFocus() != curprop.getFocus()) {
                 /* Focus  */
-                out.printf("\033&y%dA", dmm2focus(curprop.getFocus()));
+                out.printf("\033&y%dA", mm2focus(curprop.getFocus()));
             }
             curprop = newprop;
             Point sp = rp.getRasterStart(i);
@@ -485,7 +485,7 @@ public class EpilogCutter extends LaserCutter {
                 }
                 switch (cmd.getType()) {
                     case SETFOCUS: {
-                        out.printf("WF%d;", dmm2focus(cmd.getFocus()));
+                        out.printf("WF%d;", mm2focus(cmd.getFocus()));
                         break;
                     }
                     case SETFREQUENCY: {

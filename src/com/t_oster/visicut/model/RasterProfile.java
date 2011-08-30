@@ -9,7 +9,6 @@ import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -112,6 +111,7 @@ public class RasterProfile extends LaserProfile
   @Override
   public void addToLaserJob(LaserJob job, GraphicSet objects)
   {
+    job.getRasterPart().setCurrentLaserProperty(this.getCuttingProperty());
     Rectangle2D bb = objects.getBoundingBox();
     if (bb.getWidth() > 0 && bb.getHeight() > 0)
     {

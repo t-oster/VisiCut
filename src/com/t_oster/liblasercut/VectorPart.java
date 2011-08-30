@@ -75,7 +75,7 @@ public class VectorPart
     }
   }
 
-  public void setFocus(int focus)
+  public void setFocus(float focus)
   {
     if (focus != this.currentCuttingProperty.getFocus())
     {

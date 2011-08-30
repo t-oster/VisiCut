@@ -4,17 +4,23 @@
  */
 package com.t_oster.visicut;
 
-import com.t_oster.liblasercut.platform.Util;
-import com.t_oster.visicut.model.Mapping;
+import com.t_oster.liblasercut.IllegalJobException;
+import com.t_oster.liblasercut.LaserJob;
+import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.RasterPart;
+import com.t_oster.liblasercut.VectorPart;
+import com.t_oster.liblasercut.drivers.EpilogCutter;
+import com.t_oster.visicut.model.LaserProfile;
+import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
-import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,51 +64,6 @@ public class VisicutModel
     AffineTransform oldPreviewTransformation = this.previewTransformation;
     this.previewTransformation = previewTransformation;
     propertyChangeSupport.firePropertyChange(PROP_PREVIEWTRANSFORMATION, oldPreviewTransformation, previewTransformation);
-  }
-  protected float materialWidth = 30;
-  public static final String PROP_MATERIALWIDTH = "materialWidth";
-
-  /**
-   * Get the value of materialWidth
-   *
-   * @return the value of materialWidth
-   */
-  public float getMaterialWidth()
-  {
-    return materialWidth;
-  }
-
-  /**
-   * Set the value of materialWidth
-   *
-   * @param materialWidth new value of materialWidth
-   */
-  public void setMaterialWidth(float materialWidth)
-  {
-    float oldMaterialWidth = this.materialWidth;
-    this.materialWidth = materialWidth;
-    propertyChangeSupport.firePropertyChange(PROP_MATERIALWIDTH, oldMaterialWidth, materialWidth);
-  }
-  protected float materialHeight = 30;
-
-  /**
-   * Get the value of materialHeight
-   *
-   * @return the value of materialHeight
-   */
-  public float getMaterialHeight()
-  {
-    return materialHeight;
-  }
-
-  /**
-   * Set the value of materialHeight
-   *
-   * @param materialHeight new value of materialHeight
-   */
-  public void setMaterialHeight(float materialHeight)
-  {
-    this.materialHeight = materialHeight;
   }
   protected GraphicSet graphicObjects = null;
   public static final String PROP_GRAPHICOBJECTS = "graphicObjects";
@@ -209,5 +170,21 @@ public class VisicutModel
     List<Mapping> oldMappings = this.mappings;
     this.mappings = mappings;
     propertyChangeSupport.firePropertyChange(PROP_MAPPINGS, oldMappings, mappings);
+  }
+
+  public void sendJob() throws IllegalJobException, SocketTimeoutException, Exception
+  {
+    RasterPart rp = new RasterPart(new LaserProperty());
+    VectorPart vp = new VectorPart(new LaserProperty());
+    EpilogCutter instance = new EpilogCutter("137.226.56.228");
+    LaserJob job = new LaserJob("VisiCut", "666", "bla", 500, null, vp, rp);
+    for (Mapping m : this.getMappings())
+    {
+      GraphicSet set = m.getA().getMatchingObjects(this.getGraphicObjects());
+      LaserProfile p = material.getLaserProfile(m.getProfileName());
+      p.addToLaserJob(job, set, material.getDepth());
+    }
+    job.getVectorPart().setFocus(0);
+    instance.sendJob(job);
   }
 }

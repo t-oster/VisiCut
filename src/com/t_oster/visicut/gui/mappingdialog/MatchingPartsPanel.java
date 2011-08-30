@@ -1,6 +1,7 @@
 package com.t_oster.visicut.gui.mappingdialog;
 
-import com.t_oster.visicut.model.Mapping;
+import com.t_oster.visicut.model.LaserProfile;
+import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
@@ -8,6 +9,7 @@ import com.t_oster.visicut.model.mapping.FilterSet;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.List;
 import javax.swing.JPanel;
 
 /**
@@ -119,10 +121,9 @@ public class MatchingPartsPanel extends JPanel
     {
       if (this.getSelectedMapping() != null)
       {
-        GraphicSet set = this.getSelectedMapping().getA().getMatchingObjects(this.getGraphicElements());
-        set.setTransform(null);
-        this.getSelectedMapping().getB().renderPreview(
-          gg, set);
+        GraphicSet set = this.getSelectedMapping().getFilterSet().getMatchingObjects(this.getGraphicElements());
+        LaserProfile p = this.material.getLaserProfile(this.getSelectedMapping().getProfileName());
+        p.renderPreview(gg, set);
       }
       else if (this.getSelectedFilterSet() != null)
       {

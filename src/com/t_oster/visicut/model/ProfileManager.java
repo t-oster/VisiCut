@@ -31,7 +31,7 @@ public class ProfileManager
     MaterialProfile profile = new MaterialProfile();
     profile.setName("Finnpappe");
     profile.setColor(new Color(209,163,117));
-    profile.setHeight(3);
+    profile.setDepth(3);
     List<LaserProfile> lprofiles = new LinkedList<LaserProfile>();
     VectorProfile vp = new VectorProfile();
     vp.setName("cut line");
@@ -79,7 +79,7 @@ public class ProfileManager
     profile = new MaterialProfile();
     profile.setColor(new Color(117,163,209));
     profile.setName("Plexiglass");
-    profile.setHeight(3);
+    profile.setDepth(1.5f);
     lprofiles = new LinkedList<LaserProfile>();
     vp = new VectorProfile();
     vp.setName("cut line");

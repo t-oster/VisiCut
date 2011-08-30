@@ -109,9 +109,20 @@ public abstract class LaserProfile
   
   public abstract void addToLaserJob(LaserJob job, GraphicSet objects);
   
+  public void addToLaserJob(LaserJob job, GraphicSet set, float focusOffset)
+  {
+    LaserProperty p = this.getCuttingProperty();
+    float originalFocus = p.getFocus();
+    p.setFocus(originalFocus+focusOffset);
+    this.addToLaserJob(job, set);
+    p.setFocus(originalFocus);
+  }
+  
   @Override
   public String toString()
   {
     return (this.getName() != null ? this.getName() : super.toString());
   }
+
+ 
 }
