@@ -2,6 +2,7 @@ package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.liblasercut.utils.ShapeConverter;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
@@ -52,7 +53,7 @@ public class VectorProfile extends LaserProfile
       if (e instanceof ShapeObject)
       {
         gg.setColor(this.getColor());
-        Stroke s = new BasicStroke(this.getWidth());
+        Stroke s = new BasicStroke((int) Util.mm2px(this.getWidth(),500));
         gg.setStroke(s);
         Shape sh = ((ShapeObject) e).getShape();
         if (objects.getTransform()!=null)

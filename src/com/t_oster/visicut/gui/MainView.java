@@ -500,6 +500,7 @@ private void previewPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
     Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
     bb = Util.transform(bb, this.previewPanel1.getLastDrawnTransform());
     movingGraphics = bb.contains(evt.getPoint());
+    this.previewPanel1.setEditRectangle(movingGraphics ? bb : null);
   }
   movingStart = evt.getPoint();
 }//GEN-LAST:event_previewPanel1MousePressed
@@ -507,6 +508,7 @@ private void previewPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
 private void previewPanel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanel1MouseReleased
   movingStart = null;
   movingGraphics = false;
+  previewPanel1.setEditRectangle(null);
 }//GEN-LAST:event_previewPanel1MouseReleased
 
 private void previewPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanel1MouseDragged
@@ -530,6 +532,9 @@ private void previewPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIR
         {
           this.visicutModel1.getGraphicObjects().setTransform(AffineTransform.getTranslateInstance(diff.x, diff.y));
         }
+        Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
+        bb = Util.transform(bb, this.previewPanel1.getLastDrawnTransform());
+        this.previewPanel1.setEditRectangle(bb);
       }
       else
       {

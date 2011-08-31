@@ -6,20 +6,24 @@ import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 
 /**
  * This class implements the Panel which provides the Preview
@@ -80,7 +84,6 @@ public class PreviewPanel extends GraphicObjectsPanel
     this.backgroundImage = backgroundImage;
     this.repaint();
   }
-
   protected MaterialProfile material = new MaterialProfile();
 
   /**
@@ -117,8 +120,41 @@ public class PreviewPanel extends GraphicObjectsPanel
     {
       this.material.addPropertyChangeListener(materialObserver);
     }
+    this.renderBuffer.clear();
     this.repaint();
   }
+  
+  protected Rectangle editRectangle = null;
+
+  /**
+   * Get the value of editRectangle
+   *
+   * @return the value of editRectangle
+   */
+  public Rectangle getEditRectangle()
+  {
+    return editRectangle;
+  }
+
+  /**
+   * Set the value of editRectangle
+   * The EditRectangele is drawn if
+   * not null
+   *
+   * @param editRectangle new value of editRectangle
+   */
+  public void setEditRectangle(Rectangle editRectangle)
+  {
+    this.editRectangle = editRectangle;
+    this.repaint();
+  }
+  
+  public void setEditRectangle(Rectangle2D r)
+  {
+    this.setEditRectangle(r == null ? null : new Rectangle((int) r.getX(), (int) r.getY(), (int) r.getWidth(), (int) r.getHeight()));
+  }
+
+  
   protected GraphicSet graphicObjects = null;
 
   /**
@@ -139,7 +175,34 @@ public class PreviewPanel extends GraphicObjectsPanel
   public void setGraphicObjects(GraphicSet graphicObjects)
   {
     this.graphicObjects = graphicObjects;
+    this.renderBuffer.clear();
     this.repaint();
+  }
+  /**
+   * The renderBuffer contains a BufferedImage for each Mapping.
+   * On refreshRenderBuffer, the Images are created by rendering
+   * the GraphicElements matching the mapping onto an Image,
+   * with the size of the BoundingBox.
+   * When drawn the offset of the BoundingBox has to be used as Upper Left
+   * Corner
+   */
+  private HashMap<Mapping, BufferedImage> renderBuffer = new LinkedHashMap<Mapping, BufferedImage>();
+
+  private void refreshRenderBuffer(Mapping m)
+  {
+    GraphicSet set = m.getFilterSet().getMatchingObjects(this.graphicObjects);
+    Rectangle2D bb = set.getBoundingBox();
+    BufferedImage buffer = null;
+    if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
+    {
+      LaserProfile p = this.getMaterial().getLaserProfile(m.getProfileName());
+      buffer = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_ARGB);
+      Graphics2D gg = buffer.createGraphics();
+      //Normalize Rendering to 0,0
+      gg.setTransform(AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY()));
+      p.renderPreview(gg, set);
+    }
+    renderBuffer.put(m, buffer);
   }
 
   @Override
@@ -149,6 +212,7 @@ public class PreviewPanel extends GraphicObjectsPanel
     if (g instanceof Graphics2D)
     {
       Graphics2D gg = (Graphics2D) g;
+      AffineTransform backup = gg.getTransform();
       if (backgroundImage != null)
       {
         gg.drawRenderedImage(backgroundImage, null);
@@ -179,9 +243,22 @@ public class PreviewPanel extends GraphicObjectsPanel
         {
           for (Mapping m : this.getMappings())
           {
-            GraphicSet set = m.getFilterSet().getMatchingObjects(this.graphicObjects);
-            LaserProfile p = this.getMaterial().getLaserProfile(m.getProfileName());
-            p.renderPreview(gg, set);
+            if (!renderBuffer.containsKey(m))
+            {
+              //Creating Buffer
+              this.refreshRenderBuffer(m);
+            }
+            Rectangle2D bb = m.getFilterSet().getMatchingObjects(graphicObjects).getBoundingBox();
+            if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
+            {
+              BufferedImage img = this.renderBuffer.get(m);
+              if (img == null || bb.getWidth() != img.getWidth() || bb.getHeight() != img.getHeight())
+              {
+                //Refreshing Buffer
+                this.refreshRenderBuffer(m);
+              }
+              gg.drawRenderedImage(img, AffineTransform.getTranslateInstance(bb.getX(), bb.getY()));
+            }
           }
         }
         else
@@ -193,6 +270,15 @@ public class PreviewPanel extends GraphicObjectsPanel
         }
       }
       this.lastDrawnTransform = gg.getTransform();
+      if (this.editRectangle != null)
+      {
+          //The Rectangle is drawn without any Transformation
+          gg.setTransform(AffineTransform.getRotateInstance(0));
+          gg.setColor(Color.GRAY);
+          gg.setStroke(new BasicStroke(2,BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND,0,new float[]{10,10},0));
+          Rectangle2D toDraw = editRectangle;//Util.transform(editRectangle, this.lastDrawnTransform);
+          gg.drawRect((int) toDraw.getX(), (int) toDraw.getY(), (int) toDraw.getWidth(), (int) toDraw.getHeight());
+      }
     }
   }
   protected List<Mapping> mappings = null;

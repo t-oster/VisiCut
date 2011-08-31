@@ -66,45 +66,39 @@ public class RasterProfile extends LaserProfile
     this.ditherAlgorithm = ditherAlgorithm;
   }
 
-  private BlackWhiteRaster buffer = null;
-  private Rectangle2D oldBB = null;
   @Override
   public void renderPreview(Graphics2D gg, GraphicSet objects)
   {
     Rectangle2D bb = objects.getBoundingBox();
-    if (bb.getWidth() > 0 && bb.getHeight() > 0)
+    if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
     {
-      if (buffer == null || bb.getWidth() != oldBB.getWidth() || bb.getHeight() != oldBB.getHeight())
-      {//Image not dithered yet, or resized=>redithering
-        BufferedImage scaledImg = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = scaledImg.createGraphics();
-        g.setColor(Color.white);
-        g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
-        if (objects.getTransform() != null)
-        {//Just apply scaling Part. Translation is already in BoundingBox
-          AffineTransform tr = objects.getTransform();
-          g.setTransform(AffineTransform.getScaleInstance(tr.getScaleX(), tr.getScaleY()));
-        }
-        for (GraphicObject o : objects)
-        {
-          o.render(g);
-        }
-        BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg);
-        //ad.setColorShift(this.getColorShift());
-        buffer = new BlackWhiteRaster(ad, this.getDitherAlgorithm());
+      BufferedImage scaledImg = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_RGB);
+      Graphics2D g = scaledImg.createGraphics();
+      g.setColor(Color.white);
+      g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
+      if (objects.getTransform() != null)
+      {//Just apply scaling Part. Translation is already in BoundingBox
+        AffineTransform tr = objects.getTransform();
+        g.setTransform(AffineTransform.getScaleInstance(tr.getScaleX(), tr.getScaleY()));
       }
-      gg.setColor(this.getColor());
-      for (int y = 0; y < buffer.getHeight(); y++)
+      for (GraphicObject o : objects)
       {
-        for (int x = 0; x < buffer.getWidth(); x++)
+        o.render(g);
+      }
+      BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg);
+      ad.setColorShift(this.getColorShift());
+      BlackWhiteRaster bwr = new BlackWhiteRaster(ad, this.getDitherAlgorithm());
+      gg.setColor(this.getColor());
+      for (int y = 0; y < bwr.getHeight(); y++)
+      {
+        for (int x = 0; x < bwr.getWidth(); x++)
         {
-          if (buffer.isBlack(x, y))
+          if (bwr.isBlack(x, y))
           {
-            gg.drawLine((int) bb.getX()+x, (int) bb.getY()+y, (int) bb.getX()+x, (int) bb.getY()+y);
+            gg.drawLine((int) bb.getX() + x, (int) bb.getY() + y, (int) bb.getX() + x, (int) bb.getY() + y);
           }
         }
       }
-      oldBB = bb;
     }
   }
 

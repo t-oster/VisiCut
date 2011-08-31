@@ -202,6 +202,10 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
   public GraphicSet getUnmappedObjects()
   {
     GraphicSet result = new GraphicSet();
+    if (graphicObjects == null)
+    {
+      return result;
+    }
     result.setTransform(this.graphicObjects.getTransform());
     if (this.graphicObjects != null)
     {
@@ -237,7 +241,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
 
   public Object getRoot()
   {
-    return this.graphicObjects == null ? "root" : root;
+    return root;
   }
 
   public Object getChild(Object o, int i)
@@ -303,9 +307,22 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     //throw new UnsupportedOperationException("Not supported yet.");
   }
 
-  public int getIndexOfChild(Object o, Object o1)
+  public int getIndexOfChild(Object parent, Object child)
   {
-    return 3;//throw new UnsupportedOperationException("Not supported yet.");
+    if (parent == null || child == null)
+    {
+      return -1;
+    }
+    int i = 0;
+    for (Object o : this.getChildren(parent))
+    {
+      if (o.equals(child))
+      {
+        return i;
+      }
+      i++;
+    }
+    return -1;
   }
   private List<TreeModelListener> listeners = new LinkedList<TreeModelListener>();
 

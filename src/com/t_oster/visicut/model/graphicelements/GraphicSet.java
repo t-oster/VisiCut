@@ -33,6 +33,21 @@ public class GraphicSet extends LinkedList<GraphicObject>
   }
 
   /**
+   * Get the Translate Part of the current Transform
+   * aka the offset, points are moved before rendering
+   * @return 
+   */
+  public AffineTransform getTranslatePart()
+  {
+    return transform == null ? AffineTransform.getTranslateInstance(0, 0) : AffineTransform.getTranslateInstance(transform.getTranslateX(), transform.getTranslateY());
+  }
+
+  public AffineTransform getScalePart()
+  {
+    return transform == null ? AffineTransform.getScaleInstance(1, 1) : AffineTransform.getScaleInstance(transform.getScaleX(), transform.getScaleY());
+  }
+
+  /**
    * Set the value of transform
    *
    * @param transform new value of transform
@@ -45,9 +60,14 @@ public class GraphicSet extends LinkedList<GraphicObject>
   }
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
+  /**
+   * Returns the BoundingBox of this Set when rendered with the current
+   * Transformation.
+   * @return 
+   */
   public Rectangle2D getBoundingBox()
   {
-    Rectangle2D result = new Rectangle();
+    Rectangle2D result = null;
     for (GraphicObject o : this)
     {
       Rectangle2D current = o.getBoundingBox();
@@ -55,11 +75,18 @@ public class GraphicSet extends LinkedList<GraphicObject>
       {
         current = Util.transform(current, this.transform);
       }
-      Rectangle2D.union(result, current, result);
+      if (result == null)
+      {
+        result = current;
+      }
+      else
+      {
+        Rectangle2D.union(result, current, result);
+      }
     }
     return result;
   }
-  
+
   /**
    * Add PropertyChangeListener.
    *
@@ -79,5 +106,4 @@ public class GraphicSet extends LinkedList<GraphicObject>
   {
     propertyChangeSupport.removePropertyChangeListener(listener);
   }
-
 }
