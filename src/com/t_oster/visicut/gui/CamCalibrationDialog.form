@@ -90,7 +90,9 @@
             <Property name="name" type="java.lang.String" value="calibrationPanel1" noResource="true"/>
           </Properties>
           <BindingProperties>
-            <BindingProperty name="backgroundImage" source="Form" sourcePath="${laserCam.capturedImage}" target="calibrationPanel1" targetPath="backgroundImage" updateStrategy="0" immediately="false"/>
+            <BindingProperty name="backgroundImage" source="Form" sourcePath="${laserCam.capturedImage}" target="calibrationPanel1" targetPath="backgroundImage" updateStrategy="1" immediately="false">
+              <Property name="name" type="java.lang.String" value="CamImageToPanel"/>
+            </BindingProperty>
             <BindingProperty name="previewTransformation" source="Form" sourcePath="${currentTransformation}" target="calibrationPanel1" targetPath="previewTransformation" updateStrategy="0" immediately="false">
               <Property name="name" type="java.lang.String" value="TransformationToPanel"/>
             </BindingProperty>
@@ -104,7 +106,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="252" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="251" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>

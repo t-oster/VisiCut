@@ -35,7 +35,10 @@
         <Property name="name" type="java.lang.String" value="camCalibrationDialog1" noResource="true"/>
       </Properties>
       <BindingProperties>
-        <BindingProperty name="resultingTransformation" source="visicutModel1" sourcePath="${previewTransformation}" target="camCalibrationDialog1" targetPath="resultingTransformation" updateStrategy="0" immediately="false">
+        <BindingProperty name="laserCam" source="visicutModel1" sourcePath="${preferences.laserCam}" target="camCalibrationDialog1" targetPath="laserCam" updateStrategy="1" immediately="false">
+          <Property name="name" type="java.lang.String" value="CamModelToDialog"/>
+        </BindingProperty>
+        <BindingProperty name="resultingTransformation" source="visicutModel1" sourcePath="${preferences.camCalibration}" target="camCalibrationDialog1" targetPath="resultingTransformation" updateStrategy="0" immediately="false">
           <Property name="name" type="java.lang.String" value="TransformationCalibDialogModel"/>
         </BindingProperty>
       </BindingProperties>
@@ -433,12 +436,12 @@
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="null"/>
             </Property>
-            <Property name="backgroundImageFile" type="java.io.File" editor="org.netbeans.beaninfo.editors.FileEditor">
-              <SerializedValue value="-84,-19,0,5,115,114,0,12,106,97,118,97,46,105,111,46,70,105,108,101,4,45,-92,69,14,13,-28,-1,3,0,1,76,0,4,112,97,116,104,116,0,18,76,106,97,118,97,47,108,97,110,103,47,83,116,114,105,110,103,59,120,112,116,0,64,47,104,111,109,101,47,116,104,111,109,109,121,47,78,101,116,66,101,97,110,115,80,114,111,106,101,99,116,115,47,86,105,115,105,99,117,116,47,116,101,115,116,47,102,105,108,101,115,47,108,97,115,101,114,99,117,116,116,101,114,46,106,112,103,119,2,0,47,120"/>
-            </Property>
             <Property name="name" type="java.lang.String" value="previewPanel1" noResource="true"/>
           </Properties>
           <BindingProperties>
+            <BindingProperty name="backgroundImage" source="visicutModel1" sourcePath="${preferences.laserCam.capturedImage}" target="previewPanel1" targetPath="backgroundImage" updateStrategy="1" immediately="false">
+              <Property name="name" type="java.lang.String" value="Image Cam to Dialog"/>
+            </BindingProperty>
             <BindingProperty name="graphicObjects" source="visicutModel1" sourcePath="${graphicObjects}" target="previewPanel1" targetPath="graphicObjects" updateStrategy="1" immediately="false">
               <Property name="name" type="java.lang.String" value="ModelToPreviewObjects"/>
             </BindingProperty>
@@ -446,7 +449,7 @@
               <Property name="name" type="java.lang.String" value="MappingsFromModelToPreviewPanel"/>
             </BindingProperty>
             <BindingProperty name="material" source="visicutModel1" sourcePath="${material}" target="previewPanel1" targetPath="material" updateStrategy="0" immediately="false"/>
-            <BindingProperty name="previewTransformation" source="visicutModel1" sourcePath="${previewTransformation}" target="previewPanel1" targetPath="previewTransformation" updateStrategy="1" immediately="false">
+            <BindingProperty name="previewTransformation" source="visicutModel1" sourcePath="${preferences.camCalibration}" target="previewPanel1" targetPath="previewTransformation" updateStrategy="1" immediately="false">
               <Property name="name" type="java.lang.String" value="TransformFromModel"/>
             </BindingProperty>
           </BindingProperties>

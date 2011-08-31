@@ -19,21 +19,69 @@ import javax.imageio.ImageIO;
 public class LaserCam
 {
 
+  protected int refreshInterval = 0;
+  public static final String PROP_REFRESHINTERVAL = "refreshInterval";
+
+  /**
+   * Get the value of refreshInterval
+   *
+   * @return the value of refreshInterval
+   */
+  public int getRefreshInterval()
+  {
+    return refreshInterval;
+  }
+  private Thread refreshTread = new Thread()
+  {
+
+    @Override
+    public void run()
+    {
+      while (LaserCam.this.getRefreshInterval() != 0)
+      {
+        try
+        {
+          Thread.sleep(LaserCam.this.getRefreshInterval() * 1000);
+        }
+        catch (InterruptedException ex)
+        {
+          //
+        }
+        LaserCam.this.setImageURL(LaserCam.this.getImageURL());
+      }
+    }
+  };
+
+  /**
+   * Set the value of refreshInterval
+   *
+   * @param refreshInterval new value of refreshInterval
+   */
+  public void setRefreshInterval(int refreshInterval)
+  {
+    int oldRefreshInterval = this.refreshInterval;
+    this.refreshInterval = refreshInterval;
+    propertyChangeSupport.firePropertyChange(PROP_REFRESHINTERVAL, oldRefreshInterval, refreshInterval);
+    if (oldRefreshInterval == 0 && refreshInterval != 0)
+    {
+      this.refreshTread.start();
+    }
+  }
+
   public LaserCam()
   {
     try
     {
-      this.setImageURL(new File("test/files/lasercutter.jpg").toURL());
+      this.setImageURL(new File("test/files/lasercutter.jpg").toURI().toURL());
     }
     catch (MalformedURLException ex)
     {
       Logger.getLogger(LaserCam.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
-  
   protected RenderedImage capturedImage = null;
   public static final String PROP_CAPTUREDIMAGE = "capturedImage";
-
+  public static final String PROP_IMAGEURL = "imageURL";
   protected URL imageURL = null;
 
   /**
@@ -53,15 +101,20 @@ public class LaserCam
    */
   public final void setImageURL(URL imageURL)
   {
+    URL oldURL = this.imageURL;
     this.imageURL = imageURL;
     try
     {
-      this.setCapturedImage(ImageIO.read(imageURL));
+      this.setCapturedImage(imageURL == null ? null : ImageIO.read(imageURL));
     }
     catch (IOException ex)
     {
       Logger.getLogger(LaserCam.class.getName()).log(Level.SEVERE, null, ex);
     }
+
+    propertyChangeSupport.firePropertyChange(PROP_IMAGEURL, oldURL, imageURL);
+
+
   }
 
   /**
@@ -81,9 +134,9 @@ public class LaserCam
    */
   public void setCapturedImage(RenderedImage capturedImage)
   {
-    RenderedImage oldCapturedImage = this.capturedImage;
-    this.capturedImage = capturedImage;
-    propertyChangeSupport.firePropertyChange(PROP_CAPTUREDIMAGE, oldCapturedImage, capturedImage);
+      RenderedImage oldCapturedImage = this.capturedImage;
+      this.capturedImage = capturedImage;
+      propertyChangeSupport.firePropertyChange(PROP_CAPTUREDIMAGE, oldCapturedImage, capturedImage);
   }
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -106,5 +159,4 @@ public class LaserCam
   {
     propertyChangeSupport.removePropertyChangeListener(listener);
   }
-
 }

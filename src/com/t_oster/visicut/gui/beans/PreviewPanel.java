@@ -78,22 +78,9 @@ public class PreviewPanel extends GraphicObjectsPanel
   public void setBackgroundImage(RenderedImage backgroundImage)
   {
     this.backgroundImage = backgroundImage;
+    this.repaint();
   }
 
-  public void setBackgroundImageFile(File imageFile)
-  {
-    try
-    {
-      if (imageFile.exists())
-      {
-        this.setBackgroundImage(ImageIO.read(imageFile));
-      }
-    }
-    catch (IOException ex)
-    {
-      Logger.getLogger(PreviewPanel.class.getName()).log(Level.SEVERE, null, ex);
-    }
-  }
   protected MaterialProfile material = new MaterialProfile();
 
   /**

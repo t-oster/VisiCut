@@ -11,11 +11,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 /**
@@ -36,7 +33,7 @@ public class CalibrationPanel extends JPanel implements MouseListener
   private Point upperLeft = new Point((int) Util.mm2px(0, DPI), (int) Util.mm2px(0, DPI));
   private Point lowerLeft = new Point((int) Util.mm2px(0, DPI), (int) Util.mm2px(300, DPI));
   private Point lowerRight = new Point((int) Util.mm2px(600, DPI), (int) Util.mm2px(300, DPI));
-  protected AffineTransform previewTransformation = null;
+  protected AffineTransform previewTransformation = AffineTransform.getScaleInstance(0.02, 0.02);
   public static final String PROP_PREVIEWTRANSFORMATION = "previewTransformation";
 
   /**
@@ -81,21 +78,6 @@ public class CalibrationPanel extends JPanel implements MouseListener
   public void setBackgroundImage(RenderedImage backgroundImage)
   {
     this.backgroundImage = backgroundImage;
-  }
-
-  public void setBackgroundImageFile(File imageFile)
-  {
-    try
-    {
-      if (imageFile.exists())
-      {
-        this.setBackgroundImage(ImageIO.read(imageFile));
-      }
-    }
-    catch (IOException ex)
-    {
-      Logger.getLogger(PreviewPanel.class.getName()).log(Level.SEVERE, null, ex);
-    }
   }
 
   @Override

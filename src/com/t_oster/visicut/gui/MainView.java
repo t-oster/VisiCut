@@ -10,25 +10,19 @@
  */
 package com.t_oster.visicut.gui;
 
-import com.t_oster.liblasercut.IllegalJobException;
-import com.t_oster.liblasercut.LaserJob;
-import com.t_oster.liblasercut.LaserProperty;
-import com.t_oster.liblasercut.RasterPart;
-import com.t_oster.liblasercut.VectorPart;
-import com.t_oster.liblasercut.drivers.EpilogCutter;
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.Preferences;
+import com.t_oster.visicut.PreferencesManager;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
-import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
-import java.net.SocketTimeoutException;
+import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -45,6 +39,19 @@ public class MainView extends javax.swing.JFrame
   public MainView()
   {
     initComponents();
+    try
+    {
+      Preferences pref = PreferencesManager.getInstance().loadPreferences(new File("settings.xml"));
+      if (pref != null)
+      {
+        this.visicutModel1.setPreferences(pref);
+      }
+    }
+    catch (FileNotFoundException ex)
+    {
+      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
   }
 
   /** This method is called from within the constructor to
@@ -110,7 +117,9 @@ public class MainView extends javax.swing.JFrame
 
     camCalibrationDialog1.setName("camCalibrationDialog1"); // NOI18N
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${previewTransformation}"), camCalibrationDialog1, org.jdesktop.beansbinding.BeanProperty.create("resultingTransformation"), "TransformationCalibDialogModel");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${preferences.laserCam}"), camCalibrationDialog1, org.jdesktop.beansbinding.BeanProperty.create("laserCam"), "CamModelToDialog");
+    bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${preferences.camCalibration}"), camCalibrationDialog1, org.jdesktop.beansbinding.BeanProperty.create("resultingTransformation"), "TransformationCalibDialogModel");
     bindingGroup.addBinding(binding);
 
     filesDropSupport1.setComponent(previewPanel1);
@@ -243,16 +252,17 @@ public class MainView extends javax.swing.JFrame
     jPanel1.setName("jPanel1"); // NOI18N
 
     previewPanel1.setBorder(null);
-    previewPanel1.setBackgroundImageFile(new java.io.File("/home/thommy/NetBeansProjects/Visicut/test/files/lasercutter.jpg"));
     previewPanel1.setName("previewPanel1"); // NOI18N
 
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${preferences.laserCam.capturedImage}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("backgroundImage"), "Image Cam to Dialog");
+    bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${graphicObjects}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("graphicObjects"), "ModelToPreviewObjects");
     bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${mappings}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("mappings"), "MappingsFromModelToPreviewPanel");
     bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("material"));
     bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${previewTransformation}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("previewTransformation"), "TransformFromModel");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${preferences.camCalibration}"), previewPanel1, org.jdesktop.beansbinding.BeanProperty.create("previewTransformation"), "TransformFromModel");
     bindingGroup.addBinding(binding);
 
     previewPanel1.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
@@ -471,6 +481,16 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
 private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
   this.camCalibrationDialog1.setVisible(true);
+  PreferencesManager man = PreferencesManager.getInstance();
+  try
+  {
+    man.savePreferences(this.visicutModel1.getPreferences(), new File("settings.xml"));
+  }
+  catch (FileNotFoundException ex)
+  {
+    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+    JOptionPane.showMessageDialog(this, "Error while saving Settings: " + ex.getLocalizedMessage());
+  }
 }//GEN-LAST:event_jMenuItem1ActionPerformed
   private Point movingStart = null;
   private boolean movingGraphics = false;
@@ -562,16 +582,16 @@ private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
   MappingSet ms = (MappingSet) this.jComboBox2.getSelectedItem();
   if (ms != null && this.visicutModel1.getMaterial() != null)
   {
-     MaterialProfile m = this.visicutModel1.getMaterial();
-     MappingSet supportedSubset = new MappingSet();
-     supportedSubset.setName(ms.getName()+"*");
-     String mappings = "";
+    MaterialProfile m = this.visicutModel1.getMaterial();
+    MappingSet supportedSubset = new MappingSet();
+    supportedSubset.setName(ms.getName() + "*");
+    String mappings = "";
     //Check if the current Material supports all Mappings in this set
     for (Mapping map : ms)
     {
       if (m.getLaserProfile(map.getProfileName()) == null)
       {
-        mappings+=map.getProfileName()+"\n";
+        mappings += map.getProfileName() + "\n";
       }
       else
       {
@@ -580,8 +600,8 @@ private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     }
     if (!"".equals(mappings))//there are unsupported Mappings
     {
-      if (JOptionPane.showConfirmDialog(this, "The Mapping you selected contains the following Profiles: \n"+mappings
-        +"which are not supported by the current Material. If you proceed all Items matching to these Profiles will be unmapped.", "Warning", JOptionPane.OK_CANCEL_OPTION)
+      if (JOptionPane.showConfirmDialog(this, "The Mapping you selected contains the following Profiles: \n" + mappings
+        + "which are not supported by the current Material. If you proceed all Items matching to these Profiles will be unmapped.", "Warning", JOptionPane.OK_CANCEL_OPTION)
         == JOptionPane.CANCEL_OPTION)
       {
         this.jComboBox2.setSelectedItem(this.visicutModel1.getMappings());
@@ -598,9 +618,26 @@ private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
 
 private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
 //TODO: Check if Material supports all Mappings
-  this.visicutModel1.setMaterial((MaterialProfile) this.jComboBox1.getSelectedItem());
+  MaterialProfile newMaterial = (MaterialProfile) this.jComboBox1.getSelectedItem();
+  if (newMaterial != null)
+  {
+    if (this.visicutModel1.getMappings() != null)
+    {
+      MappingSet mappings = this.visicutModel1.getMappings();
+      for (Mapping m : mappings)
+      {
+        if (newMaterial.getLaserProfile(m.getProfileName()) == null)
+        {
+          JOptionPane.showMessageDialog(this, "The selected Material does not support the Profile '"
+            + m.getProfileName() + "'", "Error", JOptionPane.OK_OPTION);
+          this.jComboBox1.setSelectedItem(this.visicutModel1.getMaterial());
+          return;
+        }
+      }
+    }
+  }
+  this.visicutModel1.setMaterial(newMaterial);
 }//GEN-LAST:event_jComboBox1ActionPerformed
-
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
   private com.t_oster.visicut.gui.CamCalibrationDialog camCalibrationDialog1;

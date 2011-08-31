@@ -20,7 +20,7 @@ import java.awt.geom.AffineTransform;
 public class CamCalibrationDialog extends javax.swing.JDialog
 {
 
-  protected AffineTransform currentTransformation = null;
+  protected AffineTransform currentTransformation = currentTransformation = AffineTransform.getScaleInstance(0.01, 0.01);
   public static final String PROP_CURRENTTRANSFORMATION = "currentTransformation";
 
   /**
@@ -40,6 +40,10 @@ public class CamCalibrationDialog extends javax.swing.JDialog
    */
   public void setCurrentTransformation(AffineTransform currentTransformation)
   {
+    if (currentTransformation == null)
+    {
+      currentTransformation = AffineTransform.getScaleInstance(0.01, 0.01);
+    }
     AffineTransform oldCurrentTransformation = this.currentTransformation;
     this.currentTransformation = currentTransformation;
     firePropertyChange(PROP_CURRENTTRANSFORMATION, oldCurrentTransformation, currentTransformation);
@@ -129,7 +133,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
 
     calibrationPanel1.setName("calibrationPanel1"); // NOI18N
 
-    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${laserCam.capturedImage}"), calibrationPanel1, org.jdesktop.beansbinding.BeanProperty.create("backgroundImage"));
+    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${laserCam.capturedImage}"), calibrationPanel1, org.jdesktop.beansbinding.BeanProperty.create("backgroundImage"), "CamImageToPanel");
     bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentTransformation}"), calibrationPanel1, org.jdesktop.beansbinding.BeanProperty.create("previewTransformation"), "TransformationToPanel");
     bindingGroup.addBinding(binding);
@@ -142,7 +146,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     );
     calibrationPanel1Layout.setVerticalGroup(
       calibrationPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 252, Short.MAX_VALUE)
+      .addGap(0, 251, Short.MAX_VALUE)
     );
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);

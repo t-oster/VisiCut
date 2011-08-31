@@ -17,13 +17,10 @@ import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.mapping.MappingSet;
-import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.net.SocketTimeoutException;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class contains the state and business logic of the 
@@ -34,38 +31,31 @@ import java.util.List;
 public class VisicutModel
 {
 
-  protected AffineTransform previewTransformation = null;
-  public static final String PROP_PREVIEWTRANSFORMATION = "previewTransformation";
+  protected Preferences preferences = new Preferences();
+  public static final String PROP_PREFERENCES = "preferences";
 
-  public VisicutModel()
+  /**
+   * Get the value of preferences
+   *
+   * @return the value of preferences
+   */
+  public Preferences getPreferences()
   {
-    AffineTransform move = AffineTransform.getTranslateInstance(54, 113);
-    AffineTransform scale = AffineTransform.getScaleInstance(0.048, 0.048);
-    scale.concatenate(move);
-    previewTransformation = scale;
+    return preferences;
   }
 
   /**
-   * Get the value of previewTransformation
+   * Set the value of preferences
    *
-   * @return the value of previewTransformation
+   * @param preferences new value of preferences
    */
-  public AffineTransform getPreviewTransformation()
+  public void setPreferences(Preferences preferences)
   {
-    return previewTransformation;
+    Preferences oldPreferences = this.preferences;
+    this.preferences = preferences;
+    propertyChangeSupport.firePropertyChange(PROP_PREFERENCES, oldPreferences, preferences);
   }
 
-  /**
-   * Set the value of previewTransformation
-   *
-   * @param previewTransformation new value of previewTransformation
-   */
-  public void setPreviewTransformation(AffineTransform previewTransformation)
-  {
-    AffineTransform oldPreviewTransformation = this.previewTransformation;
-    this.previewTransformation = previewTransformation;
-    propertyChangeSupport.firePropertyChange(PROP_PREVIEWTRANSFORMATION, oldPreviewTransformation, previewTransformation);
-  }
   protected GraphicSet graphicObjects = null;
   public static final String PROP_GRAPHICOBJECTS = "graphicObjects";
 
