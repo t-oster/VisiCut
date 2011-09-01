@@ -41,12 +41,6 @@ public class PreviewPanel extends GraphicObjectsPanel
   {
 
     public boolean keepRunning = true;
-    public boolean sleeping = false;
-
-    public boolean isSleeping()
-    {
-      return sleeping;
-    }
 
     private BufferedImage renderMapping(Mapping m)
     {
@@ -95,11 +89,7 @@ public class PreviewPanel extends GraphicObjectsPanel
         {
           synchronized (this)
           {
-            System.out.println("Thread sleeping");
-            sleeping = true;
             this.wait();
-            sleeping = false;
-            System.out.println("Thread awake");
           }
         }
         catch (InterruptedException ex)
