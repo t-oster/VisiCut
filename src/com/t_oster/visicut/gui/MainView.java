@@ -11,15 +11,21 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.Helper;
 import com.t_oster.visicut.Preferences;
 import com.t_oster.visicut.PreferencesManager;
+import com.t_oster.visicut.gui.beans.EditRectangle;
+import com.t_oster.visicut.gui.beans.EditRectangle.Button;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -271,6 +277,9 @@ public class MainView extends javax.swing.JFrame
       }
     });
     previewPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        previewPanel1MouseClicked(evt);
+      }
       public void mousePressed(java.awt.event.MouseEvent evt) {
         previewPanel1MousePressed(evt);
       }
@@ -308,7 +317,7 @@ public class MainView extends javax.swing.JFrame
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 621, Short.MAX_VALUE)
+      .addGap(0, 620, Short.MAX_VALUE)
       .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel1Layout.createSequentialGroup()
           .addContainerGap()
@@ -492,55 +501,163 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     JOptionPane.showMessageDialog(this, "Error while saving Settings: " + ex.getLocalizedMessage());
   }
 }//GEN-LAST:event_jMenuItem1ActionPerformed
-  private Point movingStart = null;
-  private boolean movingGraphics = false;
-private void previewPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanel1MousePressed
-  if (this.visicutModel1.getGraphicObjects() != null)
+  private enum MouseAction
   {
-    Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
-    bb = Util.transform(bb, this.previewPanel1.getLastDrawnTransform());
-    movingGraphics = bb.contains(evt.getPoint());
-    this.previewPanel1.setEditRectangle(movingGraphics ? bb : null);
+
+    movingBackground,
+    movingSet,
+    resizingSet,
+  };
+  private Point lastMousePosition = null;
+  private MouseAction currentAction = null;
+  private Button currentButton = null;
+  private GraphicSet selectedSet = null;
+  private EditRectangle editRect = null;
+private void previewPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanel1MousePressed
+  lastMousePosition = evt.getPoint();
+  currentAction = MouseAction.movingBackground;
+  if (editRect != null)
+  {
+    Rectangle2D curRect = Helper.transform(editRect, this.previewPanel1.getLastDrawnTransform());
+    Button b = editRect.getButtonByPoint(lastMousePosition, this.previewPanel1.getLastDrawnTransform());
+    if (b != null)
+    {
+      currentButton = b;
+      currentAction = MouseAction.resizingSet;
+    }
+    else if (curRect.contains(lastMousePosition))
+    {
+      currentAction = MouseAction.movingSet;
+    }
   }
-  movingStart = evt.getPoint();
 }//GEN-LAST:event_previewPanel1MousePressed
 
 private void previewPanel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanel1MouseReleased
-  movingStart = null;
-  movingGraphics = false;
-  previewPanel1.setEditRectangle(null);
-}//GEN-LAST:event_previewPanel1MouseReleased
-
-private void previewPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanel1MouseDragged
-  if (movingStart != null)
+  if (currentAction != MouseAction.movingSet)
   {
-
-    Point diff = new Point(evt.getPoint().x - movingStart.x, evt.getPoint().y - movingStart.y);
-    try
+    if (currentAction == MouseAction.resizingSet)
     {
-
-      if (movingGraphics)
+      //Apply changes to the EditRectangle to the selectedSet
+      Rectangle2D src = selectedSet.getOriginalBoundingBox();
+      selectedSet.setTransform(Helper.getTransform(src, editRect));
+      this.previewPanel1.repaint();
+    }
+    else if (this.visicutModel1.getGraphicObjects() != null)
+    {
+      Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
+      Rectangle2D e = Helper.transform(bb, this.previewPanel1.getLastDrawnTransform());
+      if (e.contains(evt.getPoint()))
       {
-        this.previewPanel1.getLastDrawnTransform().createInverse().deltaTransform(diff, diff);
-        if (this.visicutModel1.getGraphicObjects().getTransform() != null)
-        {
-          AffineTransform tr = AffineTransform.getTranslateInstance(diff.x, diff.y);
-          tr.concatenate(this.visicutModel1.getGraphicObjects().getTransform());
-          this.visicutModel1.getGraphicObjects().setTransform(tr);
-        }
-        else
-        {
-          this.visicutModel1.getGraphicObjects().setTransform(AffineTransform.getTranslateInstance(diff.x, diff.y));
-        }
-        Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
-        bb = Util.transform(bb, this.previewPanel1.getLastDrawnTransform());
-        this.previewPanel1.setEditRectangle(bb);
+        selectedSet = this.visicutModel1.getGraphicObjects();
+        editRect = new EditRectangle(bb);
+        this.previewPanel1.setEditRectangle(editRect);
       }
       else
       {
-        Point center = this.previewPanel1.getCenter();
-        center.translate(-diff.x, -diff.y);
-        this.previewPanel1.setCenter(center);
+        selectedSet = null;
+        editRect = null;
+        this.previewPanel1.setEditRectangle(null);
+      }
+    }
+  }
+  lastMousePosition = null;
+}//GEN-LAST:event_previewPanel1MouseReleased
+private void previewPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanel1MouseDragged
+  if (lastMousePosition != null)
+  {
+    Point diff = new Point(evt.getPoint().x - lastMousePosition.x, evt.getPoint().y - lastMousePosition.y);
+    try
+    {
+      switch (currentAction)
+      {
+        case resizingSet:
+        {
+          this.previewPanel1.getLastDrawnTransform().createInverse().deltaTransform(diff, diff);
+          switch (currentButton)
+          {
+            case BOTTOM_RIGHT:
+            {
+              int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
+              editRect.height += (offset * editRect.height / editRect.width);
+              editRect.width += offset;
+              break;
+            }
+            case BOTTOM_LEFT:
+            {
+              int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
+              editRect.height -= (offset * editRect.height / editRect.width);
+              editRect.x += offset;
+              editRect.width-=offset;
+              break;
+            }
+              case TOP_RIGHT:
+            {
+              int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
+              editRect.y -= (offset * editRect.height / editRect.width);
+              editRect.height += (offset * editRect.height / editRect.width);
+              editRect.width += offset;
+              break;
+            }
+            case TOP_LEFT:
+            {
+              int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
+              editRect.y += (offset * editRect.height / editRect.width);
+              editRect.height -= (offset * editRect.height / editRect.width);
+              editRect.x += offset;
+              editRect.width-=offset;
+              break;
+            }
+            case CENTER_RIGHT:
+            {
+              this.editRect.width += diff.x;
+              break;
+            }
+            case TOP_CENTER:
+            {
+              this.editRect.y += diff.y;
+              this.editRect.height -= diff.y;
+              break;
+            }
+            case BOTTOM_CENTER:
+            {
+              this.editRect.height += diff.y;
+              break;
+            }
+            case CENTER_LEFT:
+            {
+              this.editRect.x += diff.x;
+              this.editRect.width -= diff.x;
+              break;
+            }
+          }
+          this.previewPanel1.setEditRectangle(editRect);
+          break;
+        }
+        case movingSet:
+        {
+          this.previewPanel1.getLastDrawnTransform().createInverse().deltaTransform(diff, diff);
+          if (selectedSet.getTransform() != null)
+          {
+            AffineTransform tr = AffineTransform.getTranslateInstance(diff.x, diff.y);
+            tr.concatenate(selectedSet.getTransform());
+            selectedSet.setTransform(tr);
+          }
+          else
+          {
+            selectedSet.setTransform(AffineTransform.getTranslateInstance(diff.x, diff.y));
+          }
+          Rectangle2D bb = selectedSet.getBoundingBox();
+          editRect = new EditRectangle(bb);
+          this.previewPanel1.setEditRectangle(editRect);
+          break;
+        }
+        case movingBackground:
+        {
+          Point center = this.previewPanel1.getCenter();
+          center.translate(-diff.x, -diff.y);
+          this.previewPanel1.setCenter(center);
+          break;
+        }
       }
       this.repaint();
     }
@@ -548,7 +665,7 @@ private void previewPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIR
     {
       Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
     }
-    movingStart = evt.getPoint();
+    lastMousePosition = evt.getPoint();
   }
 }//GEN-LAST:event_previewPanel1MouseDragged
 
@@ -643,6 +760,9 @@ private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
   }
   this.visicutModel1.setMaterial(newMaterial);
 }//GEN-LAST:event_jComboBox1ActionPerformed
+
+private void previewPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanel1MouseClicked
+}//GEN-LAST:event_previewPanel1MouseClicked
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
   private com.t_oster.visicut.gui.CamCalibrationDialog camCalibrationDialog1;

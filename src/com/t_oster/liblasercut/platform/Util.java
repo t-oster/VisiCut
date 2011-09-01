@@ -4,32 +4,12 @@
  */
 package com.t_oster.liblasercut.platform;
 
-import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-
 /**
  *
  * @author oster
  */
 public class Util
 {
-
-  public static Rectangle2D transform(Rectangle2D src, AffineTransform at)
-  {
-    if (at==null)
-    {
-      return src;
-    }
-    else
-    {
-      java.awt.Point p = new java.awt.Point((int) src.getX(),(int) src.getY());
-      at.transform(p, p);
-      java.awt.Point d = new java.awt.Point((int) src.getWidth(), (int) src.getHeight());
-      at.deltaTransform(d, d);
-      return new Rectangle(p.x,p.y,d.x,d.y);
-    }
-  }
   
   public static double inch2mm(double inch)
   {

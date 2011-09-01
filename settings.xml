@@ -3,10 +3,10 @@
  <object class="com.t_oster.visicut.Preferences">
   <void property="camCalibration">
    <object class="java.awt.geom.AffineTransform">
-    <double>0.04639742612818559</double>
+    <double>0.04605875878418424</double>
     <double>0.0</double>
     <double>0.0</double>
-    <double>0.04487722269263336</double>
+    <double>0.04352243861134632</double>
     <double>51.0</double>
     <double>115.0</double>
    </object>

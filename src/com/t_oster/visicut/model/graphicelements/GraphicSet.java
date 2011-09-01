@@ -5,6 +5,7 @@
 package com.t_oster.visicut.model.graphicelements;
 
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.Helper;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -61,6 +62,28 @@ public class GraphicSet extends LinkedList<GraphicObject>
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
   /**
+   * Returns the BoundingBox of this Set ignoring the Transform
+   * @return 
+   */
+  public Rectangle2D getOriginalBoundingBox()
+  {
+    Rectangle2D result = null;
+    for (GraphicObject o : this)
+    {
+      Rectangle2D current = o.getBoundingBox();
+      if (result == null)
+      {
+        result = current;
+      }
+      else
+      {
+        Rectangle2D.union(result, current, result);
+      }
+    }
+    return result;
+  }
+  
+  /**
    * Returns the BoundingBox of this Set when rendered with the current
    * Transformation.
    * @return 
@@ -73,7 +96,7 @@ public class GraphicSet extends LinkedList<GraphicObject>
       Rectangle2D current = o.getBoundingBox();
       if (this.transform != null)
       {
-        current = Util.transform(current, this.transform);
+        current = Helper.transform(current, this.transform);
       }
       if (result == null)
       {

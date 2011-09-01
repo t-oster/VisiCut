@@ -123,15 +123,14 @@ public class PreviewPanel extends GraphicObjectsPanel
     this.renderBuffer.clear();
     this.repaint();
   }
-  
-  protected Rectangle editRectangle = null;
+  protected EditRectangle editRectangle = null;
 
   /**
    * Get the value of editRectangle
    *
    * @return the value of editRectangle
    */
-  public Rectangle getEditRectangle()
+  public EditRectangle getEditRectangle()
   {
     return editRectangle;
   }
@@ -139,22 +138,16 @@ public class PreviewPanel extends GraphicObjectsPanel
   /**
    * Set the value of editRectangle
    * The EditRectangele is drawn if
-   * not null
+   * The Values of the Rectangle are exspected to be
+   * in LaserCutter Coordinate Space.
    *
    * @param editRectangle new value of editRectangle
    */
-  public void setEditRectangle(Rectangle editRectangle)
+  public void setEditRectangle(EditRectangle editRectangle)
   {
     this.editRectangle = editRectangle;
     this.repaint();
   }
-  
-  public void setEditRectangle(Rectangle2D r)
-  {
-    this.setEditRectangle(r == null ? null : new Rectangle((int) r.getX(), (int) r.getY(), (int) r.getWidth(), (int) r.getHeight()));
-  }
-
-  
   protected GraphicSet graphicObjects = null;
 
   /**
@@ -255,6 +248,7 @@ public class PreviewPanel extends GraphicObjectsPanel
               if (img == null || bb.getWidth() != img.getWidth() || bb.getHeight() != img.getHeight())
               {
                 //Refreshing Buffer
+                System.out.println("Size changed");
                 this.refreshRenderBuffer(m);
               }
               gg.drawRenderedImage(img, AffineTransform.getTranslateInstance(bb.getX(), bb.getY()));
@@ -272,15 +266,12 @@ public class PreviewPanel extends GraphicObjectsPanel
       this.lastDrawnTransform = gg.getTransform();
       if (this.editRectangle != null)
       {
-          //The Rectangle is drawn without any Transformation
-          gg.setTransform(AffineTransform.getRotateInstance(0));
-          gg.setColor(Color.GRAY);
-          gg.setStroke(new BasicStroke(2,BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND,0,new float[]{10,10},0));
-          Rectangle2D toDraw = editRectangle;//Util.transform(editRectangle, this.lastDrawnTransform);
-          gg.drawRect((int) toDraw.getX(), (int) toDraw.getY(), (int) toDraw.getWidth(), (int) toDraw.getHeight());
+        this.editRectangle.render(gg);
       }
     }
   }
+
+  
   protected List<Mapping> mappings = null;
 
   /**
