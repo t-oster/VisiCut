@@ -5,10 +5,12 @@ import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.platform.Point;
 import com.t_oster.liblasercut.utils.BufferedImageAdapter;
+import com.t_oster.visicut.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -77,9 +79,10 @@ public class RasterProfile extends LaserProfile
       g.setColor(Color.white);
       g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
       if (objects.getTransform() != null)
-      {//Just apply scaling Part. Translation is already in BoundingBox
-        AffineTransform tr = objects.getTransform();
-        g.setTransform(AffineTransform.getScaleInstance(tr.getScaleX(), tr.getScaleY()));
+      {
+        Rectangle2D origBB = objects.getOriginalBoundingBox();
+        Rectangle2D targetBB = new Rectangle(0,0,scaledImg.getWidth(),scaledImg.getHeight());
+        g.setTransform(Helper.getTransform(origBB, targetBB));
       }
       for (GraphicObject o : objects)
       {
