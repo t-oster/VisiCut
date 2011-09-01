@@ -1,19 +1,18 @@
 package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.Helper;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -34,6 +33,82 @@ import java.util.logging.Logger;
 public class PreviewPanel extends GraphicObjectsPanel
 {
 
+  public PreviewPanel()
+  {
+    this.imageProcessingThread.start();
+  }
+  private final Thread imageProcessingThread = new Thread()
+  {
+
+    public boolean keepRunning = true;
+    public boolean sleeping = false;
+
+    public boolean isSleeping()
+    {
+      return sleeping;
+    }
+
+    private BufferedImage renderMapping(Mapping m)
+    {
+      GraphicSet set = m.getFilterSet().getMatchingObjects(PreviewPanel.this.graphicObjects);
+      Rectangle2D bb = set.getBoundingBox();
+      BufferedImage buffer = null;
+      if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
+      {
+        LaserProfile p = PreviewPanel.this.getMaterial().getLaserProfile(m.getProfileName());
+        buffer = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D gg = buffer.createGraphics();
+        //Normalize Rendering to 0,0
+        gg.setTransform(AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY()));
+        p.renderPreview(gg, set);
+      }
+      return buffer;
+    }
+
+    @Override
+    public void run()
+    {
+      while (keepRunning)
+      {
+        Mapping toProcess = null;
+        synchronized (PreviewPanel.this.renderBuffer)
+        {
+          for (Mapping m : PreviewPanel.this.renderBuffer.keySet())
+          {
+            if (PreviewPanel.this.renderBuffer.get(m) == null)
+            {
+              toProcess = m;
+              break;
+            }
+          }
+        }
+        if (toProcess != null)
+        {
+          BufferedImage result = this.renderMapping(toProcess);
+          synchronized (PreviewPanel.this.renderBuffer)
+          {
+            PreviewPanel.this.renderBuffer.put(toProcess, result);
+          }
+          PreviewPanel.this.repaint();
+        }
+        try
+        {
+          synchronized (this)
+          {
+            System.out.println("Thread sleeping");
+            sleeping = true;
+            this.wait();
+            sleeping = false;
+            System.out.println("Thread awake");
+          }
+        }
+        catch (InterruptedException ex)
+        {
+          Logger.getLogger(PreviewPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+    }
+  };
   protected AffineTransform previewTransformation = AffineTransform.getTranslateInstance(40, 150);
   private AffineTransform lastDrawnTransform = null;
 
@@ -179,24 +254,7 @@ public class PreviewPanel extends GraphicObjectsPanel
    * When drawn the offset of the BoundingBox has to be used as Upper Left
    * Corner
    */
-  private HashMap<Mapping, BufferedImage> renderBuffer = new LinkedHashMap<Mapping, BufferedImage>();
-
-  private void refreshRenderBuffer(Mapping m)
-  {
-    GraphicSet set = m.getFilterSet().getMatchingObjects(this.graphicObjects);
-    Rectangle2D bb = set.getBoundingBox();
-    BufferedImage buffer = null;
-    if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
-    {
-      LaserProfile p = this.getMaterial().getLaserProfile(m.getProfileName());
-      buffer = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_ARGB);
-      Graphics2D gg = buffer.createGraphics();
-      //Normalize Rendering to 0,0
-      gg.setTransform(AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY()));
-      p.renderPreview(gg, set);
-    }
-    renderBuffer.put(m, buffer);
-  }
+  private final HashMap<Mapping, BufferedImage> renderBuffer = new LinkedHashMap<Mapping, BufferedImage>();
 
   @Override
   protected void paintComponent(Graphics g)
@@ -205,7 +263,6 @@ public class PreviewPanel extends GraphicObjectsPanel
     if (g instanceof Graphics2D)
     {
       Graphics2D gg = (Graphics2D) g;
-      AffineTransform backup = gg.getTransform();
       if (backgroundImage != null)
       {
         gg.drawRenderedImage(backgroundImage, null);
@@ -236,22 +293,40 @@ public class PreviewPanel extends GraphicObjectsPanel
         {
           for (Mapping m : this.getMappings())
           {
-            if (!renderBuffer.containsKey(m))
-            {
-              //Creating Buffer
-              this.refreshRenderBuffer(m);
-            }
             Rectangle2D bb = m.getFilterSet().getMatchingObjects(graphicObjects).getBoundingBox();
             if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
             {
-              BufferedImage img = this.renderBuffer.get(m);
-              if (img == null || bb.getWidth() != img.getWidth() || bb.getHeight() != img.getHeight())
+              synchronized (renderBuffer)
               {
-                //Refreshing Buffer
-                System.out.println("Size changed");
-                this.refreshRenderBuffer(m);
+                BufferedImage img = this.renderBuffer.get(m);
+                if (img == null || bb.getWidth() != img.getWidth() || bb.getHeight() != img.getHeight())
+                {//Image not rendered or Size differs
+                  if (!renderBuffer.containsKey(m) || img != null)
+                  {//image not yet scheduled for rendering
+                    this.renderBuffer.put(m, null);
+                  }
+                  synchronized (imageProcessingThread)
+                  {
+                    imageProcessingThread.notify();
+                  }
+                  gg.setColor(Color.GRAY);
+                  Rectangle r = Helper.toRect(bb);
+                  gg.fillRect(r.x, r.y, r.width, r.height);
+                  gg.setColor(Color.BLACK);
+                  gg.drawString("processing...", r.x+r.width/2, r.y+r.height/2);
+                }
+                else
+                {
+                  gg.drawRenderedImage(img, AffineTransform.getTranslateInstance(bb.getX(), bb.getY()));
+                }
               }
-              gg.drawRenderedImage(img, AffineTransform.getTranslateInstance(bb.getX(), bb.getY()));
+            }
+            else
+            {//Mapping is Empty or BoundingBox zero
+              synchronized (renderBuffer)
+              {
+                renderBuffer.remove(m);
+              }
             }
           }
         }
@@ -270,8 +345,6 @@ public class PreviewPanel extends GraphicObjectsPanel
       }
     }
   }
-
-  
   protected List<Mapping> mappings = null;
 
   /**

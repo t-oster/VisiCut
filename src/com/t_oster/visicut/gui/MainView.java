@@ -469,7 +469,9 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   {
     File file = openFileChooser.getSelectedFile();
     this.visicutModel1.loadGraphicFile(file);
-    System.out.println("Selected File: " + file);
+    this.selectedSet = this.visicutModel1.getGraphicObjects();
+    this.editRect = new EditRectangle(this.selectedSet.getBoundingBox());
+    this.previewPanel1.setEditRectangle(editRect);
   }
   else
   {
@@ -506,8 +508,7 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
 
     movingBackground,
     movingSet,
-    resizingSet,
-  };
+    resizingSet,};
   private Point lastMousePosition = null;
   private MouseAction currentAction = null;
   private Button currentButton = null;
@@ -587,10 +588,10 @@ private void previewPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIR
               int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
               editRect.height -= (offset * editRect.height / editRect.width);
               editRect.x += offset;
-              editRect.width-=offset;
+              editRect.width -= offset;
               break;
             }
-              case TOP_RIGHT:
+            case TOP_RIGHT:
             {
               int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
               editRect.y -= (offset * editRect.height / editRect.width);
@@ -604,7 +605,7 @@ private void previewPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIR
               editRect.y += (offset * editRect.height / editRect.width);
               editRect.height -= (offset * editRect.height / editRect.width);
               editRect.x += offset;
-              editRect.width-=offset;
+              editRect.width -= offset;
               break;
             }
             case CENTER_RIGHT:
@@ -696,6 +697,9 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
     for (File f : this.filesDropSupport1.getDroppedFiles())
     {
       this.visicutModel1.loadGraphicFile(f);
+      this.selectedSet = this.visicutModel1.getGraphicObjects();
+      this.editRect = new EditRectangle(this.selectedSet.getBoundingBox());
+      this.previewPanel1.setEditRectangle(editRect);
     }
   }
 }//GEN-LAST:event_filesDropSupport1PropertyChange

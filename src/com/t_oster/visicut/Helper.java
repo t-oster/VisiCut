@@ -26,11 +26,6 @@ public class Helper
     Point2D scaled = scale.transform(new Point((int) src.getX(), (int) src.getY()), null);
     AffineTransform result = AffineTransform.getTranslateInstance(dest.getX()-scaled.getX(),dest.getY()-scaled.getY());
     result.concatenate(scale);
-    if (!transform(src, result).equals(dest))
-    {
-      System.out.println("Should be:"+dest);
-      System.out.println("Is:"+transform(src, result));
-    }
     return result;
   }
   
