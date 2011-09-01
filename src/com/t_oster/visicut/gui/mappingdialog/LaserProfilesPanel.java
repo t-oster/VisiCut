@@ -73,6 +73,10 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
     if (selectedCuttingProfile == null)
     {
       group.clearSelection();
+      if (this.buttons.length > 0)
+      {
+        this.buttons[this.buttons.length - 1].setSelected(true);
+      }
     }
     else
     {
@@ -100,7 +104,7 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
     this.buttons = new JRadioButton[0];
     if (this.getMaterial() != null && this.getMaterial().getLaserProfiles() != null)
     {
-      this.buttons = new JRadioButton[this.getMaterial().getLaserProfiles().length];
+      this.buttons = new JRadioButton[this.getMaterial().getLaserProfiles().length + 1];
       this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
       int i = 0;
       for (LaserProfile l : this.getMaterial().getLaserProfiles())
@@ -114,6 +118,13 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
         this.add(b);
         this.buttons[i++] = b;
       }
+      JiconRadioButton b = new JiconRadioButton();
+      b.setText("unmap");
+      b.addActionListener(this);
+      this.group.add(b);
+      b.setVisible(true);
+      this.add(b);
+      this.buttons[i++] = b;
       this.setVisible(true);
       this.validate();
     }
@@ -130,7 +141,14 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
         {
           if (this.buttons[i].equals(b))
           {
-            this.setSelectedLaserProfile(this.material.getLaserProfile(i));
+            if (i < this.buttons.length - 1)
+            {
+              this.setSelectedLaserProfile(this.material.getLaserProfile(i));
+            }
+            else
+            {
+              this.setSelectedLaserProfile(null);
+            }
           }
         }
       }

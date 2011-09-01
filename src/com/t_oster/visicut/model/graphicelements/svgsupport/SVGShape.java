@@ -107,7 +107,7 @@ public class SVGShape extends SVGObject implements ShapeObject
 
   public Shape getShape()
   {
-    if (this.getDecoratee() instanceof Path)
+    if (false && this.getDecoratee() instanceof Path)
     {
       try
       {

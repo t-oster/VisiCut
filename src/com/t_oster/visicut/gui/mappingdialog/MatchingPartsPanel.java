@@ -122,8 +122,12 @@ public class MatchingPartsPanel extends JPanel
       {
         GraphicSet set = this.getSelectedMapping().getFilterSet().getMatchingObjects(this.getGraphicElements());
         set.setTransform(null);
-        LaserProfile p = this.material.getLaserProfile(this.getSelectedMapping().getProfileName());
-        p.renderPreview(gg, set);
+        //LaserProfile p = this.material.getLaserProfile(this.getSelectedMapping().getProfileName());
+        //p.renderPreview(gg, set);
+        for (GraphicObject e:set)
+        {
+          e.render(gg);
+        }
       }
       else if (this.getSelectedFilterSet() != null)
       {

@@ -277,9 +277,6 @@ public class MainView extends javax.swing.JFrame
       }
     });
     previewPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
-      public void mouseClicked(java.awt.event.MouseEvent evt) {
-        previewPanel1MouseClicked(evt);
-      }
       public void mousePressed(java.awt.event.MouseEvent evt) {
         previewPanel1MousePressed(evt);
       }
@@ -534,14 +531,27 @@ private void previewPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
 }//GEN-LAST:event_previewPanel1MousePressed
 
 private void previewPanel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanel1MouseReleased
-  if (currentAction != MouseAction.movingSet)
-  {
+
     if (currentAction == MouseAction.resizingSet)
     {
       //Apply changes to the EditRectangle to the selectedSet
       Rectangle2D src = selectedSet.getOriginalBoundingBox();
       selectedSet.setTransform(Helper.getTransform(src, editRect));
       this.previewPanel1.repaint();
+    }
+    else if (this.selectedSet != null)
+    {
+      Rectangle2D e = Helper.transform(editRect, this.previewPanel1.getLastDrawnTransform());
+      if (e.contains(evt.getPoint()))
+      {
+        //let the set stay selected
+      }
+      else
+      {
+        selectedSet = null;
+        editRect = null;
+        this.previewPanel1.setEditRectangle(null);
+      }
     }
     else if (this.visicutModel1.getGraphicObjects() != null)
     {
@@ -560,7 +570,6 @@ private void previewPanel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FI
         this.previewPanel1.setEditRectangle(null);
       }
     }
-  }
   lastMousePosition = null;
 }//GEN-LAST:event_previewPanel1MouseReleased
 private void previewPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanel1MouseDragged
@@ -765,8 +774,6 @@ private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
   this.visicutModel1.setMaterial(newMaterial);
 }//GEN-LAST:event_jComboBox1ActionPerformed
 
-private void previewPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanel1MouseClicked
-}//GEN-LAST:event_previewPanel1MouseClicked
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
   private com.t_oster.visicut.gui.CamCalibrationDialog camCalibrationDialog1;

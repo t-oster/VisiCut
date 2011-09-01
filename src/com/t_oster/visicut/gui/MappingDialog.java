@@ -16,6 +16,7 @@ import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
+import com.t_oster.visicut.model.mapping.MappingSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -206,7 +207,7 @@ public class MappingDialog extends javax.swing.JDialog
   public static final String PROP_SELECTEDLASERPROFILE = "selectedLaserProfile";
   public static final String PROP_MATERIAL = "material";
   protected MaterialProfile material = null;
-  protected List<Mapping> mappings = null;
+  protected MappingSet mappings = null;
   public static final String PROP_MAPPINGS = "mappings";
   protected FilterSet selectedFilterSet = null;
   public static final String PROP_SELECTEDFILTERSET = "selectedFilterSet";
@@ -264,7 +265,7 @@ public class MappingDialog extends javax.swing.JDialog
       this.setSelectedLaserProfile(this.material.getLaserProfile(selectedMapping.getProfileName()));
     }
   }
-  protected List<Mapping> currentMappings = new LinkedList<Mapping>();
+  protected MappingSet currentMappings = new MappingSet();
   public static final String PROP_CURRENTMAPPINGS = "currentMappings";
 
   /**
@@ -272,7 +273,7 @@ public class MappingDialog extends javax.swing.JDialog
    *
    * @return the value of currentMappings
    */
-  public List<Mapping> getCurrentMappings()
+  public MappingSet getCurrentMappings()
   {
     return currentMappings;
   }
@@ -282,9 +283,9 @@ public class MappingDialog extends javax.swing.JDialog
    *
    * @param currentMappings new value of currentMappings
    */
-  public void setCurrentMappings(List<Mapping> currentMappings)
+  public void setCurrentMappings(MappingSet currentMappings)
   {
-    List<Mapping> oldCurrentMappings = this.currentMappings;
+    MappingSet oldCurrentMappings = this.currentMappings;
     this.currentMappings = currentMappings;
     firePropertyChange(PROP_CURRENTMAPPINGS, oldCurrentMappings, currentMappings);
   }
@@ -294,7 +295,7 @@ public class MappingDialog extends javax.swing.JDialog
    *
    * @return the value of mappings
    */
-  public List<Mapping> getMappings()
+  public MappingSet getMappings()
   {
     return mappings;
   }
@@ -304,14 +305,14 @@ public class MappingDialog extends javax.swing.JDialog
    *
    * @param mappings new value of mappings
    */
-  public void setMappings(List<Mapping> mappings)
+  public void setMappings(MappingSet mappings)
   {
-    List<Mapping> oldMappings = this.mappings;
+    MappingSet oldMappings = this.mappings;
     this.mappings = mappings;
     firePropertyChange(PROP_MAPPINGS, oldMappings, mappings);
     if (mappings != null && mappings.size() > 0)
     {
-      List<Mapping> copy = new LinkedList<Mapping>();
+      MappingSet copy = new MappingSet();
       copy.addAll(mappings);
       this.setCurrentMappings(copy);
     }
@@ -404,7 +405,16 @@ private void cuttingProfilesPanel1PropertyChange(java.beans.PropertyChangeEvent 
     {//A Filter Set is selected, so we create a new Mapping
       Mapping m = new Mapping(this.getSelectedFilterSet(), lp.getName());
       this.getCurrentMappings().add(m);
+      this.sVGElementsTree1.refreshTree();
       this.setSelectedMapping(m);
+    }
+  }
+  else if (evt.getNewValue() == null)
+  {//Unmap selected
+    if (this.getSelectedMapping() != null)
+    {//Unmap the selected mapping
+      this.getCurrentMappings().remove(this.getSelectedMapping());
+      this.sVGElementsTree1.refreshTree();
     }
   }
 }//GEN-LAST:event_cuttingProfilesPanel1PropertyChange

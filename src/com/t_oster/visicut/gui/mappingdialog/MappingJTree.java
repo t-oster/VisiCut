@@ -88,6 +88,14 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     return selectedMapping;
   }
 
+  public void refreshTree()
+  {
+    this.valueForPathChanged(new TreePath(new Object[]
+      {
+        this.getRoot()
+      }), this.getRoot());
+  }
+
   /**
    * Set the value of selectedMapping
    *
@@ -106,10 +114,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
       }
       else
       {
-        this.valueForPathChanged(new TreePath(new Object[]
-          {
-            this.getRoot()
-          }), this.getRoot());
+        this.refreshTree();
         TreePath p = new TreePath(new Object[]
           {
             this.getRoot(), MAPPINGS, this.selectedMapping
