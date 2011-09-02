@@ -5,10 +5,11 @@
 package com.t_oster.visicut;
 
 import com.t_oster.liblasercut.LaserCutter;
-import com.t_oster.visicut.gui.beans.LaserCam;
+import com.t_oster.liblasercut.drivers.EpilogCutter;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.net.URL;
 
 /**
  *
@@ -17,32 +18,11 @@ import java.beans.PropertyChangeSupport;
 public class Preferences
 {
 
-  protected LaserCam laserCam = new LaserCam();
-  public static final String PROP_LASERCAM = "laserCam";
-
-  /**
-   * Get the value of laserCam
-   *
-   * @return the value of laserCam
-   */
-  public LaserCam getLaserCam()
+  public Preferences()
   {
-    return laserCam;
   }
-
-  /**
-   * Set the value of laserCam
-   *
-   * @param laserCam new value of laserCam
-   */
-  public void setLaserCam(LaserCam laserCam)
-  {
-    LaserCam oldLaserCam = this.laserCam;
-    this.laserCam = laserCam;
-    propertyChangeSupport.firePropertyChange(PROP_LASERCAM, oldLaserCam, laserCam);
-  }
-
-  protected LaserCutter laserCutter = null;
+  
+  protected LaserCutter laserCutter = new EpilogCutter("137.226.56.228");
   public static final String PROP_LASERCUTTER = "laserCutter";
 
   /**
@@ -65,6 +45,30 @@ public class Preferences
     LaserCutter oldLaserCutter = this.laserCutter;
     this.laserCutter = laserCutter;
     propertyChangeSupport.firePropertyChange(PROP_LASERCUTTER, oldLaserCutter, laserCutter);
+  }
+  protected String backgroundImageURL = null;
+  public static final String PROP_BACKGROUNDIMAGEURL = "backgroundImageURL";
+
+  /**
+   * Get the value of backgroundImageURL
+   *
+   * @return the value of backgroundImageURL
+   */
+  public String getBackgroundImageURL()
+  {
+    return backgroundImageURL;
+  }
+
+  /**
+   * Set the value of backgroundImageURL
+   *
+   * @param backgroundImageURL new value of backgroundImageURL
+   */
+  public void setBackgroundImageURL(String backgroundImageURL)
+  {
+    String oldBackgroundImageURL = this.backgroundImageURL;
+    this.backgroundImageURL = backgroundImageURL;
+    propertyChangeSupport.firePropertyChange(PROP_BACKGROUNDIMAGEURL, oldBackgroundImageURL, backgroundImageURL);
   }
 
   protected AffineTransform camCalibration = null;

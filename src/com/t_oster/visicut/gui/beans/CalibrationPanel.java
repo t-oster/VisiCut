@@ -1,66 +1,37 @@
 package com.t_oster.visicut.gui.beans;
 
-import com.t_oster.liblasercut.platform.Util;
-import com.t_oster.visicut.Helper;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JPanel;
 
 /**
- * This class implements the Panel which provides the Preview
- * of the current LaserJob
+ * This Panel displays a Set of points which are draggable
+ * with the mouse
  * 
  * @author thommy
  */
-public class CalibrationPanel extends JPanel implements MouseListener
+public class CalibrationPanel extends GraphicObjectsPanel implements MouseListener, MouseMotionListener
 {
 
+  //The size of the Points in Pixel
+  private static int SIZE = 10;
+  
   public CalibrationPanel()
   {
     this.addMouseListener(this);
+    this.addMouseMotionListener(this);
   }
-  private int DPI = 500;
-  private int SIZE = 10;
-  private Point upperLeft = new Point((int) Util.mm2px(0, DPI), (int) Util.mm2px(0, DPI));
-  //private Point lowerLeft = new Point((int) Util.mm2px(0, DPI), (int) Util.mm2px(300, DPI));
-  private Point lowerRight = new Point((int) Util.mm2px(600, DPI), (int) Util.mm2px(300, DPI));
-  protected AffineTransform previewTransformation = AffineTransform.getScaleInstance(0.02, 0.02);
-  public static final String PROP_PREVIEWTRANSFORMATION = "previewTransformation";
-
-  /**
-   * Get the value of previewTransformation
-   *
-   * @return the value of previewTransformation
-   */
-  public AffineTransform getPreviewTransformation()
-  {
-    return previewTransformation;
-  }
-
-  /**
-   * Set the value of previewTransformation
-   *
-   * @param previewTransformation new value of previewTransformation
-   */
-  public void setPreviewTransformation(AffineTransform previewTransformation)
-  {
-    AffineTransform oldPreviewTransformation = this.previewTransformation;
-    this.previewTransformation = previewTransformation;
-    firePropertyChange(PROP_PREVIEWTRANSFORMATION, oldPreviewTransformation, previewTransformation);
-    repaint();
-  }
+  
   protected RenderedImage backgroundImage = null;
 
   /**
@@ -83,6 +54,31 @@ public class CalibrationPanel extends JPanel implements MouseListener
     this.backgroundImage = backgroundImage;
   }
 
+  protected Point[] pointList = new Point[0];
+
+  /**
+   * Get the value of pointList
+   *
+   * @return the value of pointList
+   */
+  public Point[] getPointList()
+  {
+    return pointList;
+  }
+
+  /**
+   * Set the value of pointList
+   *
+   * @param pointList new value of pointList
+   */
+  public void setPointList(Point[] pointList)
+  {
+    this.pointList = pointList;
+    this.repaint();
+  }
+
+  //Contains the last Transform the component was rendered with
+  AffineTransform lastTransform;
   @Override
   protected void paintComponent(Graphics g)
   {
@@ -90,29 +86,29 @@ public class CalibrationPanel extends JPanel implements MouseListener
     if (g instanceof Graphics2D)
     {
       Graphics2D gg = (Graphics2D) g;
+      lastTransform = gg.getTransform();
       if (backgroundImage != null)
       {
         gg.drawRenderedImage(backgroundImage, null);
-      }
-      if (this.previewTransformation != null)
-      {
-        AffineTransform curr = gg.getTransform();
-        curr.concatenate(this.getPreviewTransformation());
-        gg.setTransform(curr);
       }
       gg.setColor(Color.red);
       Point2D size = new Point(SIZE, SIZE);
       try
       {
-        size = this.getPreviewTransformation().createInverse().deltaTransform(size, null);
+        size = gg.getTransform().createInverse().deltaTransform(size, null);
       }
       catch (NoninvertibleTransformException ex)
       {
         Logger.getLogger(CalibrationPanel.class.getName()).log(Level.SEVERE, null, ex);
       }
-      drawCross(gg, upperLeft, (int) size.getX());
-      //drawCross(gg, lowerLeft, (int) size.getX());
-      drawCross(gg, lowerRight, (int) size.getX());
+      for (Point p:this.pointList)
+      {
+        drawCross(gg, p, (int) size.getX());
+        if (p==selectedPoint)
+        {
+          gg.drawOval((int) (p.x-size.getX()/2), (int) (p.y-size.getY()/2), (int) size.getX(), (int) size.getY());
+        }
+      }
     }
   }
 
@@ -130,42 +126,22 @@ public class CalibrationPanel extends JPanel implements MouseListener
   public void mousePressed(MouseEvent me)
   {
     Point p = me.getPoint();
-    for (Point source : new Point[]
-      {
-        upperLeft, lowerRight
-      })
+    selectedPoint = null;
+    for (Point source : this.getPointList())
     {
-      Point2D target = this.getPreviewTransformation().transform(source, null);
+      Point2D target = this.lastTransform.transform(source, null);
       if (p.distance(target) < SIZE)
       {
         selectedPoint = source;
+        repaint();
         return;
       }
     }
-    selectedPoint = null;
   }
 
   public void mouseReleased(MouseEvent me)
   {
-    if (selectedPoint != null)
-    {
-      Point trUpperLeft = Helper.toPoint(this.getPreviewTransformation().transform(upperLeft, null));
-      //Point2D trLowerLeft = this.getPreviewTransformation().transform(lowerLeft, null);
-      Point trLowerRight = Helper.toPoint(this.getPreviewTransformation().transform(lowerRight, null));
-      Point transformed = me.getPoint();
-      if (selectedPoint == upperLeft)
-      {
-        trUpperLeft = transformed;
-      }
-      else
-      {
-        trLowerRight = transformed;
-      }
-      this.setPreviewTransformation(
-        Helper.getTransform(
-        new Rectangle(upperLeft.x, upperLeft.y, lowerRight.x - upperLeft.x, lowerRight.y - upperLeft.y),
-        new Rectangle(trUpperLeft.x, trUpperLeft.y, trLowerRight.x - trUpperLeft.x, trLowerRight.y - trUpperLeft.y)));
-    }
+    selectedPoint = null;
   }
 
   public void mouseEntered(MouseEvent me)
@@ -173,6 +149,29 @@ public class CalibrationPanel extends JPanel implements MouseListener
   }
 
   public void mouseExited(MouseEvent me)
+  {
+  }
+
+  public void mouseDragged(MouseEvent me)
+  {
+    if (selectedPoint != null)
+    {
+      try
+      {
+        Point p = me.getPoint();
+        lastTransform.createInverse().transform(p, p);
+        selectedPoint.x = p.x;
+        selectedPoint.y = p.y;
+      }
+      catch (NoninvertibleTransformException ex)
+      {
+        Logger.getLogger(CalibrationPanel.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      this.repaint();
+    }
+  }
+
+  public void mouseMoved(MouseEvent me)
   {
   }
 }

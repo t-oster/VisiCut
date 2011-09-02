@@ -27,11 +27,15 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
@@ -48,17 +52,41 @@ public class MainView extends javax.swing.JFrame
   public MainView()
   {
     initComponents();
-    try
+    if (new File("settings.xml").exists())
     {
-      Preferences pref = PreferencesManager.getInstance().loadPreferences(new File("settings.xml"));
-      if (pref != null)
+      try
       {
-        this.visicutModel1.setPreferences(pref);
+        Preferences pref = PreferencesManager.getInstance().loadPreferences(new File("settings.xml"));
+        if (pref != null)
+        {
+          this.visicutModel1.setPreferences(pref);
+        }
+      }
+      catch (FileNotFoundException ex)
+      {
+        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
-    catch (FileNotFoundException ex)
+    if (this.visicutModel1.getPreferences().getBackgroundImageURL() == null)
     {
-      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+      try
+      {
+        this.visicutModel1.getPreferences().setBackgroundImageURL(new File("test/files/lasercutter.jpg").toURI().toURL().toString());
+      }
+      catch (MalformedURLException ex)
+      {
+        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+    this.captureImage();
+    String[] args = VisicutApp.getApplication().getProgramArguments();
+    for (String s : args)
+    {
+      File f = new File(s);
+      if (f.exists())
+      {
+        this.loadFile(f);
+      }
     }
 
   }
@@ -83,20 +111,21 @@ public class MainView extends javax.swing.JFrame
     saveFileChooser = new javax.swing.JFileChooser();
     jPanel2 = new javax.swing.JPanel();
     jLabel1 = new javax.swing.JLabel();
-    jComboBox1 = new javax.swing.JComboBox();
+    materialComboBox = new javax.swing.JComboBox();
     jLabel2 = new javax.swing.JLabel();
-    jComboBox2 = new javax.swing.JComboBox();
-    jButton1 = new javax.swing.JButton();
+    mappingComboBox = new javax.swing.JComboBox();
+    editMappingButton = new javax.swing.JButton();
     jLabel3 = new javax.swing.JLabel();
-    jTextField1 = new javax.swing.JTextField();
-    jTextField2 = new javax.swing.JTextField();
+    dimensionWidthTextField = new javax.swing.JTextField();
+    dimesnionsHeightTextfield = new javax.swing.JTextField();
     jLabel4 = new javax.swing.JLabel();
     jLabel5 = new javax.swing.JLabel();
-    jTextField3 = new javax.swing.JTextField();
+    materialHeightTextField = new javax.swing.JTextField();
     jPanel1 = new javax.swing.JPanel();
     previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
-    jButton2 = new javax.swing.JButton();
-    jButton3 = new javax.swing.JButton();
+    executeJobButton = new javax.swing.JButton();
+    saveButton = new javax.swing.JButton();
+    captureImageButton = new javax.swing.JButton();
     menuBar = new javax.swing.JMenuBar();
     fileMenu = new javax.swing.JMenu();
     newMenuItem = new javax.swing.JMenuItem();
@@ -105,11 +134,8 @@ public class MainView extends javax.swing.JFrame
     saveAsMenuItem = new javax.swing.JMenuItem();
     exitMenuItem = new javax.swing.JMenuItem();
     editMenu = new javax.swing.JMenu();
-    cutMenuItem = new javax.swing.JMenuItem();
-    copyMenuItem = new javax.swing.JMenuItem();
-    pasteMenuItem = new javax.swing.JMenuItem();
-    deleteMenuItem = new javax.swing.JMenuItem();
-    jMenuItem1 = new javax.swing.JMenuItem();
+    calibrateCameraMenuItem = new javax.swing.JMenuItem();
+    executeJobMenuItem = new javax.swing.JMenuItem();
     helpMenu = new javax.swing.JMenu();
     aboutMenuItem = new javax.swing.JMenuItem();
 
@@ -129,21 +155,13 @@ public class MainView extends javax.swing.JFrame
         visicutModel1PropertyChange(evt);
       }
     });
-    String[] args = VisicutApp.getApplication().getProgramArguments();
-    for (String s:args)
-    {
-      File f = new File(s);
-      if (f.exists())
-      {
-        this.loadFile(f);
-      }
-    }
-
     this.visicutModel1.setMaterial(this.profileManager1.getMaterials().get(0));
 
     camCalibrationDialog1.setName("camCalibrationDialog1"); // NOI18N
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${preferences.laserCam}"), camCalibrationDialog1, org.jdesktop.beansbinding.BeanProperty.create("laserCam"), "CamModelToDialog");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${backgroundImage}"), camCalibrationDialog1, org.jdesktop.beansbinding.BeanProperty.create("backgroundImage"), "bgImage from Model to Dialog");
+    bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${preferences.laserCutter}"), camCalibrationDialog1, org.jdesktop.beansbinding.BeanProperty.create("laserCutter"), "LaserCutterFromPreferences to Dialog");
     bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${preferences.camCalibration}"), camCalibrationDialog1, org.jdesktop.beansbinding.BeanProperty.create("resultingTransformation"), "TransformationCalibDialogModel");
     bindingGroup.addBinding(binding);
@@ -173,56 +191,56 @@ public class MainView extends javax.swing.JFrame
     jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
     jLabel1.setName("jLabel1"); // NOI18N
 
-    jComboBox1.setName("jComboBox1"); // NOI18N
+    materialComboBox.setName("materialComboBox"); // NOI18N
 
     org.jdesktop.beansbinding.ELProperty eLProperty = org.jdesktop.beansbinding.ELProperty.create("${materials}");
-    org.jdesktop.swingbinding.JComboBoxBinding jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, profileManager1, eLProperty, jComboBox1);
+    org.jdesktop.swingbinding.JComboBoxBinding jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, profileManager1, eLProperty, materialComboBox);
     bindingGroup.addBinding(jComboBoxBinding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material}"), jComboBox1, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"), "MaterialFromModel");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material}"), materialComboBox, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"), "MaterialFromModel");
     bindingGroup.addBinding(binding);
 
-    jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+    materialComboBox.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jComboBox1ActionPerformed(evt);
+        materialComboBoxActionPerformed(evt);
       }
     });
 
     jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
     jLabel2.setName("jLabel2"); // NOI18N
 
-    jComboBox2.setName("jComboBox2"); // NOI18N
+    mappingComboBox.setName("mappingComboBox"); // NOI18N
 
     eLProperty = org.jdesktop.beansbinding.ELProperty.create("${mappingSets}");
-    jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, mappingManager1, eLProperty, jComboBox2, "MappingSets from Manager");
+    jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, mappingManager1, eLProperty, mappingComboBox, "MappingSets from Manager");
     bindingGroup.addBinding(jComboBoxBinding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${mappings}"), jComboBox2, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"), "MappingsFromModel");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${mappings}"), mappingComboBox, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"), "MappingsFromModel");
     bindingGroup.addBinding(binding);
 
-    jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+    mappingComboBox.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jComboBox2ActionPerformed(evt);
+        mappingComboBoxActionPerformed(evt);
       }
     });
 
-    jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
-    jButton1.setName("jButton1"); // NOI18N
-    jButton1.addActionListener(new java.awt.event.ActionListener() {
+    editMappingButton.setText(resourceMap.getString("editMappingButton.text")); // NOI18N
+    editMappingButton.setName("editMappingButton"); // NOI18N
+    editMappingButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton1ActionPerformed(evt);
+        editMappingButtonActionPerformed(evt);
       }
     });
 
     jLabel3.setText(resourceMap.getString("jLabel3.text")); // NOI18N
     jLabel3.setName("jLabel3"); // NOI18N
 
-    jTextField1.setName("jTextField1"); // NOI18N
+    dimensionWidthTextField.setName("dimensionWidthTextField"); // NOI18N
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material.width}"), jTextField1, org.jdesktop.beansbinding.BeanProperty.create("text_ON_ACTION_OR_FOCUS_LOST"), "tfw"); // NOI18N
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material.width}"), dimensionWidthTextField, org.jdesktop.beansbinding.BeanProperty.create("text_ON_ACTION_OR_FOCUS_LOST"), "tfw"); // NOI18N
     bindingGroup.addBinding(binding);
 
-    jTextField2.setName("jTextField2"); // NOI18N
+    dimesnionsHeightTextfield.setName("dimesnionsHeightTextfield"); // NOI18N
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material.height}"), jTextField2, org.jdesktop.beansbinding.BeanProperty.create("text_ON_ACTION_OR_FOCUS_LOST"), "tfh");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material.height}"), dimesnionsHeightTextfield, org.jdesktop.beansbinding.BeanProperty.create("text_ON_ACTION_OR_FOCUS_LOST"), "tfh");
     bindingGroup.addBinding(binding);
 
     jLabel4.setText(resourceMap.getString("jLabel4.text")); // NOI18N
@@ -231,9 +249,9 @@ public class MainView extends javax.swing.JFrame
     jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
     jLabel5.setName("jLabel5"); // NOI18N
 
-    jTextField3.setName("jTextField3"); // NOI18N
+    materialHeightTextField.setName("materialHeightTextField"); // NOI18N
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material.depth}"), jTextField3, org.jdesktop.beansbinding.BeanProperty.create("text_ON_ACTION_OR_FOCUS_LOST"), "tfd");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material.depth}"), materialHeightTextField, org.jdesktop.beansbinding.BeanProperty.create("text_ON_ACTION_OR_FOCUS_LOST"), "tfd");
     bindingGroup.addBinding(binding);
 
     javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -243,21 +261,21 @@ public class MainView extends javax.swing.JFrame
       .addGroup(jPanel2Layout.createSequentialGroup()
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addComponent(jLabel1)
-          .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(jLabel3)
           .addGroup(jPanel2Layout.createSequentialGroup()
-            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(mappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jButton1))
+            .addComponent(editMappingButton))
           .addComponent(jLabel5)
           .addGroup(jPanel2Layout.createSequentialGroup()
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-              .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE))
+              .addComponent(materialHeightTextField, javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(dimensionWidthTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jLabel4)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(dimesnionsHeightTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addComponent(jLabel2))
         .addContainerGap(26, Short.MAX_VALUE))
     );
@@ -266,24 +284,24 @@ public class MainView extends javax.swing.JFrame
       .addGroup(jPanel2Layout.createSequentialGroup()
         .addComponent(jLabel1)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel3)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(dimensionWidthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(dimesnionsHeightTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(jLabel4))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel5)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(materialHeightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addGap(10, 10, 10)
         .addComponent(jLabel2)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jButton1))
+          .addComponent(mappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(editMappingButton))
         .addContainerGap(214, Short.MAX_VALUE))
     );
 
@@ -291,9 +309,10 @@ public class MainView extends javax.swing.JFrame
     jPanel1.setName("jPanel1"); // NOI18N
 
     previewPanel.setBorder(null);
+    previewPanel.setAutoCenter(true);
     previewPanel.setName("previewPanel"); // NOI18N
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${preferences.laserCam.capturedImage}"), previewPanel, org.jdesktop.beansbinding.BeanProperty.create("backgroundImage"), "Image Cam to Dialog");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${backgroundImage}"), previewPanel, org.jdesktop.beansbinding.BeanProperty.create("backgroundImage"), "BackImageFromModel");
     bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${graphicObjects}"), previewPanel, org.jdesktop.beansbinding.BeanProperty.create("graphicObjects"), "ModelToPreviewObjects");
     bindingGroup.addBinding(binding);
@@ -327,18 +346,18 @@ public class MainView extends javax.swing.JFrame
     previewPanel.setLayout(previewPanelLayout);
     previewPanelLayout.setHorizontalGroup(
       previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 653, Short.MAX_VALUE)
+      .addGap(0, 643, Short.MAX_VALUE)
     );
     previewPanelLayout.setVerticalGroup(
       previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 597, Short.MAX_VALUE)
+      .addGap(0, 596, Short.MAX_VALUE)
     );
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 677, Short.MAX_VALUE)
+      .addGap(0, 667, Short.MAX_VALUE)
       .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel1Layout.createSequentialGroup()
           .addContainerGap()
@@ -355,19 +374,27 @@ public class MainView extends javax.swing.JFrame
           .addContainerGap()))
     );
 
-    jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
-    jButton2.setName("jButton2"); // NOI18N
-    jButton2.addActionListener(new java.awt.event.ActionListener() {
+    executeJobButton.setText(resourceMap.getString("executeJobButton.text")); // NOI18N
+    executeJobButton.setName("executeJobButton"); // NOI18N
+    executeJobButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton2ActionPerformed(evt);
+        executeJobButtonActionPerformed(evt);
       }
     });
 
-    jButton3.setText(resourceMap.getString("jButton3.text")); // NOI18N
-    jButton3.setName("jButton3"); // NOI18N
-    jButton3.addActionListener(new java.awt.event.ActionListener() {
+    saveButton.setText(resourceMap.getString("saveButton.text")); // NOI18N
+    saveButton.setName("saveButton"); // NOI18N
+    saveButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton3ActionPerformed(evt);
+        saveButtonActionPerformed(evt);
+      }
+    });
+
+    captureImageButton.setText(resourceMap.getString("captureImageButton.text")); // NOI18N
+    captureImageButton.setName("captureImageButton"); // NOI18N
+    captureImageButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        captureImageButtonActionPerformed(evt);
       }
     });
 
@@ -431,34 +458,23 @@ public class MainView extends javax.swing.JFrame
     editMenu.setText(resourceMap.getString("editMenu.text")); // NOI18N
     editMenu.setName("editMenu"); // NOI18N
 
-    cutMenuItem.setMnemonic('t');
-    cutMenuItem.setText(resourceMap.getString("cutMenuItem.text")); // NOI18N
-    cutMenuItem.setName("cutMenuItem"); // NOI18N
-    editMenu.add(cutMenuItem);
-
-    copyMenuItem.setMnemonic('y');
-    copyMenuItem.setText(resourceMap.getString("copyMenuItem.text")); // NOI18N
-    copyMenuItem.setName("copyMenuItem"); // NOI18N
-    editMenu.add(copyMenuItem);
-
-    pasteMenuItem.setMnemonic('p');
-    pasteMenuItem.setText(resourceMap.getString("pasteMenuItem.text")); // NOI18N
-    pasteMenuItem.setName("pasteMenuItem"); // NOI18N
-    editMenu.add(pasteMenuItem);
-
-    deleteMenuItem.setMnemonic('d');
-    deleteMenuItem.setText(resourceMap.getString("deleteMenuItem.text")); // NOI18N
-    deleteMenuItem.setName("deleteMenuItem"); // NOI18N
-    editMenu.add(deleteMenuItem);
-
-    jMenuItem1.setText(resourceMap.getString("jMenuItem1.text")); // NOI18N
-    jMenuItem1.setName("jMenuItem1"); // NOI18N
-    jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+    calibrateCameraMenuItem.setText(resourceMap.getString("calibrateCameraMenuItem.text")); // NOI18N
+    calibrateCameraMenuItem.setName("calibrateCameraMenuItem"); // NOI18N
+    calibrateCameraMenuItem.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jMenuItem1ActionPerformed(evt);
+        calibrateCameraMenuItemActionPerformed(evt);
       }
     });
-    editMenu.add(jMenuItem1);
+    editMenu.add(calibrateCameraMenuItem);
+
+    executeJobMenuItem.setText(resourceMap.getString("executeJobMenuItem.text")); // NOI18N
+    executeJobMenuItem.setName("executeJobMenuItem"); // NOI18N
+    executeJobMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        executeJobMenuItemActionPerformed(evt);
+      }
+    });
+    editMenu.add(executeJobMenuItem);
 
     menuBar.add(editMenu);
 
@@ -488,12 +504,14 @@ public class MainView extends javax.swing.JFrame
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
           .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addGroup(layout.createSequentialGroup()
-            .addComponent(jButton3)
+            .addComponent(captureImageButton)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(saveButton)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jButton2)
+            .addComponent(executeJobButton)
             .addContainerGap())))
     );
     layout.setVerticalGroup(
@@ -502,8 +520,9 @@ public class MainView extends javax.swing.JFrame
         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 174, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jButton2)
-          .addComponent(jButton3))
+          .addComponent(executeJobButton)
+          .addComponent(saveButton)
+          .addComponent(captureImageButton))
         .addContainerGap())
       .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
     );
@@ -552,30 +571,16 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   }
 }//GEN-LAST:event_openMenuItemActionPerformed
 
-private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+private void editMappingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMappingButtonActionPerformed
   mappingDialog1.setVisible(true);
   this.previewPanel.repaint();
-}//GEN-LAST:event_jButton1ActionPerformed
+}//GEN-LAST:event_editMappingButtonActionPerformed
 
 private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
   VisicutAboutBox box = new VisicutAboutBox(this);
   box.setModal(true);
   box.setVisible(true);
 }//GEN-LAST:event_aboutMenuItemActionPerformed
-
-private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-  this.camCalibrationDialog1.setVisible(true);
-  PreferencesManager man = PreferencesManager.getInstance();
-  try
-  {
-    man.savePreferences(this.visicutModel1.getPreferences(), new File("settings.xml"));
-  }
-  catch (FileNotFoundException ex)
-  {
-    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-    JOptionPane.showMessageDialog(this, "Error while saving Settings: " + ex.getLocalizedMessage());
-  }
-}//GEN-LAST:event_jMenuItem1ActionPerformed
   private enum MouseAction
   {
 
@@ -756,17 +761,22 @@ private void previewPanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRS
   }
 }//GEN-LAST:event_previewPanelMouseDragged
 
-private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-  try
+  private void executeJob()
   {
-    this.visicutModel1.sendJob();
-    JOptionPane.showMessageDialog(null, "Please press START on the Lasercutter");
+    try
+    {
+      this.visicutModel1.sendJob();
+      JOptionPane.showMessageDialog(null, "Please press START on the Lasercutter");
+    }
+    catch (Exception ex)
+    {
+      JOptionPane.showMessageDialog(null, "Error: " + ex.getLocalizedMessage());
+    }
   }
-  catch (Exception ex)
-  {
-    JOptionPane.showMessageDialog(null, "Error: " + ex.getLocalizedMessage());
-  }
-}//GEN-LAST:event_jButton2ActionPerformed
+
+private void executeJobButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobButtonActionPerformed
+  this.executeJob();
+}//GEN-LAST:event_executeJobButtonActionPerformed
 
 private void previewPanelMouseWheelMoved(java.awt.event.MouseWheelEvent evt)//GEN-FIRST:event_previewPanelMouseWheelMoved
 {//GEN-HEADEREND:event_previewPanelMouseWheelMoved
@@ -787,8 +797,8 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
   }
 }//GEN-LAST:event_filesDropSupport1PropertyChange
 
-private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
-  MappingSet ms = (MappingSet) this.jComboBox2.getSelectedItem();
+private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mappingComboBoxActionPerformed
+  MappingSet ms = (MappingSet) this.mappingComboBox.getSelectedItem();
   if (ms != null && !ms.equals(this.visicutModel1.getMappings()) && this.visicutModel1.getMaterial() != null)
   {
     MaterialProfile m = this.visicutModel1.getMaterial();
@@ -813,7 +823,7 @@ private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
         + "which are not supported by the current Material. If you proceed all Items matching to these Profiles will be unmapped.", "Warning", JOptionPane.OK_CANCEL_OPTION)
         == JOptionPane.CANCEL_OPTION)
       {
-        this.jComboBox2.setSelectedItem(this.visicutModel1.getMappings());
+        this.mappingComboBox.setSelectedItem(this.visicutModel1.getMappings());
         return;
       }
       this.visicutModel1.setMappings(supportedSubset);
@@ -823,11 +833,11 @@ private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
       this.visicutModel1.setMappings(ms);
     }
   }
-}//GEN-LAST:event_jComboBox2ActionPerformed
+}//GEN-LAST:event_mappingComboBoxActionPerformed
 
-private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_materialComboBoxActionPerformed
 //TODO: Check if Material supports all Mappings
-  MaterialProfile newMaterial = (MaterialProfile) this.jComboBox1.getSelectedItem();
+  MaterialProfile newMaterial = (MaterialProfile) this.materialComboBox.getSelectedItem();
   if (newMaterial != null && !newMaterial.equals(this.visicutModel1.getMaterial()))
   {
     if (this.visicutModel1.getMappings() != null)
@@ -839,16 +849,16 @@ private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
         {
           JOptionPane.showMessageDialog(this, "The selected Material does not support the Profile '"
             + m.getProfileName() + "'", "Error", JOptionPane.OK_OPTION);
-          this.jComboBox1.setSelectedItem(this.visicutModel1.getMaterial());
+          this.materialComboBox.setSelectedItem(this.visicutModel1.getMaterial());
           return;
         }
       }
     }
   }
   this.visicutModel1.setMaterial(newMaterial);
-}//GEN-LAST:event_jComboBox1ActionPerformed
+}//GEN-LAST:event_materialComboBoxActionPerformed
 
-private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
   int returnVal = saveFileChooser.showSaveDialog(this);
   if (returnVal == JFileChooser.APPROVE_OPTION)
   {
@@ -871,10 +881,10 @@ private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   {
     System.out.println("File access cancelled by user.");
   }
-}//GEN-LAST:event_jButton3ActionPerformed
+}//GEN-LAST:event_saveButtonActionPerformed
 
 private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
-  this.jButton3ActionPerformed(evt);
+  this.saveButtonActionPerformed(evt);
 }//GEN-LAST:event_saveAsMenuItemActionPerformed
 
 private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_visicutModel1PropertyChange
@@ -901,43 +911,87 @@ private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
   this.previewPanel.setEditRectangle(null);
   this.visicutModel1.setGraphicObjects(new GraphicSet());
 }//GEN-LAST:event_newMenuItemActionPerformed
+
+private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calibrateCameraMenuItemActionPerformed
+  this.camCalibrationDialog1.setVisible(true);
+  PreferencesManager man = PreferencesManager.getInstance();
+  try
+  {
+    man.savePreferences(this.visicutModel1.getPreferences(), new File("settings.xml"));
+  }
+  catch (FileNotFoundException ex)
+  {
+    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+    JOptionPane.showMessageDialog(this, "Error while saving Settings: " + ex.getLocalizedMessage());
+  }
+}//GEN-LAST:event_calibrateCameraMenuItemActionPerformed
+
+private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobMenuItemActionPerformed
+  this.executeJob();
+}//GEN-LAST:event_executeJobMenuItemActionPerformed
+
+  private void captureImage()
+  {
+    try
+    {
+      URL src = new URL(this.visicutModel1.getPreferences().getBackgroundImageURL());
+      if (src != null)
+      {
+        try
+        {
+          BufferedImage back = ImageIO.read(src);
+          this.visicutModel1.setBackgroundImage(back);
+        }
+        catch (IOException ex)
+        {
+          Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+    }
+    catch (MalformedURLException ex)
+    {
+      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
+
+private void captureImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_captureImageButtonActionPerformed
+  captureImage();
+}//GEN-LAST:event_captureImageButtonActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
+  private javax.swing.JMenuItem calibrateCameraMenuItem;
   private com.t_oster.visicut.gui.CamCalibrationDialog camCalibrationDialog1;
-  private javax.swing.JMenuItem copyMenuItem;
-  private javax.swing.JMenuItem cutMenuItem;
-  private javax.swing.JMenuItem deleteMenuItem;
+  private javax.swing.JButton captureImageButton;
+  private javax.swing.JTextField dimensionWidthTextField;
+  private javax.swing.JTextField dimesnionsHeightTextfield;
+  private javax.swing.JButton editMappingButton;
   private javax.swing.JMenu editMenu;
+  private javax.swing.JButton executeJobButton;
+  private javax.swing.JMenuItem executeJobMenuItem;
   private javax.swing.JMenuItem exitMenuItem;
   private javax.swing.JMenu fileMenu;
   private com.t_oster.visicut.gui.beans.FilesDropSupport filesDropSupport1;
   private javax.swing.JMenu helpMenu;
-  private javax.swing.JButton jButton1;
-  private javax.swing.JButton jButton2;
-  private javax.swing.JButton jButton3;
-  private javax.swing.JComboBox jComboBox1;
-  private javax.swing.JComboBox jComboBox2;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
-  private javax.swing.JMenuItem jMenuItem1;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
-  private javax.swing.JTextField jTextField1;
-  private javax.swing.JTextField jTextField2;
-  private javax.swing.JTextField jTextField3;
+  private javax.swing.JComboBox mappingComboBox;
   private com.t_oster.visicut.gui.MappingDialog mappingDialog1;
   private com.t_oster.visicut.model.MappingManager mappingManager1;
+  private javax.swing.JComboBox materialComboBox;
+  private javax.swing.JTextField materialHeightTextField;
   private javax.swing.JMenuBar menuBar;
   private javax.swing.JMenuItem newMenuItem;
   private javax.swing.JFileChooser openFileChooser;
   private javax.swing.JMenuItem openMenuItem;
-  private javax.swing.JMenuItem pasteMenuItem;
   private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
   private com.t_oster.visicut.model.ProfileManager profileManager1;
   private javax.swing.JMenuItem saveAsMenuItem;
+  private javax.swing.JButton saveButton;
   private javax.swing.JFileChooser saveFileChooser;
   private javax.swing.JMenuItem saveMenuItem;
   private com.t_oster.visicut.VisicutModel visicutModel1;

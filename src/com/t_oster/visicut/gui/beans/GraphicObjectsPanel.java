@@ -20,6 +20,28 @@ import javax.swing.JPanel;
 public class GraphicObjectsPanel extends JPanel
 {
 
+  protected boolean autoCenter = false;
+
+  /**
+   * Get the value of autoCenter
+   *
+   * @return the value of autoCenter
+   */
+  public boolean isAutoCenter()
+  {
+    return autoCenter;
+  }
+
+  /**
+   * Set the value of autoCenter
+   *
+   * @param autoCenter new value of autoCenter
+   */
+  public void setAutoCenter(boolean autoCenter)
+  {
+    this.autoCenter = autoCenter;
+  }
+
   protected Point center = null;
   public static final String PROP_CENTER = "center";
 
@@ -45,7 +67,7 @@ public class GraphicObjectsPanel extends JPanel
     this.repaint();
     firePropertyChange(PROP_CENTER, oldCenter, center);
   }
-  protected int zoom = 100;
+  protected int zoom = 1000;
   public static final String PROP_ZOOM = "zoom";
 
   /**
@@ -85,7 +107,7 @@ public class GraphicObjectsPanel extends JPanel
 
   private AffineTransform calculateTransform()
   {
-    AffineTransform ownTransform = AffineTransform.getScaleInstance((double) zoom / 100, (double) zoom / 100);
+    AffineTransform ownTransform = AffineTransform.getScaleInstance((double) zoom / 1000, (double) zoom / 1000);
 
     double w = this.getWidth();
     double h = this.getHeight();
@@ -97,7 +119,7 @@ public class GraphicObjectsPanel extends JPanel
       trans.concatenate(ownTransform);
       ownTransform = trans;
     }
-    else
+    else if (autoCenter)
     {
       try
       {

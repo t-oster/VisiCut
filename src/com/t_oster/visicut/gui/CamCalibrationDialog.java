@@ -10,8 +10,20 @@
  */
 package com.t_oster.visicut.gui;
 
-import com.t_oster.visicut.gui.beans.LaserCam;
+import com.t_oster.liblasercut.LaserCutter;
+import com.t_oster.liblasercut.LaserJob;
+import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.VectorPart;
+import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.Helper;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -20,8 +32,79 @@ import java.awt.geom.AffineTransform;
 public class CamCalibrationDialog extends javax.swing.JDialog
 {
 
+  protected BufferedImage backgroundImage = null;
+  public static final String PROP_BACKGROUNDIMAGE = "backgroundImage";
+  public Point laserUpperLeft = new Point((int) Util.mm2px(0, 500), (int) Util.mm2px(0, 500));
+  public Point laserLowerRight = new Point((int) Util.mm2px(600, 500), (int) Util.mm2px(300, 500));
+
+
+  /**
+   * Get the value of backgroundImage
+   *
+   * @return the value of backgroundImage
+   */
+  public BufferedImage getBackgroundImage()
+  {
+    return backgroundImage;
+  }
+
+  /**
+   * Set the value of backgroundImage
+   *
+   * @param backgroundImage new value of backgroundImage
+   */
+  public void setBackgroundImage(BufferedImage backgroundImage)
+  {
+    this.backgroundImage = backgroundImage;
+    this.calibrationPanel1.setBackgroundImage(backgroundImage);
+  }
+  protected LaserCutter laserCutter = null;
+
+  /**
+   * Get the value of laserCutter
+   *
+   * @return the value of laserCutter
+   */
+  public LaserCutter getLaserCutter()
+  {
+    return laserCutter;
+  }
+
+  /**
+   * Set the value of laserCutter
+   *
+   * @param laserCutter new value of laserCutter
+   */
+  public void setLaserCutter(LaserCutter laserCutter)
+  {
+    this.laserCutter = laserCutter;
+    if (laserCutter != null)
+    {
+      double width = this.laserCutter.getBedWidth();
+      double height = this.laserCutter.getBedHeight();
+      laserUpperLeft = new Point((int) Util.mm2px(width * 20 / 100, 500), (int) Util.mm2px(height * 20 / 100, 500));
+      laserLowerRight = new Point((int) Util.mm2px(width * 80 / 100, 500), (int) Util.mm2px(height * 80 / 100, 500));
+      refreshImagePoints();
+    }
+  }
   protected AffineTransform currentTransformation = currentTransformation = AffineTransform.getScaleInstance(0.01, 0.01);
   public static final String PROP_CURRENTTRANSFORMATION = "currentTransformation";
+
+  private void refreshImagePoints()
+  {
+    Point imageUpperLeft = (Point) laserUpperLeft.clone();
+    Point imageLowerRight = (Point) laserLowerRight.clone();
+    if (this.getResultingTransformation() != null)
+    {
+      AffineTransform laser2img = this.getResultingTransformation();
+      laser2img.transform(imageUpperLeft, imageUpperLeft);
+      laser2img.transform(imageLowerRight, imageLowerRight);
+    }
+    this.calibrationPanel1.setPointList(new Point[]
+      {
+        imageUpperLeft, imageLowerRight
+      });
+  }
 
   /**
    * Get the value of currentTransformation
@@ -30,25 +113,11 @@ public class CamCalibrationDialog extends javax.swing.JDialog
    */
   public AffineTransform getCurrentTransformation()
   {
-    return currentTransformation;
+    Point[] img = this.calibrationPanel1.getPointList();
+    return Helper.getTransform(
+      new Rectangle(laserUpperLeft.x, laserUpperLeft.y, laserLowerRight.x - laserUpperLeft.x, laserLowerRight.y - laserUpperLeft.y),
+      new Rectangle(img[0].x, img[0].y, img[1].x - img[0].x, img[1].y - img[0].y));
   }
-
-  /**
-   * Set the value of currentTransformation
-   *
-   * @param currentTransformation new value of currentTransformation
-   */
-  public void setCurrentTransformation(AffineTransform currentTransformation)
-  {
-    if (currentTransformation == null)
-    {
-      currentTransformation = AffineTransform.getScaleInstance(0.01, 0.01);
-    }
-    AffineTransform oldCurrentTransformation = this.currentTransformation;
-    this.currentTransformation = currentTransformation;
-    firePropertyChange(PROP_CURRENTTRANSFORMATION, oldCurrentTransformation, currentTransformation);
-  }
-
   protected AffineTransform resultingTransformation = null;
   public static final String PROP_RESULTINGTRANSFORMATION = "resultingTransformation";
 
@@ -72,35 +141,14 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     AffineTransform oldResultingTransformation = this.resultingTransformation;
     this.resultingTransformation = resultingTransformation;
     firePropertyChange(PROP_RESULTINGTRANSFORMATION, oldResultingTransformation, resultingTransformation);
-    this.setCurrentTransformation(resultingTransformation);
-  }
-
-  protected LaserCam laserCam = new LaserCam();
-  /**
-   * Get the value of laserCam
-   *
-   * @return the value of laserCam
-   */
-  public LaserCam getLaserCam()
-  {
-    return laserCam;
-  }
-
-  /**
-   * Set the value of laserCam
-   *
-   * @param laserCam new value of laserCam
-   */
-  public void setLaserCam(LaserCam laserCam)
-  {
-    this.laserCam = laserCam;
+    this.refreshImagePoints();
   }
 
   public CamCalibrationDialog()
   {
     this(null, true);
   }
-  
+
   /** Creates new form CamCalibrationDialog */
   public CamCalibrationDialog(java.awt.Frame parent, boolean modal)
   {
@@ -120,9 +168,9 @@ public class CamCalibrationDialog extends javax.swing.JDialog
 
     jPanel1 = new javax.swing.JPanel();
     calibrationPanel1 = new com.t_oster.visicut.gui.beans.CalibrationPanel();
-    jButton1 = new javax.swing.JButton();
-    jButton2 = new javax.swing.JButton();
-    jButton3 = new javax.swing.JButton();
+    okButton = new javax.swing.JButton();
+    cancelButton = new javax.swing.JButton();
+    sendButton = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setName("Form"); // NOI18N
@@ -135,18 +183,22 @@ public class CamCalibrationDialog extends javax.swing.JDialog
 
     org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${laserCam.capturedImage}"), calibrationPanel1, org.jdesktop.beansbinding.BeanProperty.create("backgroundImage"), "CamImageToPanel");
     bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentTransformation}"), calibrationPanel1, org.jdesktop.beansbinding.BeanProperty.create("previewTransformation"), "TransformationToPanel");
-    bindingGroup.addBinding(binding);
+
+    calibrationPanel1.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+      public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+        calibrationPanel1MouseWheelMoved(evt);
+      }
+    });
 
     javax.swing.GroupLayout calibrationPanel1Layout = new javax.swing.GroupLayout(calibrationPanel1);
     calibrationPanel1.setLayout(calibrationPanel1Layout);
     calibrationPanel1Layout.setHorizontalGroup(
       calibrationPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 451, Short.MAX_VALUE)
+      .addGap(0, 824, Short.MAX_VALUE)
     );
     calibrationPanel1Layout.setVerticalGroup(
       calibrationPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 251, Short.MAX_VALUE)
+      .addGap(0, 379, Short.MAX_VALUE)
     );
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -162,39 +214,44 @@ public class CamCalibrationDialog extends javax.swing.JDialog
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel1Layout.createSequentialGroup()
         .addComponent(calibrationPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addGap(13, 13, 13))
+        .addContainerGap())
     );
 
-    jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
-    jButton1.setName("jButton1"); // NOI18N
-    jButton1.addActionListener(new java.awt.event.ActionListener() {
+    okButton.setText(resourceMap.getString("okButton.text")); // NOI18N
+    okButton.setName("okButton"); // NOI18N
+    okButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton1ActionPerformed(evt);
+        okButtonActionPerformed(evt);
       }
     });
 
-    jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
-    jButton2.setName("jButton2"); // NOI18N
-    jButton2.addActionListener(new java.awt.event.ActionListener() {
+    cancelButton.setText(resourceMap.getString("cancelButton.text")); // NOI18N
+    cancelButton.setName("cancelButton"); // NOI18N
+    cancelButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton2ActionPerformed(evt);
+        cancelButtonActionPerformed(evt);
       }
     });
 
-    jButton3.setText(resourceMap.getString("jButton3.text")); // NOI18N
-    jButton3.setName("jButton3"); // NOI18N
+    sendButton.setText(resourceMap.getString("sendButton.text")); // NOI18N
+    sendButton.setName("sendButton"); // NOI18N
+    sendButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        sendButtonActionPerformed(evt);
+      }
+    });
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-        .addContainerGap(171, Short.MAX_VALUE)
-        .addComponent(jButton3)
+        .addContainerGap(544, Short.MAX_VALUE)
+        .addComponent(sendButton)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jButton2)
+        .addComponent(cancelButton)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addGap(15, 15, 15))
       .addGroup(layout.createSequentialGroup()
         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -206,9 +263,9 @@ public class CamCalibrationDialog extends javax.swing.JDialog
         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jButton2)
-          .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jButton3)))
+          .addComponent(cancelButton)
+          .addComponent(okButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(sendButton)))
     );
 
     bindingGroup.bind();
@@ -216,15 +273,52 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     pack();
   }// </editor-fold>//GEN-END:initComponents
 
-private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-this.setResultingTransformation(this.getCurrentTransformation());
-this.setVisible(false);
-}//GEN-LAST:event_jButton1ActionPerformed
+private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
+  this.setResultingTransformation(this.getCurrentTransformation());
+  this.setVisible(false);
+}//GEN-LAST:event_okButtonActionPerformed
 
-private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-this.setCurrentTransformation(this.getResultingTransformation());
-this.setVisible(false);
-}//GEN-LAST:event_jButton2ActionPerformed
+private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
+  this.refreshImagePoints();
+  this.setVisible(false);
+}//GEN-LAST:event_cancelButtonActionPerformed
+
+private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
+
+  try
+  {
+    if (laserCutter == null)
+    {
+      throw new Exception("No Lasercutter selected");
+    }
+    VectorPart vp = new VectorPart(new LaserProperty());
+    int size = 10;
+    for (Point p : new Point[]
+      {
+        laserUpperLeft, laserLowerRight
+      })
+    {
+      vp.moveto(p.x - size / 2, p.y);
+      vp.lineto(p.x + size / 2, p.y);
+      vp.moveto(p.x, p.y - size / 2);
+      vp.lineto(p.x, p.y + size / 2);
+    }
+    LaserJob job = new LaserJob("Calibration", "VisiCut Calibration Page", "visicut", 500, null, vp, null);
+    this.laserCutter.sendJob(job);
+    JOptionPane.showMessageDialog(this, "Please press 'START' on the Lasercutter");
+  }
+  catch (Exception e)
+  {
+    JOptionPane.showMessageDialog(this, "Error sending Page:\n" + e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+  }
+}//GEN-LAST:event_sendButtonActionPerformed
+
+private void calibrationPanel1MouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_calibrationPanel1MouseWheelMoved
+  if (evt.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
+  {
+    this.calibrationPanel1.setZoom(this.calibrationPanel1.getZoom() - (evt.getUnitsToScroll() * this.calibrationPanel1.getZoom() / 32));
+  }
+}//GEN-LAST:event_calibrationPanel1MouseWheelMoved
 
   /**
    * @param args the command line arguments
@@ -287,10 +381,10 @@ this.setVisible(false);
   }
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private com.t_oster.visicut.gui.beans.CalibrationPanel calibrationPanel1;
-  private javax.swing.JButton jButton1;
-  private javax.swing.JButton jButton2;
-  private javax.swing.JButton jButton3;
+  private javax.swing.JButton cancelButton;
   private javax.swing.JPanel jPanel1;
+  private javax.swing.JButton okButton;
+  private javax.swing.JButton sendButton;
   private org.jdesktop.beansbinding.BindingGroup bindingGroup;
   // End of variables declaration//GEN-END:variables
 }

@@ -5,11 +5,11 @@
 package com.t_oster.visicut;
 
 import com.t_oster.liblasercut.IllegalJobException;
+import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.RasterPart;
 import com.t_oster.liblasercut.VectorPart;
-import com.t_oster.liblasercut.drivers.EpilogCutter;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
@@ -18,6 +18,7 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
@@ -42,6 +43,31 @@ import java.util.zip.ZipOutputStream;
  */
 public class VisicutModel
 {
+
+  protected BufferedImage backgroundImage = null;
+  public static final String PROP_BACKGROUNDIMAGE = "backgroundImage";
+
+  /**
+   * Get the value of backgroundImage
+   *
+   * @return the value of backgroundImage
+   */
+  public BufferedImage getBackgroundImage()
+  {
+    return backgroundImage;
+  }
+
+  /**
+   * Set the value of backgroundImage
+   *
+   * @param backgroundImage new value of backgroundImage
+   */
+  public void setBackgroundImage(BufferedImage backgroundImage)
+  {
+    BufferedImage oldBackgroundImage = this.backgroundImage;
+    this.backgroundImage = backgroundImage;
+    propertyChangeSupport.firePropertyChange(PROP_BACKGROUNDIMAGE, oldBackgroundImage, backgroundImage);
+  }
 
   protected Preferences preferences = new Preferences();
   public static final String PROP_PREFERENCES = "preferences";
@@ -332,7 +358,7 @@ public class VisicutModel
   {
     RasterPart rp = new RasterPart(new LaserProperty());
     VectorPart vp = new VectorPart(new LaserProperty());
-    EpilogCutter instance = new EpilogCutter("137.226.56.228");
+    LaserCutter instance = this.preferences.getLaserCutter();
     LaserJob job = new LaserJob("VisiCut", "666", "bla", 500, null, vp, rp);
     for (Mapping m : this.getMappings())
     {

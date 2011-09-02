@@ -27,9 +27,6 @@
       <Events>
         <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="visicutModel1PropertyChange"/>
       </Events>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_allCodePost" type="java.lang.String" value="String[] args = VisicutApp.getApplication().getProgramArguments();&#xa;for (String s:args)&#xa;{&#xa;  File f = new File(s);&#xa;  if (f.exists())&#xa;{&#xa;this.loadFile(f);&#xa;}&#xa;}"/>
-      </AuxValues>
     </Component>
     <Component class="com.t_oster.visicut.model.ProfileManager" name="profileManager1">
       <AuxValues>
@@ -41,8 +38,11 @@
         <Property name="name" type="java.lang.String" value="camCalibrationDialog1" noResource="true"/>
       </Properties>
       <BindingProperties>
-        <BindingProperty name="laserCam" source="visicutModel1" sourcePath="${preferences.laserCam}" target="camCalibrationDialog1" targetPath="laserCam" updateStrategy="1" immediately="false">
-          <Property name="name" type="java.lang.String" value="CamModelToDialog"/>
+        <BindingProperty name="backgroundImage" source="visicutModel1" sourcePath="${backgroundImage}" target="camCalibrationDialog1" targetPath="backgroundImage" updateStrategy="1" immediately="false">
+          <Property name="name" type="java.lang.String" value="bgImage from Model to Dialog"/>
+        </BindingProperty>
+        <BindingProperty name="laserCutter" source="visicutModel1" sourcePath="${preferences.laserCutter}" target="camCalibrationDialog1" targetPath="laserCutter" updateStrategy="1" immediately="false">
+          <Property name="name" type="java.lang.String" value="LaserCutterFromPreferences to Dialog"/>
         </BindingProperty>
         <BindingProperty name="resultingTransformation" source="visicutModel1" sourcePath="${preferences.camCalibration}" target="camCalibrationDialog1" targetPath="resultingTransformation" updateStrategy="0" immediately="false">
           <Property name="name" type="java.lang.String" value="TransformationCalibDialogModel"/>
@@ -140,41 +140,22 @@
             <Property name="name" type="java.lang.String" value="editMenu" noResource="true"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="cutMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="calibrateCameraMenuItem">
               <Properties>
-                <Property name="mnemonic" type="int" value="116"/>
-                <Property name="text" type="java.lang.String" resourceKey="cutMenuItem.text"/>
-                <Property name="name" type="java.lang.String" value="cutMenuItem" noResource="true"/>
-              </Properties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="copyMenuItem">
-              <Properties>
-                <Property name="mnemonic" type="int" value="121"/>
-                <Property name="text" type="java.lang.String" resourceKey="copyMenuItem.text"/>
-                <Property name="name" type="java.lang.String" value="copyMenuItem" noResource="true"/>
-              </Properties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="pasteMenuItem">
-              <Properties>
-                <Property name="mnemonic" type="int" value="112"/>
-                <Property name="text" type="java.lang.String" resourceKey="pasteMenuItem.text"/>
-                <Property name="name" type="java.lang.String" value="pasteMenuItem" noResource="true"/>
-              </Properties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="deleteMenuItem">
-              <Properties>
-                <Property name="mnemonic" type="int" value="100"/>
-                <Property name="text" type="java.lang.String" resourceKey="deleteMenuItem.text"/>
-                <Property name="name" type="java.lang.String" value="deleteMenuItem" noResource="true"/>
-              </Properties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="jMenuItem1.text"/>
-                <Property name="name" type="java.lang.String" value="jMenuItem1" noResource="true"/>
+                <Property name="text" type="java.lang.String" resourceKey="calibrateCameraMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="calibrateCameraMenuItem" noResource="true"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem1ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="calibrateCameraMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="executeJobMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="executeJobMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="executeJobMenuItem" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="executeJobMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -237,12 +218,14 @@
           <Group type="102" alignment="1" attributes="0">
               <Component id="jPanel1" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
+              <Group type="103" groupAlignment="1" max="-2" attributes="0">
                   <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Component id="jButton3" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" alignment="1" attributes="1">
+                      <Component id="captureImageButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="saveButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jButton2" min="-2" max="-2" attributes="0"/>
+                      <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -255,8 +238,9 @@
               <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
               <EmptySpace pref="174" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButton3" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="executeJobButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="saveButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="captureImageButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -276,23 +260,23 @@
               <Group type="102" attributes="0">
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                       <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="jComboBox1" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="materialComboBox" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="jComboBox2" min="-2" max="-2" attributes="0"/>
+                          <Component id="mappingComboBox" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                          <Component id="editMappingButton" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="1">
                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                              <Component id="jTextField3" alignment="0" max="32767" attributes="1"/>
-                              <Component id="jTextField1" alignment="0" pref="66" max="32767" attributes="1"/>
+                              <Component id="materialHeightTextField" alignment="0" max="32767" attributes="1"/>
+                              <Component id="dimensionWidthTextField" alignment="0" pref="66" max="32767" attributes="1"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
-                          <Component id="jTextField2" min="-2" pref="56" max="-2" attributes="0"/>
+                          <Component id="dimesnionsHeightTextfield" min="-2" pref="56" max="-2" attributes="0"/>
                       </Group>
                       <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -305,25 +289,25 @@
               <Group type="102" alignment="0" attributes="0">
                   <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jComboBox1" min="-2" max="-2" attributes="0"/>
+                  <Component id="materialComboBox" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="jTextField1" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jTextField2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="dimensionWidthTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="dimesnionsHeightTextfield" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jTextField3" min="-2" max="-2" attributes="0"/>
+                  <Component id="materialHeightTextField" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="jComboBox2" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="mappingComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="editMappingButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="214" max="32767" attributes="0"/>
               </Group>
@@ -337,18 +321,18 @@
             <Property name="name" type="java.lang.String" value="jLabel1" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JComboBox" name="jComboBox1">
+        <Component class="javax.swing.JComboBox" name="materialComboBox">
           <Properties>
-            <Property name="name" type="java.lang.String" value="jComboBox1" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="materialComboBox" noResource="true"/>
           </Properties>
           <BindingProperties>
-            <BindingProperty name="elements" source="profileManager1" sourcePath="${materials}" target="jComboBox1" targetPath="elements" updateStrategy="0" immediately="false"/>
-            <BindingProperty name="selectedItem" source="visicutModel1" sourcePath="${material}" target="jComboBox1" targetPath="selectedItem" updateStrategy="1" immediately="false">
+            <BindingProperty name="elements" source="profileManager1" sourcePath="${materials}" target="materialComboBox" targetPath="elements" updateStrategy="0" immediately="false"/>
+            <BindingProperty name="selectedItem" source="visicutModel1" sourcePath="${material}" target="materialComboBox" targetPath="selectedItem" updateStrategy="1" immediately="false">
               <Property name="name" type="java.lang.String" value="MaterialFromModel"/>
             </BindingProperty>
           </BindingProperties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jComboBox1ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="materialComboBoxActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
@@ -357,29 +341,29 @@
             <Property name="name" type="java.lang.String" value="jLabel2" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JComboBox" name="jComboBox2">
+        <Component class="javax.swing.JComboBox" name="mappingComboBox">
           <Properties>
-            <Property name="name" type="java.lang.String" value="jComboBox2" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="mappingComboBox" noResource="true"/>
           </Properties>
           <BindingProperties>
-            <BindingProperty name="elements" source="mappingManager1" sourcePath="${mappingSets}" target="jComboBox2" targetPath="elements" updateStrategy="1" immediately="false">
+            <BindingProperty name="elements" source="mappingManager1" sourcePath="${mappingSets}" target="mappingComboBox" targetPath="elements" updateStrategy="1" immediately="false">
               <Property name="name" type="java.lang.String" value="MappingSets from Manager"/>
             </BindingProperty>
-            <BindingProperty name="selectedItem" source="visicutModel1" sourcePath="${mappings}" target="jComboBox2" targetPath="selectedItem" updateStrategy="1" immediately="false">
+            <BindingProperty name="selectedItem" source="visicutModel1" sourcePath="${mappings}" target="mappingComboBox" targetPath="selectedItem" updateStrategy="1" immediately="false">
               <Property name="name" type="java.lang.String" value="MappingsFromModel"/>
             </BindingProperty>
           </BindingProperties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jComboBox2ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mappingComboBoxActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="jButton1">
+        <Component class="javax.swing.JButton" name="editMappingButton">
           <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="jButton1.text"/>
-            <Property name="name" type="java.lang.String" value="jButton1" noResource="true"/>
+            <Property name="text" type="java.lang.String" resourceKey="editMappingButton.text"/>
+            <Property name="name" type="java.lang.String" value="editMappingButton" noResource="true"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editMappingButtonActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel3">
@@ -388,23 +372,23 @@
             <Property name="name" type="java.lang.String" value="jLabel3" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="jTextField1">
+        <Component class="javax.swing.JTextField" name="dimensionWidthTextField">
           <Properties>
-            <Property name="name" type="java.lang.String" value="jTextField1" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="dimensionWidthTextField" noResource="true"/>
           </Properties>
           <BindingProperties>
-            <BindingProperty name="text" source="visicutModel1" sourcePath="${material.width}" target="jTextField1" targetPath="text" updateStrategy="0" immediately="false">
+            <BindingProperty name="text" source="visicutModel1" sourcePath="${material.width}" target="dimensionWidthTextField" targetPath="text" updateStrategy="0" immediately="false">
               <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_ACTION_OR_FOCUS_LOST"/>
               <Property name="name" type="java.lang.String" value="tfw" noResource="true"/>
             </BindingProperty>
           </BindingProperties>
         </Component>
-        <Component class="javax.swing.JTextField" name="jTextField2">
+        <Component class="javax.swing.JTextField" name="dimesnionsHeightTextfield">
           <Properties>
-            <Property name="name" type="java.lang.String" value="jTextField2" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="dimesnionsHeightTextfield" noResource="true"/>
           </Properties>
           <BindingProperties>
-            <BindingProperty name="text" source="visicutModel1" sourcePath="${material.height}" target="jTextField2" targetPath="text" updateStrategy="0" immediately="false">
+            <BindingProperty name="text" source="visicutModel1" sourcePath="${material.height}" target="dimesnionsHeightTextfield" targetPath="text" updateStrategy="0" immediately="false">
               <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_ACTION_OR_FOCUS_LOST"/>
               <Property name="name" type="java.lang.String" value="tfh"/>
             </BindingProperty>
@@ -422,12 +406,12 @@
             <Property name="name" type="java.lang.String" value="jLabel5" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="jTextField3">
+        <Component class="javax.swing.JTextField" name="materialHeightTextField">
           <Properties>
-            <Property name="name" type="java.lang.String" value="jTextField3" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="materialHeightTextField" noResource="true"/>
           </Properties>
           <BindingProperties>
-            <BindingProperty name="text" source="visicutModel1" sourcePath="${material.depth}" target="jTextField3" targetPath="text" updateStrategy="0" immediately="false">
+            <BindingProperty name="text" source="visicutModel1" sourcePath="${material.depth}" target="materialHeightTextField" targetPath="text" updateStrategy="0" immediately="false">
               <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_ACTION_OR_FOCUS_LOST"/>
               <Property name="name" type="java.lang.String" value="tfd"/>
             </BindingProperty>
@@ -450,7 +434,7 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="677" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="667" max="32767" attributes="0"/>
               <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
@@ -479,11 +463,12 @@
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="null"/>
             </Property>
+            <Property name="autoCenter" type="boolean" value="true"/>
             <Property name="name" type="java.lang.String" value="previewPanel" noResource="true"/>
           </Properties>
           <BindingProperties>
-            <BindingProperty name="backgroundImage" source="visicutModel1" sourcePath="${preferences.laserCam.capturedImage}" target="previewPanel" targetPath="backgroundImage" updateStrategy="1" immediately="false">
-              <Property name="name" type="java.lang.String" value="Image Cam to Dialog"/>
+            <BindingProperty name="backgroundImage" source="visicutModel1" sourcePath="${backgroundImage}" target="previewPanel" targetPath="backgroundImage" updateStrategy="1" immediately="false">
+              <Property name="name" type="java.lang.String" value="BackImageFromModel"/>
             </BindingProperty>
             <BindingProperty name="graphicObjects" source="visicutModel1" sourcePath="${graphicObjects}" target="previewPanel" targetPath="graphicObjects" updateStrategy="1" immediately="false">
               <Property name="name" type="java.lang.String" value="ModelToPreviewObjects"/>
@@ -506,34 +491,43 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="653" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="643" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="597" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="596" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
         </Container>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="jButton2">
+    <Component class="javax.swing.JButton" name="executeJobButton">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="jButton2.text"/>
-        <Property name="name" type="java.lang.String" value="jButton2" noResource="true"/>
+        <Property name="text" type="java.lang.String" resourceKey="executeJobButton.text"/>
+        <Property name="name" type="java.lang.String" value="executeJobButton" noResource="true"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="executeJobButtonActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton3">
+    <Component class="javax.swing.JButton" name="saveButton">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="jButton3.text"/>
-        <Property name="name" type="java.lang.String" value="jButton3" noResource="true"/>
+        <Property name="text" type="java.lang.String" resourceKey="saveButton.text"/>
+        <Property name="name" type="java.lang.String" value="saveButton" noResource="true"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton3ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="captureImageButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="captureImageButton.text"/>
+        <Property name="name" type="java.lang.String" value="captureImageButton" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="captureImageButtonActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
