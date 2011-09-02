@@ -181,6 +181,7 @@ public class VisicutModel
     this.setMappings(mappings);
     if (inputFile != null && inputFile.exists())
     {
+      inputFile.deleteOnExit();
       this.loadGraphicFile(inputFile);
     }
     else
