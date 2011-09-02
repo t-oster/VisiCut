@@ -27,11 +27,26 @@ public class MappingFilter
     return value;
   }
   
+  public void setAttribute(String attribute)
+  {
+    this.attribute = attribute;
+  }
+  
+  public void setValue(Object value)
+  {
+    this.value = value;
+  }
+  
   public final boolean matches(GraphicObject e)
   {
     return e.getAttributeValues(attribute).contains(value);
   }
 
+  public MappingFilter()
+  {
+    
+  }
+  
   public MappingFilter(String attribute, Object value)
   {
     this.attribute = attribute;

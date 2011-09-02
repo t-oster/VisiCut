@@ -3,6 +3,7 @@
  */
 package com.t_oster.visicut.gui;
 
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.UIManager;
@@ -43,6 +44,20 @@ public class VisicutApp extends SingleFrameApplication
   public static VisicutApp getApplication()
   {
     return Application.getInstance(VisicutApp.class);
+  }
+
+  private String[] arguments;
+  
+  public String[] getProgramArguments()
+  {
+    return arguments;
+  }
+  
+  @Override
+  protected void initialize(String[] args)
+  {
+    super.initialize(args);
+    this.arguments = args;
   }
 
   /**

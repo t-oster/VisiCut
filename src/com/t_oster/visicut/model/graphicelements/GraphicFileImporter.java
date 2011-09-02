@@ -4,12 +4,14 @@
  */
 package com.t_oster.visicut.model.graphicelements;
 
+import com.t_oster.visicut.ExtensionFilter;
 import com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter;
 import com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter;
+import com.t_oster.visicut.model.graphicelements.pdfsupport.PDFImporter;
 import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.List;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * The Importer class Takes an InputFile and returns
@@ -19,6 +21,24 @@ import java.util.List;
  */
 public class GraphicFileImporter implements Importer
 {
+
+  private static FileFilter[] fileTypes;
+
+  public static FileFilter[] getFileFilters()
+  {
+    if (fileTypes == null)
+    {
+      fileTypes = new FileFilter[]
+      {
+        new ExtensionFilter(".plf", "VisiCut Portable Laser File (*.plf)"),
+        new ExtensionFilter(".svg", "Scalable Vector Graphics (*.svg)"),
+        new ExtensionFilter(".png", "Portable Network Graphic (*.png)"),
+        new ExtensionFilter(".jpg", "JPEG (*.jpg)"),
+      };
+    }
+    return fileTypes;
+  }
+
   public GraphicSet importFile(File inputFile) throws ImportException
   {
     if (inputFile == null)
@@ -41,6 +61,10 @@ public class GraphicFileImporter implements Importer
     else if (name.endsWith(".dxf"))
     {
       return (new DXFImporter()).importFile(inputFile);
+    }
+    else if (name.endsWith(".pdf"))
+    {
+      return (new PDFImporter()).importFile(inputFile);
     }
     else
     {

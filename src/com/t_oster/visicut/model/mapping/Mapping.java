@@ -11,6 +11,10 @@ import com.t_oster.liblasercut.platform.Tuple;
  */
 public class Mapping extends Tuple<FilterSet,String>
 {
+  public Mapping()
+  {
+  }
+  
   public Mapping(FilterSet filterSet, String profileName)
   {
     super(filterSet,profileName);
@@ -21,9 +25,19 @@ public class Mapping extends Tuple<FilterSet,String>
     return this.getA();
   }
   
+  public void setFilterSet(FilterSet f)
+  {
+    this.setA(f);
+  }
+  
   public String getProfileName()
   {
     return this.getB();
+  }
+  
+  public void setProfileName(String name)
+  {
+    this.setB(name);
   }
   
   @Override
