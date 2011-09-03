@@ -119,7 +119,6 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
           {
             this.getRoot(), MAPPINGS, this.selectedMapping
           });
-        this.getSelectionModel().clearSelection();
         this.getSelectionModel().setSelectionPath(p);
       }
     }

@@ -11,8 +11,10 @@ import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.RasterPart;
 import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.visicut.model.LaserProfile;
+import com.t_oster.visicut.model.MappingManager;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.ProfileManager;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
@@ -31,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -68,7 +71,6 @@ public class VisicutModel
     this.backgroundImage = backgroundImage;
     propertyChangeSupport.firePropertyChange(PROP_BACKGROUNDIMAGE, oldBackgroundImage, backgroundImage);
   }
-
   protected Preferences preferences = new Preferences();
   public static final String PROP_PREFERENCES = "preferences";
   public static final String PROP_LOADEDFILE = "loadedFile";
@@ -151,7 +153,7 @@ public class VisicutModel
     return loadedFile;
   }
 
-  public void loadFromFile(File f) throws FileNotFoundException, IOException, ImportException
+  public void loadFromFile(ProfileManager pm, MappingManager mm, File f) throws FileNotFoundException, IOException, ImportException
   {
     ZipFile zip = new ZipFile(f);
     Enumeration entries = zip.entries();
@@ -170,13 +172,11 @@ public class VisicutModel
       }
       else if (name.equals("mappings.xml"))
       {
-        XMLDecoder decoder = new XMLDecoder(zip.getInputStream(entry));
-        mappings = (MappingSet) decoder.readObject();
+        mappings = mm.loadMappingSet(zip.getInputStream(entry));
       }
       else if (name.equals("material.xml"))
       {
-        XMLDecoder decoder = new XMLDecoder(zip.getInputStream(entry));
-        material = (MaterialProfile) decoder.readObject();
+        material = pm.loadProfile(zip.getInputStream(entry));
       }
       else
       {
@@ -203,6 +203,17 @@ public class VisicutModel
     {
       throw new ImportException("Corrupted Input File");
     }
+    //If loaded Material or Mapping is not yet present, add it to Managers
+    List<MaterialProfile> materials = pm.getMaterials();
+    if (!materials.contains(material))
+    {
+      materials.add(material);
+    }
+    List<MappingSet> mappingsets = mm.getMappingSets();
+    if (!mappingsets.contains(mappings))
+    {
+      mappingsets.add(mappings);
+    }
     this.setMaterial(material);
     this.setMappings(mappings);
     if (inputFile != null && inputFile.exists())
@@ -218,7 +229,7 @@ public class VisicutModel
     this.setLoadedFile(f);
   }
 
-  public void saveToFile(File f) throws FileNotFoundException, IOException
+  public void saveToFile(ProfileManager pm, MappingManager mm, File f) throws FileNotFoundException, IOException
   {
     FileInputStream in;
     byte[] buf = new byte[1024];
@@ -262,9 +273,7 @@ public class VisicutModel
     in.close();
     out.closeEntry();
     out.putNextEntry(new ZipEntry("mappings.xml"));
-    encoder = new XMLEncoder(new FileOutputStream(tmp));
-    encoder.writeObject(this.getMappings());
-    encoder.close();
+    mm.saveMappingSet(this.getMappings(), tmp);
     in = new FileInputStream(tmp);
     // Transfer bytes from the file to the ZIP file
     while ((len = in.read(buf)) > 0)
@@ -274,9 +283,7 @@ public class VisicutModel
     in.close();
     out.closeEntry();
     out.putNextEntry(new ZipEntry("material.xml"));
-    encoder = new XMLEncoder(new FileOutputStream(tmp));
-    encoder.writeObject(this.getMaterial());
-    encoder.close();
+    pm.saveProfile(this.getMaterial(), tmp);
     in = new FileInputStream(tmp);
     // Transfer bytes from the file to the ZIP file
     while ((len = in.read(buf)) > 0)

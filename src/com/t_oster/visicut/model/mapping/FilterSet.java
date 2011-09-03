@@ -43,7 +43,7 @@ public class FilterSet extends LinkedList<MappingFilter>
     {
       if (this.size()==0)
       {
-        return "EmptyFilter";
+        return "Everything";
       }
       else
       {

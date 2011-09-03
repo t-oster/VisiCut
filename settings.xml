@@ -6,12 +6,12 @@
   </void>
   <void property="camCalibration">
    <object class="java.awt.geom.AffineTransform">
-    <double>0.25458650860852383</double>
+    <double>0.24075642111205192</double>
     <double>0.0</double>
     <double>0.0</double>
-    <double>0.37679932260795934</double>
-    <double>-152.33331298828125</double>
-    <double>-141.0</double>
+    <double>0.2802709568162574</double>
+    <double>-268.66668701171875</double>
+    <double>-111.0</double>
    </object>
   </void>
  </object>

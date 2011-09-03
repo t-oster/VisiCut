@@ -33,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -88,7 +89,7 @@ public class MainView extends javax.swing.JFrame
         this.loadFile(f);
       }
     }
-
+    
   }
 
   /** This method is called from within the constructor to
@@ -136,6 +137,7 @@ public class MainView extends javax.swing.JFrame
     editMenu = new javax.swing.JMenu();
     calibrateCameraMenuItem = new javax.swing.JMenuItem();
     executeJobMenuItem = new javax.swing.JMenuItem();
+    saveMappingMenuItem = new javax.swing.JMenuItem();
     helpMenu = new javax.swing.JMenu();
     aboutMenuItem = new javax.swing.JMenuItem();
 
@@ -476,6 +478,15 @@ public class MainView extends javax.swing.JFrame
     });
     editMenu.add(executeJobMenuItem);
 
+    saveMappingMenuItem.setText(resourceMap.getString("saveMappingMenuItem.text")); // NOI18N
+    saveMappingMenuItem.setName("saveMappingMenuItem"); // NOI18N
+    saveMappingMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        saveMappingMenuItemActionPerformed(evt);
+      }
+    });
+    editMenu.add(saveMappingMenuItem);
+
     menuBar.add(editMenu);
 
     javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(MainView.class, this);
@@ -535,14 +546,14 @@ public class MainView extends javax.swing.JFrame
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
       System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
-
+  
   public void loadFile(File file)
   {
     try
     {
       if (file.getAbsolutePath().toLowerCase().endsWith(".plf"))
       {
-        this.visicutModel1.loadFromFile(file);
+        this.visicutModel1.loadFromFile(this.profileManager1, this.mappingManager1, file);
       }
       else
       {
@@ -557,7 +568,7 @@ public class MainView extends javax.swing.JFrame
       JOptionPane.showMessageDialog(this, "Beim Öffnen von '" + file.getName() + "' ist ein Fehler Aufgetreten:\n" + e.getLocalizedMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
     }
   }
-
+  
 private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
   for (FileFilter f : GraphicFileImporter.getFileFilters())
   {
@@ -570,12 +581,12 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     loadFile(file);
   }
 }//GEN-LAST:event_openMenuItemActionPerformed
-
+  
 private void editMappingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMappingButtonActionPerformed
   mappingDialog1.setVisible(true);
   this.previewPanel.repaint();
 }//GEN-LAST:event_editMappingButtonActionPerformed
-
+  
 private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
   VisicutAboutBox box = new VisicutAboutBox(this);
   box.setModal(true);
@@ -583,11 +594,10 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 }//GEN-LAST:event_aboutMenuItemActionPerformed
   private enum MouseAction
   {
-
+    
     movingBackground,
     movingSet,
-    resizingSet,
-  };
+    resizingSet,};
   private Point lastMousePosition = null;
   private MouseAction currentAction = null;
   private Button currentButton = null;
@@ -611,9 +621,9 @@ private void previewPanelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRS
     }
   }
 }//GEN-LAST:event_previewPanelMousePressed
-
+  
 private void previewPanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanelMouseReleased
-
+  
   if (currentAction == MouseAction.resizingSet)
   {
     //Apply changes to the EditRectangle to the selectedSet
@@ -635,7 +645,7 @@ private void previewPanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIR
       this.previewPanel.setEditRectangle(null);
     }
   }
-  else if (this.visicutModel1.getGraphicObjects() != null)
+  else if (this.visicutModel1.getGraphicObjects() != null && this.visicutModel1.getMappings().size() > 0)
   {
     Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
     Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
@@ -760,7 +770,7 @@ private void previewPanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRS
     lastMousePosition = evt.getPoint();
   }
 }//GEN-LAST:event_previewPanelMouseDragged
-
+  
   private void executeJob()
   {
     try
@@ -773,11 +783,11 @@ private void previewPanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRS
       JOptionPane.showMessageDialog(null, "Error: " + ex.getLocalizedMessage());
     }
   }
-
+  
 private void executeJobButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobButtonActionPerformed
   this.executeJob();
 }//GEN-LAST:event_executeJobButtonActionPerformed
-
+  
 private void previewPanelMouseWheelMoved(java.awt.event.MouseWheelEvent evt)//GEN-FIRST:event_previewPanelMouseWheelMoved
 {//GEN-HEADEREND:event_previewPanelMouseWheelMoved
   if (evt.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
@@ -785,7 +795,7 @@ private void previewPanelMouseWheelMoved(java.awt.event.MouseWheelEvent evt)//GE
     this.previewPanel.setZoom(this.previewPanel.getZoom() - (evt.getUnitsToScroll() * this.previewPanel.getZoom() / 32));
   }
 }//GEN-LAST:event_previewPanelMouseWheelMoved
-
+  
 private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)//GEN-FIRST:event_filesDropSupport1PropertyChange
 {//GEN-HEADEREND:event_filesDropSupport1PropertyChange
   if (this.filesDropSupport1.getDroppedFiles() != null && this.filesDropSupport1.getDroppedFiles().size() > 0)
@@ -796,7 +806,7 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
     }
   }
 }//GEN-LAST:event_filesDropSupport1PropertyChange
-
+  
 private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mappingComboBoxActionPerformed
   MappingSet ms = (MappingSet) this.mappingComboBox.getSelectedItem();
   if (ms != null && !ms.equals(this.visicutModel1.getMappings()) && this.visicutModel1.getMaterial() != null)
@@ -834,7 +844,7 @@ private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//G
     }
   }
 }//GEN-LAST:event_mappingComboBoxActionPerformed
-
+  
 private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_materialComboBoxActionPerformed
 //TODO: Check if Material supports all Mappings
   MaterialProfile newMaterial = (MaterialProfile) this.materialComboBox.getSelectedItem();
@@ -857,7 +867,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   }
   this.visicutModel1.setMaterial(newMaterial);
 }//GEN-LAST:event_materialComboBoxActionPerformed
-
+  
 private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
   int returnVal = saveFileChooser.showSaveDialog(this);
   if (returnVal == JFileChooser.APPROVE_OPTION)
@@ -869,7 +879,7 @@ private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     }
     try
     {
-      this.visicutModel1.saveToFile(file);
+      this.visicutModel1.saveToFile(this.profileManager1, this.mappingManager1, file);
     }
     catch (Exception ex)
     {
@@ -882,22 +892,22 @@ private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     System.out.println("File access cancelled by user.");
   }
 }//GEN-LAST:event_saveButtonActionPerformed
-
+  
 private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
   this.saveButtonActionPerformed(evt);
 }//GEN-LAST:event_saveAsMenuItemActionPerformed
-
+  
 private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_visicutModel1PropertyChange
   if (evt.getPropertyName().equals(VisicutModel.PROP_LOADEDFILE))
   {
     this.saveMenuItem.setEnabled(this.visicutModel1.getLoadedFile() != null);
   }
 }//GEN-LAST:event_visicutModel1PropertyChange
-
+  
 private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuItemActionPerformed
   try
   {
-    this.visicutModel1.saveToFile(this.visicutModel1.getLoadedFile());
+    this.visicutModel1.saveToFile(this.profileManager1, this.mappingManager1, this.visicutModel1.getLoadedFile());
   }
   catch (Exception ex)
   {
@@ -905,13 +915,13 @@ private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     JOptionPane.showMessageDialog(this, "Error saving File:\n" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
   }
 }//GEN-LAST:event_saveMenuItemActionPerformed
-
+  
 private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newMenuItemActionPerformed
   this.editRect = null;
   this.previewPanel.setEditRectangle(null);
   this.visicutModel1.setGraphicObjects(new GraphicSet());
 }//GEN-LAST:event_newMenuItemActionPerformed
-
+  
 private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calibrateCameraMenuItemActionPerformed
   this.camCalibrationDialog1.setVisible(true);
   PreferencesManager man = PreferencesManager.getInstance();
@@ -925,38 +935,75 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
     JOptionPane.showMessageDialog(this, "Error while saving Settings: " + ex.getLocalizedMessage());
   }
 }//GEN-LAST:event_calibrateCameraMenuItemActionPerformed
-
+  
 private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobMenuItemActionPerformed
   this.executeJob();
 }//GEN-LAST:event_executeJobMenuItemActionPerformed
-
+  
   private void captureImage()
   {
-    try
+    new Thread()
     {
-      URL src = new URL(this.visicutModel1.getPreferences().getBackgroundImageURL());
-      if (src != null)
+
+      @Override
+      public void run()
       {
+        MainView.this.captureImageButton.setEnabled(false);
         try
         {
-          BufferedImage back = ImageIO.read(src);
-          this.visicutModel1.setBackgroundImage(back);
+          URL src = new URL(MainView.this.visicutModel1.getPreferences().getBackgroundImageURL());
+          if (src != null)
+          {
+            BufferedImage back = ImageIO.read(src);
+            MainView.this.visicutModel1.setBackgroundImage(back);
+          }
         }
-        catch (IOException ex)
+        catch (Exception ex)
         {
-          Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+          JOptionPane.showMessageDialog(MainView.this, "Error loading Image:" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+        MainView.this.captureImageButton.setEnabled(true);
       }
-    }
-    catch (MalformedURLException ex)
-    {
-      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-    }
+    }.start();
   }
-
+  
 private void captureImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_captureImageButtonActionPerformed
   captureImage();
 }//GEN-LAST:event_captureImageButtonActionPerformed
+  
+private void saveMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMappingMenuItemActionPerformed
+  FileFilter bak = saveFileChooser.getFileFilter();
+  saveFileChooser.setFileFilter(new ExtensionFilter(".xml", "Mapping-XML (*.xml)"));
+  //TODO: Set to mappings directory
+  int returnVal = saveFileChooser.showSaveDialog(this);
+  if (returnVal == JFileChooser.APPROVE_OPTION)
+  {
+    File file = saveFileChooser.getSelectedFile();
+    if (!file.getName().endsWith(".xml"))
+    {
+      file = new File(file.getAbsolutePath() + ".xml");
+    }
+    try
+    {
+      MappingSet m = this.visicutModel1.getMappings();
+      String name = file.getName();
+      name = name.substring(0,name.length()-4);
+      m.setName(name);
+      this.mappingManager1.saveMappingSet(this.visicutModel1.getMappings(), file);
+      
+    }
+    catch (Exception ex)
+    {
+      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+      JOptionPane.showMessageDialog(this, "Error saving File: " + ex.getLocalizedMessage());
+    }
+  }
+  else
+  {
+    System.out.println("File access cancelled by user.");
+  }
+  saveFileChooser.setFileFilter(bak);
+}//GEN-LAST:event_saveMappingMenuItemActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
   private javax.swing.JMenuItem calibrateCameraMenuItem;
@@ -993,6 +1040,7 @@ private void captureImageButtonActionPerformed(java.awt.event.ActionEvent evt) {
   private javax.swing.JMenuItem saveAsMenuItem;
   private javax.swing.JButton saveButton;
   private javax.swing.JFileChooser saveFileChooser;
+  private javax.swing.JMenuItem saveMappingMenuItem;
   private javax.swing.JMenuItem saveMenuItem;
   private com.t_oster.visicut.VisicutModel visicutModel1;
   private org.jdesktop.beansbinding.BindingGroup bindingGroup;

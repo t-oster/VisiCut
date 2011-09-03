@@ -110,7 +110,6 @@ public class MappingDialog extends javax.swing.JDialog
     jScrollPane1.setName("jScrollPane1"); // NOI18N
 
     mappingJTree.setName("mappingJTree"); // NOI18N
-    mappingJTree.setRootVisible(false);
 
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${graphicElements}"), mappingJTree, org.jdesktop.beansbinding.BeanProperty.create("graphicObjects"), "GraphicObjectsFormToTree");
     bindingGroup.addBinding(binding);

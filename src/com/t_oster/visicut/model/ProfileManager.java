@@ -9,9 +9,18 @@ import com.t_oster.liblasercut.LaserProperty;
 import java.awt.Color;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class manages the available Material Profiles
@@ -26,8 +35,17 @@ public class ProfileManager
 
   public ProfileManager()
   {
-    //Finnpappe
     this.materials = new LinkedList<MaterialProfile>();
+    loadFromDirectory();
+    if (materials.isEmpty())
+    {
+      generateDefault();
+    }
+  }
+  
+  private void generateDefault()
+  {
+    //Finnpappe
     MaterialProfile profile = new MaterialProfile();
     profile.setName("Finnpappe");
     profile.setColor(new Color(209,163,117));
@@ -114,6 +132,53 @@ public class ProfileManager
     profile.setLaserProfiles(lprofiles.toArray(new LaserProfile[0]));
     this.materials.add(profile);
   }
+  
+  private void loadFromDirectory()
+  {
+    File dir = new File("materials");
+    if (dir.isDirectory())
+    {
+      for (File f:dir.listFiles())
+      {
+        if (f.isFile() && f.getAbsolutePath().toLowerCase().endsWith(".xml"))
+        {
+          try
+          {
+            MaterialProfile prof = this.loadProfile(f);
+            this.materials.add(prof);
+          }
+          catch (Exception ex)
+          {
+            Logger.getLogger(ProfileManager.class.getName()).log(Level.SEVERE, null, ex);
+          }
+        }
+      }
+    }
+  }
+  
+  public void saveProfile(MaterialProfile mp, File f) throws FileNotFoundException
+  {
+    FileOutputStream out = new FileOutputStream(f);
+    XMLEncoder enc = new XMLEncoder(out);
+    enc.writeObject(mp);
+    enc.close();
+  }
+  
+  public MaterialProfile loadProfile(File f) throws FileNotFoundException, IOException
+  {
+    FileInputStream fin = new FileInputStream(f);
+    MaterialProfile result = this.loadProfile(fin);
+    fin.close();
+    return result;
+  }
+  
+  public MaterialProfile loadProfile(InputStream in)
+  {
+    XMLDecoder dec = new XMLDecoder(in);
+    MaterialProfile result = (MaterialProfile) dec.readObject();
+    return result;
+  }
+  
   
   /**
    * Get the value of materials

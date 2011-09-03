@@ -3,6 +3,7 @@ package com.t_oster.visicut.model;
 import java.awt.Color;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Arrays;
 
 /**
  *

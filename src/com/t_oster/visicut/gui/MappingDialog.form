@@ -126,7 +126,6 @@
         <Component class="com.t_oster.visicut.gui.mappingdialog.MappingJTree" name="mappingJTree">
           <Properties>
             <Property name="name" type="java.lang.String" value="mappingJTree" noResource="true"/>
-            <Property name="rootVisible" type="boolean" value="false"/>
           </Properties>
           <BindingProperties>
             <BindingProperty name="graphicObjects" source="Form" sourcePath="${graphicElements}" target="mappingJTree" targetPath="graphicObjects" updateStrategy="1" immediately="false">

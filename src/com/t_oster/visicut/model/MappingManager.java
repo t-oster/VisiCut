@@ -11,8 +11,18 @@ import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Color;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -23,6 +33,38 @@ public class MappingManager
   public MappingManager()
   {
     mappingSets = new LinkedList<MappingSet>();
+    loadFromDirectory();
+    if (mappingSets.isEmpty())
+    {
+      generateDefault();
+    }
+  }
+  
+  private void loadFromDirectory()
+  {
+    File dir = new File("mappings");
+    if (dir.isDirectory())
+    {
+      for (File f:dir.listFiles())
+      {
+        if (f.isFile() && f.getAbsolutePath().toLowerCase().endsWith(".xml"))
+        {
+          try
+          {
+            MappingSet s = this.loadMappingSet(f);
+            this.mappingSets.add(s);
+          }
+          catch (Exception ex)
+          {
+            Logger.getLogger(MappingManager.class.getName()).log(Level.SEVERE, null, ex);
+          }
+        }
+      }
+    }
+  }
+  
+  private void generateDefault()
+  {
     MappingSet ms;
     FilterSet fs;
     ms = new MappingSet();
@@ -44,8 +86,8 @@ public class MappingManager
     fs = new FilterSet();//Empty Filter matches everything
     ms.add(new Mapping(fs, "Floyd Steinberg"));
     mappingSets.add(ms);
-    //TODO: Refactor Mapping to Contain just the Name of the LaserProfile
   }
+  
   protected List<MappingSet> mappingSets = null;
   public static final String PROP_MAPPINGSETS = "mappingSets";
 
@@ -90,6 +132,29 @@ public class MappingManager
   public void removePropertyChangeListener(PropertyChangeListener listener)
   {
     propertyChangeSupport.removePropertyChangeListener(listener);
+  }
+
+  public void saveMappingSet(MappingSet pref, File f) throws FileNotFoundException
+  {
+    FileOutputStream os = new FileOutputStream(f);
+    XMLEncoder encoder = new XMLEncoder(os);
+    encoder.writeObject(pref);
+    encoder.close();
+  }
+
+  public MappingSet loadMappingSet(File f) throws FileNotFoundException, IOException
+  {
+    FileInputStream in = new FileInputStream(f);
+    MappingSet p = this.loadMappingSet(in);
+    in.close();
+    return p;
+  }
+  
+  public MappingSet loadMappingSet(InputStream in) throws FileNotFoundException
+  {
+    XMLDecoder decoder = new XMLDecoder(in);
+    MappingSet p = (MappingSet) decoder.readObject();
+    return p;
   }
 
 }
