@@ -30,17 +30,14 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
-import org.jdesktop.beansbinding.Converter;
 
 /**
  *
@@ -771,7 +768,7 @@ private void previewPanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRS
         case movingBackground:
         {
           Point center = this.previewPanel.getCenter();
-          center.translate(-diff.x, -diff.y);
+          center.translate(-diff.x*1000/this.previewPanel.getZoom(), -diff.y*1000/this.previewPanel.getZoom());
           this.previewPanel.setCenter(center);
           break;
         }
