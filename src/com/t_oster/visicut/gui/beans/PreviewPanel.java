@@ -10,6 +10,7 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -99,6 +100,28 @@ public class PreviewPanel extends GraphicObjectsPanel
       }
     }
   };
+  protected boolean showGrid = false;
+
+  /**
+   * Get the value of showGrid
+   *
+   * @return the value of showGrid
+   */
+  public boolean isShowGrid()
+  {
+    return showGrid;
+  }
+
+  /**
+   * Set the value of showGrid
+   *
+   * @param showGrid new value of showGrid
+   */
+  public void setShowGrid(boolean showGrid)
+  {
+    this.showGrid = showGrid;
+    this.repaint();
+  }
   protected AffineTransform previewTransformation = AffineTransform.getTranslateInstance(40, 150);
   private AffineTransform lastDrawnTransform = null;
 
@@ -277,6 +300,11 @@ public class PreviewPanel extends GraphicObjectsPanel
           gg.fillRect(0, 0, (int) Util.mm2px(material.getWidth(), 500), (int) Util.mm2px(material.getHeight(), 500));
         }
       }
+      if (showGrid)
+      {
+        gg.setColor(Color.DARK_GRAY);
+        drawGrid(gg);
+      }
       if (this.getGraphicObjects() != null)
       {
         if (this.getMaterial() != null && this.getMappings() != null && this.getMappings().size() > 0)
@@ -303,7 +331,7 @@ public class PreviewPanel extends GraphicObjectsPanel
                   Rectangle r = Helper.toRect(bb);
                   gg.fillRect(r.x, r.y, r.width, r.height);
                   gg.setColor(Color.BLACK);
-                  gg.drawString("processing...", r.x+r.width/2, r.y+r.height/2);
+                  gg.drawString("processing...", r.x + r.width / 2, r.y + r.height / 2);
                 }
                 else
                 {
@@ -366,5 +394,59 @@ public class PreviewPanel extends GraphicObjectsPanel
   public void mouseMoved(MouseEvent me)
   {
     throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  private void drawGrid(Graphics2D gg)
+  {
+    if (this.material != null)
+    {
+      /**
+       * The minimal distance of 2 grid lines in Pixel
+       */
+      int minPixelDst = 20;
+      AffineTransform trans = gg.getTransform();
+      double minDrawDst = minPixelDst / trans.getScaleX();
+      /**
+       * The grid distance in mm
+       */
+      //todo calculate gridDst from Transform
+      double gridDst = 0.1;
+      while (Util.mm2px(gridDst, 500) < minDrawDst)
+      {
+        gridDst *= 10;
+      }
+      gg.setTransform(new AffineTransform());//we dont want the line width to scale with zoom etc
+      for (int x = 0; x < Util.mm2px(this.material.getWidth(), 500); x += Util.mm2px(gridDst, 500))
+      {
+        Point a = new Point(x, 0);
+        Point b = new Point(x, (int) Util.mm2px(this.material.getHeight(), 500));
+        trans.transform(a, a);
+        trans.transform(b, b);
+        if (a.x > 0)//only draw if in viewing range
+        {
+          if (a.x > this.getWidth())
+          {
+            break;
+          }
+          gg.drawLine(a.x, a.y, b.x, b.y);
+        }
+      }
+      for (int y = 0; y < Util.mm2px(this.material.getHeight(), 500); y += Util.mm2px(gridDst, 500))
+      {
+        Point a = new Point(0, y);
+        Point b = new Point((int) Util.mm2px(this.material.getWidth(), 500), y);
+        trans.transform(a, a);
+        trans.transform(b, b);
+        if (a.y > 0)
+        {
+          if (a.y > this.getHeight())
+          {
+            break;
+          }
+          gg.drawLine(a.x, a.y, b.x, b.y);
+        }
+      }
+      gg.setTransform(trans);
+    }
   }
 }

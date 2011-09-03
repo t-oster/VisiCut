@@ -138,6 +138,8 @@ public class MainView extends javax.swing.JFrame
     calibrateCameraMenuItem = new javax.swing.JMenuItem();
     executeJobMenuItem = new javax.swing.JMenuItem();
     saveMappingMenuItem = new javax.swing.JMenuItem();
+    viewMenu = new javax.swing.JMenu();
+    showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
     helpMenu = new javax.swing.JMenu();
     aboutMenuItem = new javax.swing.JMenuItem();
 
@@ -488,6 +490,19 @@ public class MainView extends javax.swing.JFrame
     editMenu.add(saveMappingMenuItem);
 
     menuBar.add(editMenu);
+
+    viewMenu.setText(resourceMap.getString("viewMenu.text")); // NOI18N
+    viewMenu.setName("viewMenu"); // NOI18N
+
+    showGridMenuItem.setText(resourceMap.getString("showGridMenuItem.text")); // NOI18N
+    showGridMenuItem.setName("showGridMenuItem"); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${showGrid}"), showGridMenuItem, org.jdesktop.beansbinding.BeanProperty.create("selected"), "ShowGrid");
+    bindingGroup.addBinding(binding);
+
+    viewMenu.add(showGridMenuItem);
+
+    menuBar.add(viewMenu);
 
     javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(MainView.class, this);
     helpMenu.setAction(actionMap.get("showAboutDialog")); // NOI18N
@@ -1042,6 +1057,8 @@ private void saveMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
   private javax.swing.JFileChooser saveFileChooser;
   private javax.swing.JMenuItem saveMappingMenuItem;
   private javax.swing.JMenuItem saveMenuItem;
+  private javax.swing.JCheckBoxMenuItem showGridMenuItem;
+  private javax.swing.JMenu viewMenu;
   private com.t_oster.visicut.VisicutModel visicutModel1;
   private org.jdesktop.beansbinding.BindingGroup bindingGroup;
   // End of variables declaration//GEN-END:variables
