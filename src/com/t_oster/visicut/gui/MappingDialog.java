@@ -13,12 +13,9 @@ package com.t_oster.visicut.gui;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
-import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  *
@@ -404,7 +401,6 @@ private void cuttingProfilesPanel1PropertyChange(java.beans.PropertyChangeEvent 
     {//A Filter Set is selected, so we create a new Mapping
       Mapping m = new Mapping(this.getSelectedFilterSet(), lp.getName());
       this.getCurrentMappings().add(m);
-      this.mappingJTree.refreshTree();
       this.setSelectedMapping(m);
     }
   }

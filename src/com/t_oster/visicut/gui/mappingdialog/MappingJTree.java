@@ -108,19 +108,22 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     firePropertyChange(PROP_SELECTEDMAPPING, oldSelectedMapping, selectedMapping);
     if (Util.differ(oldSelectedMapping, this.selectedMapping))
     {
-      if (this.selectedMapping == null)
+      if (this.selectedMapping == null && this.getSelectionModel().getSelectionPath() != null)
       {
         this.getSelectionModel().clearSelection();
       }
-      else
+      else if (this.selectedMapping != null && (this.getSelectionModel().getSelectionPath() == null 
+        || !this.getSelectionModel().getSelectionPath().getLastPathComponent().equals(this.selectedMapping)))
       {
-        this.refreshTree();
+        //this.refreshTree();
         TreePath p = new TreePath(new Object[]
           {
             this.getRoot(), MAPPINGS, this.selectedMapping
           });
+        this.refreshTree();
         this.getSelectionModel().setSelectionPath(p);
       }
+      
     }
     this.repaint();
   }
