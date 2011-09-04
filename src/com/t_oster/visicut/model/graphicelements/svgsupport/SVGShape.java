@@ -4,11 +4,16 @@
  */
 package com.t_oster.visicut.model.graphicelements.svgsupport;
 
+import com.kitfox.svg.Circle;
+import com.kitfox.svg.Line;
 import com.kitfox.svg.Path;
+import com.kitfox.svg.Rect;
 import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGElementException;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.ShapeElement;
+import com.kitfox.svg.Text;
+import com.kitfox.svg.Tspan;
 import com.kitfox.svg.animation.AnimationElement;
 import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
@@ -75,6 +80,30 @@ public class SVGShape extends SVGObject implements ShapeObject
       }
       case ObjectType:
       {
+        if (this.getDecoratee() instanceof Tspan)
+        {
+          result.add("Tspan");
+        }
+        if (this.getDecoratee() instanceof Circle)
+        {
+          result.add("Circle");
+        }
+        if (this.getDecoratee() instanceof Rect)
+        {
+          result.add("Rect");
+        }
+        if (this.getDecoratee() instanceof Text)
+        {
+          result.add("Text");
+        }
+        if (this.getDecoratee() instanceof com.kitfox.svg.Ellipse)
+        {
+          result.add("Ellipse");
+        }
+        if (this.getDecoratee() instanceof Line)
+        {
+          result.add("Line");
+        }
         result.add("Shape");
         break;
       }

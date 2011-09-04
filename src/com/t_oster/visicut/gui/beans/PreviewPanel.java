@@ -403,7 +403,7 @@ public class PreviewPanel extends GraphicObjectsPanel
       /**
        * The minimal distance of 2 grid lines in Pixel
        */
-      int minPixelDst = 20;
+      int minPixelDst = 80;
       AffineTransform trans = gg.getTransform();
       double minDrawDst = minPixelDst / trans.getScaleX();
       /**
@@ -416,6 +416,7 @@ public class PreviewPanel extends GraphicObjectsPanel
         gridDst *= 10;
       }
       gg.setTransform(new AffineTransform());//we dont want the line width to scale with zoom etc
+      double mmx = 0;
       for (int x = 0; x < Util.mm2px(this.material.getWidth(), 500); x += Util.mm2px(gridDst, 500))
       {
         Point a = new Point(x, 0);
@@ -429,8 +430,14 @@ public class PreviewPanel extends GraphicObjectsPanel
             break;
           }
           gg.drawLine(a.x, a.y, b.x, b.y);
+          String txt = ((float) Math.round((float) (10*mmx)))/10+" mm";
+          int w = gg.getFontMetrics().stringWidth(txt);
+          int h = gg.getFontMetrics().getHeight();
+          gg.drawString(txt, a.x-w/2, 5+h);
         }
+        mmx+=gridDst;
       }
+      double mmy = 0;
       for (int y = 0; y < Util.mm2px(this.material.getHeight(), 500); y += Util.mm2px(gridDst, 500))
       {
         Point a = new Point(0, y);
@@ -444,7 +451,12 @@ public class PreviewPanel extends GraphicObjectsPanel
             break;
           }
           gg.drawLine(a.x, a.y, b.x, b.y);
+          String txt = (float) (Math.round((float) (10*mmy)))/10+" mm";
+          int w = gg.getFontMetrics().stringWidth(txt);
+          int h = gg.getFontMetrics().getHeight();
+          gg.drawString(txt, 5, a.y);
         }
+        mmy+=gridDst;
       }
       gg.setTransform(trans);
     }

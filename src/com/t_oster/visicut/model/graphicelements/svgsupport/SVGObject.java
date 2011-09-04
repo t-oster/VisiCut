@@ -159,8 +159,16 @@ public abstract class SVGObject implements GraphicObject
       Rectangle2D result = getDecoratee().getBoundingBox();
       if (result == null)
       {
-        throw new SVGException("Could not determine BoundingBox of:"
-          +getDecoratee());
+        //Return boundingbox of parent
+        SVGElement p = this.getDecoratee();
+        do
+        {
+          p = p.getParent();
+          if (p != null && p instanceof RenderableElement)
+          {
+            result = ((RenderableElement) p).getBoundingBox();
+          }
+        }while(result == null && p != null);
       }
       return result;
     }
