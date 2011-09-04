@@ -10,8 +10,6 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * A cutting Profile represents a specific way of handling Image
@@ -64,7 +62,28 @@ public abstract class LaserProfile
   {
     this.color = color;
   }
-  protected File previewThumbnail = new File("/home/thommy/NetBeansProjects/jepilog/materials/Fliess/bigcut.png");
+  
+  protected String thumbnailPath = "/home/thommy/NetBeansProjects/jepilog/materials/Fliess/bigcut.png";
+
+  /**
+   * Get the value of thumbnailPath
+   *
+   * @return the value of thumbnailPath
+   */
+  public String getThumbnailPath()
+  {
+    return thumbnailPath;
+  }
+
+  /**
+   * Set the value of thumbnailPath
+   *
+   * @param thumbnailPath new value of thumbnailPath
+   */
+  public void setThumbnailPath(String thumbnailPath)
+  {
+    this.thumbnailPath = thumbnailPath;
+  }
 
   /**
    * Get the value of previewThumbnail
@@ -73,7 +92,7 @@ public abstract class LaserProfile
    */
   public File getPreviewThumbnail()
   {
-    return previewThumbnail;
+    return new File(this.thumbnailPath);
   }
 
   /**
@@ -83,7 +102,7 @@ public abstract class LaserProfile
    */
   public void setPreviewThumbnail(File previewThumbnail)
   {
-    this.previewThumbnail = previewThumbnail;
+    this.thumbnailPath = previewThumbnail.getAbsolutePath();
   }
   protected String name = "broad line";
 

@@ -40,6 +40,7 @@ public class ProfileManager
     if (materials.isEmpty())
     {
       generateDefault();
+      writeAll();
     }
   }
   
@@ -221,6 +222,29 @@ public class ProfileManager
   public void removePropertyChangeListener(PropertyChangeListener listener)
   {
     propertyChangeSupport.removePropertyChangeListener(listener);
+  }
+
+  /**
+   * Writes all Profiles to a subdirectory "materials"
+   */
+  private void writeAll()
+  {
+    File dir = new File("materials");
+    if (!dir.exists())
+    {
+      dir.mkdir();
+    }
+    for (MaterialProfile p:this.materials)
+    {
+      try
+      {
+        this.saveProfile(p, new File("materials/"+p.getName()+".xml"));
+      }
+      catch (FileNotFoundException ex)
+      {
+        Logger.getLogger(ProfileManager.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
   }
 
 }
