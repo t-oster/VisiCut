@@ -12,16 +12,13 @@ package com.t_oster.visicut.gui;
 
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
-import com.t_oster.visicut.Preferences;
 import com.t_oster.visicut.PreferencesManager;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
-import com.t_oster.visicut.gui.beans.MaterialComboBox;
 import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
-import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Point;
@@ -909,6 +906,7 @@ private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//G
         this.mappingComboBox.setSelectedItem(this.visicutModel1.getMappings());
         return;
       }
+      this.mappingManager1.getMappingSets().add(supportedSubset);
       this.visicutModel1.setMappings(supportedSubset);
     }
     else
@@ -1078,7 +1076,8 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         if (newMaterial.getLaserProfile(m.getProfileName()) == null)
         {
           JOptionPane.showMessageDialog(this, "The selected Material does not support the Profile '"
-            + m.getProfileName() + "'", "Error", JOptionPane.OK_OPTION);
+            + m.getProfileName() + "', but your current Mapping '"+this.visicutModel1.getMappings().getName()+"' uses it.\n"
+            +"Please select a differend Mapping or a different Material.", "Error", JOptionPane.OK_OPTION);
           this.materialComboBox.setSelectedItem(this.visicutModel1.getMaterial());
           return;
         }

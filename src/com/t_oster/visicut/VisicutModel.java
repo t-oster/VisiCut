@@ -49,7 +49,7 @@ import javax.swing.filechooser.FileFilter;
 public class VisicutModel
 {
 
-  public static final FileFilter PLFFilter = new ExtensionFilter("*.plf", "VisiCut Portable Laser Format (*.plf)");
+  public static final FileFilter PLFFilter = new ExtensionFilter(".plf", "VisiCut Portable Laser Format (*.plf)");
   
   protected BufferedImage backgroundImage = null;
   public static final String PROP_BACKGROUNDIMAGE = "backgroundImage";
