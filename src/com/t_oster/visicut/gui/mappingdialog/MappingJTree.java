@@ -48,20 +48,20 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     FilterSet oldSelectedFilterSet = this.selectedFilterSet;
     this.selectedFilterSet = selectedFilterSet;
     firePropertyChange(PROP_SELECTEDFILTERSET, oldSelectedFilterSet, selectedFilterSet);
-    if (Util.differ(oldSelectedFilterSet, this.selectedFilterSet))
+    if (Util.differ(oldSelectedFilterSet, selectedFilterSet))
     {
-      if (this.selectedFilterSet == null)
+      if (selectedFilterSet == null && this.getSelectionModel().getSelectionPath() != null && this.getSelectionModel().getSelectionPath().getLastPathComponent() instanceof FilterSet)
       {
         this.getSelectionModel().clearSelection();
       }
-      else
+      else if (selectedFilterSet != null && (this.getSelectionModel().getSelectionPath() == null || this.getSelectionModel().getSelectionPath().getLastPathComponent() != selectedFilterSet))
       {
         //Generate Tree Path from selected FilterSet
         TreePath p = new TreePath(new Object[]
           {
             this.getRoot()
           });
-        for (MappingFilter f : this.selectedFilterSet)
+        for (MappingFilter f : selectedFilterSet)
         {
           AttributeNode a = new AttributeNode((FilterSet) p.getLastPathComponent(), f.getAttribute());
           p = p.pathByAddingChild(a);
@@ -70,7 +70,6 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
           fs.add(f);
           p = p.pathByAddingChild(fs);
         }
-        this.getSelectionModel().clearSelection();
         this.getSelectionModel().setSelectionPath(p);
       }
     }
@@ -106,21 +105,20 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     Mapping oldSelectedMapping = this.selectedMapping;
     this.selectedMapping = selectedMapping;
     firePropertyChange(PROP_SELECTEDMAPPING, oldSelectedMapping, selectedMapping);
-    if (Util.differ(oldSelectedMapping, this.selectedMapping))
+    if (Util.differ(oldSelectedMapping, selectedMapping))
     {
-      if (this.selectedMapping == null && this.getSelectionModel().getSelectionPath() != null)
+      if (selectedMapping == null && this.getSelectionModel().getSelectionPath() != null && this.getSelectionModel().getSelectionPath().getLastPathComponent() instanceof Mapping)
       {
         this.getSelectionModel().clearSelection();
       }
-      else if (this.selectedMapping != null && (this.getSelectionModel().getSelectionPath() == null 
-        || !this.getSelectionModel().getSelectionPath().getLastPathComponent().equals(this.selectedMapping)))
+      else if (selectedMapping != null && (this.getSelectionModel().getSelectionPath() == null 
+        || !this.getSelectionModel().getSelectionPath().getLastPathComponent().equals(selectedMapping)))
       {
         //this.refreshTree();
         TreePath p = new TreePath(new Object[]
           {
-            this.getRoot(), MAPPINGS, this.selectedMapping
+            this.getRoot(), MAPPINGS, selectedMapping
           });
-        this.refreshTree();
         this.getSelectionModel().setSelectionPath(p);
       }
       

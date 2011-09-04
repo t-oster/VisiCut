@@ -401,6 +401,7 @@ private void cuttingProfilesPanel1PropertyChange(java.beans.PropertyChangeEvent 
     {//A Filter Set is selected, so we create a new Mapping
       Mapping m = new Mapping(this.getSelectedFilterSet(), lp.getName());
       this.getCurrentMappings().add(m);
+      this.mappingJTree.refreshTree();
       this.setSelectedMapping(m);
     }
   }
@@ -408,8 +409,10 @@ private void cuttingProfilesPanel1PropertyChange(java.beans.PropertyChangeEvent 
   {//Unmap selected
     if (this.getSelectedMapping() != null)
     {//Unmap the selected mapping
-      this.getCurrentMappings().remove(this.getSelectedMapping());
+      Mapping m = this.getSelectedMapping();
+      this.getCurrentMappings().remove(m);
       this.mappingJTree.refreshTree();
+      this.mappingJTree.setSelectedFilterSet(m.getFilterSet());
     }
   }
 }//GEN-LAST:event_cuttingProfilesPanel1PropertyChange
