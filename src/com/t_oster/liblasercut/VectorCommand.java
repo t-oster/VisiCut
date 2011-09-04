@@ -32,6 +32,7 @@ public class VectorCommand
       this.type = type;
       this.foperand = f;
     }
+    else
     {
       throw new IllegalArgumentException("Wrong number of Parameters for " + type.toString());
     }
