@@ -5,6 +5,7 @@
 package com.t_oster.visicut.model.graphicelements;
 
 import java.io.File;
+import javax.swing.filechooser.FileFilter;
 
 /**
  *
@@ -12,7 +13,8 @@ import java.io.File;
  */
 public interface Importer
 {
-
+  
+  FileFilter getFileFilter();
   GraphicSet importFile(File inputFile) throws ImportException;
   
 }

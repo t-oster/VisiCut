@@ -1,4 +1,4 @@
-package com.t_oster.visicut;
+package com.t_oster.visicut.misc;
 
 import java.awt.Color;
 import java.awt.Point;

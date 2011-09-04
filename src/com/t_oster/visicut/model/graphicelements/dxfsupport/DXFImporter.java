@@ -4,6 +4,7 @@
  */
 package com.t_oster.visicut.model.graphicelements.dxfsupport;
 
+import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.Importer;
@@ -12,11 +13,11 @@ import java.io.FileInputStream;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.filechooser.FileFilter;
 import org.kabeja.dxf.DXFBlock;
 import org.kabeja.dxf.DXFDocument;
 import org.kabeja.dxf.DXFEntity;
 import org.kabeja.parser.DXFParser;
-import org.kabeja.parser.ParseException;
 import org.kabeja.parser.Parser;
 import org.kabeja.parser.ParserBuilder;
 
@@ -61,6 +62,11 @@ public class DXFImporter implements Importer
       Logger.getLogger(DXFImporter.class.getName()).log(Level.SEVERE, null, ex);
     }
     return result;
+  }
+
+  public FileFilter getFileFilter()
+  {
+    return new ExtensionFilter(".dxf", "AutoCAD DXF Files (*.dxf)");
   }
   
 }

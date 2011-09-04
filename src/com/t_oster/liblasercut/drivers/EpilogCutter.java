@@ -53,10 +53,25 @@ public class EpilogCutter extends LaserCutter {
         return (float) (focus * FOCUSWIDTH);
     }
 
+    public EpilogCutter()
+    {
+      this("localhost");
+    }
+    
     public EpilogCutter(String hostname) {
         this.hostname = hostname;
     }
 
+    public String getHostname()
+    {
+      return this.hostname;
+    }
+    
+    public void setHostname(String hostname)
+    {
+      this.hostname = hostname;
+    }
+    
     private void waitForResponse(int expected) throws IOException, Exception {
         waitForResponse(expected, 3);
     }

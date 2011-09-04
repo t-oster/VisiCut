@@ -6,6 +6,7 @@ package com.t_oster.visicut.model.graphicelements.pdfsupport;
 
 import com.sun.pdfview.PDFFile;
 import com.sun.pdfview.PDFObject;
+import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.Importer;
@@ -14,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
+import javax.swing.filechooser.FileFilter;
 
 /**
  *
@@ -55,5 +57,10 @@ public class PDFImporter implements Importer
       throw new ImportException(ex);
     }
     return result;
+  }
+
+  public FileFilter getFileFilter()
+  {
+    return new ExtensionFilter(".pdf", "Portable Document Format (*.pdf)");
   }
 }

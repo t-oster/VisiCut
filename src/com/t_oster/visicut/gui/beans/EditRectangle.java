@@ -5,7 +5,7 @@
 package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.liblasercut.platform.Util;
-import com.t_oster.visicut.Helper;
+import com.t_oster.visicut.misc.Helper;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;

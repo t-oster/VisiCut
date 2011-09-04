@@ -15,7 +15,7 @@ import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.liblasercut.platform.Util;
-import com.t_oster.visicut.Helper;
+import com.t_oster.visicut.misc.Helper;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseWheelEvent;

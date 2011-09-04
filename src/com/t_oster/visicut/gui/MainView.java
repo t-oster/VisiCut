@@ -10,13 +10,14 @@
  */
 package com.t_oster.visicut.gui;
 
-import com.t_oster.visicut.ExtensionFilter;
-import com.t_oster.visicut.Helper;
+import com.t_oster.visicut.misc.ExtensionFilter;
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.Preferences;
 import com.t_oster.visicut.PreferencesManager;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
+import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
@@ -50,21 +51,7 @@ public class MainView extends javax.swing.JFrame
   public MainView()
   {
     initComponents();
-    if (new File("settings.xml").exists())
-    {
-      try
-      {
-        Preferences pref = PreferencesManager.getInstance().loadPreferences(new File("settings.xml"));
-        if (pref != null)
-        {
-          this.visicutModel1.setPreferences(pref);
-        }
-      }
-      catch (FileNotFoundException ex)
-      {
-        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-      }
-    }
+    this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
     if (this.visicutModel1.getPreferences().getBackgroundImageURL() == null)
     {
       try
@@ -553,7 +540,7 @@ public class MainView extends javax.swing.JFrame
   {
     try
     {
-      if (file.getAbsolutePath().toLowerCase().endsWith(".plf"))
+      if (VisicutModel.PLFFilter.accept(file))
       {
         this.visicutModel1.loadFromFile(this.profileManager1, this.mappingManager1, file);
       }
@@ -572,7 +559,15 @@ public class MainView extends javax.swing.JFrame
   }
   
 private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
-  for (FileFilter f : GraphicFileImporter.getFileFilters())
+  openFileChooser.setAcceptAllFileFilterUsed(false);
+  openFileChooser.addChoosableFileFilter(
+    new MultiFilter(
+      new FileFilter[]{
+        this.visicutModel1.getGraphicFileImporter().getFileFilter(),
+        VisicutModel.PLFFilter
+      }, "All supported Files"));
+  openFileChooser.addChoosableFileFilter(VisicutModel.PLFFilter);
+  for (FileFilter f : this.visicutModel1.getGraphicFileImporter().getFileFilters())
   {
     openFileChooser.addChoosableFileFilter(f);
   }
@@ -945,7 +940,7 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
   this.visicutModel1.getPreferences().setCamCalibration(ccd.getResultingTransformation());
   try
   {
-    PreferencesManager.getInstance().savePreferences(this.visicutModel1.getPreferences(), new File("settings.xml"));
+    PreferencesManager.getInstance().savePreferences();
   }
   catch (FileNotFoundException ex)
   {

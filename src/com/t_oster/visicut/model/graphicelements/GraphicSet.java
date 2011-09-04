@@ -5,7 +5,7 @@
 package com.t_oster.visicut.model.graphicelements;
 
 import com.t_oster.liblasercut.platform.Util;
-import com.t_oster.visicut.Helper;
+import com.t_oster.visicut.misc.Helper;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;

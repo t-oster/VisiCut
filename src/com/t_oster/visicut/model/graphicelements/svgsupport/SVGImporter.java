@@ -11,6 +11,7 @@ import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGRoot;
 import com.kitfox.svg.SVGUniverse;
 import com.kitfox.svg.ShapeElement;
+import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
@@ -19,6 +20,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.List;
+import javax.swing.filechooser.FileFilter;
 
 /**
  *
@@ -61,5 +63,10 @@ public class SVGImporter implements Importer
     {
       throw new ImportException(ex);
     }
+  }
+
+  public FileFilter getFileFilter()
+  {
+    return new ExtensionFilter(".svg", "Scalable Vector Graphic (*.svg)");
   }
 }

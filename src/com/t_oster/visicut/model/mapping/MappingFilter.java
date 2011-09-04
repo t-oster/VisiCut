@@ -5,7 +5,7 @@
 package com.t_oster.visicut.model.mapping;
 
 import com.t_oster.liblasercut.platform.Util;
-import com.t_oster.visicut.Helper;
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;

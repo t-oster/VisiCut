@@ -1,4 +1,4 @@
-package com.t_oster.visicut;
+package com.t_oster.visicut.misc;
 
 import java.io.File;
 import javax.swing.filechooser.FileFilter;

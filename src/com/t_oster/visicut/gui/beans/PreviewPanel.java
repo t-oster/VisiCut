@@ -1,7 +1,7 @@
 package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.liblasercut.platform.Util;
-import com.t_oster.visicut.Helper;
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.mapping.Mapping;

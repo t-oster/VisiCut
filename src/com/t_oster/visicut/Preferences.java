@@ -9,7 +9,6 @@ import com.t_oster.liblasercut.drivers.EpilogCutter;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.net.URL;
 
 /**
  *
@@ -22,8 +21,29 @@ public class Preferences
   {
   }
   
-  protected LaserCutter laserCutter = new EpilogCutter("137.226.56.228");
+  protected LaserCutter laserCutter = null;
   public static final String PROP_LASERCUTTER = "laserCutter";
+  protected String[] availableImporters = null;
+
+  /**
+   * Get the value of availableImporters
+   *
+   * @return the value of availableImporters
+   */
+  public String[] getAvailableImporters()
+  {
+    return availableImporters;
+  }
+
+  /**
+   * Set the value of availableImporters
+   *
+   * @param availableImporters new value of availableImporters
+   */
+  public void setAvailableImporters(String[] availableImporters)
+  {
+    this.availableImporters = availableImporters;
+  }
 
   /**
    * Get the value of laserCutter

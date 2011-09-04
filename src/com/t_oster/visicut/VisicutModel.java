@@ -4,6 +4,7 @@
  */
 package com.t_oster.visicut;
 
+import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * This class contains the state and business logic of the 
@@ -47,6 +49,8 @@ import java.util.zip.ZipOutputStream;
 public class VisicutModel
 {
 
+  public static final FileFilter PLFFilter = new ExtensionFilter("*.plf", "VisiCut Portable Laser Format (*.plf)");
+  
   protected BufferedImage backgroundImage = null;
   public static final String PROP_BACKGROUNDIMAGE = "backgroundImage";
 
@@ -95,6 +99,7 @@ public class VisicutModel
     Preferences oldPreferences = this.preferences;
     this.preferences = preferences;
     propertyChangeSupport.firePropertyChange(PROP_PREFERENCES, oldPreferences, preferences);
+    this.graphicFileImporter = null;
   }
   protected GraphicSet graphicObjects = null;
   public static final String PROP_GRAPHICOBJECTS = "graphicObjects";
@@ -158,8 +163,8 @@ public class VisicutModel
     ZipFile zip = new ZipFile(f);
     Enumeration entries = zip.entries();
     AffineTransform transform = null;
-    MappingSet mappings = null;
-    MaterialProfile material = null;
+    MappingSet loadedMappings = null;
+    MaterialProfile loadedMaterial = null;
     File inputFile = null;
     while (entries.hasMoreElements())
     {
@@ -172,11 +177,11 @@ public class VisicutModel
       }
       else if (name.equals("mappings.xml"))
       {
-        mappings = mm.loadMappingSet(zip.getInputStream(entry));
+        loadedMappings = mm.loadMappingSet(zip.getInputStream(entry));
       }
       else if (name.equals("material.xml"))
       {
-        material = pm.loadProfile(zip.getInputStream(entry));
+        loadedMaterial = pm.loadProfile(zip.getInputStream(entry));
       }
       else
       {
@@ -199,23 +204,23 @@ public class VisicutModel
         in.close();
       }
     }
-    if (mappings == null || transform == null || material == null || inputFile == null || !inputFile.exists())
+    if (loadedMappings == null || transform == null || loadedMaterial == null || inputFile == null || !inputFile.exists())
     {
       throw new ImportException("Corrupted Input File");
     }
     //If loaded Material or Mapping is not yet present, add it to Managers
     List<MaterialProfile> materials = pm.getMaterials();
-    if (!materials.contains(material))
+    if (!materials.contains(loadedMaterial))
     {
-      materials.add(material);
+      materials.add(loadedMaterial);
     }
     List<MappingSet> mappingsets = mm.getMappingSets();
-    if (!mappingsets.contains(mappings))
+    if (!mappingsets.contains(loadedMappings))
     {
-      mappingsets.add(mappings);
+      mappingsets.add(loadedMappings);
     }
-    this.setMaterial(material);
-    this.setMappings(mappings);
+    this.setMaterial(loadedMaterial);
+    this.setMappings(loadedMappings);
     if (inputFile != null && inputFile.exists())
     {
       inputFile.deleteOnExit();
@@ -299,11 +304,22 @@ public class VisicutModel
   }
   private File sourceFile = null;
 
+  private GraphicFileImporter graphicFileImporter = null;
+  
+  public GraphicFileImporter getGraphicFileImporter()
+  {
+    if (graphicFileImporter == null)
+    {
+      graphicFileImporter = new GraphicFileImporter(this.preferences.availableImporters);
+    }
+    return graphicFileImporter;
+  }
+  
   public void loadGraphicFile(File f)
   {
     try
     {
-      GraphicFileImporter im = new GraphicFileImporter();
+      GraphicFileImporter im = this.getGraphicFileImporter();
       this.setGraphicObjects(im.importFile(f));
       sourceFile = f;
     }

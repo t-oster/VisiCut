@@ -4,13 +4,19 @@
  */
 package com.t_oster.visicut.model.graphicelements;
 
-import com.t_oster.visicut.ExtensionFilter;
+import com.t_oster.visicut.misc.ExtensionFilter;
+import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter;
 import com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter;
 import com.t_oster.visicut.model.graphicelements.pdfsupport.PDFImporter;
 import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.Class;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -22,21 +28,36 @@ import javax.swing.filechooser.FileFilter;
 public class GraphicFileImporter implements Importer
 {
 
-  private static FileFilter[] fileTypes;
+  private List<Importer> importers = new LinkedList<Importer>();
 
-  public static FileFilter[] getFileFilters()
+  /**
+   * Tries to load all importerClasses and creates a GraphicFileImporter
+   * which uses all given Importers to import files
+   * @param importerClasses 
+   */
+  public GraphicFileImporter(String[] importerClasses)
   {
-    if (fileTypes == null)
+    for (String className:importerClasses)
     {
-      fileTypes = new FileFilter[]
+      try
       {
-        new ExtensionFilter(".plf", "VisiCut Portable Laser File (*.plf)"),
-        new ExtensionFilter(".svg", "Scalable Vector Graphics (*.svg)"),
-        new ExtensionFilter(".png", "Portable Network Graphic (*.png)"),
-        new ExtensionFilter(".jpg", "JPEG (*.jpg)"),
-      };
+        Class c = Class.forName(className);
+        this.importers.add((Importer) c.newInstance());
+      }
+      catch (InstantiationException ex)
+      {
+        Logger.getLogger(GraphicFileImporter.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      catch (IllegalAccessException ex)
+      {
+        Logger.getLogger(GraphicFileImporter.class.getName()).log(Level.SEVERE, null, ex);
+      }      
+      catch (ClassNotFoundException ex)
+      {
+        Logger.getLogger(GraphicFileImporter.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      
     }
-    return fileTypes;
   }
 
   public GraphicSet importFile(File inputFile) throws ImportException
@@ -49,26 +70,32 @@ public class GraphicFileImporter implements Importer
     {
       throw new ImportException(new FileNotFoundException());
     }
-    String name = inputFile.getAbsolutePath().toLowerCase();
-    if (name.endsWith(".svg"))
-    {
-      return (new SVGImporter()).importFile(inputFile);
-    }
-    else if (name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg"))
-    {
-      return (new JPGPNGImporter()).importFile(inputFile);
-    }
-    else if (name.endsWith(".dxf"))
-    {
-      return (new DXFImporter()).importFile(inputFile);
-    }
-    else if (name.endsWith(".pdf"))
-    {
-      return (new PDFImporter()).importFile(inputFile);
-    }
     else
     {
+      for (Importer i:this.importers)
+      {
+        if (i.getFileFilter().accept(inputFile))
+        {
+          GraphicSet gs = i.importFile(inputFile);
+          return gs;
+        }
+      }
       throw new ImportException("Unsupported File Format");
     }
+  }
+
+  public FileFilter[] getFileFilters()
+  {
+    List<FileFilter> result = new LinkedList<FileFilter>();
+    for (Importer i : this.importers)
+    {
+      result.add(i.getFileFilter());
+    }
+    return result.toArray(new FileFilter[0]);
+  }
+
+  public FileFilter getFileFilter()
+  {
+    return new MultiFilter(this.getFileFilters(), "Alle supported Files");
   }
 }
