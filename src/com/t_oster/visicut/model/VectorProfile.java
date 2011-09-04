@@ -23,6 +23,28 @@ import java.awt.Stroke;
 public class VectorProfile extends LaserProfile
 {
 
+  protected boolean isCut = false;
+
+  /**
+   * Get the value of isCut
+   *
+   * @return the value of isCut
+   */
+  public boolean isIsCut()
+  {
+    return isCut;
+  }
+
+  /**
+   * Set the value of isCut
+   *
+   * @param isCut new value of isCut
+   */
+  public void setIsCut(boolean isCut)
+  {
+    this.isCut = isCut;
+  }
+
   protected float width = 1;
 
   /**

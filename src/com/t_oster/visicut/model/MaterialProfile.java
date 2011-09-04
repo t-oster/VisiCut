@@ -12,7 +12,74 @@ import java.util.Arrays;
 public class MaterialProfile
 {
 
-  protected Color color = new Color(180, 20, 40);
+  protected String description = null;
+
+  /**
+   * Get the value of description
+   *
+   * @return the value of description
+   */
+  public String getDescription()
+  {
+    return description;
+  }
+
+  /**
+   * Set the value of description
+   *
+   * @param description new value of description
+   */
+  public void setDescription(String description)
+  {
+    this.description = description;
+  }
+
+  protected String thumbnailPath = null;
+
+  /**
+   * Get the value of thumbnailPath
+   *
+   * @return the value of thumbnailPath
+   */
+  public String getThumbnailPath()
+  {
+    return thumbnailPath;
+  }
+
+  /**
+   * Set the value of thumbnailPath
+   *
+   * @param thumbnailPath new value of thumbnailPath
+   */
+  public void setThumbnailPath(String thumbnailPath)
+  {
+    this.thumbnailPath = thumbnailPath;
+  }
+
+  
+  protected Color cutColor = null;
+
+  /**
+   * Get the value of cutColor
+   *
+   * @return the value of cutColor
+   */
+  public Color getCutColor()
+  {
+    return cutColor;
+  }
+
+  /**
+   * Set the value of cutColor
+   *
+   * @param cutColor new value of cutColor
+   */
+  public void setCutColor(Color cutColor)
+  {
+    this.cutColor = cutColor;
+  }
+
+  protected Color color = null;
 
   /**
    * Get the value of color
@@ -93,7 +160,7 @@ public class MaterialProfile
   {
     this.laserProfile[index] = newLineProfile;
   }
-  protected String name = "Filz (rot)";
+  protected String name = null;
 
   /**
    * Get the value of name

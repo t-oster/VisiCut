@@ -25,6 +25,28 @@ import java.awt.image.BufferedImage;
 public class RasterProfile extends LaserProfile
 {
 
+  protected boolean invertColors = false;
+
+  /**
+   * Get the value of invertColors
+   *
+   * @return the value of invertColors
+   */
+  public boolean isInvertColors()
+  {
+    return invertColors;
+  }
+
+  /**
+   * Set the value of invertColors
+   *
+   * @param invertColors new value of invertColors
+   */
+  public void setInvertColors(boolean invertColors)
+  {
+    this.invertColors = invertColors;
+  }
+
   protected int colorShift = 0;
 
   /**
@@ -88,7 +110,7 @@ public class RasterProfile extends LaserProfile
       {
         o.render(g);
       }
-      BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg);
+      BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors);
       ad.setColorShift(this.getColorShift());
       BlackWhiteRaster bwr = new BlackWhiteRaster(ad, this.getDitherAlgorithm());
       gg.setColor(this.getColor());
@@ -121,7 +143,7 @@ public class RasterProfile extends LaserProfile
         {
           o.render(g);
         }
-        BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg);
+        BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors);
         ad.setColorShift(this.getColorShift());
         BlackWhiteRaster bw = new BlackWhiteRaster(ad, this.getDitherAlgorithm());
         job.getRasterPart().addImage(bw, prop, new Point((int) bb.getX(), (int) bb.getY()));

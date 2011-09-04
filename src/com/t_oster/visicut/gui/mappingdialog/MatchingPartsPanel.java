@@ -1,14 +1,18 @@
 package com.t_oster.visicut.gui.mappingdialog;
 
+import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import javax.swing.JPanel;
 
 /**
@@ -128,7 +132,7 @@ public class MatchingPartsPanel extends JPanel
   public void setMaterial(MaterialProfile material)
   {
     this.material = material;
-    this.setBackground(this.material == null ? Color.white : this.material.getColor());
+    //this.setBackground(this.material == null ? Color.white : this.material.getColor());
     this.repaint();
   }
 
@@ -154,11 +158,26 @@ public class MatchingPartsPanel extends JPanel
         }
         GraphicSet set = this.getSelectedMapping().getFilterSet().getMatchingObjects(unmatched);
         set.setTransform(null);
-        //LaserProfile p = this.material.getLaserProfile(this.getSelectedMapping().getProfileName());
+        LaserProfile p = this.material.getLaserProfile(this.getSelectedMapping().getProfileName());
         //p.renderPreview(gg, set);
-        for (GraphicObject e : set)
+        if (p instanceof VectorProfile)
         {
-          e.render(gg);
+          for (GraphicObject e : set)
+          {
+            if (e instanceof ShapeObject)
+            {
+              Shape s = ((ShapeObject) e).getShape();
+              gg.setColor(Color.red);
+              gg.draw(s);
+            }
+          }
+        }
+        else
+        {
+          for (GraphicObject e : set)
+          {
+            e.render(gg);
+          }
         }
       }
       else if (this.getSelectedFilterSet() != null)

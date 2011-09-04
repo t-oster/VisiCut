@@ -123,6 +123,7 @@ public class MainView extends javax.swing.JFrame
     editMappingMenuItem = new javax.swing.JMenuItem();
     viewMenu = new javax.swing.JMenu();
     showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
+    jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
     helpMenu = new javax.swing.JMenu();
     aboutMenuItem = new javax.swing.JMenuItem();
 
@@ -335,7 +336,7 @@ public class MainView extends javax.swing.JFrame
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 620, Short.MAX_VALUE)
+      .addGap(0, 621, Short.MAX_VALUE)
       .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel1Layout.createSequentialGroup()
           .addContainerGap()
@@ -475,6 +476,14 @@ public class MainView extends javax.swing.JFrame
     bindingGroup.addBinding(binding);
 
     viewMenu.add(showGridMenuItem);
+
+    jCheckBoxMenuItem1.setText(resourceMap.getString("jCheckBoxMenuItem1.text")); // NOI18N
+    jCheckBoxMenuItem1.setName("jCheckBoxMenuItem1"); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${highlightCutLines}"), jCheckBoxMenuItem1, org.jdesktop.beansbinding.BeanProperty.create("selected"), "HighlightCutLines");
+    bindingGroup.addBinding(binding);
+
+    viewMenu.add(jCheckBoxMenuItem1);
 
     menuBar.add(viewMenu);
 
@@ -1037,6 +1046,7 @@ this.editMapping();
   private javax.swing.JMenu fileMenu;
   private com.t_oster.visicut.gui.beans.FilesDropSupport filesDropSupport1;
   private javax.swing.JMenu helpMenu;
+  private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;

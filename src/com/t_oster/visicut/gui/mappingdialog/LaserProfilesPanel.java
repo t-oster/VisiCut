@@ -111,8 +111,12 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
       {
         JiconRadioButton b = new JiconRadioButton();
         b.setText(l.getName());
-        b.setLabelIcon(l.getPreviewThumbnail());
+        if (l.getPreviewThumbnail().exists())
+        {
+          b.setLabelIcon(l.getPreviewThumbnail());
+        }
         b.addActionListener(this);
+        b.setToolTipText(l.getDescription());
         this.group.add(b);
         b.setVisible(true);
         this.add(b);

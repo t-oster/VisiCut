@@ -20,6 +20,28 @@ import java.io.File;
 public abstract class LaserProfile
 {
 
+  protected String description = null;
+
+  /**
+   * Get the value of description
+   *
+   * @return the value of description
+   */
+  public String getDescription()
+  {
+    return description;
+  }
+
+  /**
+   * Set the value of description
+   *
+   * @param description new value of description
+   */
+  public void setDescription(String description)
+  {
+    this.description = description;
+  }
+
   protected LaserProperty[] laserProperties = new LaserProperty[0];
 
   /**

@@ -4,15 +4,18 @@ import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -101,6 +104,29 @@ public class PreviewPanel extends GraphicObjectsPanel
       }
     }
   };
+  protected boolean highlightCutLines = false;
+
+  /**
+   * Get the value of highlightCutLines
+   *
+   * @return the value of highlightCutLines
+   */
+  public boolean isHighlightCutLines()
+  {
+    return highlightCutLines;
+  }
+
+  /**
+   * Set the value of highlightCutLines
+   *
+   * @param highlightCutLines new value of highlightCutLines
+   */
+  public void setHighlightCutLines(boolean highlightCutLines)
+  {
+    this.highlightCutLines = highlightCutLines;
+    this.repaint();
+  }
+
   protected boolean showGrid = false;
 
   /**
@@ -294,7 +320,7 @@ public class PreviewPanel extends GraphicObjectsPanel
         Color c = this.material.getColor();
         if (this.backgroundImage != null)
         {
-          gg.setColor(Color.BLACK);
+          gg.setColor(this.material.getCutColor() != null ? this.material.getCutColor() : Color.BLACK);
           gg.drawRect(0, 0, (int) Util.mm2px(material.getWidth(), 500), (int) Util.mm2px(material.getHeight(), 500));
         }
         else
@@ -312,9 +338,14 @@ public class PreviewPanel extends GraphicObjectsPanel
       {
         if (this.getMaterial() != null && this.getMappings() != null && this.getMappings().size() > 0)
         {
+          GraphicSet rest = new GraphicSet();
+          rest.addAll(graphicObjects);
+          rest.setTransform(graphicObjects.getTransform());
           for (Mapping m : this.getMappings())
           {
-            Rectangle2D bb = m.getFilterSet().getMatchingObjects(graphicObjects).getBoundingBox();
+            GraphicSet current = m.getFilterSet().getMatchingObjects(rest);
+            rest.removeAll(current);
+            Rectangle2D bb = current.getBoundingBox();
             if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
             {
               synchronized (renderBuffer)
@@ -339,6 +370,26 @@ public class PreviewPanel extends GraphicObjectsPanel
                 else
                 {
                   gg.drawRenderedImage(img, AffineTransform.getTranslateInstance(bb.getX(), bb.getY()));
+                  if (highlightCutLines)
+                  {
+                    LaserProfile p = this.material.getLaserProfile(m.getProfileName());
+                    gg.setColor(material.getCutColor());
+                    if (p instanceof VectorProfile && ((VectorProfile) p).isIsCut())
+                    {
+                      for (GraphicObject o:current)
+                      {
+                        if (o instanceof ShapeObject)
+                        {
+                          Shape s = ((ShapeObject) o).getShape();
+                          if (current.getTransform() != null)
+                          {
+                            s = current.getTransform().createTransformedShape(s);
+                          }
+                          gg.draw(s);
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
