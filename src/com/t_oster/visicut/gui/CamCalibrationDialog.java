@@ -23,6 +23,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.net.URL;
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 /**
@@ -31,6 +34,28 @@ import javax.swing.JOptionPane;
  */
 public class CamCalibrationDialog extends javax.swing.JDialog
 {
+
+  protected String imageURL = null;
+
+  /**
+   * Get the value of imageURL
+   *
+   * @return the value of imageURL
+   */
+  public String getImageURL()
+  {
+    return imageURL;
+  }
+
+  /**
+   * Set the value of imageURL
+   *
+   * @param imageURL new value of imageURL
+   */
+  public void setImageURL(String imageURL)
+  {
+    this.imageURL = imageURL;
+  }
 
   protected BufferedImage backgroundImage = null;
   public static final String PROP_BACKGROUNDIMAGE = "backgroundImage";
@@ -171,6 +196,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     okButton = new javax.swing.JButton();
     cancelButton = new javax.swing.JButton();
     sendButton = new javax.swing.JButton();
+    captureButton = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setName("Form"); // NOI18N
@@ -198,7 +224,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     );
     calibrationPanel1Layout.setVerticalGroup(
       calibrationPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 379, Short.MAX_VALUE)
+      .addGap(0, 377, Short.MAX_VALUE)
     );
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -241,12 +267,22 @@ public class CamCalibrationDialog extends javax.swing.JDialog
       }
     });
 
+    captureButton.setText(resourceMap.getString("captureButton.text")); // NOI18N
+    captureButton.setName("captureButton"); // NOI18N
+    captureButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        captureButtonActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-        .addContainerGap(544, Short.MAX_VALUE)
+        .addContainerGap(473, Short.MAX_VALUE)
+        .addComponent(captureButton)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(sendButton)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(cancelButton)
@@ -265,7 +301,8 @@ public class CamCalibrationDialog extends javax.swing.JDialog
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(cancelButton)
           .addComponent(okButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(sendButton)))
+          .addComponent(sendButton)
+          .addComponent(captureButton)))
     );
 
     bindingGroup.bind();
@@ -320,68 +357,36 @@ private void calibrationPanel1MouseWheelMoved(java.awt.event.MouseWheelEvent evt
   }
 }//GEN-LAST:event_calibrationPanel1MouseWheelMoved
 
-  /**
-   * @param args the command line arguments
-   */
-  public static void main(String args[])
-  {
-    /* Set the Nimbus look and feel */
-    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-     * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-     */
-    try
-    {
-      for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels())
-      {
-        if ("Nimbus".equals(info.getName()))
-        {
-          javax.swing.UIManager.setLookAndFeel(info.getClassName());
-          break;
-        }
-      }
-    }
-    catch (ClassNotFoundException ex)
-    {
-      java.util.logging.Logger.getLogger(CamCalibrationDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    catch (InstantiationException ex)
-    {
-      java.util.logging.Logger.getLogger(CamCalibrationDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    catch (IllegalAccessException ex)
-    {
-      java.util.logging.Logger.getLogger(CamCalibrationDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    catch (javax.swing.UnsupportedLookAndFeelException ex)
-    {
-      java.util.logging.Logger.getLogger(CamCalibrationDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    //</editor-fold>
-
-    /* Create and display the dialog */
-    java.awt.EventQueue.invokeLater(new Runnable()
+private void captureButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_captureButtonActionPerformed
+new Thread()
     {
 
+      @Override
       public void run()
       {
-        CamCalibrationDialog dialog = new CamCalibrationDialog(new javax.swing.JFrame(), true);
-        dialog.addWindowListener(new java.awt.event.WindowAdapter()
+        CamCalibrationDialog.this.captureButton.setEnabled(false);
+        try
         {
-
-          @Override
-          public void windowClosing(java.awt.event.WindowEvent e)
+          URL src = new URL(imageURL);
+          if (src != null)
           {
-            System.exit(0);
+            BufferedImage back = ImageIO.read(src);
+            CamCalibrationDialog.this.setBackgroundImage(back);
           }
-        });
-        dialog.setVisible(true);
+        }
+        catch (Exception ex)
+        {
+          JOptionPane.showMessageDialog(CamCalibrationDialog.this, "Error loading Image:" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        CamCalibrationDialog.this.captureButton.setEnabled(true);
       }
-    });
-  }
+    }.start();
+}//GEN-LAST:event_captureButtonActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private com.t_oster.visicut.gui.beans.CalibrationPanel calibrationPanel1;
   private javax.swing.JButton cancelButton;
+  private javax.swing.JButton captureButton;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JButton okButton;
   private javax.swing.JButton sendButton;

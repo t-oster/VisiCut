@@ -102,7 +102,6 @@ public class MainView extends javax.swing.JFrame
     openFileChooser = new javax.swing.JFileChooser();
     visicutModel1 = new com.t_oster.visicut.VisicutModel();
     profileManager1 = new com.t_oster.visicut.model.ProfileManager();
-    camCalibrationDialog1 = new com.t_oster.visicut.gui.CamCalibrationDialog();
     filesDropSupport1 = new com.t_oster.visicut.gui.beans.FilesDropSupport();
     mappingManager1 = new com.t_oster.visicut.model.MappingManager();
     saveFileChooser = new javax.swing.JFileChooser();
@@ -149,15 +148,6 @@ public class MainView extends javax.swing.JFrame
     });
     this.visicutModel1.setMaterial(this.profileManager1.getMaterials().get(0));
 
-    camCalibrationDialog1.setName("camCalibrationDialog1"); // NOI18N
-
-    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${backgroundImage}"), camCalibrationDialog1, org.jdesktop.beansbinding.BeanProperty.create("backgroundImage"), "bgImage from Model to Dialog");
-    bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${preferences.laserCutter}"), camCalibrationDialog1, org.jdesktop.beansbinding.BeanProperty.create("laserCutter"), "LaserCutterFromPreferences to Dialog");
-    bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${preferences.camCalibration}"), camCalibrationDialog1, org.jdesktop.beansbinding.BeanProperty.create("resultingTransformation"), "TransformationCalibDialogModel");
-    bindingGroup.addBinding(binding);
-
     filesDropSupport1.setComponent(previewPanel);
     filesDropSupport1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
       public void propertyChange(java.beans.PropertyChangeEvent evt) {
@@ -173,7 +163,7 @@ public class MainView extends javax.swing.JFrame
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setName("Form"); // NOI18N
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${loadedFile} - VisiCut"), this, org.jdesktop.beansbinding.BeanProperty.create("title"), "Filename to Title");
+    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${loadedFile} - VisiCut"), this, org.jdesktop.beansbinding.BeanProperty.create("title"), "Filename to Title");
     binding.setSourceNullValue("VisiCut");
     bindingGroup.addBinding(binding);
 
@@ -358,7 +348,7 @@ public class MainView extends javax.swing.JFrame
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 621, Short.MAX_VALUE)
+      .addGap(0, 620, Short.MAX_VALUE)
       .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel1Layout.createSequentialGroup()
           .addContainerGap()
@@ -945,7 +935,14 @@ private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 }//GEN-LAST:event_newMenuItemActionPerformed
   
 private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calibrateCameraMenuItemActionPerformed
-  this.camCalibrationDialog1.setVisible(true);
+  
+  CamCalibrationDialog ccd = new CamCalibrationDialog();
+  ccd.setBackgroundImage(this.visicutModel1.getBackgroundImage());
+  ccd.setImageURL(this.visicutModel1.getPreferences().getBackgroundImageURL());
+  ccd.setLaserCutter(this.visicutModel1.getPreferences().getLaserCutter());
+  ccd.setResultingTransformation(this.visicutModel1.getPreferences().getCamCalibration());
+  ccd.setVisible(true);
+  this.visicutModel1.getPreferences().setCamCalibration(ccd.getResultingTransformation());
   PreferencesManager man = PreferencesManager.getInstance();
   try
   {
@@ -1034,7 +1031,6 @@ this.editMapping();
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
   private javax.swing.JMenuItem calibrateCameraMenuItem;
-  private com.t_oster.visicut.gui.CamCalibrationDialog camCalibrationDialog1;
   private javax.swing.JButton captureImageButton;
   private javax.swing.JTextField dimensionWidthTextField;
   private javax.swing.JTextField dimesnionsHeightTextfield;
