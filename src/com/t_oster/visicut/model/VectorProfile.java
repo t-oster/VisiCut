@@ -53,17 +53,17 @@ public class VectorProfile extends LaserProfile
       if (e instanceof ShapeObject)
       {
         gg.setColor(this.getColor());
-        Stroke s = new BasicStroke((int) Util.mm2px(this.getWidth(),500));
+        Stroke s = new BasicStroke((int) Util.mm2px(this.getWidth(), 500));
         gg.setStroke(s);
         Shape sh = ((ShapeObject) e).getShape();
-        if (objects.getTransform()!=null)
+        if (objects.getTransform() != null)
         {
           sh = objects.getTransform().createTransformedShape(sh);
         }
         if (sh == null)
         {
           //WTF??
-          System.out.println("Error extracting Shape from: "+((ShapeObject) e).toString());
+          System.out.println("Error extracting Shape from: " + ((ShapeObject) e).toString());
         }
         else
         {
@@ -76,18 +76,21 @@ public class VectorProfile extends LaserProfile
   @Override
   public void addToLaserJob(LaserJob job, GraphicSet objects)
   {
-    job.getVectorPart().setCurrentCuttingProperty(this.getCuttingProperty());
-    ShapeConverter conv = new ShapeConverter();
-    for (GraphicObject e : objects)
+    for (LaserProperty prop : this.getLaserProperties())
     {
-      if (e instanceof ShapeObject)
+      job.getVectorPart().setCurrentCuttingProperty(prop);
+      ShapeConverter conv = new ShapeConverter();
+      for (GraphicObject e : objects)
       {
-        Shape sh = ((ShapeObject) e).getShape();
-        if (objects.getTransform() != null)
+        if (e instanceof ShapeObject)
         {
-          sh = objects.getTransform().createTransformedShape(sh);
+          Shape sh = ((ShapeObject) e).getShape();
+          if (objects.getTransform() != null)
+          {
+            sh = objects.getTransform().createTransformedShape(sh);
+          }
+          conv.addShape(sh, job.getVectorPart());
         }
-        conv.addShape(sh, job.getVectorPart());
       }
     }
   }

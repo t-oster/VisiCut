@@ -10,6 +10,8 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A cutting Profile represents a specific way of handling Image
@@ -20,26 +22,26 @@ import java.io.File;
 public abstract class LaserProfile
 {
 
-  protected LaserProperty cuttingProperty = new LaserProperty();
+  protected LaserProperty[] laserProperties = new LaserProperty[0];
 
   /**
-   * Get the value of cuttingProperty
+   * Get the value of laserProperties
    *
-   * @return the value of cuttingProperty
+   * @return the value of laserProperties
    */
-  public LaserProperty getCuttingProperty()
+  public LaserProperty[] getLaserProperties()
   {
-    return cuttingProperty;
+    return laserProperties;
   }
 
   /**
-   * Set the value of cuttingProperty
+   * Set the value of laserProperties
    *
-   * @param cuttingProperty new value of cuttingProperty
+   * @param laserProperties new value of laserProperties
    */
-  public void setCuttingProperty(LaserProperty cuttingProperty)
+  public void setLaserProperties(LaserProperty[] laserProperties)
   {
-    this.cuttingProperty = cuttingProperty;
+    this.laserProperties = laserProperties;
   }
   protected Color color = new Color(0, 0, 0);
 
@@ -104,25 +106,30 @@ public abstract class LaserProfile
   {
     this.name = name;
   }
-  
+
   public abstract void renderPreview(Graphics2D g, GraphicSet objects);
-  
+
   public abstract void addToLaserJob(LaserJob job, GraphicSet objects);
-  
+
   public void addToLaserJob(LaserJob job, GraphicSet set, float focusOffset)
   {
-    LaserProperty p = this.getCuttingProperty();
-    float originalFocus = p.getFocus();
-    p.setFocus(originalFocus+focusOffset);
+    LaserProperty[] props = this.getLaserProperties();
+    float[] originalFocus = new float[props.length];
+    for (int i = 0;i<props.length;i++)
+    {
+      originalFocus[i] = props[i].getFocus();
+      props[i].setFocus(originalFocus[i] + focusOffset);
+    }
     this.addToLaserJob(job, set);
-    p.setFocus(originalFocus);
+    for (int i = 0;i<props.length;i++)
+    {
+      props[i].setFocus(originalFocus[i]);
+    }
   }
-  
+
   @Override
   public String toString()
   {
     return (this.getName() != null ? this.getName() : super.toString());
   }
-
- 
 }

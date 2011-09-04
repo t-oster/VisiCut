@@ -7,22 +7,6 @@
         <Property name="name" type="java.lang.String" value="openFileChooser" noResource="true"/>
       </Properties>
     </Component>
-    <Component class="com.t_oster.visicut.gui.MappingDialog" name="mappingDialog1">
-      <Properties>
-        <Property name="name" type="java.lang.String" value="mappingDialog1" noResource="true"/>
-      </Properties>
-      <BindingProperties>
-        <BindingProperty name="graphicElements" source="visicutModel1" sourcePath="${graphicObjects}" target="mappingDialog1" targetPath="graphicElements" updateStrategy="1" immediately="false">
-          <Property name="name" type="java.lang.String" value="GraphicObjectsToMappingDialog"/>
-        </BindingProperty>
-        <BindingProperty name="mappings" source="visicutModel1" sourcePath="${mappings}" target="mappingDialog1" targetPath="mappings" updateStrategy="0" immediately="false">
-          <Property name="name" type="java.lang.String" value="MappingsModelToDialog"/>
-        </BindingProperty>
-        <BindingProperty name="material" source="visicutModel1" sourcePath="${material}" target="mappingDialog1" targetPath="material" updateStrategy="0" immediately="false">
-          <Property name="name" type="java.lang.String" value="MaterialToMappingDialog"/>
-        </BindingProperty>
-      </BindingProperties>
-    </Component>
     <Component class="com.t_oster.visicut.VisicutModel" name="visicutModel1">
       <Events>
         <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="visicutModel1PropertyChange"/>
@@ -165,6 +149,15 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveMappingMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="editMappingMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="editMappingMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="editMappingMenuItem" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editMappingMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>

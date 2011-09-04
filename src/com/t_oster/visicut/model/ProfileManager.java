@@ -55,13 +55,13 @@ public class ProfileManager
     vp.setName("cut line");
     vp.setWidth(1f);
     vp.setPreviewThumbnail(new File("materials/Finnpappe/cutline.png"));
-    vp.setCuttingProperty(new LaserProperty(50,100));
+    vp.setLaserProperties(new LaserProperty[]{new LaserProperty(50,100)});
     lprofiles.add(vp);
     vp = new VectorProfile();
     vp.setName("broad line");
     vp.setWidth(3f);
     vp.setPreviewThumbnail(new File("materials/Finnpappe/bigline.png"));
-    vp.setCuttingProperty(new LaserProperty(50,100,5000,300));
+    vp.setLaserProperties(new LaserProperty[]{new LaserProperty(50,100,5000,300)});
     lprofiles.add(vp);
     RasterProfile rp = new RasterProfile();
     rp.setColor(Color.black);

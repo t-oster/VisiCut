@@ -100,7 +100,6 @@ public class MainView extends javax.swing.JFrame
     bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
     openFileChooser = new javax.swing.JFileChooser();
-    mappingDialog1 = new com.t_oster.visicut.gui.MappingDialog();
     visicutModel1 = new com.t_oster.visicut.VisicutModel();
     profileManager1 = new com.t_oster.visicut.model.ProfileManager();
     camCalibrationDialog1 = new com.t_oster.visicut.gui.CamCalibrationDialog();
@@ -135,21 +134,13 @@ public class MainView extends javax.swing.JFrame
     calibrateCameraMenuItem = new javax.swing.JMenuItem();
     executeJobMenuItem = new javax.swing.JMenuItem();
     saveMappingMenuItem = new javax.swing.JMenuItem();
+    editMappingMenuItem = new javax.swing.JMenuItem();
     viewMenu = new javax.swing.JMenu();
     showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
     helpMenu = new javax.swing.JMenu();
     aboutMenuItem = new javax.swing.JMenuItem();
 
     openFileChooser.setName("openFileChooser"); // NOI18N
-
-    mappingDialog1.setName("mappingDialog1"); // NOI18N
-
-    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${graphicObjects}"), mappingDialog1, org.jdesktop.beansbinding.BeanProperty.create("graphicElements"), "GraphicObjectsToMappingDialog");
-    bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${mappings}"), mappingDialog1, org.jdesktop.beansbinding.BeanProperty.create("mappings"), "MappingsModelToDialog");
-    bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material}"), mappingDialog1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialToMappingDialog");
-    bindingGroup.addBinding(binding);
 
     visicutModel1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
       public void propertyChange(java.beans.PropertyChangeEvent evt) {
@@ -160,7 +151,7 @@ public class MainView extends javax.swing.JFrame
 
     camCalibrationDialog1.setName("camCalibrationDialog1"); // NOI18N
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${backgroundImage}"), camCalibrationDialog1, org.jdesktop.beansbinding.BeanProperty.create("backgroundImage"), "bgImage from Model to Dialog");
+    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${backgroundImage}"), camCalibrationDialog1, org.jdesktop.beansbinding.BeanProperty.create("backgroundImage"), "bgImage from Model to Dialog");
     bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${preferences.laserCutter}"), camCalibrationDialog1, org.jdesktop.beansbinding.BeanProperty.create("laserCutter"), "LaserCutterFromPreferences to Dialog");
     bindingGroup.addBinding(binding);
@@ -486,6 +477,15 @@ public class MainView extends javax.swing.JFrame
     });
     editMenu.add(saveMappingMenuItem);
 
+    editMappingMenuItem.setText(resourceMap.getString("editMappingMenuItem.text")); // NOI18N
+    editMappingMenuItem.setName("editMappingMenuItem"); // NOI18N
+    editMappingMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        editMappingMenuItemActionPerformed(evt);
+      }
+    });
+    editMenu.add(editMappingMenuItem);
+
     menuBar.add(editMenu);
 
     viewMenu.setText(resourceMap.getString("viewMenu.text")); // NOI18N
@@ -594,9 +594,19 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   }
 }//GEN-LAST:event_openMenuItemActionPerformed
   
-private void editMappingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMappingButtonActionPerformed
-  mappingDialog1.setVisible(true);
+private void editMapping()
+{
+  MappingDialog md = new MappingDialog();
+  md.setGraphicElements(this.visicutModel1.getGraphicObjects());
+  md.setMappings(this.visicutModel1.getMappings());
+  md.setMaterial(this.visicutModel1.getMaterial());
+  md.setVisible(true);
+  this.visicutModel1.setMappings(md.getMappings());
   this.previewPanel.repaint();
+}
+
+private void editMappingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMappingButtonActionPerformed
+  this.editMapping();
 }//GEN-LAST:event_editMappingButtonActionPerformed
   
 private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
@@ -1016,6 +1026,11 @@ private void saveMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
   }
   saveFileChooser.setFileFilter(bak);
 }//GEN-LAST:event_saveMappingMenuItemActionPerformed
+
+private void editMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMappingMenuItemActionPerformed
+this.editMapping();
+}//GEN-LAST:event_editMappingMenuItemActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
   private javax.swing.JMenuItem calibrateCameraMenuItem;
@@ -1024,6 +1039,7 @@ private void saveMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
   private javax.swing.JTextField dimensionWidthTextField;
   private javax.swing.JTextField dimesnionsHeightTextfield;
   private javax.swing.JButton editMappingButton;
+  private javax.swing.JMenuItem editMappingMenuItem;
   private javax.swing.JMenu editMenu;
   private javax.swing.JButton executeJobButton;
   private javax.swing.JMenuItem executeJobMenuItem;
@@ -1039,7 +1055,6 @@ private void saveMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JComboBox mappingComboBox;
-  private com.t_oster.visicut.gui.MappingDialog mappingDialog1;
   private com.t_oster.visicut.model.MappingManager mappingManager1;
   private javax.swing.JComboBox materialComboBox;
   private javax.swing.JTextField materialHeightTextField;

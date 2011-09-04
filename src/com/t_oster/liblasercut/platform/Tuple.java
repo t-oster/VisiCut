@@ -51,6 +51,10 @@ public class Tuple<A, B>
     {
       return !Util.differ(this.a, ((Tuple) o).a) && !Util.differ(this.b, ((Tuple) o).b);
     }
+    else if (o == null)
+    {
+      return false;
+    }
     else
     {
       return super.equals(this);

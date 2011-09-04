@@ -12,6 +12,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -276,6 +277,8 @@ public class PreviewPanel extends GraphicObjectsPanel
     if (g instanceof Graphics2D)
     {
       Graphics2D gg = (Graphics2D) g;
+      gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
       if (backgroundImage != null)
       {
         gg.drawRenderedImage(backgroundImage, null);
