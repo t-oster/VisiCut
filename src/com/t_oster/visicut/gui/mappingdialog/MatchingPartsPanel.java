@@ -1,11 +1,11 @@
 package com.t_oster.visicut.gui.mappingdialog;
 
-import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
+import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -21,6 +21,27 @@ import javax.swing.JPanel;
 public class MatchingPartsPanel extends JPanel
 {
 
+  protected MappingSet mappings = new MappingSet();
+
+  /**
+   * Get the value of mappings
+   *
+   * @return the value of mappings
+   */
+  public MappingSet getMappings()
+  {
+    return mappings;
+  }
+
+  /**
+   * Set the value of mappings
+   *
+   * @param mappings new value of mappings
+   */
+  public void setMappings(MappingSet mappings)
+  {
+    this.mappings = mappings;
+  }
   protected GraphicSet graphicElements = null;
 
   /**
@@ -120,25 +141,50 @@ public class MatchingPartsPanel extends JPanel
     {
       if (this.getSelectedMapping() != null)
       {
-        GraphicSet set = this.getSelectedMapping().getFilterSet().getMatchingObjects(this.getGraphicElements());
+        GraphicSet unmatched = new GraphicSet();
+        unmatched.addAll(this.graphicElements);
+        //Remove all Elements, matched by previous mappings
+        for(Mapping m:this.mappings)
+        {
+          if (m.equals(this.getSelectedMapping()))
+          {
+            break;
+          }
+          unmatched.removeAll(m.getFilterSet().getMatchingObjects(unmatched));
+        }
+        GraphicSet set = this.getSelectedMapping().getFilterSet().getMatchingObjects(unmatched);
         set.setTransform(null);
         //LaserProfile p = this.material.getLaserProfile(this.getSelectedMapping().getProfileName());
         //p.renderPreview(gg, set);
-        for (GraphicObject e:set)
+        for (GraphicObject e : set)
         {
           e.render(gg);
         }
       }
       else if (this.getSelectedFilterSet() != null)
       {
-        for (GraphicObject e : this.getSelectedFilterSet().getMatchingObjects(graphicElements))
+        GraphicSet unmatched = new GraphicSet();
+        unmatched.addAll(this.graphicElements);
+        //Remove all Elements, matched by previous mappings
+        for(Mapping m:this.mappings)
+        {
+          unmatched.removeAll(m.getFilterSet().getMatchingObjects(unmatched));
+        }
+        for (GraphicObject e : this.getSelectedFilterSet().getMatchingObjects(unmatched))
         {
           e.render(gg);
         }
       }
       else
       {
-        for (GraphicObject e : this.graphicElements)
+        GraphicSet unmatched = new GraphicSet();
+        unmatched.addAll(this.graphicElements);
+        //Remove all Elements, matched by previous mappings
+        for(Mapping m:this.mappings)
+        {
+          unmatched.removeAll(m.getFilterSet().getMatchingObjects(unmatched));
+        }
+        for (GraphicObject e : unmatched)
         {
           e.render(gg);
         }

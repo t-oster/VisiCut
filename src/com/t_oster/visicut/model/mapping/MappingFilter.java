@@ -5,8 +5,10 @@
 package com.t_oster.visicut.model.mapping;
 
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import java.awt.Color;
 
 /**
  *
@@ -70,7 +72,18 @@ public class MappingFilter
   @Override
   public String toString()
   {
-    return value == null ? "null" : value.toString();
+    if (value == null)
+    {
+      return "null";
+    }
+    else if (value instanceof Color)
+    {
+      return Helper.toHtmlRGB((Color) value);
+    }
+    else
+    {
+      return value.toString();
+    }
   }
 
   @Override

@@ -2,11 +2,14 @@ package com.t_oster.visicut.gui.mappingdialog;
 
 import com.t_oster.liblasercut.platform.Tuple;
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.Helper;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingFilter;
+import java.awt.Color;
+import java.awt.Component;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JTree;
@@ -14,6 +17,7 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
@@ -190,6 +194,29 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
   public MappingJTree()
   {
     this.setModel(this);
+    this.setCellRenderer(new DefaultTreeCellRenderer(){
+
+      @Override
+      public Component getTreeCellRendererComponent(JTree jtree, Object o, boolean bln, boolean bln1, boolean bln2, int i, boolean bln3)
+      {
+        Component c = null;
+        if (o instanceof FilterSet)
+        {
+          MappingFilter f = ((FilterSet) o).peekLast();
+          if (f != null && f.getValue() instanceof Color)
+          {
+            c =  super.getTreeCellRendererComponent(jtree, Helper.toHtmlRGB((Color) f.getValue()), bln, bln1, bln2, i, bln3);
+            c.setForeground((Color) f.getValue());
+          }
+        }
+        if (c == null)
+        {
+          c =  super.getTreeCellRendererComponent(jtree, o, bln, bln1, bln2, i, bln3);
+        }
+        return c;
+      }
+      
+    });
     this.getSelectionModel().addTreeSelectionListener(this);
   }
   protected GraphicSet graphicObjects = null;

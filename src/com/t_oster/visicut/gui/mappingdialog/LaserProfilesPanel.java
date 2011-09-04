@@ -119,7 +119,7 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
         this.buttons[i++] = b;
       }
       JiconRadioButton b = new JiconRadioButton();
-      b.setText("unmap");
+      b.setText("not mapped");
       b.addActionListener(this);
       this.group.add(b);
       b.setVisible(true);

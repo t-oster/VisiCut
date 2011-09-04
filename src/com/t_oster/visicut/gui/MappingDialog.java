@@ -127,6 +127,8 @@ public class MappingDialog extends javax.swing.JDialog
 
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${graphicElements}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("graphicElements"), "GraphicElementsFromForm");
     bindingGroup.addBinding(binding);
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${currentMappings}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("mappings"), "MappingsFromFormToPanel");
+    bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${material}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialToPanel");
     bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${selectedFilterSet}"), matchingPartsPanel1, org.jdesktop.beansbinding.BeanProperty.create("selectedFilterSet"), "FilterSetFormPanel");
