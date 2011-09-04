@@ -104,6 +104,31 @@ public class PreviewPanel extends GraphicObjectsPanel
       }
     }
   };
+  protected boolean drawPreview = true;
+  public static final String PROP_DRAWPREVIEW = "drawPreview";
+
+  /**
+   * Get the value of drawPreview
+   *
+   * @return the value of drawPreview
+   */
+  public boolean isDrawPreview()
+  {
+    return drawPreview;
+  }
+
+  /**
+   * Set the value of drawPreview
+   *
+   * @param drawPreview new value of drawPreview
+   */
+  public void setDrawPreview(boolean drawPreview)
+  {
+    boolean oldDrawPreview = this.drawPreview;
+    this.drawPreview = drawPreview;
+    firePropertyChange(PROP_DRAWPREVIEW, oldDrawPreview, drawPreview);
+    repaint();
+  }
   protected boolean highlightCutLines = false;
 
   /**
@@ -123,10 +148,11 @@ public class PreviewPanel extends GraphicObjectsPanel
    */
   public void setHighlightCutLines(boolean highlightCutLines)
   {
+    boolean oldHighlightCutLines = this.highlightCutLines;
     this.highlightCutLines = highlightCutLines;
+    this.firePropertyChange("highlightCutLines", oldHighlightCutLines, highlightCutLines);
     this.repaint();
   }
-
   protected boolean showGrid = false;
 
   /**
@@ -146,7 +172,9 @@ public class PreviewPanel extends GraphicObjectsPanel
    */
   public void setShowGrid(boolean showGrid)
   {
+    boolean oldShowGrid = this.showGrid;
     this.showGrid = showGrid;
+    this.firePropertyChange("showGrid", oldShowGrid, showGrid);
     this.repaint();
   }
   protected AffineTransform previewTransformation = AffineTransform.getTranslateInstance(40, 150);
@@ -346,46 +374,49 @@ public class PreviewPanel extends GraphicObjectsPanel
             Rectangle2D bb = current.getBoundingBox();
             if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
             {
-              synchronized (renderBuffer)
+              if (drawPreview)
               {
-                BufferedImage img = this.renderBuffer.get(m);
-                if (img == null || bb.getWidth() != img.getWidth() || bb.getHeight() != img.getHeight())
-                {//Image not rendered or Size differs
-                  if (!renderBuffer.containsKey(m) || img != null)
-                  {//image not yet scheduled for rendering
-                    this.renderBuffer.put(m, null);
-                  }
-                  synchronized (imageProcessingThread)
-                  {
-                    imageProcessingThread.notify();
-                  }
-                  gg.setColor(Color.GRAY);
-                  Rectangle r = Helper.toRect(bb);
-                  gg.fillRect(r.x, r.y, r.width, r.height);
-                  gg.setColor(Color.BLACK);
-                  gg.drawString("processing...", r.x + r.width / 2, r.y + r.height / 2);
-                }
-                else
+                synchronized (renderBuffer)
                 {
-                  gg.drawRenderedImage(img, AffineTransform.getTranslateInstance(bb.getX(), bb.getY()));
-                  if (highlightCutLines)
-                  {
-                    LaserProfile p = this.material.getLaserProfile(m.getProfileName());
-                    gg.setColor(material.getCutColor());
-                    if (p instanceof VectorProfile && ((VectorProfile) p).isIsCut())
+                  BufferedImage img = this.renderBuffer.get(m);
+                  if (img == null || bb.getWidth() != img.getWidth() || bb.getHeight() != img.getHeight())
+                  {//Image not rendered or Size differs
+                    if (!renderBuffer.containsKey(m) || img != null)
+                    {//image not yet scheduled for rendering
+                      this.renderBuffer.put(m, null);
+                    }
+                    synchronized (imageProcessingThread)
                     {
-                      for (GraphicObject o:current)
+                      imageProcessingThread.notify();
+                    }
+                    gg.setColor(Color.GRAY);
+                    Rectangle r = Helper.toRect(bb);
+                    gg.fillRect(r.x, r.y, r.width, r.height);
+                    gg.setColor(Color.BLACK);
+                    gg.drawString("processing...", r.x + r.width / 2, r.y + r.height / 2);
+                  }
+                  else
+                  {
+                    gg.drawRenderedImage(img, AffineTransform.getTranslateInstance(bb.getX(), bb.getY()));
+                  }
+                }
+              }
+              if (highlightCutLines)
+              {
+                LaserProfile p = this.material.getLaserProfile(m.getProfileName());
+                gg.setColor(material.getCutColor());
+                if (p instanceof VectorProfile && ((VectorProfile) p).isIsCut())
+                {
+                  for (GraphicObject o : current)
+                  {
+                    if (o instanceof ShapeObject)
+                    {
+                      Shape s = ((ShapeObject) o).getShape();
+                      if (current.getTransform() != null)
                       {
-                        if (o instanceof ShapeObject)
-                        {
-                          Shape s = ((ShapeObject) o).getShape();
-                          if (current.getTransform() != null)
-                          {
-                            s = current.getTransform().createTransformedShape(s);
-                          }
-                          gg.draw(s);
-                        }
+                        s = current.getTransform().createTransformedShape(s);
                       }
+                      gg.draw(s);
                     }
                   }
                 }
@@ -482,12 +513,12 @@ public class PreviewPanel extends GraphicObjectsPanel
             break;
           }
           gg.drawLine(a.x, a.y, b.x, b.y);
-          String txt = ((float) Math.round((float) (10*mmx)))/10+" mm";
+          String txt = ((float) Math.round((float) (10 * mmx))) / 10 + " mm";
           int w = gg.getFontMetrics().stringWidth(txt);
           int h = gg.getFontMetrics().getHeight();
-          gg.drawString(txt, a.x-w/2, 5+h);
+          gg.drawString(txt, a.x - w / 2, 5 + h);
         }
-        mmx+=gridDst;
+        mmx += gridDst;
       }
       double mmy = 0;
       for (int y = 0; y < Util.mm2px(this.material.getHeight(), 500); y += Util.mm2px(gridDst, 500))
@@ -503,12 +534,12 @@ public class PreviewPanel extends GraphicObjectsPanel
             break;
           }
           gg.drawLine(a.x, a.y, b.x, b.y);
-          String txt = (float) (Math.round((float) (10*mmy)))/10+" mm";
+          String txt = (float) (Math.round((float) (10 * mmy))) / 10 + " mm";
           int w = gg.getFontMetrics().stringWidth(txt);
           int h = gg.getFontMetrics().getHeight();
           gg.drawString(txt, 5, a.y);
         }
-        mmy+=gridDst;
+        mmy += gridDst;
       }
       gg.setTransform(trans);
     }
