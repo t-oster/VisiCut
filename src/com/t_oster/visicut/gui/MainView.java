@@ -943,10 +943,9 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
   ccd.setResultingTransformation(this.visicutModel1.getPreferences().getCamCalibration());
   ccd.setVisible(true);
   this.visicutModel1.getPreferences().setCamCalibration(ccd.getResultingTransformation());
-  PreferencesManager man = PreferencesManager.getInstance();
   try
   {
-    man.savePreferences(this.visicutModel1.getPreferences(), new File("settings.xml"));
+    PreferencesManager.getInstance().savePreferences(this.visicutModel1.getPreferences(), new File("settings.xml"));
   }
   catch (FileNotFoundException ex)
   {

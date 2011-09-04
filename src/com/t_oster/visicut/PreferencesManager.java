@@ -28,6 +28,10 @@ public class PreferencesManager
     }
     return instance;
   }
+  private PreferencesManager()
+  {
+    
+  }
   public void savePreferences(Preferences pref, File f) throws FileNotFoundException
   {
     FileOutputStream os = new FileOutputStream(f);
