@@ -49,6 +49,7 @@ public class ProfileManager
     //Finnpappe
     MaterialProfile profile = new MaterialProfile();
     profile.setName("Finnpappe");
+    profile.setThumbnailPath(new File("materials/Finnpappe/profile.png").getAbsolutePath());
     profile.setDescription("A light paper based material.");
     profile.setColor(new Color(209,163,117));
     profile.setCutColor(Color.RED);
@@ -95,6 +96,7 @@ public class ProfileManager
     //Filz
     profile = new MaterialProfile();
     profile.setName("Filz");
+    profile.setThumbnailPath(new File("materials/Filz/profile.png").getAbsolutePath());
     profile.setDescription("A red Material");
     lprofiles = new LinkedList<LaserProfile>();
     vp = new VectorProfile();
@@ -115,6 +117,7 @@ public class ProfileManager
     profile.setColor(new Color(117,163,209));
     profile.setName("Plexiglass");
     profile.setDepth(1.5f);
+    profile.setThumbnailPath(new File("materials/Plexiglass/profile.png").getAbsolutePath());
     lprofiles = new LinkedList<LaserProfile>();
     vp = new VectorProfile();
     vp.setName("cut line");

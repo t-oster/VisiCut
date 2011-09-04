@@ -17,6 +17,7 @@ import com.t_oster.visicut.PreferencesManager;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
+import com.t_oster.visicut.gui.beans.MaterialComboBox;
 import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
@@ -94,7 +95,7 @@ public class MainView extends javax.swing.JFrame
     saveFileChooser = new javax.swing.JFileChooser();
     jPanel2 = new javax.swing.JPanel();
     jLabel1 = new javax.swing.JLabel();
-    materialComboBox = new javax.swing.JComboBox();
+    materialComboBox = new com.t_oster.visicut.gui.beans.MaterialComboBox();
     jLabel2 = new javax.swing.JLabel();
     mappingComboBox = new javax.swing.JComboBox();
     editMappingButton = new javax.swing.JButton();

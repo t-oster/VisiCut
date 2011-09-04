@@ -115,7 +115,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
       {
         this.getSelectionModel().clearSelection();
       }
-      else if (selectedMapping != null && (this.getSelectionModel().getSelectionPath() == null 
+      else if (selectedMapping != null && (this.getSelectionModel().getSelectionPath() == null
         || !this.getSelectionModel().getSelectionPath().getLastPathComponent().equals(selectedMapping)))
       {
         //this.refreshTree();
@@ -125,7 +125,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
           });
         this.getSelectionModel().setSelectionPath(p);
       }
-      
+
     }
     this.repaint();
   }
@@ -194,7 +194,8 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
   public MappingJTree()
   {
     this.setModel(this);
-    this.setCellRenderer(new DefaultTreeCellRenderer(){
+    this.setCellRenderer(new DefaultTreeCellRenderer()
+    {
 
       @Override
       public Component getTreeCellRendererComponent(JTree jtree, Object o, boolean bln, boolean bln1, boolean bln2, int i, boolean bln3)
@@ -205,17 +206,16 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
           MappingFilter f = ((FilterSet) o).peekLast();
           if (f != null && f.getValue() instanceof Color)
           {
-            c =  super.getTreeCellRendererComponent(jtree, Helper.toHtmlRGB((Color) f.getValue()), bln, bln1, bln2, i, bln3);
+            c = super.getTreeCellRendererComponent(jtree, Helper.toHtmlRGB((Color) f.getValue()), bln, bln1, bln2, i, bln3);
             c.setForeground((Color) f.getValue());
           }
         }
         if (c == null)
         {
-          c =  super.getTreeCellRendererComponent(jtree, o, bln, bln1, bln2, i, bln3);
+          c = super.getTreeCellRendererComponent(jtree, o, bln, bln1, bln2, i, bln3);
         }
         return c;
       }
-      
     });
     this.getSelectionModel().addTreeSelectionListener(this);
   }
@@ -233,23 +233,19 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
 
   public GraphicSet getUnmappedObjects()
   {
-    GraphicSet result = new GraphicSet();
+    GraphicSet result;
     if (graphicObjects == null)
     {
-      return result;
+      return new GraphicSet();
     }
-    result.setTransform(this.graphicObjects.getTransform());
-    if (this.graphicObjects != null)
+    result = this.graphicObjects.copy();
+    if (this.mappings != null)
     {
-      result.addAll(this.graphicObjects);
-      if (this.mappings != null)
+      for (Mapping m : this.getMappings())
       {
-        for (Mapping m : this.getMappings())
+        for (GraphicObject o : m.getA().getMatchingObjects(result))
         {
-          for (GraphicObject o : m.getA().getMatchingObjects(result))
-          {
-            result.remove(o);
-          }
+          result.remove(o);
         }
       }
     }

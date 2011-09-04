@@ -338,9 +338,7 @@ public class PreviewPanel extends GraphicObjectsPanel
       {
         if (this.getMaterial() != null && this.getMappings() != null && this.getMappings().size() > 0)
         {
-          GraphicSet rest = new GraphicSet();
-          rest.addAll(graphicObjects);
-          rest.setTransform(graphicObjects.getTransform());
+          GraphicSet rest = graphicObjects.copy();
           for (Mapping m : this.getMappings())
           {
             GraphicSet current = m.getFilterSet().getMatchingObjects(rest);

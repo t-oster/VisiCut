@@ -145,8 +145,7 @@ public class MatchingPartsPanel extends JPanel
     {
       if (this.getSelectedMapping() != null)
       {
-        GraphicSet unmatched = new GraphicSet();
-        unmatched.addAll(this.graphicElements);
+        GraphicSet unmatched = this.graphicElements.copy();
         //Remove all Elements, matched by previous mappings
         for(Mapping m:this.mappings)
         {
@@ -182,8 +181,7 @@ public class MatchingPartsPanel extends JPanel
       }
       else if (this.getSelectedFilterSet() != null)
       {
-        GraphicSet unmatched = new GraphicSet();
-        unmatched.addAll(this.graphicElements);
+        GraphicSet unmatched = this.graphicElements.copy();
         //Remove all Elements, matched by previous mappings
         for(Mapping m:this.mappings)
         {
@@ -196,8 +194,7 @@ public class MatchingPartsPanel extends JPanel
       }
       else
       {
-        GraphicSet unmatched = new GraphicSet();
-        unmatched.addAll(this.graphicElements);
+        GraphicSet unmatched = this.graphicElements.copy();
         //Remove all Elements, matched by previous mappings
         for(Mapping m:this.mappings)
         {

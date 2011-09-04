@@ -383,9 +383,11 @@ public class VisicutModel
     VectorPart vp = new VectorPart(new LaserProperty());
     LaserCutter instance = this.preferences.getLaserCutter();
     LaserJob job = new LaserJob("VisiCut", "666", "bla", 500, null, vp, rp);
+    GraphicSet all = this.getGraphicObjects().copy();
     for (Mapping m : this.getMappings())
     {
-      GraphicSet set = m.getA().getMatchingObjects(this.getGraphicObjects());
+      GraphicSet set = m.getA().getMatchingObjects(all);
+      all.removeAll(set);
       LaserProfile p = material.getLaserProfile(m.getProfileName());
       p.addToLaserJob(job, set, material.getDepth());
     }

@@ -129,4 +129,12 @@ public class GraphicSet extends LinkedList<GraphicObject>
   {
     propertyChangeSupport.removePropertyChangeListener(listener);
   }
+
+  public GraphicSet copy()
+  {
+    GraphicSet result = new GraphicSet();
+    result.addAll(this);
+    result.setTransform(this.getTransform());
+    return result;
+  }
 }

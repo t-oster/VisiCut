@@ -340,6 +340,9 @@
         <Component class="javax.swing.JComboBox" name="materialComboBox">
           <Properties>
             <Property name="name" type="java.lang.String" value="materialComboBox" noResource="true"/>
+            <Property name="renderer" type="javax.swing.ListCellRenderer" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new com.t_oster.visicut.gui.beans.MaterialComboBox()" type="code"/>
+            </Property>
           </Properties>
           <BindingProperties>
             <BindingProperty name="elements" source="profileManager1" sourcePath="${materials}" target="materialComboBox" targetPath="elements" updateStrategy="0" immediately="false"/>
