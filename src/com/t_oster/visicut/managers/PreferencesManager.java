@@ -4,13 +4,17 @@
  */
 package com.t_oster.visicut.managers;
 
+import com.t_oster.liblasercut.drivers.EpilogCutter;
 import com.t_oster.visicut.Preferences;
+import com.t_oster.visicut.model.LaserDevice;
+import java.awt.geom.AffineTransform;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,6 +65,16 @@ public final class PreferencesManager
       "com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter",
       "com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter"
     });
+    LaserDevice epilog = new LaserDevice();
+    epilog.setLaserCutter(new EpilogCutter("137.226.56.228"));
+    epilog.setName("Epilog ZING @ Fablab");
+    epilog.setDescription("The Epilog ZING 30W Laser which is in the Fablab");
+    epilog.setCameraURL("http://137.226.56.115:8080/defaultbackground.jpg");
+    epilog.setThumbnailPath(new File(".VisiCut/cutters/epilog.png").getAbsolutePath());
+    epilog.setCameraCalibration(new AffineTransform(0.19630256844482077,0.0,0.0,0.19954840530623766,124.33334350585938,484.3333282470703));
+    preferences.setLaserDevices(new LinkedList<LaserDevice>());
+    preferences.getLaserDevices().add(epilog);
+    preferences.setDefaultLaserDevice(epilog);
   }
 
   public Preferences getPreferences()

@@ -20,6 +20,28 @@ import javax.swing.JPanel;
 public class GraphicObjectsPanel extends JPanel
 {
 
+  protected Dimension outerBounds = null;
+
+  /**
+   * Get the value of outerBounds
+   *
+   * @return the value of outerBounds
+   */
+  public Dimension getOuterBounds()
+  {
+    return outerBounds;
+  }
+
+  /**
+   * Set the value of outerBounds
+   * The Component can't zoom more out than the size of the outer bounds.
+   *
+   * @param outerBounds new value of outerBounds
+   */
+  public void setOuterBounds(Dimension outerBounds)
+  {
+    this.outerBounds = outerBounds;
+  }
   protected boolean autoCenter = false;
 
   /**
@@ -41,7 +63,6 @@ public class GraphicObjectsPanel extends JPanel
   {
     this.autoCenter = autoCenter;
   }
-
   protected Point center = null;
   public static final String PROP_CENTER = "center";
 
@@ -66,6 +87,7 @@ public class GraphicObjectsPanel extends JPanel
     this.center = center;
     this.repaint();
     firePropertyChange(PROP_CENTER, oldCenter, center);
+    //TODO: Prevent Image from getting out of bounds
   }
   protected int zoom = 1000;
   public static final String PROP_ZOOM = "zoom";
@@ -87,6 +109,15 @@ public class GraphicObjectsPanel extends JPanel
    */
   public void setZoom(int zoom)
   {
+    if (outerBounds != null)
+    {
+      double minWidthZoom = 1000 * this.getWidth() / outerBounds.width;
+      double minHeightZoom = 1000 * this.getHeight() / outerBounds.height;
+      if (zoom < Math.min(minWidthZoom, minHeightZoom))
+      {
+        zoom = (int) Math.min(minWidthZoom, minHeightZoom);
+      }
+    }
     int oldZoom = this.zoom;
     this.zoom = zoom;
     this.repaint();
@@ -105,7 +136,7 @@ public class GraphicObjectsPanel extends JPanel
     super.setSize(d);
   }
 
-  private AffineTransform calculateTransform()
+  public AffineTransform getZoomTransform()
   {
     AffineTransform ownTransform = AffineTransform.getScaleInstance((double) zoom / 1000, (double) zoom / 1000);
 
@@ -119,16 +150,19 @@ public class GraphicObjectsPanel extends JPanel
       trans.concatenate(ownTransform);
       ownTransform = trans;
     }
-    else if (autoCenter)
+    else
     {
-      try
+      if (autoCenter)
       {
-        ownTransform.createInverse().transform(mp, mp);
-        this.setCenter(new Point((int) mp.getX(), (int) mp.getY()));
-      }
-      catch (NoninvertibleTransformException ex)
-      {
-        Logger.getLogger(GraphicObjectsPanel.class.getName()).log(Level.SEVERE, null, ex);
+        try
+        {
+          ownTransform.createInverse().transform(mp, mp);
+          this.setCenter(new Point((int) mp.getX(), (int) mp.getY()));
+        }
+        catch (NoninvertibleTransformException ex)
+        {
+          Logger.getLogger(GraphicObjectsPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
       }
     }
     return ownTransform;
@@ -142,7 +176,7 @@ public class GraphicObjectsPanel extends JPanel
     {
       Graphics2D gg = (Graphics2D) g;
       AffineTransform at = gg.getTransform();
-      at.concatenate(this.calculateTransform());
+      at.concatenate(this.getZoomTransform());
       gg.setTransform(at);
     }
 

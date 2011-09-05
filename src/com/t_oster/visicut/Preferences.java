@@ -7,6 +7,7 @@ package com.t_oster.visicut;
 import com.t_oster.visicut.model.LaserDevice;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.List;
 
 /**
  *
@@ -19,7 +20,7 @@ public class Preferences
   {
   }
   
-  protected LaserDevice[] laserDevices = null;
+  protected List<LaserDevice> laserDevices = null;
   public static final String PROP_LASERDEVICES = "laserDevices";
   protected LaserDevice defaultLaserDevice = null;
   public static final String PROP_DEFAULTLASERDEVICE = "defaultLaserDevice";
@@ -51,7 +52,7 @@ public class Preferences
    *
    * @return the value of laserDevices
    */
-  public LaserDevice[] getLaserDevices()
+  public List<LaserDevice> getLaserDevices()
   {
     return laserDevices;
   }
@@ -61,9 +62,9 @@ public class Preferences
    *
    * @param laserDevices new value of laserDevices
    */
-  public void setLaserDevices(LaserDevice[] laserDevices)
+  public void setLaserDevices(List<LaserDevice> laserDevices)
   {
-    LaserDevice[] oldLaserDevices = this.laserDevices;
+    List<LaserDevice> oldLaserDevices = this.laserDevices;
     this.laserDevices = laserDevices;
     propertyChangeSupport.firePropertyChange(PROP_LASERDEVICES, oldLaserDevices, laserDevices);
   }

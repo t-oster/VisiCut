@@ -633,6 +633,11 @@
       <Properties>
         <Property name="name" type="java.lang.String" value="jSpinner1" noResource="true"/>
       </Properties>
+      <BindingProperties>
+        <BindingProperty name="value" source="previewPanel" sourcePath="${zoom}" target="jSpinner1" targetPath="value" updateStrategy="0" immediately="false">
+          <Property name="name" type="java.lang.String" value="ZommSpinner"/>
+        </BindingProperty>
+      </BindingProperties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel8">
       <Properties>

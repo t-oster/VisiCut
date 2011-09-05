@@ -10,6 +10,7 @@ import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -225,6 +226,10 @@ public class PreviewPanel extends GraphicObjectsPanel
   public void setBackgroundImage(RenderedImage backgroundImage)
   {
     this.backgroundImage = backgroundImage;
+    if (this.backgroundImage != null)
+    {
+      this.setOuterBounds(new Dimension(backgroundImage.getWidth(), backgroundImage.getHeight()));
+    }
     this.repaint();
   }
   protected MaterialProfile material = new MaterialProfile();
@@ -243,6 +248,7 @@ public class PreviewPanel extends GraphicObjectsPanel
 
     public void propertyChange(PropertyChangeEvent pce)
     {
+      PreviewPanel.this.setOuterBounds(new Dimension((int) Util.mm2px(PreviewPanel.this.material.getWidth(),500),(int) Util.mm2px(PreviewPanel.this.material.getHeight(), 500)));
       PreviewPanel.this.repaint();
     }
   };
@@ -262,6 +268,7 @@ public class PreviewPanel extends GraphicObjectsPanel
     if (this.material != null)
     {
       this.material.addPropertyChangeListener(materialObserver);
+      this.setOuterBounds(new Dimension((int) Util.mm2px(this.material.getWidth(),500),(int) Util.mm2px(this.material.getHeight(), 500)));
     }
     this.renderBuffer.clear();
     this.repaint();
@@ -486,7 +493,7 @@ public class PreviewPanel extends GraphicObjectsPanel
       /**
        * The minimal distance of 2 grid lines in Pixel
        */
-      int minPixelDst = 80;
+      int minPixelDst = 40;
       AffineTransform trans = gg.getTransform();
       double minDrawDst = minPixelDst / trans.getScaleX();
       /**
@@ -496,7 +503,11 @@ public class PreviewPanel extends GraphicObjectsPanel
       double gridDst = 0.1;
       while (Util.mm2px(gridDst, 500) < minDrawDst)
       {
-        gridDst *= 10;
+        gridDst *= 2;
+        if (Util.mm2px(gridDst, 500) < minDrawDst)
+        {
+          gridDst *= 5;
+        }
       }
       gg.setTransform(new AffineTransform());//we dont want the line width to scale with zoom etc
       double mmx = 0;

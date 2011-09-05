@@ -50,7 +50,10 @@ public class MainView extends javax.swing.JFrame
   {
     initComponents();
     this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
-    this.captureImage();
+    if (this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null)
+    {
+      this.captureImage();
+    }
     String[] args = VisicutApp.getApplication().getProgramArguments();
     for (String s : args)
     {
@@ -407,6 +410,9 @@ public class MainView extends javax.swing.JFrame
 
         jSpinner1.setName("jSpinner1"); // NOI18N
 
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${zoom}"), jSpinner1, org.jdesktop.beansbinding.BeanProperty.create("value"), "ZommSpinner");
+        bindingGroup.addBinding(binding);
+
         jLabel8.setText(resourceMap.getString("jLabel8.text")); // NOI18N
         jLabel8.setName("jLabel8"); // NOI18N
 
@@ -659,16 +665,17 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   }
 
 private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
-  VisicutAboutBox box = new VisicutAboutBox(this);
-  box.setModal(true);
-  box.setVisible(true);
+    VisicutAboutBox box = new VisicutAboutBox(this);
+    box.setModal(true);
+    box.setVisible(true);
 }//GEN-LAST:event_aboutMenuItemActionPerformed
   private enum MouseAction
   {
 
     movingBackground,
     movingSet,
-    resizingSet,};
+    resizingSet,
+  };
   private Point lastMousePosition = null;
   private MouseAction currentAction = null;
   private Button currentButton = null;
@@ -686,9 +693,12 @@ private void previewPanelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRS
       currentButton = b;
       currentAction = MouseAction.resizingSet;
     }
-    else if (curRect.contains(lastMousePosition))
+    else
     {
-      currentAction = MouseAction.movingSet;
+      if (curRect.contains(lastMousePosition))
+      {
+        currentAction = MouseAction.movingSet;
+      }
     }
   }
 }//GEN-LAST:event_previewPanelMousePressed
@@ -702,35 +712,41 @@ private void previewPanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIR
     selectedSet.setTransform(Helper.getTransform(src, editRect));
     this.previewPanel.repaint();
   }
-  else if (this.selectedSet != null)
+  else
   {
-    Rectangle2D e = Helper.transform(editRect, this.previewPanel.getLastDrawnTransform());
-    if (e.contains(evt.getPoint()))
+    if (this.selectedSet != null)
     {
-      //let the set stay selected
+      Rectangle2D e = Helper.transform(editRect, this.previewPanel.getLastDrawnTransform());
+      if (e.contains(evt.getPoint()))
+      {
+        //let the set stay selected
+      }
+      else
+      {
+        selectedSet = null;
+        editRect = null;
+        this.previewPanel.setEditRectangle(null);
+      }
     }
     else
     {
-      selectedSet = null;
-      editRect = null;
-      this.previewPanel.setEditRectangle(null);
-    }
-  }
-  else if (this.visicutModel1.getGraphicObjects() != null && this.visicutModel1.getMappings().size() > 0)
-  {
-    Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
-    Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
-    if (e.contains(evt.getPoint()))
-    {
-      selectedSet = this.visicutModel1.getGraphicObjects();
-      editRect = new EditRectangle(bb);
-      this.previewPanel.setEditRectangle(editRect);
-    }
-    else
-    {
-      selectedSet = null;
-      editRect = null;
-      this.previewPanel.setEditRectangle(null);
+      if (this.visicutModel1.getGraphicObjects() != null && this.visicutModel1.getMappings().size() > 0)
+      {
+        Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
+        Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
+        if (e.contains(evt.getPoint()))
+        {
+          selectedSet = this.visicutModel1.getGraphicObjects();
+          editRect = new EditRectangle(bb);
+          this.previewPanel.setEditRectangle(editRect);
+        }
+        else
+        {
+          selectedSet = null;
+          editRect = null;
+          this.previewPanel.setEditRectangle(null);
+        }
+      }
     }
   }
   lastMousePosition = null;
@@ -841,15 +857,15 @@ private void previewPanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRS
     lastMousePosition = evt.getPoint();
   }
 }//GEN-LAST:event_previewPanelMouseDragged
+  private int jobnumber = 0;
 
-private int jobnumber = 0;
   private void executeJob()
   {
     try
     {
       jobnumber++;
-      this.visicutModel1.sendJob("VisiCut "+jobnumber);
-      JOptionPane.showMessageDialog(this, "Job was sent as 'VisiCut "+jobnumber+"'\nPlease press START on the Lasercutter:\n" + this.visicutModel1.getSelectedLaserDevice().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
+      this.visicutModel1.sendJob("VisiCut " + jobnumber);
+      JOptionPane.showMessageDialog(this, "Job was sent as 'VisiCut " + jobnumber + "'\nPlease press START on the Lasercutter:\n" + this.visicutModel1.getSelectedLaserDevice().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
     }
     catch (Exception ex)
     {
@@ -886,37 +902,17 @@ private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//G
   if (ms != null && !ms.equals(this.visicutModel1.getMappings()) && this.visicutModel1.getMaterial() != null)
   {
     MaterialProfile m = this.visicutModel1.getMaterial();
-    MappingSet supportedSubset = new MappingSet();
-    supportedSubset.setName(ms.getName() + "*");
-    String mappings = "";
     //Check if the current Material supports all Mappings in this set
     for (Mapping map : ms)
     {
       if (m.getLaserProfile(map.getProfileName()) == null)
       {
-        mappings += map.getProfileName() + "\n";
-      }
-      else
-      {
-        supportedSubset.add(map);
-      }
-    }
-    if (!"".equals(mappings))//there are unsupported Mappings
-    {
-      if (JOptionPane.showConfirmDialog(this, "The Mapping you selected contains the following Profiles: \n" + mappings
-        + "which are not supported by the current Material. If you proceed all Items matching to these Profiles will be unmapped.", "Warning", JOptionPane.OK_CANCEL_OPTION)
-        == JOptionPane.CANCEL_OPTION)
-      {
+        JOptionPane.showConfirmDialog(this, "The Mapping you selected contains is not supported by the current Material.", "Error", JOptionPane.ERROR_MESSAGE);
         this.mappingComboBox.setSelectedItem(this.visicutModel1.getMappings());
         return;
       }
-      this.mappingManager1.getMappingSets().add(supportedSubset);
-      this.visicutModel1.setMappings(supportedSubset);
     }
-    else
-    {
       this.visicutModel1.setMappings(ms);
-    }
   }
 }//GEN-LAST:event_mappingComboBoxActionPerformed
 
@@ -980,7 +976,6 @@ private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 }//GEN-LAST:event_newMenuItemActionPerformed
 
 private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calibrateCameraMenuItemActionPerformed
-
 }//GEN-LAST:event_calibrateCameraMenuItemActionPerformed
 
 private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobMenuItemActionPerformed
@@ -1004,8 +999,8 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
             BufferedImage back = ImageIO.read(src);
             if (back != null && MainView.this.visicutModel1.getBackgroundImage() == null)
             {//First Time Image is Captured => resize View
-              MainView.this.previewPanel.setCenter(new Point(back.getWidth()/2, back.getHeight()/2));
-              MainView.this.previewPanel.setZoom(1000*MainView.this.previewPanel.getWidth()/back.getWidth());
+              MainView.this.previewPanel.setCenter(new Point(back.getWidth() / 2, back.getHeight() / 2));
+              MainView.this.previewPanel.setZoom(1000 * MainView.this.previewPanel.getWidth() / back.getWidth());
             }
             MainView.this.visicutModel1.setBackgroundImage(back);
           }
