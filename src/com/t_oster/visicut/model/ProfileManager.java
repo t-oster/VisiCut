@@ -6,7 +6,9 @@ package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.drivers.EpilogCutter;
 import java.awt.Color;
+import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
@@ -17,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -49,6 +52,17 @@ public class ProfileManager
     //Finnpappe
     MaterialProfile profile = new MaterialProfile();
     profile.setName("Finnpappe");
+    profile.setCamImageCalibration(new AffineTransform(0.04572009144018288,0.0,0.0,0.043691786621507196,53.0,115.0));
+    try
+    {
+      profile.setCamImageURL(new File(".VisiCut/materials/Finnpappe/background.jpg").toURI().toURL().toString());
+    }
+    catch (MalformedURLException ex)
+    {
+      Logger.getLogger(ProfileManager.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    profile.setLaserCutter(new EpilogCutter("137.226.56.228"));
+    profile.getLaserCutter().setName("Epilog ZING @ Fablab RWTH Aachen");
     profile.setThumbnailPath(new File(".VisiCut/materials/Finnpappe/profile.png").getAbsolutePath());
     profile.setDescription("A light paper based material.");
     profile.setColor(new Color(209, 163, 117));
