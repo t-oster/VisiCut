@@ -46,8 +46,8 @@ public class Mapping extends Tuple<FilterSet,String>
     String fs = "";
     for (MappingFilter f:this.getA())
     {
-      fs+="/"+f.toString();
+      fs+= fs.equals("") ? f.toString() : ","+f.toString();
     }
-    return fs+"=>"+this.getB();
+    return fs+"->"+this.getB();
   }
 }

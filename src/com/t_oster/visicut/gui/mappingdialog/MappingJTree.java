@@ -29,7 +29,6 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
 {
 
   protected FilterSet selectedFilterSet = null;
-  private static final String MAPPINGS = "Mappings";
   public static final String PROP_SELECTEDFILTERSET = "selectedFilterSet";
 
   /**
@@ -78,18 +77,6 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
       }
     }
   }
-  protected Mapping selectedMapping = null;
-  public static final String PROP_SELECTEDMAPPING = "selectedMapping";
-
-  /**
-   * Get the value of selectedMapping
-   *
-   * @return the value of selectedMapping
-   */
-  public Mapping getSelectedMapping()
-  {
-    return selectedMapping;
-  }
 
   public void refreshTree()
   {
@@ -99,54 +86,14 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
       }), this.getRoot());
   }
 
-  /**
-   * Set the value of selectedMapping
-   *
-   * @param selectedMapping new value of selectedMapping
-   */
-  public void setSelectedMapping(Mapping selectedMapping)
-  {
-    Mapping oldSelectedMapping = this.selectedMapping;
-    this.selectedMapping = selectedMapping;
-    firePropertyChange(PROP_SELECTEDMAPPING, oldSelectedMapping, selectedMapping);
-    if (Util.differ(oldSelectedMapping, selectedMapping))
-    {
-      if (selectedMapping == null && this.getSelectionModel().getSelectionPath() != null && this.getSelectionModel().getSelectionPath().getLastPathComponent() instanceof Mapping)
-      {
-        this.getSelectionModel().clearSelection();
-      }
-      else if (selectedMapping != null && (this.getSelectionModel().getSelectionPath() == null
-        || !this.getSelectionModel().getSelectionPath().getLastPathComponent().equals(selectedMapping)))
-      {
-        //this.refreshTree();
-        TreePath p = new TreePath(new Object[]
-          {
-            this.getRoot(), MAPPINGS, selectedMapping
-          });
-        this.getSelectionModel().setSelectionPath(p);
-      }
-
-    }
-    this.repaint();
-  }
-
   public void valueChanged(TreeSelectionEvent evt)
   {
     if (evt.getNewLeadSelectionPath() != null && evt.getNewLeadSelectionPath().getPathCount() >= 1)
     {
       Object selected = evt.getNewLeadSelectionPath().getLastPathComponent();
-      if (selected != null)
+      if (selected != null && selected instanceof FilterSet)
       {
-        if (selected instanceof FilterSet)
-        {
-          this.setSelectedMapping(null);
-          this.setSelectedFilterSet((FilterSet) selected);
-        }
-        else if (selected instanceof Mapping)
-        {
-          this.setSelectedFilterSet(null);
-          this.setSelectedMapping((Mapping) selected);
-        }
+        this.setSelectedFilterSet((FilterSet) selected);
       }
     }
   }
@@ -289,25 +236,17 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
         for (String attribute : g.getAttributes())
         {
           AttributeNode node = new AttributeNode(fs, attribute);
-          if (!result.contains(node) && node.getChildren().size() > 0)
+          if (!result.contains(node) && node.getChildren().size() > 1)
           {
             result.add(node);
           }
         }
-      }
-      if (fs.size() == 0)//RootElement
-      {
-        result.add(MAPPINGS);
       }
       return result;
     }
     else if (o instanceof AttributeNode)
     {
       return ((AttributeNode) o).getChildren();
-    }
-    else if (MAPPINGS.equals(o))
-    {
-      return this.getMappings() == null ? new LinkedList() : this.getMappings();
     }
     else
     {
@@ -385,5 +324,6 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
   public void setMappings(List<Mapping> mappings)
   {
     this.mappings = mappings;
+    this.refreshTree();
   }
 }

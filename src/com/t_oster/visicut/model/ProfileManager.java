@@ -6,9 +6,7 @@ package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
 import com.t_oster.liblasercut.LaserProperty;
-import com.t_oster.liblasercut.drivers.EpilogCutter;
 import java.awt.Color;
-import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
@@ -19,7 +17,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -90,7 +87,7 @@ public class ProfileManager
     rp.setName("Floyd Steinberg");
     rp.setColor(new Color(150,72,0));
     rp.setDescription("The Floyd Steinberg Algorithm is good for Fotos.");
-    rp.setPreviewThumbnail(new File(".VisiCut/materials/Plexiglass/floydsteinberg.png"));
+    rp.setPreviewThumbnail(new File(".VisiCut/materials/Finnpappe/floydsteinberg.png"));
     rp.setDitherAlgorithm(DitherAlgorithm.FLOYD_STEINBERG);
     rp.setLaserProperties(new LaserProperty[]
       {
@@ -101,7 +98,7 @@ public class ProfileManager
     rp.setName("Ordered");
     rp.setColor(new Color(150,72,0));
     rp.setDescription("The Ordered Algorithm adds a Pattern to the image");
-    rp.setPreviewThumbnail(new File(".VisiCut/materials/Plexiglass/rasterordered.png"));
+    rp.setPreviewThumbnail(new File(".VisiCut/materials/Finnpappe/ordered.png"));
     rp.setDitherAlgorithm(DitherAlgorithm.ORDERED);
     rp.setLaserProperties(new LaserProperty[]
       {
@@ -112,7 +109,7 @@ public class ProfileManager
     rp.setColor(new Color(150,72,0));
     rp.setName("Average");
     rp.setDescription("The Average Algorithm makes a pixel black iff its darker than the average pixel");
-    rp.setPreviewThumbnail(new File(".VisiCut/materials/Plexiglass/rasterordered.png"));
+    rp.setPreviewThumbnail(new File(".VisiCut/materials/Finnpappe/average.png"));
     rp.setDitherAlgorithm(DitherAlgorithm.AVERAGE);
     rp.setLaserProperties(new LaserProperty[]
       {

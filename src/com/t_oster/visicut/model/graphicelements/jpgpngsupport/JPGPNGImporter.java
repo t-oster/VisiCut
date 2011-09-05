@@ -7,6 +7,7 @@ package com.t_oster.visicut.model.graphicelements.jpgpngsupport;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.Importer;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -24,6 +25,8 @@ public class JPGPNGImporter implements Importer
     try
     {
       GraphicSet result = new GraphicSet();
+      //TODO: Get Real Resolution
+      result.setTransform(AffineTransform.getScaleInstance(500/72, 500/72));
       result.add(new JPGPNGImage(ImageIO.read(inputFile)));
       return result;
     }
