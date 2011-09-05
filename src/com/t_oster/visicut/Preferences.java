@@ -5,7 +5,6 @@
 package com.t_oster.visicut;
 
 import com.t_oster.liblasercut.LaserCutter;
-import com.t_oster.liblasercut.drivers.EpilogCutter;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

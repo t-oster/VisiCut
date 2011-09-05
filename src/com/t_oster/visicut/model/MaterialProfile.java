@@ -1,9 +1,10 @@
 package com.t_oster.visicut.model;
 
+import com.t_oster.liblasercut.LaserCutter;
 import java.awt.Color;
+import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.Arrays;
 
 /**
  *
@@ -11,6 +12,70 @@ import java.util.Arrays;
  */
 public class MaterialProfile
 {
+
+  protected LaserCutter laserCutter = null;
+
+  /**
+   * Get the value of laserCutter
+   *
+   * @return the value of laserCutter
+   */
+  public LaserCutter getLaserCutter()
+  {
+    return laserCutter;
+  }
+
+  /**
+   * Set the value of laserCutter
+   *
+   * @param laserCutter new value of laserCutter
+   */
+  public void setLaserCutter(LaserCutter laserCutter)
+  {
+    this.laserCutter = laserCutter;
+  }
+  protected String camImageURL = null;
+
+  /**
+   * Get the value of camImageURL
+   *
+   * @return the value of camImageURL
+   */
+  public String getCamImageURL()
+  {
+    return camImageURL;
+  }
+
+  /**
+   * Set the value of camImageURL
+   *
+   * @param camImageURL new value of camImageURL
+   */
+  public void setCamImageURL(String camImageURL)
+  {
+    this.camImageURL = camImageURL;
+  }
+  protected AffineTransform camImageCalibration = null;
+
+  /**
+   * Get the value of camImageCalibration
+   *
+   * @return the value of camImageCalibration
+   */
+  public AffineTransform getCamImageCalibration()
+  {
+    return camImageCalibration;
+  }
+
+  /**
+   * Set the value of camImageCalibration
+   *
+   * @param camImageCalibration new value of camImageCalibration
+   */
+  public void setCamImageCalibration(AffineTransform camImageCalibration)
+  {
+    this.camImageCalibration = camImageCalibration;
+  }
 
   protected String description = null;
 

@@ -617,7 +617,7 @@ public class MainView extends javax.swing.JFrame
     }
     catch (Exception e)
     {
-      JOptionPane.showMessageDialog(this, "Beim Öffnen von '" + file.getName() + "' ist ein Fehler Aufgetreten:\n" + e.getLocalizedMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, "Error while opening '" + file.getName() + "':\n" + e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
   }
   
@@ -846,11 +846,11 @@ private void previewPanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRS
     try
     {
       this.visicutModel1.sendJob();
-      JOptionPane.showMessageDialog(null, "Please press START on the Lasercutter");
+      JOptionPane.showMessageDialog(this, "Please press START on the Lasercutter:\n"+this.visicutModel1.getPreferences().getLaserCutter().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
     }
     catch (Exception ex)
     {
-      JOptionPane.showMessageDialog(null, "Error: " + ex.getLocalizedMessage());
+      JOptionPane.showMessageDialog(this, "Error: " + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
   }
   

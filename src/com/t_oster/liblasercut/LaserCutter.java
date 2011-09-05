@@ -5,7 +5,6 @@
 package com.t_oster.liblasercut;
 
 import java.util.List;
-import java.util.LinkedList;
 
 /**
  *
@@ -39,4 +38,22 @@ public abstract class LaserCutter
    * @return 
    */
   public abstract double getBedHeight();
+  
+  protected String name = "Unnamed Lasercutter";
+  /**
+   * Returns the Name of the Lasercutter instance
+   * @return 
+   */
+  public String getName()
+  {
+    return name;
+  }
+  
+  /**
+   * Sets the name of this Lasercutter Instance
+   */
+  public void setName(String name)
+  {
+    this.name = name;
+  }
 }

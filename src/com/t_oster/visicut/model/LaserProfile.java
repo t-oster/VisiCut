@@ -124,7 +124,7 @@ public abstract class LaserProfile
    */
   public void setPreviewThumbnail(File previewThumbnail)
   {
-    this.thumbnailPath = previewThumbnail.getAbsolutePath();
+    this.thumbnailPath = previewThumbnail.getPath();
   }
   protected String name = "broad line";
 

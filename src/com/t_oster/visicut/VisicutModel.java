@@ -50,7 +50,6 @@ public class VisicutModel
 {
 
   public static final FileFilter PLFFilter = new ExtensionFilter(".plf", "VisiCut Portable Laser Format (*.plf)");
-  
   protected BufferedImage backgroundImage = null;
   public static final String PROP_BACKGROUNDIMAGE = "backgroundImage";
 
@@ -303,9 +302,8 @@ public class VisicutModel
     tmp.delete();
   }
   private File sourceFile = null;
-
   private GraphicFileImporter graphicFileImporter = null;
-  
+
   public GraphicFileImporter getGraphicFileImporter()
   {
     if (graphicFileImporter == null)
@@ -314,7 +312,7 @@ public class VisicutModel
     }
     return graphicFileImporter;
   }
-  
+
   public void loadGraphicFile(File f)
   {
     try
@@ -351,6 +349,21 @@ public class VisicutModel
     MaterialProfile oldMaterial = this.material;
     this.material = material;
     propertyChangeSupport.firePropertyChange(PROP_MATERIAL, oldMaterial, material);
+    if (this.material != null)
+    {
+      if (this.material.getLaserCutter() != null)
+      {
+        this.preferences.setLaserCutter(this.material.getLaserCutter());
+      }
+      if (this.material.getCamImageURL() != null)
+      {
+        this.preferences.setBackgroundImageURL(this.material.getCamImageURL());
+      }
+      if (this.material.getCamImageCalibration() != null)
+      {
+        this.preferences.setCamCalibration(this.material.getCamImageCalibration());
+      }
+    }
   }
   protected MappingSet mappings = null;
   public static final String PROP_MAPPINGS = "mappings";

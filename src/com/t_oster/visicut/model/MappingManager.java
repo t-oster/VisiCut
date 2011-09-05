@@ -37,12 +37,13 @@ public class MappingManager
     if (mappingSets.isEmpty())
     {
       generateDefault();
+      saveMappings();
     }
   }
   
   private void loadFromDirectory()
   {
-    File dir = new File("mappings");
+    File dir = new File(".VisiCut/mappings");
     if (dir.isDirectory())
     {
       for (File f:dir.listFiles())
@@ -155,6 +156,29 @@ public class MappingManager
     XMLDecoder decoder = new XMLDecoder(in);
     MappingSet p = (MappingSet) decoder.readObject();
     return p;
+  }
+
+  private void saveMappings()
+  {
+    if (new File(".VisiCut").isDirectory())
+    {
+      File dir = new File(".VisiCut/mappings");
+      if (!dir.exists())
+      {
+        dir.mkdir();
+      }
+      for (MappingSet s:this.mappingSets)
+      {
+        try
+        {
+          this.saveMappingSet(s, new File(dir, s.getName()+".xml"));
+        }
+        catch (FileNotFoundException ex)
+        {
+          Logger.getLogger(MappingManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+    }
   }
 
 }

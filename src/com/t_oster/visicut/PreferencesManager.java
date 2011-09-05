@@ -39,7 +39,7 @@ public final class PreferencesManager
   {
     try
     {
-      preferences = this.loadPreferences(new File("settings.xml"));
+      preferences = this.loadPreferences(new File(".VisiCut/settings.xml"));
     }
     catch (FileNotFoundException ex)
     {
@@ -59,6 +59,7 @@ public final class PreferencesManager
   {
     preferences = new Preferences();
     preferences.laserCutter = new EpilogCutter("137.226.56.228");
+    preferences.laserCutter.setName("Epilog ZING @ Fablab Aachen");
     preferences.availableImporters = new String[]
     {
       "com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter",
@@ -66,7 +67,7 @@ public final class PreferencesManager
     };
     try
     {
-      preferences.backgroundImageURL = new File("test/files/lasercutter.jpg").toURI().toURL().toString();
+      preferences.backgroundImageURL = new File(".VisiCut/defaultbackground.jpg").toURI().toURL().toString();
     }
     catch (MalformedURLException ex)
     {
@@ -82,7 +83,10 @@ public final class PreferencesManager
 
   public void savePreferences() throws FileNotFoundException
   {
-    this.savePreferences(preferences, new File("settings.xml"));
+    if (new File(".VisiCut").isDirectory())
+    {
+      this.savePreferences(preferences, new File(".VisiCut/settings.xml"));
+    }
   }
 
   public void savePreferences(Preferences pref, File f) throws FileNotFoundException
