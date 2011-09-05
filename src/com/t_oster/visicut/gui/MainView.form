@@ -126,15 +126,6 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="executeJobMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="saveMappingMenuItem">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="saveMappingMenuItem.text"/>
-                <Property name="name" type="java.lang.String" value="saveMappingMenuItem" noResource="true"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveMappingMenuItemActionPerformed"/>
-              </Events>
-            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="editMappingMenuItem">
               <Properties>
                 <Property name="text" type="java.lang.String" resourceKey="editMappingMenuItem.text"/>

@@ -122,7 +122,6 @@ public class MainView extends javax.swing.JFrame
     editMenu = new javax.swing.JMenu();
     calibrateCameraMenuItem = new javax.swing.JMenuItem();
     executeJobMenuItem = new javax.swing.JMenuItem();
-    saveMappingMenuItem = new javax.swing.JMenuItem();
     editMappingMenuItem = new javax.swing.JMenuItem();
     viewMenu = new javax.swing.JMenu();
     showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
@@ -279,7 +278,7 @@ public class MainView extends javax.swing.JFrame
               .addComponent(jLabel7)))
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
             .addComponent(mappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
             .addComponent(editMappingButton))
           .addComponent(jLabel1)
           .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -382,7 +381,7 @@ public class MainView extends javax.swing.JFrame
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 621, Short.MAX_VALUE)
+      .addGap(0, 620, Short.MAX_VALUE)
       .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel1Layout.createSequentialGroup()
           .addContainerGap()
@@ -491,15 +490,6 @@ public class MainView extends javax.swing.JFrame
       }
     });
     editMenu.add(executeJobMenuItem);
-
-    saveMappingMenuItem.setText(resourceMap.getString("saveMappingMenuItem.text")); // NOI18N
-    saveMappingMenuItem.setName("saveMappingMenuItem"); // NOI18N
-    saveMappingMenuItem.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        saveMappingMenuItemActionPerformed(evt);
-      }
-    });
-    editMenu.add(saveMappingMenuItem);
 
     editMappingMenuItem.setText(resourceMap.getString("editMappingMenuItem.text")); // NOI18N
     editMappingMenuItem.setName("editMappingMenuItem"); // NOI18N
@@ -648,6 +638,7 @@ private void editMapping()
   md.setGraphicElements(this.visicutModel1.getGraphicObjects());
   md.setMappings(this.visicutModel1.getMappings());
   md.setMaterial(this.visicutModel1.getMaterial());
+  md.setMappingManager(this.mappingManager1);
   md.setVisible(true);
   this.visicutModel1.setMappings(md.getMappings());
   this.previewPanel.repaint();
@@ -1025,40 +1016,6 @@ private void captureImageButtonActionPerformed(java.awt.event.ActionEvent evt) {
   captureImage();
 }//GEN-LAST:event_captureImageButtonActionPerformed
   
-private void saveMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMappingMenuItemActionPerformed
-  FileFilter bak = saveFileChooser.getFileFilter();
-  saveFileChooser.setFileFilter(new ExtensionFilter(".xml", "Mapping-XML (*.xml)"));
-  //TODO: Set to mappings directory
-  int returnVal = saveFileChooser.showSaveDialog(this);
-  if (returnVal == JFileChooser.APPROVE_OPTION)
-  {
-    File file = saveFileChooser.getSelectedFile();
-    if (!file.getName().endsWith(".xml"))
-    {
-      file = new File(file.getAbsolutePath() + ".xml");
-    }
-    try
-    {
-      MappingSet m = this.visicutModel1.getMappings();
-      String name = file.getName();
-      name = name.substring(0,name.length()-4);
-      m.setName(name);
-      this.mappingManager1.saveMappingSet(this.visicutModel1.getMappings(), file);
-      
-    }
-    catch (Exception ex)
-    {
-      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-      JOptionPane.showMessageDialog(this, "Error saving File: " + ex.getLocalizedMessage());
-    }
-  }
-  else
-  {
-    System.out.println("File access cancelled by user.");
-  }
-  saveFileChooser.setFileFilter(bak);
-}//GEN-LAST:event_saveMappingMenuItemActionPerformed
-
 private void editMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMappingMenuItemActionPerformed
 this.editMapping();
 }//GEN-LAST:event_editMappingMenuItemActionPerformed
@@ -1129,7 +1086,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   private javax.swing.JMenuItem saveAsMenuItem;
   private javax.swing.JButton saveButton;
   private javax.swing.JFileChooser saveFileChooser;
-  private javax.swing.JMenuItem saveMappingMenuItem;
   private javax.swing.JMenuItem saveMenuItem;
   private javax.swing.JCheckBoxMenuItem showGridMenuItem;
   private javax.swing.JMenu viewMenu;
