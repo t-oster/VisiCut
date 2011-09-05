@@ -12,7 +12,7 @@
         <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="visicutModel1PropertyChange"/>
       </Events>
     </Component>
-    <Component class="com.t_oster.visicut.model.ProfileManager" name="profileManager1">
+    <Component class="com.t_oster.visicut.managers.ProfileManager" name="profileManager1">
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_allCodePost" type="java.lang.String" value="this.visicutModel1.setMaterial(this.profileManager1.getMaterials().get(0));"/>
       </AuxValues>
@@ -27,7 +27,7 @@
         <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="filesDropSupport1PropertyChange"/>
       </Events>
     </Component>
-    <Component class="com.t_oster.visicut.model.MappingManager" name="mappingManager1">
+    <Component class="com.t_oster.visicut.managers.MappingManager" name="mappingManager1">
     </Component>
     <Component class="javax.swing.JFileChooser" name="saveFileChooser">
       <Properties>
@@ -234,7 +234,18 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
-              <Component id="jPanel1" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Component id="togglePreviewButton" min="-2" pref="70" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="toggleCutLinesButton" min="-2" pref="80" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
+                      <Component id="jSpinner1" min="-2" pref="80" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="jPanel1" max="32767" attributes="0"/>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
                   <Group type="102" attributes="0">
@@ -254,7 +265,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="292" max="32767" attributes="0"/>
+              <EmptySpace pref="157" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="executeJobButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="saveButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -262,7 +273,16 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
-          <Component id="jPanel1" alignment="0" max="32767" attributes="0"/>
+          <Group type="102" alignment="0" attributes="0">
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="togglePreviewButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleCutLinesButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jSpinner1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jPanel1" max="32767" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -275,9 +295,10 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                      <Component id="laserCutterComboBox" alignment="0" max="32767" attributes="1"/>
                       <Component id="drawGridCheckbox" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -301,15 +322,21 @@
                       </Group>
                       <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="materialComboBox" alignment="0" max="32767" attributes="1"/>
-                      <Component id="mappingComboBox" alignment="0" max="32767" attributes="1"/>
+                      <Component id="mappingComboBox" alignment="0" min="-2" max="-2" attributes="1"/>
+                      <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
+              <Group type="102" alignment="1" attributes="0">
+                  <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
+                  <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="laserCutterComboBox" pref="71" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="materialComboBox" min="-2" max="-2" attributes="0"/>
@@ -335,7 +362,7 @@
                   <Component id="mappingComboBox" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                   <Component id="drawGridCheckbox" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -420,7 +447,7 @@
             </BindingProperty>
           </BindingProperties>
         </Component>
-        <Component class="com.t_oster.visicut.gui.beans.MaterialComboBox" name="materialComboBox">
+        <Component class="com.t_oster.visicut.gui.beans.ImageComboBox" name="materialComboBox">
           <Properties>
             <Property name="name" type="java.lang.String" value="materialComboBox" noResource="true"/>
           </Properties>
@@ -457,6 +484,25 @@
             </BindingProperty>
           </BindingProperties>
         </Component>
+        <Component class="javax.swing.JLabel" name="jLabel9">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jLabel9.text"/>
+            <Property name="name" type="java.lang.String" value="jLabel9" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="com.t_oster.visicut.gui.beans.ImageComboBox" name="laserCutterComboBox">
+          <Properties>
+            <Property name="name" type="java.lang.String" value="laserCutterComboBox" noResource="true"/>
+          </Properties>
+          <BindingProperties>
+            <BindingProperty name="elements" source="visicutModel1" sourcePath="${preferences.laserDevices}" target="laserCutterComboBox" targetPath="elements" updateStrategy="0" immediately="false">
+              <Property name="name" type="java.lang.String" value="LaserDevicesFromModel"/>
+            </BindingProperty>
+            <BindingProperty name="selectedItem" source="visicutModel1" sourcePath="${selectedLaserDevice}" target="laserCutterComboBox" targetPath="selectedItem" updateStrategy="0" immediately="false">
+              <Property name="name" type="java.lang.String" value="LaserDeviceFromCBToModel"/>
+            </BindingProperty>
+          </BindingProperties>
+        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JPanel" name="jPanel1">
@@ -475,114 +521,64 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jLayeredPane1" pref="603" max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
+                  <Component id="previewPanel" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="jLayeredPane1" alignment="0" pref="620" max="32767" attributes="0"/>
+              <Group type="102" alignment="1" attributes="0">
+                  <Component id="previewPanel" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Container class="javax.swing.JLayeredPane" name="jLayeredPane1">
+        <Container class="com.t_oster.visicut.gui.beans.PreviewPanel" name="previewPanel">
           <Properties>
-            <Property name="name" type="java.lang.String" value="jLayeredPane1" noResource="true"/>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="null"/>
+            </Property>
+            <Property name="autoCenter" type="boolean" value="true"/>
+            <Property name="name" type="java.lang.String" value="previewPanel" noResource="true"/>
           </Properties>
+          <BindingProperties>
+            <BindingProperty name="backgroundImage" source="visicutModel1" sourcePath="${backgroundImage}" target="previewPanel" targetPath="backgroundImage" updateStrategy="1" immediately="false">
+              <Property name="name" type="java.lang.String" value="BackImageFromModel"/>
+            </BindingProperty>
+            <BindingProperty name="graphicObjects" source="visicutModel1" sourcePath="${graphicObjects}" target="previewPanel" targetPath="graphicObjects" updateStrategy="1" immediately="false">
+              <Property name="name" type="java.lang.String" value="ModelToPreviewObjects"/>
+            </BindingProperty>
+            <BindingProperty name="mappings" source="visicutModel1" sourcePath="${mappings}" target="previewPanel" targetPath="mappings" updateStrategy="1" immediately="false">
+              <Property name="name" type="java.lang.String" value="MappingsFromModelToPreviewPanel"/>
+            </BindingProperty>
+            <BindingProperty name="material" source="visicutModel1" sourcePath="${material}" target="previewPanel" targetPath="material" updateStrategy="0" immediately="false"/>
+            <BindingProperty name="previewTransformation" source="visicutModel1" sourcePath="${preferences.camCalibration}" target="previewPanel" targetPath="previewTransformation" updateStrategy="1" immediately="false">
+              <Property name="name" type="java.lang.String" value="TransformFromModel"/>
+            </BindingProperty>
+          </BindingProperties>
+          <Events>
+            <EventHandler event="mouseWheelMoved" listener="java.awt.event.MouseWheelListener" parameters="java.awt.event.MouseWheelEvent" handler="previewPanelMouseWheelMoved"/>
+            <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="previewPanelMousePressed"/>
+            <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="previewPanelMouseReleased"/>
+            <EventHandler event="mouseDragged" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="previewPanelMouseDragged"/>
+          </Events>
 
-          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout"/>
-          <SubComponents>
-            <Container class="com.t_oster.visicut.gui.beans.PreviewPanel" name="previewPanel">
-              <Properties>
-                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                  <Border info="null"/>
-                </Property>
-                <Property name="autoCenter" type="boolean" value="true"/>
-                <Property name="name" type="java.lang.String" value="previewPanel" noResource="true"/>
-              </Properties>
-              <BindingProperties>
-                <BindingProperty name="backgroundImage" source="visicutModel1" sourcePath="${backgroundImage}" target="previewPanel" targetPath="backgroundImage" updateStrategy="1" immediately="false">
-                  <Property name="name" type="java.lang.String" value="BackImageFromModel"/>
-                </BindingProperty>
-                <BindingProperty name="graphicObjects" source="visicutModel1" sourcePath="${graphicObjects}" target="previewPanel" targetPath="graphicObjects" updateStrategy="1" immediately="false">
-                  <Property name="name" type="java.lang.String" value="ModelToPreviewObjects"/>
-                </BindingProperty>
-                <BindingProperty name="mappings" source="visicutModel1" sourcePath="${mappings}" target="previewPanel" targetPath="mappings" updateStrategy="1" immediately="false">
-                  <Property name="name" type="java.lang.String" value="MappingsFromModelToPreviewPanel"/>
-                </BindingProperty>
-                <BindingProperty name="material" source="visicutModel1" sourcePath="${material}" target="previewPanel" targetPath="material" updateStrategy="0" immediately="false"/>
-                <BindingProperty name="previewTransformation" source="visicutModel1" sourcePath="${preferences.camCalibration}" target="previewPanel" targetPath="previewTransformation" updateStrategy="1" immediately="false">
-                  <Property name="name" type="java.lang.String" value="TransformFromModel"/>
-                </BindingProperty>
-              </BindingProperties>
-              <Events>
-                <EventHandler event="mouseWheelMoved" listener="java.awt.event.MouseWheelListener" parameters="java.awt.event.MouseWheelEvent" handler="previewPanelMouseWheelMoved"/>
-                <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="previewPanelMousePressed"/>
-                <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="previewPanelMouseReleased"/>
-                <EventHandler event="mouseDragged" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="previewPanelMouseDragged"/>
-              </Events>
-              <Constraints>
-                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout$JLayeredPaneConstraintsDescription">
-                  <JLayeredPaneConstraints x="0" y="40" width="600" height="580" layer="0" position="-1"/>
-                </Constraint>
-              </Constraints>
-
-              <Layout>
-                <DimensionLayout dim="0">
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="600" max="32767" attributes="0"/>
-                  </Group>
-                </DimensionLayout>
-                <DimensionLayout dim="1">
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="580" max="32767" attributes="0"/>
-                  </Group>
-                </DimensionLayout>
-              </Layout>
-            </Container>
-            <Component class="javax.swing.JToggleButton" name="togglePreviewButton">
-              <Properties>
-                <Property name="selected" type="boolean" value="true"/>
-                <Property name="text" type="java.lang.String" resourceKey="togglePreviewButton.text"/>
-                <Property name="enabled" type="boolean" value="false"/>
-                <Property name="name" type="java.lang.String" value="togglePreviewButton" noResource="true"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="togglePreviewButtonActionPerformed"/>
-              </Events>
-              <Constraints>
-                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout$JLayeredPaneConstraintsDescription">
-                  <JLayeredPaneConstraints x="0" y="0" width="70" height="-1" layer="100" position="-1"/>
-                </Constraint>
-              </Constraints>
-            </Component>
-            <Component class="javax.swing.JToggleButton" name="toggleCutLinesButton">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="toggleCutLinesButton.text"/>
-                <Property name="name" type="java.lang.String" value="toggleCutLinesButton" noResource="true"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="toggleCutLinesButtonActionPerformed"/>
-              </Events>
-              <Constraints>
-                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout$JLayeredPaneConstraintsDescription">
-                  <JLayeredPaneConstraints x="70" y="0" width="80" height="-1" layer="100" position="-1"/>
-                </Constraint>
-              </Constraints>
-            </Component>
-            <Component class="javax.swing.JSpinner" name="jSpinner1">
-              <Properties>
-                <Property name="name" type="java.lang.String" value="jSpinner1" noResource="true"/>
-              </Properties>
-              <Constraints>
-                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout$JLayeredPaneConstraintsDescription">
-                  <JLayeredPaneConstraints x="160" y="0" width="80" height="-1" layer="0" position="-1"/>
-                </Constraint>
-              </Constraints>
-            </Component>
-          </SubComponents>
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="600" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="599" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
         </Container>
       </SubComponents>
     </Container>
@@ -612,6 +608,37 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="captureImageButtonActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JToggleButton" name="togglePreviewButton">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" resourceKey="togglePreviewButton.text"/>
+        <Property name="enabled" type="boolean" value="false"/>
+        <Property name="name" type="java.lang.String" value="togglePreviewButton" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="togglePreviewButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JToggleButton" name="toggleCutLinesButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="toggleCutLinesButton.text"/>
+        <Property name="name" type="java.lang.String" value="toggleCutLinesButton" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="toggleCutLinesButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JSpinner" name="jSpinner1">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="jSpinner1" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel8">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel8.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel8" noResource="true"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

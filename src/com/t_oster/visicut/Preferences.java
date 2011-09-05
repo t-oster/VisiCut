@@ -4,8 +4,7 @@
  */
 package com.t_oster.visicut;
 
-import com.t_oster.liblasercut.LaserCutter;
-import java.awt.geom.AffineTransform;
+import com.t_oster.visicut.model.LaserDevice;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
@@ -20,8 +19,56 @@ public class Preferences
   {
   }
   
-  protected LaserCutter laserCutter = null;
-  public static final String PROP_LASERCUTTER = "laserCutter";
+  protected LaserDevice[] laserDevices = null;
+  public static final String PROP_LASERDEVICES = "laserDevices";
+  protected LaserDevice defaultLaserDevice = null;
+  public static final String PROP_DEFAULTLASERDEVICE = "defaultLaserDevice";
+
+  /**
+   * Get the value of defaultLaserDevice
+   *
+   * @return the value of defaultLaserDevice
+   */
+  public LaserDevice getDefaultLaserDevice()
+  {
+    return defaultLaserDevice;
+  }
+
+  /**
+   * Set the value of defaultLaserDevice
+   *
+   * @param defaultLaserDevice new value of defaultLaserDevice
+   */
+  public void setDefaultLaserDevice(LaserDevice defaultLaserDevice)
+  {
+    LaserDevice oldDefaultLaserDevice = this.defaultLaserDevice;
+    this.defaultLaserDevice = defaultLaserDevice;
+    propertyChangeSupport.firePropertyChange(PROP_DEFAULTLASERDEVICE, oldDefaultLaserDevice, defaultLaserDevice);
+  }
+
+  /**
+   * Get the value of laserDevices
+   *
+   * @return the value of laserDevices
+   */
+  public LaserDevice[] getLaserDevices()
+  {
+    return laserDevices;
+  }
+
+  /**
+   * Set the value of laserDevices
+   *
+   * @param laserDevices new value of laserDevices
+   */
+  public void setLaserDevices(LaserDevice[] laserDevices)
+  {
+    LaserDevice[] oldLaserDevices = this.laserDevices;
+    this.laserDevices = laserDevices;
+    propertyChangeSupport.firePropertyChange(PROP_LASERDEVICES, oldLaserDevices, laserDevices);
+  }
+
+  
   protected String[] availableImporters = null;
 
   /**
@@ -44,76 +91,6 @@ public class Preferences
     this.availableImporters = availableImporters;
   }
 
-  /**
-   * Get the value of laserCutter
-   *
-   * @return the value of laserCutter
-   */
-  public LaserCutter getLaserCutter()
-  {
-    return laserCutter;
-  }
-
-  /**
-   * Set the value of laserCutter
-   *
-   * @param laserCutter new value of laserCutter
-   */
-  public void setLaserCutter(LaserCutter laserCutter)
-  {
-    LaserCutter oldLaserCutter = this.laserCutter;
-    this.laserCutter = laserCutter;
-    propertyChangeSupport.firePropertyChange(PROP_LASERCUTTER, oldLaserCutter, laserCutter);
-  }
-  protected String backgroundImageURL = null;
-  public static final String PROP_BACKGROUNDIMAGEURL = "backgroundImageURL";
-
-  /**
-   * Get the value of backgroundImageURL
-   *
-   * @return the value of backgroundImageURL
-   */
-  public String getBackgroundImageURL()
-  {
-    return backgroundImageURL;
-  }
-
-  /**
-   * Set the value of backgroundImageURL
-   *
-   * @param backgroundImageURL new value of backgroundImageURL
-   */
-  public void setBackgroundImageURL(String backgroundImageURL)
-  {
-    String oldBackgroundImageURL = this.backgroundImageURL;
-    this.backgroundImageURL = backgroundImageURL;
-    propertyChangeSupport.firePropertyChange(PROP_BACKGROUNDIMAGEURL, oldBackgroundImageURL, backgroundImageURL);
-  }
-
-  protected AffineTransform camCalibration = null;
-  public static final String PROP_CAMCALIBRATION = "camCalibration";
-
-  /**
-   * Get the value of camCalibration
-   *
-   * @return the value of camCalibration
-   */
-  public AffineTransform getCamCalibration()
-  {
-    return camCalibration;
-  }
-
-  /**
-   * Set the value of camCalibration
-   *
-   * @param camCalibration new value of camCalibration
-   */
-  public void setCamCalibration(AffineTransform camCalibration)
-  {
-    AffineTransform oldCamCalibration = this.camCalibration;
-    this.camCalibration = camCalibration;
-    propertyChangeSupport.firePropertyChange(PROP_CAMCALIBRATION, oldCamCalibration, camCalibration);
-  }
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
   /**

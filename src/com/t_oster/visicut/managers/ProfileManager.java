@@ -2,10 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.visicut.model;
+package com.t_oster.visicut.managers;
 
 import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.visicut.model.LaserProfile;
+import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.RasterProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import java.awt.Color;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

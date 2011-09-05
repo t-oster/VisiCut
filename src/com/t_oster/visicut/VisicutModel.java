@@ -12,10 +12,11 @@ import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.RasterPart;
 import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.visicut.model.LaserProfile;
-import com.t_oster.visicut.model.MappingManager;
+import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
-import com.t_oster.visicut.model.ProfileManager;
+import com.t_oster.visicut.managers.ProfileManager;
+import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
@@ -50,6 +51,32 @@ public class VisicutModel
 {
 
   public static final FileFilter PLFFilter = new ExtensionFilter(".plf", "VisiCut Portable Laser Format (*.plf)");
+  
+  protected LaserDevice selectedLaserDevice = null;
+  public static final String PROP_SELECTEDLASERDEVICE = "selectedLaserDevice";
+
+  /**
+   * Get the value of selectedLaserDevice
+   *
+   * @return the value of selectedLaserDevice
+   */
+  public LaserDevice getSelectedLaserDevice()
+  {
+    return selectedLaserDevice;
+  }
+
+  /**
+   * Set the value of selectedLaserDevice
+   *
+   * @param selectedLaserDevice new value of selectedLaserDevice
+   */
+  public void setSelectedLaserDevice(LaserDevice selectedLaserDevice)
+  {
+    LaserDevice oldSelectedLaserDevice = this.selectedLaserDevice;
+    this.selectedLaserDevice = selectedLaserDevice;
+    propertyChangeSupport.firePropertyChange(PROP_SELECTEDLASERDEVICE, oldSelectedLaserDevice, selectedLaserDevice);
+  }
+
   protected BufferedImage backgroundImage = null;
   public static final String PROP_BACKGROUNDIMAGE = "backgroundImage";
 
@@ -349,21 +376,6 @@ public class VisicutModel
     MaterialProfile oldMaterial = this.material;
     this.material = material;
     propertyChangeSupport.firePropertyChange(PROP_MATERIAL, oldMaterial, material);
-    if (this.material != null)
-    {
-      if (this.material.getLaserCutter() != null)
-      {
-        this.preferences.setLaserCutter(this.material.getLaserCutter());
-      }
-      if (this.material.getCamImageURL() != null)
-      {
-        this.preferences.setBackgroundImageURL(this.material.getCamImageURL());
-      }
-      if (this.material.getCamImageCalibration() != null)
-      {
-        this.preferences.setCamCalibration(this.material.getCamImageCalibration());
-      }
-    }
   }
   protected MappingSet mappings = null;
   public static final String PROP_MAPPINGS = "mappings";
@@ -390,12 +402,12 @@ public class VisicutModel
     propertyChangeSupport.firePropertyChange(PROP_MAPPINGS, oldMappings, mappings);
   }
 
-  public void sendJob() throws IllegalJobException, SocketTimeoutException, Exception
+  public void sendJob(String name) throws IllegalJobException, SocketTimeoutException, Exception
   {
     RasterPart rp = new RasterPart(new LaserProperty());
     VectorPart vp = new VectorPart(new LaserProperty());
-    LaserCutter instance = this.preferences.getLaserCutter();
-    LaserJob job = new LaserJob("VisiCut", "666", "bla", 500, null, vp, rp);
+    LaserCutter instance = this.getSelectedLaserDevice().getLaserCutter();
+    LaserJob job = new LaserJob(name, "666", "bla", 500, null, vp, rp);
     GraphicSet all = this.getGraphicObjects().copy();
     for (Mapping m : this.getMappings())
     {

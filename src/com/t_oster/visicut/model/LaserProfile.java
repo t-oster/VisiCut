@@ -6,6 +6,7 @@ package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.visicut.gui.ImageListable;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -17,7 +18,7 @@ import java.io.File;
  * to generate preview and laser data out of Graphic parts.
  * @author thommy
  */
-public abstract class LaserProfile
+public abstract class LaserProfile implements ImageListable
 {
 
   protected String description = null;

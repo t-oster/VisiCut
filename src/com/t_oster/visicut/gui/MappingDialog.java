@@ -12,7 +12,7 @@ package com.t_oster.visicut.gui;
 
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.model.LaserProfile;
-import com.t_oster.visicut.model.MappingManager;
+import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;

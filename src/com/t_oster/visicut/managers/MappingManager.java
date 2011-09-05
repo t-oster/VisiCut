@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.visicut.model;
+package com.t_oster.visicut.managers;
 
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;

@@ -2,17 +2,15 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.visicut;
+package com.t_oster.visicut.managers;
 
-import com.t_oster.liblasercut.drivers.EpilogCutter;
-import java.awt.geom.AffineTransform;
+import com.t_oster.visicut.Preferences;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,22 +56,11 @@ public final class PreferencesManager
   private void generateDefault()
   {
     preferences = new Preferences();
-    preferences.laserCutter = new EpilogCutter("137.226.56.228");
-    preferences.laserCutter.setName("Epilog ZING @ Fablab Aachen");
-    preferences.availableImporters = new String[]
+    preferences.setAvailableImporters( new String[]
     {
       "com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter",
       "com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter"
-    };
-    try
-    {
-      preferences.backgroundImageURL = new File(".VisiCut/defaultbackground.jpg").toURI().toURL().toString();
-    }
-    catch (MalformedURLException ex)
-    {
-      Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    preferences.camCalibration = new AffineTransform(0.04572009144018288,0.0,0.0,0.043691786621507196,53.0,115.0);
+    });
   }
 
   public Preferences getPreferences()
