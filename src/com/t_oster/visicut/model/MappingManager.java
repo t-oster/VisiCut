@@ -69,19 +69,20 @@ public class MappingManager
     MappingSet ms;
     FilterSet fs;
     ms = new MappingSet();
-    ms.setName("Cut all Lines");
+    ms.setName("Cut");
     fs = new FilterSet();
-    fs.add(new MappingFilter("ObjectType", "Shape"));
+    fs.add(new MappingFilter());
     ms.add(new Mapping(fs,"cut line"));
-    fs = new FilterSet();
-    fs.add(new MappingFilter("ObjectType", "Image"));
+    mappingSets.add(ms);
+    ms = new MappingSet();
+    ms.setName("Engrave");
+    fs = new FilterSet();//Empty Filter matches everything
     ms.add(new Mapping(fs, "Floyd Steinberg"));
     mappingSets.add(ms);
     ms = new MappingSet();
-    ms.setName("Epilog");
+    ms.setName("Cut + Engrave");
     fs = new FilterSet();
     fs.add(new MappingFilter("ObjectType", "Shape"));
-    fs.add(new MappingFilter("StrokeColor", Color.RED));
     fs.add(new MappingFilter("FillColor", "none"));
     ms.add(new Mapping(fs,"cut line"));
     fs = new FilterSet();//Empty Filter matches everything

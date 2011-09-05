@@ -50,17 +50,6 @@ public class MainView extends javax.swing.JFrame
   {
     initComponents();
     this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
-    if (this.visicutModel1.getPreferences().getBackgroundImageURL() == null)
-    {
-      try
-      {
-        this.visicutModel1.getPreferences().setBackgroundImageURL(new File("test/files/lasercutter.jpg").toURI().toURL().toString());
-      }
-      catch (MalformedURLException ex)
-      {
-        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-      }
-    }
     this.captureImage();
     String[] args = VisicutApp.getApplication().getProgramArguments();
     for (String s : args)
@@ -71,7 +60,7 @@ public class MainView extends javax.swing.JFrame
         this.loadFile(f);
       }
     }
-    
+
   }
 
   /** This method is called from within the constructor to
@@ -105,10 +94,11 @@ public class MainView extends javax.swing.JFrame
     jLabel6 = new javax.swing.JLabel();
     jLabel7 = new javax.swing.JLabel();
     drawGridCheckbox = new javax.swing.JCheckBox();
-    highlightCPCheckbox = new javax.swing.JCheckBox();
-    renderPreviewCB = new javax.swing.JCheckBox();
     jPanel1 = new javax.swing.JPanel();
+    jLayeredPane1 = new javax.swing.JLayeredPane();
     previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
+    togglePreviewButton = new javax.swing.JToggleButton();
+    toggleCutLinesButton = new javax.swing.JToggleButton();
     executeJobButton = new javax.swing.JButton();
     saveButton = new javax.swing.JButton();
     captureImageButton = new javax.swing.JButton();
@@ -239,18 +229,6 @@ public class MainView extends javax.swing.JFrame
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${showGrid}"), drawGridCheckbox, org.jdesktop.beansbinding.BeanProperty.create("selected"), "gridcheckbox");
     bindingGroup.addBinding(binding);
 
-    highlightCPCheckbox.setText(resourceMap.getString("highlightCPCheckbox.text")); // NOI18N
-    highlightCPCheckbox.setName("highlightCPCheckbox"); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${highlightCutLines}"), highlightCPCheckbox, org.jdesktop.beansbinding.BeanProperty.create("selected"), "CutLinesCheckBox");
-    bindingGroup.addBinding(binding);
-
-    renderPreviewCB.setText(resourceMap.getString("renderPreviewCB.text")); // NOI18N
-    renderPreviewCB.setName("renderPreviewCB"); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${drawPreview}"), renderPreviewCB, org.jdesktop.beansbinding.BeanProperty.create("selected"), "renderPreviewCB");
-    bindingGroup.addBinding(binding);
-
     javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
     jPanel2.setLayout(jPanel2Layout);
     jPanel2Layout.setHorizontalGroup(
@@ -258,7 +236,6 @@ public class MainView extends javax.swing.JFrame
       .addGroup(jPanel2Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(highlightCPCheckbox)
           .addComponent(drawGridCheckbox)
           .addComponent(jLabel3)
           .addComponent(jLabel5)
@@ -281,8 +258,7 @@ public class MainView extends javax.swing.JFrame
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
             .addComponent(editMappingButton))
           .addComponent(jLabel1)
-          .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(renderPreviewCB))
+          .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addContainerGap())
     );
     jPanel2Layout.setVerticalGroup(
@@ -313,15 +289,13 @@ public class MainView extends javax.swing.JFrame
           .addComponent(editMappingButton))
         .addGap(18, 18, 18)
         .addComponent(drawGridCheckbox)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(highlightCPCheckbox)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(renderPreviewCB)
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanel1.border.title"))); // NOI18N
     jPanel1.setName("jPanel1"); // NOI18N
+
+    jLayeredPane1.setName("jLayeredPane1"); // NOI18N
 
     previewPanel.setBorder(null);
     previewPanel.setAutoCenter(true);
@@ -361,32 +335,49 @@ public class MainView extends javax.swing.JFrame
     previewPanel.setLayout(previewPanelLayout);
     previewPanelLayout.setHorizontalGroup(
       previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 591, Short.MAX_VALUE)
+      .addGap(0, 600, Short.MAX_VALUE)
     );
     previewPanelLayout.setVerticalGroup(
       previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 596, Short.MAX_VALUE)
+      .addGap(0, 620, Short.MAX_VALUE)
     );
+
+    previewPanel.setBounds(0, 0, 600, 620);
+    jLayeredPane1.add(previewPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+    togglePreviewButton.setSelected(true);
+    togglePreviewButton.setText(resourceMap.getString("togglePreviewButton.text")); // NOI18N
+    togglePreviewButton.setEnabled(false);
+    togglePreviewButton.setName("togglePreviewButton"); // NOI18N
+    togglePreviewButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        togglePreviewButtonActionPerformed(evt);
+      }
+    });
+    togglePreviewButton.setBounds(0, 0, 70, 28);
+    jLayeredPane1.add(togglePreviewButton, javax.swing.JLayeredPane.PALETTE_LAYER);
+
+    toggleCutLinesButton.setText(resourceMap.getString("toggleCutLinesButton.text")); // NOI18N
+    toggleCutLinesButton.setName("toggleCutLinesButton"); // NOI18N
+    toggleCutLinesButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        toggleCutLinesButtonActionPerformed(evt);
+      }
+    });
+    toggleCutLinesButton.setBounds(70, 0, 80, 28);
+    jLayeredPane1.add(toggleCutLinesButton, javax.swing.JLayeredPane.PALETTE_LAYER);
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 615, Short.MAX_VALUE)
-      .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jPanel1Layout.createSequentialGroup()
-          .addContainerGap()
-          .addComponent(previewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addContainerGap()))
+      .addGroup(jPanel1Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(jLayeredPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 603, Short.MAX_VALUE))
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 620, Short.MAX_VALUE)
-      .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jPanel1Layout.createSequentialGroup()
-          .addContainerGap()
-          .addComponent(previewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addContainerGap()))
+      .addComponent(jLayeredPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
     );
 
     executeJobButton.setText(resourceMap.getString("executeJobButton.text")); // NOI18N
@@ -571,7 +562,7 @@ public class MainView extends javax.swing.JFrame
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 234, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 290, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(executeJobButton)
           .addComponent(saveButton)
@@ -588,7 +579,7 @@ public class MainView extends javax.swing.JFrame
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
       System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
-  
+
   public void loadFile(File file)
   {
     try
@@ -610,15 +601,16 @@ public class MainView extends javax.swing.JFrame
       JOptionPane.showMessageDialog(this, "Error while opening '" + file.getName() + "':\n" + e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
   }
-  
+
 private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
   openFileChooser.setAcceptAllFileFilterUsed(false);
   openFileChooser.addChoosableFileFilter(
     new MultiFilter(
-      new FileFilter[]{
-        this.visicutModel1.getGraphicFileImporter().getFileFilter(),
-        VisicutModel.PLFFilter
-      }, "All supported Files"));
+    new FileFilter[]
+    {
+      this.visicutModel1.getGraphicFileImporter().getFileFilter(),
+      VisicutModel.PLFFilter
+    }, "All supported Files"));
   openFileChooser.addChoosableFileFilter(VisicutModel.PLFFilter);
   for (FileFilter f : this.visicutModel1.getGraphicFileImporter().getFileFilters())
   {
@@ -631,23 +623,23 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     loadFile(file);
   }
 }//GEN-LAST:event_openMenuItemActionPerformed
-  
-private void editMapping()
-{
-  MappingDialog md = new MappingDialog();
-  md.setGraphicElements(this.visicutModel1.getGraphicObjects());
-  md.setMappings(this.visicutModel1.getMappings());
-  md.setMaterial(this.visicutModel1.getMaterial());
-  md.setMappingManager(this.mappingManager1);
-  md.setVisible(true);
-  this.visicutModel1.setMappings(md.getMappings());
-  this.previewPanel.repaint();
-}
+
+  private void editMapping()
+  {
+    MappingDialog md = new MappingDialog();
+    md.setGraphicElements(this.visicutModel1.getGraphicObjects());
+    md.setMappings(this.visicutModel1.getMappings());
+    md.setMaterial(this.visicutModel1.getMaterial());
+    md.setMappingManager(this.mappingManager1);
+    md.setVisible(true);
+    this.visicutModel1.setMappings(md.getMappings());
+    this.previewPanel.repaint();
+  }
 
 private void editMappingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMappingButtonActionPerformed
   this.editMapping();
 }//GEN-LAST:event_editMappingButtonActionPerformed
-  
+
 private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
   VisicutAboutBox box = new VisicutAboutBox(this);
   box.setModal(true);
@@ -655,7 +647,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 }//GEN-LAST:event_aboutMenuItemActionPerformed
   private enum MouseAction
   {
-    
+
     movingBackground,
     movingSet,
     resizingSet,};
@@ -682,9 +674,9 @@ private void previewPanelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRS
     }
   }
 }//GEN-LAST:event_previewPanelMousePressed
-  
+
 private void previewPanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanelMouseReleased
-  
+
   if (currentAction == MouseAction.resizingSet)
   {
     //Apply changes to the EditRectangle to the selectedSet
@@ -817,7 +809,7 @@ private void previewPanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRS
         case movingBackground:
         {
           Point center = this.previewPanel.getCenter();
-          center.translate(-diff.x*1000/this.previewPanel.getZoom(), -diff.y*1000/this.previewPanel.getZoom());
+          center.translate(-diff.x * 1000 / this.previewPanel.getZoom(), -diff.y * 1000 / this.previewPanel.getZoom());
           this.previewPanel.setCenter(center);
           break;
         }
@@ -831,24 +823,25 @@ private void previewPanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRS
     lastMousePosition = evt.getPoint();
   }
 }//GEN-LAST:event_previewPanelMouseDragged
-  
+
   private void executeJob()
   {
     try
     {
       this.visicutModel1.sendJob();
-      JOptionPane.showMessageDialog(this, "Please press START on the Lasercutter:\n"+this.visicutModel1.getPreferences().getLaserCutter().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
+      JOptionPane.showMessageDialog(this, "Please press START on the Lasercutter:\n" + this.visicutModel1.getPreferences().getLaserCutter().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
     }
     catch (Exception ex)
     {
+      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
       JOptionPane.showMessageDialog(this, "Error: " + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
   }
-  
+
 private void executeJobButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobButtonActionPerformed
   this.executeJob();
 }//GEN-LAST:event_executeJobButtonActionPerformed
-  
+
 private void previewPanelMouseWheelMoved(java.awt.event.MouseWheelEvent evt)//GEN-FIRST:event_previewPanelMouseWheelMoved
 {//GEN-HEADEREND:event_previewPanelMouseWheelMoved
   if (evt.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
@@ -856,7 +849,7 @@ private void previewPanelMouseWheelMoved(java.awt.event.MouseWheelEvent evt)//GE
     this.previewPanel.setZoom(this.previewPanel.getZoom() - (evt.getUnitsToScroll() * this.previewPanel.getZoom() / 32));
   }
 }//GEN-LAST:event_previewPanelMouseWheelMoved
-  
+
 private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)//GEN-FIRST:event_filesDropSupport1PropertyChange
 {//GEN-HEADEREND:event_filesDropSupport1PropertyChange
   if (this.filesDropSupport1.getDroppedFiles() != null && this.filesDropSupport1.getDroppedFiles().size() > 0)
@@ -867,7 +860,7 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
     }
   }
 }//GEN-LAST:event_filesDropSupport1PropertyChange
-  
+
 private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mappingComboBoxActionPerformed
   MappingSet ms = (MappingSet) this.mappingComboBox.getSelectedItem();
   if (ms != null && !ms.equals(this.visicutModel1.getMappings()) && this.visicutModel1.getMaterial() != null)
@@ -906,7 +899,7 @@ private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//G
     }
   }
 }//GEN-LAST:event_mappingComboBoxActionPerformed
-    
+
 private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
   int returnVal = saveFileChooser.showSaveDialog(this);
   if (returnVal == JFileChooser.APPROVE_OPTION)
@@ -931,19 +924,24 @@ private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     System.out.println("File access cancelled by user.");
   }
 }//GEN-LAST:event_saveButtonActionPerformed
-  
+
 private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
   this.saveButtonActionPerformed(evt);
 }//GEN-LAST:event_saveAsMenuItemActionPerformed
-  
+
 private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_visicutModel1PropertyChange
   if (evt.getPropertyName().equals(VisicutModel.PROP_LOADEDFILE))
   {
     this.saveMenuItem.setEnabled(this.visicutModel1.getLoadedFile() != null);
   }
 }//GEN-LAST:event_visicutModel1PropertyChange
-  
+
 private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuItemActionPerformed
+  if (this.visicutModel1.getLoadedFile() == null || !VisicutModel.PLFFilter.accept(this.visicutModel1.getLoadedFile()))
+  {//File is not PLF or no file loaded yet
+    this.saveAsMenuItemActionPerformed(evt);
+    return;
+  }
   try
   {
     this.visicutModel1.saveToFile(this.profileManager1, this.mappingManager1, this.visicutModel1.getLoadedFile());
@@ -954,15 +952,15 @@ private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     JOptionPane.showMessageDialog(this, "Error saving File:\n" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
   }
 }//GEN-LAST:event_saveMenuItemActionPerformed
-  
+
 private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newMenuItemActionPerformed
   this.editRect = null;
   this.previewPanel.setEditRectangle(null);
   this.visicutModel1.setGraphicObjects(new GraphicSet());
 }//GEN-LAST:event_newMenuItemActionPerformed
-  
+
 private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calibrateCameraMenuItemActionPerformed
-  
+
   CamCalibrationDialog ccd = new CamCalibrationDialog();
   ccd.setBackgroundImage(this.visicutModel1.getBackgroundImage());
   ccd.setImageURL(this.visicutModel1.getPreferences().getBackgroundImageURL());
@@ -980,11 +978,11 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
     JOptionPane.showMessageDialog(this, "Error while saving Settings: " + ex.getLocalizedMessage());
   }
 }//GEN-LAST:event_calibrateCameraMenuItemActionPerformed
-  
+
 private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobMenuItemActionPerformed
   this.executeJob();
 }//GEN-LAST:event_executeJobMenuItemActionPerformed
-  
+
   private void captureImage()
   {
     new Thread()
@@ -1000,6 +998,11 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
           if (src != null)
           {
             BufferedImage back = ImageIO.read(src);
+            if (back != null && MainView.this.visicutModel1.getBackgroundImage() == null)
+            {//First Time Image is Captured => resize View
+              MainView.this.previewPanel.setCenter(new Point(back.getWidth()/2, back.getHeight()/2));
+              MainView.this.previewPanel.setZoom(1000*MainView.this.previewPanel.getWidth()/back.getWidth());
+            }
             MainView.this.visicutModel1.setBackgroundImage(back);
           }
         }
@@ -1011,13 +1014,13 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
       }
     }.start();
   }
-  
+
 private void captureImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_captureImageButtonActionPerformed
   captureImage();
 }//GEN-LAST:event_captureImageButtonActionPerformed
-  
+
 private void editMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMappingMenuItemActionPerformed
-this.editMapping();
+  this.editMapping();
 }//GEN-LAST:event_editMappingMenuItemActionPerformed
 
 private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_materialComboBoxActionPerformed
@@ -1033,8 +1036,8 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         if (newMaterial.getLaserProfile(m.getProfileName()) == null)
         {
           JOptionPane.showMessageDialog(this, "The selected Material does not support the Profile '"
-            + m.getProfileName() + "', but your current Mapping '"+this.visicutModel1.getMappings().getName()+"' uses it.\n"
-            +"Please select a differend Mapping or a different Material.", "Error", JOptionPane.OK_OPTION);
+            + m.getProfileName() + "', but your current Mapping '" + this.visicutModel1.getMappings().getName() + "' uses it.\n"
+            + "Please select a differend Mapping or a different Material.", "Error", JOptionPane.OK_OPTION);
           this.materialComboBox.setSelectedItem(this.visicutModel1.getMaterial());
           return;
         }
@@ -1044,6 +1047,35 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   this.visicutModel1.setMaterial(newMaterial);
 }//GEN-LAST:event_materialComboBoxActionPerformed
 
+  private void togglePreviewMode()
+  {
+    if (this.togglePreviewButton.isEnabled())
+    {
+      this.previewPanel.setDrawPreview(true);
+      this.previewPanel.setHighlightCutLines(false);
+      this.togglePreviewButton.setEnabled(false);
+      this.togglePreviewButton.setSelected(true);
+      this.toggleCutLinesButton.setEnabled(true);
+      this.toggleCutLinesButton.setSelected(false);
+    }
+    else
+    {
+      this.previewPanel.setDrawPreview(false);
+      this.previewPanel.setHighlightCutLines(true);
+      this.togglePreviewButton.setEnabled(true);
+      this.togglePreviewButton.setSelected(false);
+      this.toggleCutLinesButton.setEnabled(false);
+      this.toggleCutLinesButton.setSelected(true);
+    }
+  }
+
+private void togglePreviewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_togglePreviewButtonActionPerformed
+  togglePreviewMode();
+}//GEN-LAST:event_togglePreviewButtonActionPerformed
+
+private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleCutLinesButtonActionPerformed
+  togglePreviewMode();
+}//GEN-LAST:event_toggleCutLinesButtonActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
   private javax.swing.JMenuItem calibrateCameraMenuItem;
@@ -1060,7 +1092,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   private javax.swing.JMenu fileMenu;
   private com.t_oster.visicut.gui.beans.FilesDropSupport filesDropSupport1;
   private javax.swing.JMenu helpMenu;
-  private javax.swing.JCheckBox highlightCPCheckbox;
   private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
@@ -1069,6 +1100,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   private javax.swing.JLabel jLabel5;
   private javax.swing.JLabel jLabel6;
   private javax.swing.JLabel jLabel7;
+  private javax.swing.JLayeredPane jLayeredPane1;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JComboBox mappingComboBox;
@@ -1081,13 +1113,14 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   private javax.swing.JMenuItem openMenuItem;
   private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
   private com.t_oster.visicut.model.ProfileManager profileManager1;
-  private javax.swing.JCheckBox renderPreviewCB;
   private javax.swing.JCheckBoxMenuItem renderPreviewMenuItem;
   private javax.swing.JMenuItem saveAsMenuItem;
   private javax.swing.JButton saveButton;
   private javax.swing.JFileChooser saveFileChooser;
   private javax.swing.JMenuItem saveMenuItem;
   private javax.swing.JCheckBoxMenuItem showGridMenuItem;
+  private javax.swing.JToggleButton toggleCutLinesButton;
+  private javax.swing.JToggleButton togglePreviewButton;
   private javax.swing.JMenu viewMenu;
   private com.t_oster.visicut.VisicutModel visicutModel1;
   private org.jdesktop.beansbinding.BindingGroup bindingGroup;

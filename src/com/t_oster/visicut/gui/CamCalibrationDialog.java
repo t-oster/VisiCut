@@ -329,7 +329,7 @@ private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
       throw new Exception("No Lasercutter selected");
     }
     VectorPart vp = new VectorPart(new LaserProperty());
-    int size = 10;
+    int size = 100;
     for (Point p : new Point[]
       {
         laserUpperLeft, laserLowerRight

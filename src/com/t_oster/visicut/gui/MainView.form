@@ -254,7 +254,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="234" max="32767" attributes="0"/>
+              <EmptySpace pref="290" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="executeJobButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="saveButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -278,7 +278,6 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="highlightCPCheckbox" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="drawGridCheckbox" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -307,7 +306,6 @@
                       </Group>
                       <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="materialComboBox" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="renderPreviewCB" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -344,10 +342,6 @@
                   </Group>
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                   <Component id="drawGridCheckbox" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="highlightCPCheckbox" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="renderPreviewCB" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
@@ -479,28 +473,6 @@
             </BindingProperty>
           </BindingProperties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="highlightCPCheckbox">
-          <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="highlightCPCheckbox.text"/>
-            <Property name="name" type="java.lang.String" value="highlightCPCheckbox" noResource="true"/>
-          </Properties>
-          <BindingProperties>
-            <BindingProperty name="selected" source="previewPanel" sourcePath="${highlightCutLines}" target="highlightCPCheckbox" targetPath="selected" updateStrategy="0" immediately="false">
-              <Property name="name" type="java.lang.String" value="CutLinesCheckBox"/>
-            </BindingProperty>
-          </BindingProperties>
-        </Component>
-        <Component class="javax.swing.JCheckBox" name="renderPreviewCB">
-          <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="renderPreviewCB.text"/>
-            <Property name="name" type="java.lang.String" value="renderPreviewCB" noResource="true"/>
-          </Properties>
-          <BindingProperties>
-            <BindingProperty name="selected" source="previewPanel" sourcePath="${drawPreview}" target="renderPreviewCB" targetPath="selected" updateStrategy="0" immediately="false">
-              <Property name="name" type="java.lang.String" value="renderPreviewCB"/>
-            </BindingProperty>
-          </BindingProperties>
-        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JPanel" name="jPanel1">
@@ -518,72 +490,105 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="615" max="32767" attributes="0"/>
-              <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="previewPanel" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                  </Group>
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jLayeredPane1" pref="603" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="620" max="32767" attributes="0"/>
-              <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="previewPanel" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                  </Group>
-              </Group>
+              <Component id="jLayeredPane1" alignment="0" pref="620" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Container class="com.t_oster.visicut.gui.beans.PreviewPanel" name="previewPanel">
+        <Container class="javax.swing.JLayeredPane" name="jLayeredPane1">
           <Properties>
-            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-              <Border info="null"/>
-            </Property>
-            <Property name="autoCenter" type="boolean" value="true"/>
-            <Property name="name" type="java.lang.String" value="previewPanel" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="jLayeredPane1" noResource="true"/>
           </Properties>
-          <BindingProperties>
-            <BindingProperty name="backgroundImage" source="visicutModel1" sourcePath="${backgroundImage}" target="previewPanel" targetPath="backgroundImage" updateStrategy="1" immediately="false">
-              <Property name="name" type="java.lang.String" value="BackImageFromModel"/>
-            </BindingProperty>
-            <BindingProperty name="graphicObjects" source="visicutModel1" sourcePath="${graphicObjects}" target="previewPanel" targetPath="graphicObjects" updateStrategy="1" immediately="false">
-              <Property name="name" type="java.lang.String" value="ModelToPreviewObjects"/>
-            </BindingProperty>
-            <BindingProperty name="mappings" source="visicutModel1" sourcePath="${mappings}" target="previewPanel" targetPath="mappings" updateStrategy="1" immediately="false">
-              <Property name="name" type="java.lang.String" value="MappingsFromModelToPreviewPanel"/>
-            </BindingProperty>
-            <BindingProperty name="material" source="visicutModel1" sourcePath="${material}" target="previewPanel" targetPath="material" updateStrategy="0" immediately="false"/>
-            <BindingProperty name="previewTransformation" source="visicutModel1" sourcePath="${preferences.camCalibration}" target="previewPanel" targetPath="previewTransformation" updateStrategy="1" immediately="false">
-              <Property name="name" type="java.lang.String" value="TransformFromModel"/>
-            </BindingProperty>
-          </BindingProperties>
-          <Events>
-            <EventHandler event="mouseWheelMoved" listener="java.awt.event.MouseWheelListener" parameters="java.awt.event.MouseWheelEvent" handler="previewPanelMouseWheelMoved"/>
-            <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="previewPanelMousePressed"/>
-            <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="previewPanelMouseReleased"/>
-            <EventHandler event="mouseDragged" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="previewPanelMouseDragged"/>
-          </Events>
 
-          <Layout>
-            <DimensionLayout dim="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="591" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-            <DimensionLayout dim="1">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="596" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-          </Layout>
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout"/>
+          <SubComponents>
+            <Container class="com.t_oster.visicut.gui.beans.PreviewPanel" name="previewPanel">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="null"/>
+                </Property>
+                <Property name="autoCenter" type="boolean" value="true"/>
+                <Property name="name" type="java.lang.String" value="previewPanel" noResource="true"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="backgroundImage" source="visicutModel1" sourcePath="${backgroundImage}" target="previewPanel" targetPath="backgroundImage" updateStrategy="1" immediately="false">
+                  <Property name="name" type="java.lang.String" value="BackImageFromModel"/>
+                </BindingProperty>
+                <BindingProperty name="graphicObjects" source="visicutModel1" sourcePath="${graphicObjects}" target="previewPanel" targetPath="graphicObjects" updateStrategy="1" immediately="false">
+                  <Property name="name" type="java.lang.String" value="ModelToPreviewObjects"/>
+                </BindingProperty>
+                <BindingProperty name="mappings" source="visicutModel1" sourcePath="${mappings}" target="previewPanel" targetPath="mappings" updateStrategy="1" immediately="false">
+                  <Property name="name" type="java.lang.String" value="MappingsFromModelToPreviewPanel"/>
+                </BindingProperty>
+                <BindingProperty name="material" source="visicutModel1" sourcePath="${material}" target="previewPanel" targetPath="material" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="previewTransformation" source="visicutModel1" sourcePath="${preferences.camCalibration}" target="previewPanel" targetPath="previewTransformation" updateStrategy="1" immediately="false">
+                  <Property name="name" type="java.lang.String" value="TransformFromModel"/>
+                </BindingProperty>
+              </BindingProperties>
+              <Events>
+                <EventHandler event="mouseWheelMoved" listener="java.awt.event.MouseWheelListener" parameters="java.awt.event.MouseWheelEvent" handler="previewPanelMouseWheelMoved"/>
+                <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="previewPanelMousePressed"/>
+                <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="previewPanelMouseReleased"/>
+                <EventHandler event="mouseDragged" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="previewPanelMouseDragged"/>
+              </Events>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout$JLayeredPaneConstraintsDescription">
+                  <JLayeredPaneConstraints x="0" y="0" width="600" height="620" layer="0" position="-1"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <EmptySpace min="0" pref="600" max="32767" attributes="0"/>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <EmptySpace min="0" pref="620" max="32767" attributes="0"/>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+            </Container>
+            <Component class="javax.swing.JToggleButton" name="togglePreviewButton">
+              <Properties>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" resourceKey="togglePreviewButton.text"/>
+                <Property name="enabled" type="boolean" value="false"/>
+                <Property name="name" type="java.lang.String" value="togglePreviewButton" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="togglePreviewButtonActionPerformed"/>
+              </Events>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout$JLayeredPaneConstraintsDescription">
+                  <JLayeredPaneConstraints x="0" y="0" width="70" height="-1" layer="100" position="-1"/>
+                </Constraint>
+              </Constraints>
+            </Component>
+            <Component class="javax.swing.JToggleButton" name="toggleCutLinesButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="toggleCutLinesButton.text"/>
+                <Property name="name" type="java.lang.String" value="toggleCutLinesButton" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="toggleCutLinesButtonActionPerformed"/>
+              </Events>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout$JLayeredPaneConstraintsDescription">
+                  <JLayeredPaneConstraints x="70" y="0" width="80" height="-1" layer="100" position="-1"/>
+                </Constraint>
+              </Constraints>
+            </Component>
+          </SubComponents>
         </Container>
       </SubComponents>
     </Container>

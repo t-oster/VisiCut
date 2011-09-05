@@ -41,7 +41,7 @@ public class MappingFilter
   
   public final boolean matches(GraphicObject e)
   {
-    return e.getAttributeValues(attribute).contains(value);
+    return attribute == null || e.getAttributeValues(attribute).contains(value);
   }
 
   public MappingFilter()
@@ -101,7 +101,7 @@ public class MappingFilter
     if (o instanceof MappingFilter)
     {
       MappingFilter f = (MappingFilter) o;
-      return f.attribute.equals(attribute) && !Util.differ(f.value, value);
+      return !Util.differ(f.attribute, attribute) && !Util.differ(f.value, value);
     }
     return super.equals(o);
   }

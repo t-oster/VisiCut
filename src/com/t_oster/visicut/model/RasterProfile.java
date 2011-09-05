@@ -12,6 +12,7 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -46,7 +47,6 @@ public class RasterProfile extends LaserProfile
   {
     this.invertColors = invertColors;
   }
-
   protected int colorShift = 0;
 
   /**
@@ -106,6 +106,7 @@ public class RasterProfile extends LaserProfile
         Rectangle2D targetBB = new Rectangle(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
         g.setTransform(Helper.getTransform(origBB, targetBB));
       }
+      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       for (GraphicObject o : objects)
       {
         o.render(g);
@@ -133,12 +134,19 @@ public class RasterProfile extends LaserProfile
     for (LaserProperty prop : this.getLaserProperties())
     {
       Rectangle2D bb = objects.getBoundingBox();
-      if (bb.getWidth() > 0 && bb.getHeight() > 0)
+      if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
       {
-
         BufferedImage scaledImg = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g = scaledImg.createGraphics();
-        g.setTransform(objects.getTransform());
+        g.setColor(Color.white);
+        g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
+        if (objects.getTransform() != null)
+        {
+          Rectangle2D origBB = objects.getOriginalBoundingBox();
+          Rectangle2D targetBB = new Rectangle(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
+          g.setTransform(Helper.getTransform(origBB, targetBB));
+        }
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         for (GraphicObject o : objects)
         {
           o.render(g);
