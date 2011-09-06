@@ -564,15 +564,15 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
-                  <Component id="previewPanel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                  <Component id="previewPanel" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="1" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
                   <Component id="previewPanel" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -599,7 +599,7 @@
               <Property name="name" type="java.lang.String" value="MappingsFromModelToPreviewPanel"/>
             </BindingProperty>
             <BindingProperty name="material" source="visicutModel1" sourcePath="${material}" target="previewPanel" targetPath="material" updateStrategy="0" immediately="false"/>
-            <BindingProperty name="previewTransformation" source="visicutModel1" sourcePath="${preferences.camCalibration}" target="previewPanel" targetPath="previewTransformation" updateStrategy="1" immediately="false">
+            <BindingProperty name="previewTransformation" source="visicutModel1" sourcePath="${selectedLaserDevice.cameraCalibration}" target="previewPanel" targetPath="previewTransformation" updateStrategy="1" immediately="false">
               <Property name="name" type="java.lang.String" value="TransformFromModel"/>
             </BindingProperty>
           </BindingProperties>

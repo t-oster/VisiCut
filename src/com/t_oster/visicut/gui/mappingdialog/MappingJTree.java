@@ -207,17 +207,21 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
   {
     if (o instanceof FilterSet)
     {
+
       FilterSet fs = (FilterSet) o;
       List<Object> result = new LinkedList<Object>();
-      List<GraphicObject> gos = fs.getMatchingObjects(MappingJTree.this.getGraphicObjects());
-      for (GraphicObject g : gos)
+      if (this.getGraphicObjects() != null)
       {
-        for (String attribute : g.getAttributes())
+        List<GraphicObject> gos = fs.getMatchingObjects(MappingJTree.this.getGraphicObjects());
+        for (GraphicObject g : gos)
         {
-          AttributeNode node = new AttributeNode(fs, attribute);
-          if (!result.contains(node) && node.getChildren().size() > 1)
+          for (String attribute : g.getAttributes())
           {
-            result.add(node);
+            AttributeNode node = new AttributeNode(fs, attribute);
+            if (!result.contains(node) && node.getChildren().size() > 1)
+            {
+              result.add(node);
+            }
           }
         }
       }

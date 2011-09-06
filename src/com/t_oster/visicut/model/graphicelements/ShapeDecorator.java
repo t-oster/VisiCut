@@ -47,7 +47,7 @@ public class ShapeDecorator implements ShapeObject
   public List<String> getAttributes()
   {
     List<String> result = new LinkedList<String>();
-    result.add("Object Type");
+    result.add("Type");
     return result;
   }
 

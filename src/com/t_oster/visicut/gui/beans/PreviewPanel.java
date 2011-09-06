@@ -248,7 +248,10 @@ public class PreviewPanel extends ZoomablePanel
 
     public void propertyChange(PropertyChangeEvent pce)
     {
-      PreviewPanel.this.setOuterBounds(new Dimension((int) Util.mm2px(PreviewPanel.this.material.getWidth(),500),(int) Util.mm2px(PreviewPanel.this.material.getHeight(), 500)));
+      if (PreviewPanel.this.backgroundImage == null)
+      {
+        PreviewPanel.this.setOuterBounds(new Dimension((int) Util.mm2px(PreviewPanel.this.material.getWidth(), 500), (int) Util.mm2px(PreviewPanel.this.material.getHeight(), 500)));
+      }
       PreviewPanel.this.repaint();
     }
   };
@@ -268,7 +271,10 @@ public class PreviewPanel extends ZoomablePanel
     if (this.material != null)
     {
       this.material.addPropertyChangeListener(materialObserver);
-      this.setOuterBounds(new Dimension((int) Util.mm2px(this.material.getWidth(),500),(int) Util.mm2px(this.material.getHeight(), 500)));
+      if (this.backgroundImage == null)
+      {
+        this.setOuterBounds(new Dimension((int) Util.mm2px(this.material.getWidth(), 500), (int) Util.mm2px(this.material.getHeight(), 500)));
+      }
     }
     this.renderBuffer.clear();
     this.repaint();
@@ -402,7 +408,7 @@ public class PreviewPanel extends ZoomablePanel
                     gg.setTransform(new AffineTransform());
                     Point p = new Point(r.x, r.y + r.height / 2);
                     tmp.transform(p, p);
-                    gg.drawString("please wait...", p.x,p.y);
+                    gg.drawString("please wait...", p.x, p.y);
                     gg.setTransform(tmp);
                   }
                   else

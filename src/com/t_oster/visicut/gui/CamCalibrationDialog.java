@@ -16,6 +16,7 @@ import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.Helper;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseWheelEvent;
@@ -82,6 +83,8 @@ public class CamCalibrationDialog extends javax.swing.JDialog
   {
     this.backgroundImage = backgroundImage;
     this.calibrationPanel1.setBackgroundImage(backgroundImage);
+    this.calibrationPanel1.setOuterBounds(new Dimension(this.getBackgroundImage().getWidth(), this.getBackgroundImage().getHeight()));
+    
   }
   protected LaserCutter laserCutter = null;
 
@@ -179,6 +182,10 @@ public class CamCalibrationDialog extends javax.swing.JDialog
   {
     super(parent, modal);
     initComponents();
+    if (this.getBackgroundImage() != null)
+    {
+      this.calibrationPanel1.setOuterBounds(new Dimension(this.getBackgroundImage().getWidth(), this.getBackgroundImage().getHeight()));
+    }
   }
 
   /** This method is called from within the constructor to

@@ -10,6 +10,8 @@
  */
 package com.t_oster.visicut.gui;
 
+import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.gui.mappingdialog.MappingListModel;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.managers.MappingManager;
@@ -19,7 +21,6 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.io.File;
-import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -34,14 +35,13 @@ public class MappingDialog extends javax.swing.JDialog
   {
     this(null, true);
   }
-  private DefaultListModel mappingListModel = new DefaultListModel();
+  private MappingListModel mappingListModel = new MappingListModel();
 
   /** Creates new form MappingDialog */
   public MappingDialog(java.awt.Frame parent, boolean modal)
   {
     super(parent, modal);
     initComponents();
-    mappingList.setModel(mappingListModel);
   }
 
   /** This method is called from within the constructor to
@@ -55,6 +55,8 @@ public class MappingDialog extends javax.swing.JDialog
     bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
     buttonGroup1 = new javax.swing.ButtonGroup();
+    jScrollPane3 = new javax.swing.JScrollPane();
+    mappingTable1 = new com.t_oster.visicut.gui.MappingTable();
     jScrollPane2 = new javax.swing.JScrollPane();
     cuttingProfilesPanel1 = new com.t_oster.visicut.gui.mappingdialog.LaserProfilesPanel();
     okButton = new javax.swing.JButton();
@@ -64,11 +66,16 @@ public class MappingDialog extends javax.swing.JDialog
     jPanel1 = new javax.swing.JPanel();
     matchingPartsPanel1 = new com.t_oster.visicut.gui.mappingdialog.MatchingPartsPanel();
     saveAsButton = new javax.swing.JButton();
-    jScrollPane3 = new javax.swing.JScrollPane();
-    mappingList = new javax.swing.JList();
     jLabel1 = new javax.swing.JLabel();
     jLabel2 = new javax.swing.JLabel();
     jCheckBox1 = new javax.swing.JCheckBox();
+    jScrollPane4 = new javax.swing.JScrollPane();
+    mappingTable2 = new com.t_oster.visicut.gui.MappingTable();
+
+    jScrollPane3.setName("jScrollPane3"); // NOI18N
+
+    mappingTable1.setName("mappingTable1"); // NOI18N
+    jScrollPane3.setViewportView(mappingTable1);
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setName("Form"); // NOI18N
@@ -79,7 +86,7 @@ public class MappingDialog extends javax.swing.JDialog
 
     org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${material}"), cuttingProfilesPanel1, org.jdesktop.beansbinding.BeanProperty.create("material"), "MaterialToProfilesPanel");
     bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${selectedLaserProfile}"), cuttingProfilesPanel1, org.jdesktop.beansbinding.BeanProperty.create("selectedLaserProfile"), "LaserProfileFormPanel");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${selectedLProfile}"), cuttingProfilesPanel1, org.jdesktop.beansbinding.BeanProperty.create("selectedLaserProfile"), "LaserProfileFormPanel");
     bindingGroup.addBinding(binding);
 
     cuttingProfilesPanel1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -96,7 +103,7 @@ public class MappingDialog extends javax.swing.JDialog
     );
     cuttingProfilesPanel1Layout.setVerticalGroup(
       cuttingProfilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 422, Short.MAX_VALUE)
+      .addGap(0, 592, Short.MAX_VALUE)
     );
 
     jScrollPane2.setViewportView(cuttingProfilesPanel1);
@@ -126,7 +133,7 @@ public class MappingDialog extends javax.swing.JDialog
     bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${currentMappings}"), mappingJTree, org.jdesktop.beansbinding.BeanProperty.create("mappings"), "MappingsFromForm");
     bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${selectedFilterSet}"), mappingJTree, org.jdesktop.beansbinding.BeanProperty.create("selectedFilterSet"), "FilterSetFormTree");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${selectedFilters}"), mappingJTree, org.jdesktop.beansbinding.BeanProperty.create("selectedFilterSet"), "FilterSetFormTree");
     bindingGroup.addBinding(binding);
 
     jScrollPane1.setViewportView(mappingJTree);
@@ -156,7 +163,7 @@ public class MappingDialog extends javax.swing.JDialog
     );
     matchingPartsPanel1Layout.setVerticalGroup(
       matchingPartsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 376, Short.MAX_VALUE)
+      .addGap(0, 546, Short.MAX_VALUE)
     );
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -172,7 +179,7 @@ public class MappingDialog extends javax.swing.JDialog
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 400, Short.MAX_VALUE)
+      .addGap(0, 571, Short.MAX_VALUE)
       .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel1Layout.createSequentialGroup()
           .addContainerGap()
@@ -188,20 +195,6 @@ public class MappingDialog extends javax.swing.JDialog
       }
     });
 
-    jScrollPane3.setName("jScrollPane3"); // NOI18N
-
-    mappingList.setModel(new javax.swing.AbstractListModel() {
-      String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-      public int getSize() { return strings.length; }
-      public Object getElementAt(int i) { return strings[i]; }
-    });
-    mappingList.setName("mappingList"); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${selectedMapping}"), mappingList, org.jdesktop.beansbinding.BeanProperty.create("selectedElement"));
-    bindingGroup.addBinding(binding);
-
-    jScrollPane3.setViewportView(mappingList);
-
     jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
     jLabel1.setName("jLabel1"); // NOI18N
 
@@ -211,6 +204,15 @@ public class MappingDialog extends javax.swing.JDialog
     jCheckBox1.setText(resourceMap.getString("jCheckBox1.text")); // NOI18N
     jCheckBox1.setName("jCheckBox1"); // NOI18N
 
+    jScrollPane4.setName("jScrollPane4"); // NOI18N
+
+    mappingTable2.setName("mappingTable2"); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${selectedMapping}"), mappingTable2, org.jdesktop.beansbinding.BeanProperty.create("selectedMapping"), "mappingfromtable");
+    bindingGroup.addBinding(binding);
+
+    jScrollPane4.setViewportView(mappingTable2);
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -218,10 +220,10 @@ public class MappingDialog extends javax.swing.JDialog
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
           .addComponent(jLabel1)
           .addComponent(jLabel2)
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE))
+          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+          .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -241,6 +243,16 @@ public class MappingDialog extends javax.swing.JDialog
       .addGroup(layout.createSequentialGroup()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 594, Short.MAX_VALUE))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(okButton)
+              .addComponent(cancelButton)
+              .addComponent(saveAsButton)
+              .addComponent(jCheckBox1)))
+          .addGroup(layout.createSequentialGroup()
             .addGap(7, 7, 7)
             .addComponent(jLabel2)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -248,17 +260,7 @@ public class MappingDialog extends javax.swing.JDialog
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jLabel1)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE))
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-              .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(okButton)
-              .addComponent(cancelButton)
-              .addComponent(saveAsButton)
-              .addComponent(jCheckBox1))))
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)))
         .addContainerGap())
     );
 
@@ -275,32 +277,8 @@ public class MappingDialog extends javax.swing.JDialog
   protected FilterSet selectedFilterSet = null;
   public static final String PROP_SELECTEDFILTERSET = "selectedFilterSet";
 
-  /**
-   * Get the value of selectedFilterSet
-   *
-   * @return the value of selectedFilterSet
-   */
-  public FilterSet getSelectedFilterSet()
-  {
-    return selectedFilterSet;
-  }
-
-  /**
-   * Set the value of selectedFilterSet
-   *
-   * @param selectedFilterSet new value of selectedFilterSet
-   */
-  public void setSelectedFilterSet(FilterSet selectedFilterSet)
-  {
-    FilterSet oldSelectedFilterSet = this.selectedFilterSet;
-    this.selectedFilterSet = selectedFilterSet;
-    firePropertyChange(PROP_SELECTEDFILTERSET, oldSelectedFilterSet, selectedFilterSet);
-    if (selectedFilterSet != null && !selectedFilterSet.equals(oldSelectedFilterSet))
-    {
-      this.setSelectedMapping(null);
-      this.setSelectedLaserProfile(null);
-    }
-  }
+  protected MappingSet currentMappings = new MappingSet();
+  public static final String PROP_CURRENTMAPPINGS = "currentMappings";
   protected Mapping selectedMapping = null;
   public static final String PROP_SELECTEDMAPPING = "selectedMapping";
 
@@ -324,14 +302,67 @@ public class MappingDialog extends javax.swing.JDialog
     Mapping oldSelectedMapping = this.selectedMapping;
     this.selectedMapping = selectedMapping;
     firePropertyChange(PROP_SELECTEDMAPPING, oldSelectedMapping, selectedMapping);
-    if (selectedMapping != null && !selectedMapping.equals(oldSelectedMapping))
+  }
+  protected FilterSet selectedFilters = null;
+  public static final String PROP_SELECTEDFILTERS = "selectedFilters";
+
+  /**
+   * Get the value of selectedFilters
+   *
+   * @return the value of selectedFilters
+   */
+  public FilterSet getSelectedFilters()
+  {
+    return selectedFilters;
+  }
+
+  /**
+   * Set the value of selectedFilters
+   *
+   * @param selectedFilters new value of selectedFilters
+   */
+  public void setSelectedFilters(FilterSet selectedFilters)
+  {
+    FilterSet oldSelectedFilters = this.selectedFilters;
+    this.selectedFilters = selectedFilters;
+    firePropertyChange(PROP_SELECTEDFILTERS, oldSelectedFilters, selectedFilters);
+  }
+ 
+  protected LaserProfile selectedLProfile = null;
+  public static final String PROP_SELECTEDLPROFILE = "selectedLProfile";
+
+  /**
+   * Get the value of selectedLProfile
+   *
+   * @return the value of selectedLProfile
+   */
+  public LaserProfile getSelectedLProfile()
+  {
+    return selectedLProfile;
+  }
+
+  /**
+   * Set the value of selectedLProfile
+   *
+   * @param selectedLProfile new value of selectedLProfile
+   */
+  public void setSelectedLProfile(LaserProfile selectedLProfile)
+  {
+    LaserProfile oldSelectedLProfile = this.selectedLProfile;
+    this.selectedLProfile = selectedLProfile;
+    firePropertyChange(PROP_SELECTEDLPROFILE, oldSelectedLProfile, selectedLProfile);
+    if (Util.differ(oldSelectedLProfile, selectedLProfile))
     {
-      this.setSelectedFilterSet(null);
-      this.setSelectedLaserProfile(this.material.getLaserProfile(selectedMapping.getProfileName()));
+      if (this.getSelectedMapping() != null)
+      {//Mapping selected, so we change Profile
+        this.getSelectedMapping().setProfileName(selectedLProfile.getName());
+      }
+      else if (this.getSelectedFilters() != null)
+      {
+        
+      }
     }
   }
-  protected MappingSet currentMappings = new MappingSet();
-  public static final String PROP_CURRENTMAPPINGS = "currentMappings";
 
   /**
    * Get the value of currentMappings
@@ -353,11 +384,7 @@ public class MappingDialog extends javax.swing.JDialog
     MappingSet oldCurrentMappings = this.currentMappings;
     this.currentMappings = currentMappings;
     firePropertyChange(PROP_CURRENTMAPPINGS, oldCurrentMappings, currentMappings);
-    this.mappingListModel.clear();
-    for (Mapping m : currentMappings)
-    {
-      this.mappingListModel.addElement(m);
-    }
+    this.mappingListModel.setMappings(currentMappings);
   }
 
   /**
@@ -410,27 +437,6 @@ public class MappingDialog extends javax.swing.JDialog
     firePropertyChange(PROP_MATERIAL, oldMaterial, material);
   }
 
-  /**
-   * Get the value of selectedLaserProfile
-   *
-   * @return the value of selectedLaserProfile
-   */
-  public LaserProfile getSelectedLaserProfile()
-  {
-    return selectedLaserProfile;
-  }
-
-  /**
-   * Set the value of selectedLaserProfile
-   *
-   * @param selectedLaserProfile new value of selectedLaserProfile
-   */
-  public void setSelectedLaserProfile(LaserProfile selectedLaserProfile)
-  {
-    LaserProfile oldSelectedLineType = this.selectedLaserProfile;
-    this.selectedLaserProfile = selectedLaserProfile;
-    firePropertyChange(PROP_SELECTEDLASERPROFILE, oldSelectedLineType, selectedLaserProfile);
-  }
   protected GraphicSet graphicElements = new GraphicSet();
   public static final String PROP_GRAPHICELEMENTS = "graphicElements";
 
@@ -463,35 +469,7 @@ private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 }//GEN-LAST:event_okButtonActionPerformed
 
 private void cuttingProfilesPanel1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_cuttingProfilesPanel1PropertyChange
-  if (evt.getNewValue() instanceof LaserProfile)
-  {//Clicked a new or other LaserProfile
-    LaserProfile lp = (LaserProfile) evt.getNewValue();
-    if (this.getSelectedMapping() != null)
-    {//A Mapping is selected, thus we change its laser profile
-      this.getSelectedMapping().setB(lp.getName());
-      this.matchingPartsPanel1.repaint();
-      this.mappingList.repaint();
-    }
-    else if (this.getSelectedFilterSet() != null)
-    {//A Filter Set is selected, so we create a new Mapping
-      Mapping m = new Mapping(this.getSelectedFilterSet(), lp.getName());
-      this.getCurrentMappings().add(m);
-      this.mappingListModel.addElement(m);
-      this.mappingJTree.refreshTree();
-      this.setSelectedMapping(m);
-    }
-  }
-  else if (evt.getNewValue() == null)
-  {//Unmap selected
-    if (this.getSelectedMapping() != null)
-    {//Unmap the selected mapping
-      Mapping m = this.getSelectedMapping();
-      this.getCurrentMappings().remove(m);
-      this.mappingListModel.removeElement(m);
-      this.setSelectedMapping(null);
-      this.mappingJTree.setSelectedFilterSet(m.getFilterSet());
-    }
-  }
+
 }//GEN-LAST:event_cuttingProfilesPanel1PropertyChange
 
 private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
@@ -564,8 +542,10 @@ private void saveAsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JScrollPane jScrollPane3;
+  private javax.swing.JScrollPane jScrollPane4;
   private com.t_oster.visicut.gui.mappingdialog.MappingJTree mappingJTree;
-  private javax.swing.JList mappingList;
+  private com.t_oster.visicut.gui.MappingTable mappingTable1;
+  private com.t_oster.visicut.gui.MappingTable mappingTable2;
   private com.t_oster.visicut.gui.mappingdialog.MatchingPartsPanel matchingPartsPanel1;
   private javax.swing.JButton okButton;
   private javax.swing.JButton saveAsButton;
