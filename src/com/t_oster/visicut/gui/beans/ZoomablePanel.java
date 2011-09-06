@@ -17,7 +17,7 @@ import javax.swing.JPanel;
  * 
  * @author thommy
  */
-public class GraphicObjectsPanel extends JPanel
+public class ZoomablePanel extends JPanel
 {
 
   protected Dimension outerBounds = new Dimension(100, 100);
@@ -45,6 +45,7 @@ public class GraphicObjectsPanel extends JPanel
     {
       outerBounds = this.getSize();
     }
+    this.setZoom(this.getZoom());
   }
   protected boolean autoCenter = false;
 
@@ -87,32 +88,35 @@ public class GraphicObjectsPanel extends JPanel
    */
   public void setCenter(Point center)
   {
-    double minCenterX = (this.outerBounds.width/2)/(zoom/100d);
+    if (center == null)
+    {
+      center = new Point(outerBounds.width/2, outerBounds.height/2);
+    }
+    double minCenterX = (this.outerBounds.width / 2) / (zoom / 100d);
     if (center.x < minCenterX)
     {
       center.x = (int) minCenterX;
     }
-    double minCenterY = (this.outerBounds.height/2)/(zoom/100d);
+    double minCenterY = (this.outerBounds.height / 2) / (zoom / 100d);
     if (center.y < minCenterY)
     {
       center.y = (int) minCenterY;
     }
-    double maxCenterX = this.outerBounds.width-minCenterX;
+    double maxCenterX = this.outerBounds.width - minCenterX;
     if (center.x > maxCenterX)
     {
       center.x = (int) maxCenterX;
     }
-    double maxCenterY = this.outerBounds.height-minCenterY;
+    double maxCenterY = this.outerBounds.height - minCenterY;
     if (center.y > maxCenterY)
     {
       center.y = (int) maxCenterY;
     }
-    
+
     Point oldCenter = this.center;
     this.center = center;
-    this.repaint();
     firePropertyChange(PROP_CENTER, oldCenter, center);
-    //TODO: Prevent Image from getting out of bounds
+    this.repaint();
   }
   protected int zoom = 100;
   public static final String PROP_ZOOM = "zoom";
@@ -140,7 +144,6 @@ public class GraphicObjectsPanel extends JPanel
     }
     int oldZoom = this.zoom;
     this.zoom = zoom;
-    this.repaint();
     firePropertyChange(PROP_ZOOM, oldZoom, zoom);
     this.setCenter(this.getCenter());
   }
@@ -175,7 +178,7 @@ public class GraphicObjectsPanel extends JPanel
           }
           catch (NoninvertibleTransformException ex)
           {
-            Logger.getLogger(GraphicObjectsPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ZoomablePanel.class.getName()).log(Level.SEVERE, null, ex);
           }
         }
       }

@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  * 
  * @author thommy
  */
-public class CalibrationPanel extends GraphicObjectsPanel implements MouseListener, MouseMotionListener
+public class CalibrationPanel extends ZoomablePanel implements MouseListener, MouseMotionListener
 {
 
   //The size of the Points in Pixel

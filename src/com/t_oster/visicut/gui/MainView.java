@@ -119,8 +119,10 @@ public class MainView extends javax.swing.JFrame
         calibrateCameraMenuItem = new javax.swing.JMenuItem();
         executeJobMenuItem = new javax.swing.JMenuItem();
         editMappingMenuItem = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
@@ -503,6 +505,9 @@ public class MainView extends javax.swing.JFrame
         });
         editMenu.add(editMappingMenuItem);
 
+        jMenu1.setText(resourceMap.getString("jMenu1.text")); // NOI18N
+        jMenu1.setName("jMenu1"); // NOI18N
+
         jMenuItem1.setText(resourceMap.getString("jMenuItem1.text")); // NOI18N
         jMenuItem1.setName("jMenuItem1"); // NOI18N
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -510,11 +515,22 @@ public class MainView extends javax.swing.JFrame
                 jMenuItem1ActionPerformed(evt);
             }
         });
-        editMenu.add(jMenuItem1);
+        jMenu1.add(jMenuItem1);
 
         jMenuItem2.setText(resourceMap.getString("jMenuItem2.text")); // NOI18N
         jMenuItem2.setName("jMenuItem2"); // NOI18N
-        editMenu.add(jMenuItem2);
+        jMenu1.add(jMenuItem2);
+
+        jMenuItem3.setText(resourceMap.getString("jMenuItem3.text")); // NOI18N
+        jMenuItem3.setName("jMenuItem3"); // NOI18N
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem3);
+
+        editMenu.add(jMenu1);
 
         menuBar.add(editMenu);
 
@@ -1107,6 +1123,7 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
   private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem1ActionPerformed
   {//GEN-HEADEREND:event_jMenuItem1ActionPerformed
     EditMaterialDialog d = new EditMaterialDialog(this, true);
+    int index = this.profileManager1.getMaterials().indexOf(this.visicutModel1.getMaterial());
     d.setMaterial(this.visicutModel1.getMaterial());
     d.setVisible(true);
     MaterialProfile result = d.getMaterial();
@@ -1115,6 +1132,7 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
       try
       {
         this.visicutModel1.setMaterial(result);
+        this.profileManager1.getMaterials().set(index, result);
         this.profileManager1.saveProfile(result, this.visicutModel1.getSelectedLaserDevice());
       }
       catch (FileNotFoundException ex)
@@ -1135,6 +1153,28 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
       this.visicutModel1.setMaterial(this.profileManager1.getMaterials().size() > 0 ? this.profileManager1.getMaterials().get(0) : null);
     }
   }//GEN-LAST:event_laserCutterComboBoxActionPerformed
+
+  private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem3ActionPerformed
+  {//GEN-HEADEREND:event_jMenuItem3ActionPerformed
+    MaterialProfile mp = new MaterialProfile();
+    EditMaterialDialog d = new EditMaterialDialog(this, true);
+    d.setMaterial(mp);
+    d.setVisible(true);
+    if (d.getMaterial() != null)
+    {
+      try
+      {
+        MaterialProfile neu = d.getMaterial();
+        this.profileManager1.getMaterials().add(neu);
+        this.profileManager1.saveProfile(neu, this.visicutModel1.getSelectedLaserDevice());
+      }
+      catch (FileNotFoundException ex)
+      {
+        JOptionPane.showMessageDialog(this, "Error saving Profile: "+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      }
+    }
+  }//GEN-LAST:event_jMenuItem3ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem calibrateCameraMenuItem;
@@ -1159,8 +1199,10 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JSpinner jSpinner1;

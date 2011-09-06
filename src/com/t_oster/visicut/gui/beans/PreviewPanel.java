@@ -36,7 +36,7 @@ import java.util.logging.Logger;
  * 
  * @author thommy
  */
-public class PreviewPanel extends GraphicObjectsPanel
+public class PreviewPanel extends ZoomablePanel
 {
 
   public PreviewPanel()
