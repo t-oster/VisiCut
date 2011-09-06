@@ -21,7 +21,7 @@ import java.io.File;
 public abstract class LaserProfile implements ImageListable, Cloneable
 {
 
-  protected String description = null;
+  protected String description = "A new Laserprofile";
 
   /**
    * Get the value of description
@@ -127,7 +127,7 @@ public abstract class LaserProfile implements ImageListable, Cloneable
   {
     this.thumbnailPath = previewThumbnail.getPath();
   }
-  protected String name = "broad line";
+  protected String name = "Unnamed Profile";
 
   /**
    * Get the value of name

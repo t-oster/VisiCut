@@ -13,12 +13,15 @@ package com.t_oster.visicut.gui;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import java.io.File;
+import java.util.Arrays;
 import javax.swing.DefaultListModel;
 import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.ListModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -83,15 +86,14 @@ public class EditMaterialDialog extends javax.swing.JDialog
     this.currentMaterial = currentMaterial;
     this.thumbnailButton.setText("<html><table cellpadding=3><tr><td><img width=64 height=64 src=file://" + currentMaterial.getThumbnailPath() + "/></td></tr></table></html>");
     this.listModel.clear();
-    for (LaserProfile p:currentMaterial.getLaserProfiles())
+    for (LaserProfile p : currentMaterial.getLaserProfiles())
     {
       this.listModel.addElement(p);
     }
     firePropertyChange(PROP_CURRENTMATERIAL, oldCurrentMaterial, currentMaterial);
   }
-
   private DefaultListModel listModel = new DefaultListModel();
-  
+
   /** Creates new form EditMaterialDialog */
   public EditMaterialDialog(java.awt.Frame parent, boolean modal)
   {
@@ -228,9 +230,19 @@ public class EditMaterialDialog extends javax.swing.JDialog
 
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
         jButton1.setName("jButton1"); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton5.setText(resourceMap.getString("jButton5.text")); // NOI18N
         jButton5.setName("jButton5"); // NOI18N
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         jButton6.setText(resourceMap.getString("jButton6.text")); // NOI18N
         jButton6.setName("jButton6"); // NOI18N
@@ -384,67 +396,79 @@ public class EditMaterialDialog extends javax.swing.JDialog
         this.listModel.set(index, d.getVectorProfile());
       }
     }
-  }//GEN-LAST:event_jButton6ActionPerformed
-
-  /**
-   * @param args the command line arguments
-   */
-  public static void main(String args[])
-  {
-    /* Set the Nimbus look and feel */
-    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-     * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-     */
-    try
+    else
     {
-      for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels())
+      if (selected instanceof RasterProfile)
       {
-        if ("Nimbus".equals(info.getName()))
+        EditRasterProfileDialog d = new EditRasterProfileDialog(null, true);
+        d.setRasterProfile((RasterProfile) selected);
+        d.setVisible(true);
+        if (d.getRasterProfile() != null)
         {
-          javax.swing.UIManager.setLookAndFeel(info.getClassName());
-          break;
+          this.currentMaterial.setLaserProfile(index, d.getRasterProfile());
+          this.listModel.set(index, d.getRasterProfile());
         }
       }
     }
-    catch (ClassNotFoundException ex)
-    {
-      java.util.logging.Logger.getLogger(EditMaterialDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    catch (InstantiationException ex)
-    {
-      java.util.logging.Logger.getLogger(EditMaterialDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    catch (IllegalAccessException ex)
-    {
-      java.util.logging.Logger.getLogger(EditMaterialDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    catch (javax.swing.UnsupportedLookAndFeelException ex)
-    {
-      java.util.logging.Logger.getLogger(EditMaterialDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    //</editor-fold>
+  }//GEN-LAST:event_jButton6ActionPerformed
 
-    /* Create and display the dialog */
-    java.awt.EventQueue.invokeLater(new Runnable()
+  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
+  {//GEN-HEADEREND:event_jButton1ActionPerformed
+    JComboBox choose = new JComboBox();
+    choose.addItem("Line Profile");
+    choose.addItem("Raster Profile");
+    if (JOptionPane.showConfirmDialog(this, choose, "Which kind of Profile?", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
     {
-
-      public void run()
+      LaserProfile newProfile = null;
+      if (choose.getSelectedItem().equals("Line Profile"))
       {
-        EditMaterialDialog dialog = new EditMaterialDialog(new javax.swing.JFrame(), true);
-        dialog.addWindowListener(new java.awt.event.WindowAdapter()
-        {
-
-          @Override
-          public void windowClosing(java.awt.event.WindowEvent e)
-          {
-            System.exit(0);
-          }
-        });
-        dialog.setVisible(true);
+        newProfile = new VectorProfile();
       }
-    });
-  }
+      else
+      {
+        if (choose.getSelectedItem().equals("Raster Profile"))
+        {
+          newProfile = new RasterProfile();
+        }
+      }
+      if (newProfile != null)
+      {
+        LaserProfile[] lps = this.currentMaterial.getLaserProfiles();
+        lps = Arrays.copyOf(lps, lps.length + 1);
+        lps[lps.length - 1] = newProfile;
+        this.currentMaterial.setLaserProfiles(lps);
+        this.listModel.addElement(newProfile);
+        this.jList1.setSelectedIndex(lps.length - 1);
+        this.jButton6ActionPerformed(evt);
+      }
+    }
+  }//GEN-LAST:event_jButton1ActionPerformed
+
+  private void jButton5ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton5ActionPerformed
+  {//GEN-HEADEREND:event_jButton5ActionPerformed
+    int idx = this.jList1.getSelectedIndex();
+    if (idx >= 0)
+    {
+      LaserProfile[] lps = this.currentMaterial.getLaserProfiles();
+      LaserProfile[] neu = new LaserProfile[lps.length - 1];
+      for (int i = 0; i < lps.length; i++)
+      {
+        if (i < idx)
+        {
+          neu[i] = lps[i];
+        }
+        else
+        {
+          if (i > idx)
+          {
+            neu[i - 1] = lps[i];
+          }
+        }
+      }
+      this.currentMaterial.setLaserProfiles(neu);
+      this.listModel.remove(idx);
+    }
+  }//GEN-LAST:event_jButton5ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
