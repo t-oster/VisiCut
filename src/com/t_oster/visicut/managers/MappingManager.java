@@ -8,7 +8,6 @@ import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingFilter;
 import com.t_oster.visicut.model.mapping.MappingSet;
-import java.awt.Color;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
@@ -87,6 +86,10 @@ public class MappingManager
     ms.add(new Mapping(fs,"cut line"));
     fs = new FilterSet();//Empty Filter matches everything
     ms.add(new Mapping(fs, "Floyd Steinberg"));
+    fs = new FilterSet();
+    Mapping cutOutline = new Mapping(fs, "cut line");
+    cutOutline.getFilterSet().setUseOuterShape(true);
+    ms.add(cutOutline);
     mappingSets.add(ms);
   }
   

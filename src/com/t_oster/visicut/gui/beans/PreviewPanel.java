@@ -373,11 +373,9 @@ public class PreviewPanel extends ZoomablePanel
       {
         if (this.getMaterial() != null && this.getMappings() != null && this.getMappings().size() > 0)
         {
-          GraphicSet rest = graphicObjects.copy();
           for (Mapping m : this.getMappings())
           {
-            GraphicSet current = m.getFilterSet().getMatchingObjects(rest);
-            rest.removeAll(current);
+            GraphicSet current = m.getFilterSet().getMatchingObjects(this.graphicObjects);
             Rectangle2D bb = current.getBoundingBox();
             if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
             {
@@ -400,7 +398,12 @@ public class PreviewPanel extends ZoomablePanel
                     Rectangle r = Helper.toRect(bb);
                     gg.fillRect(r.x, r.y, r.width, r.height);
                     gg.setColor(Color.BLACK);
-                    gg.drawString("processing...", r.x + r.width / 2, r.y + r.height / 2);
+                    AffineTransform tmp = gg.getTransform();
+                    gg.setTransform(new AffineTransform());
+                    Point p = new Point(r.x, r.y + r.height / 2);
+                    tmp.transform(p, p);
+                    gg.drawString("please wait...", p.x,p.y);
+                    gg.setTransform(tmp);
                   }
                   else
                   {

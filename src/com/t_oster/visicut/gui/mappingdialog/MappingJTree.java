@@ -109,7 +109,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     public List<FilterSet> getChildren()
     {
       List<FilterSet> result = new LinkedList<FilterSet>();
-      GraphicSet gos = this.getA().getMatchingObjects(MappingJTree.this.getUnmappedObjects());
+      GraphicSet gos = this.getA().getMatchingObjects(MappingJTree.this.getGraphicObjects());
       for (GraphicObject g : gos)
       {
         for (Object value : g.getAttributeValues(this.getB()))
@@ -178,27 +178,6 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     return graphicObjects;
   }
 
-  public GraphicSet getUnmappedObjects()
-  {
-    GraphicSet result;
-    if (graphicObjects == null)
-    {
-      return new GraphicSet();
-    }
-    result = this.graphicObjects.copy();
-    if (this.mappings != null)
-    {
-      for (Mapping m : this.getMappings())
-      {
-        for (GraphicObject o : m.getA().getMatchingObjects(result))
-        {
-          result.remove(o);
-        }
-      }
-    }
-    return result;
-  }
-
   /**
    * Set the value of graphicObjects
    *
@@ -230,7 +209,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     {
       FilterSet fs = (FilterSet) o;
       List<Object> result = new LinkedList<Object>();
-      List<GraphicObject> gos = fs.getMatchingObjects(MappingJTree.this.getUnmappedObjects());
+      List<GraphicObject> gos = fs.getMatchingObjects(MappingJTree.this.getGraphicObjects());
       for (GraphicObject g : gos)
       {
         for (String attribute : g.getAttributes())

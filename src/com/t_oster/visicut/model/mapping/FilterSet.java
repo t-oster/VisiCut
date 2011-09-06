@@ -6,15 +6,12 @@ package com.t_oster.visicut.model.mapping;
 
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import com.t_oster.visicut.model.graphicelements.ShapeDecorator;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
-import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.geom.Area;
-import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  *
@@ -41,53 +38,33 @@ public class FilterSet extends LinkedList<MappingFilter>
       }
       if (passed)
       {
-        if (!useOuterShape || !(o instanceof ShapeObject))
+        if (!useOuterShape)
         {
           result.add(o);
         }
         else
         {
-          if (useOuterShape && o instanceof ShapeObject)
+          if (useOuterShape)
           {
-            outerShape.add(new Area(((ShapeObject) o).getShape()));
+            if (o instanceof ShapeObject)
+            {
+              outerShape.add(new Area(((ShapeObject) o).getShape()));
+            }
+            else
+            {
+              outerShape.add(new Area(o.getBoundingBox()));
+            }
           }
         }
       }
     }
     if (useOuterShape)
     {
-      result.add(new ShapeObject()
-      {
-
-        public Shape getShape()
-        {
-          return outerShape;
-        }
-
-        public Rectangle2D getBoundingBox()
-        {
-          return outerShape.getBounds2D();
-        }
-
-        public List<Object> getAttributeValues(String name)
-        {
-          return new LinkedList<Object>();
-        }
-
-        public List<String> getAttributes()
-        {
-          return new LinkedList<String>();
-        }
-
-        public void render(Graphics2D g)
-        {
-          g.draw(outerShape);
-        }
-      });
+      result.add(new ShapeDecorator(outerShape));
     }
     return result;
   }
-  protected boolean useOuterShape = true;
+  protected boolean useOuterShape = false;
   public static final String PROP_USEOUTERSHAPE = "useOuterShape";
 
   /**

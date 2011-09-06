@@ -29,10 +29,10 @@ public abstract class SVGObject implements GraphicObject
   public enum Attribute
   {
 
-    StrokeWidth,
-    StrokeColor,
-    FillColor,
-    ObjectType,
+    Stroke_Width,
+    Stroke_Color,
+    Fill_Color,
+    Type,
     Group,
     ID,}
 

@@ -120,9 +120,10 @@ public class MainView extends javax.swing.JFrame
         executeJobMenuItem = new javax.swing.JMenuItem();
         editMappingMenuItem = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
@@ -508,15 +509,6 @@ public class MainView extends javax.swing.JFrame
         jMenu1.setText(resourceMap.getString("jMenu1.text")); // NOI18N
         jMenu1.setName("jMenu1"); // NOI18N
 
-        jMenuItem1.setText(resourceMap.getString("jMenuItem1.text")); // NOI18N
-        jMenuItem1.setName("jMenuItem1"); // NOI18N
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
-            }
-        });
-        jMenu1.add(jMenuItem1);
-
         jMenuItem2.setText(resourceMap.getString("jMenuItem2.text")); // NOI18N
         jMenuItem2.setName("jMenuItem2"); // NOI18N
         jMenu1.add(jMenuItem2);
@@ -529,6 +521,24 @@ public class MainView extends javax.swing.JFrame
             }
         });
         jMenu1.add(jMenuItem3);
+
+        jMenuItem1.setText(resourceMap.getString("jMenuItem1.text")); // NOI18N
+        jMenuItem1.setName("jMenuItem1"); // NOI18N
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
+
+        jMenuItem4.setText(resourceMap.getString("jMenuItem4.text")); // NOI18N
+        jMenuItem4.setName("jMenuItem4"); // NOI18N
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem4);
 
         editMenu.add(jMenu1);
 
@@ -809,7 +819,7 @@ private void previewPanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRS
             }
             case TOP_RIGHT:
             {
-              int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
+              int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : -diff.y;
               editRect.y -= (offset * editRect.height / editRect.width);
               editRect.height += (offset * editRect.height / editRect.width);
               editRect.width += offset;
@@ -1175,6 +1185,14 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
     }
   }//GEN-LAST:event_jMenuItem3ActionPerformed
 
+  private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem4ActionPerformed
+  {//GEN-HEADEREND:event_jMenuItem4ActionPerformed
+    MaterialProfile m = this.visicutModel1.getMaterial();
+    this.profileManager1.deleteProfile(m, this.visicutModel1.getSelectedLaserDevice());
+    this.profileManager1.getMaterials().remove(m);
+    this.visicutModel1.setMaterial(null);
+  }//GEN-LAST:event_jMenuItem4ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem calibrateCameraMenuItem;
@@ -1203,6 +1221,7 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JSpinner jSpinner1;

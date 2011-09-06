@@ -57,10 +57,6 @@ public class ProfileManager
     //Finnpappe
     MaterialProfile profile = new MaterialProfile();
     profile.setName("Finnpappe");
-    //profile.setCamImageCalibration(new AffineTransform(0.1922099915325995, 0.0, 0.0, 0.1964436917866215, 84.0, 499.0));
-    //profile.setCamImageURL("http://137.226.56.115:8080/defaultbackground.jpg");
-    //profile.setLaserCutter(new EpilogCutter("137.226.56.228"));
-    //profile.getLaserCutter().setName("Epilog ZING @ Fablab RWTH Aachen");
     profile.setThumbnailPath(new File(".VisiCut/materials/Finnpappe/profile.png").getAbsolutePath());
     profile.setDescription("A light paper based material.");
     profile.setColor(new Color(193, 127, 40));
@@ -365,5 +361,10 @@ public class ProfileManager
   public void saveProfile(MaterialProfile result, LaserDevice selectedLaserDevice) throws FileNotFoundException
   {
     this.saveProfile(result, new File(selectedLaserDevice.getMaterialsPath() + "/" + result.getName() + ".xml"));
+  }
+
+  public void deleteProfile(MaterialProfile m, LaserDevice selectedLaserDevice)
+  {
+    new File(selectedLaserDevice.getMaterialsPath() + "/" + m.getName() + ".xml").delete();
   }
 }

@@ -4,7 +4,6 @@
  */
 package com.t_oster.visicut.model.graphicelements;
 
-import java.awt.Graphics2D;
 import java.awt.Shape;
 
 /**

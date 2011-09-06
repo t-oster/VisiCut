@@ -6,7 +6,6 @@ package com.t_oster.visicut.model.graphicelements.svgsupport;
 
 import com.kitfox.svg.ImageSVG;
 import com.kitfox.svg.RenderableElement;
-import java.awt.geom.Rectangle2D;
 import java.util.List;
 
 /**
@@ -35,7 +34,7 @@ public class SVGImage extends SVGObject
     List<Object> result = super.getAttributeValues(attribute);
     switch (Attribute.valueOf(attribute))
     {
-      case ObjectType:
+      case Type:
       {
         result.add("Image");
         break;

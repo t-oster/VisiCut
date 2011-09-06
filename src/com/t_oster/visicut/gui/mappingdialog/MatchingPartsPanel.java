@@ -25,6 +25,30 @@ import javax.swing.JPanel;
 public class MatchingPartsPanel extends JPanel
 {
 
+  protected boolean previewMode = false;
+  public static final String PROP_PREVIEWMODE = "previewMode";
+
+  /**
+   * Get the value of previewMode
+   *
+   * @return the value of previewMode
+   */
+  public boolean isPreviewMode()
+  {
+    return previewMode;
+  }
+
+  /**
+   * Set the value of previewMode
+   *
+   * @param previewMode new value of previewMode
+   */
+  public void setPreviewMode(boolean previewMode)
+  {
+    boolean oldPreviewMode = this.previewMode;
+    this.previewMode = previewMode;
+    firePropertyChange(PROP_PREVIEWMODE, oldPreviewMode, previewMode);
+  }
   protected MappingSet mappings = new MappingSet();
 
   /**
@@ -145,64 +169,51 @@ public class MatchingPartsPanel extends JPanel
     {
       if (this.getSelectedMapping() != null)
       {
-        GraphicSet unmatched = this.graphicElements.copy();
-        //Remove all Elements, matched by previous mappings
-        for(Mapping m:this.mappings)
-        {
-          if (m.equals(this.getSelectedMapping()))
-          {
-            break;
-          }
-          unmatched.removeAll(m.getFilterSet().getMatchingObjects(unmatched));
-        }
-        GraphicSet set = this.getSelectedMapping().getFilterSet().getMatchingObjects(unmatched);
+        GraphicSet set = this.getSelectedMapping().getFilterSet().getMatchingObjects(this.graphicElements);
         set.setTransform(null);
         LaserProfile p = this.material.getLaserProfile(this.getSelectedMapping().getProfileName());
-        //p.renderPreview(gg, set);
-        if (p instanceof VectorProfile)
+        if (this.previewMode)
         {
-          for (GraphicObject e : set)
-          {
-            if (e instanceof ShapeObject)
-            {
-              Shape s = ((ShapeObject) e).getShape();
-              gg.setColor(Color.red);
-              gg.draw(s);
-            }
-          }
+          p.renderPreview(gg, set);
         }
         else
         {
-          for (GraphicObject e : set)
+          if (p instanceof VectorProfile)
           {
-            e.render(gg);
+            for (GraphicObject e : set)
+            {
+              if (e instanceof ShapeObject)
+              {
+                Shape s = ((ShapeObject) e).getShape();
+                gg.setColor(Color.red);
+                gg.draw(s);
+              }
+            }
           }
-        }
-      }
-      else if (this.getSelectedFilterSet() != null)
-      {
-        GraphicSet unmatched = this.graphicElements.copy();
-        //Remove all Elements, matched by previous mappings
-        for(Mapping m:this.mappings)
-        {
-          unmatched.removeAll(m.getFilterSet().getMatchingObjects(unmatched));
-        }
-        for (GraphicObject e : this.getSelectedFilterSet().getMatchingObjects(unmatched))
-        {
-          e.render(gg);
+          else
+          {
+            for (GraphicObject e : set)
+            {
+              e.render(gg);
+            }
+          }
         }
       }
       else
       {
-        GraphicSet unmatched = this.graphicElements.copy();
-        //Remove all Elements, matched by previous mappings
-        for(Mapping m:this.mappings)
+        if (this.getSelectedFilterSet() != null)
         {
-          unmatched.removeAll(m.getFilterSet().getMatchingObjects(unmatched));
+          for (GraphicObject e : this.getSelectedFilterSet().getMatchingObjects(graphicElements))
+          {
+            e.render(gg);
+          }
         }
-        for (GraphicObject e : unmatched)
+        else
         {
-          e.render(gg);
+          for (GraphicObject e : graphicElements)
+          {
+            e.render(gg);
+          }
         }
       }
 

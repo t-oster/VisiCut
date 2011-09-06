@@ -69,7 +69,7 @@ public class SVGShape extends SVGObject implements ShapeObject
     List<Object> result = super.getAttributeValues(a);
     switch (Attribute.valueOf(a))
     {
-      case StrokeWidth:
+      case Stroke_Width:
       {
         StyleAttribute sa = getStyleAttributeRecursive("stroke-width");
         if (sa != null)
@@ -78,7 +78,7 @@ public class SVGShape extends SVGObject implements ShapeObject
         }
         break;
       }
-      case ObjectType:
+      case Type:
       {
         if (this.getDecoratee() instanceof Tspan)
         {
@@ -107,7 +107,7 @@ public class SVGShape extends SVGObject implements ShapeObject
         result.add("Shape");
         break;
       }
-      case StrokeColor:
+      case Stroke_Color:
       {
         StyleAttribute sa = getStyleAttributeRecursive("stroke");
         if (sa != null)
@@ -116,7 +116,7 @@ public class SVGShape extends SVGObject implements ShapeObject
         }
         break;
       }
-      case FillColor:
+      case Fill_Color:
       {
         StyleAttribute sa = getStyleAttributeRecursive("fill");
         if (sa != null)
