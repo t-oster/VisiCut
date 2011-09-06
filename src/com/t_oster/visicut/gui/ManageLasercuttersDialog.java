@@ -12,6 +12,8 @@ package com.t_oster.visicut.gui;
 
 import com.t_oster.visicut.gui.EditLaserDeviceDialog;
 import com.t_oster.visicut.model.LaserDevice;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
@@ -23,6 +25,32 @@ import javax.swing.table.DefaultTableModel;
 public class ManageLasercuttersDialog extends javax.swing.JDialog
 {
 
+  public static final String PROP_DEFAULTLASERCUTTER = "defaultLaserCutter";
+
+  /**
+   * Get the value of defaultLaserCutter
+   *
+   * @return the value of defaultLaserCutter
+   */
+  public int getDefaultLaserCutter()
+  {
+    return defaultIndex;
+  }
+
+  /**
+   * Set the value of defaultLaserCutter
+   *
+   * @param defaultLaserCutter new value of defaultLaserCutter
+   */
+  public void setDefaultLaserCutter(int idx)
+  {
+    int oldIdx = this.defaultIndex;
+    this.defaultIndex = idx;
+    firePropertyChange(PROP_DEFAULTLASERCUTTER, oldIdx, idx);
+  }
+  
+  private int defaultIndex;
+  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   protected List<LaserDevice> laserCutters = null;
   public static final String PROP_LASERCUTTERS = "laserCutters";
 
@@ -93,8 +121,14 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog
 
       private String[] columns = new String[]
       {
-        "Name", "IP", "Port", "Treiber"
+        "Name", "IP", "Port", "Treiber", "Default"
       };
+
+      @Override
+      public Class<?> getColumnClass(int i)
+      {
+        return i<4 ? String.class : Boolean.class;
+      }
 
       @Override
       public int getColumnCount()
@@ -129,6 +163,15 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog
           case 2:
             c.getLaserCutter().setPort(Integer.parseInt((String) o));
             return;
+          case 4:
+            if ((Boolean) o.equals(true))
+            {
+              int old = ManageLasercuttersDialog.this.defaultIndex;
+              ManageLasercuttersDialog.this.defaultIndex = y;
+              this.fireTableCellUpdated(old, 4);
+              this.fireTableCellUpdated(y, 4);
+            }
+            return;
         }
       }
 
@@ -155,6 +198,8 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog
             }
             return cls;
           }
+          case 4:
+            return (y==ManageLasercuttersDialog.this.defaultIndex);
 
         }
         return null;
@@ -163,7 +208,7 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog
       @Override
       public boolean isCellEditable(int y, int x)
       {
-        return x < 3;
+        return x < 3 || x==4;
       }
     };
     this.jTable1.setModel(model);
@@ -208,9 +253,19 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(ManageLasercuttersDialog.class);
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
         jButton1.setName("jButton1"); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
         jButton2.setName("jButton2"); // NOI18N
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText(resourceMap.getString("jButton3.text")); // NOI18N
         jButton3.setName("jButton3"); // NOI18N
@@ -308,65 +363,26 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog
 
   }//GEN-LAST:event_jButton3ActionPerformed
 
-  /**
-   * @param args the command line arguments
-   */
-  public static void main(String args[])
-  {
-    /* Set the Nimbus look and feel */
-    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-     * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-     */
-    try
-    {
-      for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels())
-      {
-        if ("Nimbus".equals(info.getName()))
-        {
-          javax.swing.UIManager.setLookAndFeel(info.getClassName());
-          break;
-        }
-      }
-    }
-    catch (ClassNotFoundException ex)
-    {
-      java.util.logging.Logger.getLogger(ManageLasercuttersDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    catch (InstantiationException ex)
-    {
-      java.util.logging.Logger.getLogger(ManageLasercuttersDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    catch (IllegalAccessException ex)
-    {
-      java.util.logging.Logger.getLogger(ManageLasercuttersDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    catch (javax.swing.UnsupportedLookAndFeelException ex)
-    {
-      java.util.logging.Logger.getLogger(ManageLasercuttersDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    //</editor-fold>
+  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
+  {//GEN-HEADEREND:event_jButton1ActionPerformed
+    LaserDevice neu = new LaserDevice();
+    this.currentLaserCutters.add(neu);
+    int idx = this.currentLaserCutters.size()-1;
+    this.model.fireTableRowsInserted(idx, idx);
+    this.jTable1.getSelectionModel().setSelectionInterval(idx, idx);
+    this.jButton3ActionPerformed(evt);
+  }//GEN-LAST:event_jButton1ActionPerformed
 
-    /* Create and display the dialog */
-    java.awt.EventQueue.invokeLater(new Runnable()
+  private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton2ActionPerformed
+  {//GEN-HEADEREND:event_jButton2ActionPerformed
+    int idx = this.jTable1.getSelectedRow();
+    if (idx >= 0)
     {
+      this.currentLaserCutters.remove(idx);
+      this.model.fireTableRowsDeleted(idx, idx);
+    }
+  }//GEN-LAST:event_jButton2ActionPerformed
 
-      public void run()
-      {
-        ManageLasercuttersDialog dialog = new ManageLasercuttersDialog(new javax.swing.JFrame(), true);
-        dialog.addWindowListener(new java.awt.event.WindowAdapter()
-        {
-
-          @Override
-          public void windowClosing(java.awt.event.WindowEvent e)
-          {
-            System.exit(0);
-          }
-        });
-        dialog.setVisible(true);
-      }
-    });
-  }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

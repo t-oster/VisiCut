@@ -22,7 +22,7 @@ public class Preferences
   
   protected List<LaserDevice> laserDevices = null;
   public static final String PROP_LASERDEVICES = "laserDevices";
-  protected LaserDevice defaultLaserDevice = null;
+  protected int defaultLaserDevice = 0;
   public static final String PROP_DEFAULTLASERDEVICE = "defaultLaserDevice";
 
   /**
@@ -30,7 +30,7 @@ public class Preferences
    *
    * @return the value of defaultLaserDevice
    */
-  public LaserDevice getDefaultLaserDevice()
+  public int getDefaultLaserDevice()
   {
     return defaultLaserDevice;
   }
@@ -40,9 +40,9 @@ public class Preferences
    *
    * @param defaultLaserDevice new value of defaultLaserDevice
    */
-  public void setDefaultLaserDevice(LaserDevice defaultLaserDevice)
+  public void setDefaultLaserDevice(int defaultLaserDevice)
   {
-    LaserDevice oldDefaultLaserDevice = this.defaultLaserDevice;
+    int oldDefaultLaserDevice = this.defaultLaserDevice;
     this.defaultLaserDevice = defaultLaserDevice;
     propertyChangeSupport.firePropertyChange(PROP_DEFAULTLASERDEVICE, oldDefaultLaserDevice, defaultLaserDevice);
   }

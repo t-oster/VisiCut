@@ -76,7 +76,7 @@ public final class PreferencesManager
     epilog.setCameraCalibration(new AffineTransform(0.19630256844482077,0.0,0.0,0.19954840530623766,124.33334350585938,484.3333282470703));
     preferences.setLaserDevices(new LinkedList<LaserDevice>());
     preferences.getLaserDevices().add(epilog);
-    preferences.setDefaultLaserDevice(epilog);
+    preferences.setDefaultLaserDevice(0);
     LaserDevice trotec = new LaserDevice();
     trotec.setLaserCutter(new EpilogCutter("137.226.56.228"));
     trotec.setName("Trotec SP 1500 !@ Fablab");

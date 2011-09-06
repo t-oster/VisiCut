@@ -38,7 +38,7 @@ public class ProfileManager
   protected List<MaterialProfile> materials;
   public static final String PROP_MATERIALS = "materials";
   private File dir;
-  
+
   public ProfileManager()
   {
     this.materials = new LinkedList<MaterialProfile>();
@@ -47,11 +47,14 @@ public class ProfileManager
 
   public void loadMaterials(LaserDevice l)
   {
-    this.dir = new File(l.getMaterialsPath());
     this.materials.clear();
-    this.loadFromDirectory(dir);
+    if (l != null)
+    {
+      this.dir = new File(l.getMaterialsPath() != null ? l.getMaterialsPath() : ".VisiCut/materials");
+      this.loadFromDirectory(dir);
+    }
   }
-  
+
   private void generateDefault()
   {
     //Finnpappe

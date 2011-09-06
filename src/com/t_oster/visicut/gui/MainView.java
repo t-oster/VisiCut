@@ -52,7 +52,9 @@ public class MainView extends javax.swing.JFrame
   {
     initComponents();
     this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
-    this.visicutModel1.setSelectedLaserDevice(this.visicutModel1.getPreferences().getDefaultLaserDevice());
+    int def = this.visicutModel1.getPreferences().getDefaultLaserDevice();
+    List<LaserDevice> devs = PreferencesManager.getInstance().getPreferences().getLaserDevices();
+    this.visicutModel1.setSelectedLaserDevice(devs.isEmpty() ? null : devs.size()>def ? devs.get(def) : devs.get(0));
     if (this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null)
     {
       this.captureImage();
@@ -1175,11 +1177,13 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
   {//GEN-HEADEREND:event_jMenuItem2ActionPerformed
     ManageLasercuttersDialog d = new ManageLasercuttersDialog(this, true);
     d.setLaserCutters(this.visicutModel1.getPreferences().getLaserDevices());
+    d.setDefaultLaserCutter(this.visicutModel1.getPreferences().getDefaultLaserDevice());
     d.setVisible(true);
     List<LaserDevice> result = d.getLaserCutters();
     if (result != null)
     {
       this.visicutModel1.getPreferences().setLaserDevices(result);
+      this.visicutModel1.getPreferences().setDefaultLaserDevice(d.getDefaultLaserCutter());
       try
       {
         PreferencesManager.getInstance().savePreferences();
