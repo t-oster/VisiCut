@@ -4,6 +4,8 @@
  */
 package com.t_oster.visicut.gui.mappingdialog;
 
+import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -16,6 +18,31 @@ import javax.swing.table.DefaultTableModel;
  */
 public class MappingListModel extends DefaultTableModel
 {
+
+  protected MaterialProfile material = null;
+  public static final String PROP_MATERIAL = "material";
+
+  /**
+   * Get the value of material
+   *
+   * @return the value of material
+   */
+  public MaterialProfile getMaterial()
+  {
+    return material;
+  }
+
+  /**
+   * Set the value of material
+   *
+   * @param material new value of material
+   */
+  public void setMaterial(MaterialProfile material)
+  {
+    MaterialProfile oldMaterial = this.material;
+    this.material = material;
+    propertyChangeSupport.firePropertyChange(PROP_MATERIAL, oldMaterial, material);
+  }
 
   protected List<Mapping> mappings = null;
   public static final String PROP_MAPPINGS = "mappings";
@@ -109,7 +136,7 @@ public class MappingListModel extends DefaultTableModel
   @Override
   public boolean isCellEditable(int y, int x)
   {
-    return x==2;
+    return x==2 && material != null && material.getLaserProfile(mappings.get(y).getProfileName()) instanceof VectorProfile;
   }
 
   @Override

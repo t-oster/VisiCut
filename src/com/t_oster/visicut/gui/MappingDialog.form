@@ -268,6 +268,11 @@
         <Property name="text" type="java.lang.String" resourceKey="jCheckBox1.text"/>
         <Property name="name" type="java.lang.String" value="jCheckBox1" noResource="true"/>
       </Properties>
+      <BindingProperties>
+        <BindingProperty name="selected" source="matchingPartsPanel1" sourcePath="${previewMode}" target="jCheckBox1" targetPath="selected" updateStrategy="0" immediately="false">
+          <Property name="name" type="java.lang.String" value="prevmode"/>
+        </BindingProperty>
+      </BindingProperties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPane3">
       <Properties>

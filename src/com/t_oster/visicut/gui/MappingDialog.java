@@ -17,6 +17,7 @@ import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
@@ -194,6 +195,9 @@ public class MappingDialog extends javax.swing.JDialog
         jCheckBox1.setText(resourceMap.getString("jCheckBox1.text")); // NOI18N
         jCheckBox1.setName("jCheckBox1"); // NOI18N
 
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, matchingPartsPanel1, org.jdesktop.beansbinding.ELProperty.create("${previewMode}"), jCheckBox1, org.jdesktop.beansbinding.BeanProperty.create("selected"), "prevmode");
+        bindingGroup.addBinding(binding);
+
         jScrollPane3.setName("jScrollPane3"); // NOI18N
 
         mappingTable1.setName("mappingTable1"); // NOI18N
@@ -354,6 +358,10 @@ public class MappingDialog extends javax.swing.JDialog
         if (this.getSelectedMapping() != null)
         {//Mapping selected, so we change Profile
           this.getSelectedMapping().setProfileName(selectedLProfile.getName());
+          if (!(selectedLProfile instanceof VectorProfile))
+          {
+            this.getSelectedMapping().getFilterSet().setUseOuterShape(false);
+          }
           int idx = this.currentMappings.indexOf(this.getSelectedMapping());
           this.mappingListModel.fireTableRowsUpdated(idx, idx);
         }
@@ -443,6 +451,7 @@ public class MappingDialog extends javax.swing.JDialog
     MaterialProfile oldMaterial = this.material;
     this.material = material;
     firePropertyChange(PROP_MATERIAL, oldMaterial, material);
+    this.mappingListModel.setMaterial(material);
   }
   protected GraphicSet graphicElements = new GraphicSet();
   public static final String PROP_GRAPHICELEMENTS = "graphicElements";

@@ -48,6 +48,7 @@ public class MatchingPartsPanel extends JPanel
     boolean oldPreviewMode = this.previewMode;
     this.previewMode = previewMode;
     firePropertyChange(PROP_PREVIEWMODE, oldPreviewMode, previewMode);
+    this.repaint();
   }
   protected MappingSet mappings = new MappingSet();
 
