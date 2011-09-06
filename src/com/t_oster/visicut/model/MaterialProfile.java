@@ -57,7 +57,7 @@ public class MaterialProfile implements ImageListable, Cloneable
   }
 
   
-  protected Color cutColor = null;
+  protected Color cutColor = Color.GRAY;
 
   /**
    * Get the value of cutColor
@@ -160,7 +160,7 @@ public class MaterialProfile implements ImageListable, Cloneable
   {
     this.laserProfile[index] = newLineProfile;
   }
-  protected String name = null;
+  protected String name = "Unnamed Material";
 
   /**
    * Get the value of name

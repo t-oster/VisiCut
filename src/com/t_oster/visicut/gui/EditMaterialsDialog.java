@@ -78,7 +78,10 @@ public class EditMaterialsDialog extends javax.swing.JDialog
     this.materials = materials;
     firePropertyChange(PROP_MATERIALS, oldMaterials, materials);
     List<MaterialProfile> cur = new LinkedList<MaterialProfile>();
-    cur.addAll(materials);
+    if (materials != null)
+    {
+      cur.addAll(materials);
+    }
     this.setCurrentMaterials(cur);
   }
   private DefaultListModel listModel = new DefaultListModel();
@@ -224,28 +227,30 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 }//GEN-LAST:event_jButton5ActionPerformed
 
 private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-MaterialProfile mp = new MaterialProfile();
-this.currentMaterials.add(mp);
-this.listModel.addElement(mp);
+  MaterialProfile mp = new MaterialProfile();
+  this.currentMaterials.add(mp);
+  this.listModel.addElement(mp);
+  this.jList1.setSelectedValue(mp, true);
+  this.jButton3ActionPerformed(evt);
 }//GEN-LAST:event_jButton1ActionPerformed
 
 private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-MaterialProfile mp = (MaterialProfile) this.jList1.getSelectedValue();
-this.currentMaterials.remove(mp);
-this.listModel.removeElement(mp);
+  MaterialProfile mp = (MaterialProfile) this.jList1.getSelectedValue();
+  this.currentMaterials.remove(mp);
+  this.listModel.removeElement(mp);
 }//GEN-LAST:event_jButton2ActionPerformed
 
 private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-MaterialProfile mp = (MaterialProfile) this.jList1.getSelectedValue();
-int index = this.currentMaterials.indexOf(mp);
-EditMaterialDialog d = new EditMaterialDialog(null, true);
-d.setMaterial(mp);
-d.setVisible(true);
-if (d.getMaterial() != null)
-{
-  this.currentMaterials.set(index, d.getMaterial());
-  this.listModel.setElementAt(d.getMaterial(), index);
-}
+  MaterialProfile mp = (MaterialProfile) this.jList1.getSelectedValue();
+  int index = this.currentMaterials.indexOf(mp);
+  EditMaterialDialog d = new EditMaterialDialog(null, true);
+  d.setMaterial(mp);
+  d.setVisible(true);
+  if (d.getMaterial() != null)
+  {
+    this.currentMaterials.set(index, d.getMaterial());
+    this.listModel.setElementAt(d.getMaterial(), index);
+  }
 }//GEN-LAST:event_jButton3ActionPerformed
 
   /**
