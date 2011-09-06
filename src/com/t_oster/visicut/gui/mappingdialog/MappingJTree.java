@@ -53,7 +53,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     firePropertyChange(PROP_SELECTEDFILTERSET, oldSelectedFilterSet, selectedFilterSet);
     if (Util.differ(oldSelectedFilterSet, selectedFilterSet))
     {
-      if (selectedFilterSet == null && this.getSelectionModel().getSelectionPath() != null && this.getSelectionModel().getSelectionPath().getLastPathComponent() instanceof FilterSet)
+      if (selectedFilterSet == null && this.getSelectionModel().getSelectionPath() != null)
       {
         this.getSelectionModel().clearSelection();
       }
@@ -76,14 +76,6 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
         this.getSelectionModel().setSelectionPath(p);
       }
     }
-  }
-
-  public void refreshTree()
-  {
-    this.valueForPathChanged(new TreePath(new Object[]
-      {
-        this.getRoot()
-      }), this.getRoot());
   }
 
   public void valueChanged(TreeSelectionEvent evt)
@@ -307,6 +299,5 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
   public void setMappings(List<Mapping> mappings)
   {
     this.mappings = mappings;
-    this.refreshTree();
   }
 }

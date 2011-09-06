@@ -2,17 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.visicut.gui;
+package com.t_oster.visicut.gui.mappingdialog;
 
 import com.t_oster.liblasercut.platform.Util;
-import com.t_oster.visicut.gui.mappingdialog.MappingListModel;
 import com.t_oster.visicut.model.mapping.Mapping;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.List;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -20,7 +16,7 @@ import javax.swing.event.ListSelectionListener;
  */
 public class MappingTable extends JTable
 {
-
+  
   public MappingTable()
   {
     this.setModel(model);
@@ -98,5 +94,6 @@ public class MappingTable extends JTable
     List<Mapping> oldMappings = this.mappings;
     this.mappings = mappings;
     firePropertyChange(PROP_MAPPINGS, oldMappings, mappings);
+    this.model.setMappings(mappings);
   }
 }

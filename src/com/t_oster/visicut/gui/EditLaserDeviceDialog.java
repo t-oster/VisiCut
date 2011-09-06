@@ -350,7 +350,10 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     JFileChooser fs = new JFileChooser();
     fs.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     fs.setDialogType(JFileChooser.OPEN_DIALOG);
-    fs.setCurrentDirectory(new File(currentLaserDevice.getMaterialsPath()));
+    if (currentLaserDevice.getMaterialsPath() != null)
+    {
+      fs.setCurrentDirectory(new File(currentLaserDevice.getMaterialsPath()));
+    }
     if (fs.showDialog(this, "Please Select a Directory") == JFileChooser.APPROVE_OPTION)
     {
       File dir = fs.getSelectedFile();
