@@ -81,8 +81,8 @@ public class MappingManager
     ms = new MappingSet();
     ms.setName("Cut + Engrave");
     fs = new FilterSet();
-    fs.add(new MappingFilter("ObjectType", "Shape"));
-    fs.add(new MappingFilter("FillColor", "none"));
+    fs.add(new MappingFilter("Object_Type", "Shape"));
+    fs.add(new MappingFilter("Fill_Color", "none"));
     ms.add(new Mapping(fs,"cut line"));
     fs = new FilterSet();//Empty Filter matches everything
     ms.add(new Mapping(fs, "Floyd Steinberg"));

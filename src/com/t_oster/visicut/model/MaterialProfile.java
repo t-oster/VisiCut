@@ -100,7 +100,7 @@ public class MaterialProfile implements ImageListable, Cloneable
   {
     this.color = color;
   }
-  protected LaserProfile[] laserProfile = new LaserProfile[]{new VectorProfile(), new VectorProfile()};
+  protected LaserProfile[] laserProfile = new LaserProfile[]{new VectorProfile(), new RasterProfile()};
 
   /**
    * Get the value of lineProfile

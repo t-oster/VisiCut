@@ -26,6 +26,11 @@ import java.awt.image.BufferedImage;
 public class RasterProfile extends LaserProfile
 {
 
+  public RasterProfile()
+  {
+    this.setName("average");
+  }
+  
   protected boolean invertColors = false;
 
   /**

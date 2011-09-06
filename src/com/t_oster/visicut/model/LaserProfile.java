@@ -43,7 +43,7 @@ public abstract class LaserProfile implements ImageListable, Cloneable
     this.description = description;
   }
 
-  protected LaserProperty[] laserProperties = new LaserProperty[0];
+  protected LaserProperty[] laserProperties = new LaserProperty[]{new LaserProperty()};
 
   /**
    * Get the value of laserProperties

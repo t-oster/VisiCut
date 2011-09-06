@@ -23,6 +23,11 @@ import java.awt.Stroke;
 public class VectorProfile extends LaserProfile
 {
 
+  public VectorProfile()
+  {
+    this.setName("cut line");
+  }
+  
   protected boolean isCut = false;
 
   /**
