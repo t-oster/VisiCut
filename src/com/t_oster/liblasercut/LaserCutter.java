@@ -39,21 +39,11 @@ public abstract class LaserCutter
    */
   public abstract double getBedHeight();
   
-  protected String name = "Unnamed Lasercutter";
-  /**
-   * Returns the Name of the Lasercutter instance
-   * @return 
-   */
-  public String getName()
-  {
-    return name;
-  }
+  public abstract String getHostname();
   
-  /**
-   * Sets the name of this Lasercutter Instance
-   */
-  public void setName(String name)
-  {
-    this.name = name;
-  }
+  public abstract void setHostname(String hostname);
+  
+  public abstract int getPort();
+  
+  public abstract void setPort(int Port);
 }
