@@ -20,7 +20,7 @@ import javax.swing.JPanel;
 public class GraphicObjectsPanel extends JPanel
 {
 
-  protected Dimension outerBounds = null;
+  protected Dimension outerBounds = new Dimension(100, 100);
 
   /**
    * Get the value of outerBounds
@@ -41,6 +41,10 @@ public class GraphicObjectsPanel extends JPanel
   public void setOuterBounds(Dimension outerBounds)
   {
     this.outerBounds = outerBounds;
+    if (this.outerBounds == null)
+    {
+      outerBounds = this.getSize();
+    }
   }
   protected boolean autoCenter = false;
 
@@ -83,13 +87,34 @@ public class GraphicObjectsPanel extends JPanel
    */
   public void setCenter(Point center)
   {
+    double minCenterX = (this.outerBounds.width/2)/(zoom/100d);
+    if (center.x < minCenterX)
+    {
+      center.x = (int) minCenterX;
+    }
+    double minCenterY = (this.outerBounds.height/2)/(zoom/100d);
+    if (center.y < minCenterY)
+    {
+      center.y = (int) minCenterY;
+    }
+    double maxCenterX = this.outerBounds.width-minCenterX;
+    if (center.x > maxCenterX)
+    {
+      center.x = (int) maxCenterX;
+    }
+    double maxCenterY = this.outerBounds.height-minCenterY;
+    if (center.y > maxCenterY)
+    {
+      center.y = (int) maxCenterY;
+    }
+    
     Point oldCenter = this.center;
     this.center = center;
     this.repaint();
     firePropertyChange(PROP_CENTER, oldCenter, center);
     //TODO: Prevent Image from getting out of bounds
   }
-  protected int zoom = 1000;
+  protected int zoom = 100;
   public static final String PROP_ZOOM = "zoom";
 
   /**
@@ -103,69 +128,60 @@ public class GraphicObjectsPanel extends JPanel
   }
 
   /**
-   * Set the value of zoom in %. 100 is one pixel per pixel.
+   * Set the value of zoom in %. 100 
    *
    * @param zoom new value of zoom
    */
   public void setZoom(int zoom)
   {
-    if (outerBounds != null)
+    if (zoom < 100)
     {
-      double minWidthZoom = 1000 * this.getWidth() / outerBounds.width;
-      double minHeightZoom = 1000 * this.getHeight() / outerBounds.height;
-      if (zoom < Math.min(minWidthZoom, minHeightZoom))
-      {
-        zoom = (int) Math.min(minWidthZoom, minHeightZoom);
-      }
+      zoom = 100;
     }
     int oldZoom = this.zoom;
     this.zoom = zoom;
     this.repaint();
     firePropertyChange(PROP_ZOOM, oldZoom, zoom);
-  }
-
-  @Override
-  public void setSize(int w, int h)
-  {
-    super.setSize(w, h);
-  }
-
-  @Override
-  public void setSize(Dimension d)
-  {
-    super.setSize(d);
+    this.setCenter(this.getCenter());
   }
 
   public AffineTransform getZoomTransform()
   {
-    AffineTransform ownTransform = AffineTransform.getScaleInstance((double) zoom / 1000, (double) zoom / 1000);
+    if (this.getWidth() > 0 && this.getHeight() > 0 && zoom > 0)
+    {
+      double sh = (double) this.getWidth() / (double) this.outerBounds.width;
+      double sv = (double) this.getHeight() / (double) this.outerBounds.height;
+      double scale = Math.min(sh, sv);
+      AffineTransform ownTransform = AffineTransform.getScaleInstance((double) scale * zoom / 100, (double) scale * zoom / 100);
 
-    double w = this.getWidth();
-    double h = this.getHeight();
-    Point2D mp = new Point2D.Double(w / 2, h / 2);
-    if (center != null)
-    {
-      Point2D drawnCenter = ownTransform.transform(center, null);
-      AffineTransform trans = AffineTransform.getTranslateInstance(mp.getX() - drawnCenter.getX(), mp.getY() - drawnCenter.getY());
-      trans.concatenate(ownTransform);
-      ownTransform = trans;
-    }
-    else
-    {
-      if (autoCenter)
+      double w = this.getWidth();
+      double h = this.getHeight();
+      Point2D mp = new Point2D.Double(w / 2, h / 2);
+      if (center != null)
       {
-        try
+        Point2D drawnCenter = ownTransform.transform(center, null);
+        AffineTransform trans = AffineTransform.getTranslateInstance(mp.getX() - drawnCenter.getX(), mp.getY() - drawnCenter.getY());
+        trans.concatenate(ownTransform);
+        ownTransform = trans;
+      }
+      else
+      {
+        if (autoCenter)
         {
-          ownTransform.createInverse().transform(mp, mp);
-          this.setCenter(new Point((int) mp.getX(), (int) mp.getY()));
-        }
-        catch (NoninvertibleTransformException ex)
-        {
-          Logger.getLogger(GraphicObjectsPanel.class.getName()).log(Level.SEVERE, null, ex);
+          try
+          {
+            ownTransform.createInverse().transform(mp, mp);
+            this.setCenter(new Point((int) mp.getX(), (int) mp.getY()));
+          }
+          catch (NoninvertibleTransformException ex)
+          {
+            Logger.getLogger(GraphicObjectsPanel.class.getName()).log(Level.SEVERE, null, ex);
+          }
         }
       }
+      return ownTransform;
     }
-    return ownTransform;
+    return new AffineTransform();
   }
 
   @Override
