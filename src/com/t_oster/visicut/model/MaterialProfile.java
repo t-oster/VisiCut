@@ -281,7 +281,7 @@ public class MaterialProfile implements ImageListable, Cloneable
   @Override
   public String toString()
   {
-    return this.getName();
+    return this.getName()+" ("+this.getDepth()+" mm)";
   }
 
   @Override

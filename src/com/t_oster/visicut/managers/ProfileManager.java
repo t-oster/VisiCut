@@ -328,43 +328,17 @@ public class ProfileManager
   }
 
   /**
-   * Writes all Profiles to a subdirectory "materials"
-   */
-  private void writeAll()
-  {
-    if (new File(".VisiCut").isDirectory())
-    {
-      File dir = new File(".VisiCut/materials");
-      if (!dir.exists())
-      {
-        dir.mkdir();
-      }
-      for (MaterialProfile p : this.materials)
-      {
-        try
-        {
-          this.saveProfile(p, new File(".VisiCut/materials/" + p.getName() + ".xml"));
-        }
-        catch (FileNotFoundException ex)
-        {
-          Logger.getLogger(ProfileManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-      }
-    }
-  }
-
-  /**
    * Saves the Material for the given LaserDevice
    * @param result
    * @param selectedLaserDevice 
    */
   public void saveProfile(MaterialProfile result, LaserDevice selectedLaserDevice) throws FileNotFoundException
   {
-    this.saveProfile(result, new File(selectedLaserDevice.getMaterialsPath() + "/" + result.getName() + ".xml"));
+    this.saveProfile(result, new File(selectedLaserDevice.getMaterialsPath() + "/" + result.toString() + ".xml"));
   }
 
   public void deleteProfile(MaterialProfile m, LaserDevice selectedLaserDevice)
   {
-    new File(selectedLaserDevice.getMaterialsPath() + "/" + m.getName() + ".xml").delete();
+    new File(selectedLaserDevice.getMaterialsPath() + "/" + m.toString() + ".xml").delete();
   }
 }

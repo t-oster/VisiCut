@@ -69,6 +69,28 @@ public class Preferences
     propertyChangeSupport.firePropertyChange(PROP_LASERDEVICES, oldLaserDevices, laserDevices);
   }
 
+  protected String[] availableLasercutterDrivers = null;
+
+  /**
+   * Get the value of availableLasercutterDrivers
+   *
+   * @return the value of availableLasercutterDrivers
+   */
+  public String[] getAvailableLasercutterDrivers()
+  {
+    return availableLasercutterDrivers;
+  }
+
+  /**
+   * Set the value of availableLasercutterDrivers
+   *
+   * @param availableLasercutterDrivers new value of availableLasercutterDrivers
+   */
+  public void setAvailableLasercutterDrivers(String[] availableLasercutterDrivers)
+  {
+    this.availableLasercutterDrivers = availableLasercutterDrivers;
+  }
+
   
   protected String[] availableImporters = null;
 
@@ -81,7 +103,7 @@ public class Preferences
   {
     return availableImporters;
   }
-
+  
   /**
    * Set the value of availableImporters
    *

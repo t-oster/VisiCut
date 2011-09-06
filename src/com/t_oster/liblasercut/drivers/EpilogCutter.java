@@ -669,4 +669,13 @@ public class EpilogCutter extends LaserCutter
   {
     this.port = Port;
   }
+  
+  @Override
+  public EpilogCutter clone()
+  {
+    EpilogCutter result = new EpilogCutter();
+    result.hostname = hostname;
+    result.port = port;
+    return result;
+  }
 }

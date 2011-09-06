@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author thommy
  */
-public abstract class LaserCutter
+public abstract class LaserCutter implements Cloneable
 {
 
   /**
@@ -46,4 +46,7 @@ public abstract class LaserCutter
   public abstract int getPort();
   
   public abstract void setPort(int Port);
+  
+  @Override
+  public abstract LaserCutter clone();
 }

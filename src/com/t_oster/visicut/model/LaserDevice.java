@@ -210,5 +210,18 @@ public class LaserDevice implements ImageListable
     propertyChangeSupport.removePropertyChangeListener(listener);
   }
 
+  @Override
+  public LaserDevice clone()
+  {
+    LaserDevice result = new LaserDevice();
+    result.cameraCalibration = cameraCalibration;
+    result.cameraURL = cameraURL;
+    result.description = description;
+    result.name = name;
+    result.laserCutter = laserCutter.clone();
+    result.materialsPath = materialsPath;
+    result.thumbnailPath = thumbnailPath;
+    return result;
+  }
 
 }
