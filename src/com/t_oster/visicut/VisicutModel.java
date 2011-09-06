@@ -313,16 +313,16 @@ public class VisicutModel
     }
     in.close();
     out.closeEntry();
-    out.putNextEntry(new ZipEntry("material.xml"));
-    pm.saveProfile(this.getMaterial(), tmp);
-    in = new FileInputStream(tmp);
-    // Transfer bytes from the file to the ZIP file
-    while ((len = in.read(buf)) > 0)
-    {
-      out.write(buf, 0, len);
-    }
-    in.close();
-    out.closeEntry();
+//    out.putNextEntry(new ZipEntry("material.xml"));
+//    pm.saveProfile(this.getMaterial(), tmp);
+//    in = new FileInputStream(tmp);
+//    // Transfer bytes from the file to the ZIP file
+//    while ((len = in.read(buf)) > 0)
+//    {
+//      out.write(buf, 0, len);
+//    }
+//    in.close();
+//    out.closeEntry();
     // Complete the ZIP file
     out.close();
     // Delete the tmp file

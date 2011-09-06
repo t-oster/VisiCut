@@ -135,6 +135,21 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editMappingMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItem1.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItem1" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem1ActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem2">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItem2.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItem2" noResource="true"/>
+              </Properties>
+            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="viewMenu">
@@ -236,10 +251,10 @@
           <Group type="102" alignment="1" attributes="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <Component id="togglePreviewButton" min="-2" pref="70" max="-2" attributes="0"/>
+                      <Component id="togglePreviewButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="toggleCutLinesButton" min="-2" pref="80" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="toggleCutLinesButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="65" max="-2" attributes="0"/>
                       <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
                       <Component id="jSpinner1" min="-2" pref="80" max="-2" attributes="0"/>
@@ -276,9 +291,9 @@
           <Group type="102" alignment="0" attributes="0">
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="togglePreviewButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="toggleCutLinesButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jSpinner1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleCutLinesButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jPanel1" max="32767" attributes="0"/>
@@ -299,7 +314,6 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" max="-2" attributes="0">
                       <Component id="laserCutterComboBox" alignment="0" max="32767" attributes="1"/>
-                      <Component id="drawGridCheckbox" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -360,9 +374,7 @@
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="mappingComboBox" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                  <Component id="drawGridCheckbox" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="54" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -473,17 +485,6 @@
             <Property name="name" type="java.lang.String" value="jLabel7" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="drawGridCheckbox">
-          <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="drawGridCheckbox.text"/>
-            <Property name="name" type="java.lang.String" value="drawGridCheckbox" noResource="true"/>
-          </Properties>
-          <BindingProperties>
-            <BindingProperty name="selected" source="previewPanel" sourcePath="${showGrid}" target="drawGridCheckbox" targetPath="selected" updateStrategy="0" immediately="false">
-              <Property name="name" type="java.lang.String" value="gridcheckbox"/>
-            </BindingProperty>
-          </BindingProperties>
-        </Component>
         <Component class="javax.swing.JLabel" name="jLabel9">
           <Properties>
             <Property name="text" type="java.lang.String" resourceKey="jLabel9.text"/>
@@ -498,10 +499,13 @@
             <BindingProperty name="elements" source="visicutModel1" sourcePath="${preferences.laserDevices}" target="laserCutterComboBox" targetPath="elements" updateStrategy="0" immediately="false">
               <Property name="name" type="java.lang.String" value="LaserDevicesFromModel"/>
             </BindingProperty>
-            <BindingProperty name="selectedItem" source="visicutModel1" sourcePath="${selectedLaserDevice}" target="laserCutterComboBox" targetPath="selectedItem" updateStrategy="0" immediately="false">
+            <BindingProperty name="selectedItem" source="visicutModel1" sourcePath="${selectedLaserDevice}" target="laserCutterComboBox" targetPath="selectedItem" updateStrategy="1" immediately="false">
               <Property name="name" type="java.lang.String" value="LaserDeviceFromCBToModel"/>
             </BindingProperty>
           </BindingProperties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="laserCutterComboBoxActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

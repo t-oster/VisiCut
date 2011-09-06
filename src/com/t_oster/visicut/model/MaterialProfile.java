@@ -9,7 +9,7 @@ import java.beans.PropertyChangeSupport;
  *
  * @author thommy
  */
-public class MaterialProfile implements ImageListable
+public class MaterialProfile implements ImageListable, Cloneable
 {
   
   protected String description = null;
@@ -282,5 +282,25 @@ public class MaterialProfile implements ImageListable
   public String toString()
   {
     return this.getName();
+  }
+
+  @Override
+  public MaterialProfile clone()
+  {
+    MaterialProfile cp = new MaterialProfile();
+    cp.setName(this.getName());
+    cp.color = this.color;
+    cp.cutColor = this.cutColor;
+    cp.depth = this.depth;
+    cp.description = this.description;
+    cp.height = this.height;
+    cp.thumbnailPath = this.thumbnailPath;
+    cp.width = this.width;
+    cp.laserProfile = new LaserProfile[this.laserProfile.length];
+    for (int i=0;i<cp.laserProfile.length;i++)
+    {
+      cp.laserProfile[i] = this.laserProfile[i].clone();
+    }
+    return cp;
   }
 }

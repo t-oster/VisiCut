@@ -18,7 +18,7 @@ import java.io.File;
  * to generate preview and laser data out of Graphic parts.
  * @author thommy
  */
-public abstract class LaserProfile implements ImageListable
+public abstract class LaserProfile implements ImageListable, Cloneable
 {
 
   protected String description = null;
@@ -174,4 +174,7 @@ public abstract class LaserProfile implements ImageListable
   {
     return (this.getName() != null ? this.getName() : super.toString());
   }
+
+  @Override
+  public abstract LaserProfile clone();
 }

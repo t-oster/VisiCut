@@ -116,4 +116,22 @@ public class VectorProfile extends LaserProfile
       }
     }
   }
+
+  @Override
+  public LaserProfile clone()
+  {
+    VectorProfile cp = new VectorProfile();
+    cp.color = color;
+    cp.description = description;
+    cp.isCut = isCut;
+    cp.name = name;
+    cp.thumbnailPath = thumbnailPath;
+    cp.width = width;
+    cp.laserProperties = new LaserProperty[laserProperties.length];
+    for (int i = 0;i<cp.laserProperties.length;i++)
+    {
+      cp.laserProperties[i] = laserProperties[i].clone();
+    }
+    return cp;
+  }
 }

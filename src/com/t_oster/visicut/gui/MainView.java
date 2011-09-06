@@ -17,6 +17,7 @@ import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
 import com.t_oster.visicut.misc.MultiFilter;
+import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
@@ -50,6 +51,7 @@ public class MainView extends javax.swing.JFrame
   {
     initComponents();
     this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
+    this.visicutModel1.setSelectedLaserDevice(this.visicutModel1.getPreferences().getDefaultLaserDevice());
     if (this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null)
     {
       this.captureImage();
@@ -95,7 +97,6 @@ public class MainView extends javax.swing.JFrame
         materialComboBox = new com.t_oster.visicut.gui.beans.ImageComboBox();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        drawGridCheckbox = new javax.swing.JCheckBox();
         jLabel9 = new javax.swing.JLabel();
         laserCutterComboBox = new com.t_oster.visicut.gui.beans.ImageComboBox();
         jPanel1 = new javax.swing.JPanel();
@@ -118,6 +119,8 @@ public class MainView extends javax.swing.JFrame
         calibrateCameraMenuItem = new javax.swing.JMenuItem();
         executeJobMenuItem = new javax.swing.JMenuItem();
         editMappingMenuItem = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
@@ -220,12 +223,6 @@ public class MainView extends javax.swing.JFrame
         jLabel7.setText(resourceMap.getString("jLabel7.text")); // NOI18N
         jLabel7.setName("jLabel7"); // NOI18N
 
-        drawGridCheckbox.setText(resourceMap.getString("drawGridCheckbox.text")); // NOI18N
-        drawGridCheckbox.setName("drawGridCheckbox"); // NOI18N
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${showGrid}"), drawGridCheckbox, org.jdesktop.beansbinding.BeanProperty.create("selected"), "gridcheckbox");
-        bindingGroup.addBinding(binding);
-
         jLabel9.setText(resourceMap.getString("jLabel9.text")); // NOI18N
         jLabel9.setName("jLabel9"); // NOI18N
 
@@ -234,8 +231,14 @@ public class MainView extends javax.swing.JFrame
         eLProperty = org.jdesktop.beansbinding.ELProperty.create("${preferences.laserDevices}");
         jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, eLProperty, laserCutterComboBox, "LaserDevicesFromModel");
         bindingGroup.addBinding(jComboBoxBinding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${selectedLaserDevice}"), laserCutterComboBox, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"), "LaserDeviceFromCBToModel");
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${selectedLaserDevice}"), laserCutterComboBox, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"), "LaserDeviceFromCBToModel");
         bindingGroup.addBinding(binding);
+
+        laserCutterComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                laserCutterComboBoxActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -245,7 +248,6 @@ public class MainView extends javax.swing.JFrame
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(laserCutterComboBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(drawGridCheckbox, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
@@ -297,9 +299,7 @@ public class MainView extends javax.swing.JFrame
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(mappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(drawGridCheckbox)
-                .addContainerGap())
+                .addGap(54, 54, 54))
         );
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanel1.border.title"))); // NOI18N
@@ -503,6 +503,19 @@ public class MainView extends javax.swing.JFrame
         });
         editMenu.add(editMappingMenuItem);
 
+        jMenuItem1.setText(resourceMap.getString("jMenuItem1.text")); // NOI18N
+        jMenuItem1.setName("jMenuItem1"); // NOI18N
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        editMenu.add(jMenuItem1);
+
+        jMenuItem2.setText(resourceMap.getString("jMenuItem2.text")); // NOI18N
+        jMenuItem2.setName("jMenuItem2"); // NOI18N
+        editMenu.add(jMenuItem2);
+
         menuBar.add(editMenu);
 
         viewMenu.setText(resourceMap.getString("viewMenu.text")); // NOI18N
@@ -560,10 +573,10 @@ public class MainView extends javax.swing.JFrame
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(togglePreviewButton, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(togglePreviewButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(toggleCutLinesButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(toggleCutLinesButton)
+                        .addGap(65, 65, 65)
                         .addComponent(jLabel8)
                         .addGap(1, 1, 1)
                         .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -592,9 +605,9 @@ public class MainView extends javax.swing.JFrame
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(togglePreviewButton)
-                    .addComponent(toggleCutLinesButton)
                     .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8))
+                    .addComponent(jLabel8)
+                    .addComponent(toggleCutLinesButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -665,17 +678,16 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   }
 
 private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
-    VisicutAboutBox box = new VisicutAboutBox(this);
-    box.setModal(true);
-    box.setVisible(true);
+  VisicutAboutBox box = new VisicutAboutBox(this);
+  box.setModal(true);
+  box.setVisible(true);
 }//GEN-LAST:event_aboutMenuItemActionPerformed
   private enum MouseAction
   {
 
     movingBackground,
     movingSet,
-    resizingSet,
-  };
+    resizingSet,};
   private Point lastMousePosition = null;
   private MouseAction currentAction = null;
   private Button currentButton = null;
@@ -907,12 +919,12 @@ private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//G
     {
       if (m.getLaserProfile(map.getProfileName()) == null)
       {
-        JOptionPane.showConfirmDialog(this, "The Mapping you selected contains is not supported by the current Material.", "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "The Mapping you selected contains is not supported by the current Material.", "Error", JOptionPane.ERROR_MESSAGE);
         this.mappingComboBox.setSelectedItem(this.visicutModel1.getMappings());
         return;
       }
     }
-      this.visicutModel1.setMappings(ms);
+    this.visicutModel1.setMappings(ms);
   }
 }//GEN-LAST:event_mappingComboBoxActionPerformed
 
@@ -976,6 +988,22 @@ private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 }//GEN-LAST:event_newMenuItemActionPerformed
 
 private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calibrateCameraMenuItemActionPerformed
+  CamCalibrationDialog ccd = new CamCalibrationDialog();
+  ccd.setBackgroundImage(this.visicutModel1.getBackgroundImage());
+  ccd.setImageURL(this.visicutModel1.getSelectedLaserDevice().getCameraURL());
+  ccd.setLaserCutter(this.visicutModel1.getSelectedLaserDevice().getLaserCutter());
+  ccd.setResultingTransformation(this.visicutModel1.getSelectedLaserDevice().getCameraCalibration());
+  ccd.setVisible(true);
+  this.visicutModel1.getSelectedLaserDevice().setCameraCalibration(ccd.getResultingTransformation());
+  try
+  {
+    PreferencesManager.getInstance().savePreferences();
+  }
+  catch (FileNotFoundException ex)
+  {
+    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+    JOptionPane.showMessageDialog(this, "Error while saving Settings: " + ex.getLocalizedMessage());
+  }
 }//GEN-LAST:event_calibrateCameraMenuItemActionPerformed
 
 private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobMenuItemActionPerformed
@@ -1075,13 +1103,44 @@ private void togglePreviewButtonActionPerformed(java.awt.event.ActionEvent evt) 
 private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleCutLinesButtonActionPerformed
   togglePreviewMode();
 }//GEN-LAST:event_toggleCutLinesButtonActionPerformed
+
+  private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem1ActionPerformed
+  {//GEN-HEADEREND:event_jMenuItem1ActionPerformed
+    EditMaterialDialog d = new EditMaterialDialog(this, true);
+    d.setMaterial(this.visicutModel1.getMaterial());
+    d.setVisible(true);
+    MaterialProfile result = d.getMaterial();
+    if (result != null)
+    {
+      try
+      {
+        this.visicutModel1.setMaterial(result);
+        this.profileManager1.saveProfile(result, this.visicutModel1.getSelectedLaserDevice());
+      }
+      catch (FileNotFoundException ex)
+      {
+        JOptionPane.showMessageDialog(this, "Error saving Profile: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      }
+    }
+
+  }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+  private void laserCutterComboBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_laserCutterComboBoxActionPerformed
+  {//GEN-HEADEREND:event_laserCutterComboBoxActionPerformed
+    LaserDevice newDev = (LaserDevice) laserCutterComboBox.getSelectedItem();
+    if (newDev != null && !newDev.equals(this.visicutModel1.getSelectedLaserDevice()))
+    {
+      this.profileManager1.loadMaterials(newDev);
+      this.visicutModel1.setSelectedLaserDevice(newDev);
+      this.visicutModel1.setMaterial(this.profileManager1.getMaterials().size() > 0 ? this.profileManager1.getMaterials().get(0) : null);
+    }
+  }//GEN-LAST:event_laserCutterComboBoxActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem calibrateCameraMenuItem;
     private javax.swing.JButton captureImageButton;
     private javax.swing.JTextField dimensionWidthTextField;
     private javax.swing.JTextField dimesnionsHeightTextfield;
-    private javax.swing.JCheckBox drawGridCheckbox;
     private javax.swing.JMenuItem editMappingMenuItem;
     private javax.swing.JMenu editMenu;
     private javax.swing.JButton executeJobButton;
@@ -1100,6 +1159,8 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JSpinner jSpinner1;

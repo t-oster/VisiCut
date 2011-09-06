@@ -158,4 +158,23 @@ public class RasterProfile extends LaserProfile
       }
     }
   }
+
+  @Override
+  public LaserProfile clone()
+  {
+    RasterProfile rp = new RasterProfile();
+    rp.color = this.color;
+    rp.colorShift = this.colorShift;
+    rp.description = this.description;
+    rp.ditherAlgorithm = this.ditherAlgorithm;
+    rp.invertColors = this.invertColors;
+    rp.name = this.name;
+    rp.thumbnailPath = this.thumbnailPath;
+    rp.laserProperties = new LaserProperty[this.laserProperties.length];
+    for (int i = 0;i<rp.laserProperties.length;i++)
+    {
+      rp.laserProperties[i] = this.laserProperties[i].clone();
+    }
+    return rp;
+  }
 }

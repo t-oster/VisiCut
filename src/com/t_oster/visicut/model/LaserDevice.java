@@ -14,6 +14,31 @@ import java.beans.PropertyChangeSupport;
 public class LaserDevice implements ImageListable
 {
 
+  protected String materialsPath = null;
+  public static final String PROP_MATERIALSPATH = "materialsPath";
+
+  /**
+   * Get the value of materialsPath
+   *
+   * @return the value of materialsPath
+   */
+  public String getMaterialsPath()
+  {
+    return materialsPath;
+  }
+
+  /**
+   * Set the value of materialsPath
+   *
+   * @param materialsPath new value of materialsPath
+   */
+  public void setMaterialsPath(String materialsPath)
+  {
+    String oldMaterialsPath = this.materialsPath;
+    this.materialsPath = materialsPath;
+    propertyChangeSupport.firePropertyChange(PROP_MATERIALSPATH, oldMaterialsPath, materialsPath);
+  }
+
   protected LaserCutter laserCutter = null;
   public static final String PROP_LASERCUTTER = "laserCutter";
 
@@ -184,5 +209,6 @@ public class LaserDevice implements ImageListable
   {
     propertyChangeSupport.removePropertyChangeListener(listener);
   }
+
 
 }
