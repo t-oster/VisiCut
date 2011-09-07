@@ -34,18 +34,18 @@
                           <Component id="selectThumbnailButton1" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="1">
                               <Component id="jTextField4" min="-2" pref="63" max="-2" attributes="1"/>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace pref="49" max="32767" attributes="0"/>
                               <Component id="jCheckBox1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jButton2" max="32767" attributes="0"/>
+                              <Component id="chooseColorButton1" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="jTextField1" alignment="0" pref="286" max="32767" attributes="1"/>
+                          <Component id="jTextField1" alignment="0" pref="303" max="32767" attributes="1"/>
                           <Component id="jTextField2" alignment="0" min="-2" pref="300" max="-2" attributes="1"/>
                       </Group>
                   </Group>
@@ -85,19 +85,15 @@
                   <Component id="jTextField2" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jTextField4" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jCheckBox1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Component id="jButton2" min="-2" pref="28" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextField4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="chooseColorButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jCheckBox1" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
+              <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+              <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
@@ -158,19 +154,6 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton3ActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="jButton2">
-      <Properties>
-        <Property name="contentAreaFilled" type="boolean" value="false"/>
-        <Property name="name" type="java.lang.String" value="jButton2" noResource="true"/>
-        <Property name="opaque" type="boolean" value="true"/>
-      </Properties>
-      <BindingProperties>
-        <BindingProperty name="background" source="Form" sourcePath="${currentVectorProfile.color}" target="jButton2" targetPath="background" updateStrategy="0" immediately="false"/>
-      </BindingProperties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel5">
@@ -270,6 +253,16 @@
       <BindingProperties>
         <BindingProperty name="thumbnailPath" source="Form" sourcePath="${currentVectorProfile.thumbnailPath}" target="selectThumbnailButton1" targetPath="thumbnailPath" updateStrategy="0" immediately="false">
           <Property name="name" type="java.lang.String" value="thumbnailbt"/>
+        </BindingProperty>
+      </BindingProperties>
+    </Component>
+    <Component class="com.t_oster.visicut.gui.beans.ChooseColorButton" name="chooseColorButton1">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="chooseColorButton1" noResource="true"/>
+      </Properties>
+      <BindingProperties>
+        <BindingProperty name="selectedColor" source="Form" sourcePath="${currentVectorProfile.color}" target="chooseColorButton1" targetPath="selectedColor" updateStrategy="0" immediately="false">
+          <Property name="name" type="java.lang.String" value="colorbt"/>
         </BindingProperty>
       </BindingProperties>
     </Component>

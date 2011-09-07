@@ -115,7 +115,6 @@ public class EditMaterialDialog extends javax.swing.JDialog
     jLabel4 = new javax.swing.JLabel();
     jTextField4 = new javax.swing.JTextField();
     jLabel5 = new javax.swing.JLabel();
-    jButton2 = new javax.swing.JButton();
     jButton3 = new javax.swing.JButton();
     jButton4 = new javax.swing.JButton();
     jLabel6 = new javax.swing.JLabel();
@@ -128,6 +127,7 @@ public class EditMaterialDialog extends javax.swing.JDialog
     jButton5 = new javax.swing.JButton();
     jButton6 = new javax.swing.JButton();
     selectThumbnailButton1 = new com.t_oster.visicut.gui.beans.SelectThumbnailButton();
+    chooseColorButton1 = new com.t_oster.visicut.gui.beans.ChooseColorButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setName("Form"); // NOI18N
@@ -159,20 +159,6 @@ public class EditMaterialDialog extends javax.swing.JDialog
 
     jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
     jLabel5.setName("jLabel5"); // NOI18N
-
-    jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
-    jButton2.setContentAreaFilled(false);
-    jButton2.setName("jButton2"); // NOI18N
-    jButton2.setOpaque(true);
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentMaterial.color}"), jButton2, org.jdesktop.beansbinding.BeanProperty.create("background"));
-    bindingGroup.addBinding(binding);
-
-    jButton2.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton2ActionPerformed(evt);
-      }
-    });
 
     jButton3.setText(resourceMap.getString("jButton3.text")); // NOI18N
     jButton3.setName("jButton3"); // NOI18N
@@ -245,6 +231,12 @@ public class EditMaterialDialog extends javax.swing.JDialog
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentMaterial.thumbnailPath}"), selectThumbnailButton1, org.jdesktop.beansbinding.BeanProperty.create("thumbnailPath"), "thumbnailbt");
     bindingGroup.addBinding(binding);
 
+    chooseColorButton1.setText(resourceMap.getString("chooseColorButton1.text")); // NOI18N
+    chooseColorButton1.setName("chooseColorButton1"); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentMaterial.color}"), chooseColorButton1, org.jdesktop.beansbinding.BeanProperty.create("selectedColor"), "selectedColor");
+    bindingGroup.addBinding(binding);
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -253,7 +245,7 @@ public class EditMaterialDialog extends javax.swing.JDialog
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
               .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -269,19 +261,22 @@ public class EditMaterialDialog extends javax.swing.JDialog
             .addGap(29, 29, 29)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jLabel1)
-              .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
-              .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
+              .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                  .addComponent(jTextField4, javax.swing.GroupLayout.Alignment.LEADING)
-                  .addComponent(jTextField5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(24, 24, 24)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                  .addGroup(layout.createSequentialGroup()
-                    .addComponent(jLabel5)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                  .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                  .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.LEADING)
+                  .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                      .addComponent(jTextField4, javax.swing.GroupLayout.Alignment.LEADING)
+                      .addComponent(jTextField5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(24, 24, 24)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                      .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(chooseColorButton1, 0, 0, Short.MAX_VALUE))
+                      .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE))))
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addComponent(jButton4)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -308,13 +303,12 @@ public class EditMaterialDialog extends javax.swing.JDialog
           .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(jLabel6))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jLabel4)
-            .addComponent(jLabel5))
-          .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGap(18, 18, 18)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel4)
+          .addComponent(jLabel5)
+          .addComponent(chooseColorButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGap(20, 20, 20)
         .addComponent(jLabel3)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -324,7 +318,7 @@ public class EditMaterialDialog extends javax.swing.JDialog
             .addComponent(jButton5)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jButton6))
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE))
+          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jButton3)
@@ -336,12 +330,6 @@ public class EditMaterialDialog extends javax.swing.JDialog
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
-
-  private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton2ActionPerformed
-  {//GEN-HEADEREND:event_jButton2ActionPerformed
-    this.currentMaterial.setColor(JColorChooser.showDialog(this, "Please select the Material Color", this.currentMaterial.getColor()));
-    this.jButton2.setBackground(this.currentMaterial.getColor());
-  }//GEN-LAST:event_jButton2ActionPerformed
 
   private void jButton3ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton3ActionPerformed
   {//GEN-HEADEREND:event_jButton3ActionPerformed
@@ -445,8 +433,8 @@ public class EditMaterialDialog extends javax.swing.JDialog
   }//GEN-LAST:event_jButton5ActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private com.t_oster.visicut.gui.beans.ChooseColorButton chooseColorButton1;
   private javax.swing.JButton jButton1;
-  private javax.swing.JButton jButton2;
   private javax.swing.JButton jButton3;
   private javax.swing.JButton jButton4;
   private javax.swing.JButton jButton5;

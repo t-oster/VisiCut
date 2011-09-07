@@ -179,7 +179,6 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
     jButton1 = new javax.swing.JButton();
     jButton5 = new javax.swing.JButton();
     jButton3 = new javax.swing.JButton();
-    jButton2 = new javax.swing.JButton();
     jLabel5 = new javax.swing.JLabel();
     jTextField4 = new javax.swing.JTextField();
     jLabel4 = new javax.swing.JLabel();
@@ -191,6 +190,7 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
     jScrollPane1 = new javax.swing.JScrollPane();
     jTable1 = new javax.swing.JTable();
     selectThumbnailButton1 = new com.t_oster.visicut.gui.beans.SelectThumbnailButton();
+    chooseColorButton1 = new com.t_oster.visicut.gui.beans.ChooseColorButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setName("Form"); // NOI18N
@@ -231,25 +231,12 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
       }
     });
 
-    jButton2.setContentAreaFilled(false);
-    jButton2.setName("jButton2"); // NOI18N
-    jButton2.setOpaque(true);
-
-    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentVectorProfile.color}"), jButton2, org.jdesktop.beansbinding.BeanProperty.create("background"));
-    bindingGroup.addBinding(binding);
-
-    jButton2.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton2ActionPerformed(evt);
-      }
-    });
-
     jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
     jLabel5.setName("jLabel5"); // NOI18N
 
     jTextField4.setName("jTextField4"); // NOI18N
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentVectorProfile.width}"), jTextField4, org.jdesktop.beansbinding.BeanProperty.create("text"));
+    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentVectorProfile.width}"), jTextField4, org.jdesktop.beansbinding.BeanProperty.create("text"));
     bindingGroup.addBinding(binding);
 
     jLabel4.setText(resourceMap.getString("jLabel4.text")); // NOI18N
@@ -298,6 +285,11 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentVectorProfile.thumbnailPath}"), selectThumbnailButton1, org.jdesktop.beansbinding.BeanProperty.create("thumbnailPath"), "thumbnailbt");
     bindingGroup.addBinding(binding);
 
+    chooseColorButton1.setName("chooseColorButton1"); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentVectorProfile.color}"), chooseColorButton1, org.jdesktop.beansbinding.BeanProperty.create("selectedColor"), "colorbt");
+    bindingGroup.addBinding(binding);
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -312,17 +304,17 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
               .addComponent(jLabel4)
               .addComponent(selectThumbnailButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGap(28, 28, 28)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addGroup(layout.createSequentialGroup()
                 .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
                 .addComponent(jCheckBox1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(chooseColorButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
               .addComponent(jLabel1)
-              .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE)
+              .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 303, Short.MAX_VALUE)
               .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
           .addGroup(layout.createSequentialGroup()
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -351,16 +343,14 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
           .addComponent(jLabel2)
           .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(jLabel4)
-              .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(jCheckBox1)
-              .addComponent(jLabel5))
-            .addGap(18, 18, 18)
-            .addComponent(jLabel3))
-          .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel4)
+          .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(chooseColorButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel5)
+          .addComponent(jCheckBox1))
+        .addGap(18, 18, 18)
+        .addComponent(jLabel3)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(layout.createSequentialGroup()
@@ -389,11 +379,6 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
   {//GEN-HEADEREND:event_jButton3ActionPerformed
 
     this.setVectorProfile(this.getCurrentVectorProfile());     this.setVisible(false);   }//GEN-LAST:event_jButton3ActionPerformed
-
-  private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton2ActionPerformed
-  {//GEN-HEADEREND:event_jButton2ActionPerformed
-
-    this.currentVectorProfile.setColor(JColorChooser.showDialog(this, "Please select the Material Color", this.currentVectorProfile.getColor()));     this.jButton2.setBackground(this.currentVectorProfile.getColor());   }//GEN-LAST:event_jButton2ActionPerformed
 
   private void jButton5ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton5ActionPerformed
   {//GEN-HEADEREND:event_jButton5ActionPerformed
@@ -433,8 +418,8 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
    * @param args the command line arguments
    */
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private com.t_oster.visicut.gui.beans.ChooseColorButton chooseColorButton1;
   private javax.swing.JButton jButton1;
-  private javax.swing.JButton jButton2;
   private javax.swing.JButton jButton3;
   private javax.swing.JButton jButton4;
   private javax.swing.JButton jButton5;
