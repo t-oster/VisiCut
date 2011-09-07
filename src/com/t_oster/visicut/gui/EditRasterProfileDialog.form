@@ -38,21 +38,21 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="thumbnailButton" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="selectThumbnailButton1" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="1">
-                              <Component id="jComboBox1" pref="183" max="32767" attributes="0"/>
+                              <Component id="jComboBox1" pref="187" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jButton2" min="-2" pref="55" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="jTextField1" alignment="0" pref="300" max="32767" attributes="1"/>
+                          <Component id="jTextField1" alignment="0" pref="303" max="32767" attributes="1"/>
                           <Component id="jTextField2" alignment="0" min="-2" pref="300" max="-2" attributes="1"/>
+                          <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
@@ -69,13 +69,13 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" groupAlignment="1" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jTextField1" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="thumbnailButton" alignment="1" min="-2" pref="69" max="-2" attributes="0"/>
+                  <Component id="selectThumbnailButton1" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -84,7 +84,7 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Group type="103" groupAlignment="3" attributes="0">
+                  <Group type="103" alignment="1" groupAlignment="3" attributes="0">
                       <Component id="jComboBox1" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -107,7 +107,7 @@
                   <Component id="jButton3" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jButton4" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="30" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -126,15 +126,6 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton4ActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="thumbnailButton">
-      <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="thumbnailButton.text"/>
-        <Property name="name" type="java.lang.String" value="thumbnailButton" noResource="true"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="thumbnailButtonActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="jButton1">
@@ -262,6 +253,16 @@
       </Properties>
       <BindingProperties>
         <BindingProperty name="selectedItem" source="Form" sourcePath="${currentRasterProfile.ditherAlgorithm}" target="jComboBox1" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
+      </BindingProperties>
+    </Component>
+    <Component class="com.t_oster.visicut.gui.beans.SelectThumbnailButton" name="selectThumbnailButton1">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="selectThumbnailButton1" noResource="true"/>
+      </Properties>
+      <BindingProperties>
+        <BindingProperty name="thumbnailPath" source="Form" sourcePath="${currentRasterProfile.thumbnailPath}" target="selectThumbnailButton1" targetPath="thumbnailPath" updateStrategy="0" immediately="false">
+          <Property name="name" type="java.lang.String" value="thumbnailbt"/>
+        </BindingProperty>
       </BindingProperties>
     </Component>
   </SubComponents>
