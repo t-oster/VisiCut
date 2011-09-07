@@ -30,7 +30,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
@@ -993,6 +992,16 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
   {
     this.saveMenuItem.setEnabled(this.visicutModel1.getLoadedFile() != null);
   }
+  else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDLASERDEVICE))
+  {
+    boolean cam = this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null;
+    this.calibrateCameraMenuItem.setEnabled(cam);
+    this.captureImageButton.setEnabled(cam);
+    if (cam)
+    {
+      this.captureImage();
+    }
+  }
 }//GEN-LAST:event_visicutModel1PropertyChange
 
 private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuItemActionPerformed
@@ -1019,6 +1028,11 @@ private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 }//GEN-LAST:event_newMenuItemActionPerformed
 
 private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calibrateCameraMenuItemActionPerformed
+  if (this.visicutModel1.getBackgroundImage() == null)
+  {
+    JOptionPane.showMessageDialog(this, "The Camera doesn't seem to be working. Please check the URL in the Lasercutter Settings");
+    return;
+  }
   CamCalibrationDialog ccd = new CamCalibrationDialog();
   ccd.setBackgroundImage(this.visicutModel1.getBackgroundImage());
   ccd.setImageURL(this.visicutModel1.getSelectedLaserDevice().getCameraURL());

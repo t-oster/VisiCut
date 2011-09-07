@@ -510,6 +510,7 @@ public class PreviewPanel extends ZoomablePanel
        */
       //todo calculate gridDst from Transform
       double gridDst = 0.1;
+      int smalllines = 2;
       while (Util.mm2px(gridDst, 500) < minDrawDst)
       {
         gridDst *= 2;
@@ -520,6 +521,7 @@ public class PreviewPanel extends ZoomablePanel
       }
       gg.setTransform(new AffineTransform());//we dont want the line width to scale with zoom etc
       double mmx = 0;
+      int count = 0;
       for (int x = 0; x < Util.mm2px(this.material.getWidth(), 500); x += Util.mm2px(gridDst, 500))
       {
         Point a = new Point(x, 0);
@@ -533,14 +535,28 @@ public class PreviewPanel extends ZoomablePanel
             break;
           }
           gg.drawLine(a.x, a.y, b.x, b.y);
-          String txt = ((float) Math.round((float) (10 * mmx))) / 10 + " mm";
-          int w = gg.getFontMetrics().stringWidth(txt);
-          int h = gg.getFontMetrics().getHeight();
-          gg.drawString(txt, a.x - w / 2, 5 + h);
+          if (++count >= smalllines)
+          {
+            String txt;
+            float mm = ((float) Math.round((float) (10 * mmx))) / 10;
+            if ((int) mm == mm)
+            {
+              txt = ""+(int) mm;
+            }
+            else
+            {
+              txt = ""+mm;
+            }
+            int w = gg.getFontMetrics().stringWidth(txt);
+            int h = gg.getFontMetrics().getHeight();
+            gg.drawString(txt, a.x - w / 2, 5 + h);
+            count = 0;
+          }
         }
         mmx += gridDst;
       }
       double mmy = 0;
+      count = 0;
       for (int y = 0; y < Util.mm2px(this.material.getHeight(), 500); y += Util.mm2px(gridDst, 500))
       {
         Point a = new Point(0, y);
@@ -554,10 +570,23 @@ public class PreviewPanel extends ZoomablePanel
             break;
           }
           gg.drawLine(a.x, a.y, b.x, b.y);
-          String txt = (float) (Math.round((float) (10 * mmy))) / 10 + " mm";
-          int w = gg.getFontMetrics().stringWidth(txt);
-          int h = gg.getFontMetrics().getHeight();
-          gg.drawString(txt, 5, a.y);
+          if (++count >= smalllines)
+          {
+            String txt;
+            float mm = ((float) Math.round((float) (10 * mmy))) / 10;
+            if ((int) mm == mm)
+            {
+              txt = ""+(int) mm;
+            }
+            else
+            {
+              txt = ""+mm;
+            }
+            int w = gg.getFontMetrics().stringWidth(txt);
+            int h = gg.getFontMetrics().getHeight();
+            gg.drawString(txt, 5, a.y);
+            count = 0;
+          }
         }
         mmy += gridDst;
       }
