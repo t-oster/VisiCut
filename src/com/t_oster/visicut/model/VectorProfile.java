@@ -132,10 +132,10 @@ public class VectorProfile extends LaserProfile
     cp.name = name;
     cp.thumbnailPath = thumbnailPath;
     cp.width = width;
-    cp.laserProperties = new LaserProperty[laserProperties.length];
-    for (int i = 0;i<cp.laserProperties.length;i++)
+    //cp.laserProperties = new LinkedList<LaserProperty>();
+    for (LaserProperty l:this.getLaserProperties())
     {
-      cp.laserProperties[i] = laserProperties[i].clone();
+      cp.laserProperties.add(l.clone());
     }
     return cp;
   }

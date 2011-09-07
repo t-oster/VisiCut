@@ -11,17 +11,26 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.visicut.gui.beans.EditableTableProvider;
 import com.t_oster.visicut.model.VectorProfile;
-import java.util.Arrays;
-import javax.swing.JColorChooser;
 import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author thommy
  */
-public class EditVectorProfileDialog extends javax.swing.JDialog
+public class EditVectorProfileDialog extends javax.swing.JDialog implements EditableTableProvider
 {
+
+  public Object getNewInstance()
+  {
+    return new LaserProperty();
+  }
+
+  public Object editObject(Object o)
+  {
+    return o;
+  }
 
   private class LaserPropertiesTableModel extends DefaultTableModel
   {
@@ -54,13 +63,13 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
       switch (x)
       {
         case 0:
-          return vp.getLaserProperties()[y].getPower();
+          return vp.getLaserProperties().get(y).getPower();
         case 1:
-          return vp.getLaserProperties()[y].getSpeed();
+          return vp.getLaserProperties().get(y).getSpeed();
         case 2:
-          return vp.getLaserProperties()[y].getFrequency();
+          return vp.getLaserProperties().get(y).getFrequency();
         case 3:
-          return vp.getLaserProperties()[y].getFocus();
+          return vp.getLaserProperties().get(y).getFocus();
       }
       return null;
     }
@@ -77,16 +86,16 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
       switch (x)
       {
         case 0:
-          vp.getLaserProperties()[y].setPower(Integer.parseInt(o.toString()));
+          vp.getLaserProperties().get(y).setPower(Integer.parseInt(o.toString()));
           return;
         case 1:
-          vp.getLaserProperties()[y].setSpeed(Integer.parseInt(o.toString()));
+          vp.getLaserProperties().get(y).setSpeed(Integer.parseInt(o.toString()));
           return;
         case 2:
-          vp.getLaserProperties()[y].setFrequency(Integer.parseInt(o.toString()));
+          vp.getLaserProperties().get(y).setFrequency(Integer.parseInt(o.toString()));
           return;
         case 3:
-          vp.getLaserProperties()[y].setFocus(Float.parseFloat(o.toString()));
+          vp.getLaserProperties().get(y).setFocus(Float.parseFloat(o.toString()));
           return;
       }
     }
@@ -94,7 +103,7 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
     @Override
     public int getRowCount()
     {
-      return vp == null ? 0 : vp.getLaserProperties().length;
+      return vp == null ? 0 : vp.getLaserProperties().size();
     }
   }
   protected VectorProfile vectorProfile = null;
@@ -161,7 +170,7 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
   {
     super(parent, modal);
     initComponents();
-    this.jTable1.setModel(listModel);
+    this.editableTablePanel1.setTableModel(listModel);
   }
 
   /** This method is called from within the constructor to
@@ -176,8 +185,6 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
 
     jLabel3 = new javax.swing.JLabel();
     jButton4 = new javax.swing.JButton();
-    jButton1 = new javax.swing.JButton();
-    jButton5 = new javax.swing.JButton();
     jButton3 = new javax.swing.JButton();
     jLabel5 = new javax.swing.JLabel();
     jTextField4 = new javax.swing.JTextField();
@@ -187,10 +194,9 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
     jLabel1 = new javax.swing.JLabel();
     jTextField1 = new javax.swing.JTextField();
     jCheckBox1 = new javax.swing.JCheckBox();
-    jScrollPane1 = new javax.swing.JScrollPane();
-    jTable1 = new javax.swing.JTable();
     selectThumbnailButton1 = new com.t_oster.visicut.gui.beans.SelectThumbnailButton();
     chooseColorButton1 = new com.t_oster.visicut.gui.beans.ChooseColorButton();
+    editableTablePanel1 = new com.t_oster.visicut.gui.beans.EditableTablePanel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setName("Form"); // NOI18N
@@ -204,22 +210,6 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
     jButton4.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         jButton4ActionPerformed(evt);
-      }
-    });
-
-    jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
-    jButton1.setName("jButton1"); // NOI18N
-    jButton1.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton1ActionPerformed(evt);
-      }
-    });
-
-    jButton5.setText(resourceMap.getString("jButton5.text")); // NOI18N
-    jButton5.setName("jButton5"); // NOI18N
-    jButton5.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton5ActionPerformed(evt);
       }
     });
 
@@ -264,22 +254,6 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentVectorProfile.isCut}"), jCheckBox1, org.jdesktop.beansbinding.BeanProperty.create("selected"));
     bindingGroup.addBinding(binding);
 
-    jScrollPane1.setName("jScrollPane1"); // NOI18N
-
-    jTable1.setModel(new javax.swing.table.DefaultTableModel(
-      new Object [][] {
-        {null, null, null, null},
-        {null, null, null, null},
-        {null, null, null, null},
-        {null, null, null, null}
-      },
-      new String [] {
-        "Title 1", "Title 2", "Title 3", "Title 4"
-      }
-    ));
-    jTable1.setName("jTable1"); // NOI18N
-    jScrollPane1.setViewportView(jTable1);
-
     selectThumbnailButton1.setName("selectThumbnailButton1"); // NOI18N
 
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentVectorProfile.thumbnailPath}"), selectThumbnailButton1, org.jdesktop.beansbinding.BeanProperty.create("thumbnailPath"), "thumbnailbt");
@@ -288,6 +262,12 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
     chooseColorButton1.setName("chooseColorButton1"); // NOI18N
 
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentVectorProfile.color}"), chooseColorButton1, org.jdesktop.beansbinding.BeanProperty.create("selectedColor"), "colorbt");
+    bindingGroup.addBinding(binding);
+
+    editableTablePanel1.setName("editableTablePanel1"); // NOI18N
+    editableTablePanel1.setProvider(this);
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentVectorProfile.laserProperties}"), editableTablePanel1, org.jdesktop.beansbinding.BeanProperty.create("objects"), "laserprops");
     bindingGroup.addBinding(binding);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -307,25 +287,21 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addGroup(layout.createSequentialGroup()
                 .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 54, Short.MAX_VALUE)
                 .addComponent(jCheckBox1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(chooseColorButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
               .addComponent(jLabel1)
-              .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 303, Short.MAX_VALUE)
+              .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
               .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)
-              .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)))
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addComponent(jButton4)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jButton3)))
+          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(layout.createSequentialGroup()
+              .addComponent(jButton4)
+              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+              .addComponent(jButton3))
+            .addComponent(editableTablePanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -352,12 +328,7 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
         .addGap(18, 18, 18)
         .addComponent(jLabel3)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(jButton1)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jButton5))
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addComponent(editableTablePanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jButton3)
@@ -379,58 +350,20 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
   {//GEN-HEADEREND:event_jButton3ActionPerformed
 
     this.setVectorProfile(this.getCurrentVectorProfile());     this.setVisible(false);   }//GEN-LAST:event_jButton3ActionPerformed
-
-  private void jButton5ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton5ActionPerformed
-  {//GEN-HEADEREND:event_jButton5ActionPerformed
-    int idx = this.jTable1.getSelectedRow();
-    if (idx >= 0)
-    {
-      LaserProperty[] orig = this.currentVectorProfile.getLaserProperties();
-      LaserProperty[] neu = new LaserProperty[orig.length - 1];
-      for (int i = 0; i < orig.length; i++)
-      {
-        if (i < idx)
-        {
-          neu[i] = orig[i];
-        }
-        else
-        {
-          if (i > idx)
-          {
-            neu[i - 1] = orig[i];
-          }
-        }
-      }
-      this.currentVectorProfile.setLaserProperties(neu);
-      this.listModel.fireTableRowsDeleted(idx, idx);
-    }
-  }//GEN-LAST:event_jButton5ActionPerformed
-
-  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
-  {//GEN-HEADEREND:event_jButton1ActionPerformed
-    LaserProperty[] props = this.currentVectorProfile.getLaserProperties();
-    props = Arrays.copyOf(props, props.length+1);
-    props[props.length-1] = new LaserProperty();
-    this.currentVectorProfile.setLaserProperties(props);
-    this.listModel.fireTableRowsInserted(props.length-1, props.length-1);
-  }//GEN-LAST:event_jButton1ActionPerformed
   /**
    * @param args the command line arguments
    */
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private com.t_oster.visicut.gui.beans.ChooseColorButton chooseColorButton1;
-  private javax.swing.JButton jButton1;
+  private com.t_oster.visicut.gui.beans.EditableTablePanel editableTablePanel1;
   private javax.swing.JButton jButton3;
   private javax.swing.JButton jButton4;
-  private javax.swing.JButton jButton5;
   private javax.swing.JCheckBox jCheckBox1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
-  private javax.swing.JScrollPane jScrollPane1;
-  private javax.swing.JTable jTable1;
   private javax.swing.JTextField jTextField1;
   private javax.swing.JTextField jTextField2;
   private javax.swing.JTextField jTextField4;

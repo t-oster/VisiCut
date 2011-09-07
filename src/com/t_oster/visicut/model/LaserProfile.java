@@ -10,7 +10,11 @@ import com.t_oster.visicut.gui.ImageListable;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A cutting Profile represents a specific way of handling Image
@@ -43,14 +47,15 @@ public abstract class LaserProfile implements ImageListable, Cloneable
     this.description = description;
   }
 
-  protected LaserProperty[] laserProperties = new LaserProperty[]{new LaserProperty()};
+  protected List<LaserProperty> laserProperties = new LinkedList<LaserProperty>();
+  public static final String PROP_LASERPROPERTIES = "laserProperties";
 
   /**
    * Get the value of laserProperties
    *
    * @return the value of laserProperties
    */
-  public LaserProperty[] getLaserProperties()
+  public List<LaserProperty> getLaserProperties()
   {
     return laserProperties;
   }
@@ -60,10 +65,35 @@ public abstract class LaserProfile implements ImageListable, Cloneable
    *
    * @param laserProperties new value of laserProperties
    */
-  public void setLaserProperties(LaserProperty[] laserProperties)
+  public void setLaserProperties(List<LaserProperty> laserProperties)
   {
+    List<LaserProperty> oldLaserProperties = this.laserProperties;
     this.laserProperties = laserProperties;
+    propertyChangeSupport.firePropertyChange(PROP_LASERPROPERTIES, oldLaserProperties, laserProperties);
   }
+  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+  /**
+   * Add PropertyChangeListener.
+   *
+   * @param listener
+   */
+  public void addPropertyChangeListener(PropertyChangeListener listener)
+  {
+    propertyChangeSupport.addPropertyChangeListener(listener);
+  }
+
+  /**
+   * Remove PropertyChangeListener.
+   *
+   * @param listener
+   */
+  public void removePropertyChangeListener(PropertyChangeListener listener)
+  {
+    propertyChangeSupport.removePropertyChangeListener(listener);
+  }
+
+
   protected Color color = new Color(0, 0, 0);
 
   /**
@@ -155,17 +185,14 @@ public abstract class LaserProfile implements ImageListable, Cloneable
 
   public void addToLaserJob(LaserJob job, GraphicSet set, float focusOffset)
   {
-    LaserProperty[] props = this.getLaserProperties();
-    float[] originalFocus = new float[props.length];
-    for (int i = 0;i<props.length;i++)
+    for (LaserProperty p:this.getLaserProperties())
     {
-      originalFocus[i] = props[i].getFocus();
-      props[i].setFocus(originalFocus[i] + focusOffset);
+      p.setFocus(p.getFocus()+focusOffset);
     }
     this.addToLaserJob(job, set);
-    for (int i = 0;i<props.length;i++)
+    for (LaserProperty p:this.getLaserProperties())
     {
-      props[i].setFocus(originalFocus[i]);
+      p.setFocus(p.getFocus()-focusOffset);
     }
   }
 

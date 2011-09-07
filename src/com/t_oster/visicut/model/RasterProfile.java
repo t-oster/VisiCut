@@ -15,6 +15,7 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.LinkedList;
 
 /**
  * This Class represents a profile, describing
@@ -175,10 +176,10 @@ public class RasterProfile extends LaserProfile
     rp.invertColors = this.invertColors;
     rp.name = this.name;
     rp.thumbnailPath = this.thumbnailPath;
-    rp.laserProperties = new LaserProperty[this.laserProperties.length];
-    for (int i = 0;i<rp.laserProperties.length;i++)
+    //rp.laserProperties = new LinkedList<LaserProperty>();
+    for (LaserProperty l: this.getLaserProperties())
     {
-      rp.laserProperties[i] = this.laserProperties[i].clone();
+      rp.laserProperties.add(l.clone());
     }
     return rp;
   }

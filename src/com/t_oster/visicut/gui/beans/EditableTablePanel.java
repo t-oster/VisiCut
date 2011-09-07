@@ -54,8 +54,11 @@ public class EditableTablePanel extends javax.swing.JPanel
   protected DefaultTableModel tableModel = new DefaultTableModel()
   {
 
-    private String[] columns = new String[]{"Elements"};
-    
+    private String[] columns = new String[]
+    {
+      "Elements"
+    };
+
     @Override
     public int getColumnCount()
     {
@@ -85,7 +88,6 @@ public class EditableTablePanel extends javax.swing.JPanel
     {
       return false;
     }
-    
   };
   public static final String PROP_TABLEMODEL = "tableModel";
 
@@ -226,9 +228,12 @@ public class EditableTablePanel extends javax.swing.JPanel
 
 private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
   int idx = this.table.getSelectedRow();
-  Object o = this.objects.get(idx);
-  this.objects.remove(o);
-  this.tableModel.fireTableRowsDeleted(idx, idx);
+  if (idx >= 0)
+  {
+    Object o = this.objects.get(idx);
+    this.objects.remove(o);
+    this.tableModel.fireTableRowsDeleted(idx, idx);
+  }
 }//GEN-LAST:event_removeButtonActionPerformed
 
 private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
@@ -247,12 +252,16 @@ private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
 private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
   if (this.provider != null)
   {
-    Object o = this.provider.editObject(this.provider.getNewInstance());
-    if (o != null)
+    Object n = this.provider.getNewInstance();
+    if (n != null)
     {
-      this.objects.add(o);
-      int idx = this.objects.indexOf(o);
-      this.tableModel.fireTableRowsInserted(idx, idx);
+      Object o = this.provider.editObject(n);
+      if (o != null)
+      {
+        this.objects.add(o);
+        int idx = this.objects.indexOf(o);
+        this.tableModel.fireTableRowsInserted(idx, idx);
+      }
     }
   }
 }//GEN-LAST:event_addButtonActionPerformed

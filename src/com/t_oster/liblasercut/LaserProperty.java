@@ -43,6 +43,8 @@ public class LaserProperty implements Cloneable
    */
   public void setPower(int power)
   {
+    power = power < 0 ? 0 : power;
+    power = power > 100 ? 100 : power;
     this.power = power;
   }
 
@@ -57,6 +59,8 @@ public class LaserProperty implements Cloneable
    */
   public void setSpeed(int speed)
   {
+    speed = speed < 0 ? 0 : speed;
+    speed = speed > 100 ? 100 : speed;
     this.speed = speed;
   }
 
@@ -67,6 +71,8 @@ public class LaserProperty implements Cloneable
 
   public void setFrequency(int frequency)
   {
+    frequency = frequency < 100 ? 100 : frequency;
+    frequency = frequency > 5000 ? 5000 : frequency;
     this.frequency = frequency;
   }
 

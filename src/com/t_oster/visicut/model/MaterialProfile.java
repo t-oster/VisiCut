@@ -4,6 +4,8 @@ import com.t_oster.visicut.gui.ImageListable;
 import java.awt.Color;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -100,38 +102,31 @@ public class MaterialProfile implements ImageListable, Cloneable
   {
     this.color = color;
   }
-  protected LaserProfile[] laserProfile = new LaserProfile[]{new VectorProfile(), new RasterProfile()};
+  protected List<LaserProfile> laserProfiles = new LinkedList<LaserProfile>();
+  public static final String PROP_LASERPROFILES = "laserProfiles";
 
   /**
-   * Get the value of lineProfile
+   * Get the value of laserProfiles
    *
-   * @return the value of lineProfile
+   * @return the value of laserProfiles
    */
-  public LaserProfile[] getLaserProfiles()
+  public List<LaserProfile> getLaserProfiles()
   {
-    return laserProfile;
+    return laserProfiles;
   }
 
   /**
-   * Set the value of lineProfile
+   * Set the value of laserProfiles
    *
-   * @param lineProfile new value of lineProfile
+   * @param laserProfiles new value of laserProfiles
    */
-  public void setLaserProfiles(LaserProfile[] lineProfile)
+  public void setLaserProfiles(List<LaserProfile> laserProfiles)
   {
-    this.laserProfile = lineProfile;
+    List<LaserProfile> oldLaserProfiles = this.laserProfiles;
+    this.laserProfiles = laserProfiles;
+    propertyChangeSupport.firePropertyChange(PROP_LASERPROFILES, oldLaserProfiles, laserProfiles);
   }
 
-  /**
-   * Get the value of lineProfile at specified index
-   *
-   * @param index
-   * @return the value of lineProfile at specified index
-   */
-  public LaserProfile getLaserProfile(int index)
-  {
-    return this.laserProfile[index];
-  }
   
   /**
    * Returns the LaserProfile with the given Name.
@@ -140,7 +135,7 @@ public class MaterialProfile implements ImageListable, Cloneable
    */
   public LaserProfile getLaserProfile(String name)
   {
-    for (LaserProfile p :this.laserProfile)
+    for (LaserProfile p :this.laserProfiles)
     {
       if (p.getName().equals(name))
       {
@@ -150,16 +145,6 @@ public class MaterialProfile implements ImageListable, Cloneable
     return null;
   }
 
-  /**
-   * Set the value of lineProfile at specified index.
-   *
-   * @param index
-   * @param newLineProfile new value of lineProfile at specified index
-   */
-  public void setLaserProfile(int index, LaserProfile newLineProfile)
-  {
-    this.laserProfile[index] = newLineProfile;
-  }
   protected String name = "Unnamed Material";
 
   /**
@@ -296,10 +281,10 @@ public class MaterialProfile implements ImageListable, Cloneable
     cp.height = this.height;
     cp.thumbnailPath = this.thumbnailPath;
     cp.width = this.width;
-    cp.laserProfile = new LaserProfile[this.laserProfile.length];
-    for (int i=0;i<cp.laserProfile.length;i++)
+    //cp.laserProfiles = new LinkedList<LaserProfile>();
+    for (LaserProfile lp:this.laserProfiles)
     {
-      cp.laserProfile[i] = this.laserProfile[i].clone();
+      cp.laserProfiles.add(lp.clone());
     }
     return cp;
   }

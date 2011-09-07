@@ -73,10 +73,7 @@ public class ProfileManager
     vp.setIsCut(true);
     vp.setWidth(1f);
     vp.setPreviewThumbnail(new File(".VisiCut/materials/Finnpappe/cutline.png"));
-    vp.setLaserProperties(new LaserProperty[]
-      {
-        new LaserProperty(100, 70)
-      });
+    vp.getLaserProperties().add(new LaserProperty(100, 70));
     lprofiles.add(vp);
     vp = new VectorProfile();
     vp.setName("broad line");
@@ -84,10 +81,7 @@ public class ProfileManager
     vp.setDescription("A broad line, which is not cut through.");
     vp.setWidth(3f);
     vp.setPreviewThumbnail(new File(".VisiCut/materials/Finnpappe/bigline.png"));
-    vp.setLaserProperties(new LaserProperty[]
-      {
-        new LaserProperty(90, 100, 500, 150 * 0.0252f)
-      });
+    vp.getLaserProperties().add(new LaserProperty(90, 100, 500, 150 * 0.0252f));
     lprofiles.add(vp);
     RasterProfile rp = new RasterProfile();
     rp.setColor(Color.black);
@@ -96,10 +90,7 @@ public class ProfileManager
     rp.setDescription("The Floyd Steinberg Algorithm is good for Fotos.");
     rp.setPreviewThumbnail(new File(".VisiCut/materials/Finnpappe/floydsteinberg.png"));
     rp.setDitherAlgorithm(DitherAlgorithm.FLOYD_STEINBERG);
-    rp.setLaserProperties(new LaserProperty[]
-      {
-        new LaserProperty(100, 70)
-      });
+    rp.getLaserProperties().add(new LaserProperty(100, 70));
     lprofiles.add(rp);
     rp = new RasterProfile();
     rp.setName("Ordered");
@@ -107,10 +98,7 @@ public class ProfileManager
     rp.setDescription("The Ordered Algorithm adds a Pattern to the image");
     rp.setPreviewThumbnail(new File(".VisiCut/materials/Finnpappe/ordered.png"));
     rp.setDitherAlgorithm(DitherAlgorithm.ORDERED);
-    rp.setLaserProperties(new LaserProperty[]
-      {
-        new LaserProperty(100, 70)
-      });
+    rp.getLaserProperties().add(new LaserProperty(100, 70));
     lprofiles.add(rp);
     rp = new RasterProfile();
     rp.setColor(new Color(150, 72, 0));
@@ -118,12 +106,9 @@ public class ProfileManager
     rp.setDescription("The Average Algorithm makes a pixel black iff its darker than the average pixel");
     rp.setPreviewThumbnail(new File(".VisiCut/materials/Finnpappe/average.png"));
     rp.setDitherAlgorithm(DitherAlgorithm.AVERAGE);
-    rp.setLaserProperties(new LaserProperty[]
-      {
-        new LaserProperty(100, 70)
-      });
+    rp.getLaserProperties().add(new LaserProperty(100, 70));
     lprofiles.add(rp);
-    profile.setLaserProfiles(lprofiles.toArray(new LaserProfile[0]));
+    profile.setLaserProfiles(lprofiles);
     this.materials.add(profile);
     //Filz
     profile = new MaterialProfile();
@@ -136,10 +121,7 @@ public class ProfileManager
     vp = new VectorProfile();
     vp.setName("cut line");
     vp.setColor(new Color(205, 77, 4));
-    vp.setLaserProperties(new LaserProperty[]
-      {
-        new LaserProperty(100, 80, 500)
-      });
+    vp.getLaserProperties().add(new LaserProperty(100, 80, 500));
     vp.setIsCut(true);
     vp.setWidth(1.07f);
     vp.setPreviewThumbnail(new File(".VisiCut/materials/Filz/cutline.png"));
@@ -148,10 +130,7 @@ public class ProfileManager
     vp.setName("broad cut line");
     vp.setColor(new Color(205, 77, 4));
     vp.setIsCut(true);
-    vp.setLaserProperties(new LaserProperty[]
-      {
-        new LaserProperty(90, 100, 500, 150 * 0.0252f)
-      });
+    vp.getLaserProperties().add(new LaserProperty(90, 100, 500, 150 * 0.0252f));
     vp.setWidth(2f);
     vp.setPreviewThumbnail(new File(".VisiCut/materials/Filz/bigcut.png"));
     lprofiles.add(vp);
@@ -161,12 +140,9 @@ public class ProfileManager
     rp.setDescription("The Average Algorithm makes a pixel black iff its darker than the average pixel");
     rp.setPreviewThumbnail(new File(".VisiCut/materials/Plexiglass/rasterordered.png"));
     rp.setDitherAlgorithm(DitherAlgorithm.AVERAGE);
-    rp.setLaserProperties(new LaserProperty[]
-      {
-        new LaserProperty(100, 70)
-      });
+    rp.getLaserProperties().add(new LaserProperty(100, 70));
     lprofiles.add(rp);
-    profile.setLaserProfiles(lprofiles.toArray(new LaserProfile[0]));
+    profile.setLaserProfiles(lprofiles);
     this.materials.add(profile);
     //Plexiglass
     profile = new MaterialProfile();
@@ -177,10 +153,7 @@ public class ProfileManager
     lprofiles = new LinkedList<LaserProfile>();
     vp = new VectorProfile();
     vp.setName("cut line");
-    vp.setLaserProperties(new LaserProperty[]
-      {
-        new LaserProperty(100, 50, 5000)
-      });
+    vp.getLaserProperties().add(new LaserProperty(100, 50, 5000));
     vp.setIsCut(true);
     vp.setWidth(1f);
     vp.setColor(new Color(170, 160, 160));
@@ -189,10 +162,7 @@ public class ProfileManager
     vp = new VectorProfile();
     vp.setColor(new Color(170, 160, 160));
     vp.setName("broad line");
-    vp.setLaserProperties(new LaserProperty[]
-      {
-        new LaserProperty(90, 100, 500, 150 * 0.0252f)
-      });
+    vp.getLaserProperties().add(new LaserProperty(90, 100, 500, 150 * 0.0252f));
     vp.setWidth(2f);
     vp.setPreviewThumbnail(new File(".VisiCut/materials/Plexiglass/bigline.png"));
     lprofiles.add(vp);
@@ -201,20 +171,16 @@ public class ProfileManager
     rp.setName("Floyd Steinberg");
     rp.setPreviewThumbnail(new File(".VisiCut/materials/Plexiglass/floydsteinberg.png"));
     rp.setDitherAlgorithm(DitherAlgorithm.FLOYD_STEINBERG);
-    rp.setLaserProperties(new LaserProperty[]
-      {
-        new LaserProperty(80, 100), new LaserProperty(80, 100)
-      });
+    rp.getLaserProperties().add(new LaserProperty(80, 100));
+    rp.getLaserProperties().add(new LaserProperty(80, 100));
     lprofiles.add(rp);
     rp = new RasterProfile();
     rp.setColor(new Color(170, 160, 160));
     rp.setName("Ordered");
     rp.setPreviewThumbnail(new File(".VisiCut/materials/Plexiglass/rasterordered.png"));
     rp.setDitherAlgorithm(DitherAlgorithm.ORDERED);
-    rp.setLaserProperties(new LaserProperty[]
-      {
-        new LaserProperty(50, 100), new LaserProperty(50, 100)
-      });
+    rp.getLaserProperties().add(new LaserProperty(50, 100));
+    rp.getLaserProperties().add(new LaserProperty(50, 100));
     lprofiles.add(rp);
     rp = new RasterProfile();
     rp.setColor(new Color(170, 160, 160));
@@ -222,23 +188,19 @@ public class ProfileManager
     rp.setInvertColors(true);
     rp.setPreviewThumbnail(new File(".VisiCut/materials/Plexiglass/floydsteinberg.png"));
     rp.setDitherAlgorithm(DitherAlgorithm.FLOYD_STEINBERG);
-    rp.setLaserProperties(new LaserProperty[]
-      {
-        new LaserProperty(50, 100), new LaserProperty(50, 100)
-      });
+    rp.getLaserProperties().add(new LaserProperty(50, 100));
+    rp.getLaserProperties().add(new LaserProperty(50, 100));
     lprofiles.add(rp);
     rp = new RasterProfile();
     rp.setColor(new Color(170, 160, 160));
     rp.setName("Ordered (inverted)");
     rp.setPreviewThumbnail(new File(".VisiCut/materials/Plexiglass/rasterordered.png"));
     rp.setDitherAlgorithm(DitherAlgorithm.ORDERED);
-    rp.setLaserProperties(new LaserProperty[]
-      {
-        new LaserProperty(50, 100), new LaserProperty(50, 100)
-      });
+    rp.getLaserProperties().add(new LaserProperty(50, 100));
+    rp.getLaserProperties().add(new LaserProperty(50, 100));
     rp.setInvertColors(true);
     lprofiles.add(rp);
-    profile.setLaserProfiles(lprofiles.toArray(new LaserProfile[0]));
+    profile.setLaserProfiles(lprofiles);
     this.materials.add(profile);
   }
 

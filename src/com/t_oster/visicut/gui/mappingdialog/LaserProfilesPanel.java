@@ -80,9 +80,9 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
     }
     else
     {
-      for (int i = 0; i < this.getMaterial().getLaserProfiles().length; i++)
+      for (int i = 0; i < this.getMaterial().getLaserProfiles().size(); i++)
       {
-        if (this.getMaterial().getLaserProfile(i).equals(selectedCuttingProfile))
+        if (this.getMaterial().getLaserProfiles().get(i).equals(selectedCuttingProfile))
         {
           this.buttons[i].setSelected(true);
           break;
@@ -104,7 +104,7 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
     this.buttons = new JRadioButton[0];
     if (this.getMaterial() != null && this.getMaterial().getLaserProfiles() != null)
     {
-      this.buttons = new JRadioButton[this.getMaterial().getLaserProfiles().length + 1];
+      this.buttons = new JRadioButton[this.getMaterial().getLaserProfiles().size() + 1];
       this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
       int i = 0;
       for (LaserProfile l : this.getMaterial().getLaserProfiles())
@@ -147,7 +147,7 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
           {
             if (i < this.buttons.length - 1)
             {
-              this.setSelectedLaserProfile(this.material.getLaserProfile(i));
+              this.setSelectedLaserProfile(this.material.getLaserProfiles().get(i));
             }
             else
             {
