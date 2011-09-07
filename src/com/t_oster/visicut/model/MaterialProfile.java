@@ -281,7 +281,7 @@ public class MaterialProfile implements ImageListable, Cloneable
     cp.height = this.height;
     cp.thumbnailPath = this.thumbnailPath;
     cp.width = this.width;
-    //cp.laserProfiles = new LinkedList<LaserProfile>();
+    cp.laserProfiles = new LinkedList<LaserProfile>();
     for (LaserProfile lp:this.laserProfiles)
     {
       cp.laserProfiles.add(lp.clone());

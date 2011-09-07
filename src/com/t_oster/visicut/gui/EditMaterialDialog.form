@@ -254,7 +254,7 @@
       </Properties>
       <BindingProperties>
         <BindingProperty name="objects" source="Form" sourcePath="${currentMaterial.laserProfiles}" target="editableTablePanel1" targetPath="objects" updateStrategy="0" immediately="false">
-          <Property name="name" type="java.lang.String" value="sfsdf"/>
+          <Property name="name" type="java.lang.String" value="Laser Profiles to Table Model"/>
         </BindingProperty>
       </BindingProperties>
     </Component>

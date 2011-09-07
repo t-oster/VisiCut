@@ -14,6 +14,7 @@ import com.t_oster.visicut.gui.beans.EditableTableProvider;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
+import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
@@ -79,6 +80,8 @@ public class EditMaterialDialog extends javax.swing.JDialog implements EditableT
     MaterialProfile oldCurrentMaterial = this.currentMaterial;
     this.currentMaterial = currentMaterial;
     firePropertyChange(PROP_CURRENTMATERIAL, oldCurrentMaterial, currentMaterial);
+    //Bug: Beansbinding does not work properly, so we set it manually
+    this.editableTablePanel1.setObjects((List) currentMaterial.getLaserProfiles());
   }
 
   /** Creates new form EditMaterialDialog */
@@ -192,7 +195,7 @@ public class EditMaterialDialog extends javax.swing.JDialog implements EditableT
     editableTablePanel1.setName("editableTablePanel1"); // NOI18N
     editableTablePanel1.setProvider(this);
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentMaterial.laserProfiles}"), editableTablePanel1, org.jdesktop.beansbinding.BeanProperty.create("objects"), "sfsdf");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentMaterial.laserProfiles}"), editableTablePanel1, org.jdesktop.beansbinding.BeanProperty.create("objects"), "Laser Profiles to Table Model");
     bindingGroup.addBinding(binding);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

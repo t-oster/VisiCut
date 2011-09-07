@@ -46,14 +46,6 @@ public class EditMaterialsDialog extends javax.swing.JDialog implements Editable
     List<MaterialProfile> oldCurrentMaterials = this.currentMaterials;
     this.currentMaterials = currentMaterials;
     firePropertyChange(PROP_CURRENTMATERIALS, oldCurrentMaterials, currentMaterials);
-    this.listModel.clear();
-    if (currentMaterials != null)
-    {
-      for (MaterialProfile m : currentMaterials)
-      {
-        listModel.addElement(m);
-      }
-    }
   }
   protected List<MaterialProfile> materials = null;
   public static final String PROP_MATERIALS = "materials";
@@ -85,8 +77,7 @@ public class EditMaterialsDialog extends javax.swing.JDialog implements Editable
     }
     this.setCurrentMaterials(cur);
   }
-  private DefaultListModel listModel = new DefaultListModel();
-
+  
   /** Creates new form EditMaterialsDialog */
   public EditMaterialsDialog(java.awt.Frame parent, boolean modal)
   {
