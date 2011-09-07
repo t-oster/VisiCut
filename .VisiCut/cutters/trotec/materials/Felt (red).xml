@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0_26" class="java.beans.XMLDecoder"> 
+ <object class="com.t_oster.visicut.model.MaterialProfile"> 
+  <void property="color"> 
+   <object class="java.awt.Color"> 
+    <int>230</int> 
+    <int>88</int> 
+    <int>53</int> 
+    <int>255</int> 
+   </object> 
+  </void> 
+  <void property="depth"> 
+   <float>4.06</float> 
+  </void> 
+  <void property="description"> 
+   <string>A red Material</string> 
+  </void> 
+  <void property="laserProfiles"> 
+   <array class="com.t_oster.visicut.model.LaserProfile" length="3"> 
+    <void index="0"> 
+     <object class="com.t_oster.visicut.model.VectorProfile"> 
+      <void property="color"> 
+       <object class="java.awt.Color"> 
+        <int>205</int> 
+        <int>77</int> 
+        <int>4</int> 
+        <int>255</int> 
+       </object> 
+      </void> 
+      <void property="isCut"> 
+       <boolean>true</boolean> 
+      </void> 
+      <void property="laserProperties"> 
+       <array class="com.t_oster.liblasercut.LaserProperty" length="1"> 
+        <void index="0"> 
+         <object class="com.t_oster.liblasercut.LaserProperty"> 
+          <void property="frequency"> 
+           <int>500</int> 
+          </void> 
+          <void property="power"> 
+           <int>100</int> 
+          </void> 
+          <void property="speed"> 
+           <int>80</int> 
+          </void> 
+         </object> 
+        </void> 
+       </array> 
+      </void> 
+      <void property="name"> 
+       <string>cut line</string> 
+      </void> 
+      <void property="thumbnailPath"> 
+       <string>.VisiCut/materials/Filz/cutline.png</string> 
+      </void> 
+      <void property="width"> 
+       <float>1.07</float> 
+      </void> 
+     </object> 
+    </void> 
+    <void index="1"> 
+     <object class="com.t_oster.visicut.model.VectorProfile"> 
+      <void property="color"> 
+       <object class="java.awt.Color"> 
+        <int>205</int> 
+        <int>77</int> 
+        <int>4</int> 
+        <int>255</int> 
+       </object> 
+      </void> 
+      <void property="isCut"> 
+       <boolean>true</boolean> 
+      </void> 
+      <void property="laserProperties"> 
+       <array class="com.t_oster.liblasercut.LaserProperty" length="1"> 
+        <void index="0"> 
+         <object class="com.t_oster.liblasercut.LaserProperty"> 
+          <void property="focus"> 
+           <float>3.78</float> 
+          </void> 
+          <void property="frequency"> 
+           <int>500</int> 
+          </void> 
+          <void property="power"> 
+           <int>90</int> 
+          </void> 
+         </object> 
+        </void> 
+       </array> 
+      </void> 
+      <void property="name"> 
+       <string>broad cut line</string> 
+      </void> 
+      <void property="thumbnailPath"> 
+       <string>.VisiCut/materials/Filz/bigcut.png</string> 
+      </void> 
+      <void property="width"> 
+       <float>2.0</float> 
+      </void> 
+     </object> 
+    </void> 
+    <void index="2"> 
+     <object class="com.t_oster.visicut.model.RasterProfile"> 
+      <void property="color"> 
+       <object class="java.awt.Color"> 
+        <int>205</int> 
+        <int>77</int> 
+        <int>4</int> 
+        <int>255</int> 
+       </object> 
+      </void> 
+      <void property="description"> 
+       <string>The Average Algorithm makes a pixel black iff its darker than the average pixel</string> 
+      </void> 
+      <void property="laserProperties"> 
+       <array class="com.t_oster.liblasercut.LaserProperty" length="1"> 
+        <void index="0"> 
+         <object class="com.t_oster.liblasercut.LaserProperty"> 
+          <void property="power"> 
+           <int>100</int> 
+          </void> 
+          <void property="speed"> 
+           <int>70</int> 
+          </void> 
+         </object> 
+        </void> 
+       </array> 
+      </void> 
+      <void property="name"> 
+       <string>Average</string> 
+      </void> 
+      <void property="thumbnailPath"> 
+       <string>.VisiCut/materials/Plexiglass/rasterordered.png</string> 
+      </void> 
+     </object> 
+    </void> 
+   </array> 
+  </void> 
+  <void property="name"> 
+   <string>Felt (red)</string> 
+  </void> 
+  <void property="thumbnailPath"> 
+   <string>/home/thommy/NetBeansProjects/Visicut/.VisiCut/materials/Filz/profile.png</string> 
+  </void> 
+ </object> 
+</java> 

@@ -23,7 +23,21 @@ public class VectorCommand
   }
   private CmdType type;
   private int[] operands;
+  private float foperand;
 
+  public VectorCommand(CmdType type, float f)
+  {
+    if (type == CmdType.SETFOCUS)
+    {
+      this.type = type;
+      this.foperand = f;
+    }
+    else
+    {
+      throw new IllegalArgumentException("Wrong number of Parameters for " + type.toString());
+    }
+  }
+  
   public VectorCommand(CmdType type, int x, int y)
   {
     if (type == CmdType.MOVETO || type == CmdType.LINETO)
@@ -65,7 +79,7 @@ public class VectorCommand
 
   public VectorCommand(CmdType type, int operand1)
   {
-    if (type == CmdType.SETSPEED || type == CmdType.SETPOWER || type == CmdType.SETFREQUENCY || type == CmdType.SETFOCUS)
+    if (type == CmdType.SETSPEED || type == CmdType.SETPOWER || type == CmdType.SETFREQUENCY)
     {
       this.type = type;
       operands = new int[]
@@ -106,11 +120,11 @@ public class VectorCommand
     throw new UnsupportedOperationException("getFrequency is not Applicable for " + type.toString());
   }
 
-  public int getFocus()
+  public float getFocus()
   {
     if (type == CmdType.SETFOCUS)
     {
-      return operands[0];
+      return foperand;
     }
     throw new UnsupportedOperationException("getFocus is not Applicable for " + type.toString());
   }

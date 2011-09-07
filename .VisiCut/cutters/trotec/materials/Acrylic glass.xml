@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0_26" class="java.beans.XMLDecoder"> 
+ <object class="com.t_oster.visicut.model.MaterialProfile"> 
+  <void property="color"> 
+   <object class="java.awt.Color"> 
+    <int>117</int> 
+    <int>163</int> 
+    <int>209</int> 
+    <int>255</int> 
+   </object> 
+  </void> 
+  <void property="depth"> 
+   <float>3.0</float> 
+  </void> 
+  <void property="laserProfiles"> 
+   <array class="com.t_oster.visicut.model.LaserProfile" length="6"> 
+    <void index="0"> 
+     <object class="com.t_oster.visicut.model.VectorProfile"> 
+      <void property="color"> 
+       <object class="java.awt.Color"> 
+        <int>170</int> 
+        <int>160</int> 
+        <int>160</int> 
+        <int>255</int> 
+       </object> 
+      </void> 
+      <void property="isCut"> 
+       <boolean>true</boolean> 
+      </void> 
+      <void property="laserProperties"> 
+       <array class="com.t_oster.liblasercut.LaserProperty" length="1"> 
+        <void index="0"> 
+         <object class="com.t_oster.liblasercut.LaserProperty"> 
+          <void property="power"> 
+           <int>100</int> 
+          </void> 
+          <void property="speed"> 
+           <int>50</int> 
+          </void> 
+         </object> 
+        </void> 
+       </array> 
+      </void> 
+      <void property="name"> 
+       <string>cut line</string> 
+      </void> 
+      <void property="thumbnailPath"> 
+       <string>.VisiCut/materials/Plexiglass/cutline.png</string> 
+      </void> 
+     </object> 
+    </void> 
+    <void index="1"> 
+     <object class="com.t_oster.visicut.model.VectorProfile"> 
+      <void property="color"> 
+       <object class="java.awt.Color"> 
+        <int>170</int> 
+        <int>160</int> 
+        <int>160</int> 
+        <int>255</int> 
+       </object> 
+      </void> 
+      <void property="laserProperties"> 
+       <array class="com.t_oster.liblasercut.LaserProperty" length="1"> 
+        <void index="0"> 
+         <object class="com.t_oster.liblasercut.LaserProperty"> 
+          <void property="focus"> 
+           <float>3.78</float> 
+          </void> 
+          <void property="frequency"> 
+           <int>500</int> 
+          </void> 
+          <void property="power"> 
+           <int>90</int> 
+          </void> 
+         </object> 
+        </void> 
+       </array> 
+      </void> 
+      <void property="thumbnailPath"> 
+       <string>.VisiCut/materials/Plexiglass/bigline.png</string> 
+      </void> 
+      <void property="width"> 
+       <float>2.0</float> 
+      </void> 
+     </object> 
+    </void> 
+    <void index="2"> 
+     <object class="com.t_oster.visicut.model.RasterProfile"> 
+      <void property="color"> 
+       <object class="java.awt.Color"> 
+        <int>170</int> 
+        <int>160</int> 
+        <int>160</int> 
+        <int>255</int> 
+       </object> 
+      </void> 
+      <void property="ditherAlgorithm"> 
+       <object id="BlackWhiteRaster$DitherAlgorithm0" class="com.t_oster.liblasercut.BlackWhiteRaster$DitherAlgorithm" method="valueOf"> 
+        <string>FLOYD_STEINBERG</string> 
+       </object> 
+      </void> 
+      <void property="laserProperties"> 
+       <array class="com.t_oster.liblasercut.LaserProperty" length="2"> 
+        <void index="0"> 
+         <object class="com.t_oster.liblasercut.LaserProperty"> 
+          <void property="power"> 
+           <int>80</int> 
+          </void> 
+         </object> 
+        </void> 
+        <void index="1"> 
+         <object class="com.t_oster.liblasercut.LaserProperty"> 
+          <void property="power"> 
+           <int>80</int> 
+          </void> 
+         </object> 
+        </void> 
+       </array> 
+      </void> 
+      <void property="name"> 
+       <string>Floyd Steinberg</string> 
+      </void> 
+      <void property="thumbnailPath"> 
+       <string>.VisiCut/materials/Plexiglass/floydsteinberg.png</string> 
+      </void> 
+     </object> 
+    </void> 
+    <void index="3"> 
+     <object class="com.t_oster.visicut.model.RasterProfile"> 
+      <void property="color"> 
+       <object class="java.awt.Color"> 
+        <int>170</int> 
+        <int>160</int> 
+        <int>160</int> 
+        <int>255</int> 
+       </object> 
+      </void> 
+      <void property="ditherAlgorithm"> 
+       <object id="BlackWhiteRaster$DitherAlgorithm1" class="com.t_oster.liblasercut.BlackWhiteRaster$DitherAlgorithm" method="valueOf"> 
+        <string>ORDERED</string> 
+       </object> 
+      </void> 
+      <void property="laserProperties"> 
+       <array class="com.t_oster.liblasercut.LaserProperty" length="2"> 
+        <void index="0"> 
+         <object class="com.t_oster.liblasercut.LaserProperty"> 
+          <void property="power"> 
+           <int>50</int> 
+          </void> 
+         </object> 
+        </void> 
+        <void index="1"> 
+         <object class="com.t_oster.liblasercut.LaserProperty"> 
+          <void property="power"> 
+           <int>50</int> 
+          </void> 
+         </object> 
+        </void> 
+       </array> 
+      </void> 
+      <void property="name"> 
+       <string>Ordered</string> 
+      </void> 
+      <void property="thumbnailPath"> 
+       <string>.VisiCut/materials/Plexiglass/rasterordered.png</string> 
+      </void> 
+     </object> 
+    </void> 
+    <void index="4"> 
+     <object class="com.t_oster.visicut.model.RasterProfile"> 
+      <void property="color"> 
+       <object class="java.awt.Color"> 
+        <int>170</int> 
+        <int>160</int> 
+        <int>160</int> 
+        <int>255</int> 
+       </object> 
+      </void> 
+      <void property="ditherAlgorithm"> 
+       <object idref="BlackWhiteRaster$DitherAlgorithm0"/> 
+      </void> 
+      <void property="invertColors"> 
+       <boolean>true</boolean> 
+      </void> 
+      <void property="laserProperties"> 
+       <array class="com.t_oster.liblasercut.LaserProperty" length="2"> 
+        <void index="0"> 
+         <object class="com.t_oster.liblasercut.LaserProperty"> 
+          <void property="power"> 
+           <int>50</int> 
+          </void> 
+         </object> 
+        </void> 
+        <void index="1"> 
+         <object class="com.t_oster.liblasercut.LaserProperty"> 
+          <void property="power"> 
+           <int>50</int> 
+          </void> 
+         </object> 
+        </void> 
+       </array> 
+      </void> 
+      <void property="name"> 
+       <string>Floyd Steinberg (inverted)</string> 
+      </void> 
+      <void property="thumbnailPath"> 
+       <string>.VisiCut/materials/Plexiglass/floydsteinberg.png</string> 
+      </void> 
+     </object> 
+    </void> 
+    <void index="5"> 
+     <object class="com.t_oster.visicut.model.RasterProfile"> 
+      <void property="color"> 
+       <object class="java.awt.Color"> 
+        <int>170</int> 
+        <int>160</int> 
+        <int>160</int> 
+        <int>255</int> 
+       </object> 
+      </void> 
+      <void property="ditherAlgorithm"> 
+       <object idref="BlackWhiteRaster$DitherAlgorithm1"/> 
+      </void> 
+      <void property="invertColors"> 
+       <boolean>true</boolean> 
+      </void> 
+      <void property="laserProperties"> 
+       <array class="com.t_oster.liblasercut.LaserProperty" length="2"> 
+        <void index="0"> 
+         <object class="com.t_oster.liblasercut.LaserProperty"> 
+          <void property="power"> 
+           <int>50</int> 
+          </void> 
+         </object> 
+        </void> 
+        <void index="1"> 
+         <object class="com.t_oster.liblasercut.LaserProperty"> 
+          <void property="power"> 
+           <int>50</int> 
+          </void> 
+         </object> 
+        </void> 
+       </array> 
+      </void> 
+      <void property="name"> 
+       <string>Ordered (inverted)</string> 
+      </void> 
+      <void property="thumbnailPath"> 
+       <string>.VisiCut/materials/Plexiglass/rasterordered.png</string> 
+      </void> 
+     </object> 
+    </void> 
+   </array> 
+  </void> 
+  <void property="name"> 
+   <string>Acrylic glass</string> 
+  </void> 
+  <void property="thumbnailPath"> 
+   <string>/home/thommy/NetBeansProjects/Visicut/.VisiCut/materials/Plexiglass/profile.png</string> 
+  </void> 
+ </object> 
+</java> 

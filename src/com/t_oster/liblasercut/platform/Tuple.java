@@ -51,6 +51,10 @@ public class Tuple<A, B>
     {
       return !Util.differ(this.a, ((Tuple) o).a) && !Util.differ(this.b, ((Tuple) o).b);
     }
+    else if (o == null)
+    {
+      return false;
+    }
     else
     {
       return super.equals(this);
@@ -64,5 +68,11 @@ public class Tuple<A, B>
     hash = 89 * hash + (this.a != null ? this.a.hashCode() : 0);
     hash = 89 * hash + (this.b != null ? this.b.hashCode() : 0);
     return hash;
+  }
+  
+  @Override
+  public String toString()
+  {
+    return a!= null ? a.toString() : b.toString();
   }
 }
