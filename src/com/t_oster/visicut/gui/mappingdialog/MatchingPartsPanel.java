@@ -23,6 +23,7 @@ import javax.swing.JPanel;
  * 
  * @author thommy
  */
+//TODO: Make it extend ZoomablePanel or better PreviewPanel for the RenderBuffer
 public class MatchingPartsPanel extends JPanel
 {
 
@@ -185,17 +186,21 @@ public class MatchingPartsPanel extends JPanel
         LaserProfile p = this.material.getLaserProfile(this.getSelectedMapping().getProfileName());
         if (this.previewMode)
         {
+          AffineTransform trans = gg.getTransform();
           if (p == null)
           {
-            AffineTransform trans = gg.getTransform();
             gg.setTransform(new AffineTransform());
             gg.drawString("Profile not available for current Material", 10, this.getHeight() / 2);
-            gg.setTransform(trans);
           }
           else
           {
+            if (set.getTransform() != null)
+            {
+              gg.setTransform(set.getTransform());
+            }
             p.renderPreview(gg, set);
           }
+          gg.setTransform(trans);
         }
         else
         {
