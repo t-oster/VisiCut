@@ -76,6 +76,10 @@ public class SVGShape extends SVGObject implements ShapeObject
         {
           result.add("" + sa.getFloatValue());
         }
+        else
+        {
+          result.add("none");
+        }
         break;
       }
       case Type:
@@ -114,6 +118,10 @@ public class SVGShape extends SVGObject implements ShapeObject
         {
           result.add(sa.getColorValue());
         }
+        else
+        {
+          result.add("none");
+        }
         break;
       }
       case Fill_Color:
@@ -122,6 +130,10 @@ public class SVGShape extends SVGObject implements ShapeObject
         if (sa != null)
         {
           result.add(sa.getColorValue());
+        }
+        else
+        {
+          result.add("none");
         }
         break;
       }

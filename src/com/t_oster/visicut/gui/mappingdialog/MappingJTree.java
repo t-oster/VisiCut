@@ -107,9 +107,11 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
       {
         for (Object value : g.getAttributeValues(this.getB()))
         {
+          GraphicSet restObjects = this.getA().getMatchingObjects(gos);
           MappingFilter f = new MappingFilter(this.getB(), value);
-          //Check if filter already present
-          if (!this.getA().contains(f))
+          int newrest = f.getMatchingElements(restObjects).size();
+          //Check if filter makes a difference
+          if (newrest != 0 && newrest != restObjects.size())
           {
             FilterSet node = new FilterSet();
             node.addAll(this.getA());
@@ -121,8 +123,9 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
           }
           f = new MappingFilter(this.getB(), value);
           f.setInverted(true);
-          //Check if filter already present
-          if (!this.getA().contains(f))
+          newrest = f.getMatchingElements(restObjects).size();
+          //Check if filter makes a difference
+          if (newrest != 0 && newrest != restObjects.size())
           {
             FilterSet node = new FilterSet();
             node.addAll(this.getA());
@@ -230,7 +233,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
           for (String attribute : g.getAttributes())
           {
             AttributeNode node = new AttributeNode(fs, attribute);
-            if (!result.contains(node) && node.getChildren().size() > 2)
+            if (!result.contains(node) && node.getChildren().size() > 1)
             {
               result.add(node);
             }

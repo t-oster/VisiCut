@@ -1,4 +1,4 @@
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.visicut.gui.mappingdialog;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.JButton;
@@ -10,6 +10,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
 import javax.swing.JTextField;
 
 public class FilterValueEditor extends DefaultCellEditor
@@ -21,6 +22,7 @@ public class FilterValueEditor extends DefaultCellEditor
   JButton button;
   JColorChooser colorChooser;
   JDialog dialog;
+  DefaultCellEditor selectTypeEditor;
   protected static final String EDIT = "edit";
 
   public FilterValueEditor()
@@ -39,6 +41,12 @@ public class FilterValueEditor extends DefaultCellEditor
       colorChooser,
       this, //OK button handler
       null); //no CANCEL button handler
+    JComboBox types = new JComboBox();
+    types.addItem("Select Type");
+    types.addItem("Color");
+    types.addItem("Number");
+    types.addItem("Text");
+    this.selectTypeEditor = new DefaultCellEditor(types);
   }
 
   /**
@@ -69,9 +77,26 @@ public class FilterValueEditor extends DefaultCellEditor
   @Override
   public Object getCellEditorValue()
   {
+    if (currentObject == null)
+    {
+      String type = (String) this.selectTypeEditor.getCellEditorValue();
+      if ("Select Type".equals(type))
+      {
+        return null;
+      }
+      if ("Color".equals(type))
+      {
+        return Color.black;
+      }
+      if ("Number".equals(type))
+      {
+        return "1.0";
+      }
+      return "example";
+    }
     if (currentObject instanceof Color)
     {
-    return currentObject;
+      return currentObject;
     }
     return super.getCellEditorValue();
   }
@@ -85,6 +110,10 @@ public class FilterValueEditor extends DefaultCellEditor
     int column)
   {
     currentObject = value;
+    if (currentObject == null)
+    {
+      return this.selectTypeEditor.getTableCellEditorComponent(table, value, isSelected, row, row);
+    }
     if (currentObject instanceof Color)
     {
       return button;

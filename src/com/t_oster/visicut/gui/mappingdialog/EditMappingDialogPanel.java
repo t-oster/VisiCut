@@ -6,7 +6,6 @@
 package com.t_oster.visicut.gui.mappingdialog;
 
 import com.t_oster.visicut.gui.beans.EditableTableProvider;
-import com.t_oster.visicut.gui.beans.FilterValueEditor;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
@@ -309,7 +308,7 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
 
   public Object getNewInstance()
   {
-    return new MappingFilter("Line Width", 0.2);
+    return new MappingFilter("Line Width", null);
   }
 
   public Object editObject(Object o)

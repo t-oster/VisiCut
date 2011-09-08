@@ -109,14 +109,16 @@ public abstract class SVGObject implements GraphicObject
         {
           if (e instanceof Group)
           {
-            result.add(((Group) e).getId());
+            String id = ((Group) e).getId();
+            result.add(id == null ? "none" : id);
           }
         }
         break;
       }
       case ID:
       {
-        result.add(this.getDecoratee().getId());
+        String id = this.getDecoratee().getId();
+        result.add(id == null ? "none" : id);
         break;
       }
     }
