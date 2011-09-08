@@ -189,6 +189,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     jLabel7.setText(resourceMap.getString("jLabel7.text")); // NOI18N
     jLabel7.setName("jLabel7"); // NOI18N
 
+    jTextField6.setToolTipText(resourceMap.getString("jTextField6.toolTipText")); // NOI18N
     jTextField6.setName("jTextField6"); // NOI18N
 
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.materialsPath}"), jTextField6, org.jdesktop.beansbinding.BeanProperty.create("text"), "path");
@@ -299,8 +300,31 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     String driver = (String) this.jComboBox1.getSelectedItem();
     try
     {
+      LaserCutter cutter;
+      try
+      {
       Class driverclass = Class.forName(driver);
-      LaserCutter cutter = (LaserCutter) driverclass.newInstance();
+      cutter = (LaserCutter) driverclass.newInstance();
+      }
+      catch (Exception e)
+      {
+        throw new Exception("The driver could not be loaded:\n"+e.getMessage());
+      }
+      cutter.setHostname(currentLaserDevice.getLaserCutter().getHostname());
+      cutter.setPort(currentLaserDevice.getLaserCutter().getPort());
+      currentLaserDevice.setLaserCutter(cutter);
+      if ("".equals(currentLaserDevice.getCameraURL()))
+      {
+        currentLaserDevice.setCameraURL(null);
+      }
+      if (currentLaserDevice.getMaterialsPath() == null || !new File(currentLaserDevice.getMaterialsPath()).isDirectory())
+      {
+        throw new Exception("The materials directory must be a valid directory");
+      }
+      if (currentLaserDevice.getName() == null || currentLaserDevice.getName().equals(""))
+      {
+        throw new Exception("The name must not be empty");
+      }
       //If class not existing yet in preferences, add them
       boolean found = false;
       String[] drivers = PreferencesManager.getInstance().getPreferences().getAvailableLasercutterDrivers();
@@ -318,19 +342,12 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
         drivers[drivers.length - 1] = driver;
         PreferencesManager.getInstance().getPreferences().setAvailableLasercutterDrivers(drivers);
       }
-      cutter.setHostname(currentLaserDevice.getLaserCutter().getHostname());
-      cutter.setPort(currentLaserDevice.getLaserCutter().getPort());
-      currentLaserDevice.setLaserCutter(cutter);
-      if ("".equals(currentLaserDevice.getCameraURL()))
-      {
-        currentLaserDevice.setCameraURL(null);
-      }
       this.setLaserDevice(currentLaserDevice);
       this.setVisible(false);
     }
     catch (Exception ex)
     {
-      JOptionPane.showMessageDialog(this, "Error. The selected Driver could not be loaded:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       return;
     }
   }//GEN-LAST:event_jButton1ActionPerformed
