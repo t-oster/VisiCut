@@ -14,8 +14,9 @@ import com.t_oster.liblasercut.BlackWhiteRaster;
 import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.visicut.gui.beans.EditableTableProvider;
+import com.t_oster.visicut.model.LaserPropertyBean;
 import com.t_oster.visicut.model.RasterProfile;
-import java.util.Arrays;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -32,6 +33,20 @@ public class EditRasterProfileDialog extends javax.swing.JDialog implements Edit
 
   public Object editObject(Object o)
   {
+    if (o instanceof LaserProperty)
+    {
+      EditLaserPropertyPanel d = new EditLaserPropertyPanel();
+      d.setLaserProperty(new LaserPropertyBean(((LaserProperty) o).clone()));
+      d.setShowFrequency(false);
+      if (JOptionPane.showConfirmDialog(this, d, "Edit Laser Property", JOptionPane.OK_CANCEL_OPTION)== JOptionPane.OK_OPTION)
+      {
+        return d.getLaserProperty().getLaserProperty();
+      }
+      else
+      {
+        return null;
+      }
+    }
     return o;
   }
 
