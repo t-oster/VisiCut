@@ -124,4 +124,16 @@ public class FilterSet extends LinkedList<MappingFilter>
       return this.get(this.size() - 1).toString();
     }
   }
+  
+  @Override
+  public FilterSet clone()
+  {
+    FilterSet result = new FilterSet();
+    for (MappingFilter f:this)
+    {
+      result.add(f.clone());
+    }
+    result.useOuterShape=useOuterShape;
+    return result;
+  }
 }

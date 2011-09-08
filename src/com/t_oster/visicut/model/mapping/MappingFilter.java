@@ -16,6 +16,7 @@ import java.awt.Color;
  */
 public class MappingFilter
 {
+
   private String attribute;
   private Object value;
 
@@ -23,22 +24,22 @@ public class MappingFilter
   {
     return attribute;
   }
-  
+
   public Object getValue()
   {
     return value;
   }
-  
+
   public void setAttribute(String attribute)
   {
     this.attribute = attribute;
   }
-  
+
   public void setValue(Object value)
   {
     this.value = value;
   }
-  
+
   public final boolean matches(GraphicObject e)
   {
     return attribute == null || e.getAttributeValues(attribute).contains(value);
@@ -46,9 +47,8 @@ public class MappingFilter
 
   public MappingFilter()
   {
-    
   }
-  
+
   public MappingFilter(String attribute, Object value)
   {
     this.attribute = attribute;
@@ -59,7 +59,7 @@ public class MappingFilter
   {
     GraphicSet result = new GraphicSet();
     result.setTransform(elements.getTransform());
-    for (GraphicObject e:elements)
+    for (GraphicObject e : elements)
     {
       if (this.matches(e))
       {
@@ -94,7 +94,7 @@ public class MappingFilter
     hash = 29 * hash + (this.value != null ? this.value.hashCode() : 0);
     return hash;
   }
-  
+
   @Override
   public boolean equals(Object o)
   {
@@ -104,5 +104,11 @@ public class MappingFilter
       return !Util.differ(f.attribute, attribute) && !Util.differ(f.value, value);
     }
     return super.equals(o);
+  }
+
+  @Override
+  public MappingFilter clone()
+  {
+    return new MappingFilter(attribute, value);
   }
 }

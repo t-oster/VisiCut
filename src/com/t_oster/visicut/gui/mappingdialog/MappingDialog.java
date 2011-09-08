@@ -176,6 +176,8 @@ public class MappingDialog extends javax.swing.JDialog
 
     mappingTable1.setName("mappingTable1"); // NOI18N
 
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${material}"), mappingTable1, org.jdesktop.beansbinding.BeanProperty.create("material"));
+    bindingGroup.addBinding(binding);
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${selectedMapping}"), mappingTable1, org.jdesktop.beansbinding.BeanProperty.create("selectedMapping"), "sfsdf");
     bindingGroup.addBinding(binding);
 

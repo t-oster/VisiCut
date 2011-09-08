@@ -12,6 +12,7 @@ package com.t_oster.visicut.gui.beans;
 
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.JTable;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
@@ -39,6 +40,11 @@ public class EditableTablePanel extends javax.swing.JPanel
     this.table.getSelectionModel().removeListSelectionListener(l);
   }
   
+  public JTable getTable()
+  {
+    return table;
+  }
+  
   public void clearSelection()
   {
     this.table.clearSelection();
@@ -53,7 +59,36 @@ public class EditableTablePanel extends javax.swing.JPanel
   {
     return this.table.getSelectedRow();
   }
-  
+  protected boolean editButtonVisible = true;
+  public static final String PROP_EDITBUTTONVISIBLE = "editButtonVisible";
+
+  /**
+   * Get the value of editButtonVisible
+   *
+   * @return the value of editButtonVisible
+   */
+  public boolean isEditButtonVisible()
+  {
+    return editButtonVisible;
+  }
+
+  /**
+   * Set the value of editButtonVisible
+   * If the Edit button is visible, all Add-Button pushes
+   * will be resulting in editing the new Object before adding
+   * it to the list. If editButtonVisible is false, it will directly
+   * be added to the list
+   *
+   * @param editButtonVisible new value of editButtonVisible
+   */
+  public void setEditButtonVisible(boolean editButtonVisible)
+  {
+    boolean oldEditButtonVisible = this.editButtonVisible;
+    this.editButtonVisible = editButtonVisible;
+    firePropertyChange(PROP_EDITBUTTONVISIBLE, oldEditButtonVisible, editButtonVisible);
+    this.editButton.setVisible(editButtonVisible);
+  }
+
   protected EditableTableProvider provider = null;
   public static final String PROP_PROVIDER = "provider";
 
@@ -283,7 +318,7 @@ private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
     Object n = this.provider.getNewInstance();
     if (n != null)
     {
-      Object o = this.provider.editObject(n);
+      Object o = editButtonVisible ? this.provider.editObject(n) : n;
       if (o != null)
       {
         this.objects.add(o);

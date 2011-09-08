@@ -9,7 +9,7 @@ import com.t_oster.liblasercut.platform.Tuple;
  * Elements should be rendered and cut on the LaserCutter
  * @author thommy
  */
-public class Mapping extends Tuple<FilterSet,String>
+public class Mapping extends Tuple<FilterSet,String> implements Cloneable
 {
   public Mapping()
   {
@@ -49,5 +49,11 @@ public class Mapping extends Tuple<FilterSet,String>
       fs+= fs.equals("") ? f.toString() : ","+f.toString();
     }
     return fs+"->"+this.getB();
+  }
+  
+  @Override
+  public Mapping clone()
+  {
+    return new Mapping((FilterSet) this.getFilterSet().clone(), this.getProfileName());
   }
 }
