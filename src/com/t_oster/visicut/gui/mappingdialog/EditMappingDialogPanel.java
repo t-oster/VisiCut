@@ -14,6 +14,8 @@ import com.t_oster.visicut.model.mapping.MappingFilter;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.List;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -30,7 +32,11 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
   DefaultTableModel filterTableModel = new DefaultTableModel()
   {
 
-    String[] columns = new String[]{"Attribute", "Value"};
+    String[] columns = new String[]
+    {
+      "Attribute", " ", "Value"
+    };
+
     @Override
     public int getColumnCount()
     {
@@ -58,6 +64,8 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
         case 0:
           return f.getAttribute();
         case 1:
+          return f.isInverted() ? "!=" : "=";
+        case 2:
           return f.getValue();
       }
       return null;
@@ -79,17 +87,23 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
           f.setAttribute(o.toString());
           break;
         case 1:
+          f.setInverted(o.toString().equals("!="));
+        case 2:
           f.setValue(o);
           break;
       }
     }
-    
   };
+
   public EditMappingDialogPanel()
   {
     initComponents();
     this.editableTablePanel1.setTableModel(filterTableModel);
-    this.editableTablePanel1.getTable().getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer()
+    JComboBox cb = new JComboBox();
+    cb.addItem("=");
+    cb.addItem("!=");
+    this.editableTablePanel1.getTable().getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(cb));
+    this.editableTablePanel1.getTable().getColumnModel().getColumn(2).setCellRenderer(new DefaultTableCellRenderer()
     {
 
       @Override
@@ -98,13 +112,13 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
         Component c = super.getTableCellRendererComponent(jtable, o, bln, bln1, i, i1);
         if (c instanceof JLabel && o instanceof Color)
         {
+          ((JLabel) c).setText("  ");
           c.setBackground((Color) o);
         }
         return c;
       }
-      
     });
-    this.editableTablePanel1.getTable().getColumnModel().getColumn(1).setCellEditor(new FilterValueEditor());
+    this.editableTablePanel1.getTable().getColumnModel().getColumn(2).setCellEditor(new FilterValueEditor());
   }
   protected MaterialProfile material = null;
   public static final String PROP_MATERIAL = "material";
@@ -133,13 +147,12 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
     firePropertyChange(PROP_MATERIAL, oldMaterial, material);
     if (material != null)
     {
-      for (LaserProfile p:material.getLaserProfiles())
+      for (LaserProfile p : material.getLaserProfiles())
       {
         this.imageComboBox1.addItem(p);
       }
     }
   }
-
   protected Mapping currentMapping = new Mapping();
   ;
 
@@ -174,7 +187,7 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
     Mapping oldCurrentMapping = this.currentMapping;
     this.currentMapping = currentMapping;
     firePropertyChange(PROP_CURRENTMAPPING, oldCurrentMapping, currentMapping);
-    
+
     //Fill ComboBox
     if (currentMapping != null)
     {
@@ -182,7 +195,7 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
       this.jCheckBox1.setSelected(currentMapping.getFilterSet().isUseOuterShape());
       boolean found = false;
       String prof = currentMapping.getProfileName();
-      for (int i=0;i<this.imageComboBox1.getItemCount();i++)
+      for (int i = 0; i < this.imageComboBox1.getItemCount(); i++)
       {
         if (this.imageComboBox1.getItemAt(i) instanceof LaserProfile)
         {

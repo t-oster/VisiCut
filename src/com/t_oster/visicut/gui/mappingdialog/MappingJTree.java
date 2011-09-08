@@ -119,6 +119,19 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
               result.add(node);
             }
           }
+          f = new MappingFilter(this.getB(), value);
+          f.setInverted(true);
+          //Check if filter already present
+          if (!this.getA().contains(f))
+          {
+            FilterSet node = new FilterSet();
+            node.addAll(this.getA());
+            node.add(f);
+            if (!result.contains(node))
+            {
+              result.add(node);
+            }
+          }
         }
       }
       return result;
@@ -127,7 +140,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     @Override
     public String toString()
     {
-      return this.getB();
+      return (this.getA().isEmpty() ? "WITH ":"AND ")+this.getB();
     }
   }
 
@@ -144,12 +157,15 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
         if (o instanceof FilterSet)
         {
           MappingFilter f = ((FilterSet) o).peekLast();
-          if (f != null && f.getValue() instanceof Color)
+          if (f != null)
           {
             c = super.getTreeCellRendererComponent(jtree, o, bln, bln1, bln2, i, bln3);
-            if (c instanceof JLabel)
+            if (c instanceof JLabel && f.getValue() instanceof Color)
             {
-             ((JLabel) c).setText("<html><table border=1 bgcolor="+Helper.toHtmlRGB((Color) f.getValue())+"><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>"); 
+              JLabel l =  (JLabel) c;
+              
+                l.setText("<html><table><tr><td>"+(f.isInverted() ? "!=" : "&nbsp;=")+"</td><td border=1 bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
+              
             }
           }
         }
@@ -214,7 +230,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
           for (String attribute : g.getAttributes())
           {
             AttributeNode node = new AttributeNode(fs, attribute);
-            if (!result.contains(node) && node.getChildren().size() > 1)
+            if (!result.contains(node) && node.getChildren().size() > 2)
             {
               result.add(node);
             }

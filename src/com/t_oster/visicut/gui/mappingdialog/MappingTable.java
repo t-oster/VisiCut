@@ -56,7 +56,7 @@ public class MappingTable extends EditableTablePanel implements EditableTablePro
               {
                 text += "<td>AND</td>";
               }
-              text += "<td>"+f.getAttribute().replace("_", " ") + " =</td>";
+              text += "<td>"+f.getAttribute().replace("_", " ") + (f.isInverted() ? " !=" : " =")+"</td>";
               if (f.getValue() instanceof Color)
               {
                 text += "<td bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;</td>";

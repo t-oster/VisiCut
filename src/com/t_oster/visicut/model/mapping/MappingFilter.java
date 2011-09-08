@@ -9,6 +9,8 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 /**
  *
@@ -17,6 +19,51 @@ import java.awt.Color;
 public class MappingFilter
 {
 
+  protected boolean inverted = false;
+  public static final String PROP_INVERTED = "inverted";
+
+  /**
+   * Get the value of inverted
+   *
+   * @return the value of inverted
+   */
+  public boolean isInverted()
+  {
+    return inverted;
+  }
+
+  /**
+   * Set the value of inverted
+   *
+   * @param inverted new value of inverted
+   */
+  public void setInverted(boolean inverted)
+  {
+    boolean oldInverted = this.inverted;
+    this.inverted = inverted;
+    propertyChangeSupport.firePropertyChange(PROP_INVERTED, oldInverted, inverted);
+  }
+  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+  /**
+   * Add PropertyChangeListener.
+   *
+   * @param listener
+   */
+  public void addPropertyChangeListener(PropertyChangeListener listener)
+  {
+    propertyChangeSupport.addPropertyChangeListener(listener);
+  }
+
+  /**
+   * Remove PropertyChangeListener.
+   *
+   * @param listener
+   */
+  public void removePropertyChangeListener(PropertyChangeListener listener)
+  {
+    propertyChangeSupport.removePropertyChangeListener(listener);
+  }
   private String attribute;
   private Object value;
 
@@ -42,7 +89,14 @@ public class MappingFilter
 
   public final boolean matches(GraphicObject e)
   {
-    return attribute == null || e.getAttributeValues(attribute).contains(value);
+    if (inverted)
+    {
+      return !(attribute == null || e.getAttributeValues(attribute).contains(value));
+    }
+    else
+    {
+      return attribute == null || e.getAttributeValues(attribute).contains(value);
+    }
   }
 
   public MappingFilter()
@@ -72,18 +126,20 @@ public class MappingFilter
   @Override
   public String toString()
   {
+    String result;
     if (value == null)
     {
-      return "null";
+      result = "null";
     }
     else if (value instanceof Color)
     {
-      return Helper.toHtmlRGB((Color) value);
+      result = Helper.toHtmlRGB((Color) value);
     }
     else
     {
-      return value.toString();
+      result = value.toString();
     }
+    return inverted ? "!="+result : "="+result;
   }
 
   @Override
@@ -92,6 +148,7 @@ public class MappingFilter
     int hash = 7;
     hash = 29 * hash + (this.attribute != null ? this.attribute.hashCode() : 0);
     hash = 29 * hash + (this.value != null ? this.value.hashCode() : 0);
+    hash = 29 * hash + (this.inverted ? 1 : 0);
     return hash;
   }
 
@@ -101,7 +158,7 @@ public class MappingFilter
     if (o instanceof MappingFilter)
     {
       MappingFilter f = (MappingFilter) o;
-      return !Util.differ(f.attribute, attribute) && !Util.differ(f.value, value);
+      return f.inverted == inverted && !Util.differ(f.attribute, attribute) && !Util.differ(f.value, value); 
     }
     return super.equals(o);
   }
