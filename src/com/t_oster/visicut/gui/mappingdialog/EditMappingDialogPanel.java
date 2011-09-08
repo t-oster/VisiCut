@@ -7,6 +7,7 @@ package com.t_oster.visicut.gui.mappingdialog;
 
 import com.t_oster.visicut.gui.beans.EditableTableProvider;
 import com.t_oster.visicut.gui.beans.FilterValueEditor;
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
@@ -88,6 +89,7 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
           break;
         case 1:
           f.setInverted(o.toString().equals("!="));
+          break;
         case 2:
           f.setValue(o);
           break;
@@ -99,10 +101,17 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
   {
     initComponents();
     this.editableTablePanel1.setTableModel(filterTableModel);
-    JComboBox cb = new JComboBox();
-    cb.addItem("=");
-    cb.addItem("!=");
-    this.editableTablePanel1.getTable().getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(cb));
+    JComboBox attributeCb = new JComboBox();
+    attributeCb.setEditable(true);
+    for (String a:new String[]{"Type", "Fill Color", "Line Color", "Line Width", "Group"})
+    {
+      attributeCb.addItem(a);
+    }
+    this.editableTablePanel1.getTable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(attributeCb));
+    JComboBox invertedCb = new JComboBox();
+    invertedCb.addItem("=");
+    invertedCb.addItem("!=");
+    this.editableTablePanel1.getTable().getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(invertedCb));
     this.editableTablePanel1.getTable().getColumnModel().getColumn(2).setCellRenderer(new DefaultTableCellRenderer()
     {
 
@@ -112,8 +121,7 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
         Component c = super.getTableCellRendererComponent(jtable, o, bln, bln1, i, i1);
         if (c instanceof JLabel && o instanceof Color)
         {
-          ((JLabel) c).setText("  ");
-          c.setBackground((Color) o);
+          ((JLabel) c).setText("<html><table border=1><tr><td bgcolor=" + Helper.toHtmlRGB((Color) o) + ">&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
         }
         return c;
       }
@@ -147,10 +155,13 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
     firePropertyChange(PROP_MATERIAL, oldMaterial, material);
     if (material != null)
     {
+      this.imageComboBox1.removeAllItems();
       for (LaserProfile p : material.getLaserProfiles())
       {
         this.imageComboBox1.addItem(p);
       }
+      //For adding eventually missing Laserprofile  
+      this.setCurrentMapping(this.getCurrentMapping());
     }
   }
   protected Mapping currentMapping = new Mapping();

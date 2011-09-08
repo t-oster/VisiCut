@@ -1,6 +1,5 @@
 package com.t_oster.visicut.gui.beans;
 
-import javax.swing.AbstractCellEditor;
 import javax.swing.table.TableCellEditor;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -10,8 +9,10 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JTextField;
 
-public class FilterValueEditor extends AbstractCellEditor
+public class FilterValueEditor extends DefaultCellEditor
   implements TableCellEditor,
   ActionListener
 {
@@ -24,6 +25,7 @@ public class FilterValueEditor extends AbstractCellEditor
 
   public FilterValueEditor()
   {
+    super(new JTextField());
     button = new JButton();
     button.setActionCommand(EDIT);
     button.addActionListener(this);
@@ -64,12 +66,18 @@ public class FilterValueEditor extends AbstractCellEditor
   }
 
   //Implement the one CellEditor method that AbstractCellEditor doesn't.
+  @Override
   public Object getCellEditorValue()
   {
+    if (currentObject instanceof Color)
+    {
     return currentObject;
+    }
+    return super.getCellEditorValue();
   }
 
   //Implement the one method defined by TableCellEditor.
+  @Override
   public Component getTableCellEditorComponent(JTable table,
     Object value,
     boolean isSelected,
@@ -77,6 +85,10 @@ public class FilterValueEditor extends AbstractCellEditor
     int column)
   {
     currentObject = value;
-    return button;
+    if (currentObject instanceof Color)
+    {
+      return button;
+    }
+    return super.getTableCellEditorComponent(table, value, isSelected, row, column);
   }
 }
