@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -145,8 +146,11 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
           MappingFilter f = ((FilterSet) o).peekLast();
           if (f != null && f.getValue() instanceof Color)
           {
-            c = super.getTreeCellRendererComponent(jtree, Helper.toHtmlRGB((Color) f.getValue()), bln, bln1, bln2, i, bln3);
-            c.setForeground((Color) f.getValue());
+            c = super.getTreeCellRendererComponent(jtree, o, bln, bln1, bln2, i, bln3);
+            if (c instanceof JLabel)
+            {
+             ((JLabel) c).setText("<html><table border=1 bgcolor="+Helper.toHtmlRGB((Color) f.getValue())+"><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>"); 
+            }
           }
         }
         if (c == null)

@@ -12,6 +12,7 @@ package com.t_oster.visicut.gui.beans;
 
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -27,6 +28,32 @@ public class EditableTablePanel extends javax.swing.JPanel
     initComponents();
     this.table.setModel(this.getTableModel());
   }
+  
+  public void addListSelectionListener(ListSelectionListener l)
+  {
+    this.table.getSelectionModel().addListSelectionListener(l);
+  }
+  
+  public void removeListSelectionListener(ListSelectionListener l)
+  {
+    this.table.getSelectionModel().removeListSelectionListener(l);
+  }
+  
+  public void clearSelection()
+  {
+    this.table.clearSelection();
+  }
+  
+  public void setSelectedRow(int i)
+  {
+    this.table.getSelectionModel().setSelectionInterval(i, i);
+  }
+  
+  public int getSelectedRow()
+  {
+    return this.table.getSelectedRow();
+  }
+  
   protected EditableTableProvider provider = null;
   public static final String PROP_PROVIDER = "provider";
 
@@ -206,23 +233,24 @@ public class EditableTablePanel extends javax.swing.JPanel
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addComponent(editButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(removeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(addButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(editButton)
+          .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(removeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
       .addGroup(layout.createSequentialGroup()
         .addComponent(addButton)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(removeButton)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(editButton))
+        .addComponent(editButton)
+        .addContainerGap(183, Short.MAX_VALUE))
+      .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE)
     );
   }// </editor-fold>//GEN-END:initComponents
 

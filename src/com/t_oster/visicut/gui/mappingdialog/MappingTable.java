@@ -5,21 +5,26 @@
 package com.t_oster.visicut.gui.mappingdialog;
 
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.gui.beans.EditableTablePanel;
+import com.t_oster.visicut.gui.beans.EditableTableProvider;
+import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import java.util.List;
-import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
  * @author thommy
  */
-public class MappingTable extends JTable
+public class MappingTable extends EditableTablePanel implements EditableTableProvider, ListSelectionListener
 {
   
   public MappingTable()
   {
-    this.setModel(model);
+    this.setTableModel(model);
+    this.setProvider(this);
+    this.addListSelectionListener(this);
   }
   private MappingListModel model = new MappingListModel();
   protected Mapping selectedMapping = null;
@@ -53,7 +58,7 @@ public class MappingTable extends JTable
       }
       else
       {
-        this.getSelectionModel().addSelectionInterval(mappings.indexOf(selectedMapping), mappings.indexOf(selectedMapping));
+        this.setSelectedRow(mappings.indexOf(selectedMapping));
       }
     }
   }
@@ -61,7 +66,6 @@ public class MappingTable extends JTable
   @Override
   public void valueChanged(ListSelectionEvent lse)
   {
-    super.valueChanged(lse);
     int idx = this.getSelectedRow();
     if (idx >= 0)
     {
@@ -95,5 +99,24 @@ public class MappingTable extends JTable
     this.mappings = mappings;
     firePropertyChange(PROP_MAPPINGS, oldMappings, mappings);
     this.model.setMappings(mappings);
+    this.setObjects((List) mappings);
+  }
+
+  public MappingListModel getModel()
+  {
+    return this.model;
+  }
+  
+  public Object getNewInstance()
+  {
+    Mapping m = new Mapping();
+    m.setFilterSet(new FilterSet());
+    m.setProfileName("cut line");
+    return m;
+  }
+
+  public Object editObject(Object o)
+  {
+    return o;
   }
 }

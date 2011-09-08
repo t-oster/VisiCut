@@ -32,7 +32,7 @@ public class SVGImage extends SVGObject
   public List<Object> getAttributeValues(String attribute)
   {
     List<Object> result = super.getAttributeValues(attribute);
-    switch (Attribute.valueOf(attribute))
+    switch (Attribute.valueOf(attribute.replace(" ", "_")))
     {
       case Type:
       {

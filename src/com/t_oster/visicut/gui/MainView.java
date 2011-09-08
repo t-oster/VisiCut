@@ -10,6 +10,7 @@
  */
 package com.t_oster.visicut.gui;
 
+import com.t_oster.visicut.gui.mappingdialog.MappingDialog;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.managers.PreferencesManager;

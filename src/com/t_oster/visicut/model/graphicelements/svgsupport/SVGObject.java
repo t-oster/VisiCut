@@ -101,7 +101,7 @@ public abstract class SVGObject implements GraphicObject
   public List<Object> getAttributeValues(String name)
   {
     List<Object> result = new LinkedList<Object>();
-    switch (Attribute.valueOf(name))
+    switch (Attribute.valueOf(name.replace(" ", "_")))
     {
       case Group:
       {
@@ -130,7 +130,7 @@ public abstract class SVGObject implements GraphicObject
     {
       if (this.getAttributeValues(a.toString()).size() > 0)
       {
-        result.add(a.toString());
+        result.add(a.toString().replace("_", " "));
       }
     }
     return result;

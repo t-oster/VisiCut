@@ -379,72 +379,84 @@ public class PreviewPanel extends ZoomablePanel
       {
         if (this.getMaterial() != null && this.getMappings() != null && this.getMappings().size() > 0)
         {
+          boolean somethingMatched = false;
           for (Mapping m : this.getMappings())
           {
-            GraphicSet current = m.getFilterSet().getMatchingObjects(this.graphicObjects);
-            Rectangle2D bb = current.getBoundingBox();
-            if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
-            {
-              if (drawPreview)
+            if (this.getMaterial().getLaserProfile(m.getProfileName()) != null)
+            {//Render only parts the material supports
+              GraphicSet current = m.getFilterSet().getMatchingObjects(this.graphicObjects);
+              Rectangle2D bb = current.getBoundingBox();
+              if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
               {
+                somethingMatched = true;
+                if (drawPreview)
+                {
+                  synchronized (renderBuffer)
+                  {
+                    BufferedImage img = this.renderBuffer.get(m);
+                    if (img == null || bb.getWidth() != img.getWidth() || bb.getHeight() != img.getHeight())
+                    {//Image not rendered or Size differs
+                      if (!renderBuffer.containsKey(m) || img != null)
+                      {//image not yet scheduled for rendering
+                        this.renderBuffer.put(m, null);
+                      }
+                      synchronized (imageProcessingThread)
+                      {
+                        imageProcessingThread.notify();
+                      }
+                      gg.setColor(Color.GRAY);
+                      Rectangle r = Helper.toRect(bb);
+                      gg.fillRect(r.x, r.y, r.width, r.height);
+                      gg.setColor(Color.BLACK);
+                      AffineTransform tmp = gg.getTransform();
+                      gg.setTransform(new AffineTransform());
+                      Point p = new Point(r.x, r.y + r.height / 2);
+                      tmp.transform(p, p);
+                      gg.drawString("please wait...", p.x, p.y);
+                      gg.setTransform(tmp);
+                    }
+                    else
+                    {
+                      gg.drawRenderedImage(img, AffineTransform.getTranslateInstance(bb.getX(), bb.getY()));
+                    }
+                  }
+                }
+                if (highlightCutLines)
+                {
+                  LaserProfile p = this.material.getLaserProfile(m.getProfileName());
+                  gg.setColor(material.getCutColor());
+                  if (p instanceof VectorProfile && ((VectorProfile) p).isIsCut())
+                  {
+                    for (GraphicObject o : current)
+                    {
+                      if (o instanceof ShapeObject)
+                      {
+                        Shape s = ((ShapeObject) o).getShape();
+                        if (current.getTransform() != null)
+                        {
+                          s = current.getTransform().createTransformedShape(s);
+                        }
+                        gg.draw(s);
+                      }
+                    }
+                  }
+                }
+              }
+              else
+              {//Mapping is Empty or BoundingBox zero
                 synchronized (renderBuffer)
                 {
-                  BufferedImage img = this.renderBuffer.get(m);
-                  if (img == null || bb.getWidth() != img.getWidth() || bb.getHeight() != img.getHeight())
-                  {//Image not rendered or Size differs
-                    if (!renderBuffer.containsKey(m) || img != null)
-                    {//image not yet scheduled for rendering
-                      this.renderBuffer.put(m, null);
-                    }
-                    synchronized (imageProcessingThread)
-                    {
-                      imageProcessingThread.notify();
-                    }
-                    gg.setColor(Color.GRAY);
-                    Rectangle r = Helper.toRect(bb);
-                    gg.fillRect(r.x, r.y, r.width, r.height);
-                    gg.setColor(Color.BLACK);
-                    AffineTransform tmp = gg.getTransform();
-                    gg.setTransform(new AffineTransform());
-                    Point p = new Point(r.x, r.y + r.height / 2);
-                    tmp.transform(p, p);
-                    gg.drawString("please wait...", p.x, p.y);
-                    gg.setTransform(tmp);
-                  }
-                  else
-                  {
-                    gg.drawRenderedImage(img, AffineTransform.getTranslateInstance(bb.getX(), bb.getY()));
-                  }
-                }
-              }
-              if (highlightCutLines)
-              {
-                LaserProfile p = this.material.getLaserProfile(m.getProfileName());
-                gg.setColor(material.getCutColor());
-                if (p instanceof VectorProfile && ((VectorProfile) p).isIsCut())
-                {
-                  for (GraphicObject o : current)
-                  {
-                    if (o instanceof ShapeObject)
-                    {
-                      Shape s = ((ShapeObject) o).getShape();
-                      if (current.getTransform() != null)
-                      {
-                        s = current.getTransform().createTransformedShape(s);
-                      }
-                      gg.draw(s);
-                    }
-                  }
+                  renderBuffer.remove(m);
                 }
               }
             }
-            else
-            {//Mapping is Empty or BoundingBox zero
-              synchronized (renderBuffer)
-              {
-                renderBuffer.remove(m);
-              }
-            }
+          }
+          if (!somethingMatched)
+          {//Nothing drawn because of no Matching mapping
+            AffineTransform trans = gg.getTransform();
+            gg.setTransform(new AffineTransform());
+            gg.drawString("No matching parts for the current Mapping found.", 10, this.getHeight()/2);
+            gg.setTransform(trans);
           }
         }
         else
@@ -541,11 +553,11 @@ public class PreviewPanel extends ZoomablePanel
             float mm = ((float) Math.round((float) (10 * mmx))) / 10;
             if ((int) mm == mm)
             {
-              txt = ""+(int) mm;
+              txt = "" + (int) mm;
             }
             else
             {
-              txt = ""+mm;
+              txt = "" + mm;
             }
             int w = gg.getFontMetrics().stringWidth(txt);
             int h = gg.getFontMetrics().getHeight();
@@ -576,11 +588,11 @@ public class PreviewPanel extends ZoomablePanel
             float mm = ((float) Math.round((float) (10 * mmy))) / 10;
             if ((int) mm == mm)
             {
-              txt = ""+(int) mm;
+              txt = "" + (int) mm;
             }
             else
             {
-              txt = ""+mm;
+              txt = "" + mm;
             }
             int w = gg.getFontMetrics().stringWidth(txt);
             int h = gg.getFontMetrics().getHeight();

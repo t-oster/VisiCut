@@ -67,7 +67,7 @@ public class SVGShape extends SVGObject implements ShapeObject
   public List<Object> getAttributeValues(String a)
   {
     List<Object> result = super.getAttributeValues(a);
-    switch (Attribute.valueOf(a))
+    switch (Attribute.valueOf(a.replace(" ", "_")))
     {
       case Stroke_Width:
       {

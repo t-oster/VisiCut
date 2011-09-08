@@ -8,6 +8,8 @@ import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
+import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
@@ -22,7 +24,7 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
 
   protected MaterialProfile material = new MaterialProfile();
   private ButtonGroup group = new ButtonGroup();
-  private JRadioButton[] buttons = new JRadioButton[0];
+  private List<JRadioButton> buttons = new LinkedList<JRadioButton>();
 
   public LaserProfilesPanel()
   {
@@ -73,10 +75,6 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
     if (selectedCuttingProfile == null)
     {
       group.clearSelection();
-      if (this.buttons.length > 0)
-      {
-        this.buttons[this.buttons.length - 1].setSelected(true);
-      }
     }
     else
     {
@@ -84,7 +82,7 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
       {
         if (this.getMaterial().getLaserProfiles().get(i).equals(selectedCuttingProfile))
         {
-          this.buttons[i].setSelected(true);
+          this.buttons.get(i).setSelected(true);
           break;
         }
       }
@@ -101,10 +99,9 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
       b.removeActionListener(this);
       this.remove(b);
     }
-    this.buttons = new JRadioButton[0];
+    this.buttons.clear();
     if (this.getMaterial() != null && this.getMaterial().getLaserProfiles() != null)
     {
-      this.buttons = new JRadioButton[this.getMaterial().getLaserProfiles().size() + 1];
       this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
       int i = 0;
       for (LaserProfile l : this.getMaterial().getLaserProfiles())
@@ -120,15 +117,8 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
         this.group.add(b);
         b.setVisible(true);
         this.add(b);
-        this.buttons[i++] = b;
+        this.buttons.add(b);
       }
-      JiconRadioButton b = new JiconRadioButton();
-      b.setText("not mapped");
-      b.addActionListener(this);
-      this.group.add(b);
-      b.setVisible(true);
-      this.add(b);
-      this.buttons[i++] = b;
       this.setVisible(true);
       this.validate();
     }
@@ -141,20 +131,8 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
       JiconRadioButton b = (JiconRadioButton) ae.getSource();
       if (b.isSelected())
       {
-        for (int i = 0; i < this.buttons.length; i++)
-        {
-          if (this.buttons[i].equals(b))
-          {
-            if (i < this.buttons.length - 1)
-            {
-              this.setSelectedLaserProfile(this.material.getLaserProfiles().get(i));
-            }
-            else
-            {
-              this.setSelectedLaserProfile(null);
-            }
-          }
-        }
+        this.setSelectedLaserProfile(this.material.getLaserProfiles().get(
+          this.buttons.indexOf(b)));
       }
     }
   }

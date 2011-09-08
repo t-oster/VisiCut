@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 import javax.swing.JPanel;
 
 /**
@@ -113,6 +114,10 @@ public class MatchingPartsPanel extends JPanel
   public void setSelectedFilterSet(FilterSet selectedFilterSet)
   {
     this.selectedFilterSet = selectedFilterSet;
+    if (selectedFilterSet != null)
+    {
+      selectedMapping = null;
+    }
     this.repaint();
   }
   protected Mapping selectedMapping = null;
@@ -135,6 +140,10 @@ public class MatchingPartsPanel extends JPanel
   public void setSelectedMapping(Mapping selectedMapping)
   {
     this.selectedMapping = selectedMapping;
+    if (selectedMapping != null)
+    {
+      selectedFilterSet = null;
+    }
     this.repaint();
   }
   protected MaterialProfile material = null;
@@ -164,6 +173,7 @@ public class MatchingPartsPanel extends JPanel
   @Override
   protected void paintComponent(Graphics g)
   {
+    this.setBackground(previewMode ? material.getColor() : null);
     super.paintComponent(g);
     Graphics2D gg = (Graphics2D) g;
     if (this.graphicElements != null)
@@ -175,7 +185,17 @@ public class MatchingPartsPanel extends JPanel
         LaserProfile p = this.material.getLaserProfile(this.getSelectedMapping().getProfileName());
         if (this.previewMode)
         {
-          p.renderPreview(gg, set);
+          if (p == null)
+          {
+            AffineTransform trans = gg.getTransform();
+            gg.setTransform(new AffineTransform());
+            gg.drawString("Profile not available for current Material", 10, this.getHeight() / 2);
+            gg.setTransform(trans);
+          }
+          else
+          {
+            p.renderPreview(gg, set);
+          }
         }
         else
         {
