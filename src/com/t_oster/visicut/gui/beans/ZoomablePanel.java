@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
@@ -17,9 +19,13 @@ import javax.swing.JPanel;
  * 
  * @author thommy
  */
-public class ZoomablePanel extends JPanel
+public class ZoomablePanel extends JPanel implements MouseWheelListener
 {
 
+  public ZoomablePanel()
+  {
+    this.addMouseWheelListener(this);
+  }
   protected Dimension outerBounds = new Dimension(100, 100);
 
   /**
@@ -43,7 +49,7 @@ public class ZoomablePanel extends JPanel
     this.outerBounds = outerBounds;
     if (this.outerBounds == null)
     {
-      outerBounds = this.getSize();
+      this.outerBounds = this.getSize();
     }
     this.setZoom(this.getZoom());
   }
@@ -90,7 +96,7 @@ public class ZoomablePanel extends JPanel
   {
     if (center == null)
     {
-      center = new Point(outerBounds.width/2, outerBounds.height/2);
+      center = new Point(outerBounds.width / 2, outerBounds.height / 2);
     }
     double minCenterX = (this.outerBounds.width / 2) / (zoom / 100d);
     if (center.x < minCenterX)
@@ -199,5 +205,13 @@ public class ZoomablePanel extends JPanel
       gg.setTransform(at);
     }
 
+  }
+
+  public void mouseWheelMoved(MouseWheelEvent mwe)
+  {
+    if (mwe.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
+    {
+      this.setZoom(this.getZoom() - (mwe.getUnitsToScroll() * this.getZoom() / 32));
+    }
   }
 }

@@ -349,12 +349,12 @@ public class PreviewPanel extends ZoomablePanel
       if (backgroundImage != null)
       {
         gg.drawRenderedImage(backgroundImage, null);
-      }
-      if (this.previewTransformation != null)
-      {
-        AffineTransform current = gg.getTransform();
-        current.concatenate(this.getPreviewTransformation());
-        gg.setTransform(current);
+        if (this.previewTransformation != null)
+        {
+          AffineTransform current = gg.getTransform();
+          current.concatenate(this.getPreviewTransformation());
+          gg.setTransform(current);
+        }
       }
       if (this.material != null)
       {
@@ -455,7 +455,7 @@ public class PreviewPanel extends ZoomablePanel
           {//Nothing drawn because of no Matching mapping
             AffineTransform trans = gg.getTransform();
             gg.setTransform(new AffineTransform());
-            gg.drawString("No matching parts for the current Mapping found.", 10, this.getHeight()/2);
+            gg.drawString("No matching parts for the current Mapping found.", 10, this.getHeight() / 2);
             gg.setTransform(trans);
           }
         }
