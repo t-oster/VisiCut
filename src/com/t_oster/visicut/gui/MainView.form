@@ -337,8 +337,8 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="materialComboBox" alignment="0" pref="241" max="32767" attributes="1"/>
-                      <Component id="laserCutterComboBox" alignment="0" pref="241" max="32767" attributes="1"/>
+                      <Component id="materialComboBox" alignment="0" min="-2" pref="241" max="-2" attributes="1"/>
+                      <Component id="laserCutterComboBox" alignment="0" min="-2" pref="241" max="-2" attributes="1"/>
                       <Component id="mappingComboBox" alignment="0" pref="241" max="32767" attributes="1"/>
                       <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
