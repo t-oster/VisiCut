@@ -14,10 +14,16 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Shape;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import javax.swing.JPanel;
+import java.awt.image.BufferedImage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This Class implements a JPanel which is able
@@ -26,10 +32,52 @@ import javax.swing.JPanel;
  * 
  * @author thommy
  */
-//TODO: Make it extend ZoomablePanel or better PreviewPanel for the RenderBuffer
-public class MatchingPartsPanel extends ZoomablePanel
+public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionListener, MouseListener
 {
 
+  public MatchingPartsPanel()
+  {
+    this.renderThread.start();
+    this.addMouseListener(this);
+    this.addMouseMotionListener(this);
+  }
+
+  public void refreshRendering()
+  {
+    this.needRefresh = true;
+    synchronized (renderThread)
+    {
+      this.renderThread.notify();
+    }
+  }
+  protected int renderingProgress = 100;
+  public static final String PROP_RENDERINGPROGRESS = "renderingProgress";
+
+  /**
+   * Get the value of renderingProgress.
+   * Values between 0 and 100 mean progress in percent.
+   * -1 means rendering without possibility to calculate percent value
+   * (intermediate)
+   *
+   * @return the value of renderingProgress
+   */
+  public int getRenderingProgress()
+  {
+    return renderingProgress;
+  }
+
+  /**
+   * Set the value of renderingProgress
+   *
+   * @param renderingProgress new value of renderingProgress
+   */
+  private void setRenderingProgress(int renderingProgress)
+  {
+    int oldRenderingProgress = this.renderingProgress;
+    this.renderingProgress = renderingProgress;
+    firePropertyChange(PROP_RENDERINGPROGRESS, oldRenderingProgress, renderingProgress);
+    this.repaint();
+  }
   protected boolean previewMode = false;
   public static final String PROP_PREVIEWMODE = "previewMode";
 
@@ -53,7 +101,7 @@ public class MatchingPartsPanel extends ZoomablePanel
     boolean oldPreviewMode = this.previewMode;
     this.previewMode = previewMode;
     firePropertyChange(PROP_PREVIEWMODE, oldPreviewMode, previewMode);
-    this.repaint();
+    this.refreshRendering();
   }
   protected MappingSet mappings = new MappingSet();
 
@@ -102,9 +150,10 @@ public class MatchingPartsPanel extends ZoomablePanel
       if (bb != null)
       {
         this.setOuterBounds(new Dimension((int) (bb.getWidth()), (int) (bb.getHeight())));
+        this.renderBuffer = new BufferedImage((int) (bb.getWidth()), (int) (bb.getHeight()), BufferedImage.TYPE_INT_RGB);
       }
     }
-    this.repaint();
+    this.refreshRendering();
   }
   protected FilterSet selectedFilterSet = null;
 
@@ -130,7 +179,7 @@ public class MatchingPartsPanel extends ZoomablePanel
     {
       selectedMapping = null;
     }
-    this.repaint();
+    this.refreshRendering();
   }
   protected Mapping selectedMapping = null;
 
@@ -156,7 +205,7 @@ public class MatchingPartsPanel extends ZoomablePanel
     {
       selectedFilterSet = null;
     }
-    this.repaint();
+    this.refreshRendering();
   }
   protected MaterialProfile material = null;
 
@@ -179,16 +228,64 @@ public class MatchingPartsPanel extends ZoomablePanel
   {
     this.material = material;
     //this.setBackground(this.material == null ? Color.white : this.material.getColor());
-    this.repaint();
+    this.refreshRendering();
   }
+  private BufferedImage renderBuffer;
+  private boolean needRefresh = true;
+  private final Thread renderThread = new Thread()
+  {
+
+    @Override
+    public void run()
+    {
+      while (true)
+      {
+        while (renderBuffer != null && needRefresh)
+        {
+          needRefresh = false;
+          MatchingPartsPanel.this.setRenderingProgress(-1);
+          Graphics g = renderBuffer.createGraphics();
+          g.setColor(previewMode && selectedMapping != null ? material.getColor() : Color.WHITE);
+          g.fillRect(0, 0, renderBuffer.getWidth(), renderBuffer.getHeight());
+          MatchingPartsPanel.this.render(g);
+        }
+        MatchingPartsPanel.this.setRenderingProgress(100);
+        synchronized (this)
+        {
+          try
+          {
+            this.wait();
+          }
+          catch (InterruptedException ex)
+          {
+            Logger.getLogger(MatchingPartsPanel.class.getName()).log(Level.SEVERE, null, ex);
+          }
+        }
+      }
+    }
+  };
 
   @Override
-  protected void paintComponent(Graphics g)
+  public void paintComponent(Graphics g)
   {
-    this.setBackground(previewMode ? material.getColor() : null);
     super.paintComponent(g);
+    if (g instanceof Graphics2D)
+    {
+      Graphics2D gg = (Graphics2D) g;
+      if (this.getRenderingProgress() == 100)
+      {//no rendering active
+        if (this.renderBuffer != null)
+        {//render buffer filled
+          gg.drawRenderedImage(renderBuffer, null);
+        }
+      }
+    }
+  }
+
+  protected void render(Graphics g)
+  {
     Graphics2D gg = (Graphics2D) g;
-    AffineTransform zoomTrans = gg.getTransform();
+    AffineTransform currentTrans = gg.getTransform();
     if (this.graphicElements != null)
     {
       AffineTransform scaleTrans = this.graphicElements.getScalePart();
@@ -226,8 +323,8 @@ public class MatchingPartsPanel extends ZoomablePanel
           }
           else
           {
-            zoomTrans.concatenate(scaleTrans);
-            gg.setTransform(zoomTrans);
+            currentTrans.concatenate(scaleTrans);
+            gg.setTransform(currentTrans);
             for (GraphicObject e : set)
             {
               e.render(gg);
@@ -237,8 +334,8 @@ public class MatchingPartsPanel extends ZoomablePanel
       }
       else
       {
-        zoomTrans.concatenate(scaleTrans);
-        gg.setTransform(zoomTrans);
+        currentTrans.concatenate(scaleTrans);
+        gg.setTransform(currentTrans);
         if (this.getSelectedFilterSet() != null)
         {
           for (GraphicObject e : this.getSelectedFilterSet().getMatchingObjects(graphicElements))
@@ -256,5 +353,47 @@ public class MatchingPartsPanel extends ZoomablePanel
       }
 
     }
+  }
+  private Point lastMousePosition = null;
+
+  public void mouseDragged(MouseEvent me)
+  {
+    if (lastMousePosition != null)
+    {
+      Point center = this.getCenter();
+      Point diff = new Point(me.getPoint().x - lastMousePosition.x, me.getPoint().y - lastMousePosition.y);
+      center.translate(-diff.x * 1000 / this.getZoom(), -diff.y * 1000 / this.getZoom());
+      this.setCenter(center);
+    }
+    lastMousePosition = me.getPoint();
+  }
+
+  public void mouseMoved(MouseEvent me)
+  {
+  }
+
+  public void mouseClicked(MouseEvent me)
+  {
+    //
+  }
+
+  public void mousePressed(MouseEvent me)
+  {
+    lastMousePosition = me.getPoint();
+  }
+
+  public void mouseReleased(MouseEvent me)
+  {
+    lastMousePosition = null;
+  }
+
+  public void mouseEntered(MouseEvent me)
+  {
+    //
+  }
+
+  public void mouseExited(MouseEvent me)
+  {
+    //
   }
 }
