@@ -47,12 +47,7 @@ public class ProfileManager
 
   public void loadMaterials(LaserDevice l)
   {
-    this.materials.clear();
-    if (l != null)
-    {
-      this.dir = new File(l.getMaterialsPath() != null ? l.getMaterialsPath() : ".VisiCut/materials");
-      this.loadFromDirectory(dir);
-    }
+    this.materials = this.getMaterials(l);
   }
 
   private void generateDefault()
@@ -204,8 +199,9 @@ public class ProfileManager
     this.materials.add(profile);
   }
 
-  private void loadFromDirectory(File dir)
+  private List<MaterialProfile> loadFromDirectory(File dir)
   {
+    List<MaterialProfile> result = new LinkedList<MaterialProfile>();
     if (dir.isDirectory())
     {
       for (File f : dir.listFiles())
@@ -215,7 +211,7 @@ public class ProfileManager
           try
           {
             MaterialProfile prof = this.loadProfile(f);
-            this.materials.add(prof);
+            result.add(prof);
           }
           catch (Exception ex)
           {
@@ -224,6 +220,7 @@ public class ProfileManager
         }
       }
     }
+    return result;
   }
 
   public void saveProfile(MaterialProfile mp, File f) throws FileNotFoundException
@@ -305,5 +302,17 @@ public class ProfileManager
   public void deleteProfile(MaterialProfile m, LaserDevice selectedLaserDevice)
   {
     new File(selectedLaserDevice.getMaterialsPath() + "/" + m.toString() + ".xml").delete();
+  }
+
+  /**
+   * Returns all Materials this Lasercutter supports
+   * (without loading anything)
+   * @param ld
+   * @return 
+   */
+  public List<MaterialProfile> getMaterials(LaserDevice ld)
+  {
+    this.dir = new File(ld.getMaterialsPath() != null ? ld.getMaterialsPath() : ".VisiCut/materials");
+    return this.loadFromDirectory(dir);
   }
 }

@@ -6,6 +6,8 @@ package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.visicut.gui.ImageListable;
 import java.awt.Component;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -34,7 +36,16 @@ public class ImageComboBox extends JComboBox
         {
           label += "<img width=64 height=64 src=file://" + item.getThumbnailPath() + "/> ";
         }
-        label += "</td><td width=3><td>" + item.getName() + "</td></tr></table></html>";
+        if (ImageComboBox.this.isDisabled(o))
+        {
+          label += "</td><td width=3><td>" + item.getName() + "<br/>"+ImageComboBox.this.disableReasons.get(o)+"</td></tr></table></html>";
+          l.setFocusable(false);
+          l.setEnabled(false);
+        }
+        else
+        {
+          label += "</td><td width=3><td>" + item.getName() + "</td></tr></table></html>";
+        }
         l.setText(label);
         l.setToolTipText(item.getDescription());
       }
@@ -42,6 +53,29 @@ public class ImageComboBox extends JComboBox
     }
   };
 
+  private Map<Object,String> disableReasons = new LinkedHashMap<Object,String>();
+  public void setDisabled(Object o, boolean disabled, String reason)
+  {
+    if (disabled)
+    {
+      this.disableReasons.put(o, reason);
+    }
+    else
+    {
+      this.disableReasons.remove(o);
+    }
+  }
+  
+  public void setDisabled(Object o, boolean disabled)
+  {
+    this.setDisabled(o, disabled, "disabled");
+  }
+  
+  public boolean isDisabled(Object o)
+  {
+    return this.disableReasons.containsKey(o);
+  }
+  
   public ImageComboBox()
   {
     this.setRenderer(cellrenderer);
