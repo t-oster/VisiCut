@@ -1,5 +1,6 @@
 package com.t_oster.visicut.gui.mappingdialog;
 
+import com.t_oster.visicut.gui.beans.ZoomablePanel;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
@@ -10,10 +11,12 @@ import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import javax.swing.JPanel;
 
 /**
@@ -24,7 +27,7 @@ import javax.swing.JPanel;
  * @author thommy
  */
 //TODO: Make it extend ZoomablePanel or better PreviewPanel for the RenderBuffer
-public class MatchingPartsPanel extends JPanel
+public class MatchingPartsPanel extends ZoomablePanel
 {
 
   protected boolean previewMode = false;
@@ -93,6 +96,14 @@ public class MatchingPartsPanel extends JPanel
   public void setGraphicElements(GraphicSet graphicElements)
   {
     this.graphicElements = graphicElements;
+    if (graphicElements != null)
+    {
+      Rectangle2D bb = graphicElements.getBoundingBox();
+      if (bb != null)
+      {
+        this.setOuterBounds(new Dimension((int) (bb.getWidth()), (int) (bb.getHeight())));
+      }
+    }
     this.repaint();
   }
   protected FilterSet selectedFilterSet = null;
@@ -177,16 +188,17 @@ public class MatchingPartsPanel extends JPanel
     this.setBackground(previewMode ? material.getColor() : null);
     super.paintComponent(g);
     Graphics2D gg = (Graphics2D) g;
+    AffineTransform zoomTrans = gg.getTransform();
     if (this.graphicElements != null)
     {
+      AffineTransform scaleTrans = this.graphicElements.getScalePart();
       if (this.getSelectedMapping() != null)
       {
         GraphicSet set = this.getSelectedMapping().getFilterSet().getMatchingObjects(this.graphicElements);
-        set.setTransform(null);
         LaserProfile p = this.material.getLaserProfile(this.getSelectedMapping().getProfileName());
+        set.setTransform(scaleTrans);
         if (this.previewMode)
         {
-          AffineTransform trans = gg.getTransform();
           if (p == null)
           {
             gg.setTransform(new AffineTransform());
@@ -194,13 +206,8 @@ public class MatchingPartsPanel extends JPanel
           }
           else
           {
-            if (set.getTransform() != null)
-            {
-              gg.setTransform(set.getTransform());
-            }
             p.renderPreview(gg, set);
           }
-          gg.setTransform(trans);
         }
         else
         {
@@ -211,6 +218,7 @@ public class MatchingPartsPanel extends JPanel
               if (e instanceof ShapeObject)
               {
                 Shape s = ((ShapeObject) e).getShape();
+                s = scaleTrans.createTransformedShape(s);
                 gg.setColor(Color.red);
                 gg.draw(s);
               }
@@ -218,6 +226,8 @@ public class MatchingPartsPanel extends JPanel
           }
           else
           {
+            zoomTrans.concatenate(scaleTrans);
+            gg.setTransform(zoomTrans);
             for (GraphicObject e : set)
             {
               e.render(gg);
@@ -227,6 +237,8 @@ public class MatchingPartsPanel extends JPanel
       }
       else
       {
+        zoomTrans.concatenate(scaleTrans);
+        gg.setTransform(zoomTrans);
         if (this.getSelectedFilterSet() != null)
         {
           for (GraphicObject e : this.getSelectedFilterSet().getMatchingObjects(graphicElements))

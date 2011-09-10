@@ -35,7 +35,14 @@ public class SVGImporter implements Importer
   {
     if (e instanceof ShapeElement && !(e instanceof Group))
     {
+      if (((ShapeElement) e).getShape() != null)
+      {
       result.add(new SVGShape((ShapeElement) e));
+      }
+      else
+      {
+        System.err.println("Ignoring SVGShape: "+e+" because can't get Shape");
+      }
     }
     else if (e instanceof ImageSVG)
     {

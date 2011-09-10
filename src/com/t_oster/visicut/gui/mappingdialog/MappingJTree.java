@@ -143,7 +143,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     @Override
     public String toString()
     {
-      return (this.getA().isEmpty() ? "WITH ":"AND ")+this.getB();
+      return (this.getA().isEmpty() ? "WHERE ":"AND ")+this.getB();
     }
   }
 
@@ -167,7 +167,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
             {
               JLabel l =  (JLabel) c;
               
-                l.setText("<html><table><tr><td>"+(f.isInverted() ? "!=" : "&nbsp;=")+"</td><td border=1 bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
+                l.setText("<html><table><tr><td>"+(f.isInverted() ? "IS NOT" : "IS")+"</td><td border=1 bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
               
             }
           }

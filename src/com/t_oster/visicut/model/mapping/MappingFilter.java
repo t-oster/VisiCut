@@ -139,7 +139,7 @@ public class MappingFilter
     {
       result = value.toString();
     }
-    return inverted ? "!="+result : "="+result;
+    return (inverted ? "IS NOT " : "IS ")+result;
   }
 
   @Override
@@ -166,6 +166,8 @@ public class MappingFilter
   @Override
   public MappingFilter clone()
   {
-    return new MappingFilter(attribute, value);
+    MappingFilter result = new MappingFilter(attribute, value);
+    result.inverted = inverted;
+    return result;
   }
 }

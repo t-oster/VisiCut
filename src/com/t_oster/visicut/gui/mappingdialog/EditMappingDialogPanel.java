@@ -64,7 +64,7 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
         case 0:
           return f.getAttribute();
         case 1:
-          return f.isInverted() ? "!=" : "=";
+          return f.isInverted() ? "IS NOT" : "IS";
         case 2:
           return f.getValue();
       }
@@ -87,7 +87,7 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
           f.setAttribute(o.toString());
           break;
         case 1:
-          f.setInverted(o.toString().equals("!="));
+          f.setInverted(o.toString().equals("IS NOT"));
           break;
         case 2:
           f.setValue(o);
@@ -108,8 +108,8 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
     }
     this.editableTablePanel1.getTable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(attributeCb));
     JComboBox invertedCb = new JComboBox();
-    invertedCb.addItem("=");
-    invertedCb.addItem("!=");
+    invertedCb.addItem("IS NOT");
+    invertedCb.addItem("IS");
     this.editableTablePanel1.getTable().getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(invertedCb));
     this.editableTablePanel1.getTable().getColumnModel().getColumn(2).setCellRenderer(new DefaultTableCellRenderer()
     {
@@ -231,6 +231,7 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
         this.imageComboBox1.addItem(prof);
         this.imageComboBox1.setSelectedItem(prof);
       }
+      this.filterTableModel.fireTableDataChanged();
     }
   }
 

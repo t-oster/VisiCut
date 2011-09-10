@@ -92,6 +92,11 @@ public abstract class SVGObject implements GraphicObject
       //g.setTransform(this.getAbsoluteTransformation());
       this.getDecoratee().render(g);
     }
+    catch (NullPointerException e)
+    {
+      System.err.println("Null Pointer while rendering.");
+      Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, e);
+    }
     catch (SVGException ex)
     {
       Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
