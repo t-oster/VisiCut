@@ -17,7 +17,9 @@ import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,9 +60,14 @@ public class SVGShape extends SVGObject implements ShapeObject
     return null;
   }
 
+  private Map<String,List<Object>> attributeValues = new LinkedHashMap<String,List<Object>>();
   @Override
   public List<Object> getAttributeValues(String a)
   {
+    if (attributeValues.containsKey(a))
+    {
+      return attributeValues.get(a);
+    }
     List<Object> result = super.getAttributeValues(a);
     switch (Attribute.valueOf(a.replace(" ", "_")))
     {
@@ -139,6 +146,7 @@ public class SVGShape extends SVGObject implements ShapeObject
         break;
       }
     }
+    attributeValues.put(a, result);
     return result;
   }
 

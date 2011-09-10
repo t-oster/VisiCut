@@ -53,7 +53,7 @@ public class MainView extends javax.swing.JFrame
     this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
     int def = this.visicutModel1.getPreferences().getDefaultLaserDevice();
     List<LaserDevice> devs = PreferencesManager.getInstance().getPreferences().getLaserDevices();
-    this.visicutModel1.setSelectedLaserDevice(devs.isEmpty() ? null : devs.size()>def ? devs.get(def) : devs.get(0));
+    this.visicutModel1.setSelectedLaserDevice(devs.isEmpty() ? null : devs.size() > def ? devs.get(def) : devs.get(0));
     if (this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null)
     {
       this.captureImage();
@@ -112,6 +112,7 @@ public class MainView extends javax.swing.JFrame
     toggleCutLinesButton = new javax.swing.JToggleButton();
     jSpinner1 = new javax.swing.JSpinner();
     jLabel8 = new javax.swing.JLabel();
+    progressBar = new javax.swing.JProgressBar();
     menuBar = new javax.swing.JMenuBar();
     fileMenu = new javax.swing.JMenu();
     newMenuItem = new javax.swing.JMenuItem();
@@ -358,11 +359,11 @@ public class MainView extends javax.swing.JFrame
     previewPanel.setLayout(previewPanelLayout);
     previewPanelLayout.setHorizontalGroup(
       previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 600, Short.MAX_VALUE)
+      .addGap(0, 869, Short.MAX_VALUE)
     );
     previewPanelLayout.setVerticalGroup(
       previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 609, Short.MAX_VALUE)
+      .addGap(0, 618, Short.MAX_VALUE)
     );
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -430,6 +431,8 @@ public class MainView extends javax.swing.JFrame
 
     jLabel8.setText(resourceMap.getString("jLabel8.text")); // NOI18N
     jLabel8.setName("jLabel8"); // NOI18N
+
+    progressBar.setName("progressBar"); // NOI18N
 
     menuBar.setName("menuBar"); // NOI18N
 
@@ -595,46 +598,54 @@ public class MainView extends javax.swing.JFrame
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+      .addGroup(layout.createSequentialGroup()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createSequentialGroup()
+          .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addComponent(togglePreviewButton)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(toggleCutLinesButton)
             .addGap(65, 65, 65)
             .addComponent(jLabel8)
             .addGap(1, 1, 1)
-            .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 500, Short.MAX_VALUE)))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-          .addGroup(layout.createSequentialGroup()
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addComponent(captureImageButton)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(saveButton)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(executeJobButton))
-          .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(executeJobButton)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 258, Short.MAX_VALUE)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(executeJobButton)
-          .addComponent(saveButton)
-          .addComponent(captureImageButton))
-        .addContainerGap())
       .addGroup(layout.createSequentialGroup()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(togglePreviewButton)
-          .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jLabel8)
-          .addComponent(toggleCutLinesButton))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 305, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(executeJobButton)
+              .addComponent(saveButton)
+              .addComponent(captureImageButton)))
+          .addGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(togglePreviewButton)
+              .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(jLabel8)
+              .addComponent(toggleCutLinesButton))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        .addContainerGap())
     );
 
     bindingGroup.bind();
@@ -648,8 +659,22 @@ public class MainView extends javax.swing.JFrame
 
   public void loadFile(File file)
   {
+    final File fileToLoad = file;
+    new Thread()
+    {
+      @Override
+      public void run()
+      {
+        MainView.this.loadFileReal(fileToLoad);
+      }
+    }.start();
+  }
+
+  public void loadFileReal(File file)
+  {
     try
     {
+      this.progressBar.setIndeterminate(true);
       if (VisicutModel.PLFFilter.accept(file))
       {
         this.visicutModel1.loadFromFile(this.profileManager1, this.mappingManager1, file);
@@ -661,9 +686,11 @@ public class MainView extends javax.swing.JFrame
       this.selectedSet = this.visicutModel1.getGraphicObjects();
       this.editRect = selectedSet.size() == 0 ? null : new EditRectangle(this.selectedSet.getBoundingBox());
       this.previewPanel.setEditRectangle(editRect);
+      this.progressBar.setIndeterminate(false);
     }
     catch (Exception e)
     {
+      this.progressBar.setIndeterminate(false);
       JOptionPane.showMessageDialog(this, "Error while opening '" + file.getName() + "':\n" + e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
   }
@@ -707,6 +734,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
   box.setModal(true);
   box.setVisible(true);
 }//GEN-LAST:event_aboutMenuItemActionPerformed
+
   private enum MouseAction
   {
 
@@ -1145,12 +1173,12 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
     {
       try
       {
-        for (MaterialProfile mp:this.profileManager1.getMaterials())
+        for (MaterialProfile mp : this.profileManager1.getMaterials())
         {
           this.profileManager1.deleteProfile(mp, this.visicutModel1.getSelectedLaserDevice());
         }
         this.profileManager1.setMaterials(result);
-        for (MaterialProfile mp:this.profileManager1.getMaterials())
+        for (MaterialProfile mp : this.profileManager1.getMaterials())
         {
           this.profileManager1.saveProfile(mp, this.visicutModel1.getSelectedLaserDevice());
         }
@@ -1191,11 +1219,10 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
       }
       catch (FileNotFoundException ex)
       {
-        JOptionPane.showMessageDialog(this, "Error saving preferences: "+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Error saving preferences: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       }
     }
   }//GEN-LAST:event_jMenuItem2ActionPerformed
-
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
   private javax.swing.JMenuItem calibrateCameraMenuItem;
@@ -1239,6 +1266,7 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
   private javax.swing.JMenuItem openMenuItem;
   private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
   private com.t_oster.visicut.managers.ProfileManager profileManager1;
+  private javax.swing.JProgressBar progressBar;
   private javax.swing.JCheckBoxMenuItem renderPreviewMenuItem;
   private javax.swing.JMenuItem saveAsMenuItem;
   private javax.swing.JButton saveButton;

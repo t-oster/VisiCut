@@ -14,8 +14,10 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -95,7 +97,7 @@ public abstract class SVGObject implements GraphicObject
     catch (NullPointerException e)
     {
       System.err.println("Null Pointer while rendering.");
-      Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, e);
+      //Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, e);
     }
     catch (SVGException ex)
     {
@@ -103,8 +105,13 @@ public abstract class SVGObject implements GraphicObject
     }
   }
 
+  private Map<String,List<Object>> attributeValues = new LinkedHashMap<String, List<Object>>();
   public List<Object> getAttributeValues(String name)
   {
+    if (attributeValues.containsKey(name))
+    {
+      return attributeValues.get(name);
+    }
     List<Object> result = new LinkedList<Object>();
     switch (Attribute.valueOf(name.replace(" ", "_")))
     {
@@ -127,20 +134,26 @@ public abstract class SVGObject implements GraphicObject
         break;
       }
     }
+    attributeValues.put(name, result);
     return result;
   }
 
+  private List<String> attributes = null;
   public List<String> getAttributes()
   {
-    List<String> result = new LinkedList<String>();
+    if (attributes != null)
+    {
+      return attributes;
+    }
+    attributes = new LinkedList<String>();
     for (Attribute a : Attribute.values())
     {
       if (this.getAttributeValues(a.toString()).size() > 0)
       {
-        result.add(a.toString().replace("_", " "));
+        attributes.add(a.toString().replace("_", " "));
       }
     }
-    return result;
+    return attributes;
   }
 
   /**

@@ -6,7 +6,9 @@ package com.t_oster.visicut.model.graphicelements.svgsupport;
 
 import com.kitfox.svg.ImageSVG;
 import com.kitfox.svg.RenderableElement;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -28,9 +30,14 @@ public class SVGImage extends SVGObject
     return decoratee;
   }
 
+  private Map<String,List<Object>> attributeValues = new LinkedHashMap<String,List<Object>>();
   @Override
   public List<Object> getAttributeValues(String attribute)
   {
+    if (attributeValues.containsKey(attribute))
+    {
+      return attributeValues.get(attribute);
+    }
     List<Object> result = super.getAttributeValues(attribute);
     switch (Attribute.valueOf(attribute.replace(" ", "_")))
     {
@@ -40,6 +47,7 @@ public class SVGImage extends SVGObject
         break;
       }
     }
+    attributeValues.put(attribute, result);
     return result;
   }
 }
