@@ -8,15 +8,13 @@ import com.kitfox.svg.Circle;
 import com.kitfox.svg.Line;
 import com.kitfox.svg.Path;
 import com.kitfox.svg.Rect;
-import com.kitfox.svg.SVGElement;
-import com.kitfox.svg.SVGElementException;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.ShapeElement;
 import com.kitfox.svg.Text;
 import com.kitfox.svg.Tspan;
-import com.kitfox.svg.animation.AnimationElement;
 import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
+import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.util.List;
@@ -45,20 +43,17 @@ public class SVGShape extends SVGObject implements ShapeObject
    */
   private StyleAttribute getStyleAttributeRecursive(String name)
   {
-    StyleAttribute sa = null;
-    for (SVGElement node : this.getPathToRoot())
+    StyleAttribute sa = new StyleAttribute(name);
+    try
     {
-      try
+      if (this.getDecoratee().getStyle(sa, true))
       {
-        if (node.hasAttribute(name, AnimationElement.AT_CSS))
-        {
-          return node.getStyleAbsolute(name);
-        }
+        return sa;
       }
-      catch (SVGElementException ex)
-      {
-        Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
-      }
+    }
+    catch (Exception ex)
+    {
+      Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
     }
     return null;
   }
@@ -108,6 +103,10 @@ public class SVGShape extends SVGObject implements ShapeObject
         {
           result.add("Line");
         }
+        if (this.getDecoratee() instanceof Path)
+        {
+          result.add("Path");
+        }
         result.add("Shape");
         break;
       }
@@ -116,7 +115,8 @@ public class SVGShape extends SVGObject implements ShapeObject
         StyleAttribute sa = getStyleAttributeRecursive("stroke");
         if (sa != null)
         {
-          result.add(sa.getColorValue());
+          Color c = sa.getColorValue();
+          result.add(c == null ? "none" : c);
         }
         else
         {
@@ -129,7 +129,8 @@ public class SVGShape extends SVGObject implements ShapeObject
         StyleAttribute sa = getStyleAttributeRecursive("fill");
         if (sa != null)
         {
-          result.add(sa.getColorValue());
+          Color c = sa.getColorValue();
+          result.add(c == null ? "none" : c);
         }
         else
         {

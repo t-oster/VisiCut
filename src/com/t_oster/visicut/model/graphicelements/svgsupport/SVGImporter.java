@@ -37,7 +37,7 @@ public class SVGImporter implements Importer
     {
       if (((ShapeElement) e).getShape() != null)
       {
-      result.add(new SVGShape((ShapeElement) e));
+        result.add(new SVGShape((ShapeElement) e));
       }
       else
       {
