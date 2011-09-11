@@ -822,7 +822,7 @@ private void previewPanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIR
     }
     else
     {
-      if (this.visicutModel1.getGraphicObjects() != null && this.visicutModel1.getMappings().size() > 0)
+      if (this.visicutModel1.getGraphicObjects() != null && this.visicutModel1.getMappings() != null && this.visicutModel1.getMappings().size() > 0)
       {
         Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
         Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
