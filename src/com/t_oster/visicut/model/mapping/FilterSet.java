@@ -22,7 +22,12 @@ public class FilterSet extends LinkedList<MappingFilter>
 
   public GraphicSet getMatchingObjects(GraphicSet elements)
   {
+    
     GraphicSet result = new GraphicSet();
+    if (elements==null)
+    {
+      return result;
+    }
     result.setTransform(elements.getTransform());
     final Area outerShape = new Area();
     for (GraphicObject o : elements)
