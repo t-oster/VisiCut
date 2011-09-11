@@ -1007,7 +1007,6 @@ private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     List<MaterialProfile> result = new LinkedList<MaterialProfile>();
     for (LaserDevice ld : PreferencesManager.getInstance().getPreferences().getLaserDevices())
     {
-      this.laserCutterComboBox.addItem(ld);
       for (MaterialProfile mp : this.profileManager1.getMaterials(ld))
       {
         boolean found = false;
@@ -1303,6 +1302,16 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
     LaserDevice ld = this.visicutModel1.getSelectedLaserDevice();
     MaterialProfile mp = this.visicutModel1.getMaterial();
     MappingSet mappings = this.visicutModel1.getMappings();
+    if (ld==null || mp == null||mappings==null)
+    {
+      this.executeJobButton.setEnabled(false);
+      this.executeJobMenuItem.setEnabled(false);
+    }
+    else
+    {
+      this.executeJobButton.setEnabled(true);
+      this.executeJobMenuItem.setEnabled(true);
+    }
     for (int i = 1; i < this.laserCutterComboBox.getItemCount(); i++)
     {
       LaserDevice cld = (LaserDevice) this.laserCutterComboBox.getItemAt(i);
