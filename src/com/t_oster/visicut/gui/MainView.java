@@ -17,6 +17,7 @@ import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
+import com.t_oster.visicut.gui.beans.ImageComboBox;
 import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.mapping.Mapping;
@@ -51,11 +52,17 @@ public class MainView extends javax.swing.JFrame
   public MainView()
   {
     initComponents();
+    this.visicutModel1.setMaterial(null);
+    this.visicutModel1.setMappings(null);
     fillComboBoxes();
+    refreshComboBoxes();
     this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
+
     int def = this.visicutModel1.getPreferences().getDefaultLaserDevice();
-    List<LaserDevice> devs = PreferencesManager.getInstance().getPreferences().getLaserDevices();
-    this.visicutModel1.setSelectedLaserDevice(devs.isEmpty() ? null : devs.size() > def ? devs.get(def) : devs.get(0));
+    if (def + 1 < this.laserCutterComboBox.getItemCount())
+    {
+      this.laserCutterComboBox.setSelectedIndex(def + 1);
+    }
     if (this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null)
     {
       this.captureImage();
@@ -77,37 +84,41 @@ public class MainView extends javax.swing.JFrame
    */
   private void fillComboBoxes()
   {
-    List<MaterialProfile> possibleProfiles = new LinkedList<MaterialProfile>();
-    this.laserCutterComboBox.addItem("Please select");
+    Object selected = this.laserCutterComboBox.getSelectedItem();
+    this.laserCutterComboBox.removeAllItems();
+    this.laserCutterComboBox.addItem(null);
+    this.laserCutterComboBox.setSelectedIndex(0);
     for (LaserDevice ld : PreferencesManager.getInstance().getPreferences().getLaserDevices())
     {
       this.laserCutterComboBox.addItem(ld);
-      for (MaterialProfile mp : this.profileManager1.getMaterials(ld))
+      if (ld.equals(selected))
       {
-        boolean found = false;
-        for (MaterialProfile pp : possibleProfiles)
-        {
-          if (pp.getName().equals(mp.getName()) && pp.getDepth() == mp.getDepth())
-          {
-            found = true;
-            break;
-          }
-        }
-        if (!found)
-        {
-          possibleProfiles.add(mp);
-        }
+        this.laserCutterComboBox.setSelectedItem(ld);
       }
     }
-    this.materialComboBox.addItem("Please select");
-    for (MaterialProfile mp : possibleProfiles)
+    selected = this.materialComboBox.getSelectedItem();
+    this.materialComboBox.removeAllItems();
+    this.materialComboBox.addItem(null);
+    this.materialComboBox.setSelectedIndex(0);
+    for (MaterialProfile mp : getAllMaterials())
     {
       this.materialComboBox.addItem(mp);
+      if (mp.equals(selected))
+      {
+        this.materialComboBox.setSelectedItem(mp);
+      }
     }
-    this.mappingComboBox.addItem("Please select");
+    selected = mappingComboBox.getSelectedItem();
+    this.mappingComboBox.removeAllItems();
+    this.mappingComboBox.addItem(null);
+    this.mappingComboBox.setSelectedIndex(0);
     for (MappingSet m : this.mappingManager1.getMappingSets())
     {
       this.mappingComboBox.addItem(m);
+      if (m.equals(selected))
+      {
+        this.mappingComboBox.setSelectedItem(m);
+      }
     }
   }
 
@@ -130,7 +141,6 @@ public class MainView extends javax.swing.JFrame
     jPanel2 = new javax.swing.JPanel();
     jLabel1 = new javax.swing.JLabel();
     jLabel2 = new javax.swing.JLabel();
-    mappingComboBox = new javax.swing.JComboBox();
     jLabel3 = new javax.swing.JLabel();
     dimensionWidthTextField = new javax.swing.JTextField();
     dimesnionsHeightTextfield = new javax.swing.JTextField();
@@ -142,6 +152,7 @@ public class MainView extends javax.swing.JFrame
     jLabel7 = new javax.swing.JLabel();
     jLabel9 = new javax.swing.JLabel();
     laserCutterComboBox = new com.t_oster.visicut.gui.beans.ImageComboBox();
+    mappingComboBox = new com.t_oster.visicut.gui.beans.ImageComboBox();
     jPanel1 = new javax.swing.JPanel();
     previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
     executeJobButton = new javax.swing.JButton();
@@ -210,13 +221,6 @@ public class MainView extends javax.swing.JFrame
     jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
     jLabel2.setName("jLabel2"); // NOI18N
 
-    mappingComboBox.setName("mappingComboBox"); // NOI18N
-    mappingComboBox.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        mappingComboBoxActionPerformed(evt);
-      }
-    });
-
     jLabel3.setText(resourceMap.getString("jLabel3.text")); // NOI18N
     jLabel3.setName("jLabel3"); // NOI18N
 
@@ -264,6 +268,13 @@ public class MainView extends javax.swing.JFrame
       }
     });
 
+    mappingComboBox.setName("mappingComboBox"); // NOI18N
+    mappingComboBox.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        mappingComboBoxActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
     jPanel2.setLayout(jPanel2Layout);
     jPanel2Layout.setHorizontalGroup(
@@ -271,11 +282,11 @@ public class MainView extends javax.swing.JFrame
       .addGroup(jPanel2Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(mappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(jLabel1)
           .addComponent(jLabel9)
           .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(laserCutterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(mappingComboBox, 0, 241, Short.MAX_VALUE)
           .addComponent(jLabel2)
           .addGroup(jPanel2Layout.createSequentialGroup()
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -322,9 +333,9 @@ public class MainView extends javax.swing.JFrame
           .addComponent(jLabel6))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel2)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(mappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addComponent(mappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap())
     );
 
     jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanel1.border.title"))); // NOI18N
@@ -731,6 +742,8 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     md.setMappingManager(this.mappingManager1);
     md.setVisible(true);
     this.visicutModel1.setMappings(md.getMappings());
+    this.fillComboBoxes();
+    this.refreshComboBoxes();
     this.previewPanel.repaint();
   }
 
@@ -959,25 +972,6 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
   }
 }//GEN-LAST:event_filesDropSupport1PropertyChange
 
-private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mappingComboBoxActionPerformed
-  MappingSet ms = this.mappingComboBox.getSelectedItem() instanceof MappingSet ? (MappingSet) this.mappingComboBox.getSelectedItem() : null;
-  if (ms != null && !ms.equals(this.visicutModel1.getMappings()) && this.visicutModel1.getMaterial() != null)
-  {
-    MaterialProfile m = this.visicutModel1.getMaterial();
-    //Check if the current Material supports all Mappings in this set
-    for (Mapping map : ms)
-    {
-      if (m.getLaserProfile(map.getProfileName()) == null)
-      {
-        JOptionPane.showMessageDialog(this, "The Mapping you selected contains is not supported by the current Material.", "Error", JOptionPane.ERROR_MESSAGE);
-        this.mappingComboBox.setSelectedItem(this.visicutModel1.getMappings());
-        return;
-      }
-    }
-    this.visicutModel1.setMappings(ms);
-  }
-}//GEN-LAST:event_mappingComboBoxActionPerformed
-
 private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
   int returnVal = saveFileChooser.showSaveDialog(this);
   if (returnVal == JFileChooser.APPROVE_OPTION)
@@ -1002,6 +996,98 @@ private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     System.out.println("File access cancelled by user.");
   }
 }//GEN-LAST:event_saveButtonActionPerformed
+
+  /**
+   * Returns a list of MaterialProfiles
+   * for all available lasercutters. Aggregated by name and Depth
+   * @return 
+   */
+  private List<MaterialProfile> getAllMaterials()
+  {
+    List<MaterialProfile> result = new LinkedList<MaterialProfile>();
+    for (LaserDevice ld : PreferencesManager.getInstance().getPreferences().getLaserDevices())
+    {
+      this.laserCutterComboBox.addItem(ld);
+      for (MaterialProfile mp : this.profileManager1.getMaterials(ld))
+      {
+        boolean found = false;
+        for (MaterialProfile pp : result)
+        {
+          if (pp.getName().equals(mp.getName()) && pp.getDepth() == mp.getDepth())
+          {
+            found = true;
+            break;
+          }
+        }
+        if (!found)
+        {
+          result.add(mp);
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * returns true iff the combination is supported
+   * @param ld
+   * @param mp
+   * @param ms
+   * @return 
+   */
+  private boolean supported(LaserDevice ld, MaterialProfile mp, MappingSet ms)
+  {
+    if (ld == null && mp == null)
+    {
+      return true;
+    }
+    for (MaterialProfile m : ld != null ? this.profileManager1.getMaterials(ld) : getAllMaterials())
+    {
+      if (mp != null && m.getName().equals(mp.getName()) && m.getDepth() == mp.getDepth())
+      {
+        if (ms == null)
+        {
+          return true;
+        }
+        else
+        {
+          boolean mappingOK = true;
+          for (Mapping map : ms)
+          {
+            if (m.getLaserProfile(map.getProfileName()) == null)
+            {
+              mappingOK = false;
+              break;
+            }
+          }
+          if (mappingOK)
+          {
+            return true;
+          }
+        }
+      }
+      else if (mp == null)
+      {
+        boolean mappingOK = true;
+        if (ms != null)
+        {
+          for (Mapping map : ms)
+          {
+            if (m.getLaserProfile(map.getProfileName()) == null)
+            {
+              mappingOK = false;
+              break;
+            }
+          }
+        }
+        if (mappingOK)
+        {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
 private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
   this.saveButtonActionPerformed(evt);
@@ -1117,25 +1203,16 @@ private void editMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
 private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_materialComboBoxActionPerformed
   //Check if Material supports all Mappings
   MaterialProfile newMaterial = this.materialComboBox.getSelectedItem() instanceof MaterialProfile ? (MaterialProfile) this.materialComboBox.getSelectedItem() : null;
-  if (newMaterial != null && !newMaterial.equals(this.visicutModel1.getMaterial()))
+  if (newMaterial != null)
   {
-    if (this.visicutModel1.getMappings() != null)
+    if (this.materialComboBox.isDisabled(newMaterial))
     {
-      MappingSet mappings = this.visicutModel1.getMappings();
-      for (Mapping m : mappings)
-      {
-        if (newMaterial.getLaserProfile(m.getProfileName()) == null)
-        {
-          JOptionPane.showMessageDialog(this, "The selected Material does not support the Profile '"
-            + m.getProfileName() + "', but your current Mapping '" + this.visicutModel1.getMappings().getName() + "' uses it.\n"
-            + "Please select a differend Mapping or a different Material.", "Error", JOptionPane.OK_OPTION);
-          this.materialComboBox.setSelectedItem(this.visicutModel1.getMaterial());
-          return;
-        }
-      }
+      this.materialComboBox.setSelectedItem(this.visicutModel1.getMaterial());
+      return;
     }
   }
   this.visicutModel1.setMaterial(newMaterial);
+  this.refreshComboBoxes();
 }//GEN-LAST:event_materialComboBoxActionPerformed
 
   private void togglePreviewMode()
@@ -1170,32 +1247,57 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
 
   private void materialMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_materialMenuItemActionPerformed
   {//GEN-HEADEREND:event_materialMenuItemActionPerformed
-    EditMaterialsDialog d = new EditMaterialsDialog(this, true);
-    d.setMaterials(this.profileManager1.getMaterials());
-    d.setVisible(true);
-    List<MaterialProfile> result = d.getMaterials();
-    if (result != null)
+    ImageComboBox laserDevs = new ImageComboBox();
+    for (LaserDevice ld : this.visicutModel1.getPreferences().getLaserDevices())
     {
-      try
+      laserDevs.addItem(ld);
+      if (ld.equals(this.visicutModel1.getSelectedLaserDevice()))
       {
-        for (MaterialProfile mp : this.profileManager1.getMaterials())
-        {
-          this.profileManager1.deleteProfile(mp, this.visicutModel1.getSelectedLaserDevice());
-        }
-        this.profileManager1.setMaterials(result);
-        for (MaterialProfile mp : this.profileManager1.getMaterials())
-        {
-          this.profileManager1.saveProfile(mp, this.visicutModel1.getSelectedLaserDevice());
-        }
-      }
-      catch (FileNotFoundException ex)
-      {
-        JOptionPane.showMessageDialog(this, "Error saving Profile: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        laserDevs.setSelectedItem(ld);
       }
     }
-
+    if (laserDevs.getItemCount()==0)
+    {
+      JOptionPane.showMessageDialog(this, "You have to add at least one Lasercutter first.", "Error", JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+    if (JOptionPane.showConfirmDialog(this, laserDevs, "Please choose a Lasercutter", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
+    {
+      LaserDevice ld = (LaserDevice) laserDevs.getSelectedItem();
+      EditMaterialsDialog d = new EditMaterialsDialog(this, true);
+      d.setMaterials(this.profileManager1.getMaterials(ld));
+      d.setVisible(true);
+      List<MaterialProfile> result = d.getMaterials();
+      if (result != null)
+      {
+        try
+        {
+          for (MaterialProfile mp : this.profileManager1.getMaterials(ld))
+          {
+            this.profileManager1.deleteProfile(mp, ld);
+          }
+          for (MaterialProfile mp : result)
+          {
+            this.profileManager1.saveProfile(mp, ld);
+          }
+          if (ld.equals(this.visicutModel1.getSelectedLaserDevice()))
+          {
+            this.profileManager1.loadMaterials(ld);
+          }
+          this.fillComboBoxes();
+          this.refreshComboBoxes();
+        }
+        catch (FileNotFoundException ex)
+        {
+          JOptionPane.showMessageDialog(this, "Error saving Profile: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+      }
+    }
   }//GEN-LAST:event_materialMenuItemActionPerformed
 
+  /**
+   * Disables all impossible combinations
+   */
   private void refreshComboBoxes()
   {
     LaserDevice ld = this.visicutModel1.getSelectedLaserDevice();
@@ -1204,35 +1306,37 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
     for (int i = 1; i < this.laserCutterComboBox.getItemCount(); i++)
     {
       LaserDevice cld = (LaserDevice) this.laserCutterComboBox.getItemAt(i);
-      profileCheck:
+      if (supported(cld, mp, mappings))
       {
-        if (mp != null)
-        {//Check if MaterialProfile supported by Lasercutter
-          this.laserCutterComboBox.setDisabled(cld, true, "Material not supported");
-          for (MaterialProfile cmp : this.profileManager1.getMaterials(cld))
-          {
-            if (cmp.getName().equals(mp.getName()) && cmp.getDepth() == mp.getDepth())
-            {
-              if (mappings == null)
-              {
-                this.laserCutterComboBox.setDisabled(cld, false);
-                break profileCheck;
-              }
-              else
-              {
-                this.laserCutterComboBox.setDisabled(cld, true, "Mapping not supported");
-                for (Mapping m : mappings)
-                {
-                  if (cmp.getLaserProfile(m.getProfileName()) != null)
-                  {
-                    this.laserCutterComboBox.setDisabled(cld, false);
-                    break profileCheck;
-                  }
-                }
-              }
-            }
-          }
-        }
+        this.laserCutterComboBox.setDisabled(cld, false);
+      }
+      else
+      {
+        this.laserCutterComboBox.setDisabled(cld, true, mappings == null ? "Material not supported" : "Mapping not supported");
+      }
+    }
+    for (int i = 1; i < this.materialComboBox.getItemCount(); i++)
+    {
+      MaterialProfile m = (MaterialProfile) this.materialComboBox.getItemAt(i);
+      if (supported(ld, m, mappings))
+      {
+        this.materialComboBox.setDisabled(m, false);
+      }
+      else
+      {
+        this.materialComboBox.setDisabled(m, true, mappings == null ? "Lasercutter not supported" : "Mapping not supported");
+      }
+    }
+    for (int i = 1; i < this.mappingComboBox.getItemCount(); i++)
+    {
+      MappingSet m = (MappingSet) this.mappingComboBox.getItemAt(i);
+      if (supported(ld, mp, m))
+      {
+        this.mappingComboBox.setDisabled(m, false);
+      }
+      else
+      {
+        this.mappingComboBox.setDisabled(m, true, mp == null ? "Lasercutter not supported" : "Material not supported");
       }
     }
   }
@@ -1240,7 +1344,6 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
   private void laserCutterComboBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_laserCutterComboBoxActionPerformed
   {//GEN-HEADEREND:event_laserCutterComboBoxActionPerformed
     LaserDevice newDev = laserCutterComboBox.getSelectedItem() instanceof LaserDevice ? (LaserDevice) laserCutterComboBox.getSelectedItem() : null;
-
     if (newDev != null)
     {
       if (this.laserCutterComboBox.isDisabled(newDev))
@@ -1284,8 +1387,24 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
       {
         JOptionPane.showMessageDialog(this, "Error saving preferences: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       }
+      this.fillComboBoxes();
+      this.refreshComboBoxes();
     }
   }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mappingComboBoxActionPerformed
+  MappingSet ms = this.mappingComboBox.getSelectedItem() instanceof MappingSet ? (MappingSet) this.mappingComboBox.getSelectedItem() : null;
+  if (ms != null)
+  {
+    if (this.mappingComboBox.isDisabled(ms))
+    {
+      this.mappingComboBox.setSelectedItem(this.visicutModel1.getMappings());
+      return;
+    }
+  }
+  this.visicutModel1.setMappings(ms);
+  this.refreshComboBoxes();
+}//GEN-LAST:event_mappingComboBoxActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
   private javax.swing.JMenuItem calibrateCameraMenuItem;
@@ -1316,7 +1435,7 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
   private javax.swing.JPanel jPanel2;
   private javax.swing.JSpinner jSpinner1;
   private com.t_oster.visicut.gui.beans.ImageComboBox laserCutterComboBox;
-  private javax.swing.JComboBox mappingComboBox;
+  private com.t_oster.visicut.gui.beans.ImageComboBox mappingComboBox;
   private com.t_oster.visicut.managers.MappingManager mappingManager1;
   private com.t_oster.visicut.gui.beans.ImageComboBox materialComboBox;
   private javax.swing.JTextField materialHeightTextField;
