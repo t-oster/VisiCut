@@ -41,4 +41,15 @@ public class MappingSet extends LinkedList<Mapping>
     return this.name;
   }
   
+  @Override
+  public MappingSet clone()
+  {
+    MappingSet result = new MappingSet();
+    for (Mapping m:this)
+    {
+      result.add(m.clone());
+    }
+    return result;
+  }
+  
 }

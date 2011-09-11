@@ -11,7 +11,6 @@
 package com.t_oster.visicut.gui.mappingdialog;
 
 import com.t_oster.liblasercut.platform.Util;
-import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.model.mapping.Mapping;
@@ -20,9 +19,6 @@ import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
-import java.io.File;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -64,7 +60,6 @@ public class MappingDialog extends javax.swing.JDialog
     mappingJTree = new com.t_oster.visicut.gui.mappingdialog.MappingJTree();
     jPanel1 = new javax.swing.JPanel();
     matchingPartsPanel1 = new com.t_oster.visicut.gui.mappingdialog.MatchingPartsPanel();
-    saveAsButton = new javax.swing.JButton();
     jLabel1 = new javax.swing.JLabel();
     jLabel2 = new javax.swing.JLabel();
     jCheckBox1 = new javax.swing.JCheckBox();
@@ -184,14 +179,6 @@ public class MappingDialog extends javax.swing.JDialog
           .addContainerGap()))
     );
 
-    saveAsButton.setText(resourceMap.getString("saveAsButton.text")); // NOI18N
-    saveAsButton.setName("saveAsButton"); // NOI18N
-    saveAsButton.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        saveAsButtonActionPerformed(evt);
-      }
-    });
-
     jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
     jLabel1.setName("jLabel1"); // NOI18N
 
@@ -233,8 +220,6 @@ public class MappingDialog extends javax.swing.JDialog
           .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1200, Short.MAX_VALUE)
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addComponent(cancelButton)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(saveAsButton)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(okButton))
           .addGroup(layout.createSequentialGroup()
@@ -282,7 +267,6 @@ public class MappingDialog extends javax.swing.JDialog
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(okButton)
-          .addComponent(saveAsButton)
           .addComponent(cancelButton))
         .addContainerGap())
     );
@@ -528,60 +512,6 @@ private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   this.setCurrentMappings(this.getMappings());
   this.setVisible(false);
 }//GEN-LAST:event_cancelButtonActionPerformed
-  protected MappingManager mappingManager = null;
-
-  /**
-   * Get the value of mappingManager
-   *
-   * @return the value of mappingManager
-   */
-  public MappingManager getMappingManager()
-  {
-    if (mappingManager == null)
-    {
-      mappingManager = new MappingManager();
-    }
-    return mappingManager;
-  }
-
-  /**
-   * Set the value of mappingManager
-   *
-   * @param mappingManager new value of mappingManager
-   */
-  public void setMappingManager(MappingManager mappingManager)
-  {
-    this.mappingManager = mappingManager;
-  }
-
-private void saveAsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsButtonActionPerformed
-  MappingSet ms = this.getCurrentMappings();
-  JFileChooser sav = new JFileChooser();
-  sav.setDialogType(JFileChooser.SAVE_DIALOG);
-  sav.setCurrentDirectory(new File(".VisiCut/mappings"));
-  sav.setSelectedFile(new File(ms.getName() + ".xml"));
-  sav.setAcceptAllFileFilterUsed(false);
-  sav.setFileFilter(new ExtensionFilter(".xml", "Mapping XML File (*.xml)"));
-  if (sav.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
-  {
-    File file = sav.getSelectedFile();
-    if (!file.getName().endsWith(".xml"))
-    {
-      file = new File(file.getAbsolutePath() + ".xml");
-    }
-    String name = file.getName();
-    ms.setName(name.substring(0, name.length() - 4));
-    try
-    {
-      this.getMappingManager().saveMappingSet(ms, file);
-      this.getMappingManager().getMappingSets().add(ms);
-    }
-    catch (Exception ex)
-    {
-      JOptionPane.showMessageDialog(this, "Error saving File: " + ex.getLocalizedMessage());
-    }
-  }
-}//GEN-LAST:event_saveAsButtonActionPerformed
 
 private void matchingPartsPanel1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_matchingPartsPanel1PropertyChange
 if (evt.getPropertyName().equals(MatchingPartsPanel.PROP_RENDERINGPROGRESS))
@@ -616,7 +546,6 @@ if (evt.getPropertyName().equals(MatchingPartsPanel.PROP_RENDERINGPROGRESS))
   private com.t_oster.visicut.gui.mappingdialog.MatchingPartsPanel matchingPartsPanel1;
   private javax.swing.JButton okButton;
   private javax.swing.JProgressBar progressBar;
-  private javax.swing.JButton saveAsButton;
   private org.jdesktop.beansbinding.BindingGroup bindingGroup;
   // End of variables declaration//GEN-END:variables
 }

@@ -735,16 +735,25 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 
   private void editMapping()
   {
-    MappingDialog md = new MappingDialog();
-    md.setGraphicElements(this.visicutModel1.getGraphicObjects());
-    md.setMappings(this.visicutModel1.getMappings());
-    md.setMaterial(this.visicutModel1.getMaterial());
-    md.setMappingManager(this.mappingManager1);
-    md.setVisible(true);
-    this.visicutModel1.setMappings(md.getMappings());
-    this.fillComboBoxes();
-    this.refreshComboBoxes();
-    this.previewPanel.repaint();
+    List<MappingSet> mappingsets = new LinkedList<MappingSet>();
+    for (MappingSet m : this.mappingManager1.getMappingSets())
+    {
+      mappingsets.add(m.clone());
+    }
+    EditMappingsDialog d = new EditMappingsDialog(this, true);
+    d.setGraphicElements(this.visicutModel1.getGraphicObjects());
+    d.setMappingSets(mappingsets);
+    d.setMaterial(this.visicutModel1.getMaterial());
+    d.setVisible(true);
+    mappingsets = d.getMappingSets();
+    if (mappingsets != null)
+    {
+      //TODO: delete and save all
+      this.mappingManager1.setMappingSets(mappingsets);
+      this.fillComboBoxes();
+      this.refreshComboBoxes();
+      this.previewPanel.repaint();
+    }
   }
 
 private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
@@ -1255,7 +1264,7 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
         laserDevs.setSelectedItem(ld);
       }
     }
-    if (laserDevs.getItemCount()==0)
+    if (laserDevs.getItemCount() == 0)
     {
       JOptionPane.showMessageDialog(this, "You have to add at least one Lasercutter first.", "Error", JOptionPane.ERROR_MESSAGE);
       return;
@@ -1302,7 +1311,7 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
     LaserDevice ld = this.visicutModel1.getSelectedLaserDevice();
     MaterialProfile mp = this.visicutModel1.getMaterial();
     MappingSet mappings = this.visicutModel1.getMappings();
-    if (ld==null || mp == null||mappings==null)
+    if (ld == null || mp == null || mappings == null)
     {
       this.executeJobButton.setEnabled(false);
       this.executeJobMenuItem.setEnabled(false);
