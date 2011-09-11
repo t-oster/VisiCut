@@ -29,6 +29,7 @@ import java.util.logging.Logger;
  */
 public class MappingManager
 {
+
   public MappingManager()
   {
     mappingSets = new LinkedList<MappingSet>();
@@ -39,13 +40,13 @@ public class MappingManager
       saveMappings();
     }
   }
-  
+
   private void loadFromDirectory()
   {
     File dir = new File(".VisiCut/mappings");
     if (dir.isDirectory())
     {
-      for (File f:dir.listFiles())
+      for (File f : dir.listFiles())
       {
         if (f.isFile() && f.getAbsolutePath().toLowerCase().endsWith(".xml"))
         {
@@ -62,7 +63,7 @@ public class MappingManager
       }
     }
   }
-  
+
   private void generateDefault()
   {
     MappingSet ms;
@@ -71,7 +72,7 @@ public class MappingManager
     ms.setName("Cut");
     fs = new FilterSet();
     fs.add(new MappingFilter());
-    ms.add(new Mapping(fs,"cut line"));
+    ms.add(new Mapping(fs, "cut line"));
     mappingSets.add(ms);
     ms = new MappingSet();
     ms.setName("Engrave");
@@ -83,7 +84,7 @@ public class MappingManager
     fs = new FilterSet();
     fs.add(new MappingFilter("Type", "Shape"));
     fs.add(new MappingFilter("Fill_Color", "none"));
-    ms.add(new Mapping(fs,"cut line"));
+    ms.add(new Mapping(fs, "cut line"));
     fs = new FilterSet();//Empty Filter matches everything
     ms.add(new Mapping(fs, "Floyd Steinberg"));
     fs = new FilterSet();
@@ -92,7 +93,6 @@ public class MappingManager
     ms.add(cutOutline);
     mappingSets.add(ms);
   }
-  
   protected List<MappingSet> mappingSets = null;
   public static final String PROP_MAPPINGSETS = "mappingSets";
 
@@ -139,6 +139,26 @@ public class MappingManager
     propertyChangeSupport.removePropertyChangeListener(listener);
   }
 
+  /**
+   * Deletes all Mappings in the Mapping directory and saves
+   * the current Mappings.
+   */
+  public void saveAllMappings()
+  {
+    File dir = new File(".VisiCut/mappings");
+    if (dir.exists() && dir.isDirectory())
+    {
+      for (File f:dir.listFiles())
+      {
+        if (f.isFile() && f.getAbsolutePath().toLowerCase().endsWith(".xml"))
+        {
+          f.delete();
+        }
+      }
+    }
+    this.saveMappings();
+  }
+
   public void saveMappingSet(MappingSet pref, File f) throws FileNotFoundException
   {
     FileOutputStream os = new FileOutputStream(f);
@@ -154,7 +174,7 @@ public class MappingManager
     in.close();
     return p;
   }
-  
+
   public MappingSet loadMappingSet(InputStream in) throws FileNotFoundException
   {
     XMLDecoder decoder = new XMLDecoder(in);
@@ -171,11 +191,11 @@ public class MappingManager
       {
         dir.mkdir();
       }
-      for (MappingSet s:this.mappingSets)
+      for (MappingSet s : this.mappingSets)
       {
         try
         {
-          this.saveMappingSet(s, new File(dir, s.getName()+".xml"));
+          this.saveMappingSet(s, new File(dir, s.getName() + ".xml"));
         }
         catch (FileNotFoundException ex)
         {
@@ -184,5 +204,4 @@ public class MappingManager
       }
     }
   }
-
 }

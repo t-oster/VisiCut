@@ -733,7 +733,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   }
 }//GEN-LAST:event_openMenuItemActionPerformed
 
-  private void editMapping()
+  private void editMappings()
   {
     List<MappingSet> mappingsets = new LinkedList<MappingSet>();
     for (MappingSet m : this.mappingManager1.getMappingSets())
@@ -748,8 +748,8 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     mappingsets = d.getMappingSets();
     if (mappingsets != null)
     {
-      //TODO: delete and save all
       this.mappingManager1.setMappingSets(mappingsets);
+      this.mappingManager1.saveAllMappings();
       this.fillComboBoxes();
       this.refreshComboBoxes();
       this.previewPanel.repaint();
@@ -1205,7 +1205,7 @@ private void captureImageButtonActionPerformed(java.awt.event.ActionEvent evt) {
 }//GEN-LAST:event_captureImageButtonActionPerformed
 
 private void editMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMappingMenuItemActionPerformed
-  this.editMapping();
+  this.editMappings();
 }//GEN-LAST:event_editMappingMenuItemActionPerformed
 
 private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_materialComboBoxActionPerformed

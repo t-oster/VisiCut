@@ -45,6 +45,7 @@ public class MappingSet extends LinkedList<Mapping>
   public MappingSet clone()
   {
     MappingSet result = new MappingSet();
+    result.name = name;
     for (Mapping m:this)
     {
       result.add(m.clone());
