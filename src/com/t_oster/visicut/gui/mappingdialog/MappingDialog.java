@@ -329,7 +329,7 @@ public class MappingDialog extends javax.swing.JDialog
       this.setSelectedFilters(null);
       if (selectedMapping.getProfileName() != null)
       {
-        if (this.material.getLaserProfile(selectedMapping.getProfileName()) != null)
+        if (this.material != null && this.material.getLaserProfile(selectedMapping.getProfileName()) != null)
         {
           this.setSelectedLProfile(this.material.getLaserProfile(selectedMapping.getProfileName()));
         }
