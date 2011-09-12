@@ -17,9 +17,15 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import java.awt.geom.AffineTransform;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -30,7 +36,7 @@ public class SVGImporter implements Importer
 {
 
   private SVGUniverse u = new SVGUniverse();
-  
+
   private void importNode(SVGElement e, List<GraphicObject> result)
   {
     if (e instanceof ShapeElement && !(e instanceof Group))
@@ -41,32 +47,41 @@ public class SVGImporter implements Importer
       }
       else
       {
-        System.err.println("Ignoring SVGShape: "+e+" because can't get Shape");
+        System.err.println("Ignoring SVGShape: " + e + " because can't get Shape");
       }
     }
-    else if (e instanceof ImageSVG)
+    else
     {
-      result.add(new SVGImage((ImageSVG) e));
+      if (e instanceof ImageSVG)
+      {
+        result.add(new SVGImage((ImageSVG) e));
+      }
     }
-    for (int i=0;i< e.getNumChildren();i++)
+    for (int i = 0; i < e.getNumChildren(); i++)
     {
       importNode(e.getChild(i), result);
     }
   }
-  
+
+  public GraphicSet importFile(InputStream in, String name) throws IOException
+  {
+    URI svg = u.loadSVG(in, name);
+    SVGRoot root = u.getDiagram(svg).getRoot();
+    GraphicSet result = new GraphicSet();
+    result.setTransform(AffineTransform.getScaleInstance(500 / 96, 500 / 96));
+    importNode(root, result);
+    return result;
+
+  }
+
   @Override
   public GraphicSet importFile(File inputFile) throws ImportException
   {
     try
     {
-      URI svg = u.loadSVG(inputFile.toURI().toURL());
-      SVGRoot root = u.getDiagram(svg).getRoot();
-      GraphicSet result = new GraphicSet();
-      result.setTransform(AffineTransform.getScaleInstance(500/96, 500/96));
-      importNode(root,result);
-      return result;
+      return this.importFile(new FileInputStream(inputFile), inputFile.getName());
     }
-    catch (MalformedURLException ex)
+    catch (Exception ex)
     {
       throw new ImportException(ex);
     }

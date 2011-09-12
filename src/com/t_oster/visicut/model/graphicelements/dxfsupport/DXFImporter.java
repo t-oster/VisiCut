@@ -8,8 +8,13 @@ import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.Importer;
+import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.filechooser.FileFilter;
@@ -23,6 +28,13 @@ import org.kabeja.dxf.DXFConstants;
 import org.kabeja.parser.Parser;
 import org.kabeja.parser.DXFParser;
 import org.kabeja.parser.ParserBuilder;
+import org.kabeja.svg.SVGGenerator;
+import org.kabeja.xml.SAXGenerator;
+import org.kabeja.xml.SAXPrettyOutputter;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -34,27 +46,47 @@ public class DXFImporter implements Importer
   public GraphicSet importFile(File inputFile) throws ImportException
   {
     GraphicSet result = new GraphicSet();
-    Parser parser = ParserBuilder.createDefaultParser();
     try
     {
-      //parse
+      Parser parser = ParserBuilder.createDefaultParser();
       parser.parse(new FileInputStream(inputFile), DXFParser.DEFAULT_ENCODING);
-      //get the documnet and the layer
-      DXFDocument doc = parser.getDocument();
-      Iterator i = doc.getDXFLayerIterator();
-      while (i.hasNext())
-      {
-        DXFLayer layer = (DXFLayer) i.next();
-        //get all polylines from the layer
-        List<DXFPolyline> list = layer.getDXFEntities(DXFConstants.ENTITY_TYPE_POLYLINE);
-        if (list != null)
+      final DXFDocument doc = parser.getDocument();
+
+      PipedInputStream in = new PipedInputStream();
+      PipedOutputStream out = new PipedOutputStream(in);
+      
+
+      //the SVG will be emitted as SAX-Events
+      //see org.xml.sax.ContentHandler for more information 
+      final ContentHandler myhandler = new SAXPrettyOutputter(out);
+
+      //the output - create first a SAXGenerator (SVG here)
+      final SAXGenerator generator = new SVGGenerator();
+
+      //setup properties
+      generator.setProperties(new HashMap());
+
+      new Thread(
+        new Runnable()
         {
-          for (Object o : list)
+
+          public void run()
           {
-            result.add(new Polyline((DXFPolyline) o));
+          try
+          {
+            generator.generate(doc, myhandler, new HashMap());
           }
-        }
-      }
+          catch (SAXException ex)
+          {
+            Logger.getLogger(DXFImporter.class.getName()).log(Level.SEVERE, null, ex);
+          }
+          }
+        }).start();
+      SVGImporter svgimp = new SVGImporter();
+      return svgimp.importFile(in, inputFile.getName());
+      //start the output
+      
+
     }
     catch (Exception ex)
     {
