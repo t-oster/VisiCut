@@ -4,15 +4,9 @@
  */
 package com.t_oster.visicut.model.graphicelements;
 
-import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.MultiFilter;
-import com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter;
-import com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter;
-import com.t_oster.visicut.model.graphicelements.pdfsupport.PDFImporter;
-import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.Class;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
