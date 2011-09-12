@@ -45,14 +45,13 @@ public class VisicutApp extends SingleFrameApplication
   {
     return Application.getInstance(VisicutApp.class);
   }
-
   private String[] arguments;
-  
+
   public String[] getProgramArguments()
   {
     return arguments;
   }
-  
+
   @Override
   protected void initialize(String[] args)
   {
@@ -66,18 +65,21 @@ public class VisicutApp extends SingleFrameApplication
   public static void main(String[] args)
   {
     //Mac Specific
-    System.setProperty("apple.laf.useScreenMenuBar", "true");
-    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Jepilog");
-    //System.setProperty("apple.awt.brushMetalLook", "true");
-    System.setProperty("apple.awt.antialiasing", "on");
-    System.setProperty("apple.awt.textantialiasing", "on");
-    System.setProperty("com.apple.mrj.application.growbox.intrudes", "false");
-    System.setProperty("com.apple.mrj.application.live-resize", "true");
-    System.setProperty("com.apple.macos.smallTabs", "true");
+    if (System.getProperty("os.name").toLowerCase().contains("mac"))
+    {
+      System.setProperty("apple.laf.useScreenMenuBar", "true");
+      System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Visicut");
+      //System.setProperty("apple.awt.brushMetalLook", "true");
+      System.setProperty("apple.awt.antialiasing", "on");
+      System.setProperty("apple.awt.textantialiasing", "on");
+      System.setProperty("com.apple.mrj.application.growbox.intrudes", "false");
+      System.setProperty("com.apple.mrj.application.live-resize", "true");
+      System.setProperty("com.apple.macos.smallTabs", "true");
+    }
     try
     {
       UIManager.setLookAndFeel(
-              UIManager.getSystemLookAndFeelClassName());
+        UIManager.getSystemLookAndFeelClassName());
     }
     catch (ClassNotFoundException ex)
     {

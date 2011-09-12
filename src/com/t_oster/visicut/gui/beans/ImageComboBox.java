@@ -5,6 +5,7 @@
 package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.visicut.gui.ImageListable;
+import java.awt.Color;
 import java.awt.Component;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -12,6 +13,8 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.UIManager;
+import javax.swing.plaf.metal.MetalComboBoxUI;
 
 /**
  *
@@ -32,15 +35,16 @@ public class ImageComboBox extends JComboBox
         JLabel l = (JLabel) c;
         if (o instanceof ImageListable)
         {
+          
           ImageListable item = (ImageListable) o;
-          String label = "<html><table cellpadding=3><tr><td>";
+          String label = "<html><table cellpadding=3><tr>";
           if (item.getThumbnailPath() != null)
           {
-            label += "<img width=64 height=64 src=file://" + item.getThumbnailPath() + "/> ";
+            label += "<td height=80><img width=64 height=64 src=file://" + item.getThumbnailPath() + "/></td>";
           }
           if (ImageComboBox.this.isDisabled(o))
           {
-            label += "</td><td width=3><td>" + item.getName() + "<br/>" + ImageComboBox.this.disableReasons.get(o) + "</td></tr></table></html>";
+            label += "<td width=3><td>" + item.getName() + "<br/>" + ImageComboBox.this.disableReasons.get(o) + "</td></tr></table></html>";
             l.setFocusable(false);
             l.setEnabled(false);
           }
@@ -53,13 +57,13 @@ public class ImageComboBox extends JComboBox
         }
         else
         {
-          if (o==null)
+          if (o == null)
           {
             l.setText("Please select");
           }
           else if (ImageComboBox.this.isDisabled(o))
           {
-            l.setText(o.toString()+" ("+ImageComboBox.this.disableReasons.get(o)+")");
+            l.setText(o.toString() + " (" + ImageComboBox.this.disableReasons.get(o) + ")");
             l.setFocusable(false);
             l.setEnabled(false);
           }
@@ -85,7 +89,7 @@ public class ImageComboBox extends JComboBox
       this.disableReasons.remove(o);
     }
   }
-  
+
   public void setDisabled(Object o, boolean disabled)
   {
     this.setDisabled(o, disabled, "disabled");
@@ -98,6 +102,15 @@ public class ImageComboBox extends JComboBox
 
   public ImageComboBox()
   {
+    //For MAC Os displaying the correct size
+    if (System.getProperty("os.name").toLowerCase().contains("mac"))
+    {
+      Color bg = (Color) UIManager.get("ComboBox.background");
+      Color fg = (Color) UIManager.get("ComboBox.foreground");
+      UIManager.put("ComboBox.selectionBackground", bg);
+      UIManager.put("ComboBox.selectionForeground", fg);
+      this.setUI(new MetalComboBoxUI());
+    }
     this.setRenderer(cellrenderer);
   }
 }
