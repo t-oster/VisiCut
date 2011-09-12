@@ -15,7 +15,6 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.LinkedList;
 
 /**
  * This Class represents a profile, describing
@@ -31,7 +30,6 @@ public class RasterProfile extends LaserProfile
   {
     this.setName("average");
   }
-  
   protected boolean invertColors = false;
 
   /**
@@ -153,7 +151,8 @@ public class RasterProfile extends LaserProfile
           Rectangle2D targetBB = new Rectangle(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
           g.setTransform(Helper.getTransform(origBB, targetBB));
         }
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         for (GraphicObject o : objects)
         {
           o.render(g);
@@ -178,7 +177,7 @@ public class RasterProfile extends LaserProfile
     rp.name = this.name;
     rp.thumbnailPath = this.thumbnailPath;
     //rp.laserProperties = new LinkedList<LaserProperty>();
-    for (LaserProperty l: this.getLaserProperties())
+    for (LaserProperty l : this.getLaserProperties())
     {
       rp.laserProperties.add(l.clone());
     }
