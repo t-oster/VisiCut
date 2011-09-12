@@ -101,12 +101,8 @@ public class Raster3dProfile extends LaserProfile
         {
           if (ad.getGreyScale(x, y)<255)
           {//TODO: Scale color between profile color and material color
-              double f = 1-(ad.getGreyScale(x, y)/255);
-            Color scaled = new Color(
-                    (int)(f*this.getColor().getRed()),
-                    (int)(f*this.getColor().getGreen()),
-                    (int)(f*this.getColor().getBlue())
-                    );
+              double f = (double) ad.getGreyScale(x, y)/255;
+            Color scaled = getColorBetween(Color.black, this.getColor(), f);
             gg.setColor(scaled);
             gg.drawLine((int) bb.getX() + x, (int) bb.getY() + y, (int) bb.getX() + x, (int) bb.getY() + y);
           }
@@ -115,6 +111,29 @@ public class Raster3dProfile extends LaserProfile
     }
   }
 
+  /**
+   * Returns the color between a and b depending on factor.
+   * factor 0 means a, factor 1 means b
+   * @param a
+   * @param b
+   * @param factor
+   * @return 
+   */
+  private Color getColorBetween(Color a, Color b, double factor)
+  {
+    int ra = a.getRed();
+    int rb = b.getRed();
+    int ga = a.getGreen();
+    int gb = b.getGreen();
+    int ba = a.getBlue();
+    int bb = b.getBlue();
+    return new Color(
+      (int)(ra+factor*(rb-ra)),
+      (int)(ga+factor*(gb-ga)),
+      (int)(ba+factor*(bb-ba))
+      );
+  }
+  
   @Override
   public void addToLaserJob(LaserJob job, GraphicSet objects)
   {
