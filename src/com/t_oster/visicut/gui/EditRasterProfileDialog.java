@@ -214,6 +214,9 @@ public class EditRasterProfileDialog extends javax.swing.JDialog implements Edit
     selectThumbnailButton1 = new com.t_oster.visicut.gui.beans.SelectThumbnailButton();
     chooseColorButton1 = new com.t_oster.visicut.gui.beans.ChooseColorButton();
     editableTablePanel1 = new com.t_oster.visicut.gui.beans.EditableTablePanel();
+    jCheckBox1 = new javax.swing.JCheckBox();
+    jSlider1 = new javax.swing.JSlider();
+    jLabel6 = new javax.swing.JLabel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setName("Form"); // NOI18N
@@ -282,16 +285,32 @@ public class EditRasterProfileDialog extends javax.swing.JDialog implements Edit
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentRasterProfile.laserProperties}"), editableTablePanel1, org.jdesktop.beansbinding.BeanProperty.create("objects"), "laserprops");
     bindingGroup.addBinding(binding);
 
+    jCheckBox1.setText(resourceMap.getString("jCheckBox1.text")); // NOI18N
+    jCheckBox1.setName("jCheckBox1"); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentRasterProfile.invertColors}"), jCheckBox1, org.jdesktop.beansbinding.BeanProperty.create("selected"), "invcolors");
+    bindingGroup.addBinding(binding);
+
+    jSlider1.setMaximum(255);
+    jSlider1.setMinimum(-255);
+    jSlider1.setToolTipText(resourceMap.getString("jSlider1.toolTipText")); // NOI18N
+    jSlider1.setValue(0);
+    jSlider1.setName("jSlider1"); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentRasterProfile.colorShift}"), jSlider1, org.jdesktop.beansbinding.BeanProperty.create("value"), "colorshift");
+    bindingGroup.addBinding(binding);
+
+    jLabel6.setText(resourceMap.getString("jLabel6.text")); // NOI18N
+    jLabel6.setName("jLabel6"); // NOI18N
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+      .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-          .addComponent(editableTablePanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)
-          .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jLabel2)
               .addComponent(jLabel4)
@@ -299,18 +318,26 @@ public class EditRasterProfileDialog extends javax.swing.JDialog implements Edit
             .addGap(28, 28, 28)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jComboBox1, 0, 172, Short.MAX_VALUE)
+                .addComponent(jComboBox1, 0, 201, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(chooseColorButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-              .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+              .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
               .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addComponent(jLabel1)))
-          .addGroup(layout.createSequentialGroup()
+          .addComponent(editableTablePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 439, Short.MAX_VALUE)
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addComponent(jButton4)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jButton3)))
+            .addComponent(jButton3))
+          .addComponent(jLabel3)
+          .addGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel6)
+              .addComponent(jCheckBox1))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -333,10 +360,17 @@ public class EditRasterProfileDialog extends javax.swing.JDialog implements Edit
           .addComponent(jLabel4)
           .addComponent(jLabel5)
           .addComponent(chooseColorButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGap(18, 18, 18)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jCheckBox1)
+            .addGap(18, 18, 18)
+            .addComponent(jLabel6))
+          .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGap(19, 19, 19)
         .addComponent(jLabel3)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(editableTablePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+        .addGap(18, 18, 18)
+        .addComponent(editableTablePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jButton3)
@@ -366,12 +400,15 @@ public class EditRasterProfileDialog extends javax.swing.JDialog implements Edit
   private com.t_oster.visicut.gui.beans.EditableTablePanel editableTablePanel1;
   private javax.swing.JButton jButton3;
   private javax.swing.JButton jButton4;
+  private javax.swing.JCheckBox jCheckBox1;
   private javax.swing.JComboBox jComboBox1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
+  private javax.swing.JLabel jLabel6;
+  private javax.swing.JSlider jSlider1;
   private javax.swing.JTextField jTextField1;
   private javax.swing.JTextField jTextField2;
   private com.t_oster.visicut.gui.beans.SelectThumbnailButton selectThumbnailButton1;
