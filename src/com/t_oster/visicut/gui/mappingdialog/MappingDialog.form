@@ -32,9 +32,9 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jScrollPane3" alignment="0" pref="1200" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                      <Component id="nameLB" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jTextField1" min="-2" pref="186" max="-2" attributes="0"/>
+                      <Component id="nameTF" min="-2" pref="186" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="cancelButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -100,8 +100,8 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="okButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cancelButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextField1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="nameTF" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="nameLB" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -330,21 +330,21 @@
         <Property name="name" type="java.lang.String" value="progressBar" noResource="true"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="jTextField1">
+    <Component class="javax.swing.JTextField" name="nameTF">
       <Properties>
-        <Property name="name" type="java.lang.String" value="jTextField1" noResource="true"/>
+        <Property name="name" type="java.lang.String" value="nameTF" noResource="true"/>
       </Properties>
       <BindingProperties>
-        <BindingProperty name="text" source="Form" sourcePath="${currentMappings.name}" target="jTextField1" targetPath="text" updateStrategy="0" immediately="false">
+        <BindingProperty name="text" source="Form" sourcePath="${currentMappings.name}" target="nameTF" targetPath="text" updateStrategy="0" immediately="false">
           <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
           <Property name="name" type="java.lang.String" value="name"/>
         </BindingProperty>
       </BindingProperties>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel5">
+    <Component class="javax.swing.JLabel" name="nameLB">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="jLabel5.text"/>
-        <Property name="name" type="java.lang.String" value="jLabel5" noResource="true"/>
+        <Property name="text" type="java.lang.String" resourceKey="nameLB.text"/>
+        <Property name="name" type="java.lang.String" value="nameLB" noResource="true"/>
       </Properties>
     </Component>
   </SubComponents>

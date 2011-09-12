@@ -85,20 +85,19 @@ public class MainView extends javax.swing.JFrame
    */
   private void fillComboBoxes()
   {
-    Object selected = this.laserCutterComboBox.getSelectedItem();
+    LaserDevice sld = this.visicutModel1.getSelectedLaserDevice();
     this.laserCutterComboBox.removeAllItems();
     this.laserCutterComboBox.addItem(null);
     this.laserCutterComboBox.setSelectedIndex(0);
     for (LaserDevice ld : PreferencesManager.getInstance().getPreferences().getLaserDevices())
     {
       this.laserCutterComboBox.addItem(ld);
-      if (ld.equals(selected))
+      if (ld.equals(sld))
       {
         this.laserCutterComboBox.setSelectedItem(ld);
       }
     }
-    selected = this.materialComboBox.getSelectedItem();
-    MaterialProfile sp = selected instanceof MaterialProfile ? (MaterialProfile) selected : null;
+    MaterialProfile sp = this.visicutModel1.getMaterial();
     this.materialComboBox.removeAllItems();
     this.materialComboBox.addItem(null);
     this.materialComboBox.setSelectedIndex(0);
@@ -110,14 +109,14 @@ public class MainView extends javax.swing.JFrame
         this.materialComboBox.setSelectedItem(mp);
       }
     }
-    selected = mappingComboBox.getSelectedItem();
+    MappingSet ss = this.visicutModel1.getMappings();
     this.mappingComboBox.removeAllItems();
     this.mappingComboBox.addItem(null);
     this.mappingComboBox.setSelectedIndex(0);
     for (MappingSet m : this.mappingManager1.getMappingSets())
     {
       this.mappingComboBox.addItem(m);
-      if (m.equals(selected))
+      if (m.equals(ss))
       {
         this.mappingComboBox.setSelectedItem(m);
       }
@@ -1439,6 +1438,7 @@ private void customMappingButtonActionPerformed(java.awt.event.ActionEvent evt) 
   d.setGraphicElements(this.visicutModel1.getGraphicObjects());
   d.setMaterial(this.visicutModel1.getMaterial());
   d.setMappings(custom);
+  d.setShowName(false);
   d.setVisible(true);
   MappingSet result = d.getMappings();
   if (result != null)
