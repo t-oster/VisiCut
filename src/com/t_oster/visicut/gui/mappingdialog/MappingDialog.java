@@ -537,7 +537,8 @@ if (evt.getPropertyName().equals(MatchingPartsPanel.PROP_RENDERINGPROGRESS))
   else
   {
     this.progressBar.setIndeterminate(false);
-    this.progressBar.setValue(this.matchingPartsPanel1.getRenderingProgress());
+    int val = this.matchingPartsPanel1.getRenderingProgress();
+    this.progressBar.setValue(val == 100 ? 0 : val);
   }
 }
 }//GEN-LAST:event_matchingPartsPanel1PropertyChange

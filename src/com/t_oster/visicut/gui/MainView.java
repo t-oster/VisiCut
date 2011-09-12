@@ -96,13 +96,14 @@ public class MainView extends javax.swing.JFrame
       }
     }
     selected = this.materialComboBox.getSelectedItem();
+    MaterialProfile sp = selected instanceof MaterialProfile ? (MaterialProfile) selected : null;
     this.materialComboBox.removeAllItems();
     this.materialComboBox.addItem(null);
     this.materialComboBox.setSelectedIndex(0);
     for (MaterialProfile mp : getAllMaterials())
     {
       this.materialComboBox.addItem(mp);
-      if (mp.equals(selected))
+      if (sp != null && sp.getName().equals(mp.getName()) && sp.getDepth()==mp.getDepth())
       {
         this.materialComboBox.setSelectedItem(mp);
       }
