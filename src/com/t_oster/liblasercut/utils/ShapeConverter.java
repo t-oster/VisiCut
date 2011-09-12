@@ -12,30 +12,42 @@ import java.awt.geom.PathIterator;
  * 
  * @author thommy
  */
-public class ShapeConverter {
+public class ShapeConverter
+{
 
-    /**
-     * Adds the given Shape to the given VectorPart by converting it to
-     * lineto and moveto commands, whose lines differs not more than
-     * 1 pixel from the original shape.
-     * 
-     * @param shape the Shape to be added
-     * @param vectorpart the Vectorpart the shape shall be added to
-     */
-    public void addShape(Shape shape, VectorPart vectorpart) {
-        AffineTransform scale = AffineTransform.getScaleInstance(1, 1);
-        PathIterator iter = shape.getPathIterator(scale, 1);
-        while (!iter.isDone()) {
-            double[] test = new double[8];
-            int result = iter.currentSegment(test);
-            if (result == PathIterator.SEG_MOVETO) {
-                vectorpart.moveto((int) test[0], (int) test[1]);
-            } else {
-                if (result == PathIterator.SEG_LINETO) {
-                    vectorpart.lineto((int) test[0], (int) test[1]);
-                }
-            }
-            iter.next();
-        }
+  /**
+   * Adds the given Shape to the given VectorPart by converting it to
+   * lineto and moveto commands, whose lines differs not more than
+   * 1 pixel from the original shape.
+   * 
+   * @param shape the Shape to be added
+   * @param vectorpart the Vectorpart the shape shall be added to
+   */
+  public void addShape(Shape shape, VectorPart vectorpart)
+  {
+    AffineTransform scale = AffineTransform.getScaleInstance(1, 1);
+    PathIterator iter = shape.getPathIterator(scale, 1);
+    int startx = 0;
+    int starty = 0;
+    while (!iter.isDone())
+    {
+      double[] test = new double[8];
+      int result = iter.currentSegment(test);
+      if (result == PathIterator.SEG_MOVETO)
+      {
+        vectorpart.moveto((int) test[0], (int) test[1]);
+        startx = (int) test[0];
+        starty = (int) test[1];
+      }
+      else if (result == PathIterator.SEG_LINETO)
+      {
+        vectorpart.lineto((int) test[0], (int) test[1]);
+      }
+      else if (result == PathIterator.SEG_CLOSE)
+      {
+        vectorpart.lineto(startx, starty);
+      }
+      iter.next();
     }
+  }
 }
