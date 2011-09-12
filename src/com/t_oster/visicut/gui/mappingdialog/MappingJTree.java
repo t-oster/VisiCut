@@ -21,6 +21,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import org.apache.fop.fonts.Font;
 
 /**
  *
@@ -156,39 +157,38 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
       @Override
       public Component getTreeCellRendererComponent(JTree jtree, Object o, boolean bln, boolean bln1, boolean bln2, int i, boolean bln3)
       {
-        Component c = null;
+        Component c = super.getTreeCellRendererComponent(jtree, o, bln, bln1, bln2, i, bln3);
         if (o instanceof FilterSet)
         {
-          boolean alreadyUsed = false;
+          GraphicSet unmapped = ((FilterSet) o).getMatchingObjects(graphicObjects);
           if (MappingJTree.this.mappings != null)
           {
             for (Mapping m : MappingJTree.this.mappings)
             {
-              if (m.getFilterSet().equals((FilterSet) o))
+              unmapped.removeAll(m.getFilterSet().getMatchingObjects(unmapped));
+              if (unmapped.size() == 0)
               {
-                alreadyUsed = true;
                 break;
               }
             }
           }
-          MappingFilter f = ((FilterSet) o).peekLast();
-          if (f != null)
+          if (c instanceof JLabel)
           {
-            c = super.getTreeCellRendererComponent(jtree, o, bln, bln1, bln2, i, bln3);
-            if (alreadyUsed)
+            JLabel l = (JLabel) c;
+            if (unmapped.size() == 0)
             {
-              c.setBackground(Color.yellow);
+              l.setText("<html><table bgcolor=#fdfbc5><tr><td>" + l.getText() + "</td></tr></table></html>");
             }
-            if (c instanceof JLabel && f.getValue() instanceof Color)
+            MappingFilter f = ((FilterSet) o).peekLast();
+            if (f != null)
             {
-              JLabel l = (JLabel) c;
-              l.setText("<html><table><tr><td>" + (f.isInverted() ? "IS NOT" : "IS") + "</td><td border=1 bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
+              if (f.getValue() instanceof Color)
+              {
+
+                l.setText("<html><table" + (unmapped.size() == 0 ? " bgcolor=#fdfbc5" : "") + "><tr><td>" + (f.isInverted() ? "IS NOT" : "IS") + "</td><td border=1 bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
+              }
             }
           }
-        }
-        if (c == null)
-        {
-          c = super.getTreeCellRendererComponent(jtree, o, bln, bln1, bln2, i, bln3);
         }
         return c;
       }

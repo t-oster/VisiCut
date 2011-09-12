@@ -12,7 +12,6 @@ package com.t_oster.visicut.gui.mappingdialog;
 
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.model.LaserProfile;
-import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.VectorProfile;
@@ -417,6 +416,7 @@ public class MappingDialog extends javax.swing.JDialog
         }
       }
     }
+    this.mappingJTree.repaint();
   }
 
   /**
