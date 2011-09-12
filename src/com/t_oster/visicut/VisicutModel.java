@@ -10,6 +10,7 @@ import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.RasterPart;
+import com.t_oster.liblasercut.Raster3dPart;
 import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.managers.MappingManager;
@@ -405,9 +406,10 @@ public class VisicutModel
   public void sendJob(String name) throws IllegalJobException, SocketTimeoutException, Exception
   {
     RasterPart rp = new RasterPart(new LaserProperty());
+    Raster3dPart r3dp = new Raster3dPart(new LaserProperty());
     VectorPart vp = new VectorPart(new LaserProperty());
     LaserCutter instance = this.getSelectedLaserDevice().getLaserCutter();
-    LaserJob job = new LaserJob(name, "666", "bla", 500, null, vp, rp);
+    LaserJob job = new LaserJob(name, "666", "bla", 500, r3dp, vp, rp);
     for (Mapping m : this.getMappings())
     {
       GraphicSet set = m.getA().getMatchingObjects(this.getGraphicObjects());
