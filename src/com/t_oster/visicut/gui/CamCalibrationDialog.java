@@ -22,9 +22,6 @@ import java.awt.Rectangle;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.io.File;
 import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -84,6 +81,18 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     this.backgroundImage = backgroundImage;
     this.calibrationPanel1.setBackgroundImage(backgroundImage);
     this.calibrationPanel1.setOuterBounds(new Dimension(this.getBackgroundImage().getWidth(), this.getBackgroundImage().getHeight()));
+    //Check if a point is not in the Image (thus not reachable anymore)
+    for (Point p :this.calibrationPanel1.getPointList())
+    {
+      if (p.x >= backgroundImage.getWidth() || p.y >= backgroundImage.getHeight())
+      {
+       calibrationPanel1.setPointList(new Point[]{
+         new Point(20*backgroundImage.getWidth()/100,20*backgroundImage.getHeight()/100),
+         new Point(80*backgroundImage.getWidth()/100,80*backgroundImage.getHeight()/100)
+       });
+       break;
+      }
+    }
     
   }
   protected LaserCutter laserCutter = null;
