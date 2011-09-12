@@ -284,8 +284,8 @@ public class EditableTablePanel extends javax.swing.JPanel
         .addComponent(removeButton)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(editButton)
-        .addContainerGap(183, Short.MAX_VALUE))
-      .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+      .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE)
     );
   }// </editor-fold>//GEN-END:initComponents
 

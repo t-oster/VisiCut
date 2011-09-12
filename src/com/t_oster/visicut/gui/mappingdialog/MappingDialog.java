@@ -87,11 +87,11 @@ public class MappingDialog extends javax.swing.JDialog
     cuttingProfilesPanel1.setLayout(cuttingProfilesPanel1Layout);
     cuttingProfilesPanel1Layout.setHorizontalGroup(
       cuttingProfilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 392, Short.MAX_VALUE)
+      .addGap(0, 250, Short.MAX_VALUE)
     );
     cuttingProfilesPanel1Layout.setVerticalGroup(
       cuttingProfilesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 598, Short.MAX_VALUE)
+      .addGap(0, 460, Short.MAX_VALUE)
     );
 
     jScrollPane2.setViewportView(cuttingProfilesPanel1);
