@@ -259,6 +259,15 @@ public class EpilogCutter extends LaserCutter
       {
         throw new IllegalJobException("The Job is too big (" + w + "x" + h + ") for the Laser bed (" + this.getBedHeight() + "x" + this.getBedHeight() + ")");
       }
+      for (int i = 0; i < job.getRasterPart().getRasterCount(); i++)
+      {
+        float focus = job.getRasterPart().getLaserProperty(i) == null ? 0 : job.getRasterPart().getLaserProperty(i).getFocus();
+        if (mm2focus(focus) > MAXFOCUS || (mm2focus(focus)) < MINFOCUS)
+        {
+          throw new IllegalJobException("Illegal Focus value. This Lasercutter supports values between"
+            + focus2mm(MINFOCUS) + "mm to " + focus2mm(MAXFOCUS) + "mm.");
+        }
+      }
     }
     if (job.contains3dRaster())
     {
@@ -268,6 +277,15 @@ public class EpilogCutter extends LaserCutter
       if (w > this.getBedWidth() || h > this.getBedHeight())
       {
         throw new IllegalJobException("The Job is too big (" + w + "x" + h + ") for the Laser bed (" + this.getBedHeight() + "x" + this.getBedHeight() + ")");
+      }
+      for (int i = 0; i < job.getRaster3dPart().getRasterCount(); i++)
+      {
+        float focus = job.getRaster3dPart().getLaserProperty(i) == null ? 0 : job.getRaster3dPart().getLaserProperty(i).getFocus();
+        if (mm2focus(focus) > MAXFOCUS || (mm2focus(focus)) < MINFOCUS)
+        {
+          throw new IllegalJobException("Illegal Focus value. This Lasercutter supports values between"
+            + focus2mm(MINFOCUS) + "mm to " + focus2mm(MAXFOCUS) + "mm.");
+        }
       }
     }
   }
@@ -669,7 +687,7 @@ public class EpilogCutter extends LaserCutter
   {
     this.port = Port;
   }
-  
+
   @Override
   public EpilogCutter clone()
   {

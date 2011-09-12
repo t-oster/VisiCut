@@ -10,6 +10,7 @@
  */
 package com.t_oster.visicut.gui;
 
+import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.managers.PreferencesManager;
@@ -964,6 +965,10 @@ private void previewPanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRS
     }
     catch (Exception ex)
     {
+      if (ex instanceof IllegalJobException && ex.getMessage().startsWith("Illegal Focus value"))
+      {
+        
+      }
       Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
       JOptionPane.showMessageDialog(this, "Error: " + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }

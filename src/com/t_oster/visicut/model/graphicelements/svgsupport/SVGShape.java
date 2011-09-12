@@ -17,6 +17,7 @@ import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,6 +156,16 @@ public class SVGShape extends SVGObject implements ShapeObject
     return this.decoratee;
   }
 
+  private static final int MAXOVERSHOOT = 10;
+  @Override
+  public Rectangle2D getBoundingBox()
+  {
+    Rectangle2D bb = super.getBoundingBox();
+    //Add overshoot
+    bb.setRect(bb.getX()-MAXOVERSHOOT, bb.getY()-MAXOVERSHOOT, bb.getWidth()+2*MAXOVERSHOOT, bb.getHeight()+2*MAXOVERSHOOT);
+    return bb;
+  }
+  
   public Shape getShape()
   {
     if (false && this.getDecoratee() instanceof Path)

@@ -427,18 +427,20 @@ public class PreviewPanel extends ZoomablePanel
                   gg.setColor(material.getCutColor());
                   if (p instanceof VectorProfile && ((VectorProfile) p).isIsCut())
                   {
-                    for (GraphicObject o : current)
-                    {
-                      if (o instanceof ShapeObject)
-                      {
-                        Shape s = ((ShapeObject) o).getShape();
-                        if (current.getTransform() != null)
-                        {
-                          s = current.getTransform().createTransformedShape(s);
-                        }
-                        gg.draw(s);
-                      }
-                    }
+                    p.renderPreview(gg, current);
+//                    for (GraphicObject o : current)
+//                    {
+//                      
+//                      if (o instanceof ShapeObject)
+//                      {
+//                        Shape s = ((ShapeObject) o).getShape();
+//                        if (current.getTransform() != null)
+//                        {
+//                          s = current.getTransform().createTransformedShape(s);
+//                        }
+//                        gg.draw(s);
+//                      }
+//                    }
                   }
                 }
               }
