@@ -475,11 +475,11 @@ public class PreviewPanel extends ZoomablePanel
           gg.setTransform(bak);
         }
       }
-      this.lastDrawnTransform = gg.getTransform();
       if (this.editRectangle != null)
       {
         this.editRectangle.render(gg);
       }
+      this.lastDrawnTransform = gg.getTransform();
     }
   }
   protected List<Mapping> mappings = null;

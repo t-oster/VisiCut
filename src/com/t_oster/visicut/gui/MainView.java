@@ -17,12 +17,14 @@ import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
 import com.t_oster.visicut.gui.beans.ImageComboBox;
+import com.t_oster.visicut.gui.mappingdialog.MappingDialog;
 import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
@@ -103,7 +105,7 @@ public class MainView extends javax.swing.JFrame
     for (MaterialProfile mp : getAllMaterials())
     {
       this.materialComboBox.addItem(mp);
-      if (sp != null && sp.getName().equals(mp.getName()) && sp.getDepth()==mp.getDepth())
+      if (sp != null && sp.getName().equals(mp.getName()) && sp.getDepth() == mp.getDepth())
       {
         this.materialComboBox.setSelectedItem(mp);
       }
@@ -153,6 +155,7 @@ public class MainView extends javax.swing.JFrame
     jLabel9 = new javax.swing.JLabel();
     laserCutterComboBox = new com.t_oster.visicut.gui.beans.ImageComboBox();
     mappingComboBox = new com.t_oster.visicut.gui.beans.ImageComboBox();
+    customMappingButton = new javax.swing.JButton();
     jPanel1 = new javax.swing.JPanel();
     previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
     executeJobButton = new javax.swing.JButton();
@@ -179,8 +182,6 @@ public class MainView extends javax.swing.JFrame
     materialMenuItem = new javax.swing.JMenuItem();
     viewMenu = new javax.swing.JMenu();
     showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
-    jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
-    renderPreviewMenuItem = new javax.swing.JCheckBoxMenuItem();
     helpMenu = new javax.swing.JMenu();
     aboutMenuItem = new javax.swing.JMenuItem();
 
@@ -275,6 +276,14 @@ public class MainView extends javax.swing.JFrame
       }
     });
 
+    customMappingButton.setText(resourceMap.getString("customMappingButton.text")); // NOI18N
+    customMappingButton.setName("customMappingButton"); // NOI18N
+    customMappingButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        customMappingButtonActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
     jPanel2.setLayout(jPanel2Layout);
     jPanel2Layout.setHorizontalGroup(
@@ -282,7 +291,6 @@ public class MainView extends javax.swing.JFrame
       .addGroup(jPanel2Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(mappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(jLabel1)
           .addComponent(jLabel9)
           .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -291,10 +299,10 @@ public class MainView extends javax.swing.JFrame
           .addGroup(jPanel2Layout.createSequentialGroup()
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
               .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                .addComponent(materialHeightTextField, javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(dimensionWidthTextField, javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING)))
+              .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addComponent(materialHeightTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE)
+                .addComponent(dimensionWidthTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE)
+                .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE)))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jLabel7)
@@ -303,7 +311,11 @@ public class MainView extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
                 .addComponent(dimesnionsHeightTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel6)))))
+                .addComponent(jLabel6))))
+          .addGroup(jPanel2Layout.createSequentialGroup()
+            .addComponent(mappingComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(customMappingButton)))
         .addContainerGap())
     );
     jPanel2Layout.setVerticalGroup(
@@ -334,8 +346,10 @@ public class MainView extends javax.swing.JFrame
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel2)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addComponent(mappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap())
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(customMappingButton)
+          .addComponent(mappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGap(46, 46, 46))
     );
 
     jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanel1.border.title"))); // NOI18N
@@ -367,6 +381,9 @@ public class MainView extends javax.swing.JFrame
     previewPanel.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
       public void mouseDragged(java.awt.event.MouseEvent evt) {
         previewPanelMouseDragged(evt);
+      }
+      public void mouseMoved(java.awt.event.MouseEvent evt) {
+        previewPanelMouseMoved(evt);
       }
     });
 
@@ -572,22 +589,6 @@ public class MainView extends javax.swing.JFrame
 
     viewMenu.add(showGridMenuItem);
 
-    jCheckBoxMenuItem1.setText(resourceMap.getString("jCheckBoxMenuItem1.text")); // NOI18N
-    jCheckBoxMenuItem1.setName("jCheckBoxMenuItem1"); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${highlightCutLines}"), jCheckBoxMenuItem1, org.jdesktop.beansbinding.BeanProperty.create("selected"), "HighlightCutLines");
-    bindingGroup.addBinding(binding);
-
-    viewMenu.add(jCheckBoxMenuItem1);
-
-    renderPreviewMenuItem.setText(resourceMap.getString("renderPreviewMenuItem.text")); // NOI18N
-    renderPreviewMenuItem.setName("renderPreviewMenuItem"); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${drawPreview}"), renderPreviewMenuItem, org.jdesktop.beansbinding.BeanProperty.create("selected"), "PreviewMenuCb");
-    bindingGroup.addBinding(binding);
-
-    viewMenu.add(renderPreviewMenuItem);
-
     menuBar.add(viewMenu);
 
     javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(MainView.class, this);
@@ -645,7 +646,7 @@ public class MainView extends javax.swing.JFrame
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(layout.createSequentialGroup()
             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 358, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 322, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(executeJobButton)
               .addComponent(saveButton)
@@ -793,6 +794,7 @@ private void previewPanelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRS
       }
     }
   }
+  setCursor(evt.getPoint());
 }//GEN-LAST:event_previewPanelMousePressed
 
 private void previewPanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanelMouseReleased
@@ -808,16 +810,17 @@ private void previewPanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIR
   {
     if (this.selectedSet != null)
     {
-      Rectangle2D e = Helper.transform(editRect, this.previewPanel.getLastDrawnTransform());
-      if (e.contains(evt.getPoint()))
+      if (this.currentAction != MouseAction.movingSet)
       {
-        //let the set stay selected
+        editRect = null;
+        this.previewPanel.setEditRectangle(null);
+        selectedSet = null;
       }
       else
       {
-        selectedSet = null;
-        editRect = null;
-        this.previewPanel.setEditRectangle(null);
+        Rectangle2D bb = selectedSet.getBoundingBox();
+        editRect = new EditRectangle(bb);
+        this.previewPanel.setEditRectangle(editRect);
       }
     }
     else
@@ -841,7 +844,8 @@ private void previewPanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIR
       }
     }
   }
-  lastMousePosition = null;
+  lastMousePosition = evt.getPoint();
+  setCursor(evt.getPoint());
 }//GEN-LAST:event_previewPanelMouseReleased
 private void previewPanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanelMouseDragged
   if (lastMousePosition != null)
@@ -1423,10 +1427,92 @@ private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//G
   this.visicutModel1.setMappings(ms);
   this.refreshComboBoxes();
 }//GEN-LAST:event_mappingComboBoxActionPerformed
+  private MappingSet custom = null;
+private void customMappingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customMappingButtonActionPerformed
+  if (custom == null)
+  {
+    custom = new MappingSet();
+    custom.setName("Custom Mapping");
+    this.mappingManager1.getMappingSets().add(custom);
+  }
+  MappingDialog d = new MappingDialog(this, true);
+  d.setGraphicElements(this.visicutModel1.getGraphicObjects());
+  d.setMaterial(this.visicutModel1.getMaterial());
+  d.setMappings(custom);
+  d.setVisible(true);
+  MappingSet result = d.getMappings();
+  if (result != null)
+  {
+    int i = this.mappingManager1.getMappingSets().indexOf(custom);
+    this.mappingManager1.getMappingSets().set(i, result);
+    custom = result;
+    this.visicutModel1.setMappings(custom);
+    this.fillComboBoxes();
+    this.refreshComboBoxes();
+  }
+}//GEN-LAST:event_customMappingButtonActionPerformed
+
+  private void setCursor(Point p)
+  {
+    int cursor = Cursor.DEFAULT_CURSOR;
+    cursorcheck:
+    {
+      if (this.visicutModel1.getGraphicObjects() != null)
+      {
+        if (editRect != null)
+        {
+          Button b = editRect.getButtonByPoint(p, this.previewPanel.getLastDrawnTransform());
+          if (b != null)
+          {
+            switch (b)
+            {
+              case TOP_RIGHT:
+                cursor = Cursor.NE_RESIZE_CURSOR;
+                break cursorcheck;
+              case CENTER_RIGHT:
+                cursor = Cursor.E_RESIZE_CURSOR;
+                break cursorcheck;
+              case BOTTOM_RIGHT:
+                cursor = Cursor.SE_RESIZE_CURSOR;
+                break cursorcheck;
+              case BOTTOM_CENTER:
+                cursor = Cursor.S_RESIZE_CURSOR;
+                break cursorcheck;
+              case BOTTOM_LEFT:
+                cursor = Cursor.SW_RESIZE_CURSOR;
+                break cursorcheck;
+              case CENTER_LEFT:
+                cursor = Cursor.W_RESIZE_CURSOR;
+                break cursorcheck;
+              case TOP_LEFT:
+                cursor = Cursor.NW_RESIZE_CURSOR;
+                break cursorcheck;
+              case TOP_CENTER:
+                cursor = Cursor.N_RESIZE_CURSOR;
+                break cursorcheck;
+            }
+          }
+        }
+        Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
+        Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
+        if (e.contains(p))
+        {
+          cursor = this.editRect == null ? Cursor.HAND_CURSOR : Cursor.MOVE_CURSOR;
+          break cursorcheck;
+        }
+      }
+    }
+    this.previewPanel.setCursor(Cursor.getPredefinedCursor(cursor));
+  }
+
+private void previewPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanelMouseMoved
+  setCursor(evt.getPoint());
+}//GEN-LAST:event_previewPanelMouseMoved
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
   private javax.swing.JMenuItem calibrateCameraMenuItem;
   private javax.swing.JButton captureImageButton;
+  private javax.swing.JButton customMappingButton;
   private javax.swing.JTextField dimensionWidthTextField;
   private javax.swing.JTextField dimesnionsHeightTextfield;
   private javax.swing.JMenuItem editMappingMenuItem;
@@ -1437,7 +1523,6 @@ private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//G
   private javax.swing.JMenu fileMenu;
   private com.t_oster.visicut.gui.beans.FilesDropSupport filesDropSupport1;
   private javax.swing.JMenu helpMenu;
-  private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
@@ -1465,7 +1550,6 @@ private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//G
   private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
   private com.t_oster.visicut.managers.ProfileManager profileManager1;
   private javax.swing.JProgressBar progressBar;
-  private javax.swing.JCheckBoxMenuItem renderPreviewMenuItem;
   private javax.swing.JMenuItem saveAsMenuItem;
   private javax.swing.JButton saveButton;
   private javax.swing.JFileChooser saveFileChooser;
