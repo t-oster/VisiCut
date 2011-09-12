@@ -60,7 +60,7 @@ public class RasterPart
   public void addImage(BlackWhiteRaster img, LaserProperty prop, Point start)
   {
     this.images.add(img);
-    this.properties.add(prop);
+    this.properties.add(prop.clone());
     this.starts.add(start);
   }
 
