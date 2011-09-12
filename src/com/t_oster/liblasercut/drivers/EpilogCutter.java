@@ -557,6 +557,11 @@ public class EpilogCutter extends LaserCutter
           {
             out.printf("\033*b%dA", -line.size());
             Collections.reverse(line);
+            //reverse every byte bitwise
+            for (int ii=0;ii<line.size();ii++)
+            {
+             line.set(ii, Util.reverseBitwise(line.get(ii)));
+            }
           }
           line = encode(line);
           int len = line.size();
