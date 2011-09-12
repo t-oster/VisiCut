@@ -143,7 +143,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     @Override
     public String toString()
     {
-      return (this.getA().isEmpty() ? "WHERE ":"AND ")+this.getB();
+      return (this.getA().isEmpty() ? "WHERE " : "AND ") + this.getB();
     }
   }
 
@@ -159,16 +159,30 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
         Component c = null;
         if (o instanceof FilterSet)
         {
+          boolean alreadyUsed = false;
+          if (MappingJTree.this.mappings != null)
+          {
+            for (Mapping m : MappingJTree.this.mappings)
+            {
+              if (m.getFilterSet().equals((FilterSet) o))
+              {
+                alreadyUsed = true;
+                break;
+              }
+            }
+          }
           MappingFilter f = ((FilterSet) o).peekLast();
           if (f != null)
           {
             c = super.getTreeCellRendererComponent(jtree, o, bln, bln1, bln2, i, bln3);
+            if (alreadyUsed)
+            {
+              c.setBackground(Color.yellow);
+            }
             if (c instanceof JLabel && f.getValue() instanceof Color)
             {
-              JLabel l =  (JLabel) c;
-              
-                l.setText("<html><table><tr><td>"+(f.isInverted() ? "IS NOT" : "IS")+"</td><td border=1 bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
-              
+              JLabel l = (JLabel) c;
+              l.setText("<html><table><tr><td>" + (f.isInverted() ? "IS NOT" : "IS") + "</td><td border=1 bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
             }
           }
         }

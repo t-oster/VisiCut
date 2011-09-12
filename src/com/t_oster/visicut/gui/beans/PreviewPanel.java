@@ -461,10 +461,18 @@ public class PreviewPanel extends ZoomablePanel
         }
         else
         {
+          AffineTransform bak = gg.getTransform();
+          if (this.graphicObjects.getTransform() != null)
+          {
+            AffineTransform trans = gg.getTransform();
+            trans.concatenate(this.graphicObjects.getTransform());
+            gg.setTransform(trans);
+          }
           for (GraphicObject o : this.getGraphicObjects())
           {
             o.render(gg);
           }
+          gg.setTransform(bak);
         }
       }
       this.lastDrawnTransform = gg.getTransform();

@@ -10,7 +10,6 @@
  */
 package com.t_oster.visicut.gui;
 
-import com.t_oster.visicut.gui.mappingdialog.MappingDialog;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.managers.PreferencesManager;
@@ -822,7 +821,7 @@ private void previewPanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIR
     }
     else
     {
-      if (this.visicutModel1.getGraphicObjects() != null && this.visicutModel1.getMappings() != null && this.visicutModel1.getMappings().size() > 0)
+      if (this.visicutModel1.getGraphicObjects() != null)
       {
         Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
         Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
