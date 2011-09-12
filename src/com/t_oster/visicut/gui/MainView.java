@@ -765,10 +765,10 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
   private enum MouseAction
   {
-
     movingBackground,
     movingSet,
-    resizingSet,};
+    resizingSet,
+  };
   private Point lastMousePosition = null;
   private MouseAction currentAction = null;
   private Button currentButton = null;
@@ -967,10 +967,12 @@ private void previewPanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRS
     {
       if (ex instanceof IllegalJobException && ex.getMessage().startsWith("Illegal Focus value"))
       {
-        
+        JOptionPane.showMessageDialog(this, "You Material is too high for automatic Focussing.\nPlease focus manually and set the total height to 0.", "Error", JOptionPane.ERROR_MESSAGE);
       }
-      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-      JOptionPane.showMessageDialog(this, "Error: " + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      else
+      {
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      }
     }
   }
 
