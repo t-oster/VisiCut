@@ -1174,8 +1174,12 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
   this.executeJob();
 }//GEN-LAST:event_executeJobMenuItemActionPerformed
 
-  private void captureImage()
+private boolean capturing = false;  
+private void captureImage()
   {
+      if (!capturing)
+      {
+          capturing = true;
     new Thread()
     {
 
@@ -1201,8 +1205,13 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
           JOptionPane.showMessageDialog(MainView.this, "Error loading Image:" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
         MainView.this.captureImageButton.setEnabled(true);
+        MainView.this.capturing = false;
       }
     }.start();
+      }
+      else{
+          System.out.println("Capturing already in progress");
+      }
   }
 
 private void captureImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_captureImageButtonActionPerformed

@@ -271,7 +271,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="279" max="32767" attributes="0"/>
+                      <EmptySpace pref="444" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="executeJobButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="captureImageButton" alignment="3" min="-2" max="-2" attributes="0"/>
