@@ -570,6 +570,12 @@ public class EpilogCutter extends LaserCutter
           {
             pcks++;
           }
+          /**
+           * Number of Pixels in a row??
+           * or b2m%dW for TIFF encoding?
+           * Or number of Bytes in a row? who knows
+           * in ctrl-cut its number of packed bytes
+           */
           out.printf("\033*b%dW", pcks * 8);
           for (byte s : line)
           {
