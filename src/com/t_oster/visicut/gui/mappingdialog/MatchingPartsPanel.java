@@ -290,12 +290,11 @@ public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionList
     AffineTransform currentTrans = gg.getTransform();
     if (this.graphicElements != null)
     {
-      AffineTransform scaleTrans = this.graphicElements.getScalePart();
       if (this.getSelectedMapping() != null)
       {
         GraphicSet set = this.getSelectedMapping().getFilterSet().getMatchingObjects(this.graphicElements);
         LaserProfile p = this.material.getLaserProfile(this.getSelectedMapping().getProfileName());
-        set.setTransform(scaleTrans);
+        //set.setTransform(scaleTrans);
         if (this.previewMode)
         {
           if (p == null)
@@ -317,7 +316,7 @@ public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionList
               if (e instanceof ShapeObject)
               {
                 Shape s = ((ShapeObject) e).getShape();
-                s = scaleTrans.createTransformedShape(s);
+                s = set.getTransform().createTransformedShape(s);
                 gg.setColor(Color.red);
                 gg.draw(s);
               }
@@ -325,7 +324,7 @@ public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionList
           }
           else
           {
-            currentTrans.concatenate(scaleTrans);
+            currentTrans.concatenate(set.getTransform());
             gg.setTransform(currentTrans);
             for (GraphicObject e : set)
             {
@@ -336,7 +335,7 @@ public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionList
       }
       else
       {
-        currentTrans.concatenate(scaleTrans);
+        currentTrans.concatenate(graphicElements.getTransform());
         gg.setTransform(currentTrans);
         if (this.getSelectedFilterSet() != null)
         {
