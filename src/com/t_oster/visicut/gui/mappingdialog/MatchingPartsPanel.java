@@ -247,6 +247,8 @@ public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionList
           Graphics g = renderBuffer.createGraphics();
           g.setColor(previewMode && selectedMapping != null ? material.getColor() : Color.WHITE);
           g.fillRect(0, 0, renderBuffer.getWidth(), renderBuffer.getHeight());
+          Rectangle2D bb = MatchingPartsPanel.this.graphicElements.getBoundingBox();
+          ((Graphics2D) g).setTransform(AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY()));
           MatchingPartsPanel.this.render(g);
         }
         MatchingPartsPanel.this.setRenderingProgress(100);

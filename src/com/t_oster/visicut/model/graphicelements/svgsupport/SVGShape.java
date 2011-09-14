@@ -174,9 +174,12 @@ public class SVGShape extends SVGObject implements ShapeObject
     AffineTransform bak = g.getTransform();
     try
     {
-      AffineTransform trans = g.getTransform();
-      trans.concatenate(this.getAbsoluteTransformation());
-      g.setTransform(trans);
+      if (!(this.getDecoratee() instanceof Circle))
+      {
+        AffineTransform trans = g.getTransform();
+        trans.concatenate(this.getAbsoluteTransformation());
+        g.setTransform(trans);
+      }
       this.getDecoratee().render(g);
 
     }
@@ -191,8 +194,15 @@ public class SVGShape extends SVGObject implements ShapeObject
   {
     try
     {
-      AffineTransform at = this.getAbsoluteTransformation();
-      return at.createTransformedShape(this.getDecoratee().getShape());
+      if (this.getDecoratee() instanceof Circle)
+      {
+        return this.getDecoratee().getShape();
+      }
+      else
+      {
+        AffineTransform at = this.getAbsoluteTransformation();
+        return at.createTransformedShape(this.getDecoratee().getShape());
+      }
     }
     catch (SVGException ex)
     {
