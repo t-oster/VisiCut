@@ -944,23 +944,37 @@ private void previewPanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRS
 
   private void executeJob()
   {
-    try
+    new Thread()
     {
-      jobnumber++;
-      this.visicutModel1.sendJob("VisiCut " + jobnumber);
-      JOptionPane.showMessageDialog(this, "Job was sent as 'VisiCut " + jobnumber + "'\nPlease press START on the Lasercutter:\n" + this.visicutModel1.getSelectedLaserDevice().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
-    }
-    catch (Exception ex)
-    {
-      if (ex instanceof IllegalJobException && ex.getMessage().startsWith("Illegal Focus value"))
+
+      @Override
+      public void run()
       {
-        JOptionPane.showMessageDialog(this, "You Material is too high for automatic Focussing.\nPlease focus manually and set the total height to 0.", "Error", JOptionPane.ERROR_MESSAGE);
+        MainView.this.progressBar.setIndeterminate(true);
+        MainView.this.executeJobButton.setEnabled(false);
+        MainView.this.executeJobMenuItem.setEnabled(false);
+        try
+        {
+          jobnumber++;
+          MainView.this.visicutModel1.sendJob("VisiCut " + jobnumber);
+          MainView.this.progressBar.setIndeterminate(false);
+          JOptionPane.showMessageDialog(MainView.this, "Job was sent as 'VisiCut " + jobnumber + "'\nPlease press START on the Lasercutter:\n" + this.visicutModel1.getSelectedLaserDevice().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
+        }
+        catch (Exception ex)
+        {
+          if (ex instanceof IllegalJobException && ex.getMessage().startsWith("Illegal Focus value"))
+          {
+            JOptionPane.showMessageDialog(MainView.this, "You Material is too high for automatic Focussing.\nPlease focus manually and set the total height to 0.", "Error", JOptionPane.ERROR_MESSAGE);
+          }
+          else
+          {
+            JOptionPane.showMessageDialog(MainView.this, "Error: " + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+          }
+        }
+        MainView.this.executeJobButton.setEnabled(true);
+        MainView.this.executeJobMenuItem.setEnabled(true);
       }
-      else
-      {
-        JOptionPane.showMessageDialog(this, "Error: " + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-      }
-    }
+    }.start();
   }
 
 private void executeJobButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobButtonActionPerformed
