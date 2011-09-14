@@ -755,8 +755,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
     movingBackground,
     movingSet,
-    resizingSet,
-  };
+    resizingSet,};
   private Point lastMousePosition = null;
   private MouseAction currentAction = null;
   private Button currentButton = null;
@@ -1173,45 +1172,46 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
 private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobMenuItemActionPerformed
   this.executeJob();
 }//GEN-LAST:event_executeJobMenuItemActionPerformed
+  private boolean capturing = false;
 
-private boolean capturing = false;  
-private void captureImage()
+  private void captureImage()
   {
-      if (!capturing)
-      {
-          capturing = true;
-    new Thread()
+    if (!capturing)
     {
-
-      @Override
-      public void run()
+      capturing = true;
+      new Thread()
       {
-        MainView.this.captureImageButton.setEnabled(false);
-        try
+
+        @Override
+        public void run()
         {
-          URL src = new URL(MainView.this.visicutModel1.getSelectedLaserDevice().getCameraURL());
-          if (src != null)
+          MainView.this.captureImageButton.setEnabled(false);
+          try
           {
-            BufferedImage back = ImageIO.read(src);
-            if (back != null && MainView.this.visicutModel1.getBackgroundImage() == null)
-            {//First Time Image is Captured => resize View
-              MainView.this.previewPanel.setZoom(100);
+            URL src = new URL(MainView.this.visicutModel1.getSelectedLaserDevice().getCameraURL());
+            if (src != null)
+            {
+              BufferedImage back = ImageIO.read(src);
+              if (back != null && MainView.this.visicutModel1.getBackgroundImage() == null)
+              {//First Time Image is Captured => resize View
+                MainView.this.previewPanel.setZoom(100);
+              }
+              MainView.this.visicutModel1.setBackgroundImage(back);
             }
-            MainView.this.visicutModel1.setBackgroundImage(back);
           }
+          catch (Exception ex)
+          {
+            JOptionPane.showMessageDialog(MainView.this, "Error loading Image:" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+          }
+          MainView.this.captureImageButton.setEnabled(true);
+          MainView.this.capturing = false;
         }
-        catch (Exception ex)
-        {
-          JOptionPane.showMessageDialog(MainView.this, "Error loading Image:" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-        MainView.this.captureImageButton.setEnabled(true);
-        MainView.this.capturing = false;
-      }
-    }.start();
-      }
-      else{
-          System.out.println("Capturing already in progress");
-      }
+      }.start();
+    }
+    else
+    {
+      System.out.println("Capturing already in progress");
+    }
   }
 
 private void captureImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_captureImageButtonActionPerformed
@@ -1439,83 +1439,95 @@ private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//G
 }//GEN-LAST:event_mappingComboBoxActionPerformed
   private MappingSet custom = null;
 private void customMappingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customMappingButtonActionPerformed
+  this.progressBar.setIndeterminate(true);
+  this.customMappingButton.setEnabled(false);
   if (custom == null)
   {
     custom = new MappingSet();
     custom.setName("Custom Mapping");
     this.mappingManager1.getMappingSets().add(custom);
   }
-  MappingDialog d = new MappingDialog(this, true);
-  d.setGraphicElements(this.visicutModel1.getGraphicObjects());
-  d.setMaterial(this.visicutModel1.getMaterial());
-  d.setMappings(custom);
-  d.setShowName(false);
-  d.setVisible(true);
-  MappingSet result = d.getMappings();
-  if (result != null)
+  new Thread()
   {
-    int i = this.mappingManager1.getMappingSets().indexOf(custom);
-    this.mappingManager1.getMappingSets().set(i, result);
-    custom = result;
-    this.visicutModel1.setMappings(custom);
-    this.fillComboBoxes();
-    this.refreshComboBoxes();
-  }
+
+    @Override
+    public void run()
+    {
+      MappingDialog d = new MappingDialog(MainView.this, true);
+      d.setGraphicElements(MainView.this.visicutModel1.getGraphicObjects());
+      d.setMaterial(MainView.this.visicutModel1.getMaterial());
+      d.setMappings(custom);
+      d.setShowName(false);
+      MainView.this.progressBar.setIndeterminate(false);
+      d.setVisible(true);
+      MappingSet result = d.getMappings();
+      if (result != null)
+      {
+        int i = MainView.this.mappingManager1.getMappingSets().indexOf(custom);
+        MainView.this.mappingManager1.getMappingSets().set(i, result);
+        custom = result;
+        MainView.this.visicutModel1.setMappings(custom);
+        MainView.this.fillComboBoxes();
+        MainView.this.refreshComboBoxes();
+      }
+      MainView.this.customMappingButton.setEnabled(true);
+    }
+  }.start();
 }//GEN-LAST:event_customMappingButtonActionPerformed
 
   private void setCursor(Point p)
   {
     int cursor = Cursor.DEFAULT_CURSOR;
     cursorcheck:
+    {
+      if (this.visicutModel1.getGraphicObjects() != null)
       {
-        if (this.visicutModel1.getGraphicObjects() != null)
+        if (editRect != null)
         {
-          if (editRect != null)
+          Button b = editRect.getButtonByPoint(p, this.previewPanel.getLastDrawnTransform());
+          if (b != null)
           {
-            Button b = editRect.getButtonByPoint(p, this.previewPanel.getLastDrawnTransform());
-            if (b != null)
+            switch (b)
             {
-              switch (b)
-              {
-                case TOP_RIGHT:
-                  cursor = Cursor.NE_RESIZE_CURSOR;
-                  break cursorcheck;
-                case CENTER_RIGHT:
-                  cursor = Cursor.E_RESIZE_CURSOR;
-                  break cursorcheck;
-                case BOTTOM_RIGHT:
-                  cursor = Cursor.SE_RESIZE_CURSOR;
-                  break cursorcheck;
-                case BOTTOM_CENTER:
-                  cursor = Cursor.S_RESIZE_CURSOR;
-                  break cursorcheck;
-                case BOTTOM_LEFT:
-                  cursor = Cursor.SW_RESIZE_CURSOR;
-                  break cursorcheck;
-                case CENTER_LEFT:
-                  cursor = Cursor.W_RESIZE_CURSOR;
-                  break cursorcheck;
-                case TOP_LEFT:
-                  cursor = Cursor.NW_RESIZE_CURSOR;
-                  break cursorcheck;
-                case TOP_CENTER:
-                  cursor = Cursor.N_RESIZE_CURSOR;
-                  break cursorcheck;
-              }
-            }
-          }
-          Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
-          if (bb != null)
-          {
-            Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
-            if (e.contains(p))
-            {
-              cursor = this.editRect == null ? Cursor.HAND_CURSOR : Cursor.MOVE_CURSOR;
-              break cursorcheck;
+              case TOP_RIGHT:
+                cursor = Cursor.NE_RESIZE_CURSOR;
+                break cursorcheck;
+              case CENTER_RIGHT:
+                cursor = Cursor.E_RESIZE_CURSOR;
+                break cursorcheck;
+              case BOTTOM_RIGHT:
+                cursor = Cursor.SE_RESIZE_CURSOR;
+                break cursorcheck;
+              case BOTTOM_CENTER:
+                cursor = Cursor.S_RESIZE_CURSOR;
+                break cursorcheck;
+              case BOTTOM_LEFT:
+                cursor = Cursor.SW_RESIZE_CURSOR;
+                break cursorcheck;
+              case CENTER_LEFT:
+                cursor = Cursor.W_RESIZE_CURSOR;
+                break cursorcheck;
+              case TOP_LEFT:
+                cursor = Cursor.NW_RESIZE_CURSOR;
+                break cursorcheck;
+              case TOP_CENTER:
+                cursor = Cursor.N_RESIZE_CURSOR;
+                break cursorcheck;
             }
           }
         }
+        Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
+        if (bb != null)
+        {
+          Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
+          if (e.contains(p))
+          {
+            cursor = this.editRect == null ? Cursor.HAND_CURSOR : Cursor.MOVE_CURSOR;
+            break cursorcheck;
+          }
+        }
       }
+    }
     this.previewPanel.setCursor(Cursor.getPredefinedCursor(cursor));
   }
 
