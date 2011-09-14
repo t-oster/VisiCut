@@ -64,7 +64,8 @@ public final class PreferencesManager
     {
       "com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter",
       "com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter",
-      "com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter"
+      "com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter",
+      "com.t_oster.visicut.model.graphicelements.epssupport.EPSImporter"
     });
     preferences.setAvailableLasercutterDrivers(new String[]{"com.t_oster.liblasercut.drivers.EpilogCutter"});
     LaserDevice epilog = new LaserDevice();
