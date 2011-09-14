@@ -104,14 +104,13 @@ public class EditRectangle extends Rectangle
   {
     AffineTransform cur = gg.getTransform();
     gg.setTransform(AffineTransform.getRotateInstance(0));
-    gg.setColor(Color.GRAY);
+    gg.setColor(new Color(104,146,255));
     gg.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, new float[]
       {
         10, 10
       }, 0));
     Rectangle tr = Helper.toRect(Helper.transform(this, cur));
     gg.drawRect(tr.x, tr.y, tr.width, tr.height);
-    gg.setColor(Color.ORANGE);
     for (Button b : Button.values())
     {
       Rectangle r = this.getButton(b,tr);
