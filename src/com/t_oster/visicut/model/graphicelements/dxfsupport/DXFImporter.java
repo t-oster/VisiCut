@@ -11,29 +11,21 @@ import com.t_oster.visicut.model.graphicelements.Importer;
 import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.filechooser.FileFilter;
-import java.util.Iterator;
 
-import java.util.List;
 import org.kabeja.dxf.DXFDocument;
-import org.kabeja.dxf.DXFLayer;
-import org.kabeja.dxf.DXFPolyline;
-import org.kabeja.dxf.DXFConstants;
 import org.kabeja.parser.Parser;
 import org.kabeja.parser.DXFParser;
 import org.kabeja.parser.ParserBuilder;
 import org.kabeja.svg.SVGGenerator;
 import org.kabeja.xml.SAXGenerator;
 import org.kabeja.xml.SAXPrettyOutputter;
-import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
 /**
