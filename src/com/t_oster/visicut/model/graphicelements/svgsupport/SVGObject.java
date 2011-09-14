@@ -78,7 +78,9 @@ public abstract class SVGObject implements GraphicObject
           if (sty != null && sty instanceof StyleAttribute)
           {
             StyleAttribute style = (StyleAttribute) sty;
-            tr.concatenate(SVGElement.parseSingleTransform(style.getStringValue()));
+            AffineTransform trans = SVGElement.parseSingleTransform(style.getStringValue());
+            trans.concatenate(tr);
+            tr = trans;
           }
         }
       }

@@ -15,6 +15,8 @@ import com.kitfox.svg.Tspan;
 import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -60,8 +62,8 @@ public class SVGShape extends SVGObject implements ShapeObject
     }
     return null;
   }
+  private Map<String, List<Object>> attributeValues = new LinkedHashMap<String, List<Object>>();
 
-  private Map<String,List<Object>> attributeValues = new LinkedHashMap<String,List<Object>>();
   @Override
   public List<Object> getAttributeValues(String a)
   {
@@ -155,36 +157,47 @@ public class SVGShape extends SVGObject implements ShapeObject
   {
     return this.decoratee;
   }
-
   private static final int MAXOVERSHOOT = 10;
+
   @Override
   public Rectangle2D getBoundingBox()
   {
-    Rectangle2D bb = super.getBoundingBox();
+    Rectangle2D bb = this.getShape().getBounds2D();//super.getBoundingBox();
     //Add overshoot
-    bb.setRect(bb.getX()-MAXOVERSHOOT, bb.getY()-MAXOVERSHOOT, bb.getWidth()+2*MAXOVERSHOOT, bb.getHeight()+2*MAXOVERSHOOT);
+    bb.setRect(bb.getX() - MAXOVERSHOOT, bb.getY() - MAXOVERSHOOT, bb.getWidth() + 2 * MAXOVERSHOOT, bb.getHeight() + 2 * MAXOVERSHOOT);
     return bb;
   }
-  
+
+  @Override
+  public void render(Graphics2D g)
+  {
+    AffineTransform bak = g.getTransform();
+    try
+    {
+      AffineTransform trans = g.getTransform();
+      trans.concatenate(this.getAbsoluteTransformation());
+      g.setTransform(trans);
+      this.getDecoratee().render(g);
+
+    }
+    catch (SVGException ex)
+    {
+      Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    g.setTransform(bak);
+  }
+
   public Shape getShape()
   {
-    if (false && this.getDecoratee() instanceof Path)
+    try
     {
-      try
-      {
-        /**
-         * Seems as if the Transformations for non-Path elements
-         * are already handled correct by Kitfox, but Path has to
-         * be transformed manually
-         */
-        AffineTransform at = this.getAbsoluteTransformation();
-        return at.createTransformedShape(this.getDecoratee().getShape());
-      }
-      catch (SVGException ex)
-      {
-        Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      AffineTransform at = this.getAbsoluteTransformation();
+      return at.createTransformedShape(this.getDecoratee().getShape());
     }
-    return this.getDecoratee().getShape();
+    catch (SVGException ex)
+    {
+      Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return null;
   }
 }
