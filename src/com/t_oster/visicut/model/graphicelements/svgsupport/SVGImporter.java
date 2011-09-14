@@ -18,14 +18,10 @@ import com.t_oster.visicut.model.graphicelements.ImportException;
 import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.filechooser.FileFilter;
 
 /**
