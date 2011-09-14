@@ -104,36 +104,34 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     {
       List<FilterSet> result = new LinkedList<FilterSet>();
       GraphicSet gos = this.getA().getMatchingObjects(MappingJTree.this.getGraphicObjects());
+      List<Object> visitedValues = new LinkedList<Object>();
       for (GraphicObject g : gos)
       {
         for (Object value : g.getAttributeValues(this.getB()))
         {
-          GraphicSet restObjects = this.getA().getMatchingObjects(gos);
-          MappingFilter f = new MappingFilter(this.getB(), value);
-          int newrest = f.getMatchingElements(restObjects).size();
-          //Check if filter makes a difference
-          if (newrest != 0 && newrest != restObjects.size())
+          if (!visitedValues.contains(value))
           {
-            FilterSet node = new FilterSet();
-            node.addAll(this.getA());
-            node.add(f);
-            if (!result.contains(node))
+            visitedValues.add(value);
+            //GraphicSet restObjects = this.getA().getMatchingObjects(gos);
+            MappingFilter f = new MappingFilter(this.getB(), value);
+            int newrest = f.getMatchingElements(gos).size();
+            //Check if filter makes a difference
+            if (newrest != 0 && newrest != gos.size())
             {
-              result.add(node);
-            }
-          }
-          f = new MappingFilter(this.getB(), value);
-          f.setInverted(true);
-          newrest = f.getMatchingElements(restObjects).size();
-          //Check if filter makes a difference
-          if (newrest != 0 && newrest != restObjects.size())
-          {
-            FilterSet node = new FilterSet();
-            node.addAll(this.getA());
-            node.add(f);
-            if (!result.contains(node))
-            {
-              result.add(node);
+              FilterSet node = new FilterSet();
+              node.addAll(this.getA());
+              node.add(f);
+              if (!result.contains(node))
+              {
+                result.add(node);
+                //Add inverted filter
+                f = new MappingFilter(this.getB(), value);
+                f.setInverted(true);
+                node = new FilterSet();
+                node.addAll(this.getA());
+                node.add(f);
+                result.add(node);
+              }
             }
           }
         }
@@ -242,14 +240,19 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
       if (this.getGraphicObjects() != null)
       {
         List<GraphicObject> gos = fs.getMatchingObjects(MappingJTree.this.getGraphicObjects());
+        List<String> visitedAttributes = new LinkedList<String>();
         for (GraphicObject g : gos)
         {
           for (String attribute : g.getAttributes())
           {
-            AttributeNode node = new AttributeNode(fs, attribute);
-            if (!result.contains(node) && node.getChildren().size() > 1)
+            if (!visitedAttributes.contains(attribute))
             {
-              result.add(node);
+              visitedAttributes.add(attribute);
+              AttributeNode node = new AttributeNode(fs, attribute);
+              if (!result.contains(node) && node.getChildren().size() > 1)
+              {
+                result.add(node);
+              }
             }
           }
         }
