@@ -57,7 +57,10 @@ public class EPSImporter implements Importer
       File tmp = File.createTempFile("temp", "svg");
       tmp.deleteOnExit();
       svgGenerator.stream(new FileWriter(tmp));
-      return new SVGImporter().importFile(tmp);
+      GraphicSet result = new SVGImporter().importFile(tmp);
+      //Assume the EPS has been created with 72DPI
+      result.setTransform(AffineTransform.getScaleInstance(500/72, 500/72));
+      return result;
     }
     catch (Exception ex)
     {

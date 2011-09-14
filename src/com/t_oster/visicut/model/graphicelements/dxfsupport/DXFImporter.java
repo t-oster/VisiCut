@@ -9,6 +9,7 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.Importer;
 import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.PipedInputStream;
@@ -75,9 +76,10 @@ public class DXFImporter implements Importer
           }
         }).start();
       SVGImporter svgimp = new SVGImporter();
-      return svgimp.importFile(in, inputFile.getName());
+      result = svgimp.importFile(in, inputFile.getName());
       //start the output
-      
+      //Assume the DXF has been created with 72DPI
+      result.setTransform(AffineTransform.getScaleInstance(500/72, 500/72));
 
     }
     catch (Exception ex)
