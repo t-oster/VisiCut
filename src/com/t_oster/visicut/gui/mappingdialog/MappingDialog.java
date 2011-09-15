@@ -565,7 +565,7 @@ private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
 private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
   //Abort => reload the original Settings and dispose
-  this.setCurrentMappings(null);
+  this.setMappings(null);
   this.setVisible(false);
 }//GEN-LAST:event_cancelButtonActionPerformed
 
