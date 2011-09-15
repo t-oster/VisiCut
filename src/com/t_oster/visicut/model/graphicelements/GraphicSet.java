@@ -74,8 +74,10 @@ public class GraphicSet extends LinkedList<GraphicObject>
     AffineTransform oldTransform = this.transform;
     this.transform = transform;
     propertyChangeSupport.firePropertyChange(PROP_TRANSFORM, oldTransform, transform);
+    this.boundingBoxCache = null;
   }
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+  private Rectangle2D originalBoundingBoxCache = null;
 
   /**
    * Returns the BoundingBox of this Set ignoring the Transform
@@ -83,22 +85,25 @@ public class GraphicSet extends LinkedList<GraphicObject>
    */
   public Rectangle2D getOriginalBoundingBox()
   {
-    Rectangle2D result = null;
-    for (GraphicObject o : this)
+    if (originalBoundingBoxCache == null)
     {
-      Rectangle2D current = o.getBoundingBox();
-      if (result == null)
+      for (GraphicObject o : this)
       {
-        result = current;
-      }
-      else
-      {
-        Rectangle2D.union(result, current, result);
+        Rectangle2D current = o.getBoundingBox();
+        if (originalBoundingBoxCache == null)
+        {
+          originalBoundingBoxCache = current;
+        }
+        else
+        {
+          Rectangle2D.union(originalBoundingBoxCache, current, originalBoundingBoxCache);
+        }
       }
     }
-    return result;
+    return originalBoundingBoxCache;
   }
-  
+  private Rectangle2D boundingBoxCache = null;
+
   /**
    * Returns the BoundingBox of this Set when rendered with the current
    * Transformation.
@@ -106,24 +111,26 @@ public class GraphicSet extends LinkedList<GraphicObject>
    */
   public Rectangle2D getBoundingBox()
   {
-    Rectangle2D result = null;
-    for (GraphicObject o : this)
+    if (boundingBoxCache == null)
     {
-      Rectangle2D current = o.getBoundingBox();
-      if (this.transform != null)
+      for (GraphicObject o : this)
       {
-        current = Helper.transform(current, this.transform);
-      }
-      if (result == null)
-      {
-        result = current;
-      }
-      else
-      {
-        Rectangle2D.union(result, current, result);
+        Rectangle2D current = o.getBoundingBox();
+        if (this.transform != null)
+        {
+          current = Helper.transform(current, this.transform);
+        }
+        if (boundingBoxCache == null)
+        {
+          boundingBoxCache = current;
+        }
+        else
+        {
+          Rectangle2D.union(boundingBoxCache, current, boundingBoxCache);
+        }
       }
     }
-    return result;
+    return boundingBoxCache;
   }
 
   /**
@@ -151,6 +158,8 @@ public class GraphicSet extends LinkedList<GraphicObject>
     GraphicSet result = new GraphicSet();
     result.addAll(this);
     result.setTransform(this.getTransform());
+    result.boundingBoxCache = boundingBoxCache;
+    result.originalBoundingBoxCache = originalBoundingBoxCache;
     return result;
   }
 }
