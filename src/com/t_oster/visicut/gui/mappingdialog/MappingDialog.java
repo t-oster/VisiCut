@@ -55,6 +55,7 @@ public class MappingDialog extends javax.swing.JDialog
     //To Capture changes to the "use outline" column
     mappingListModel.addTableModelListener(new TableModelListener()
     {
+
       public void tableChanged(TableModelEvent tme)
       {
         if (MappingDialog.this.getSelectedMapping() != null)
@@ -569,7 +570,14 @@ public class MappingDialog extends javax.swing.JDialog
 private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
   //OK => Move localMappings to global Mappings an dispose
   this.setMappings(this.getCurrentMappings());
-  this.setVisible(false);
+  try
+  {
+    this.setVisible(false);
+  }
+  catch (IndexOutOfBoundsException ex)
+  {
+    //BUG IN Java ?
+  }
 }//GEN-LAST:event_okButtonActionPerformed
 
 private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
@@ -579,21 +587,20 @@ private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 }//GEN-LAST:event_cancelButtonActionPerformed
 
 private void matchingPartsPanel1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_matchingPartsPanel1PropertyChange
-if (evt.getPropertyName().equals(MatchingPartsPanel.PROP_RENDERINGPROGRESS))
-{
-  if (this.matchingPartsPanel1.getRenderingProgress() == -1)
+  if (evt.getPropertyName().equals(MatchingPartsPanel.PROP_RENDERINGPROGRESS))
   {
-    this.progressBar.setIndeterminate(true);
+    if (this.matchingPartsPanel1.getRenderingProgress() == -1)
+    {
+      this.progressBar.setIndeterminate(true);
+    }
+    else
+    {
+      this.progressBar.setIndeterminate(false);
+      int val = this.matchingPartsPanel1.getRenderingProgress();
+      this.progressBar.setValue(val == 100 ? 0 : val);
+    }
   }
-  else
-  {
-    this.progressBar.setIndeterminate(false);
-    int val = this.matchingPartsPanel1.getRenderingProgress();
-    this.progressBar.setValue(val == 100 ? 0 : val);
-  }
-}
 }//GEN-LAST:event_matchingPartsPanel1PropertyChange
-
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.ButtonGroup buttonGroup1;
   private javax.swing.JButton cancelButton;

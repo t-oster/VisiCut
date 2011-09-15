@@ -14,10 +14,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /*
  * MainView.java
@@ -1475,7 +1471,7 @@ private void customMappingButtonActionPerformed(java.awt.event.ActionEvent evt) 
   {
     custom = new MappingSet();
     custom.setName("Custom Mapping");
-    this.mappingManager1.getMappingSets().add(custom);
+    this.mappingComboBox.addItem(custom);
   }
   new Thread()
   {
@@ -1493,12 +1489,9 @@ private void customMappingButtonActionPerformed(java.awt.event.ActionEvent evt) 
       MappingSet result = d.getMappings();
       if (result != null)
       {
-        int i = MainView.this.mappingManager1.getMappingSets().indexOf(custom);
-        MainView.this.mappingManager1.getMappingSets().set(i, result);
-        custom = result;
-        MainView.this.visicutModel1.setMappings(custom);
-        MainView.this.fillComboBoxes();
-        MainView.this.refreshComboBoxes();
+        custom.clear();
+        custom.addAll(result);
+        MainView.this.mappingComboBox.setSelectedItem(custom);
       }
       MainView.this.customMappingButton.setEnabled(true);
     }
