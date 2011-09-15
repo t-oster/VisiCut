@@ -120,6 +120,7 @@ public class RasterProfile extends LaserProfile
       Graphics2D g = scaledImg.createGraphics();
       g.setColor(Color.white);
       g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
+      g.setClip(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
       if (objects.getTransform() != null)
       {
         Rectangle2D origBB = objects.getOriginalBoundingBox();
