@@ -14,15 +14,12 @@
  *     You should have received a copy of the GNU General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.visicut.gui.ImageListable;
 import java.awt.Color;
 import java.awt.Component;
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.DefaultListCellRenderer;
@@ -51,12 +48,16 @@ public class ImageComboBox extends JComboBox
         JLabel l = (JLabel) c;
         if (o instanceof ImageListable)
         {
-          
+
           ImageListable item = (ImageListable) o;
           String label = "<html><table cellpadding=3><tr>";
           if (item.getThumbnailPath() != null)
           {
-            label += "<td height=80><img width=64 height=64 src=file://" + item.getThumbnailPath() + "/></td>";
+            File f = new File(item.getThumbnailPath());
+            if (f.exists())
+            {
+              label += "<td height=80><img width=64 height=64 src=file://" + f.getAbsolutePath() + "/></td>";
+            }
           }
           if (ImageComboBox.this.isDisabled(o))
           {

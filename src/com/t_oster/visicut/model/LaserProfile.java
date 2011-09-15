@@ -14,10 +14,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.LaserJob;
@@ -195,7 +191,7 @@ public abstract class LaserProfile implements ImageListable, Cloneable
     this.name = name;
   }
 
-  public abstract void renderPreview(Graphics2D g, GraphicSet objects);
+  public abstract void renderPreview(Graphics2D g, GraphicSet objects, MaterialProfile material);
 
   public abstract void addToLaserJob(LaserJob job, GraphicSet objects);
 

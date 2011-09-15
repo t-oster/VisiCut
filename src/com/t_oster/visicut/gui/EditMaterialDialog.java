@@ -14,10 +14,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /*
  * EditMaterialDialog.java
@@ -31,6 +27,7 @@ import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.VectorProfile;
+import java.io.File;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -40,6 +37,32 @@ import javax.swing.JOptionPane;
  * @author thommy
  */
 public class EditMaterialDialog extends javax.swing.JDialog implements EditableTableProvider {
+
+  protected File defaultDirectory = null;
+
+  /**
+   * Get the value of defaultDirectory
+   *
+   * @return the value of defaultDirectory
+   */
+  public File getDefaultDirectory()
+  {
+    return defaultDirectory;
+  }
+
+  /**
+   * Set the value of defaultDirectory for finding the Thumbnail
+   *
+   * @param defaultDirectory new value of defaultDirectory
+   */
+  public void setDefaultDirectory(File defaultDirectory)
+  {
+    this.defaultDirectory = defaultDirectory;
+    if (defaultDirectory != null)
+    {
+      this.selectThumbnailButton1.setDefaultDirectory(defaultDirectory);
+    }
+  }
 
     protected MaterialProfile material = null;
     public static final String PROP_MATERIAL = "material";
@@ -338,16 +361,19 @@ public class EditMaterialDialog extends javax.swing.JDialog implements EditableT
         if (selected instanceof VectorProfile) {
             EditVectorProfileDialog d = new EditVectorProfileDialog(null, true);
             d.setVectorProfile((VectorProfile) selected);
+            d.setDefaultDirectory(defaultDirectory);
             d.setVisible(true);
             return d.getVectorProfile();
         } else if (selected instanceof RasterProfile) {
             EditRasterProfileDialog d = new EditRasterProfileDialog(null, true);
             d.setRasterProfile((RasterProfile) selected);
+            d.setDefaultDirectory(defaultDirectory);
             d.setVisible(true);
             return d.getRasterProfile();
         } else if (selected instanceof Raster3dProfile) {
             EditRaster3dProfileDialog d = new EditRaster3dProfileDialog(null, true);
             d.setRasterProfile((Raster3dProfile) selected);
+            d.setDefaultDirectory(defaultDirectory);
             d.setVisible(true);
             return d.getRasterProfile();
         }

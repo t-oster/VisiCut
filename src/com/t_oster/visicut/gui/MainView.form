@@ -13,9 +13,6 @@
       </Events>
     </Component>
     <Component class="com.t_oster.visicut.managers.ProfileManager" name="profileManager1">
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_allCodePost" type="java.lang.String" value="this.visicutModel1.setMaterial(this.profileManager1.getMaterials().get(0));"/>
-      </AuxValues>
     </Component>
     <Component class="com.t_oster.visicut.gui.beans.FilesDropSupport" name="filesDropSupport1">
       <Properties>
@@ -271,7 +268,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="444" max="32767" attributes="0"/>
+                      <EmptySpace pref="450" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="executeJobButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="captureImageButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -568,7 +565,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="661" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="660" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>

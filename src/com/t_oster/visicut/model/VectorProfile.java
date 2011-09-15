@@ -41,7 +41,7 @@ public class VectorProfile extends LaserProfile
 
   public VectorProfile()
   {
-    this.setName("cut line");
+    this.setName("Cut Line");
   }
   
   protected boolean isCut = false;
@@ -89,7 +89,7 @@ public class VectorProfile extends LaserProfile
   }
 
   @Override
-  public void renderPreview(Graphics2D gg, GraphicSet objects)
+  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material)
   {
     for (GraphicObject e : objects)
     {

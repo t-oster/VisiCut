@@ -14,10 +14,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /*
  * EditMaterialsDialog.java
@@ -28,9 +24,9 @@ package com.t_oster.visicut.gui;
 
 import com.t_oster.visicut.gui.beans.EditableTableProvider;
 import com.t_oster.visicut.model.MaterialProfile;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.DefaultListModel;
 
 /**
  *
@@ -38,6 +34,28 @@ import javax.swing.DefaultListModel;
  */
 public class EditMaterialsDialog extends javax.swing.JDialog implements EditableTableProvider
 {
+
+  protected File defaultDirecoty = null;
+
+  /**
+   * Get the value of defaultDirecoty
+   *
+   * @return the value of defaultDirecoty
+   */
+  public File getDefaultDirecoty()
+  {
+    return defaultDirecoty;
+  }
+
+  /**
+   * Set the value of defaultDirecoty
+   *
+   * @param defaultDirecoty new value of defaultDirecoty
+   */
+  public void setDefaultDirecoty(File defaultDirecoty)
+  {
+    this.defaultDirecoty = defaultDirecoty;
+  }
 
   protected List<MaterialProfile> currentMaterials = null;
   public static final String PROP_CURRENTMATERIALS = "currentMaterials";
@@ -206,6 +224,7 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   {
     EditMaterialDialog d = new EditMaterialDialog(null, true);
     d.setMaterial((MaterialProfile) o);
+    d.setDefaultDirectory(defaultDirecoty);
     d.setVisible(true);
     return d.getMaterial();
   }

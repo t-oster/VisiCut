@@ -14,10 +14,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.visicut.gui.mappingdialog;
 
 import com.t_oster.visicut.model.MaterialProfile;
@@ -26,6 +22,7 @@ import com.t_oster.visicut.model.mapping.Mapping;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.List;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -161,6 +158,7 @@ public class MappingListModel extends DefaultTableModel
     if (x==2)
     {
       this.getMappings().get(y).getFilterSet().setUseOuterShape((Boolean) o);
+      this.fireTableChanged(new TableModelEvent(this, 0x0));
     }
   }
 

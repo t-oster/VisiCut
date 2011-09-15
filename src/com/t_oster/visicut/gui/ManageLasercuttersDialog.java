@@ -14,10 +14,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /*
  * ManageLasercuttersDialog.java
@@ -26,10 +22,8 @@
  */
 package com.t_oster.visicut.gui;
 
-import com.t_oster.visicut.gui.EditLaserDeviceDialog;
 import com.t_oster.visicut.gui.beans.EditableTableProvider;
 import com.t_oster.visicut.model.LaserDevice;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
 import java.util.List;
@@ -129,7 +123,7 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
 
     private String[] columns = new String[]
     {
-      "Name", "IP", "Port", "Treiber", "Default"
+      "Name", "IP", "Port", "Driver", "Default"
     };
 
     @Override

@@ -35,13 +35,13 @@
                       <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="1">
-                              <Component id="jComboBox1" pref="201" max="32767" attributes="0"/>
+                              <Component id="jComboBox1" pref="206" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="chooseColorButton1" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="jTextField1" alignment="0" pref="329" max="32767" attributes="1"/>
+                          <Component id="jTextField1" alignment="0" pref="334" max="32767" attributes="1"/>
                           <Component id="jTextField2" alignment="0" min="-2" pref="300" max="-2" attributes="1"/>
                           <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -249,7 +249,6 @@
         <Property name="maximum" type="int" value="255"/>
         <Property name="minimum" type="int" value="-255"/>
         <Property name="toolTipText" type="java.lang.String" resourceKey="jSlider1.toolTipText"/>
-        <Property name="value" type="int" value="0"/>
         <Property name="name" type="java.lang.String" value="jSlider1" noResource="true"/>
       </Properties>
       <BindingProperties>

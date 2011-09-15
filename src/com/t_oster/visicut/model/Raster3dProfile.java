@@ -42,7 +42,7 @@ public class Raster3dProfile extends LaserProfile
 
   public Raster3dProfile()
   {
-    this.setName("raster3d");
+    this.setName("Engrave 3D");
   }
   protected boolean invertColors = false;
 
@@ -88,7 +88,7 @@ public class Raster3dProfile extends LaserProfile
   }
 
   @Override
-  public void renderPreview(Graphics2D gg, GraphicSet objects)
+  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material)
   {
     Rectangle2D bb = objects.getBoundingBox();
     if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
@@ -118,7 +118,7 @@ public class Raster3dProfile extends LaserProfile
           if (ad.getGreyScale(x, y)<255)
           {//TODO: Scale color between profile color and material color
               double f = (double) ad.getGreyScale(x, y)/255;
-            Color scaled = getColorBetween(Color.black, this.getColor(), f);
+            Color scaled = getColorBetween(this.getColor(), material.getColor(), f);
             gg.setColor(scaled);
             gg.drawLine((int) bb.getX() + x, (int) bb.getY() + y, (int) bb.getX() + x, (int) bb.getY() + y);
           }

@@ -57,7 +57,7 @@ public final class PreferencesManager
   {
     try
     {
-      preferences = this.loadPreferences(new File(".VisiCut/settings.xml"));
+      preferences = this.loadPreferences(new File("settings/settings.xml"));
     }
     catch (FileNotFoundException ex)
     {
@@ -87,10 +87,10 @@ public final class PreferencesManager
     LaserDevice epilog = new LaserDevice();
     epilog.setLaserCutter(new EpilogCutter("137.226.56.228"));
     epilog.setName("Epilog ZING @ Fablab");
-    epilog.setMaterialsPath(new File(".VisiCut/materials").getAbsolutePath());
+    epilog.setMaterialsPath("settings/cutters/epilog/materials");
     epilog.setDescription("The Epilog ZING 30W Laser which is in the Fablab");
     epilog.setCameraURL("http://137.226.56.115:8080/defaultbackground.jpg");
-    epilog.setThumbnailPath(new File(".VisiCut/cutters/epilog.png").getAbsolutePath());
+    epilog.setThumbnailPath("settings/cutters/epilog/epilog.png");
     epilog.setCameraCalibration(new AffineTransform(0.19630256844482077,0.0,0.0,0.19954840530623766,124.33334350585938,484.3333282470703));
     preferences.setLaserDevices(new LinkedList<LaserDevice>());
     preferences.getLaserDevices().add(epilog);
@@ -98,10 +98,10 @@ public final class PreferencesManager
     LaserDevice trotec = new LaserDevice();
     trotec.setLaserCutter(new EpilogCutter("137.226.56.228"));
     trotec.setName("Trotec SP 1500 !@ Fablab");
-    trotec.setMaterialsPath(new File(".VisiCut/cutters/trotec/materials").getAbsolutePath());
+    trotec.setMaterialsPath("settings/cutters/trotec/materials");
     trotec.setDescription("The Trotec SP 1500 Laser which is not in the Fablab");
     trotec.setCameraURL("http://137.226.56.115:8080/defaultbackground.jpg");
-    trotec.setThumbnailPath(new File(".VisiCut/cutters/trotec.png").getAbsolutePath());
+    trotec.setThumbnailPath("settings/cutters/trotec/trotec.png");
     trotec.setCameraCalibration(new AffineTransform(0.19630256844482077,0.0,0.0,0.19954840530623766,124.33334350585938,484.3333282470703));
     preferences.getLaserDevices().add(trotec);
   }
@@ -113,9 +113,9 @@ public final class PreferencesManager
 
   public void savePreferences() throws FileNotFoundException
   {
-    if (new File(".VisiCut").isDirectory())
+    if (new File("settings").isDirectory())
     {
-      this.savePreferences(preferences, new File(".VisiCut/settings.xml"));
+      this.savePreferences(preferences, new File("settings/settings.xml"));
     }
   }
 

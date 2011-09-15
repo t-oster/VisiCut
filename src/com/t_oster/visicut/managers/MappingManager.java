@@ -14,10 +14,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.visicut.managers;
 
 import com.t_oster.visicut.model.mapping.FilterSet;
@@ -50,16 +46,11 @@ public class MappingManager
   {
     mappingSets = new LinkedList<MappingSet>();
     loadFromDirectory();
-    if (mappingSets.isEmpty())
-    {
-      generateDefault();
-      saveMappings();
-    }
   }
 
   private void loadFromDirectory()
   {
-    File dir = new File(".VisiCut/mappings");
+    File dir = new File("settings/mappings");
     if (dir.isDirectory())
     {
       for (File f : dir.listFiles())
@@ -80,35 +71,6 @@ public class MappingManager
     }
   }
 
-  private void generateDefault()
-  {
-    MappingSet ms;
-    FilterSet fs;
-    ms = new MappingSet();
-    ms.setName("Cut");
-    fs = new FilterSet();
-    fs.add(new MappingFilter());
-    ms.add(new Mapping(fs, "cut line"));
-    mappingSets.add(ms);
-    ms = new MappingSet();
-    ms.setName("Engrave");
-    fs = new FilterSet();//Empty Filter matches everything
-    ms.add(new Mapping(fs, "Floyd Steinberg"));
-    mappingSets.add(ms);
-    ms = new MappingSet();
-    ms.setName("Cut + Engrave");
-    fs = new FilterSet();
-    fs.add(new MappingFilter("Type", "Shape"));
-    fs.add(new MappingFilter("Fill_Color", "none"));
-    ms.add(new Mapping(fs, "cut line"));
-    fs = new FilterSet();//Empty Filter matches everything
-    ms.add(new Mapping(fs, "Floyd Steinberg"));
-    fs = new FilterSet();
-    Mapping cutOutline = new Mapping(fs, "cut line");
-    cutOutline.getFilterSet().setUseOuterShape(true);
-    ms.add(cutOutline);
-    mappingSets.add(ms);
-  }
   protected List<MappingSet> mappingSets = null;
   public static final String PROP_MAPPINGSETS = "mappingSets";
 
@@ -161,7 +123,7 @@ public class MappingManager
    */
   public void saveAllMappings()
   {
-    File dir = new File(".VisiCut/mappings");
+    File dir = new File("settings/mappings");
     if (dir.exists() && dir.isDirectory())
     {
       for (File f:dir.listFiles())
@@ -200,9 +162,9 @@ public class MappingManager
 
   private void saveMappings()
   {
-    if (new File(".VisiCut").isDirectory())
+    if (new File("settings").isDirectory())
     {
-      File dir = new File(".VisiCut/mappings");
+      File dir = new File("settings/mappings");
       if (!dir.exists())
       {
         dir.mkdir();

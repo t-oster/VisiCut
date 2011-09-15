@@ -14,10 +14,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 /*
  * EditRasterProfileDialog.java
@@ -32,6 +29,7 @@ import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.visicut.gui.beans.EditableTableProvider;
 import com.t_oster.visicut.model.LaserPropertyBean;
 import com.t_oster.visicut.model.RasterProfile;
+import java.io.File;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -134,6 +132,28 @@ public class EditRasterProfileDialog extends javax.swing.JDialog implements Edit
     {
       return rp == null ? 0 : rp.getLaserProperties().size();
     }
+  }
+  protected File defaultDirectory = null;
+
+  /**
+   * Get the value of defaultDirectory
+   *
+   * @return the value of defaultDirectory
+   */
+  public File getDefaultDirectory()
+  {
+    return defaultDirectory;
+  }
+
+  /**
+   * Set the value of defaultDirectory
+   *
+   * @param defaultDirectory new value of defaultDirectory
+   */
+  public void setDefaultDirectory(File defaultDirectory)
+  {
+    this.defaultDirectory = defaultDirectory;
+    this.selectThumbnailButton1.setDefaultDirectory(defaultDirectory);
   }
   protected RasterProfile rasterProfile = null;
   public static final String PROP_RASTERPROFILE = "rasterProfile";

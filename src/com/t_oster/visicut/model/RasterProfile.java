@@ -44,7 +44,7 @@ public class RasterProfile extends LaserProfile
 
   public RasterProfile()
   {
-    this.setName("average");
+    this.setName("Engrave Drawing");
   }
   protected boolean invertColors = false;
 
@@ -111,7 +111,7 @@ public class RasterProfile extends LaserProfile
   }
 
   @Override
-  public void renderPreview(Graphics2D gg, GraphicSet objects)
+  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material)
   {
     Rectangle2D bb = objects.getBoundingBox();
     if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)

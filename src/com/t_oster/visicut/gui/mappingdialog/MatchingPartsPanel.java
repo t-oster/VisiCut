@@ -323,7 +323,7 @@ public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionList
           }
           else
           {
-            p.renderPreview(gg, set);
+            p.renderPreview(gg, set, this.getMaterial());
           }
         }
         else

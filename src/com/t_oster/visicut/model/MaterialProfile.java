@@ -74,29 +74,6 @@ public class MaterialProfile implements ImageListable, Cloneable
     this.thumbnailPath = thumbnailPath;
   }
 
-  
-  protected Color cutColor = Color.GRAY;
-
-  /**
-   * Get the value of cutColor
-   *
-   * @return the value of cutColor
-   */
-  public Color getCutColor()
-  {
-    return cutColor;
-  }
-
-  /**
-   * Set the value of cutColor
-   *
-   * @param cutColor new value of cutColor
-   */
-  public void setCutColor(Color cutColor)
-  {
-    this.cutColor = cutColor;
-  }
-
   protected Color color = null;
 
   /**
@@ -291,7 +268,6 @@ public class MaterialProfile implements ImageListable, Cloneable
     MaterialProfile cp = new MaterialProfile();
     cp.setName(this.getName());
     cp.color = this.color;
-    cp.cutColor = this.cutColor;
     cp.depth = this.depth;
     cp.description = this.description;
     cp.height = this.height;

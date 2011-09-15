@@ -30,6 +30,7 @@ import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.visicut.gui.beans.EditableTableProvider;
 import com.t_oster.visicut.model.LaserPropertyBean;
 import com.t_oster.visicut.model.VectorProfile;
+import java.io.File;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -137,6 +138,29 @@ public class EditVectorProfileDialog extends javax.swing.JDialog implements Edit
       return vp == null ? 0 : vp.getLaserProperties().size();
     }
   }
+  protected File defaultDirectory = null;
+
+  /**
+   * Get the value of defaultDirectory
+   *
+   * @return the value of defaultDirectory
+   */
+  public File getDefaultDirectory()
+  {
+    return defaultDirectory;
+  }
+
+  /**
+   * Set the value of defaultDirectory
+   *
+   * @param defaultDirectory new value of defaultDirectory
+   */
+  public void setDefaultDirectory(File defaultDirectory)
+  {
+    this.defaultDirectory = defaultDirectory;
+    this.selectThumbnailButton1.setDefaultDirectory(defaultDirectory);
+  }
+
   protected VectorProfile vectorProfile = null;
   public static final String PROP_VECTORPROFILE = "vectorProfile";
 

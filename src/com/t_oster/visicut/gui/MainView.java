@@ -207,7 +207,6 @@ public class MainView extends javax.swing.JFrame
                 visicutModel1PropertyChange(evt);
             }
         });
-        this.visicutModel1.setMaterial(this.profileManager1.getMaterials().get(0));
 
         filesDropSupport1.setComponent(previewPanel);
         filesDropSupport1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -410,7 +409,7 @@ public class MainView extends javax.swing.JFrame
         );
         previewPanelLayout.setVerticalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 661, Short.MAX_VALUE)
+            .addGap(0, 660, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -649,7 +648,7 @@ public class MainView extends javax.swing.JFrame
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 279, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 450, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(executeJobButton)
                             .addComponent(captureImageButton)))
@@ -1318,6 +1317,7 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
       LaserDevice ld = (LaserDevice) laserDevs.getSelectedItem();
       EditMaterialsDialog d = new EditMaterialsDialog(this, true);
       d.setMaterials(this.profileManager1.getMaterials(ld));
+      d.setDefaultDirecoty(new File(ld.getMaterialsPath()));
       d.setVisible(true);
       List<MaterialProfile> result = d.getMaterials();
       if (result != null)

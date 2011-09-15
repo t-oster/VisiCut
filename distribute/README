@@ -1,0 +1,5 @@
+This folder is for automated creation of a distributable ZIP file.
+
+If you run the distribute.sh script, it will run ant to clean and compile the whole visicut project, then it will copy the output files plus any files in the "distribute/files" folder into a temporary folder, which
+will be added to the new created VisiCut.zip file.
+The "files" folder contains startup scripts for ceveral OSes and a default set of settings and predefined Materials.

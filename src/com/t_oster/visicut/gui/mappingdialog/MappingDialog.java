@@ -14,10 +14,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /*
  * MappingDialog.java
@@ -34,6 +30,8 @@ import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 /**
  *
@@ -54,6 +52,17 @@ public class MappingDialog extends javax.swing.JDialog
     super(parent, modal);
     initComponents();
     mappingListModel = (MappingListModel) this.mappingTable1.getModel();
+    //To Capture changes to the "use outline" column
+    mappingListModel.addTableModelListener(new TableModelListener()
+    {
+      public void tableChanged(TableModelEvent tme)
+      {
+        if (MappingDialog.this.getSelectedMapping() != null)
+        {
+          MappingDialog.this.setSelectedMapping(MappingDialog.this.getSelectedMapping());
+        }
+      }
+    });
   }
 
   /** This method is called from within the constructor to

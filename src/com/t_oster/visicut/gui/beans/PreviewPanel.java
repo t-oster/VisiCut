@@ -24,7 +24,6 @@ import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
-import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -32,7 +31,6 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -76,7 +74,7 @@ public class PreviewPanel extends ZoomablePanel
         Graphics2D gg = buffer.createGraphics();
         //Normalize Rendering to 0,0
         gg.setTransform(AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY()));
-        p.renderPreview(gg, set);
+        p.renderPreview(gg, set, PreviewPanel.this.getMaterial());
       }
       return buffer;
     }
@@ -377,7 +375,7 @@ public class PreviewPanel extends ZoomablePanel
         Color c = this.material.getColor();
         if (this.backgroundImage != null)
         {
-          gg.setColor(this.material.getCutColor() != null ? this.material.getCutColor() : Color.BLACK);
+          gg.setColor(Color.BLACK);
           gg.drawRect(0, 0, (int) Util.mm2px(material.getWidth(), 500), (int) Util.mm2px(material.getHeight(), 500));
         }
         else
@@ -440,23 +438,9 @@ public class PreviewPanel extends ZoomablePanel
                 if (highlightCutLines)
                 {
                   LaserProfile p = this.material.getLaserProfile(m.getProfileName());
-                  gg.setColor(material.getCutColor());
                   if (p instanceof VectorProfile && ((VectorProfile) p).isIsCut())
                   {
-                    p.renderPreview(gg, current);
-//                    for (GraphicObject o : current)
-//                    {
-//                      
-//                      if (o instanceof ShapeObject)
-//                      {
-//                        Shape s = ((ShapeObject) o).getShape();
-//                        if (current.getTransform() != null)
-//                        {
-//                          s = current.getTransform().createTransformedShape(s);
-//                        }
-//                        gg.draw(s);
-//                      }
-//                    }
+                    p.renderPreview(gg, current, this.material);
                   }
                 }
               }

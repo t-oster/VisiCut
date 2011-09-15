@@ -42,6 +42,30 @@ public class SelectThumbnailButton extends JButton implements ActionListener
   {
     this(null);
   }
+  
+  protected File defaultDirectory = null;
+
+  /**
+   * Get the value of defaultDirectory
+   *
+   * @return the value of defaultDirectory
+   */
+  public File getDefaultDirectory()
+  {
+    return defaultDirectory;
+  }
+
+  /**
+   * Set the value of defaultDirectory
+   *
+   * @param defaultDirectory new value of defaultDirectory
+   */
+  public void setDefaultDirectory(File defaultDirectory)
+  {
+    this.defaultDirectory = defaultDirectory;
+  }
+
+  
   protected String thumbnailPath = null;
   public static final String PROP_THUMBNAILPATH = "thumbnailPath";
 
@@ -67,7 +91,22 @@ public class SelectThumbnailButton extends JButton implements ActionListener
     String oldThumbnailPath = this.thumbnailPath;
     this.thumbnailPath = thumbnailPath;
     firePropertyChange(PROP_THUMBNAILPATH, oldThumbnailPath, thumbnailPath);
-    this.setText("<html><table cellpadding=3><tr><td><img width=64 height=64 src=file://" + getThumbnailPath() + "/></td></tr></table></html>");
+    if (thumbnailPath == null)
+    {
+      this.setText("No Image");
+    }
+    else
+    {
+      File f = new File(thumbnailPath);
+      if (f.exists())
+      {
+        this.setText("<html><table cellpadding=3><tr><td><img width=64 height=64 src=file://" + f.getAbsolutePath() + "/></td></tr></table></html>");
+      }
+      else
+      {
+        this.setText("File not found");
+      }
+    }
   }
 
   public void actionPerformed(ActionEvent ae)
@@ -75,6 +114,10 @@ public class SelectThumbnailButton extends JButton implements ActionListener
     JFileChooser fc = new JFileChooser();
     fc.setAcceptAllFileFilterUsed(false);
     fc.addChoosableFileFilter(new ExtensionFilter(".png", "PNG Files (*.png)"));
+    if (getDefaultDirectory() != null)
+    {
+      fc.setCurrentDirectory(getDefaultDirectory());
+    }
     if (getThumbnailPath() != null)
     {
       fc.setSelectedFile(new File(getThumbnailPath()));
@@ -84,7 +127,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
     if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
     {
       File thumb = fc.getSelectedFile();
-      setThumbnailPath(thumb.getAbsolutePath());
+      setThumbnailPath(thumb.getPath());
     }
   }
 }
