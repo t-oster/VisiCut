@@ -692,7 +692,20 @@ public class MainView extends javax.swing.JFrame
       this.progressBar.setIndeterminate(true);
       if (VisicutModel.PLFFilter.accept(file))
       {
-        this.visicutModel1.loadFromFile(this.profileManager1, this.mappingManager1, file);
+        this.visicutModel1.loadFromFile(this.mappingManager1, file);
+        if (this.custom == null)
+        {
+          custom = this.visicutModel1.getMappings();
+          custom.setName("Loaded Mapping");
+          this.mappingComboBox.addItem(custom);
+        }
+        else
+        {
+          custom.clear();
+          custom.setName("Loaded Mapping");
+          custom.addAll(this.visicutModel1.getMappings());
+        }
+        this.mappingComboBox.setSelectedItem(custom);
       }
       else
       {

@@ -14,10 +14,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.t_oster.visicut;
 
 import com.t_oster.visicut.misc.ExtensionFilter;
@@ -201,13 +198,12 @@ public class VisicutModel
     return loadedFile;
   }
 
-  public void loadFromFile(ProfileManager pm, MappingManager mm, File f) throws FileNotFoundException, IOException, ImportException
+  public void loadFromFile(MappingManager mm, File f) throws FileNotFoundException, IOException, ImportException
   {
     ZipFile zip = new ZipFile(f);
     Enumeration entries = zip.entries();
     AffineTransform transform = null;
     MappingSet loadedMappings = null;
-    MaterialProfile loadedMaterial = null;
     File inputFile = null;
     while (entries.hasMoreElements())
     {
@@ -221,10 +217,6 @@ public class VisicutModel
       else if (name.equals("mappings.xml"))
       {
         loadedMappings = mm.loadMappingSet(zip.getInputStream(entry));
-      }
-      else if (name.equals("material.xml"))
-      {
-        loadedMaterial = pm.loadProfile(zip.getInputStream(entry));
       }
       else
       {
@@ -247,22 +239,10 @@ public class VisicutModel
         in.close();
       }
     }
-    if (loadedMappings == null || transform == null || loadedMaterial == null || inputFile == null || !inputFile.exists())
+    if (loadedMappings == null || transform == null || inputFile == null || !inputFile.exists())
     {
       throw new ImportException("Corrupted Input File");
     }
-    //If loaded Material or Mapping is not yet present, add it to Managers
-    List<MaterialProfile> materials = pm.getMaterials();
-    if (!materials.contains(loadedMaterial))
-    {
-      materials.add(loadedMaterial);
-    }
-    List<MappingSet> mappingsets = mm.getMappingSets();
-    if (!mappingsets.contains(loadedMappings))
-    {
-      mappingsets.add(loadedMappings);
-    }
-    this.setMaterial(loadedMaterial);
     this.setMappings(loadedMappings);
     if (inputFile != null && inputFile.exists())
     {
