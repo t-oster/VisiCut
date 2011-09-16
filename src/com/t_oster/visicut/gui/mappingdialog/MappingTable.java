@@ -14,10 +14,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.visicut.gui.mappingdialog;
 
 import com.t_oster.liblasercut.platform.Util;
@@ -90,6 +86,28 @@ public class MappingTable extends EditableTablePanel implements EditableTablePro
     });
   }
   private MappingListModel model = new MappingListModel();
+  protected FilterSet selectedFilterSet = null;
+
+  /**
+   * Get the value of selectedFilterSet
+   *
+   * @return the value of selectedFilterSet
+   */
+  public FilterSet getSelectedFilterSet()
+  {
+    return selectedFilterSet;
+  }
+
+  /**
+   * Set the value of selectedFilterSet
+   *
+   * @param selectedFilterSet new value of selectedFilterSet
+   */
+  public void setSelectedFilterSet(FilterSet selectedFilterSet)
+  {
+    this.selectedFilterSet = selectedFilterSet;
+  }
+
   protected Mapping selectedMapping = null;
   public static final String PROP_SELECTEDMAPPING = "selectedMapping";
 
@@ -194,7 +212,7 @@ public class MappingTable extends EditableTablePanel implements EditableTablePro
   public Object getNewInstance()
   {
     Mapping m = new Mapping();
-    m.setFilterSet(new FilterSet());
+    m.setFilterSet(this.getSelectedFilterSet() != null ? this.getSelectedFilterSet().clone() : new FilterSet());
     m.setProfileName("cut line");
     return m;
   }

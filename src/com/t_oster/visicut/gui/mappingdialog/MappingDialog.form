@@ -306,6 +306,9 @@
           </Properties>
           <BindingProperties>
             <BindingProperty name="material" source="Form" sourcePath="${material}" target="mappingTable1" targetPath="material" updateStrategy="0" immediately="false"/>
+            <BindingProperty name="selectedFilterSet" source="Form" sourcePath="${selectedFilters}" target="mappingTable1" targetPath="selectedFilterSet" updateStrategy="1" immediately="false">
+              <Property name="name" type="java.lang.String" value="selectedFilterSet"/>
+            </BindingProperty>
             <BindingProperty name="selectedMapping" source="Form" sourcePath="${selectedMapping}" target="mappingTable1" targetPath="selectedMapping" updateStrategy="0" immediately="false">
               <Property name="name" type="java.lang.String" value="sfsdf"/>
             </BindingProperty>
