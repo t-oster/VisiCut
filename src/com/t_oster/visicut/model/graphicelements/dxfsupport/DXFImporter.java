@@ -95,7 +95,7 @@ public class DXFImporter implements Importer
       result = svgimp.importFile(in, inputFile.getName());
       //start the output
       //Assume the DXF has been created with 72DPI
-      result.setTransform(AffineTransform.getScaleInstance(500/72, 500/72));
+      result.setTransform(AffineTransform.getScaleInstance(500d/72, 500d/72));
 
     }
     catch (Exception ex)
