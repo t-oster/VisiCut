@@ -140,9 +140,9 @@ public class EpilogCutter extends LaserCutter
     out.printf("\033E@PJL ENTER LANGUAGE=PCL\r\n");
     /* Set autofocus off. */
     out.printf("\033&y0A");
-    /* FIXME unknown purpose. */
+    /* Set focus to 0. */
     out.printf("\033&y0C");
-    /* ALSO UNKNOWN */
+    /* UNKNOWN */
     out.printf("\033&y0Z");
     /* Left (long-edge) offset registration.  Adjusts the position of the
      * logical page across the width of the page.
@@ -306,7 +306,6 @@ public class EpilogCutter extends LaserCutter
     }
   }
 
-  //TODO: Add Timeout
   public void sendJob(LaserJob job) throws IllegalJobException, SocketTimeoutException, UnsupportedEncodingException, IOException, UnknownHostException, Exception
   {
     //Perform santiy checks
@@ -564,7 +563,6 @@ public class EpilogCutter extends LaserCutter
         {
           out.printf("\033*p%dX", sp.x + jump * 8);
           out.printf("\033*p%dY", sp.y + y);
-          //TODO: vielleicht jump nach reverse???
           if (leftToRight)
           {
             out.printf("\033*b%dA", line.size());

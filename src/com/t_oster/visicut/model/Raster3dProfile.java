@@ -117,8 +117,8 @@ public class Raster3dProfile extends LaserProfile
         for (int x = 0; x < ad.getWidth(); x++)
         {
           if (ad.getGreyScale(x, y)<255)
-          {//TODO: Scale color between profile color and material color
-              double f = (double) ad.getGreyScale(x, y)/255;
+          {
+            double f = (double) ad.getGreyScale(x, y)/255;
             Color scaled = getColorBetween(this.getColor(), material.getColor(), f);
             gg.setColor(scaled);
             gg.drawLine((int) bb.getX() + x, (int) bb.getY() + y, (int) bb.getX() + x, (int) bb.getY() + y);
