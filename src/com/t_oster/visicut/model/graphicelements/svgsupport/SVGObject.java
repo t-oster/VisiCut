@@ -14,10 +14,6 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.visicut.model.graphicelements.svgsupport;
 
 import com.kitfox.svg.Group;
@@ -51,8 +47,7 @@ public abstract class SVGObject implements GraphicObject
     Stroke_Color,
     Fill_Color,
     Type,
-    Group,
-    ID,}
+    Group,}
 
   /**
    * Returns a List of SVGElements representing the Path
@@ -121,8 +116,8 @@ public abstract class SVGObject implements GraphicObject
       Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
+  private Map<String, List<Object>> attributeValues = new LinkedHashMap<String, List<Object>>();
 
-  private Map<String,List<Object>> attributeValues = new LinkedHashMap<String, List<Object>>();
   public List<Object> getAttributeValues(String name)
   {
     if (attributeValues.containsKey(name))
@@ -139,23 +134,20 @@ public abstract class SVGObject implements GraphicObject
           if (e instanceof Group)
           {
             String id = ((Group) e).getId();
-            result.add(id == null ? "none" : id);
+            if (id != null)
+            {
+              result.add(id);
+            }
           }
         }
-        break;
-      }
-      case ID:
-      {
-        String id = this.getDecoratee().getId();
-        result.add(id == null ? "none" : id);
         break;
       }
     }
     attributeValues.put(name, result);
     return result;
   }
-
   private List<String> attributes = null;
+
   public List<String> getAttributes()
   {
     if (attributes != null)
@@ -205,14 +197,15 @@ public abstract class SVGObject implements GraphicObject
           {
             result = ((RenderableElement) p).getBoundingBox();
           }
-        }while(result == null && p != null);
+        }
+        while (result == null && p != null);
       }
       return result;
     }
     catch (SVGException ex)
     {
       Logger.getLogger(SVGObject.class.getName()).log(Level.SEVERE, null, ex);
-      return new Rectangle(0,0,0,0);
+      return new Rectangle(0, 0, 0, 0);
     }
   }
 }
