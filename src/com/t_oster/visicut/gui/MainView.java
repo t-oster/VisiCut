@@ -134,6 +134,14 @@ public class MainView extends javax.swing.JFrame
         this.mappingComboBox.setSelectedItem(m);
       }
     }
+    if (this.custom != null)
+    {
+      this.mappingComboBox.addItem(custom);
+      if (custom.equals(ss))
+      {
+        this.mappingComboBox.setSelectedItem(custom);
+      }
+    }
   }
 
   /** This method is called from within the constructor to

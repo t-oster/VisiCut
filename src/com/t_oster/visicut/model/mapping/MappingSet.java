@@ -14,10 +14,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.visicut.model.mapping;
 
 import java.util.LinkedList;
@@ -68,5 +64,35 @@ public class MappingSet extends LinkedList<Mapping>
     }
     return result;
   }
-  
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (obj == null)
+    {
+      return false;
+    }
+    if (getClass() != obj.getClass())
+    {
+      return false;
+    }
+    final MappingSet other = (MappingSet) obj;
+    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name))
+    {
+      return false;
+    }
+    if (other.size() != this.size())
+    {
+      return false;
+    }
+    return super.equals(obj);
+  }
+
+  @Override
+  public int hashCode()
+  {
+    int hash = 7;
+    hash = 13 * hash + (this.name != null ? this.name.hashCode() : 0);
+    return hash;
+  }
 }
