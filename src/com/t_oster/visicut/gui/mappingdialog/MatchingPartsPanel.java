@@ -264,7 +264,7 @@ public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionList
           needRefresh = false;
           MatchingPartsPanel.this.setRenderingProgress(-1);
           Graphics2D g = renderBuffer.createGraphics();
-          g.setColor(previewMode && selectedMapping != null ? material.getColor() : Color.WHITE);
+          g.setColor(previewMode && selectedMapping != null ? material.getColor() : MatchingPartsPanel.this.getBackground());
           g.fillRect(0, 0, renderBuffer.getWidth(), renderBuffer.getHeight());
           g.setClip(0, 0, renderBuffer.getWidth(), renderBuffer.getHeight());
           Rectangle2D bb = MatchingPartsPanel.this.graphicElements.getBoundingBox();
