@@ -22,9 +22,15 @@ import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.Importer;
 import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Writer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,6 +54,48 @@ public class EPSImporter implements Importer
     return new ExtensionFilter(".eps", "Encapsulated PostScript (*.eps)");
   }
 
+  /**
+   * Tries to read the BoundingBox out of the EPS file.
+   * If not successful, it returns a default BoundingBox
+   * @param epsfile
+   * @return 
+   */
+  private Rectangle2D getBoundingBox(File epsfile)
+  {
+    Rectangle.Double result = new Rectangle.Double(0, 0, 800, 600);
+    try
+    {
+      BufferedReader r = new BufferedReader(new FileReader(epsfile));
+      String line = null;
+      while ((line = r.readLine()) != null)
+      {
+        //TODO: Get HighRes BoundingBox
+        if (line.startsWith("%%BoundingBox:") || line.startsWith("%%PageBoundingBox:"))
+        {
+          try
+          {
+            String[] elements = line.split(" ");
+            result = new Rectangle.Double(
+              Integer.parseInt(elements[1]),
+              Integer.parseInt(elements[2]),
+              Integer.parseInt(elements[3]),
+              Integer.parseInt(elements[4]));
+            break;
+          }
+          catch (NumberFormatException e)
+          {
+          }
+        }
+      }
+      r.close();
+    }
+    catch (Exception ex)
+    {
+      Logger.getLogger(EPSImporter.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return result;
+  }
+
   public GraphicSet importFile(File inputFile) throws ImportException
   {
     Writer out = null;
@@ -63,7 +111,9 @@ public class EPSImporter implements Importer
       svgGenerator.setTransform(new AffineTransform());
       // Open input file
       PSInputFile in = new PSInputFile(inputFile.getAbsolutePath());
-      Dimension d = new Dimension(800, 600);
+      Rectangle2D bb = this.getBoundingBox(inputFile);
+      svgGenerator.setTransform(AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY()));
+      Dimension d = new Dimension((int) bb.getWidth(), (int) bb.getHeight());
       // Create processor and associate to input and output file
       Processor processor = new Processor(svgGenerator, d, false);
       processor.setData(in);
@@ -74,13 +124,21 @@ public class EPSImporter implements Importer
       tmp.deleteOnExit();
       svgGenerator.stream(new FileWriter(tmp));
       GraphicSet result = new SVGImporter().importFile(tmp);
-      //Assume the EPS has been created with 300DPI (from Inkscape)
-      result.setTransform(AffineTransform.getScaleInstance(500d/300, 500d/300));
+      //Assume the EPS has been created with 72DPI (from Inkscape)
+      result.setTransform(AffineTransform.getScaleInstance(500d / 72, 500d / 72));
       return result;
     }
     catch (Exception ex)
     {
       Logger.getLogger(EPSImporter.class.getName()).log(Level.SEVERE, null, ex);
+
+
+
+
+
+
+
+
       throw new ImportException(ex);
     }
   }

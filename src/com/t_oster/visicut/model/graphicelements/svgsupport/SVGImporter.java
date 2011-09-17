@@ -83,7 +83,7 @@ public class SVGImporter implements Importer
     URI svg = u.loadSVG(in, name);
     SVGRoot root = u.getDiagram(svg).getRoot();
     GraphicSet result = new GraphicSet();
-    result.setTransform(AffineTransform.getScaleInstance(500 / 96, 500 / 96));
+    result.setTransform(AffineTransform.getScaleInstance(500d/96, 500d/96));
     importNode(root, result);
     return result;
 
