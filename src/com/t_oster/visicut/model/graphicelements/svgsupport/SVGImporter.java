@@ -16,6 +16,7 @@
  **/
 package com.t_oster.visicut.model.graphicelements.svgsupport;
 
+import com.kitfox.svg.Defs;
 import com.kitfox.svg.Gradient;
 import com.kitfox.svg.Group;
 import com.t_oster.visicut.model.graphicelements.Importer;
@@ -49,7 +50,7 @@ public class SVGImporter implements Importer
 
   private void importNode(SVGElement e, List<GraphicObject> result)
   {
-    if (e instanceof PatternSVG || e instanceof Gradient)
+    if (e instanceof PatternSVG || e instanceof Gradient || e instanceof Defs)
     {//Ignore Patterns,Gradients and Children
       return;
     }
