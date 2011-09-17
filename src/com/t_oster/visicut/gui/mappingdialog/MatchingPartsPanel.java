@@ -264,7 +264,7 @@ public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionList
           needRefresh = false;
           MatchingPartsPanel.this.setRenderingProgress(-1);
           Graphics2D g = renderBuffer.createGraphics();
-          g.setColor(previewMode && selectedMapping != null ? material.getColor() : MatchingPartsPanel.this.getBackground());
+          g.setColor(previewMode && material != null && selectedMapping != null ? material.getColor() : MatchingPartsPanel.this.getBackground());
           g.fillRect(0, 0, renderBuffer.getWidth(), renderBuffer.getHeight());
           g.setClip(0, 0, renderBuffer.getWidth(), renderBuffer.getHeight());
           Rectangle2D bb = MatchingPartsPanel.this.graphicElements.getBoundingBox();
@@ -313,7 +313,7 @@ public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionList
       if (this.getSelectedMapping() != null)
       {
         GraphicSet set = this.getSelectedMapping().getFilterSet().getMatchingObjects(this.graphicElements);
-        LaserProfile p = this.material.getLaserProfile(this.getSelectedMapping().getProfileName());
+        LaserProfile p = material == null ? null : this.material.getLaserProfile(this.getSelectedMapping().getProfileName());
         //set.setTransform(scaleTrans);
         if (this.previewMode)
         {
