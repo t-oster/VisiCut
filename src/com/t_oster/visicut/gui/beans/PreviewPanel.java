@@ -43,6 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  * This class implements the Panel which provides the Preview
@@ -99,12 +100,19 @@ public class PreviewPanel extends ZoomablePanel
         }
         if (toProcess != null)
         {
-          BufferedImage result = this.renderMapping(toProcess);
-          synchronized (PreviewPanel.this.renderBuffer)
+          try
           {
-            PreviewPanel.this.renderBuffer.put(toProcess, result);
+            BufferedImage result = this.renderMapping(toProcess);
+            synchronized (PreviewPanel.this.renderBuffer)
+            {
+              PreviewPanel.this.renderBuffer.put(toProcess, result);
+            }
+            PreviewPanel.this.repaint();
           }
-          PreviewPanel.this.repaint();
+          catch (OutOfMemoryError e)
+          {
+            JOptionPane.showMessageDialog(PreviewPanel.this, "Error: Not enough Memory\nPlease start the Program from the provided shell scripts instead of running the .jar file", "Error: Out of Memory", JOptionPane.ERROR_MESSAGE);
+          }
         }
         try
         {
@@ -342,7 +350,7 @@ public class PreviewPanel extends ZoomablePanel
     if (graphicObjects != null && this.backgroundImage == null && this.material == null)
     {
       Rectangle bb = Helper.toRect(this.graphicObjects.getBoundingBox());
-      this.setOuterBounds(new Dimension(bb.x+bb.width, bb.y+bb.height));
+      this.setOuterBounds(new Dimension(bb.x + bb.width, bb.y + bb.height));
     }
     this.renderBuffer.clear();
     this.repaint();
@@ -430,10 +438,10 @@ public class PreviewPanel extends ZoomablePanel
                       gg.setColor(Color.BLACK);
                       AffineTransform tmp = gg.getTransform();
                       gg.setTransform(new AffineTransform());
-                      Point p = new Point(r.x+r.width/2, r.y + r.height / 2);
+                      Point p = new Point(r.x + r.width / 2, r.y + r.height / 2);
                       tmp.transform(p, p);
                       int w = gg.getFontMetrics().stringWidth("please wait...");
-                      gg.drawString("please wait...", p.x-w/2, p.y);
+                      gg.drawString("please wait...", p.x - w / 2, p.y);
                       gg.setTransform(tmp);
                     }
                     else
