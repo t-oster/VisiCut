@@ -543,6 +543,7 @@ public class MappingDialog extends javax.swing.JDialog
     this.material = material;
     firePropertyChange(PROP_MATERIAL, oldMaterial, material);
     this.mappingListModel.setMaterial(material);
+    this.jCheckBox1.setEnabled(material != null);
   }
   protected GraphicSet graphicElements = new GraphicSet();
   public static final String PROP_GRAPHICELEMENTS = "graphicElements";
