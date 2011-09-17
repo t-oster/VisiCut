@@ -14,15 +14,13 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.visicut.model.graphicelements.svgsupport;
 
+import com.kitfox.svg.Gradient;
 import com.kitfox.svg.Group;
 import com.t_oster.visicut.model.graphicelements.Importer;
 import com.kitfox.svg.ImageSVG;
+import com.kitfox.svg.PatternSVG;
 import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGRoot;
 import com.kitfox.svg.SVGUniverse;
@@ -51,6 +49,10 @@ public class SVGImporter implements Importer
 
   private void importNode(SVGElement e, List<GraphicObject> result)
   {
+    if (e instanceof PatternSVG || e instanceof Gradient)
+    {//Ignore Patterns,Gradients and Children
+      return;
+    }
     if (e instanceof ShapeElement && !(e instanceof Group))
     {
       if (((ShapeElement) e).getShape() != null)
