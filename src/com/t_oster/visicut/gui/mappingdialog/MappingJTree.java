@@ -16,8 +16,6 @@
  **/
 package com.t_oster.visicut.gui.mappingdialog;
 
-import com.t_oster.liblasercut.platform.Tuple;
-import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
@@ -37,7 +35,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-import org.apache.fop.fonts.Font;
 
 /**
  *
@@ -46,6 +43,8 @@ import org.apache.fop.fonts.Font;
 public class MappingJTree extends JTree implements TreeModel, TreeSelectionListener
 {
 
+  private Color mappedBackgroundColor = new Color(253, 248, 183);
+  private String bgHtml = Helper.toHtmlRGB(mappedBackgroundColor);
   protected FilterSet selectedFilterSet = null;
   public static final String PROP_SELECTEDFILTERSET = "selectedFilterSet";
 
@@ -61,6 +60,10 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
 
   /**
    * Set the value of selectedFilterSet
+   * and fires a property change event
+   * this does NOT alter the real selected value
+   * of the JTree, except if the value is null,
+   * then the selection is cleared
    *
    * @param selectedFilterSet new value of selectedFilterSet
    */
@@ -69,30 +72,9 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     FilterSet oldSelectedFilterSet = this.selectedFilterSet;
     this.selectedFilterSet = selectedFilterSet;
     firePropertyChange(PROP_SELECTEDFILTERSET, oldSelectedFilterSet, selectedFilterSet);
-    if (Util.differ(oldSelectedFilterSet, selectedFilterSet))
+    if (selectedFilterSet == null)
     {
-      if (selectedFilterSet == null && this.getSelectionModel().getSelectionPath() != null)
-      {
-        this.getSelectionModel().clearSelection();
-      }
-      else if (selectedFilterSet != null && (this.getSelectionModel().getSelectionPath() == null || this.getSelectionModel().getSelectionPath().getLastPathComponent() != selectedFilterSet))
-      {
-        //Generate Tree Path from selected FilterSet
-        TreePath p = new TreePath(new Object[]
-          {
-            this.getRoot()
-          });
-        for (MappingFilter f : selectedFilterSet)
-        {
-          AttributeNode a = new AttributeNode((FilterSet) p.getLastPathComponent(), f.getAttribute());
-          p = p.pathByAddingChild(a);
-          FilterSet fs = new FilterSet();
-          fs.addAll(a.getA());
-          fs.add(f);
-          p = p.pathByAddingChild(fs);
-        }
-        this.getSelectionModel().setSelectionPath(p);
-      }
+      this.clearSelection();
     }
   }
 
@@ -108,58 +90,139 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     }
   }
 
-  private class AttributeNode extends Tuple<FilterSet, String>
+  private class FilterSetNode extends FilterSet
   {
 
-    public AttributeNode(FilterSet path, String attribute)
-    {
-      super(path, attribute);
-    }
+    private List<AttributeNode> children;
 
-    public List<FilterSet> getChildren()
+    public List<AttributeNode> getChildren()
     {
-      List<FilterSet> result = new LinkedList<FilterSet>();
-      GraphicSet gos = this.getA().getMatchingObjects(MappingJTree.this.getGraphicObjects());
-      List<Object> visitedValues = new LinkedList<Object>();
-      for (GraphicObject g : gos)
+      if (children == null)
       {
-        for (Object value : g.getAttributeValues(this.getB()))
+        children = new LinkedList<AttributeNode>();
+        if (MappingJTree.this.getGraphicObjects() != null)
         {
-          if (!visitedValues.contains(value))
+          List<GraphicObject> gos = this.getMatchingObjects(MappingJTree.this.getGraphicObjects());
+          List<String> visitedAttributes = new LinkedList<String>();
+          for (GraphicObject g : gos)
           {
-            visitedValues.add(value);
-            //GraphicSet restObjects = this.getA().getMatchingObjects(gos);
-            MappingFilter f = new MappingFilter(this.getB(), value);
-            int newrest = f.getMatchingElements(gos).size();
-            //Check if filter makes a difference
-            if (newrest != 0 && newrest != gos.size())
+            for (String attribute : g.getAttributes())
             {
-              FilterSet node = new FilterSet();
-              node.addAll(this.getA());
-              node.add(f);
-              if (!result.contains(node))
+              if (!visitedAttributes.contains(attribute))
               {
-                result.add(node);
-                //Add inverted filter
-                f = new MappingFilter(this.getB(), value);
-                f.setInverted(true);
-                node = new FilterSet();
-                node.addAll(this.getA());
-                node.add(f);
-                result.add(node);
+                visitedAttributes.add(attribute);
+                AttributeNode node = new AttributeNode();
+                node.addAll(this);
+                node.setAttribute(attribute);
+                if (!children.contains(node) && node.getChildren().size() > 1)
+                {
+                  children.add(node);
+                }
               }
             }
           }
         }
       }
-      return result;
+      return children;
+    }
+  }
+
+  private class AttributeNode extends FilterSet
+  {
+
+    private String attribute;
+    private List<FilterSetNode> children;
+
+    public void setAttribute(String attribute)
+    {
+      this.attribute = attribute;
+    }
+
+    public List<FilterSet> getChildren()
+    {
+      if (children == null)
+      {
+        children = new LinkedList<FilterSetNode>();
+        GraphicSet gos = this.getMatchingObjects(MappingJTree.this.getGraphicObjects());
+        List<Object> visitedValues = new LinkedList<Object>();
+        for (GraphicObject g : gos)
+        {
+          for (Object value : g.getAttributeValues(attribute))
+          {
+            if (!visitedValues.contains(value))
+            {
+              visitedValues.add(value);
+              //GraphicSet restObjects = this.getA().getMatchingObjects(gos);
+              MappingFilter f = new MappingFilter(attribute, value);
+              int newrest = f.getMatchingElements(gos).size();
+              //Check if filter makes a difference
+              if (newrest != 0 && newrest != gos.size())
+              {
+                FilterSetNode node = new FilterSetNode();
+                node.addAll(this);
+                node.add(f);
+                if (!children.contains(node))
+                {
+                  children.add(node);
+                  //Add inverted filter
+                  f = new MappingFilter(attribute, value);
+                  f.setInverted(true);
+                  node = new FilterSetNode();
+                  node.addAll(this);
+                  node.add(f);
+                  children.add(node);
+                }
+              }
+            }
+          }
+        }
+      }
+      return (List) children;
     }
 
     @Override
     public String toString()
     {
-      return (this.getA().isEmpty() ? "WHERE " : "AND ") + this.getB();
+      return (this.isEmpty() ? "WHERE " : "AND ") + attribute;
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+      if (o instanceof AttributeNode)
+      {
+        return ((AttributeNode) o).attribute.equals(attribute) && super.equals(o);
+      }
+      return super.equals(o);
+    }
+
+    @Override
+    public int hashCode()
+    {
+      int hash = 7;
+      hash = 89 * hash + (this.attribute != null ? this.attribute.hashCode() : 0);
+      hash = 89 * hash + (this.children != null ? this.children.hashCode() : 0);
+      return hash;
+    }
+  }
+
+  private boolean hasUnmappedChildren(FilterSet fs)
+  {
+    //Calculate if there are matching elements which are
+    //not already mapped
+    GraphicSet unmapped = fs.getMatchingObjects(graphicObjects);
+    if (MappingJTree.this.mappings != null)
+    {
+      for (Mapping m : MappingJTree.this.mappings)
+      {
+        unmapped.removeAll(m.getFilterSet().getMatchingObjects(unmapped));
+        if (unmapped.size() == 0)
+        {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   public MappingJTree()
@@ -172,35 +235,21 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
       public Component getTreeCellRendererComponent(JTree jtree, Object o, boolean bln, boolean bln1, boolean bln2, int i, boolean bln3)
       {
         Component c = super.getTreeCellRendererComponent(jtree, o, bln, bln1, bln2, i, bln3);
-        if (o instanceof FilterSet)
+        if (c instanceof JLabel && o instanceof FilterSet)
         {
-          GraphicSet unmapped = ((FilterSet) o).getMatchingObjects(graphicObjects);
-          if (MappingJTree.this.mappings != null)
-          {
-            for (Mapping m : MappingJTree.this.mappings)
-            {
-              unmapped.removeAll(m.getFilterSet().getMatchingObjects(unmapped));
-              if (unmapped.size() == 0)
-              {
-                break;
-              }
-            }
+          JLabel l = (JLabel) c;
+          FilterSet fs = (FilterSet) o;
+          boolean hasUnmappedChildren = MappingJTree.this.hasUnmappedChildren(fs);
+          if (!hasUnmappedChildren)
+          {//If all chilren are already mapped, change bgcolor
+            l.setText("<html><table bgcolor=" + bgHtml + "><tr><td>" + l.getText() + "</td></tr></table></html>");
           }
-          if (c instanceof JLabel)
+          if (fs instanceof FilterSetNode)
           {
-            JLabel l = (JLabel) c;
-            if (unmapped.size() == 0)
+            MappingFilter f = fs.peekLast();
+            if (f != null && f.getValue() instanceof Color)
             {
-              l.setText("<html><table bgcolor=#fdfbc5><tr><td>" + l.getText() + "</td></tr></table></html>");
-            }
-            MappingFilter f = ((FilterSet) o).peekLast();
-            if (f != null)
-            {
-              if (f.getValue() instanceof Color)
-              {
-
-                l.setText("<html><table" + (unmapped.size() == 0 ? " bgcolor=#fdfbc5" : "") + "><tr><td>" + (f.isInverted() ? "IS NOT" : "IS") + "</td><td border=1 bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
-              }
+              l.setText("<html><table" + (!hasUnmappedChildren ? " bgcolor=" + bgHtml : "") + "><tr><td>" + (f.isInverted() ? "IS NOT" : "IS") + "</td><td border=1 bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
             }
           }
         }
@@ -229,12 +278,13 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
   public void setGraphicObjects(GraphicSet graphicObjects)
   {
     this.graphicObjects = graphicObjects;
+    this.root = new FilterSetNode();
     this.valueForPathChanged(new TreePath(new Object[]
       {
         this.getRoot()
       }), this.getRoot());
   }
-  private FilterSet root = new FilterSet();
+  private FilterSet root = new FilterSetNode();
 
   public Object getRoot()
   {
@@ -248,32 +298,9 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
 
   private List getChildren(Object o)
   {
-    if (o instanceof FilterSet)
+    if (o instanceof FilterSetNode)
     {
-
-      FilterSet fs = (FilterSet) o;
-      List<Object> result = new LinkedList<Object>();
-      if (this.getGraphicObjects() != null)
-      {
-        List<GraphicObject> gos = fs.getMatchingObjects(MappingJTree.this.getGraphicObjects());
-        List<String> visitedAttributes = new LinkedList<String>();
-        for (GraphicObject g : gos)
-        {
-          for (String attribute : g.getAttributes())
-          {
-            if (!visitedAttributes.contains(attribute))
-            {
-              visitedAttributes.add(attribute);
-              AttributeNode node = new AttributeNode(fs, attribute);
-              if (!result.contains(node) && node.getChildren().size() > 1)
-              {
-                result.add(node);
-              }
-            }
-          }
-        }
-      }
-      return result;
+      return ((FilterSetNode) o).getChildren();
     }
     else if (o instanceof AttributeNode)
     {
