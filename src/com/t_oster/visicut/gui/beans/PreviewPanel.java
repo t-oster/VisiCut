@@ -72,6 +72,7 @@ public class PreviewPanel extends ZoomablePanel
         LaserProfile p = PreviewPanel.this.getMaterial().getLaserProfile(m.getProfileName());
         buffer = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D gg = buffer.createGraphics();
+        gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         //Normalize Rendering to 0,0
         gg.setTransform(AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY()));
         p.renderPreview(gg, set, PreviewPanel.this.getMaterial());
@@ -429,9 +430,10 @@ public class PreviewPanel extends ZoomablePanel
                       gg.setColor(Color.BLACK);
                       AffineTransform tmp = gg.getTransform();
                       gg.setTransform(new AffineTransform());
-                      Point p = new Point(r.x, r.y + r.height / 2);
+                      Point p = new Point(r.x+r.width/2, r.y + r.height / 2);
                       tmp.transform(p, p);
-                      gg.drawString("please wait...", p.x, p.y);
+                      int w = gg.getFontMetrics().stringWidth("please wait...");
+                      gg.drawString("please wait...", p.x-w/2, p.y);
                       gg.setTransform(tmp);
                     }
                     else
@@ -509,6 +511,7 @@ public class PreviewPanel extends ZoomablePanel
   public void setMappings(List<Mapping> mappings)
   {
     this.mappings = mappings;
+    this.renderBuffer.clear();
     this.repaint();
   }
 
