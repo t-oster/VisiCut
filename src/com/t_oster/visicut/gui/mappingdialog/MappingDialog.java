@@ -573,14 +573,7 @@ public class MappingDialog extends javax.swing.JDialog
 private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
   //OK => Move localMappings to global Mappings an dispose
   this.setMappings(this.getCurrentMappings());
-  try
-  {
-    this.setVisible(false);
-  }
-  catch (IndexOutOfBoundsException ex)
-  {
-    //BUG IN Java ?
-  }
+  this.setVisible(false);
 }//GEN-LAST:event_okButtonActionPerformed
 
 private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
