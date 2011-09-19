@@ -50,9 +50,9 @@
     <object class="com.t_oster.visicut.model.VectorProfile">
      <void property="color">
       <object class="java.awt.Color">
-       <int>254</int>
-       <int>254</int>
-       <int>254</int>
+       <int>155</int>
+       <int>165</int>
+       <int>167</int>
        <int>255</int>
       </object>
      </void>
@@ -80,9 +80,9 @@
     <object class="com.t_oster.visicut.model.RasterProfile">
      <void property="color">
       <object class="java.awt.Color">
-       <int>251</int>
-       <int>251</int>
-       <int>251</int>
+       <int>155</int>
+       <int>165</int>
+       <int>167</int>
        <int>255</int>
       </object>
      </void>
@@ -111,9 +111,9 @@
     <object class="com.t_oster.visicut.model.RasterProfile">
      <void property="color">
       <object class="java.awt.Color">
-       <int>254</int>
-       <int>254</int>
-       <int>254</int>
+       <int>155</int>
+       <int>165</int>
+       <int>167</int>
        <int>255</int>
       </object>
      </void>
@@ -151,9 +151,9 @@
     <object class="com.t_oster.visicut.model.Raster3dProfile">
      <void property="color">
       <object class="java.awt.Color">
-       <int>254</int>
-       <int>254</int>
-       <int>254</int>
+       <int>155</int>
+       <int>165</int>
+       <int>167</int>
        <int>255</int>
       </object>
      </void>

@@ -14,10 +14,6 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.liblasercut.drivers;
 
 import com.t_oster.liblasercut.*;
@@ -389,6 +385,10 @@ public class EpilogCutter extends LaserCutter
     LaserProperty curprop = new LaserProperty();
     if (rp != null)
     {
+      if (rp.getRasterCount()>0)
+      {
+        curprop = rp.getLaserProperty(0);
+      }
       /* Raster Orientation: Printed in current direction */
       out.printf("\033*r0F");
       /* Raster power */
