@@ -16,6 +16,10 @@ chmod +x visicut/VisiCut.*
 echo "Compressing content..."
 rm VisiCut.zip
 zip -r VisiCut.zip visicut/
+echo "Creating Mac OS Bundle"
+rm -rf "VisiCut.app"
+cp -r "mac/VisiCut.app" .
+cp -r "visicut" "VisiCut.app/Contents/Resources/Java"
 echo "Cleaning up..."
 rm -rf visicut
 echo "done."
