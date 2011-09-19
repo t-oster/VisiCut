@@ -733,7 +733,7 @@ public class MainView extends javax.swing.JFrame
       if (visicutModel1.getGraphicObjects().size() > 0)
       {
         Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
-        if (bb != null && (bb.getX()<0 || bb.getY()<0))
+        if (bb != null && (bb.getX() < 0 || bb.getY() < 0))
         {//Move Object to the top left corner
           AffineTransform trans = AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY());
           trans.concatenate(visicutModel1.getGraphicObjects().getTransform());
@@ -765,7 +765,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     {
       this.visicutModel1.getGraphicFileImporter().getFileFilter(),
       VisicutModel.PLFFilter
-    }, "All supported Files"));
+    }, "All supported files"));
   int returnVal = openFileChooser.showOpenDialog(this);
   if (returnVal == JFileChooser.APPROVE_OPTION)
   {
@@ -805,10 +805,10 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
   private enum MouseAction
   {
-
     movingBackground,
     movingSet,
-    resizingSet,};
+    resizingSet,
+  };
   private Point lastMousePosition = null;
   private MouseAction currentAction = null;
   private Button currentButton = null;
@@ -1286,13 +1286,13 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
   {
     previewPanel.setZoom(previewPanel.getZoom() - (-2 * previewPanel.getZoom() / 32));
   }
-  
+
   @Action
   public void zoomOut()
   {
     previewPanel.setZoom(previewPanel.getZoom() - (2 * previewPanel.getZoom() / 32));
   }
-  
+
 private void captureImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_captureImageButtonActionPerformed
   captureImage();
 }//GEN-LAST:event_captureImageButtonActionPerformed
@@ -1539,7 +1539,15 @@ private void customMappingButtonActionPerformed(java.awt.event.ActionEvent evt) 
       d.setMappings(custom);
       d.setShowName(false);
       MainView.this.progressBar.setIndeterminate(false);
-      d.setVisible(true);
+      try
+      {
+        d.setVisible(true);
+      }
+      catch (IndexOutOfBoundsException e)
+      {
+        System.out.println("Exception MainView 1549. No idea what happended");
+        System.out.println(e);
+      }
       MappingSet result = d.getMappings();
       if (result != null)
       {
