@@ -805,10 +805,10 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
   private enum MouseAction
   {
+
     movingBackground,
     movingSet,
-    resizingSet,
-  };
+    resizingSet,};
   private Point lastMousePosition = null;
   private MouseAction currentAction = null;
   private Button currentButton = null;
@@ -1527,37 +1527,30 @@ private void customMappingButtonActionPerformed(java.awt.event.ActionEvent evt) 
     custom.setName("Custom Mapping");
     this.mappingComboBox.addItem(custom);
   }
-  new Thread()
-  {
 
-    @Override
-    public void run()
-    {
-      MappingDialog d = new MappingDialog(MainView.this, true);
-      d.setGraphicElements(MainView.this.visicutModel1.getGraphicObjects());
-      d.setMaterial(MainView.this.visicutModel1.getMaterial());
-      d.setMappings(custom);
-      d.setShowName(false);
-      MainView.this.progressBar.setIndeterminate(false);
-      try
-      {
-        d.setVisible(true);
-      }
-      catch (IndexOutOfBoundsException e)
-      {
-        System.out.println("Exception MainView 1549. No idea what happended");
-        System.out.println(e);
-      }
-      MappingSet result = d.getMappings();
-      if (result != null)
-      {
-        custom.clear();
-        custom.addAll(result);
-        MainView.this.mappingComboBox.setSelectedItem(custom);
-      }
-      MainView.this.customMappingButton.setEnabled(true);
-    }
-  }.start();
+  MappingDialog d = new MappingDialog(this, true);
+  d.setGraphicElements(this.visicutModel1.getGraphicObjects());
+  d.setMaterial(this.visicutModel1.getMaterial());
+  d.setMappings(custom);
+  d.setShowName(false);
+  this.progressBar.setIndeterminate(false);
+  try
+  {
+    d.setVisible(true);
+  }
+  catch (IndexOutOfBoundsException e)
+  {
+    System.out.println("Exception MainView 1549. No idea what happended");
+    System.out.println(e);
+  }
+  MappingSet result = d.getMappings();
+  if (result != null)
+  {
+    custom.clear();
+    custom.addAll(result);
+    this.mappingComboBox.setSelectedItem(custom);
+  }
+  this.customMappingButton.setEnabled(true);
 }//GEN-LAST:event_customMappingButtonActionPerformed
 
   private void setCursor(Point p)
