@@ -42,11 +42,15 @@ public class JiconRadioButton extends JRadioButton
     return this.icon;
   }
   
-  @Override
-  public void setText(String text)
+  public void setLabelText(String text)
   {
     this.text = text;
     setHtmlText();
+  }
+  
+  public String getLabelText()
+  {
+    return this.text;
   }
   
   private void setHtmlText()
