@@ -242,7 +242,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
           boolean hasUnmappedChildren = MappingJTree.this.hasUnmappedChildren(fs);
           if (!hasUnmappedChildren)
           {//If all chilren are already mapped, change bgcolor
-            l.setText("<html><table bgcolor=" + bgHtml + "><tr><td>" + l.getText() + "</td></tr></table></html>");
+            l.setText("<html><span style=\"background-color:" + bgHtml + "\">" + l.getText() + "</span></html>");
           }
           if (fs instanceof FilterSetNode)
           {
