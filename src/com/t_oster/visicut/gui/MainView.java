@@ -39,7 +39,6 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Cursor;
 import java.awt.Point;
-import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Rectangle2D;
@@ -734,6 +733,16 @@ public class MainView extends javax.swing.JFrame
         this.visicutModel1.loadGraphicFile(file);
       }
       this.selectedSet = this.visicutModel1.getGraphicObjects();
+      if (visicutModel1.getGraphicObjects().size() > 0)
+      {
+        Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
+        if (bb != null && (bb.getX()<0 || bb.getY()<0))
+        {//Move Object to the top left corner
+          AffineTransform trans = visicutModel1.getGraphicObjects().getTransform();
+          trans.concatenate(AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY()));
+          visicutModel1.getGraphicObjects().setTransform(trans);
+        }
+      }
       this.editRect = selectedSet.size() == 0 ? null : new EditRectangle(this.selectedSet.getBoundingBox());
       this.previewPanel.setEditRectangle(editRect);
       this.progressBar.setIndeterminate(false);
