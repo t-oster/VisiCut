@@ -62,16 +62,9 @@ public class ImageComboBox extends JComboBox
           }
           if (ImageComboBox.this.isDisabled(o))
           {
-            if (System.getProperty("os.name").toLowerCase().contains("mac"))
-            {//Mac os doesnt change text color when disabled
-              label += "<td width=3><td>";
-              label += "<font color=" + Helper.toHtmlRGB((Color) UIManager.get("ComboBox.disabledForeground")) + ">";
-              label += item.getName() + "<br/>" + ImageComboBox.this.disableReasons.get(o) + "</font></td></tr></table></html>";
-            }
-            else
-            {
-              label += "<td width=3><td>" + item.getName() + "<br/>" + ImageComboBox.this.disableReasons.get(o) + "</td></tr></table></html>";
-            }
+            label += "<td width=3><td>";
+            label += "<font color=" + Helper.toHtmlRGB((Color) UIManager.get("ComboBox.disabledForeground")) + ">";
+            label += item.getName() + "<br/>" + ImageComboBox.this.disableReasons.get(o) + "</font></td></tr></table></html>";
             l.setFocusable(false);
             l.setEnabled(false);
           }
