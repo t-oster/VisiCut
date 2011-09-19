@@ -412,12 +412,13 @@ public class PreviewPanel extends ZoomablePanel
           {
             if (this.getMaterial().getLaserProfile(m.getProfileName()) != null)
             {//Render only parts the material supports
+              LaserProfile p = this.material.getLaserProfile(m.getProfileName());
               GraphicSet current = m.getFilterSet().getMatchingObjects(this.graphicObjects);
               Rectangle2D bb = current.getBoundingBox();
               if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
               {
                 somethingMatched = true;
-                if (drawPreview)
+                if (drawPreview && !(p instanceof VectorProfile))
                 {
                   synchronized (renderBuffer)
                   {
@@ -438,10 +439,10 @@ public class PreviewPanel extends ZoomablePanel
                       gg.setColor(Color.BLACK);
                       AffineTransform tmp = gg.getTransform();
                       gg.setTransform(new AffineTransform());
-                      Point p = new Point(r.x + r.width / 2, r.y + r.height / 2);
-                      tmp.transform(p, p);
+                      Point po = new Point(r.x + r.width / 2, r.y + r.height / 2);
+                      tmp.transform(po, po);
                       int w = gg.getFontMetrics().stringWidth("please wait...");
-                      gg.drawString("please wait...", p.x - w / 2, p.y);
+                      gg.drawString("please wait...", po.x - w / 2, po.y);
                       gg.setTransform(tmp);
                     }
                     else
@@ -450,10 +451,9 @@ public class PreviewPanel extends ZoomablePanel
                     }
                   }
                 }
-                if (highlightCutLines)
+                else if (p instanceof VectorProfile)
                 {
-                  LaserProfile p = this.material.getLaserProfile(m.getProfileName());
-                  if (p instanceof VectorProfile && ((VectorProfile) p).isIsCut())
+                  if (!highlightCutLines || ((VectorProfile) p).isIsCut())
                   {
                     p.renderPreview(gg, current, this.material);
                   }
