@@ -14,17 +14,19 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-
 package com.t_oster.visicut.gui.mappingdialog;
 
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.RasterProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
@@ -116,25 +118,53 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
     if (this.getMaterial() != null && this.getMaterial().getLaserProfiles() != null)
     {
       this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-      int i = 0;
+      List<LaserProfile> rasterProfiles = new LinkedList<LaserProfile>();
+      boolean lineProfileHere = false;
       for (LaserProfile l : this.getMaterial().getLaserProfiles())
       {
-        JiconRadioButton b = new JiconRadioButton();
-        b.setText(l.getName());
-        if (l.getPreviewThumbnail().exists())
-        {
-          b.setLabelIcon(l.getPreviewThumbnail());
+        if (!(l instanceof VectorProfile))
+        {//Sort Vector from Raster Profiles
+          rasterProfiles.add(l);
+          continue;
         }
-        b.addActionListener(this);
-        b.setToolTipText(l.getDescription());
-        this.group.add(b);
-        b.setVisible(true);
-        this.add(b);
-        this.buttons.add(b);
+        if (!lineProfileHere)
+        {
+          lineProfileHere=true;
+          JLabel lab = new JLabel("Line Profiles:");
+          lab.setToolTipText("Line Profiles can only use Vectorgraphics.\nThe Laser will follow the lines in the graphic and cut or engrave,\nindependant of the line width");
+          this.add(lab);
+        }
+        this.addProfileButton(l);
+      }
+      if (rasterProfiles.size()>0)
+      {
+        JLabel l = new JLabel("Raster Profiles");
+        l.setToolTipText("Raster Profiles can use any kind of graphics.\nThe Graphic will be rastered and lasered line by line.");
+        this.add(l);
+      }
+      for (LaserProfile l:rasterProfiles)
+      {
+        this.addProfileButton(l);
       }
       this.setVisible(true);
       this.validate();
     }
+  }
+
+  private void addProfileButton(LaserProfile l)
+  {
+    JiconRadioButton b = new JiconRadioButton();
+    b.setLabelText(l.getName());
+    if (l.getPreviewThumbnail().exists())
+    {
+      b.setLabelIcon(l.getPreviewThumbnail());
+    }
+    b.addActionListener(this);
+    b.setToolTipText(l.getDescription());
+    this.group.add(b);
+    b.setVisible(true);
+    this.add(b);
+    this.buttons.add(b);
   }
 
   public void actionPerformed(ActionEvent ae)
@@ -144,8 +174,7 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
       JiconRadioButton b = (JiconRadioButton) ae.getSource();
       if (b.isSelected())
       {
-        this.setSelectedLaserProfile(this.material.getLaserProfiles().get(
-          this.buttons.indexOf(b)));
+        this.setSelectedLaserProfile(this.material.getLaserProfile(b.getLabelText()));
       }
     }
   }
