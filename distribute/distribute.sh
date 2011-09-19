@@ -20,6 +20,9 @@ echo "Creating Mac OS Bundle"
 rm -rf "VisiCut.app"
 cp -r "mac/VisiCut.app" .
 cp -r "visicut" "VisiCut.app/Contents/Resources/Java"
+echo "Compressing Mac OS Bundle"
+zip -r VisiCutMac.zip VisiCut.app
 echo "Cleaning up..."
 rm -rf visicut
+rm -rf VisiCut.app
 echo "done."
