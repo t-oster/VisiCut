@@ -17,6 +17,7 @@
 package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.visicut.gui.ImageListable;
+import com.t_oster.visicut.misc.Helper;
 import java.awt.Color;
 import java.awt.Component;
 import java.io.File;
@@ -61,7 +62,16 @@ public class ImageComboBox extends JComboBox
           }
           if (ImageComboBox.this.isDisabled(o))
           {
-            label += "<td width=3><td>" + item.getName() + "<br/>" + ImageComboBox.this.disableReasons.get(o) + "</td></tr></table></html>";
+            if (System.getProperty("os.name").toLowerCase().contains("mac"))
+            {//Mac os doesnt change text color when disabled
+              label += "<td width=3><td>";
+              label += "<font color=" + Helper.toHtmlRGB((Color) UIManager.get("ComboBox.disabledForeground")) + ">";
+              label += item.getName() + "<br/>" + ImageComboBox.this.disableReasons.get(o) + "</font></td></tr></table></html>";
+            }
+            else
+            {
+              label += "<td width=3><td>" + item.getName() + "<br/>" + ImageComboBox.this.disableReasons.get(o) + "</td></tr></table></html>";
+            }
             l.setFocusable(false);
             l.setEnabled(false);
           }
