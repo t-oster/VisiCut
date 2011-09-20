@@ -420,17 +420,17 @@ public class EpilogCutter extends LaserCutter
         if (newprop.getPower() != curprop.getPower())
         {
           /* Raster power */
-          out.printf("\033&y%dP", curprop.getPower());
+          out.printf("\033&y%dP", newprop.getPower());
         }
         if (newprop.getSpeed() != curprop.getSpeed())
         {
           /* Raster speed */
-          out.printf("\033&z%dS", curprop.getSpeed());
+          out.printf("\033&z%dS", newprop.getSpeed());
         }
         if (newprop.getFocus() != curprop.getFocus())
         {
           /* Focus  */
-          out.printf("\033&y%dA", mm2focus(curprop.getFocus()));
+          out.printf("\033&y%dA", mm2focus(newprop.getFocus()));
         }
         curprop = newprop;
         Point sp = rp.getRasterStart(i);
@@ -512,8 +512,8 @@ public class EpilogCutter extends LaserCutter
     out.printf("\033*r0F");
     /* Raster power */
     out.printf("\033&y%dP", curprop.getPower());
-    /* Raster speed */
-    out.printf("\033&z%dS", curprop.getSpeed());
+    /* Raster speed (in raster mode the value is inverse) */
+    out.printf("\033&z%dS", 100-curprop.getSpeed());
     /* Focus */
     out.printf("\033&y%dA", mm2focus(curprop.getFocus()));
 
@@ -540,17 +540,17 @@ public class EpilogCutter extends LaserCutter
       if (newprop.getPower() != curprop.getPower())
       {
         /* Raster power */
-        out.printf("\033&y%dP", curprop.getPower());
+        out.printf("\033&y%dP", newprop.getPower());
       }
       if (newprop.getSpeed() != curprop.getSpeed())
       {
-        /* Raster speed */
-        out.printf("\033&z%dS", curprop.getSpeed());
+        /* Raster speed (in RasterMode the value is inverse) */
+        out.printf("\033&z%dS", 100-newprop.getSpeed());
       }
       if (newprop.getFocus() != curprop.getFocus())
       {
         /* Focus  */
-        out.printf("\033&y%dA", mm2focus(curprop.getFocus()));
+        out.printf("\033&y%dA", mm2focus(newprop.getFocus()));
       }
       curprop = newprop;
       Point sp = rp.getRasterStart(i);
