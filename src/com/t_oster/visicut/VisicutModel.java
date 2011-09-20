@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-
 package com.t_oster.visicut;
 
 import com.t_oster.visicut.misc.ExtensionFilter;
@@ -41,6 +40,9 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
+import java.beans.Encoder;
+import java.beans.Expression;
+import java.beans.PersistenceDelegate;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -65,7 +67,6 @@ public class VisicutModel
 {
 
   public static final FileFilter PLFFilter = new ExtensionFilter(".plf", "VisiCut Portable Laser Format (*.plf)");
-  
   protected LaserDevice selectedLaserDevice = null;
   public static final String PROP_SELECTEDLASERDEVICE = "selectedLaserDevice";
 
@@ -90,7 +91,6 @@ public class VisicutModel
     this.selectedLaserDevice = selectedLaserDevice;
     propertyChangeSupport.firePropertyChange(PROP_SELECTEDLASERDEVICE, oldSelectedLaserDevice, selectedLaserDevice);
   }
-
   protected BufferedImage backgroundImage = null;
   public static final String PROP_BACKGROUNDIMAGE = "backgroundImage";
 
@@ -286,20 +286,39 @@ public class VisicutModel
       tmp = new File("tmp" + (i++) + ".xml");
     }
     while (tmp.exists());
-
-    out.putNextEntry(new ZipEntry("transform.xml"));
-    //Write xml to temp file
-    XMLEncoder encoder = new XMLEncoder(new FileOutputStream(tmp));
-    encoder.writeObject(this.getGraphicObjects().getTransform());
-    encoder.close();
-    in = new FileInputStream(tmp);
-    // Transfer bytes from the file to the ZIP file
-    while ((len = in.read(buf)) > 0)
-    {
-      out.write(buf, 0, len);
+    AffineTransform at = this.getGraphicObjects().getTransform();
+    if (at != null)
+    { 
+      out.putNextEntry(new ZipEntry("transform.xml"));
+      //Write xml to temp file
+      XMLEncoder encoder = new XMLEncoder(new FileOutputStream(tmp));
+      encoder.setPersistenceDelegate(AffineTransform.class, new PersistenceDelegate()
+      {
+        protected Expression instantiate(Object oldInstance, Encoder out)
+        {
+          AffineTransform tx = (AffineTransform) oldInstance;
+          double[] coeffs = new double[6];
+          tx.getMatrix(coeffs);
+          return new Expression(oldInstance,
+            oldInstance.getClass(),
+            "new",
+            new Object[]
+            {
+              coeffs
+            });
+        }
+      });
+      encoder.writeObject(at);
+      encoder.close();
+      in = new FileInputStream(tmp);
+      // Transfer bytes from the file to the ZIP file
+      while ((len = in.read(buf)) > 0)
+      {
+        out.write(buf, 0, len);
+      }
+      in.close();
+      out.closeEntry();
     }
-    in.close();
-    out.closeEntry();
     out.putNextEntry(new ZipEntry("mappings.xml"));
     mm.saveMappingSet(this.getMappings(), tmp);
     in = new FileInputStream(tmp);

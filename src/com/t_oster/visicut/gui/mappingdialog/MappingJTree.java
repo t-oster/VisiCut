@@ -85,7 +85,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
       Object selected = evt.getNewLeadSelectionPath().getLastPathComponent();
       if (selected != null && selected instanceof FilterSet)
       {
-        this.setSelectedFilterSet((FilterSet) selected);
+        this.setSelectedFilterSet(((FilterSet) selected).clone());
       }
     }
   }
