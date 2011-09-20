@@ -81,17 +81,17 @@ public class LaserJob
 
   public boolean contains3dRaster()
   {
-    return r3dPart != null;
+    return r3dPart != null && r3dPart.getRasterCount() > 0;
   }
 
   public boolean containsVector()
   {
-    return vPart != null;
+    return vPart != null && vPart.getCommandList().length > 0;
   }
 
   public boolean containsRaster()
   {
-    return rPart != null;
+    return rPart != null && rPart.getRasterCount() > 0;
   }
 
   public int getResolution()

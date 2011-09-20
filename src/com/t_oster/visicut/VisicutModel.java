@@ -436,7 +436,7 @@ public class VisicutModel
     Raster3dPart r3dp = new Raster3dPart(new LaserProperty());
     VectorPart vp = new VectorPart(new LaserProperty());
     LaserCutter instance = this.getSelectedLaserDevice().getLaserCutter();
-    LaserJob job = new LaserJob(name, "666", "bla", 500, r3dp, vp, rp);
+    LaserJob job = new LaserJob(name, "123", "unk", 500, r3dp, vp, rp);
     for (Mapping m : this.getMappings())
     {
       GraphicSet set = m.getA().getMatchingObjects(this.getGraphicObjects());

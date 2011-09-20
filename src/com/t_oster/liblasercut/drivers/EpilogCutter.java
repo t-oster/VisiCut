@@ -14,6 +14,12 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
+/**
+ * Known Limitations:
+ * - If there is Raster and Raster3d Part in one job, the speed from 3d raster
+ * is taken for both and eventually other side effects:
+ * IT IS NOT RECOMMENDED TO USE 3D-Raster and Raster in the same Job
+ */
 package com.t_oster.liblasercut.drivers;
 
 import com.t_oster.liblasercut.*;
@@ -306,6 +312,19 @@ public class EpilogCutter extends LaserCutter
   {
     //Perform santiy checks
     checkJob(job);
+    if (job.contains3dRaster() && job.containsRaster())
+    {//Raster and 3d Raster may not be in the same job. Send 2
+      this.realSendJob(new LaserJob("(1/2)"+job.getTitle(), job.getName(), job.getUser(), job.getResolution(), job.getRaster3dPart(), null, null));
+      this.realSendJob(new LaserJob("(2/2)"+job.getTitle(), job.getName(), job.getUser(), job.getResolution(), null, job.getVectorPart(), job.getRasterPart()));
+    }
+    else
+    {
+      this.realSendJob(job);
+    }
+  }
+  
+  private void realSendJob(LaserJob job) throws UnsupportedEncodingException, IOException, UnknownHostException, Exception
+  {
     //Generate all the data
     byte[] pjlData = generatePjlData(job);
     //connect to lasercutter
@@ -383,7 +402,7 @@ public class EpilogCutter extends LaserCutter
     ByteArrayOutputStream result = new ByteArrayOutputStream();
     PrintStream out = new PrintStream(result, true, "US-ASCII");
     LaserProperty curprop = new LaserProperty();
-    if (rp != null)
+    if (rp != null && rp.getRasterCount()>0)
     {
       if (rp.getRasterCount()>0)
       {
@@ -512,8 +531,8 @@ public class EpilogCutter extends LaserCutter
     out.printf("\033*r0F");
     /* Raster power */
     out.printf("\033&y%dP", curprop.getPower());
-    /* Raster speed (in raster mode the value is inverse) */
-    out.printf("\033&z%dS", 100-curprop.getSpeed());
+    /* Raster speed */
+    out.printf("\033&z%dS", curprop.getSpeed());
     /* Focus */
     out.printf("\033&y%dA", mm2focus(curprop.getFocus()));
 
@@ -544,8 +563,8 @@ public class EpilogCutter extends LaserCutter
       }
       if (newprop.getSpeed() != curprop.getSpeed())
       {
-        /* Raster speed (in RasterMode the value is inverse) */
-        out.printf("\033&z%dS", 100-newprop.getSpeed());
+        /* Raster speed */
+        out.printf("\033&z%dS", newprop.getSpeed());
       }
       if (newprop.getFocus() != curprop.getFocus())
       {
