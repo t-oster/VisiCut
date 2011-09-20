@@ -43,7 +43,6 @@ public class VectorProfile extends LaserProfile
   {
     this.setName("Cut Line");
   }
-  
   protected boolean isCut = false;
 
   /**
@@ -65,7 +64,6 @@ public class VectorProfile extends LaserProfile
   {
     this.isCut = isCut;
   }
-
   protected float width = 1;
 
   /**
@@ -93,25 +91,22 @@ public class VectorProfile extends LaserProfile
   {
     for (GraphicObject e : objects)
     {
-      if (e instanceof ShapeObject)
+      gg.setColor(this.getColor());
+      Stroke s = new BasicStroke((int) Util.mm2px(this.getWidth(), 500));
+      gg.setStroke(s);
+      Shape sh = (e instanceof ShapeObject) ? ((ShapeObject) e).getShape() : e.getBoundingBox();
+      if (objects.getTransform() != null)
       {
-        gg.setColor(this.getColor());
-        Stroke s = new BasicStroke((int) Util.mm2px(this.getWidth(), 500));
-        gg.setStroke(s);
-        Shape sh = ((ShapeObject) e).getShape();
-        if (objects.getTransform() != null)
-        {
-          sh = objects.getTransform().createTransformedShape(sh);
-        }
-        if (sh == null)
-        {
-          //WTF??
-          System.out.println("Error extracting Shape from: " + ((ShapeObject) e).toString());
-        }
-        else
-        {
-          gg.draw(sh);
-        }
+        sh = objects.getTransform().createTransformedShape(sh);
+      }
+      if (sh == null)
+      {
+        //WTF??
+        System.out.println("Error extracting Shape from: " + ((ShapeObject) e).toString());
+      }
+      else
+      {
+        gg.draw(sh);
       }
     }
   }
@@ -125,15 +120,12 @@ public class VectorProfile extends LaserProfile
       ShapeConverter conv = new ShapeConverter();
       for (GraphicObject e : objects)
       {
-        if (e instanceof ShapeObject)
+        Shape sh = (e instanceof ShapeObject) ? ((ShapeObject) e).getShape() : e.getBoundingBox();
+        if (objects.getTransform() != null)
         {
-          Shape sh = ((ShapeObject) e).getShape();
-          if (objects.getTransform() != null)
-          {
-            sh = objects.getTransform().createTransformedShape(sh);
-          }
-          conv.addShape(sh, job.getVectorPart());
+          sh = objects.getTransform().createTransformedShape(sh);
         }
+        conv.addShape(sh, job.getVectorPart());
       }
     }
   }
@@ -149,7 +141,7 @@ public class VectorProfile extends LaserProfile
     cp.thumbnailPath = thumbnailPath;
     cp.width = width;
     //cp.laserProperties = new LinkedList<LaserProperty>();
-    for (LaserProperty l:this.getLaserProperties())
+    for (LaserProperty l : this.getLaserProperties())
     {
       cp.laserProperties.add(l.clone());
     }

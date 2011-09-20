@@ -333,15 +333,12 @@ public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionList
           {
             for (GraphicObject e : set)
             {
-              if (e instanceof ShapeObject)
-              {
-                Shape s = ((ShapeObject) e).getShape();
-                s = set.getTransform().createTransformedShape(s);
-                gg.setColor(Color.red);
-                Stroke st = new BasicStroke((int) Util.mm2px(((VectorProfile) p).getWidth(), 500));
-                gg.setStroke(st);
-                gg.draw(s);
-              }
+              Shape s = (e instanceof ShapeObject) ? ((ShapeObject) e).getShape() : e.getBoundingBox();
+              s = set.getTransform().createTransformedShape(s);
+              gg.setColor(Color.red);
+              Stroke st = new BasicStroke((int) Util.mm2px(((VectorProfile) p).getWidth(), 500));
+              gg.setStroke(st);
+              gg.draw(s);
             }
           }
           else

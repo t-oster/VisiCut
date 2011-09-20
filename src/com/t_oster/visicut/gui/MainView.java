@@ -196,8 +196,8 @@ public class MainView extends javax.swing.JFrame
         editMenu = new javax.swing.JMenu();
         calibrateCameraMenuItem = new javax.swing.JMenuItem();
         executeJobMenuItem = new javax.swing.JMenuItem();
-        editMappingMenuItem = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
+        editMappingMenuItem = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         materialMenuItem = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
@@ -556,6 +556,9 @@ public class MainView extends javax.swing.JFrame
         });
         editMenu.add(executeJobMenuItem);
 
+        jMenu1.setText(resourceMap.getString("jMenu1.text")); // NOI18N
+        jMenu1.setName("jMenu1"); // NOI18N
+
         editMappingMenuItem.setText(resourceMap.getString("editMappingMenuItem.text")); // NOI18N
         editMappingMenuItem.setName("editMappingMenuItem"); // NOI18N
         editMappingMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -563,10 +566,7 @@ public class MainView extends javax.swing.JFrame
                 editMappingMenuItemActionPerformed(evt);
             }
         });
-        editMenu.add(editMappingMenuItem);
-
-        jMenu1.setText(resourceMap.getString("jMenu1.text")); // NOI18N
-        jMenu1.setName("jMenu1"); // NOI18N
+        jMenu1.add(editMappingMenuItem);
 
         jMenuItem2.setText(resourceMap.getString("jMenuItem2.text")); // NOI18N
         jMenuItem2.setName("jMenuItem2"); // NOI18N
