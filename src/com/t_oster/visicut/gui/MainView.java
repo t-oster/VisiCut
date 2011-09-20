@@ -31,6 +31,7 @@ import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
 import com.t_oster.visicut.gui.beans.ImageComboBox;
 import com.t_oster.visicut.gui.mappingdialog.MappingDialog;
+import com.t_oster.visicut.gui.mappingwizzard.MappingWizzard;
 import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.mapping.Mapping;
@@ -296,6 +297,7 @@ public class MainView extends javax.swing.JFrame
         });
 
         customMappingButton.setText(resourceMap.getString("customMappingButton.text")); // NOI18N
+        customMappingButton.setEnabled(false);
         customMappingButton.setName("customMappingButton"); // NOI18N
         customMappingButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -413,7 +415,7 @@ public class MainView extends javax.swing.JFrame
         );
         previewPanelLayout.setVerticalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 677, Short.MAX_VALUE)
+            .addGap(0, 676, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -661,7 +663,7 @@ public class MainView extends javax.swing.JFrame
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 462, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 466, Short.MAX_VALUE)
                         .addComponent(executeJobButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap()
@@ -742,6 +744,7 @@ public class MainView extends javax.swing.JFrame
       this.editRect = selectedSet.size() == 0 ? null : new EditRectangle(this.selectedSet.getBoundingBox());
       this.previewPanel.setEditRectangle(editRect);
       this.progressBar.setIndeterminate(false);
+      this.refreshButtonStates();
     }
     catch (Exception e)
     {
@@ -750,6 +753,18 @@ public class MainView extends javax.swing.JFrame
     }
   }
 
+  /**
+   * Sets all Buttons to their correct state (disabled/enabled)
+   */
+  private void refreshButtonStates()
+  {
+    this.customMappingButton.setEnabled(
+      this.visicutModel1.getMaterial() != null
+      && this.visicutModel1.getGraphicObjects() != null
+      && this.visicutModel1.getGraphicObjects().size() > 0
+      );
+  }
+  
 private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
   JFileChooser openFileChooser = new JFileChooser();
   openFileChooser.setAcceptAllFileFilterUsed(false);
@@ -758,13 +773,15 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   {
     openFileChooser.addChoosableFileFilter(f);
   }
-  openFileChooser.addChoosableFileFilter(
+  FileFilter allFilter = 
     new MultiFilter(
     new FileFilter[]
     {
       this.visicutModel1.getGraphicFileImporter().getFileFilter(),
       VisicutModel.PLFFilter
-    }, "All supported files"));
+    }, "All supported files");
+  openFileChooser.addChoosableFileFilter(allFilter);
+  openFileChooser.setFileFilter(allFilter);
   int returnVal = openFileChooser.showOpenDialog(this);
   if (returnVal == JFileChooser.APPROVE_OPTION)
   {
@@ -1313,6 +1330,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   }
   this.visicutModel1.setMaterial(newMaterial);
   this.refreshComboBoxes();
+  this.refreshButtonStates();
 }//GEN-LAST:event_materialComboBoxActionPerformed
 
   private void togglePreviewMode()
@@ -1518,7 +1536,6 @@ private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//G
 }//GEN-LAST:event_mappingComboBoxActionPerformed
   private MappingSet custom = null;
 private void customMappingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customMappingButtonActionPerformed
-  this.progressBar.setIndeterminate(true);
   this.customMappingButton.setEnabled(false);
   if (custom == null)
   {
@@ -1526,14 +1543,15 @@ private void customMappingButtonActionPerformed(java.awt.event.ActionEvent evt) 
     custom.setName("Custom Mapping");
     this.mappingComboBox.addItem(custom);
   }
-
-  MappingWizzard mw = new MappingWizzard(this.visicutModel1.getGraphicObjects(), this.visicutModel1.getMaterial()).showDialog(this);
+  MappingWizzard mw = new MappingWizzard(this.visicutModel1.getGraphicObjects(), this.visicutModel1.getMaterial());
+  mw.showDialog(this);
   MappingSet result = mw.getMappingSet();
   if (result != null)
   {
     custom.clear();
     custom.addAll(result);
     this.mappingComboBox.setSelectedItem(custom);
+    this.previewPanel.repaint();
   }
   this.customMappingButton.setEnabled(true);
 }//GEN-LAST:event_customMappingButtonActionPerformed
