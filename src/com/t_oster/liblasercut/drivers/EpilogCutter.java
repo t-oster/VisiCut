@@ -439,6 +439,14 @@ public class EpilogCutter extends LaserCutter
         {
 
           List<Byte> line = rp.getInvertedRasterLine(i, y);
+          for (int n=0;n<line.size();n++)
+          {//Apperantly the other power settings are ignored, so we have to scale
+            int x = line.get(n);
+            x= x>=0 ? x : 256+x;
+            int scalex = x*curprop.getPower()/100;
+            byte bx = (byte) (scalex<128 ? scalex : scalex-256);
+            line.set(n, bx);
+          }
           //Remove leading zeroes, but keep track of the offset
           int jump = 0;
 
