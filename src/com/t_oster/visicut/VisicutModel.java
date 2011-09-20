@@ -434,12 +434,12 @@ public class VisicutModel
     propertyChangeSupport.firePropertyChange(PROP_MAPPINGS, oldMappings, mappings);
   }
 
-  public void sendJob(String name) throws IllegalJobException, SocketTimeoutException, Exception
+  private LaserJob prepareJob(String name)
   {
     RasterPart rp = new RasterPart(new LaserProperty());
     Raster3dPart r3dp = new Raster3dPart(new LaserProperty());
     VectorPart vp = new VectorPart(new LaserProperty());
-    LaserCutter instance = this.getSelectedLaserDevice().getLaserCutter();
+    
     LaserJob job = new LaserJob(name, "123", "unk", 500, r3dp, vp, rp);
     //Aggregate all Mappings per LaserProfile
     HashMap<LaserProfile, GraphicSet> parts = new LinkedHashMap<LaserProfile, GraphicSet>();
@@ -467,6 +467,13 @@ public class VisicutModel
       e.getKey().addToLaserJob(job, e.getValue(), material.getDepth());
     }
     job.getVectorPart().setFocus(0);
+    return job;
+  }
+  
+  public void sendJob(String name) throws IllegalJobException, SocketTimeoutException, Exception
+  {
+    LaserCutter instance = this.getSelectedLaserDevice().getLaserCutter();
+    LaserJob job = this.prepareJob(name);
     instance.sendJob(job);
   }
 
@@ -475,5 +482,12 @@ public class VisicutModel
     File oldLoadedFile = this.loadedFile;
     this.loadedFile = f;
     this.propertyChangeSupport.firePropertyChange(PROP_LOADEDFILE, oldLoadedFile, f);
+  }
+
+  public int estimateTime()
+  {
+    LaserCutter instance = this.getSelectedLaserDevice().getLaserCutter();
+    LaserJob job = this.prepareJob("calc");
+    return instance.estimateJobDuration(job);
   }
 }

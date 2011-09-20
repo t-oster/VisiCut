@@ -20,8 +20,6 @@
  */
 package com.t_oster.liblasercut;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -77,6 +75,14 @@ public abstract class LaserCutter implements Cloneable
    * @param value 
    */
   public abstract void setSettingValue(String attribute, String value);
+  
+  /**
+   * Returns an estimated time, how long the job would take
+   * in seconds
+   * @param job
+   * @return 
+   */
+  public abstract int estimateJobDuration(LaserJob job);
   
   @Override
   public abstract LaserCutter clone();

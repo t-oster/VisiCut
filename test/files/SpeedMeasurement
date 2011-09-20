@@ -1,0 +1,14 @@
+Epilog Cutter Speed Tests:
+1. VectorPart @ 100% Speed, 500 DPI
+20000px in x direction : 36.8s(line)/4.5s(move)=>543.4782608695652px/s(line) 4444.44444px/s move
+10000px in y direction : 18s(line)/2.5s(move)=>555.555555px/s 4000px/s
+2. VectorPart @ 10% Speed, 500 DPI
+20000px in x direction : 368s(line) =>54.34782608695652px/s
+
+3. RasterPart @ 100% Speed, 500 DPI
+50x10000px in x direction : 32.5s
+50x5000px in x direction : 19.5s
+
+3. RasterPart @ 10% Speed, 500 DPI
+50x10000px in x direction : 268s
+50x5000px in x direction : 136s => Offset = 0.08

@@ -80,4 +80,23 @@ public class Helper
     String b = Integer.toHexString(col.getBlue());
     return "#" + (r.length() == 1 ? "0" + r : r) + (g.length() == 1 ? "0" + g : g) + (b.length() == 1 ? "0" + b : b);
   }
+
+  /**
+   * Returns the given time in s as HH:MM:SS
+   * @param estimateTime
+   * @return 
+   */
+  public static String toHHMMSS(int estimateTime)
+  {
+    String result = "";
+    int v = estimateTime/3600;
+    result += v < 10 ? "0"+v+":" : ""+v+":";
+    estimateTime=estimateTime%3600;
+    v = estimateTime/60;
+    result += v < 10 ? "0"+v+":" : ""+v+":";
+    estimateTime=estimateTime%60;
+    v = estimateTime;
+    result += v < 10 ? "0"+v : ""+v;
+    return result;
+  }
 }

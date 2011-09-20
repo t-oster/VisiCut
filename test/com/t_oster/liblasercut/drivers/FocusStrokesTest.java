@@ -17,6 +17,7 @@
 package com.t_oster.liblasercut.drivers;
 
 import com.t_oster.liblasercut.*;
+import com.t_oster.liblasercut.platform.Point;
 import org.junit.Test;
 
 /**
@@ -30,31 +31,17 @@ public class FocusStrokesTest
   @Test
   public void focuslines() throws IllegalJobException, Exception
   {
-    int min = -126;
-    int max = 126;
-    int step = 20;
-    VectorPart vp = new VectorPart(new LaserProperty(20, 100, 5000));
-    for (int focus = min; focus <= max; focus+=step)
+    RasterPart rp = new RasterPart(new LaserProperty(20,10,5000,10));
+    BlackWhiteRaster bwr = new BlackWhiteRaster(10000,50);
+    for (int y=0;y<50;y++)
     {
-      vp.setFocus(focus);
-      vp.moveto(0, 100*focus/step);
-      vp.lineto(500, 100*focus/step);
+      for (int x=0;x<10000;x++)
+      {
+        bwr.setBlack(x, y, true);
+      }
     }
-    vp.setPower(50);
-    for (int focus = min; focus <= max; focus+=step)
-    {
-      vp.setFocus(focus);
-      vp.moveto(600, 100*focus/step);
-      vp.lineto(1100, 100*focus/step);
-    }
-    vp.setPower(100);
-    for (int focus = min; focus <= max; focus+=step)
-    {
-      vp.setFocus(focus);
-      vp.moveto(1200, 100*focus/step);
-      vp.lineto(1700, 100*focus/step);
-    }
-    LaserJob job = new LaserJob("focus", "bla", "bla", 500, null, vp, null);
+    rp.addImage(bwr, new Point(0,0));
+    LaserJob job = new LaserJob("focus", "bla", "bla", 500, null, null, rp);
     EpilogCutter instance = new EpilogCutter("137.226.56.228");
     instance.sendJob(job);
   }

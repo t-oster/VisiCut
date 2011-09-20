@@ -177,6 +177,9 @@ public class MainView extends javax.swing.JFrame
         laserCutterComboBox = new com.t_oster.visicut.gui.beans.ImageComboBox();
         mappingComboBox = new com.t_oster.visicut.gui.beans.ImageComboBox();
         customMappingButton = new javax.swing.JButton();
+        jLabel10 = new javax.swing.JLabel();
+        calculateTimeButton = new javax.swing.JButton();
+        timeLabel = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
         executeJobButton = new javax.swing.JButton();
@@ -305,6 +308,22 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
+        jLabel10.setText(resourceMap.getString("jLabel10.text")); // NOI18N
+        jLabel10.setName("jLabel10"); // NOI18N
+
+        calculateTimeButton.setText(resourceMap.getString("calculateTimeButton.text")); // NOI18N
+        calculateTimeButton.setEnabled(false);
+        calculateTimeButton.setName("calculateTimeButton"); // NOI18N
+        calculateTimeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                calculateTimeButtonActionPerformed(evt);
+            }
+        });
+
+        timeLabel.setText(resourceMap.getString("timeLabel.text")); // NOI18N
+        timeLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        timeLabel.setName("timeLabel"); // NOI18N
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -312,32 +331,36 @@ public class MainView extends javax.swing.JFrame
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(laserCutterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel9)
-                        .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel1)
-                        .addComponent(jLabel2)
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(materialHeightTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
-                                .addComponent(dimensionWidthTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
-                                .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel2Layout.createSequentialGroup()
-                                    .addComponent(jLabel4)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(dimesnionsHeightTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(10, 10, 10)
-                                    .addComponent(jLabel6))
-                                .addComponent(jLabel7))))
+                    .addComponent(laserCutterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9)
+                    .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(materialHeightTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                            .addComponent(dimensionWidthTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(dimesnionsHeightTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(10, 10, 10)
+                                .addComponent(jLabel6))
+                            .addComponent(jLabel7)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(mappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(customMappingButton)))
-                .addContainerGap(20, Short.MAX_VALUE))
+                        .addComponent(customMappingButton))
+                    .addComponent(jLabel10)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(timeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(calculateTimeButton)))
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -370,6 +393,12 @@ public class MainView extends javax.swing.JFrame
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(customMappingButton)
                     .addComponent(mappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(calculateTimeButton)
+                    .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -423,7 +452,7 @@ public class MainView extends javax.swing.JFrame
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(25, 25, 25)
+                .addGap(33, 33, 33)
                 .addComponent(previewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -663,7 +692,7 @@ public class MainView extends javax.swing.JFrame
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 466, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 404, Short.MAX_VALUE)
                         .addComponent(executeJobButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap()
@@ -763,6 +792,10 @@ public class MainView extends javax.swing.JFrame
       && this.visicutModel1.getGraphicObjects() != null
       && this.visicutModel1.getGraphicObjects().size() > 0
       );
+    this.calculateTimeButton.setEnabled(this.visicutModel1.getMaterial() != null
+      && this.visicutModel1.getSelectedLaserDevice() != null
+      && this.visicutModel1.getMappings() != null
+      && this.visicutModel1.getMappings().size() > 0);
   }
   
 private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
@@ -1495,6 +1528,7 @@ private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt)
     }
     this.visicutModel1.setSelectedLaserDevice(newDev);
     refreshComboBoxes();
+    this.refreshButtonStates();
   }//GEN-LAST:event_laserCutterComboBoxActionPerformed
 
   private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem2ActionPerformed
@@ -1533,6 +1567,7 @@ private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//G
   }
   this.visicutModel1.setMappings(ms);
   this.refreshComboBoxes();
+  this.refreshButtonStates();
 }//GEN-LAST:event_mappingComboBoxActionPerformed
   private MappingSet custom = null;
 private void customMappingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customMappingButtonActionPerformed
@@ -1553,7 +1588,7 @@ private void customMappingButtonActionPerformed(java.awt.event.ActionEvent evt) 
     this.mappingComboBox.setSelectedItem(custom);
     this.previewPanel.repaint();
   }
-  this.customMappingButton.setEnabled(true);
+  this.refreshButtonStates();
 }//GEN-LAST:event_customMappingButtonActionPerformed
 
   private void setCursor(Point p)
@@ -1615,8 +1650,25 @@ private void customMappingButtonActionPerformed(java.awt.event.ActionEvent evt) 
 private void previewPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_previewPanelMouseMoved
   setCursor(evt.getPoint());
 }//GEN-LAST:event_previewPanelMouseMoved
+
+  private void calculateTimeButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_calculateTimeButtonActionPerformed
+  {//GEN-HEADEREND:event_calculateTimeButtonActionPerformed
+    new Thread()
+    {
+      public void run()
+      {
+        MainView.this.calculateTimeButton.setEnabled(false);
+        MainView.this.progressBar.setIndeterminate(true);
+        MainView.this.timeLabel.setText(Helper.toHHMMSS(MainView.this.visicutModel1.estimateTime()));
+        MainView.this.progressBar.setIndeterminate(false);
+        MainView.this.calculateTimeButton.setEnabled(true);
+      }
+    }.start();
+  }//GEN-LAST:event_calculateTimeButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JButton calculateTimeButton;
     private javax.swing.JMenuItem calibrateCameraMenuItem;
     private javax.swing.JButton captureImageButton;
     private javax.swing.JButton customMappingButton;
@@ -1631,6 +1683,7 @@ private void previewPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:
     private com.t_oster.visicut.gui.beans.FilesDropSupport filesDropSupport1;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1662,6 +1715,7 @@ private void previewPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:
     private javax.swing.JFileChooser saveFileChooser;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JCheckBoxMenuItem showGridMenuItem;
+    private javax.swing.JLabel timeLabel;
     private javax.swing.JToggleButton toggleCutLinesButton;
     private javax.swing.JToggleButton togglePreviewButton;
     private javax.swing.JMenu viewMenu;

@@ -276,7 +276,7 @@ public class EpilogCutter extends LaserCutter
 
       if (w > this.getBedWidth() || h > this.getBedHeight())
       {
-        throw new IllegalJobException("The Job is too big (" + w + "x" + h + ") for the Laser bed (" + this.getBedHeight() + "x" + this.getBedHeight() + ")");
+        throw new IllegalJobException("The Job is too big (" + w + "mm x" + h + "mm) for the Laser bed (" + this.getBedWidth() + "mm x" + this.getBedHeight() + "mm)");
       }
       for (int i = 0; i < job.getRasterPart().getRasterCount(); i++)
       {
@@ -315,15 +315,15 @@ public class EpilogCutter extends LaserCutter
     checkJob(job);
     if (job.contains3dRaster() && job.containsRaster())
     {//Raster and 3d Raster may not be in the same job. Send 2
-      this.realSendJob(new LaserJob("(1/2)"+job.getTitle(), job.getName(), job.getUser(), job.getResolution(), job.getRaster3dPart(), null, null));
-      this.realSendJob(new LaserJob("(2/2)"+job.getTitle(), job.getName(), job.getUser(), job.getResolution(), null, job.getVectorPart(), job.getRasterPart()));
+      this.realSendJob(new LaserJob("(1/2)" + job.getTitle(), job.getName(), job.getUser(), job.getResolution(), job.getRaster3dPart(), null, null));
+      this.realSendJob(new LaserJob("(2/2)" + job.getTitle(), job.getName(), job.getUser(), job.getResolution(), null, job.getVectorPart(), job.getRasterPart()));
     }
     else
     {
       this.realSendJob(job);
     }
   }
-  
+
   private void realSendJob(LaserJob job) throws UnsupportedEncodingException, IOException, UnknownHostException, Exception
   {
     //Generate all the data
@@ -403,9 +403,9 @@ public class EpilogCutter extends LaserCutter
     ByteArrayOutputStream result = new ByteArrayOutputStream();
     PrintStream out = new PrintStream(result, true, "US-ASCII");
     LaserProperty curprop = new LaserProperty();
-    if (rp != null && rp.getRasterCount()>0)
+    if (rp != null && rp.getRasterCount() > 0)
     {
-      if (rp.getRasterCount()>0)
+      if (rp.getRasterCount() > 0)
       {
         curprop = rp.getLaserProperty(0);
       }
@@ -459,12 +459,12 @@ public class EpilogCutter extends LaserCutter
         {
 
           List<Byte> line = rp.getInvertedRasterLine(i, y);
-          for (int n=0;n<line.size();n++)
+          for (int n = 0; n < line.size(); n++)
           {//Apperantly the other power settings are ignored, so we have to scale
             int x = line.get(n);
-            x= x>=0 ? x : 256+x;
-            int scalex = x*curprop.getPower()/100;
-            byte bx = (byte) (scalex<128 ? scalex : scalex-256);
+            x = x >= 0 ? x : 256 + x;
+            int scalex = x * curprop.getPower() / 100;
+            byte bx = (byte) (scalex < 128 ? scalex : scalex - 256);
             line.set(n, bx);
           }
           //Remove leading zeroes, but keep track of the offset
@@ -600,9 +600,9 @@ public class EpilogCutter extends LaserCutter
             out.printf("\033*b%dA", -line.size());
             Collections.reverse(line);
             //reverse every byte bitwise
-            for (int ii=0;ii<line.size();ii++)
+            for (int ii = 0; ii < line.size(); ii++)
             {
-             line.set(ii, Util.reverseBitwise(line.get(ii)));
+              line.set(ii, Util.reverseBitwise(line.get(ii)));
             }
           }
           line = encode(line);
@@ -757,11 +757,11 @@ public class EpilogCutter extends LaserCutter
     }
     else if ("Port".equals(attribute))
     {
-      return ""+this.getPort();
+      return "" + this.getPort();
     }
     return null;
   }
-  
+
   @Override
   public void setSettingValue(String attribute, String value)
   {
@@ -774,11 +774,158 @@ public class EpilogCutter extends LaserCutter
       this.setPort(Integer.parseInt(value));
     }
   }
-  
-  private String[] attributes = new String[]{"Hostname", "Port"};
+  private String[] attributes = new String[]
+  {
+    "Hostname", "Port"
+  };
+
   @Override
   public List<String> getSettingAttributes()
   {
     return Arrays.asList(attributes);
+  }
+
+  @Override
+  public int estimateJobDuration(LaserJob job)
+  {
+    double VECTOR_MOVESPEED_X = 20000d / 4.5;
+    double VECTOR_MOVESPEED_Y = 10000d / 2.5;
+    double VECTOR_LINESPEED = 20000d / 36.8;
+    double RASTER_LINEOFFSET = 0.08d;
+    double RASTER_LINESPEED = 100000d / ((268d / 50) - RASTER_LINEOFFSET);
+    //TODO: The Raster3d values are not tested yet, theyre just copies
+    double RASTER3D_LINEOFFSET = 0.08;
+    double RASTER3D_LINESPEED = 100000d / ((268d / 50) - RASTER3D_LINEOFFSET);
+
+    //Holds the current Laser Head position in Pixels
+    Point p = new Point(0, 0);
+
+    double result = 0;//usual offset
+    if (job.containsRaster())
+    {
+      RasterPart rp = job.getRasterPart();
+      for (int i = 0; i < rp.getRasterCount(); i++)
+      {//Time to move to Start Position
+        Point sp = rp.getRasterStart(i);
+        result += Math.max((double) (p.x - sp.x) / VECTOR_MOVESPEED_X,
+          (double) (p.y - sp.y) / VECTOR_MOVESPEED_Y);
+        double linespeed = ((double) RASTER_LINESPEED * rp.getLaserProperty(i).getSpeed()) / 100;
+        BlackWhiteRaster bwr = rp.getImages()[i];
+        for (int y = 0; y < bwr.getHeight(); y++)
+        {//Find first + last black point
+          int min = 0;
+          int max = -1;
+          for (int x = 0; x < bwr.getWidth(); x++)
+          {
+            if (max == -1)
+            {//No 1 found yet
+              if (!bwr.isBlack(x, y))
+              {
+                min = x;
+              }
+              else
+              {
+                max = x;
+              }
+            }
+            else
+            {
+              if (bwr.isBlack(x, y))
+              {
+                max = x;
+              }
+            }
+          }
+          if (max != -1)
+          {
+            int w = max - min;
+            result += (double) RASTER_LINEOFFSET + (double) w / linespeed;
+            p.x = sp.y%2==0 ? sp.x+max : sp.x+min;
+            p.y = sp.y+y;
+          }
+          else
+          {
+            result+=RASTER_LINEOFFSET;
+          }
+        }
+      }
+    }
+    if (job.contains3dRaster())
+    {
+      Raster3dPart rp = job.getRaster3dPart();
+      for (int i = 0; i < rp.getRasterCount(); i++)
+      {//Time to move to Start Position
+        Point sp = rp.getRasterStart(i);
+        result += Math.max((double) (p.x - sp.x) / VECTOR_MOVESPEED_X,
+          (double) (p.y - sp.y) / VECTOR_MOVESPEED_Y);
+        double linespeed = ((double) RASTER3D_LINESPEED * rp.getLaserProperty(i).getSpeed()) / 100;
+        GreyscaleRaster gsr = rp.getImages()[i];
+        for (int y = 0; y < gsr.getHeight(); y++)
+        {//Find first + last black point
+          int min = 0;
+          int max = -1;
+          for (int x = 0; x < gsr.getWidth(); x++)
+          {
+            if (max == -1)
+            {//No 1 found yet
+              if (gsr.getGreyScale(x, y) == 0)
+              {
+                min = x;
+              }
+              else
+              {
+                max = x;
+              }
+            }
+            else
+            {
+              if (gsr.getGreyScale(x, y) != 0)
+              {
+                max = x;
+              }
+            }
+          }
+          if (max != -1)
+          {
+            int w = max - min;
+            result += (double) RASTER3D_LINEOFFSET + (double) w / linespeed;
+            p.x = sp.y%2==0 ? sp.x+max : sp.x+min;
+            p.y = sp.y+y;
+          }
+        }
+      }
+    }
+    if (job.containsVector())
+    {
+      double speed = VECTOR_LINESPEED;
+      VectorPart vp = job.getVectorPart();
+      for (VectorCommand cmd : vp.getCommandList())
+      {
+        switch (cmd.getType())
+        {
+          case SETSPEED:
+          {
+            speed = VECTOR_LINESPEED * cmd.getSpeed() / 100;
+            break;
+          }
+          case MOVETO:
+            result += Math.max((double) (p.x - cmd.getX()) / VECTOR_MOVESPEED_X,
+              (double) (p.y - cmd.getY()) / VECTOR_MOVESPEED_Y);
+            p = new Point(cmd.getX(), cmd.getY());
+            break;
+          case LINETO:
+            double dist = distance(cmd.getX(), cmd.getY(), p);
+            p = new Point(cmd.getX(), cmd.getY());
+            result += dist / speed;
+            break;
+        }
+      }
+    }
+    return (int) result;
+  }
+
+  private double distance(int x, int y, Point p)
+  {
+    return Math.sqrt(Math.pow(p.x - x, 2) + Math.pow(p.y - y, 2));
   }
 }
