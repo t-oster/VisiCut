@@ -19,6 +19,7 @@ package com.t_oster.visicut.gui.mappingwizzard;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Frame;
 import java.util.LinkedList;
@@ -61,11 +62,10 @@ public class MappingWizzard
    *
    * @param mappingSet new value of mappingSet
    */
-  private void setMappingSet(MappingSet mappingSet)
+  public void setMappingSet(MappingSet mappingSet)
   {
     this.mappingSet = mappingSet;
   }
-
 
   public void showDialog(Frame parent)
   {
@@ -82,7 +82,35 @@ public class MappingWizzard
     }
     SelectAttributeDialog d = new SelectAttributeDialog();
     d.setValues(attributes);
-    if (JOptionPane.showConfirmDialog(parent, d, "Please select...", JOptionPane.OK_CANCEL_OPTION)==JOptionPane.CANCEL_OPTION)
+    String attribute = null;
+    if (this.mappingSet != null)
+    {//Check if the current Mapping is a simple one and take the attribute in case
+      for (Mapping m : this.mappingSet)
+      {
+        if (m.getFilterSet().size() != 1)
+        {//Simple filtersets have exactly 1 Filter
+          attribute = null;
+          break;
+        }
+        else
+        {
+          if (attribute == null)
+          {
+            attribute = m.getFilterSet().getFirst().getAttribute();
+          }
+          else if (!attribute.equals(m.getFilterSet().getFirst().getAttribute()))
+          {//Simple Mappings have all the same attribute
+            attribute = null;
+            break;
+          }
+        }
+      }
+    }
+    if (attribute != null)
+    {
+      d.setSelectedValue(attribute);
+    }
+    if (JOptionPane.showConfirmDialog(parent, d, "Please select...", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION)
     {
       tb = null;
       return;
@@ -92,6 +120,7 @@ public class MappingWizzard
     mwd.setAttribute(selectedAttribute);
     mwd.setMaterialProfile(this.material);
     mwd.setGraphicObjects(objects);
+    mwd.setMappingSet(this.getMappingSet());
     mwd.setVisible(true);
     this.setMappingSet(mwd.getMappingSet());
   }

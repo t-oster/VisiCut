@@ -124,11 +124,25 @@ public class MappingWizzardDialog extends javax.swing.JDialog implements ListSel
   /**
    * Set the value of MappingSet
    *
-   * @param MappingSet new value of MappingSet
+   * @param mappingSet new value of MappingSet
    */
-  private void setMappingSet(MappingSet MappingSet)
+  public void setMappingSet(MappingSet mappingSet)
   {
-    this.mappingSet = MappingSet;
+    if (this.mappingSet == null && mappingSet != null)
+    {//Just if setting the mappingSet for first time, try to parse it
+      for (Mapping m : mappingSet)
+      {
+        if (m.getFilterSet().size() == 1)
+        {
+          if (this.attribute.equals(m.getFilterSet().getFirst().getAttribute()))
+          {
+            Object value = m.getFilterSet().getFirst().getValue();
+            this.mappingWizzardTable1.setProfileForValue(value, this.materialProfile.getLaserProfile(m.getProfileName()));
+          }
+        }
+      }
+    }
+    this.mappingSet = mappingSet;
   }
 
   /** Creates new form MappingWizzardDialog */
@@ -145,7 +159,6 @@ public class MappingWizzardDialog extends javax.swing.JDialog implements ListSel
       {
         MappingWizzardDialog.this.valueChanged(null);
       }
-      
     });
   }
 
@@ -308,69 +321,9 @@ public class MappingWizzardDialog extends javax.swing.JDialog implements ListSel
   {//GEN-HEADEREND:event_matchingPartsPanel1PropertyChange
     if (evt.getPropertyName().equals(MatchingPartsPanel.PROP_RENDERINGPROGRESS))
     {
-      this.jProgressBar1.setIndeterminate(this.matchingPartsPanel1.getRenderingProgress()!=100);
+      this.jProgressBar1.setIndeterminate(this.matchingPartsPanel1.getRenderingProgress() != 100);
     }
   }//GEN-LAST:event_matchingPartsPanel1PropertyChange
-
-  /**
-   * @param args the command line arguments
-   */
-  public static void main(String args[])
-  {
-    /* Set the Nimbus look and feel */
-    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-     * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-     */
-    try
-    {
-      for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels())
-      {
-        if ("Nimbus".equals(info.getName()))
-        {
-          javax.swing.UIManager.setLookAndFeel(info.getClassName());
-          break;
-        }
-      }
-    }
-    catch (ClassNotFoundException ex)
-    {
-      java.util.logging.Logger.getLogger(MappingWizzardDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    catch (InstantiationException ex)
-    {
-      java.util.logging.Logger.getLogger(MappingWizzardDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    catch (IllegalAccessException ex)
-    {
-      java.util.logging.Logger.getLogger(MappingWizzardDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    catch (javax.swing.UnsupportedLookAndFeelException ex)
-    {
-      java.util.logging.Logger.getLogger(MappingWizzardDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    //</editor-fold>
-
-    /* Create and display the dialog */
-    java.awt.EventQueue.invokeLater(new Runnable()
-    {
-
-      public void run()
-      {
-        MappingWizzardDialog dialog = new MappingWizzardDialog(new javax.swing.JFrame(), true);
-        dialog.addWindowListener(new java.awt.event.WindowAdapter()
-        {
-
-          @Override
-          public void windowClosing(java.awt.event.WindowEvent e)
-          {
-            System.exit(0);
-          }
-        });
-        dialog.setVisible(true);
-      }
-    });
-  }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JCheckBox jCheckBox1;

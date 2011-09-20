@@ -138,6 +138,23 @@ public class MappingWizzardTable extends JTable
   }
   private ImageComboBox profilesCb;
   private List<Tuple<Object, LaserProfile>> values;
+  
+  /**
+   * Sets the mapped Laserprofile for a value, if the
+   * value exits in the table
+   */
+  void setProfileForValue(Object value, LaserProfile profile)
+  {
+    for (Tuple<Object,LaserProfile> tup:values)
+    {
+      if (tup.getA().equals(value))
+      {
+        tup.setB(profile);
+        break;
+      }
+    }
+  }
+  
   private DefaultTableModel model = new DefaultTableModel()
   {
 

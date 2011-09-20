@@ -1579,6 +1579,7 @@ private void customMappingButtonActionPerformed(java.awt.event.ActionEvent evt) 
     this.mappingComboBox.addItem(custom);
   }
   MappingWizzard mw = new MappingWizzard(this.visicutModel1.getGraphicObjects(), this.visicutModel1.getMaterial());
+  mw.setMappingSet(this.visicutModel1.getMappings());
   mw.showDialog(this);
   MappingSet result = mw.getMappingSet();
   if (result != null)
