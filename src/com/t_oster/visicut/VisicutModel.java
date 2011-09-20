@@ -26,6 +26,7 @@ import com.t_oster.liblasercut.Raster3dPart;
 import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.managers.MappingManager;
+import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.managers.ProfileManager;
@@ -51,7 +52,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -437,11 +441,30 @@ public class VisicutModel
     VectorPart vp = new VectorPart(new LaserProperty());
     LaserCutter instance = this.getSelectedLaserDevice().getLaserCutter();
     LaserJob job = new LaserJob(name, "123", "unk", 500, r3dp, vp, rp);
+    //Aggregate all Mappings per LaserProfile
+    HashMap<LaserProfile, GraphicSet> parts = new LinkedHashMap<LaserProfile, GraphicSet>();
     for (Mapping m : this.getMappings())
     {
       GraphicSet set = m.getA().getMatchingObjects(this.getGraphicObjects());
       LaserProfile p = material.getLaserProfile(m.getProfileName());
-      p.addToLaserJob(job, set, material.getDepth());
+      if (parts.containsKey(p))
+      {
+        for (GraphicObject e : set)
+        {
+          if (!parts.get(p).contains(e))
+          {
+            parts.get(p).add(e);
+          }
+        }
+      }
+      else
+      {
+        parts.put(p, set);
+      }
+    }
+    for (Entry<LaserProfile, GraphicSet> e : parts.entrySet())
+    {
+      e.getKey().addToLaserJob(job, e.getValue(), material.getDepth());
     }
     job.getVectorPart().setFocus(0);
     instance.sendJob(job);
