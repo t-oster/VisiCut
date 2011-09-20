@@ -47,7 +47,8 @@ public abstract class SVGObject implements GraphicObject
     Stroke_Color,
     Fill_Color,
     Type,
-    Group,}
+    Group,
+  }
 
   /**
    * Returns a List of SVGElements representing the Path
@@ -125,23 +126,30 @@ public abstract class SVGObject implements GraphicObject
       return attributeValues.get(name);
     }
     List<Object> result = new LinkedList<Object>();
-    switch (Attribute.valueOf(name.replace(" ", "_")))
+    try
     {
-      case Group:
+      switch (Attribute.valueOf(name.replace(" ", "_")))
       {
-        for (SVGElement e : this.getPath(this.getDecoratee()))
+        case Group:
         {
-          if (e instanceof Group)
+          for (SVGElement e : this.getPath(this.getDecoratee()))
           {
-            String id = ((Group) e).getId();
-            if (id != null)
+            if (e instanceof Group)
             {
-              result.add(id);
+              String id = ((Group) e).getId();
+              if (id != null)
+              {
+                result.add(id);
+              }
             }
           }
+          break;
         }
-        break;
       }
+    }
+    catch (IllegalArgumentException e)
+    {
+      //Attribute not supported in SVG => Ignore
     }
     attributeValues.put(name, result);
     return result;

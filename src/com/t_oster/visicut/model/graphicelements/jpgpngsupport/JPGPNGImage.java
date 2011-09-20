@@ -43,7 +43,7 @@ public class JPGPNGImage implements GraphicObject
   public List<Object> getAttributeValues(String name)
   {
     List<Object> result = new LinkedList<Object>();
-    if (name.equals("ObjectType"))
+    if (name.equals("Type"))
     {
       result.add("Image");
     }
@@ -53,7 +53,7 @@ public class JPGPNGImage implements GraphicObject
   public List<String> getAttributes()
   {
     List<String> result = new LinkedList<String>();
-    result.add("ObjectType");
+    result.add("Type");
     return result;
   }
 
