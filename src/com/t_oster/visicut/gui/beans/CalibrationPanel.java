@@ -41,13 +41,12 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
 
   //The size of the Points in Pixel
   private static int SIZE = 10;
-  
+
   public CalibrationPanel()
   {
     this.addMouseListener(this);
     this.addMouseMotionListener(this);
   }
-  
   protected RenderedImage backgroundImage = null;
 
   /**
@@ -69,7 +68,6 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
   {
     this.backgroundImage = backgroundImage;
   }
-
   protected Point[] pointList = new Point[0];
 
   /**
@@ -92,9 +90,9 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
     this.pointList = pointList;
     this.repaint();
   }
-
   //Contains the last Transform the component was rendered with
   AffineTransform lastTransform;
+
   @Override
   protected void paintComponent(Graphics g)
   {
@@ -108,21 +106,16 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
         gg.drawRenderedImage(backgroundImage, null);
       }
       gg.setColor(Color.red);
-      Point2D size = new Point(SIZE, SIZE);
-      try
+      AffineTransform trans = gg.getTransform();
+      gg.setTransform(new AffineTransform());//Draw in Screen Device space
+      for (Point p : this.pointList)
       {
-        size = gg.getTransform().createInverse().deltaTransform(size, null);
-      }
-      catch (NoninvertibleTransformException ex)
-      {
-        Logger.getLogger(CalibrationPanel.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      for (Point p:this.pointList)
-      {
-        drawCross(gg, p, (int) size.getX());
-        if (p==selectedPoint)
+        Point sp = new Point();
+        trans.transform(p, sp);
+        drawCross(gg, sp, SIZE);
+        if (p == selectedPoint)
         {
-          gg.drawOval((int) (p.x-size.getX()/2), (int) (p.y-size.getY()/2), (int) size.getX(), (int) size.getY());
+          gg.drawOval((sp.x - SIZE / 2), (sp.y - SIZE / 2), SIZE, SIZE);
         }
       }
     }
@@ -133,6 +126,11 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
     g.drawLine(p.x - size / 2, p.y, p.x + size / 2, p.y);
     g.drawLine(p.x, p.y - size / 2, p.x, p.y + size / 2);
   }
+  /**
+   * Contains last mouse Position if dragging background,
+   * null else.
+   */
+  private Point lastMousePos = null;
 
   public void mouseClicked(MouseEvent me)
   {
@@ -150,14 +148,17 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
       {
         selectedPoint = source;
         repaint();
+        lastMousePos = null;
         return;
       }
     }
+    lastMousePos = p;
   }
 
   public void mouseReleased(MouseEvent me)
   {
     selectedPoint = null;
+    lastMousePos = null;
   }
 
   public void mouseEntered(MouseEvent me)
@@ -184,6 +185,14 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
         Logger.getLogger(CalibrationPanel.class.getName()).log(Level.SEVERE, null, ex);
       }
       this.repaint();
+    }
+    else if (lastMousePos != null)
+    {
+      Point center = this.getCenter();
+      Point diff = new Point(me.getPoint().x - lastMousePos.x, me.getPoint().y - lastMousePos.y);
+      center.translate(-diff.x * 1000 / this.getZoom(), -diff.y * 1000 / this.getZoom());
+      this.setCenter(center);
+      lastMousePos = me.getPoint();
     }
   }
 
