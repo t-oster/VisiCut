@@ -39,7 +39,7 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
 
   protected MaterialProfile material = new MaterialProfile();
   private ButtonGroup group = new ButtonGroup();
-  private List<JRadioButton> buttons = new LinkedList<JRadioButton>();
+  private List<JiconRadioButton> buttons = new LinkedList<JiconRadioButton>();
 
   public LaserProfilesPanel()
   {
@@ -93,13 +93,17 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
     }
     else
     {
-      for (int i = 0; i < this.getMaterial().getLaserProfiles().size(); i++)
-      {
-        if (this.getMaterial().getLaserProfiles().get(i).equals(selectedCuttingProfile))
-        {
-          this.buttons.get(i).setSelected(true);
+      boolean found = false;
+      for (JiconRadioButton b:this.buttons){
+        if (b.getLabelText().equals(selectedCuttingProfile.getName())){
+          b.setSelected(true);
+          found=true;
           break;
         }
+      }
+      if (!found)
+      {
+        group.clearSelection();
       }
     }
     firePropertyChange(PROP_SELECTEDLASERPROFILE, oldSelectedCuttingProfile, selectedCuttingProfile);
