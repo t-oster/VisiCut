@@ -20,9 +20,7 @@
  */
 package com.t_oster.visicut.model.graphicelements;
 
-import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.Helper;
-import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
@@ -36,7 +34,7 @@ import java.util.LinkedList;
 public class GraphicSet extends LinkedList<GraphicObject>
 {
 
-  protected AffineTransform transform = null;
+  public AffineTransform transform = null;
   public static final String PROP_TRANSFORM = "transform";
 
   /**
@@ -153,7 +151,8 @@ public class GraphicSet extends LinkedList<GraphicObject>
     propertyChangeSupport.removePropertyChangeListener(listener);
   }
 
-  public GraphicSet copy()
+  @Override
+  public GraphicSet clone()
   {
     GraphicSet result = new GraphicSet();
     result.addAll(this);

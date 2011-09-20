@@ -244,17 +244,19 @@ public class VisicutModel
       throw new ImportException("Corrupted Input File");
     }
     this.setMappings(loadedMappings);
-    if (inputFile != null && inputFile.exists())
+    GraphicSet gs = new GraphicSet();
+    inputFile.deleteOnExit();
+    gs = this.loadSetFromFile(inputFile);
+    if (gs != null)
     {
-      inputFile.deleteOnExit();
-      this.loadGraphicFile(inputFile);
+      gs.setTransform(transform);
+      this.setGraphicObjects(gs);
+      this.setLoadedFile(f);
     }
     else
     {
-      this.setGraphicObjects(new GraphicSet());
+      throw new ImportException("Can not load included graphic File");
     }
-    this.getGraphicObjects().setTransform(transform);
-    this.setLoadedFile(f);
   }
 
   public void saveToFile(ProfileManager pm, MappingManager mm, File f) throws FileNotFoundException, IOException
@@ -288,12 +290,13 @@ public class VisicutModel
     while (tmp.exists());
     AffineTransform at = this.getGraphicObjects().getTransform();
     if (at != null)
-    { 
+    {
       out.putNextEntry(new ZipEntry("transform.xml"));
       //Write xml to temp file
       XMLEncoder encoder = new XMLEncoder(new FileOutputStream(tmp));
       encoder.setPersistenceDelegate(AffineTransform.class, new PersistenceDelegate()
       {
+
         protected Expression instantiate(Object oldInstance, Encoder out)
         {
           AffineTransform tx = (AffineTransform) oldInstance;
@@ -356,17 +359,26 @@ public class VisicutModel
     return graphicFileImporter;
   }
 
-  public void loadGraphicFile(File f)
+  private GraphicSet loadSetFromFile(File f)
   {
     try
     {
       GraphicFileImporter im = this.getGraphicFileImporter();
-      this.setGraphicObjects(im.importFile(f));
-      sourceFile = f;
+      return im.importFile(f);
     }
     catch (ImportException e)
     {
-      this.setGraphicObjects(null);
+      return null;
+    }
+  }
+
+  public void loadGraphicFile(File f)
+  {
+    GraphicSet gs = this.loadSetFromFile(f);
+    if (gs != null)
+    {
+      this.setGraphicObjects(gs);
+      this.sourceFile = f;
     }
   }
   protected MaterialProfile material = null;
