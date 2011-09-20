@@ -123,13 +123,13 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
 
     private String[] columns = new String[]
     {
-      "Name", "IP", "Port", "Driver", "Default"
+      "Name", "Driver", "Default"
     };
 
     @Override
     public Class<?> getColumnClass(int i)
     {
-      return i < 4 ? String.class : Boolean.class;
+      return i < 2 ? String.class : Boolean.class;
     }
 
     @Override
@@ -159,19 +159,13 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
         case 0:
           c.setName((String) o);
           return;
-        case 1:
-          c.getLaserCutter().setHostname((String) o);
-          return;
         case 2:
-          c.getLaserCutter().setPort(Integer.parseInt((String) o));
-          return;
-        case 4:
           if ((Boolean) o.equals(true))
           {
             int old = ManageLasercuttersDialog.this.defaultIndex;
             ManageLasercuttersDialog.this.defaultIndex = y;
-            this.fireTableCellUpdated(old, 4);
-            this.fireTableCellUpdated(y, 4);
+            this.fireTableCellUpdated(old, 2);
+            this.fireTableCellUpdated(y, 2);
           }
           return;
       }
@@ -186,10 +180,6 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
         case 0:
           return c.getName();
         case 1:
-          return c.getLaserCutter().getHostname();
-        case 2:
-          return c.getLaserCutter().getPort();
-        case 3:
         {
           String cls = c.getLaserCutter().getClass().toString();
           String[] parts = cls.split("\\.");
@@ -200,7 +190,7 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
           }
           return cls;
         }
-        case 4:
+        case 2:
           return (y == ManageLasercuttersDialog.this.defaultIndex);
 
       }
@@ -210,7 +200,7 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
     @Override
     public boolean isCellEditable(int y, int x)
     {
-      return x < 3 || x == 4;
+      return x == 0 || x == 2;
     }
   };
 

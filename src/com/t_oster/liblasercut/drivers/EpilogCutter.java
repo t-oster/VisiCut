@@ -37,6 +37,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
@@ -728,13 +729,11 @@ public class EpilogCutter extends LaserCutter
     return pjlJob.toByteArray();
   }
 
-  @Override
   public int getPort()
   {
     return this.port;
   }
 
-  @Override
   public void setPort(int Port)
   {
     this.port = Port;
@@ -747,5 +746,39 @@ public class EpilogCutter extends LaserCutter
     result.hostname = hostname;
     result.port = port;
     return result;
+  }
+
+  @Override
+  public String getSettingValue(String attribute)
+  {
+    if ("Hostname".equals(attribute))
+    {
+      return this.getHostname();
+    }
+    else if ("Port".equals(attribute))
+    {
+      return ""+this.getPort();
+    }
+    return null;
+  }
+  
+  @Override
+  public void setSettingValue(String attribute, String value)
+  {
+    if ("Hostname".equals(attribute))
+    {
+      this.setHostname(value);
+    }
+    else if ("Port".equals(attribute))
+    {
+      this.setPort(Integer.parseInt(value));
+    }
+  }
+  
+  private String[] attributes = new String[]{"Hostname", "Port"};
+  @Override
+  public List<String> getSettingAttributes()
+  {
+    return Arrays.asList(attributes);
   }
 }
