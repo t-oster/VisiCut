@@ -1059,8 +1059,8 @@ private void previewPanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRS
         {
           jobnumber++;
           MainView.this.visicutModel1.sendJob("VisiCut " + jobnumber);
-          MainView.this.progressBar.setIndeterminate(false);
-          JOptionPane.showMessageDialog(MainView.this, "Job was sent as 'VisiCut " + jobnumber + "'\nPlease press START on the Lasercutter:\n" + MainView.this.visicutModel1.getSelectedLaserDevice().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
+          MainView.this.progressBar.setIndeterminate(false);        
+          JOptionPane.showMessageDialog(MainView.this, "Job was sent as 'VisiCut " + jobnumber + "'\n\n Please:\n- Close the lid\n- Switch the Ventilation on\n- and press START on the Lasercutter:\n     " + MainView.this.visicutModel1.getSelectedLaserDevice().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
         }
         catch (Exception ex)
         {
