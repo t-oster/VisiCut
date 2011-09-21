@@ -209,7 +209,7 @@ public class MappingWizzardTable extends JTable
     this.setModel(model);
     DefaultTableCellRenderer renderer = new DefaultTableCellRenderer()
     {
-
+      private int minRowHeight = 16;
       @Override
       public Component getTableCellRendererComponent(JTable jtable, Object o, boolean bln, boolean bln1, int i, int i1)
       {
@@ -219,15 +219,17 @@ public class MappingWizzardTable extends JTable
           JLabel l = (JLabel) c;
           if (o == null)
           {
+            jtable.setRowHeight(i, minRowHeight);
             l.setText("Ignore");
           }
           else if (o instanceof Color)
           {
+            minRowHeight = 32;
             ((JLabel) c).setText("<html><table border=1><tr><td bgcolor=" + Helper.toHtmlRGB((Color) o) + ">&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
           }
           else if (o instanceof ImageListable)
           {
-
+            jtable.setRowHeight(i, 80);
             ImageListable item = (ImageListable) o;
             String label = "<html><table cellpadding=3><tr>";
             if (item.getThumbnailPath() != null)
