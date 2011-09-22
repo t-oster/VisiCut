@@ -184,11 +184,12 @@ public class MainView extends javax.swing.JFrame
         previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
         executeJobButton = new javax.swing.JButton();
         captureImageButton = new javax.swing.JButton();
-        togglePreviewButton = new javax.swing.JToggleButton();
-        toggleCutLinesButton = new javax.swing.JToggleButton();
         jSpinner1 = new javax.swing.JSpinner();
         jLabel8 = new javax.swing.JLabel();
         progressBar = new javax.swing.JProgressBar();
+        jPanel3 = new javax.swing.JPanel();
+        showEngravingCb = new javax.swing.JCheckBox();
+        showCuttingCb = new javax.swing.JCheckBox();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -339,9 +340,9 @@ public class MainView extends javax.swing.JFrame
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(materialHeightTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                            .addComponent(dimensionWidthTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE))
+                            .addComponent(materialHeightTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                            .addComponent(dimensionWidthTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
@@ -357,7 +358,7 @@ public class MainView extends javax.swing.JFrame
                         .addComponent(customMappingButton))
                     .addComponent(jLabel10)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(timeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
+                        .addComponent(timeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(calculateTimeButton)))
                 .addContainerGap())
@@ -444,7 +445,7 @@ public class MainView extends javax.swing.JFrame
         );
         previewPanelLayout.setVerticalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 676, Short.MAX_VALUE)
+            .addGap(0, 652, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -452,7 +453,7 @@ public class MainView extends javax.swing.JFrame
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(33, 33, 33)
+                .addGap(43, 43, 43)
                 .addComponent(previewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -479,24 +480,6 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
-        togglePreviewButton.setSelected(true);
-        togglePreviewButton.setText(resourceMap.getString("togglePreviewButton.text")); // NOI18N
-        togglePreviewButton.setEnabled(false);
-        togglePreviewButton.setName("togglePreviewButton"); // NOI18N
-        togglePreviewButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                togglePreviewButtonActionPerformed(evt);
-            }
-        });
-
-        toggleCutLinesButton.setText(resourceMap.getString("toggleCutLinesButton.text")); // NOI18N
-        toggleCutLinesButton.setName("toggleCutLinesButton"); // NOI18N
-        toggleCutLinesButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                toggleCutLinesButtonActionPerformed(evt);
-            }
-        });
-
         jSpinner1.setName("jSpinner1"); // NOI18N
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${zoom}"), jSpinner1, org.jdesktop.beansbinding.BeanProperty.create("value"), "ZommSpinner");
@@ -506,6 +489,53 @@ public class MainView extends javax.swing.JFrame
         jLabel8.setName("jLabel8"); // NOI18N
 
         progressBar.setName("progressBar"); // NOI18N
+
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanel3.border.title"))); // NOI18N
+        jPanel3.setName("jPanel3"); // NOI18N
+
+        showEngravingCb.setText(resourceMap.getString("showEngravingCb.text")); // NOI18N
+        showEngravingCb.setName("showEngravingCb"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${drawPreview}"), showEngravingCb, org.jdesktop.beansbinding.BeanProperty.create("selected"), "engr");
+        bindingGroup.addBinding(binding);
+
+        showEngravingCb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showEngravingCbActionPerformed(evt);
+            }
+        });
+
+        showCuttingCb.setText(resourceMap.getString("showCuttingCb.text")); // NOI18N
+        showCuttingCb.setName("showCuttingCb"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${highlightCutLines}"), showCuttingCb, org.jdesktop.beansbinding.BeanProperty.create("selected"), "cutl");
+        bindingGroup.addBinding(binding);
+
+        showCuttingCb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showCuttingCbActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(showEngravingCb)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(showCuttingCb)
+                .addContainerGap(45, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(showEngravingCb)
+                    .addComponent(showCuttingCb))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         menuBar.setName("menuBar"); // NOI18N
 
@@ -667,19 +697,17 @@ public class MainView extends javax.swing.JFrame
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(togglePreviewButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(toggleCutLinesButton)
-                        .addGap(48, 48, 48)
                         .addComponent(jLabel8)
-                        .addGap(1, 1, 1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(captureImageButton))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(executeJobButton)
@@ -689,20 +717,22 @@ public class MainView extends javax.swing.JFrame
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 404, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 384, Short.MAX_VALUE)
                         .addComponent(executeJobButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel8)
-                                .addComponent(togglePreviewButton)
-                                .addComponent(toggleCutLinesButton))
-                            .addComponent(captureImageButton))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(26, 26, 26)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel8)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(captureImageButton)
+                                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -796,6 +826,9 @@ public class MainView extends javax.swing.JFrame
       && this.visicutModel1.getSelectedLaserDevice() != null
       && this.visicutModel1.getMappings() != null
       && this.visicutModel1.getMappings().size() > 0);
+    boolean previewModes = this.visicutModel1.getMappings() != null && this.visicutModel1.getMaterial() != null && this.visicutModel1.getMappings().size() > 0;
+    this.showCuttingCb.setEnabled(previewModes);
+    this.showEngravingCb.setEnabled(previewModes);
   }
   
 private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
@@ -1366,36 +1399,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   this.refreshButtonStates();
 }//GEN-LAST:event_materialComboBoxActionPerformed
 
-  private void togglePreviewMode()
-  {
-    if (this.togglePreviewButton.isEnabled())
-    {
-      this.previewPanel.setDrawPreview(true);
-      this.previewPanel.setHighlightCutLines(false);
-      this.togglePreviewButton.setEnabled(false);
-      this.togglePreviewButton.setSelected(true);
-      this.toggleCutLinesButton.setEnabled(true);
-      this.toggleCutLinesButton.setSelected(false);
-    }
-    else
-    {
-      this.previewPanel.setDrawPreview(false);
-      this.previewPanel.setHighlightCutLines(true);
-      this.togglePreviewButton.setEnabled(true);
-      this.togglePreviewButton.setSelected(false);
-      this.toggleCutLinesButton.setEnabled(false);
-      this.toggleCutLinesButton.setSelected(true);
-    }
-  }
-
-private void togglePreviewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_togglePreviewButtonActionPerformed
-  togglePreviewMode();
-}//GEN-LAST:event_togglePreviewButtonActionPerformed
-
-private void toggleCutLinesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleCutLinesButtonActionPerformed
-  togglePreviewMode();
-}//GEN-LAST:event_toggleCutLinesButtonActionPerformed
-
   private void materialMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_materialMenuItemActionPerformed
   {//GEN-HEADEREND:event_materialMenuItemActionPerformed
     ImageComboBox laserDevs = new ImageComboBox();
@@ -1667,6 +1670,22 @@ private void previewPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:
     }.start();
   }//GEN-LAST:event_calculateTimeButtonActionPerformed
 
+  private void showCuttingCbActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_showCuttingCbActionPerformed
+  {//GEN-HEADEREND:event_showCuttingCbActionPerformed
+    if (!this.showEngravingCb.isSelected() && !this.showCuttingCb.isSelected()){
+      this.showCuttingCb.setSelected(true);
+    }
+    this.previewPanel.repaint();
+  }//GEN-LAST:event_showCuttingCbActionPerformed
+
+  private void showEngravingCbActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_showEngravingCbActionPerformed
+  {//GEN-HEADEREND:event_showEngravingCbActionPerformed
+    if (!this.showEngravingCb.isSelected() && !this.showCuttingCb.isSelected()){
+      this.showEngravingCb.setSelected(true);
+    }
+     this.previewPanel.repaint();
+  }//GEN-LAST:event_showEngravingCbActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton calculateTimeButton;
@@ -1699,6 +1718,7 @@ private void previewPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JSpinner jSpinner1;
     private com.t_oster.visicut.gui.beans.ImageComboBox laserCutterComboBox;
     private com.t_oster.visicut.gui.beans.ImageComboBox mappingComboBox;
@@ -1715,10 +1735,10 @@ private void previewPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JFileChooser saveFileChooser;
     private javax.swing.JMenuItem saveMenuItem;
+    private javax.swing.JCheckBox showCuttingCb;
+    private javax.swing.JCheckBox showEngravingCb;
     private javax.swing.JCheckBoxMenuItem showGridMenuItem;
     private javax.swing.JLabel timeLabel;
-    private javax.swing.JToggleButton toggleCutLinesButton;
-    private javax.swing.JToggleButton togglePreviewButton;
     private javax.swing.JMenu viewMenu;
     private com.t_oster.visicut.VisicutModel visicutModel1;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;

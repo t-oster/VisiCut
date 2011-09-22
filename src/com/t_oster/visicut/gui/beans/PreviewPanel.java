@@ -453,7 +453,7 @@ public class PreviewPanel extends ZoomablePanel
                 }
                 else if (p instanceof VectorProfile)
                 {
-                  if (!highlightCutLines || ((VectorProfile) p).isIsCut())
+                  if ((highlightCutLines && ((VectorProfile) p).isIsCut())|| (drawPreview && !((VectorProfile) p).isIsCut()))
                   {
                     p.renderPreview(gg, current, this.material);
                   }
