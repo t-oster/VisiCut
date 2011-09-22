@@ -23,6 +23,7 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.liblasercut.IllegalJobException;
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.managers.PreferencesManager;
@@ -30,8 +31,6 @@ import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
 import com.t_oster.visicut.gui.beans.ImageComboBox;
-import com.t_oster.visicut.gui.mappingdialog.MappingDialog;
-import com.t_oster.visicut.gui.mappingwizzard.MappingWizzard;
 import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.mapping.Mapping;
@@ -55,6 +54,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.DefaultListModel;
 import org.jdesktop.application.Action;
 
 /**
@@ -64,10 +64,13 @@ import org.jdesktop.application.Action;
 public class MainView extends javax.swing.JFrame
 {
 
+  private DefaultListModel mappingListModel = new DefaultListModel();
+
   /** Creates new form MainView */
   public MainView()
   {
     initComponents();
+    this.predefinedMappingList.setModel(mappingListModel);
     this.visicutModel1.setMaterial(null);
     this.visicutModel1.setMappings(null);
     fillComboBoxes();
@@ -125,23 +128,15 @@ public class MainView extends javax.swing.JFrame
       }
     }
     MappingSet ss = this.visicutModel1.getMappings();
-    this.mappingComboBox.removeAllItems();
-    this.mappingComboBox.addItem(null);
-    this.mappingComboBox.setSelectedIndex(0);
+    this.mappingListModel.removeAllElements();
+    this.mappingListModel.addElement("no mapping");
+    this.predefinedMappingList.setSelectedIndex(0);
     for (MappingSet m : this.mappingManager1.getMappingSets())
     {
-      this.mappingComboBox.addItem(m);
+      this.mappingListModel.addElement(m);
       if (m.equals(ss))
       {
-        this.mappingComboBox.setSelectedItem(m);
-      }
-    }
-    if (this.custom != null)
-    {
-      this.mappingComboBox.addItem(custom);
-      if (custom.equals(ss))
-      {
-        this.mappingComboBox.setSelectedItem(custom);
+        this.predefinedMappingList.setSelectedIndex(this.mappingListModel.indexOf(m));
       }
     }
   }
@@ -175,11 +170,14 @@ public class MainView extends javax.swing.JFrame
         jLabel7 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         laserCutterComboBox = new com.t_oster.visicut.gui.beans.ImageComboBox();
-        mappingComboBox = new com.t_oster.visicut.gui.beans.ImageComboBox();
-        customMappingButton = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
         calculateTimeButton = new javax.swing.JButton();
         timeLabel = new javax.swing.JLabel();
+        customMappingPanel = new javax.swing.JTabbedPane();
+        jPanel4 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        predefinedMappingList = new javax.swing.JList();
+        jPanel5 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
         executeJobButton = new javax.swing.JButton();
@@ -293,22 +291,6 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
-        mappingComboBox.setName("mappingComboBox"); // NOI18N
-        mappingComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mappingComboBoxActionPerformed(evt);
-            }
-        });
-
-        customMappingButton.setText(resourceMap.getString("customMappingButton.text")); // NOI18N
-        customMappingButton.setEnabled(false);
-        customMappingButton.setName("customMappingButton"); // NOI18N
-        customMappingButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                customMappingButtonActionPerformed(evt);
-            }
-        });
-
         jLabel10.setText(resourceMap.getString("jLabel10.text")); // NOI18N
         jLabel10.setName("jLabel10"); // NOI18N
 
@@ -325,6 +307,53 @@ public class MainView extends javax.swing.JFrame
         timeLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         timeLabel.setName("timeLabel"); // NOI18N
 
+        customMappingPanel.setName("customMappingPanel"); // NOI18N
+
+        jPanel4.setName("jPanel4"); // NOI18N
+
+        jScrollPane1.setName("jScrollPane1"); // NOI18N
+
+        predefinedMappingList.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        predefinedMappingList.setName("predefinedMappingList"); // NOI18N
+        predefinedMappingList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                predefinedMappingListValueChanged(evt);
+            }
+        });
+        jScrollPane1.setViewportView(predefinedMappingList);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
+        );
+
+        customMappingPanel.addTab(resourceMap.getString("jPanel4.TabConstraints.tabTitle"), jPanel4); // NOI18N
+
+        jPanel5.setName("jPanel5"); // NOI18N
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 268, Short.MAX_VALUE)
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 376, Short.MAX_VALUE)
+        );
+
+        customMappingPanel.addTab(resourceMap.getString("jPanel5.TabConstraints.tabTitle"), jPanel5); // NOI18N
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -332,36 +361,38 @@ public class MainView extends javax.swing.JFrame
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(laserCutterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel9)
-                    .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2)
+                    .addComponent(customMappingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(materialHeightTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
-                            .addComponent(dimensionWidthTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(laserCutterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9)
+                            .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(materialHeightTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                                    .addComponent(dimensionWidthTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(dimesnionsHeightTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(10, 10, 10)
-                                .addComponent(jLabel6))
-                            .addComponent(jLabel7)))
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(jLabel4)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(dimesnionsHeightTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(10, 10, 10)
+                                        .addComponent(jLabel6))
+                                    .addComponent(jLabel7))))
+                        .addContainerGap())
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(mappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(customMappingButton))
-                    .addComponent(jLabel10)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(timeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(calculateTimeButton)))
-                .addContainerGap())
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel10)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addComponent(timeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(calculateTimeButton)))
+                        .addGap(20, 20, 20))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -391,16 +422,14 @@ public class MainView extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(customMappingButton)
-                    .addComponent(mappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(customMappingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(calculateTimeButton)
                     .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanel1.border.title"))); // NOI18N
@@ -720,8 +749,8 @@ public class MainView extends javax.swing.JFrame
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 384, Short.MAX_VALUE)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(executeJobButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -775,15 +804,14 @@ public class MainView extends javax.swing.JFrame
         {
           custom = this.visicutModel1.getMappings();
           custom.setName("Loaded Mapping");
-          this.mappingComboBox.addItem(custom);
+          this.mappingListModel.addElement(custom);
         }
         else
         {
           custom.clear();
-          custom.setName("Loaded Mapping");
           custom.addAll(this.visicutModel1.getMappings());
         }
-        this.mappingComboBox.setSelectedItem(custom);
+        this.predefinedMappingList.setSelectedIndex(this.mappingListModel.indexOf(custom));
       }
       else
       {
@@ -817,11 +845,10 @@ public class MainView extends javax.swing.JFrame
    */
   private void refreshButtonStates()
   {
-    this.customMappingButton.setEnabled(
+    this.customMappingPanel.setEnabled(
       this.visicutModel1.getMaterial() != null
       && this.visicutModel1.getGraphicObjects() != null
-      && this.visicutModel1.getGraphicObjects().size() > 0
-      );
+      && this.visicutModel1.getGraphicObjects().size() > 0);
     this.calculateTimeButton.setEnabled(this.visicutModel1.getMaterial() != null
       && this.visicutModel1.getSelectedLaserDevice() != null
       && this.visicutModel1.getMappings() != null
@@ -830,7 +857,7 @@ public class MainView extends javax.swing.JFrame
     this.showCuttingCb.setEnabled(previewModes);
     this.showEngravingCb.setEnabled(previewModes);
   }
-  
+
 private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
   JFileChooser openFileChooser = new JFileChooser();
   openFileChooser.setAcceptAllFileFilterUsed(false);
@@ -839,7 +866,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   {
     openFileChooser.addChoosableFileFilter(f);
   }
-  FileFilter allFilter = 
+  FileFilter allFilter =
     new MultiFilter(
     new FileFilter[]
     {
@@ -1092,7 +1119,7 @@ private void previewPanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRS
         {
           jobnumber++;
           MainView.this.visicutModel1.sendJob("VisiCut " + jobnumber);
-          MainView.this.progressBar.setIndeterminate(false);        
+          MainView.this.progressBar.setIndeterminate(false);
           JOptionPane.showMessageDialog(MainView.this, "Job was sent as 'VisiCut " + jobnumber + "'\n\n Please:\n- Close the lid\n- Switch the Ventilation on\n- and press START on the Lasercutter:\n     " + MainView.this.visicutModel1.getSelectedLaserDevice().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
         }
         catch (Exception ex)
@@ -1492,18 +1519,24 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         this.materialComboBox.setDisabled(m, true, mappings == null ? "Lasercutter not supported" : "Mapping not supported");
       }
     }
-    for (int i = 1; i < this.mappingComboBox.getItemCount(); i++)
+    this.ignoreListChanges = true;
+    int selIndex = -1;
+    MappingSet ss = this.visicutModel1.getMappings();
+    this.mappingListModel.removeAllElements();
+    this.mappingListModel.addElement("no mapping");
+    this.predefinedMappingList.setSelectedIndex(0);
+    for (MappingSet m : this.mappingManager1.getMappingSets())
     {
-      MappingSet m = (MappingSet) this.mappingComboBox.getItemAt(i);
       if (supported(ld, mp, m))
       {
-        this.mappingComboBox.setDisabled(m, false);
-      }
-      else
-      {
-        this.mappingComboBox.setDisabled(m, true, mp == null ? "Lasercutter not supported" : "Material not supported");
+        this.mappingListModel.addElement(m);
+        if (m.equals(ss))
+        {
+          selIndex = this.mappingListModel.indexOf(m);
+        }
       }
     }
+    this.ignoreListChanges = false;
   }
 
   private void laserCutterComboBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_laserCutterComboBoxActionPerformed
@@ -1557,43 +1590,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       this.refreshComboBoxes();
     }
   }//GEN-LAST:event_jMenuItem2ActionPerformed
-
-private void mappingComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mappingComboBoxActionPerformed
-  MappingSet ms = this.mappingComboBox.getSelectedItem() instanceof MappingSet ? (MappingSet) this.mappingComboBox.getSelectedItem() : null;
-  if (ms != null)
-  {
-    if (this.mappingComboBox.isDisabled(ms))
-    {
-      this.mappingComboBox.setSelectedItem(this.visicutModel1.getMappings());
-      return;
-    }
-  }
-  this.visicutModel1.setMappings(ms);
-  this.refreshComboBoxes();
-  this.refreshButtonStates();
-}//GEN-LAST:event_mappingComboBoxActionPerformed
   private MappingSet custom = null;
-private void customMappingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customMappingButtonActionPerformed
-  this.customMappingButton.setEnabled(false);
-  if (custom == null)
-  {
-    custom = new MappingSet();
-    custom.setName("Custom Mapping");
-    this.mappingComboBox.addItem(custom);
-  }
-  MappingWizzard mw = new MappingWizzard(this.visicutModel1.getGraphicObjects(), this.visicutModel1.getMaterial());
-  mw.setMappingSet(this.visicutModel1.getMappings());
-  mw.showDialog(this);
-  MappingSet result = mw.getMappingSet();
-  if (result != null)
-  {
-    custom.clear();
-    custom.addAll(result);
-    this.mappingComboBox.setSelectedItem(custom);
-    this.previewPanel.repaint();
-  }
-  this.refreshButtonStates();
-}//GEN-LAST:event_customMappingButtonActionPerformed
 
   private void setCursor(Point p)
   {
@@ -1659,6 +1656,7 @@ private void previewPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:
   {//GEN-HEADEREND:event_calculateTimeButtonActionPerformed
     new Thread()
     {
+
       public void run()
       {
         MainView.this.calculateTimeButton.setEnabled(false);
@@ -1672,7 +1670,8 @@ private void previewPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:
 
   private void showCuttingCbActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_showCuttingCbActionPerformed
   {//GEN-HEADEREND:event_showCuttingCbActionPerformed
-    if (!this.showEngravingCb.isSelected() && !this.showCuttingCb.isSelected()){
+    if (!this.showEngravingCb.isSelected() && !this.showCuttingCb.isSelected())
+    {
       this.showCuttingCb.setSelected(true);
     }
     this.previewPanel.repaint();
@@ -1680,18 +1679,33 @@ private void previewPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:
 
   private void showEngravingCbActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_showEngravingCbActionPerformed
   {//GEN-HEADEREND:event_showEngravingCbActionPerformed
-    if (!this.showEngravingCb.isSelected() && !this.showCuttingCb.isSelected()){
+    if (!this.showEngravingCb.isSelected() && !this.showCuttingCb.isSelected())
+    {
       this.showEngravingCb.setSelected(true);
     }
-     this.previewPanel.repaint();
+    this.previewPanel.repaint();
   }//GEN-LAST:event_showEngravingCbActionPerformed
-
+  private boolean ignoreListChanges = false;
+  private void predefinedMappingListValueChanged(javax.swing.event.ListSelectionEvent evt)//GEN-FIRST:event_predefinedMappingListValueChanged
+  {//GEN-HEADEREND:event_predefinedMappingListValueChanged
+    if (!ignoreListChanges)
+    {
+      Object selected = this.predefinedMappingList.getSelectedValue();
+      MappingSet selectedSet = selected instanceof MappingSet ? (MappingSet) selected : null;
+      if (Util.differ(selectedSet, this.visicutModel1.getMappings()))
+      {
+        this.visicutModel1.setMappings(selectedSet);
+        this.refreshButtonStates();
+        this.refreshComboBoxes();
+      }
+    }
+  }//GEN-LAST:event_predefinedMappingListValueChanged
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton calculateTimeButton;
     private javax.swing.JMenuItem calibrateCameraMenuItem;
     private javax.swing.JButton captureImageButton;
-    private javax.swing.JButton customMappingButton;
+    private javax.swing.JTabbedPane customMappingPanel;
     private javax.swing.JTextField dimensionWidthTextField;
     private javax.swing.JTextField dimesnionsHeightTextfield;
     private javax.swing.JMenuItem editMappingMenuItem;
@@ -1719,9 +1733,11 @@ private void previewPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSpinner jSpinner1;
     private com.t_oster.visicut.gui.beans.ImageComboBox laserCutterComboBox;
-    private com.t_oster.visicut.gui.beans.ImageComboBox mappingComboBox;
     private com.t_oster.visicut.managers.MappingManager mappingManager1;
     private com.t_oster.visicut.gui.beans.ImageComboBox materialComboBox;
     private javax.swing.JTextField materialHeightTextField;
@@ -1729,6 +1745,7 @@ private void previewPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newMenuItem;
     private javax.swing.JMenuItem openMenuItem;
+    private javax.swing.JList predefinedMappingList;
     private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
     private com.t_oster.visicut.managers.ProfileManager profileManager1;
     private javax.swing.JProgressBar progressBar;
