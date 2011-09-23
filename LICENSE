@@ -1,0 +1,13 @@
+VisiCut itself is licensed under the GNU Lesser Public License (see COPYING.LESSER for details).
+
+However, it contains some 3rd Party files, which are listed below.
+
+3rd Party files:
+- The Camera Icon src/com/t_oster/visicut/gui/ressources/camera.png is from the Token Icon Set of EVAN BROOKS (http://brsev.com/). Its licensed under "Creative Commons Attribution Non-commercial (by-nc)"
+- The Zoom Icons src/com/t_oster/visicut/gui/ressources/zoom_*_24.png are from the "Must Have Icon Set" by Visual Farm (http://www.visualpharm.com/) and licensed under "Commercial Use Allowed, Back Link Required"
+- The VisiCut Icon "icon.png" is from the icon pack "Pry System" by "Jonas Rask Design" and licensed under "Freeware Non-commercial"
+
+3rd Party libraries:
+- SVG Support: SVGSalamander (http://svgsalamander.java.net/) by Mark McKay (LGPL)
+- DXF Support: Kabeja (kabeja.sourceforge.net) is licensed under (Apache Software License 2.0), see http://www.apache.org/licenses/LICENSE-2.0
+- EPS Support: Freehep PS Viewer (http://java.freehep.org/freehep1.x/psviewer/index.html) is licensed under LGPL

@@ -15,6 +15,7 @@ cp -r ../dist/* visicut/
 cp -r files/* visicut/
 cp ../README visicut/
 cp ../COPYING.LESSER visicut/
+cp ../LICENSE visicut/
 rm visicut/README.TXT
 chmod +x visicut/*.jar
 chmod +x visicut/VisiCut.*
