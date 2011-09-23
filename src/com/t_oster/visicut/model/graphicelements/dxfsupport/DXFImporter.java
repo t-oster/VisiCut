@@ -20,6 +20,7 @@
  */
 package com.t_oster.visicut.model.graphicelements.dxfsupport;
 
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
@@ -94,8 +95,8 @@ public class DXFImporter implements Importer
       SVGImporter svgimp = new SVGImporter();
       result = svgimp.importFile(in, inputFile.getName());
       //start the output
-      //Assume the DXF has been created with 72DPI
-      result.setTransform(AffineTransform.getScaleInstance(500d/72, 500d/72));
+      //Assume the DXF has been created with mm units
+      result.setTransform(AffineTransform.getScaleInstance(500d*Util.mm2inch(1), 500d*Util.mm2inch(1)));
 
     }
     catch (Exception ex)
