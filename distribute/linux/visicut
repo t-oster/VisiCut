@@ -1,0 +1,16 @@
+#!/bin/bash
+# VisiCut Linux Starter
+# This starter is only intended for a system wide installation
+# if you want to run VisiCut without installing, use the
+# VisiCut.Linux script in the VisiCut.zip file instead
+DIR="$( cd -P "$( dirname "$0" )" && pwd )"
+#find java libraries and separate them with colon
+JARS=$(find $DIR/lib/ -name \*.jar | xargs echo | sed s/\ /:/g)
+if [ ! -d $HOME/.visicut ]; then
+	echo "$HOME/.visicut doesn't exists, so we create it..."
+	mkdir $HOME/.visicut
+	echo "And fill it with the default settings"
+	cp -r $DIR/settings $HOME/.visicut
+fi
+cd $HOME/.visicut
+java -Xms256m -Xmx512m -classpath $JARS -jar $DIR/Visicut.jar
