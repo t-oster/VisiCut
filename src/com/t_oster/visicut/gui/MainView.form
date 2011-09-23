@@ -254,9 +254,9 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jPanel3" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButton1" min="-2" pref="57" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jSpinner1" min="-2" pref="80" max="-2" attributes="0"/>
+                      <Component id="jButton2" min="-2" pref="54" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="captureImageButton" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -282,15 +282,13 @@
                       <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jPanel3" alignment="0" min="-2" max="-2" attributes="1"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jSpinner1" alignment="3" min="-2" max="-2" attributes="1"/>
-                              <Component id="captureImageButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="jButton1" max="32767" attributes="1"/>
+                          <Component id="jButton2" max="32767" attributes="1"/>
+                          <Component id="captureImageButton" max="32767" attributes="1"/>
+                          <Component id="jPanel3" alignment="0" max="32767" attributes="1"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace pref="9" max="32767" attributes="0"/>
                       <Component id="jPanel1" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="progressBar" min="-2" max="-2" attributes="0"/>
@@ -728,7 +726,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="650" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="647" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
@@ -746,28 +744,13 @@
     </Component>
     <Component class="javax.swing.JButton" name="captureImageButton">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" resourceKey="captureImageButton.icon"/>
         <Property name="text" type="java.lang.String" resourceKey="captureImageButton.text"/>
         <Property name="name" type="java.lang.String" value="captureImageButton" noResource="true"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="captureImageButtonActionPerformed"/>
       </Events>
-    </Component>
-    <Component class="javax.swing.JSpinner" name="jSpinner1">
-      <Properties>
-        <Property name="name" type="java.lang.String" value="jSpinner1" noResource="true"/>
-      </Properties>
-      <BindingProperties>
-        <BindingProperty name="value" source="previewPanel" sourcePath="${zoom}" target="jSpinner1" targetPath="value" updateStrategy="0" immediately="false">
-          <Property name="name" type="java.lang.String" value="ZommSpinner"/>
-        </BindingProperty>
-      </BindingProperties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel8">
-      <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="jLabel8.text"/>
-        <Property name="name" type="java.lang.String" value="jLabel8" noResource="true"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JProgressBar" name="progressBar">
       <Properties>
@@ -841,5 +824,25 @@
         </Component>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JButton" name="jButton1">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" resourceKey="jButton1.icon"/>
+        <Property name="text" type="java.lang.String" resourceKey="jButton1.text"/>
+        <Property name="name" type="java.lang.String" value="jButton1" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButton2">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" resourceKey="jButton2.icon"/>
+        <Property name="text" type="java.lang.String" resourceKey="jButton2.text"/>
+        <Property name="name" type="java.lang.String" value="jButton2" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+      </Events>
+    </Component>
   </SubComponents>
 </Form>
