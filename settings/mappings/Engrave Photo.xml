@@ -11,8 +11,11 @@
     </void>
    </object>
   </void>
+  <void property="description">
+   <string>darker colors get higher pixel density</string>
+  </void>
   <void property="name">
-   <string>Engrave</string>
+   <string>Engrave Photo</string>
   </void>
  </object>
 </java>

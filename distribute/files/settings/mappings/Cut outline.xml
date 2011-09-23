@@ -4,16 +4,6 @@
   <void method="add">
    <object class="com.t_oster.visicut.model.mapping.Mapping">
     <void property="a">
-     <object class="com.t_oster.visicut.model.mapping.FilterSet"/>
-    </void>
-    <void property="b">
-     <string>Engrave Photo</string>
-    </void>
-   </object>
-  </void>
-  <void method="add">
-   <object class="com.t_oster.visicut.model.mapping.Mapping">
-    <void property="a">
      <object class="com.t_oster.visicut.model.mapping.FilterSet">
       <void property="useOuterShape">
        <boolean>true</boolean>
@@ -25,8 +15,11 @@
     </void>
    </object>
   </void>
+  <void property="description">
+   <string>Cuts only the outline</string>
+  </void>
   <void property="name">
-   <string>Engrave + Cut out</string>
+   <string>Cut outline</string>
   </void>
  </object>
 </java>
