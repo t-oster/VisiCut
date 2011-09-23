@@ -84,7 +84,7 @@ public abstract class SVGObject implements GraphicObject
       AffineTransform tr = new AffineTransform();
       for (Object o : this.getPathToRoot())
       {
-        if (o instanceof SVGElement)
+        if (o instanceof Group)
         {
           StyleAttribute sty = new StyleAttribute("transform");
           if (((SVGElement) o).getPres(sty))

@@ -78,15 +78,22 @@ public class SVGImporter implements Importer
     }
   }
 
-  public GraphicSet importFile(InputStream in, String name) throws IOException
+  public GraphicSet importFile(InputStream in, String name) throws Exception
   {
-    URI svg = u.loadSVG(in, name);
-    SVGRoot root = u.getDiagram(svg).getRoot();
-    GraphicSet result = new GraphicSet();
-    result.setTransform(AffineTransform.getScaleInstance(500d/96, 500d/96));
-    importNode(root, result);
-    return result;
-
+    try
+    {
+      URI svg = u.loadSVG(in, name);
+      SVGRoot root = u.getDiagram(svg).getRoot();
+      GraphicSet result = new GraphicSet();
+      //Inkscape SVG Units are 1/90 inch
+      result.setTransform(AffineTransform.getScaleInstance(500d / 90, 500d / 90));
+      importNode(root, result);
+      return result;
+    }
+    catch (Exception e)
+    {
+      throw new ImportException(e);
+    }
   }
 
   @Override
