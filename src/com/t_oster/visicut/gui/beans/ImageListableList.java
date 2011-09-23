@@ -20,26 +20,27 @@ import com.t_oster.visicut.gui.ImageListable;
 import com.t_oster.visicut.misc.Helper;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.JComboBox;
+import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.plaf.metal.MetalComboBoxUI;
+import javax.swing.event.ListSelectionListener;
 
 /**
- *
+ * A list Renderer, which allowes to render ImageListable Objects
+ * whith their Image, Name and Tooltip and allowes disbeling
  * @author thommy
  */
-public class ImageComboBox extends JComboBox
+public class ImageListableList extends JList
 {
 
+  private DefaultListModel mappingListModel = new DefaultListModel();
   private DefaultListCellRenderer cellrenderer = new DefaultListCellRenderer()
   {
 
@@ -63,11 +64,11 @@ public class ImageComboBox extends JComboBox
               label += "<td height=80><img width=64 height=64 src=file://" + f.getAbsolutePath() + "/></td>";
             }
           }
-          if (ImageComboBox.this.isDisabled(o))
+          if (ImageListableList.this.isDisabled(o))
           {
             label += "<td width=3><td>";
             label += "<font color=" + Helper.toHtmlRGB((Color) UIManager.get("ComboBox.disabledForeground")) + ">";
-            label += item.getName() + "<br/>" + ImageComboBox.this.disableReasons.get(o) + "</font></td></tr></table></html>";
+            label += item.getName() + "<br/>" + ImageListableList.this.disableReasons.get(o) + "</font></td></tr></table></html>";
             l.setFocusable(false);
             l.setEnabled(false);
           }
@@ -84,9 +85,9 @@ public class ImageComboBox extends JComboBox
           {
             l.setText("Please select");
           }
-          else if (ImageComboBox.this.isDisabled(o))
+          else if (ImageListableList.this.isDisabled(o))
           {
-            l.setText(o.toString() + " (" + ImageComboBox.this.disableReasons.get(o) + ")");
+            l.setText(o.toString() + " (" + ImageListableList.this.disableReasons.get(o) + ")");
             l.setFocusable(false);
             l.setEnabled(false);
           }
@@ -99,6 +100,30 @@ public class ImageComboBox extends JComboBox
       return c;
     }
   };
+
+  public ImageListableList()
+  {
+    this.setModel(mappingListModel);
+    this.setCellRenderer(cellrenderer);
+    this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    this.addListSelectionListener(new ListSelectionListener()
+    {
+
+      int oldSelectedIndex = -1;
+
+      public void valueChanged(ListSelectionEvent lse)
+      {
+        if (ImageListableList.this.isDisabled(ImageListableList.this.getSelectedValue()))
+        {
+          ImageListableList.this.setSelectedIndex(oldSelectedIndex);
+        }
+        else
+        {
+          oldSelectedIndex = ImageListableList.this.getSelectedIndex();
+        }
+      }
+    });
+  }
   private Map<Object, String> disableReasons = new LinkedHashMap<Object, String>();
 
   public void setDisabled(Object o, boolean disabled, String reason)
@@ -118,40 +143,28 @@ public class ImageComboBox extends JComboBox
     this.setDisabled(o, disabled, "disabled");
   }
 
+  public int getItemCount()
+  {
+    return mappingListModel.getSize();
+  }
+
+  public Object getItemAt(int i)
+  {
+    return mappingListModel.elementAt(i);
+  }
+
   public boolean isDisabled(Object o)
   {
     return this.disableReasons.containsKey(o);
   }
 
-  public ImageComboBox()
+  public void clearList()
   {
-    //For MAC Os displaying the correct size
-    if (System.getProperty("os.name").toLowerCase().contains("mac"))
-    {
-      Color bg = (Color) UIManager.get("ComboBox.background");
-      Color fg = (Color) UIManager.get("ComboBox.foreground");
-      UIManager.put("ComboBox.selectionBackground", bg);
-      UIManager.put("ComboBox.selectionForeground", fg);
-      this.setUI(new MetalComboBoxUI());
-    }
-    this.setRenderer(cellrenderer);
-    this.addActionListener(new ActionListener()
-    {
+    this.mappingListModel.clear();
+  }
 
-      int oldSelectedIndex = -1;
-
-      @Override
-      public void actionPerformed(ActionEvent ae)
-      {
-        if (ImageComboBox.this.isDisabled(ImageComboBox.this.getSelectedItem()))
-        {
-          ImageComboBox.this.setSelectedIndex(oldSelectedIndex);
-        }
-        else
-        {
-          oldSelectedIndex = ImageComboBox.this.getSelectedIndex();
-        }
-      }
-    });
+  public void addItem(Object o)
+  {
+    this.mappingListModel.addElement(o);
   }
 }

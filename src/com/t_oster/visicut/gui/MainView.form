@@ -283,16 +283,11 @@
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jPanel3" alignment="0" min="-2" max="-2" attributes="1"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Group type="103" alignment="0" groupAlignment="1" attributes="0">
-                                      <Component id="captureImageButton" alignment="1" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jSpinner1" alignment="1" min="-2" max="-2" attributes="1"/>
-                                  </Group>
-                              </Group>
+                          <Component id="jPanel3" alignment="0" min="-2" pref="57" max="-2" attributes="1"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jSpinner1" alignment="3" min="-2" max="-2" attributes="1"/>
+                              <Component id="captureImageButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -315,10 +310,10 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
+              <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="customMappingPanel" alignment="0" pref="289" max="32767" attributes="0"/>
+                      <Component id="mappingTabbedPane" alignment="0" pref="308" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="laserCutterComboBox" alignment="0" min="-2" pref="241" max="-2" attributes="1"/>
@@ -329,9 +324,9 @@
                               <Group type="102" alignment="0" attributes="1">
                                   <Group type="103" groupAlignment="1" attributes="0">
                                       <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="materialHeightTextField" alignment="0" pref="132" max="32767" attributes="1"/>
-                                      <Component id="dimensionWidthTextField" alignment="0" pref="132" max="32767" attributes="1"/>
-                                      <Component id="jLabel3" alignment="0" pref="132" max="32767" attributes="1"/>
+                                      <Component id="materialHeightTextField" alignment="0" pref="155" max="32767" attributes="1"/>
+                                      <Component id="dimensionWidthTextField" alignment="0" pref="155" max="32767" attributes="1"/>
+                                      <Component id="jLabel3" alignment="0" pref="155" max="32767" attributes="1"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
@@ -348,16 +343,12 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
-                      <Group type="102" alignment="0" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jLabel10" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Group type="102" alignment="1" attributes="0">
-                                  <Component id="timeLabel" pref="158" max="32767" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="calculateTimeButton" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
-                          <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="timeLabel" pref="111" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="calculateTimeButton" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -393,12 +384,11 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="customMappingPanel" pref="422" max="32767" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
+                  <Component id="mappingTabbedPane" pref="446" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="calculateTimeButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="timeLabel" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -524,29 +514,27 @@
         <Component class="javax.swing.JLabel" name="timeLabel">
           <Properties>
             <Property name="text" type="java.lang.String" resourceKey="timeLabel.text"/>
-            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-              <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
-                <LineBorder/>
-              </Border>
-            </Property>
             <Property name="name" type="java.lang.String" value="timeLabel" noResource="true"/>
           </Properties>
         </Component>
-        <Container class="javax.swing.JTabbedPane" name="customMappingPanel">
+        <Container class="javax.swing.JTabbedPane" name="mappingTabbedPane">
           <Properties>
-            <Property name="name" type="java.lang.String" value="customMappingPanel" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="mappingTabbedPane" noResource="true"/>
           </Properties>
+          <Events>
+            <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="mappingTabbedPaneStateChanged"/>
+          </Events>
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
           <SubComponents>
-            <Container class="javax.swing.JPanel" name="jPanel4">
+            <Container class="javax.swing.JPanel" name="predefinedMappingPanel">
               <Properties>
-                <Property name="name" type="java.lang.String" value="jPanel4" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="predefinedMappingPanel" noResource="true"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                   <JTabbedPaneConstraints tabName="Predefined">
-                    <Property name="tabTitle" type="java.lang.String" resourceKey="jPanel4.TabConstraints.tabTitle"/>
+                    <Property name="tabTitle" type="java.lang.String" resourceKey="predefinedMappingPanel.TabConstraints.tabTitle"/>
                   </JTabbedPaneConstraints>
                 </Constraint>
               </Constraints>
@@ -554,12 +542,12 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="0" pref="268" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" alignment="0" pref="296" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="0" pref="376" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" alignment="0" pref="404" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -574,17 +562,8 @@
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
-                    <Component class="javax.swing.JList" name="predefinedMappingList">
+                    <Component class="com.t_oster.visicut.gui.beans.ImageListableList" name="predefinedMappingList">
                       <Properties>
-                        <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
-                          <StringArray count="5">
-                            <StringItem index="0" value="Item 1"/>
-                            <StringItem index="1" value="Item 2"/>
-                            <StringItem index="2" value="Item 3"/>
-                            <StringItem index="3" value="Item 4"/>
-                            <StringItem index="4" value="Item 5"/>
-                          </StringArray>
-                        </Property>
                         <Property name="name" type="java.lang.String" value="predefinedMappingList" noResource="true"/>
                       </Properties>
                       <Events>
@@ -595,14 +574,20 @@
                 </Container>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="jPanel5">
+            <Container class="javax.swing.JPanel" name="customMappingPanel">
               <Properties>
-                <Property name="name" type="java.lang.String" value="jPanel5" noResource="true"/>
+                <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[277, 382]"/>
+                </Property>
+                <Property name="name" type="java.lang.String" value="customMappingPanel" noResource="true"/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="customMappingPanelMouseExited"/>
+              </Events>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                   <JTabbedPaneConstraints tabName="Custom">
-                    <Property name="tabTitle" type="java.lang.String" resourceKey="jPanel5.TabConstraints.tabTitle"/>
+                    <Property name="tabTitle" type="java.lang.String" resourceKey="customMappingPanel.TabConstraints.tabTitle"/>
                   </JTabbedPaneConstraints>
                 </Constraint>
               </Constraints>
@@ -610,15 +595,72 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="268" max="32767" attributes="0"/>
+                      <Group type="102" alignment="1" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="customMappingComboBox" pref="208" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                      <Component id="jScrollPane2" alignment="0" pref="296" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="376" max="32767" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="customMappingComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jScrollPane2" pref="348" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                 </DimensionLayout>
               </Layout>
+              <SubComponents>
+                <Component class="javax.swing.JLabel" name="jLabel11">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="jLabel11.text"/>
+                    <Property name="name" type="java.lang.String" value="jLabel11" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JComboBox" name="customMappingComboBox">
+                  <Properties>
+                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                      <StringArray count="4">
+                        <StringItem index="0" value="Item 1"/>
+                        <StringItem index="1" value="Item 2"/>
+                        <StringItem index="2" value="Item 3"/>
+                        <StringItem index="3" value="Item 4"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="name" type="java.lang.String" value="customMappingComboBox" noResource="true"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="customMappingComboBoxActionPerformed"/>
+                  </Events>
+                </Component>
+                <Container class="javax.swing.JScrollPane" name="jScrollPane2">
+                  <Properties>
+                    <Property name="name" type="java.lang.String" value="jScrollPane2" noResource="true"/>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+                  </AuxValues>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                  <SubComponents>
+                    <Component class="com.t_oster.visicut.gui.mappingwizzard.MappingWizzardTable" name="customMappingTable">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="customMappingTable" noResource="true"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
             </Container>
           </SubComponents>
         </Container>
@@ -691,7 +733,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="652" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="651" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>

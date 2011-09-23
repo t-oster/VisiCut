@@ -66,6 +66,7 @@ public class MappingWizzardTable extends JTable
   {
     this.attribute = attribute;
     this.getColumnModel().getColumn(0).setHeaderValue(attribute);
+    this.refreshListContent();
   }
   protected GraphicSet objects = null;
 
@@ -87,22 +88,31 @@ public class MappingWizzardTable extends JTable
   public void setObjects(GraphicSet objects)
   {
     this.objects = objects;
+    this.refreshListContent();
+  }
+
+  private void refreshListContent()
+  {
     this.values = new LinkedList<Tuple<Object, LaserProfile>>();
-    List<Object> visitedValues = new LinkedList<Object>();
-    if (objects != null)
+    if (this.attribute != null)
     {
-      for (GraphicObject g : objects)
+      List<Object> visitedValues = new LinkedList<Object>();
+      if (objects != null)
       {
-        for (Object value : g.getAttributeValues(attribute))
+        for (GraphicObject g : objects)
         {
-          if (!visitedValues.contains(value))
+          for (Object value : g.getAttributeValues(attribute))
           {
-            visitedValues.add(value);
-            this.values.add(new Tuple(value, null));
+            if (!visitedValues.contains(value))
+            {
+              visitedValues.add(value);
+              this.values.add(new Tuple(value, null));
+            }
           }
         }
       }
     }
+    this.model.fireTableDataChanged();
   }
   protected List<LaserProfile> laserProfiles = null;
 
@@ -138,14 +148,14 @@ public class MappingWizzardTable extends JTable
   }
   private ImageComboBox profilesCb;
   private List<Tuple<Object, LaserProfile>> values;
-  
+
   /**
    * Sets the mapped Laserprofile for a value, if the
    * value exits in the table
    */
   void setProfileForValue(Object value, LaserProfile profile)
   {
-    for (Tuple<Object,LaserProfile> tup:values)
+    for (Tuple<Object, LaserProfile> tup : values)
     {
       if (tup.getA().equals(value))
       {
@@ -154,7 +164,6 @@ public class MappingWizzardTable extends JTable
       }
     }
   }
-  
   private DefaultTableModel model = new DefaultTableModel()
   {
 
@@ -209,7 +218,9 @@ public class MappingWizzardTable extends JTable
     this.setModel(model);
     DefaultTableCellRenderer renderer = new DefaultTableCellRenderer()
     {
+
       private int minRowHeight = 16;
+
       @Override
       public Component getTableCellRendererComponent(JTable jtable, Object o, boolean bln, boolean bln1, int i, int i1)
       {
@@ -252,7 +263,7 @@ public class MappingWizzardTable extends JTable
     this.getColumnModel().getColumn(1).setCellRenderer(renderer);
   }
 
-  MappingSet getMappingSet()
+  public MappingSet getResultingMappingSet()
   {
     MappingSet result = new MappingSet();
     for (Tuple<Object, LaserProfile> t : this.values)
@@ -265,5 +276,35 @@ public class MappingWizzardTable extends JTable
       }
     }
     return result;
+  }
+
+  /**
+   * Returns the MappingSet resulting of all selected Rows.
+   * If A row is mapped to Ignore, the a Mapping with
+   * target null is added.
+   * If no row is selected, it returns the MappingSet of
+   * all Mapped Rows.
+   * 
+   * @return 
+   */
+  public MappingSet getSelectionMappingSet()
+  {
+    int[] rows = this.getSelectedRows();
+    if (rows.length == 0)
+    {
+      return this.getResultingMappingSet();
+    }
+    else
+    {
+      MappingSet result = new MappingSet();
+      for (int i : rows)
+      {
+        Tuple<Object, LaserProfile> t = values.get(i);
+        FilterSet fs = new FilterSet();
+        fs.add(new MappingFilter(this.attribute, t.getA()));
+        result.add(new Mapping(fs, t.getB() == null ? null : t.getB().getName()));
+      }
+      return result;
+    }
   }
 }
