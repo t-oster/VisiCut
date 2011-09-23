@@ -12,6 +12,7 @@ install: jar
 	cp icon.png $(PREFIX)/share/pixmaps/visicut.png
 	cp distribute/linux/visicut $(PREFIX)/share/visicut/
 	cp -r distribute/files/* $(PREFIX)/share/visicut/
+	mkdir -p $(PREFIX)/bin
 	ln -s $(PREFIX)/share/visicut/visicut $(PREFIX)/bin/visicut
 	mkdir -p $(PREFIX)/share/applications
 	cat distribute/linux/VisiCut.desktop | sed s#PREFIX#$(PREFIX)#g# > $(PREFIX)/share/applications/VisiCut.desktop
