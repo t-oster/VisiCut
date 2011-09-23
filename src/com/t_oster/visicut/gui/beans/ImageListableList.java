@@ -56,19 +56,19 @@ public class ImageListableList extends JList
 
           ImageListable item = (ImageListable) o;
           String label = "<html><table cellpadding=3><tr>";
-          if (item.getThumbnailPath() != null)
-          {
-            File f = new File(item.getThumbnailPath());
-            if (f.exists())
-            {
-              label += "<td height=80><img width=64 height=64 src=file://" + f.getAbsolutePath() + "/></td>";
-            }
-          }
+//          if (item.getThumbnailPath() != null)
+//          {
+//            File f = new File(item.getThumbnailPath());
+//            if (f.exists())
+//            {
+//              label += "<td height=80><img width=64 height=64 src=file://" + f.getAbsolutePath() + "/></td>";
+//            }
+//          }
           if (ImageListableList.this.isDisabled(o))
           {
             label += "<td width=3><td>";
             label += "<font color=" + Helper.toHtmlRGB((Color) UIManager.get("ComboBox.disabledForeground")) + ">";
-            label += item.getName() + "<br/>" + ImageListableList.this.disableReasons.get(o) + "</font></td></tr></table></html>";
+            label += item.getName() + " (" + ImageListableList.this.disableReasons.get(o) + ")</font></td></tr></table></html>";
             l.setFocusable(false);
             l.setEnabled(false);
           }

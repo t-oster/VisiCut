@@ -19,9 +19,9 @@
  */
 package com.t_oster.visicut.gui;
 
-import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import org.jdesktop.application.Application;
@@ -113,6 +113,15 @@ public class VisicutApp extends SingleFrameApplication
     {
       Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
     }
-    launch(VisicutApp.class, args);
+    try
+    {
+      launch(VisicutApp.class, args);
+    }
+    catch (Exception e)
+    {
+      JOptionPane.showMessageDialog(null, "Sorry: An unexpected Error occured\n Please try to reproduce it and fill in a Bugreport at\nhttps://github.com/t-oster/VisiCut/issues", "Error", JOptionPane.ERROR_MESSAGE);
+      e.printStackTrace();
+      System.exit(1);
+    }
   }
 }

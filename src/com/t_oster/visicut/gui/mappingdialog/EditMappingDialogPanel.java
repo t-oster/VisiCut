@@ -118,7 +118,7 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
     this.editableTablePanel1.setTableModel(filterTableModel);
     JComboBox attributeCb = new JComboBox();
     attributeCb.setEditable(true);
-    for (String a:new String[]{"Type", "Fill Color", "Line Color", "Line Width", "Group"})
+    for (String a:new String[]{"Type", "Fill Color", "Stroke Color", "Stroke Width", "Group"})
     {
       attributeCb.addItem(a);
     }

@@ -1601,7 +1601,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       }
       else
       {
-        this.predefinedMappingList.setDisabled(m, true, mappings == null ? "Lasercutter not supported" : "Mapping not supported");
+        this.predefinedMappingList.setDisabled(m, true, mp == null ? "Lasercutter not supported" : "Material not supported");
       }
     }
   }

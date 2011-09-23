@@ -65,9 +65,7 @@
                       <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jTextField1" min="-2" pref="344" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="selectThumbnailButton1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="339" max="32767" attributes="0"/>
+                      <EmptySpace pref="421" max="32767" attributes="0"/>
                       <Component id="cancelButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="okButton" min="-2" max="-2" attributes="0"/>
@@ -110,7 +108,6 @@
                   <Component id="nameLB" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jTextField1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="selectThumbnailButton1" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -373,16 +370,6 @@
         <BindingProperty name="text" source="Form" sourcePath="${currentMappings.description}" target="jTextField1" targetPath="text" updateStrategy="0" immediately="false">
           <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_ACTION_OR_FOCUS_LOST"/>
           <Property name="name" type="java.lang.String" value="desc"/>
-        </BindingProperty>
-      </BindingProperties>
-    </Component>
-    <Component class="com.t_oster.visicut.gui.beans.SelectThumbnailButton" name="selectThumbnailButton1">
-      <Properties>
-        <Property name="name" type="java.lang.String" value="selectThumbnailButton1" noResource="true"/>
-      </Properties>
-      <BindingProperties>
-        <BindingProperty name="thumbnailPath" source="Form" sourcePath="${currentMappings.thumbnailPath}" target="selectThumbnailButton1" targetPath="thumbnailPath" updateStrategy="0" immediately="false">
-          <Property name="name" type="java.lang.String" value="thubmpath"/>
         </BindingProperty>
       </BindingProperties>
     </Component>
