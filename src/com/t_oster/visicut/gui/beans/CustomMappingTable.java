@@ -14,7 +14,7 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.t_oster.visicut.gui.mappingwizzard;
+package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.liblasercut.platform.Tuple;
 import com.t_oster.visicut.gui.ImageListable;
@@ -42,7 +42,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author thommy
  */
-public class MappingWizzardTable extends JTable
+public class CustomMappingTable extends JTable
 {
 
   protected String attribute = null;
@@ -176,13 +176,13 @@ public class MappingWizzardTable extends JTable
     @Override
     public String getColumnName(int i)
     {
-      return i == 0 ? MappingWizzardTable.this.getAttribute() : "Laser Profile";
+      return i == 0 ? CustomMappingTable.this.getAttribute() : "Laser Profile";
     }
 
     @Override
     public int getRowCount()
     {
-      return MappingWizzardTable.this.values == null ? 0 : MappingWizzardTable.this.values.size();
+      return CustomMappingTable.this.values == null ? 0 : CustomMappingTable.this.values.size();
     }
 
     @Override
@@ -190,11 +190,11 @@ public class MappingWizzardTable extends JTable
     {
       if (x == 0)
       {
-        return MappingWizzardTable.this.values.get(y).getA();
+        return CustomMappingTable.this.values.get(y).getA();
       }
       else
       {
-        return MappingWizzardTable.this.values.get(y).getB();
+        return CustomMappingTable.this.values.get(y).getB();
       }
     }
 
@@ -207,12 +207,12 @@ public class MappingWizzardTable extends JTable
     @Override
     public void setValueAt(Object o, int y, int x)
     {
-      MappingWizzardTable.this.values.get(y).setB((LaserProfile) o);
+      CustomMappingTable.this.values.get(y).setB((LaserProfile) o);
       this.fireTableCellUpdated(y, x);
     }
   };
 
-  public MappingWizzardTable()
+  public CustomMappingTable()
   {
     this.values = new LinkedList<Tuple<Object, LaserProfile>>();
     this.setModel(model);

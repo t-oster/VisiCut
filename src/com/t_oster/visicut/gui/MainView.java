@@ -212,7 +212,7 @@ public class MainView extends javax.swing.JFrame
         jLabel11 = new javax.swing.JLabel();
         customMappingComboBox = new javax.swing.JComboBox();
         jScrollPane2 = new javax.swing.JScrollPane();
-        customMappingTable = new com.t_oster.visicut.gui.mappingwizzard.MappingWizzardTable();
+        customMappingTable = new com.t_oster.visicut.gui.beans.CustomMappingTable();
         jPanel1 = new javax.swing.JPanel();
         previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
         executeJobButton = new javax.swing.JButton();
@@ -1790,6 +1790,9 @@ private void previewPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:
   private void customMappingPanelMouseExited(java.awt.event.MouseEvent evt)//GEN-FIRST:event_customMappingPanelMouseExited
   {//GEN-HEADEREND:event_customMappingPanelMouseExited
     this.customMappingTable.clearSelection();
+    this.visicutModel1.setMappings(customMappingTable.getResultingMappingSet());
+    this.refreshComboBoxes();
+    this.refreshButtonStates();
   }//GEN-LAST:event_customMappingPanelMouseExited
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
@@ -1798,7 +1801,7 @@ private void previewPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:
     private javax.swing.JButton captureImageButton;
     private javax.swing.JComboBox customMappingComboBox;
     private javax.swing.JPanel customMappingPanel;
-    private com.t_oster.visicut.gui.mappingwizzard.MappingWizzardTable customMappingTable;
+    private com.t_oster.visicut.gui.beans.CustomMappingTable customMappingTable;
     private javax.swing.JTextField dimensionWidthTextField;
     private javax.swing.JTextField dimesnionsHeightTextfield;
     private javax.swing.JMenuItem editMappingMenuItem;

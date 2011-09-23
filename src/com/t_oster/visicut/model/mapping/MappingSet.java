@@ -16,13 +16,14 @@
  **/
 package com.t_oster.visicut.model.mapping;
 
+import com.t_oster.visicut.gui.ImageListable;
 import java.util.LinkedList;
 
 /**
  *
  * @author thommy
  */
-public class MappingSet extends LinkedList<Mapping>
+public class MappingSet extends LinkedList<Mapping> implements ImageListable
 {
 
   protected String name = "UnnamedMapping";
@@ -95,4 +96,48 @@ public class MappingSet extends LinkedList<Mapping>
     hash = 13 * hash + (this.name != null ? this.name.hashCode() : 0);
     return hash;
   }
+
+  protected String description = "A new created mapping";
+
+  /**
+   * Get the value of description
+   *
+   * @return the value of description
+   */
+  public String getDescription()
+  {
+    return description;
+  }
+
+  /**
+   * Set the value of description
+   *
+   * @param description new value of description
+   */
+  public void setDescription(String description)
+  {
+    this.description = description;
+  }
+  protected String thumbnailPath = null;
+
+  /**
+   * Get the value of thumbnailPath
+   *
+   * @return the value of thumbnailPath
+   */
+  public String getThumbnailPath()
+  {
+    return thumbnailPath;
+  }
+
+  /**
+   * Set the value of thumbnailPath
+   *
+   * @param thumbnailPath new value of thumbnailPath
+   */
+  public void setThumbnailPath(String thumbnailPath)
+  {
+    this.thumbnailPath = thumbnailPath;
+  }
+
 }

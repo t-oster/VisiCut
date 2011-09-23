@@ -653,7 +653,7 @@
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
-                    <Component class="com.t_oster.visicut.gui.mappingwizzard.MappingWizzardTable" name="customMappingTable">
+                    <Component class="com.t_oster.visicut.gui.beans.CustomMappingTable" name="customMappingTable">
                       <Properties>
                         <Property name="name" type="java.lang.String" value="customMappingTable" noResource="true"/>
                       </Properties>
