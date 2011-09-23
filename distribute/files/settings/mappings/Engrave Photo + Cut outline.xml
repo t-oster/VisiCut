@@ -25,9 +25,6 @@
     </void>
    </object>
   </void>
-  <void property="description">
-   <string>Engraves everything and cuts the outline</string>
-  </void>
   <void property="name">
    <string>Engrave Photo + Cut outline</string>
   </void>

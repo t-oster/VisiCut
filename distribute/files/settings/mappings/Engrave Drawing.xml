@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <java version="1.7.0" class="java.beans.XMLDecoder">
  <object class="com.t_oster.visicut.model.mapping.MappingSet">
-  <void property="description">
-   <string>Colors are engraved only if they are darker than the average color</string>
+  <void method="add">
+   <object class="com.t_oster.visicut.model.mapping.Mapping">
+    <void property="a">
+     <object class="com.t_oster.visicut.model.mapping.FilterSet"/>
+    </void>
+    <void property="b">
+     <string>Engrave Drawing</string>
+    </void>
+   </object>
   </void>
   <void property="name">
    <string>Engrave Drawing</string>

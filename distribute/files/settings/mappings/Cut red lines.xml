@@ -8,7 +8,7 @@
       <void method="add">
        <object class="com.t_oster.visicut.model.mapping.MappingFilter">
         <void property="attribute">
-         <string>Fill Color</string>
+         <string>Stroke Color</string>
         </void>
         <void property="value">
          <object class="java.awt.Color">
@@ -26,9 +26,6 @@
      <string>Cut Line</string>
     </void>
    </object>
-  </void>
-  <void property="description">
-   <string>Cuts every red line</string>
   </void>
   <void property="name">
    <string>Cut red lines</string>

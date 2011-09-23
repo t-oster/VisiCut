@@ -11,9 +11,6 @@
     </void>
    </object>
   </void>
-  <void property="description">
-   <string>Cuts every line and outline in the drawing</string>
-  </void>
   <void property="name">
    <string>Cut</string>
   </void>
