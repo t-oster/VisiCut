@@ -5,7 +5,7 @@ jar:
 	ant jar
 clean:
 	ant clean
-install: jar
+install:
 	mkdir -p $(PREFIX)/share/visicut/
 	cp -r dist/* $(PREFIX)/share/visicut/
 	mkdir -p $(PREFIX)/share/pixmaps

@@ -3,7 +3,8 @@
 # This starter is only intended for a system wide installation
 # if you want to run VisiCut without installing, use the
 # VisiCut.Linux script in the VisiCut.zip file instead
-DIR="$( cd -P "$( dirname "$0" )" && pwd )"
+script="`readlink -f "${BASH_SOURCE[0]}"`"
+DIR="`dirname "$script"`"
 #find java libraries and separate them with colon
 JARS=$(find $DIR/lib/ -name \*.jar | xargs echo | sed s/\ /:/g)
 if [ ! -d $HOME/.visicut ]; then

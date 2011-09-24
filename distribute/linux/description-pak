@@ -1,0 +1,3 @@
+VisiCut is a userfriendly tool for creating, saving and sending Jobs to Lasercutters.
+Currently the Epilog ZING (and maybe Legend) Lasercutters are supported, but other drivers will be implemented soon.
+For more information see http://hci.rwth-aachen.de/visicut
