@@ -813,35 +813,21 @@ public class EpilogCutter extends LaserCutter
         double linespeed = ((double) RASTER_LINESPEED * rp.getLaserProperty(i).getSpeed()) / 100;
         BlackWhiteRaster bwr = rp.getImages()[i];
         for (int y = 0; y < bwr.getHeight(); y++)
-        {//Find first + last black point
-          int min = 0;
-          int max = -1;
+        {//Find any black point
+          boolean lineEmpty = true;
           for (int x = 0; x < bwr.getWidth(); x++)
           {
-            if (max == -1)
-            {//No 1 found yet
-              if (!bwr.isBlack(x, y))
-              {
-                min = x;
-              }
-              else
-              {
-                max = x;
-              }
-            }
-            else
-            {
               if (bwr.isBlack(x, y))
               {
-                max = x;
+                lineEmpty = false;
+                break;
               }
-            }
           }
-          if (max != -1)
+          if (!lineEmpty)
           {
-            int w = max - min;
+            int w = bwr.getWidth();
             result += (double) RASTER_LINEOFFSET + (double) w / linespeed;
-            p.x = sp.y%2==0 ? sp.x+max : sp.x+min;
+            p.x = sp.y%2==0 ? sp.x+w : sp.x;
             p.y = sp.y+y;
           }
           else
@@ -862,35 +848,21 @@ public class EpilogCutter extends LaserCutter
         double linespeed = ((double) RASTER3D_LINESPEED * rp.getLaserProperty(i).getSpeed()) / 100;
         GreyscaleRaster gsr = rp.getImages()[i];
         for (int y = 0; y < gsr.getHeight(); y++)
-        {//Find first + last black point
-          int min = 0;
-          int max = -1;
+        {//Check if
+          boolean lineEmpty = true;
           for (int x = 0; x < gsr.getWidth(); x++)
           {
-            if (max == -1)
-            {//No 1 found yet
-              if (gsr.getGreyScale(x, y) == 0)
-              {
-                min = x;
-              }
-              else
-              {
-                max = x;
-              }
-            }
-            else
-            {
               if (gsr.getGreyScale(x, y) != 0)
               {
-                max = x;
+                lineEmpty = false;
+                break;
               }
-            }
           }
-          if (max != -1)
+          if (!lineEmpty)
           {
-            int w = max - min;
+            int w = gsr.getWidth();
             result += (double) RASTER3D_LINEOFFSET + (double) w / linespeed;
-            p.x = sp.y%2==0 ? sp.x+max : sp.x+min;
+            p.x = sp.y%2==0 ? sp.x+w : sp.x;
             p.y = sp.y+y;
           }
         }
