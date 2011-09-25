@@ -1,4 +1,4 @@
-PREFIX?=/usr/local
+PREFIX?=/usr
 all: jar
 
 jar:
@@ -6,16 +6,16 @@ jar:
 clean:
 	ant clean
 install:
-	mkdir -p $(PREFIX)/share/visicut/
-	cp -r dist/* $(PREFIX)/share/visicut/
-	mkdir -p $(PREFIX)/share/pixmaps
-	cp icon.png $(PREFIX)/share/pixmaps/visicut.png
-	cp distribute/linux/visicut $(PREFIX)/share/visicut/
-	cp -r distribute/files/* $(PREFIX)/share/visicut/
-	mkdir -p $(PREFIX)/bin
-	ln -s $(PREFIX)/share/visicut/visicut $(PREFIX)/bin/visicut
-	mkdir -p $(PREFIX)/share/applications
-	cat distribute/linux/VisiCut.desktop | sed s#PREFIX#$(PREFIX)#g# > $(PREFIX)/share/applications/VisiCut.desktop
+	mkdir -p $(DESTDIR)$(PREFIX)/share/visicut/
+	cp -r dist/* $(DESTDIR)$(PREFIX)/share/visicut/
+	mkdir -p $(DESTDIR)$(PREFIX)/share/pixmaps
+	cp icon.png $(DESTDIR)$(PREFIX)/share/pixmaps/visicut.png
+	cp distribute/linux/visicut $(DESTDIR)$(PREFIX)/share/visicut/
+	cp -r distribute/files/* $(DESTDIR)$(PREFIX)/share/visicut/
+	mkdir -p $(DESTDIR)$(PREFIX)/bin
+	ln -s $(PREFIX)/share/visicut/visicut $(DESTDIR)$(PREFIX)/bin/visicut
+	mkdir -p $(DESTDIR)$(PREFIX)/share/applications
+	cat distribute/linux/VisiCut.desktop | sed s#PREFIX#$(PREFIX)#g# > $(DESTDIR)$(PREFIX)/share/applications/VisiCut.desktop
 
 uninstall:
 	rm -rf $(PREFIX)/share/visicut

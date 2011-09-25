@@ -51,7 +51,7 @@ build() {
   #
   # BUILD HERE
   #
-  make -e PREFIX=/usr install
+  make
 }
 
 package() {
