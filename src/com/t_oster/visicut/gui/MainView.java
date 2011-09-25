@@ -1475,10 +1475,6 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         }
       }.start();
     }
-    else
-    {
-      System.out.println("Capturing already in progress");
-    }
   }
 
   @Action
