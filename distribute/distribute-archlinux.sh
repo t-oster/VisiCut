@@ -63,14 +63,16 @@ installwatch -o $INSTALLWATCHLOG make install -e PREFIX=/usr
 
 echo "Copying files to temp directory..."
 
-awk '($2=="open"||$2=="link") && $4=="#success" {print $3} ;($2=="open"||$2=="link") && $4!="#success" {print "$3 $4 $5"} ; $2=="rename" {print $4}' < $INSTALLWATCHLOG | grep ^/ | \
+awk '($2=="open"||$2=="link") && $4=="#success" {print $3} ;($2=="open"||$2=="link") && $4!="#success" {print $3 "_SPACE_" $4} ; $2=="rename" {print $4}' < $INSTALLWATCHLOG | grep ^/ | \
    egrep -v '/dev|$HOME' | sort | uniq > $FILELIST
 
 for i in `cat $FILELIST`; do
- tdir="${FAKEROOT}/${i%/*}"
- mkdir -p "$tdir"
- cp "$i" "$tdir"
+# tdir="${FAKEROOT}/${i%/*}"
+ #mkdir -p "$tdir"
+ #cp "$i" "$tdir"
+echo "Bla: $i"
 done
+exit
 /bin/rm $FILELIST
 
 echo "Create PKGINFO and FILEINFO..."
