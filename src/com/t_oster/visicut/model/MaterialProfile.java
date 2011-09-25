@@ -1,5 +1,6 @@
 /**
  * This file is part of VisiCut.
+ * Copyright (C) 2011 Thomas Oster <thomas.oster@rwth-aachen.de>
  * 
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
