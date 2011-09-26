@@ -6,9 +6,8 @@ jar:
 clean:
 	ant clean
 install:
-	mkdir -p $(DESTDIR)$(PREFIX)/share/visicut/
-	mkdir -p $(DESTDIR)$(PREFIX)/share/visicut/lib/
-	cp -r dist/* $(DESTDIR)$(PREFIX)/share/visicut/
+	mkdir -p $(DESTDIR)$(PREFIX)/share
+	cp -r dist $(DESTDIR)$(PREFIX)/share/visicut
 	mkdir -p $(DESTDIR)$(PREFIX)/share/pixmaps
 	cp icon.png $(DESTDIR)$(PREFIX)/share/pixmaps/visicut.png
 	cp distribute/linux/visicut $(DESTDIR)$(PREFIX)/share/visicut/
