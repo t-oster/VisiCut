@@ -1,0 +1,39 @@
+# Maintainer: Thomas Oster
+pkgname=visicut
+pkgver=1.2.2
+pkgrel=1
+epoch=
+pkgdesc="A userfriendly tool to generate, save and send Jobs to a Lasercutter"
+arch=(any)
+url="http://hci.rwth-aachen.de/visicut"
+license=('LGPL')
+groups=()
+depends=('java-runtime' 'bash')
+makedepends=('unzip' 'apache-ant')
+checkdepends=()
+optdepends=()
+provides=()
+conflicts=('visicut-git')
+replaces=()
+backup=()
+options=()
+install=
+changelog=
+source=(https://github.com/t-oster/VisiCut/zipball/$pkgver)
+noextract=($pkgver)
+md5sums=('b291a7effc55cf160a33d146ba59716e')
+
+build() {
+  cd "$srcdir"
+  unzip $pkgver
+  cd t-oster-VisiCut-*
+  make
+}
+
+package() {
+  cd "$srcdir"
+  cd t-oster-VisiCut-*
+  make DESTDIR="$pkgdir/" install
+}
+
+# vim:set ts=2 sw=2 et:
