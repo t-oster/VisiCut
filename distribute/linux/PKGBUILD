@@ -1,11 +1,3 @@
-# This is an example PKGBUILD file. Use this as a start to creating your own,
-# and remove these comments. For more information, see 'man PKGBUILD'.
-# NOTE: Please fill out the license field for your package! If it is unknown,
-# then please put 'unknown'.
-
-# See http://wiki.archlinux.org/index.php/VCS_PKGBUILD_Guidelines
-# for more information on packaging from GIT sources.
-
 # Maintainer: Thomas Oster <thomas.oster@rwth-aachen.de>
 pkgname=visicut-git
 pkgver=20110923
@@ -15,8 +7,8 @@ arch=(any)
 url="http://hci.rwth-aachen.de/visicut"
 license=('LGPL')
 groups=()
-depends=(java-environment)
-makedepends=('git', 'apache-ant')
+depends=('java-environment' 'bash')
+makedepends=('git' 'apache-ant')
 provides=()
 conflicts=()
 replaces=()
@@ -48,9 +40,6 @@ build() {
   git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
   cd "$srcdir/$_gitname-build"
 
-  #
-  # BUILD HERE
-  #
   make
 }
 
