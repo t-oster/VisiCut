@@ -151,7 +151,7 @@ public class LaosCutter extends LaserCutter
         case SETPOWER:
           if (this.isSimpleMode())
           {
-            out.printf("7 101 %d\n", cmd.getPower());
+            out.printf("7 101 %d\n", cmd.getPower()*100);
           }
           else
           {
@@ -161,7 +161,7 @@ public class LaosCutter extends LaserCutter
         case SETFOCUS:
           if (this.isSimpleMode())
           {
-            out.printf(Locale.US, "2 %f\n", cmd.getFocus());
+            out.printf(Locale.US, "2 %d\n", Util.mm2px(cmd.getFocus(),resolution));
           }
           else
           {
@@ -171,7 +171,7 @@ public class LaosCutter extends LaserCutter
         case SETSPEED:
           if (this.isSimpleMode())
           {
-            out.printf("7 100 %d\n", cmd.getSpeed());
+            out.printf("7 100 %d\n", cmd.getSpeed()*100);
           }
           else
           {
