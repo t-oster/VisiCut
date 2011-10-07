@@ -23,11 +23,15 @@
  */
 package com.t_oster.visicut.gui;
 
+import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.visicut.gui.beans.EditableTableProvider;
+import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.model.LaserDevice;
 import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -305,7 +309,28 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
 
   public Object getNewInstance()
   {
-    return new LaserDevice();
+    JComboBox driver = new JComboBox();
+    driver.setEditable(true);
+    for (String s:PreferencesManager.getInstance().getPreferences().getAvailableLasercutterDrivers())
+    {
+      driver.addItem(s);
+    }
+    if (JOptionPane.showConfirmDialog(this, driver, "Please select a driver", JOptionPane.OK_CANCEL_OPTION)==JOptionPane.CANCEL_OPTION)
+    {
+      return null;
+    }
+    LaserDevice result = new LaserDevice();
+    try
+    {
+      Class driverclass = Class.forName((String) driver.getSelectedItem());
+      LaserCutter cutter = (LaserCutter) driverclass.newInstance();
+      result.setLaserCutter(cutter);
+    }
+    catch (Exception e)
+    {
+      
+    }   
+    return result;
   }
 
   public Object editObject(Object o)
