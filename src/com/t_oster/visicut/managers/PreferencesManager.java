@@ -15,10 +15,6 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.visicut.managers;
 
 import com.t_oster.liblasercut.drivers.EpilogCutter;
@@ -84,7 +80,10 @@ public final class PreferencesManager
       "com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter",
       "com.t_oster.visicut.model.graphicelements.epssupport.EPSImporter"
     });
-    preferences.setAvailableLasercutterDrivers(new String[]{"com.t_oster.liblasercut.drivers.EpilogCutter"});
+    preferences.setAvailableLasercutterDrivers(new String[]{
+      "com.t_oster.liblasercut.drivers.EpilogCutter",
+      "com.t_oster.liblasercut.drivers.LaosCutter"
+    });
     LaserDevice epilog = new LaserDevice();
     epilog.setLaserCutter(new EpilogCutter("137.226.56.228"));
     epilog.setName("Epilog ZING @ Fablab");

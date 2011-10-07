@@ -18,10 +18,13 @@
    </array> 
   </void> 
   <void property="availableLasercutterDrivers"> 
-   <array class="java.lang.String" length="1"> 
+   <array class="java.lang.String" length="2"> 
     <void index="0"> 
      <string>com.t_oster.liblasercut.drivers.EpilogCutter</string> 
     </void> 
+    <void index="1"> 
+     <string>com.t_oster.liblasercut.drivers.LaosCutter</string>
+    </void>
    </array> 
   </void> 
   <void property="laserDevices"> 
