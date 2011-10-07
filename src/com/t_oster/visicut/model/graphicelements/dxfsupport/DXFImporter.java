@@ -49,7 +49,7 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class DXFImporter implements Importer
 {

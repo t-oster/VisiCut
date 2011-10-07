@@ -23,7 +23,7 @@ package com.t_oster.liblasercut;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class IllegalJobException extends Exception
 {

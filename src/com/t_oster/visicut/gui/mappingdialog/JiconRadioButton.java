@@ -24,7 +24,7 @@ import javax.swing.JRadioButton;
  * This class provides a RadioButton which contains
  * an icon in the label through html support
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class JiconRadioButton extends JRadioButton
 {

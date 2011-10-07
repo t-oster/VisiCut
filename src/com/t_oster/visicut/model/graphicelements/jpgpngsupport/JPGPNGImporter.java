@@ -32,7 +32,7 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class JPGPNGImporter implements Importer
 {

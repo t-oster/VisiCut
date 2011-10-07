@@ -33,7 +33,7 @@ import java.util.List;
  * A cutting Profile represents a specific way of handling Image
  * Parts. This means a CuttingProfile provides methods
  * to generate preview and laser data out of Graphic parts.
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public abstract class LaserProfile implements ImageListable, Cloneable
 {

@@ -35,7 +35,7 @@ import java.awt.Stroke;
  * cut with the lasercutten in a specified
  * Material
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class VectorProfile extends LaserProfile
 {

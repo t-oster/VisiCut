@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  * This Panel displays a Set of points which are draggable
  * with the mouse
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class CalibrationPanel extends ZoomablePanel implements MouseListener, MouseMotionListener
 {

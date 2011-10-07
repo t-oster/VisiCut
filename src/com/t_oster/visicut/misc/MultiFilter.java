@@ -26,7 +26,7 @@ import javax.swing.filechooser.FileFilter;
 /**
  * This class implements a FileFilter which takes multiple
  * FileFilters into one.
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class MultiFilter extends FileFilter
 {

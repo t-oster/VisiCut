@@ -21,7 +21,7 @@ package com.t_oster.liblasercut.platform;
  * This Class is the replacement of the java.awt.Point and android.graphics.Point
  * because the library wants to run on both platforms without modification
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class Point
 {

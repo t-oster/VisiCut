@@ -32,7 +32,7 @@ import java.util.LinkedList;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class FilterSet extends LinkedList<MappingFilter>
 {

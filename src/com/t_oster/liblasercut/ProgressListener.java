@@ -22,7 +22,7 @@ package com.t_oster.liblasercut;
  * for progress of 
  * Operations which require much time
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public interface ProgressListener
 {

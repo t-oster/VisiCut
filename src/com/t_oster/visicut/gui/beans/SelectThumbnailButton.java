@@ -28,7 +28,7 @@ import javax.swing.JFileChooser;
  * This Button displays a Thumbnail if a thumbnailPath String is given.
  * If clicked, it displays a File Selection Dialog, which can select
  * PNG files and sets its Thumbnail if a PNG file is selected.
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class SelectThumbnailButton extends JButton implements ActionListener
 {

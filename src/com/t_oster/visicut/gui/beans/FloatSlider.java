@@ -21,7 +21,7 @@ import javax.swing.JSlider;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class FloatSlider extends JSlider
 {

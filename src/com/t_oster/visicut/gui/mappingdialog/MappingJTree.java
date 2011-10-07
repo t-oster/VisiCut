@@ -39,7 +39,7 @@ import javax.swing.tree.TreePath;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class MappingJTree extends JTree implements TreeModel, TreeSelectionListener
 {

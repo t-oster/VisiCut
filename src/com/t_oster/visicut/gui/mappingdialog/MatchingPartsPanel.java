@@ -50,7 +50,7 @@ import java.util.logging.Logger;
  * to display Parts of an SVG file matching
  * certain criteria
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionListener, MouseListener
 {

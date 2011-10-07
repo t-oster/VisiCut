@@ -27,7 +27,7 @@ import java.awt.image.BufferedImage;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class BufferedImageAdapter implements GreyscaleRaster
 {

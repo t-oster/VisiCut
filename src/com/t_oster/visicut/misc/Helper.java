@@ -27,7 +27,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * This class contains frequently used conversion methods
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class Helper
 {

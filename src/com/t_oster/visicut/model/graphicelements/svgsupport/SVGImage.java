@@ -25,7 +25,7 @@ import java.util.Map;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class SVGImage extends SVGObject
 {

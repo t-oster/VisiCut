@@ -38,7 +38,7 @@ import java.awt.image.BufferedImage;
  * how the Lasercutter generates RasterData
  * from given GraphicElements
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class RasterProfile extends LaserProfile
 {

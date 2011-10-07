@@ -29,7 +29,7 @@ import javax.swing.JColorChooser;
  * current Color. If clicked, it will provide a color
  * chooser to change the color.
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class ChooseColorButton extends JButton implements ActionListener
 {

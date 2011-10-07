@@ -27,7 +27,7 @@ import java.awt.geom.PathIterator;
  * to a VectorPart. The Shape will be converted to moveto and lineto
  * commands fitting as close as possible
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class ShapeConverter
 {

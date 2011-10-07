@@ -40,7 +40,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class EditMappingDialogPanel extends javax.swing.JPanel implements EditableTableProvider
 {

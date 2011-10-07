@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class VectorPart
 {

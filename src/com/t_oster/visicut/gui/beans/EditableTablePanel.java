@@ -35,7 +35,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class EditableTablePanel extends javax.swing.JPanel
 {

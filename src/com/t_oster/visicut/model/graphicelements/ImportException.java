@@ -23,7 +23,7 @@ package com.t_oster.visicut.model.graphicelements;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class ImportException extends Exception
 {

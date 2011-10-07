@@ -33,7 +33,7 @@ import javax.swing.JRadioButton;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class LaserProfilesPanel extends JPanel implements ActionListener
 {

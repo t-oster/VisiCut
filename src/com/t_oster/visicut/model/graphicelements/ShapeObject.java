@@ -25,7 +25,7 @@ import java.awt.Shape;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public interface ShapeObject extends GraphicObject
 {

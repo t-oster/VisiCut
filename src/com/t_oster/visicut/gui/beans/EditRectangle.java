@@ -33,7 +33,7 @@ import java.awt.geom.Rectangle2D;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class EditRectangle extends Rectangle
 {

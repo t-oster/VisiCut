@@ -52,7 +52,7 @@ import javax.swing.JOptionPane;
  * This class implements the Panel which provides the Preview
  * of the current LaserJob
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class PreviewPanel extends ZoomablePanel
 {

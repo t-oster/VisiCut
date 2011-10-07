@@ -36,7 +36,7 @@ import javax.swing.plaf.metal.MetalComboBoxUI;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class ImageComboBox extends JComboBox
 {

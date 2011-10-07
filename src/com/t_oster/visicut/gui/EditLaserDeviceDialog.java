@@ -33,7 +33,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class EditLaserDeviceDialog extends javax.swing.JDialog
 {

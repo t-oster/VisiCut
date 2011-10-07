@@ -40,7 +40,7 @@ import javax.swing.JComponent;
  * This class is a helper to create platform independant file
  * drop support.
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class FilesDropSupport implements DropTargetListener
 {

@@ -27,7 +27,7 @@ package com.t_oster.liblasercut;
  * because there are some plattfroms (ie Android) where BufferedImage
  * is not available but other Image classes which can be used.
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public interface GreyscaleRaster
 {

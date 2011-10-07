@@ -43,7 +43,7 @@ import org.w3c.dom.Document;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class EPSImporter implements Importer
 {

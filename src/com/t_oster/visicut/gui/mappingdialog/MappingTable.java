@@ -37,7 +37,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class MappingTable extends EditableTablePanel implements EditableTableProvider, ListSelectionListener
 {

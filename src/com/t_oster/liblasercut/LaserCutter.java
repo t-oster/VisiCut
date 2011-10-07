@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public abstract class LaserCutter implements Cloneable
 {

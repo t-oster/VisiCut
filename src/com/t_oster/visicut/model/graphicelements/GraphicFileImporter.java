@@ -34,7 +34,7 @@ import javax.swing.filechooser.FileFilter;
  * The Importer class Takes an InputFile and returns
  * a List of GraphicObjects
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class GraphicFileImporter implements Importer
 {

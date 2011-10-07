@@ -34,7 +34,7 @@ import javax.swing.JPanel;
  * A JPanel with Support for rendering Graphic Objects.
  * This Panel supports Zoom etc.
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class ZoomablePanel extends JPanel implements MouseWheelListener
 {

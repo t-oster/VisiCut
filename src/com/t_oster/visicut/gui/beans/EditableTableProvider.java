@@ -21,7 +21,7 @@ package com.t_oster.visicut.gui.beans;
  * A class needs to implement this interface
  * to provide Data for an EditableTablePanel
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public interface EditableTableProvider
 {

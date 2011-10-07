@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 /**
  * This class manages the available Material Profiles
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class ProfileManager
 {

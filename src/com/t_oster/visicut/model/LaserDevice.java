@@ -27,7 +27,7 @@ import java.beans.PropertyChangeSupport;
 /**
  * A wrapper for the LaserCutter class which adds some Attributes
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class LaserDevice implements ImageListable
 {

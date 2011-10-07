@@ -45,7 +45,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class CamCalibrationDialog extends javax.swing.JDialog
 {

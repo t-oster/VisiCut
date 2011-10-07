@@ -32,7 +32,7 @@ import com.t_oster.visicut.model.LaserPropertyBean;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class EditLaserPropertyPanel extends javax.swing.JPanel
 {

@@ -25,7 +25,7 @@ import java.util.List;
  * just extend this class and use the fireProgressChanged
  * and fireTaskNameChanged method.
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public abstract class TimeIntensiveOperation
 {

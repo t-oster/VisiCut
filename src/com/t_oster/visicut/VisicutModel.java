@@ -66,7 +66,7 @@ import javax.swing.filechooser.FileFilter;
  * This class contains the state and business logic of the 
  * Application
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class VisicutModel
 {

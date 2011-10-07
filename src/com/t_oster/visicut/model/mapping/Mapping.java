@@ -24,7 +24,7 @@ import com.t_oster.liblasercut.platform.Tuple;
  * Elements of the InputImage and a Target which is
  * a CuttingProfile, specifying how the matched 
  * Elements should be rendered and cut on the LaserCutter
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class Mapping extends Tuple<FilterSet,String> implements Cloneable
 {

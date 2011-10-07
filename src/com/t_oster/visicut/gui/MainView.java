@@ -64,7 +64,7 @@ import org.jdesktop.application.Action;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class MainView extends javax.swing.JFrame
 {

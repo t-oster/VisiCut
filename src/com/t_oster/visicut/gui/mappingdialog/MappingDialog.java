@@ -36,7 +36,7 @@ import javax.swing.event.TableModelListener;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class MappingDialog extends javax.swing.JDialog
 {

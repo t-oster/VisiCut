@@ -26,7 +26,7 @@ import java.beans.PropertyChangeSupport;
  * A wrapper to the LaserProperty to add
  * Property Change Support
  * 
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class LaserPropertyBean
 {

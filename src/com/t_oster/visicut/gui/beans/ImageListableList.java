@@ -36,7 +36,7 @@ import javax.swing.event.ListSelectionListener;
 /**
  * A list Renderer, which allowes to render ImageListable Objects
  * whith their Image, Name and Tooltip and allowes disbeling
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class ImageListableList extends JList
 {

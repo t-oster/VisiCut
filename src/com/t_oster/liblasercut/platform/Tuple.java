@@ -23,7 +23,7 @@ package com.t_oster.liblasercut.platform;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class Tuple<A, B>
 {

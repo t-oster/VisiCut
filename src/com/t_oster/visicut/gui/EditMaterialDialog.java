@@ -35,7 +35,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author thommy
+ * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class EditMaterialDialog extends javax.swing.JDialog implements EditableTableProvider {
 
