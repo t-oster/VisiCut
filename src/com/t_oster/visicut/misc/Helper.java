@@ -43,7 +43,7 @@ public class Helper
   public static AffineTransform getTransform(Rectangle2D src, Rectangle2D dest)
   {
     AffineTransform scale = AffineTransform.getScaleInstance(dest.getWidth() / src.getWidth(), dest.getHeight() / src.getHeight());
-    Point2D scaled = scale.transform(new Point((int) src.getX(), (int) src.getY()), null);
+    Point2D scaled = scale.transform(new Point.Double(src.getX(), src.getY()), null);
     AffineTransform result = AffineTransform.getTranslateInstance(dest.getX() - scaled.getX(), dest.getY() - scaled.getY());
     result.concatenate(scale);
     return result;
@@ -71,11 +71,11 @@ public class Helper
     }
     else
     {
-      java.awt.Point p = new java.awt.Point((int) src.getX(), (int) src.getY());
+      java.awt.Point.Double p = new java.awt.Point.Double(src.getX(), src.getY());
       at.transform(p, p);
-      java.awt.Point d = new java.awt.Point((int) (src.getX() + src.getWidth()), (int) (src.getY() + src.getHeight()));
+      java.awt.Point.Double d = new java.awt.Point.Double((src.getX() + src.getWidth()), (src.getY() + src.getHeight()));
       at.transform(d, d);
-      return new Rectangle(p.x, p.y, d.x - p.x, d.y - p.y);
+      return new Rectangle.Double(p.x, p.y, d.x - p.x, d.y - p.y);
     }
   }
 
