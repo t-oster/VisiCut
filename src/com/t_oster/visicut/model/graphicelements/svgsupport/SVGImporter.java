@@ -93,7 +93,7 @@ public class SVGImporter implements Importer
       SVGRoot root = u.getDiagram(svg).getRoot();
       GraphicSet result = new GraphicSet();
       //Inkscape SVG Units are 1/90 inch
-      result.setTransform(AffineTransform.getScaleInstance(500d / 90, 500d / 90));
+      result.setBasicTransform(AffineTransform.getScaleInstance(500d / 90, 500d / 90));
       importNode(root, result);
       return result;
     }
@@ -158,7 +158,7 @@ public class SVGImporter implements Importer
     {
       GraphicSet result = this.importFile(new FileInputStream(inputFile), inputFile.getName());
       int dpi = this.determineResolution(inputFile);
-      result.setTransform(AffineTransform.getScaleInstance(500d / dpi, 500d / dpi));
+      result.setBasicTransform(AffineTransform.getScaleInstance(500d / dpi, 500d / dpi));
       return result;
     }
     catch (Exception ex)

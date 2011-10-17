@@ -98,7 +98,7 @@ public class DXFImporter implements Importer
       result = svgimp.importFile(in, inputFile.getName());
       //start the output
       //Assume the DXF has been created with mm units
-      result.setTransform(AffineTransform.getScaleInstance(500d*Util.mm2inch(1), 500d*Util.mm2inch(1)));
+      result.setBasicTransform(AffineTransform.getScaleInstance(500d*Util.mm2inch(1), 500d*Util.mm2inch(1)));
 
     }
     catch (Exception ex)

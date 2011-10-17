@@ -36,6 +36,32 @@ import java.util.LinkedList;
 public class GraphicSet extends LinkedList<GraphicObject>
 {
 
+  protected AffineTransform basicTransform = new AffineTransform();
+
+  /**
+   * Get the value of basicTransform
+   *
+   * @return the value of basicTransform
+   */
+  public AffineTransform getBasicTransform()
+  {
+    return basicTransform;
+  }
+
+  /**
+   * Set the value of basicTransform
+   * This value shall be used only for the import and for resetting
+   * the transform of this object. So it should be written only
+   * once after creation of the set
+   *
+   * @param basicTransform new value of basicTransform
+   */
+  public void setBasicTransform(AffineTransform basicTransform)
+  {
+    this.basicTransform = basicTransform;
+    this.setTransform(basicTransform);
+  }
+
   public AffineTransform transform = null;
   public static final String PROP_TRANSFORM = "transform";
 
@@ -80,7 +106,8 @@ public class GraphicSet extends LinkedList<GraphicObject>
   private Rectangle2D originalBoundingBoxCache = null;
 
   /**
-   * Returns the BoundingBox of this Set ignoring the Transform
+   * Returns the BoundingBox of this Set ignoring the Transform,
+   * but using the basicTransform
    * @return 
    */
   public Rectangle2D getOriginalBoundingBox()
@@ -90,6 +117,10 @@ public class GraphicSet extends LinkedList<GraphicObject>
       for (GraphicObject o : this)
       {
         Rectangle2D current = o.getBoundingBox();
+        if (basicTransform != null)
+        {
+          current = Helper.transform(current, basicTransform);
+        }
         if (originalBoundingBoxCache == null)
         {
           originalBoundingBoxCache = current;
@@ -161,6 +192,7 @@ public class GraphicSet extends LinkedList<GraphicObject>
     result.setTransform(this.getTransform());
     result.boundingBoxCache = boundingBoxCache;
     result.originalBoundingBoxCache = originalBoundingBoxCache;
+    result.basicTransform = basicTransform;
     return result;
   }
 }

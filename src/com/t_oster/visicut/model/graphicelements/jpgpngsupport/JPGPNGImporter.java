@@ -44,7 +44,7 @@ public class JPGPNGImporter implements Importer
     {
       GraphicSet result = new GraphicSet();
       //TODO: Get Real Resolution
-      result.setTransform(AffineTransform.getScaleInstance(500d/72, 500d/72));
+      result.setBasicTransform(AffineTransform.getScaleInstance(500d/72, 500d/72));
       result.add(new JPGPNGImage(ImageIO.read(inputFile)));
       return result;
     }
