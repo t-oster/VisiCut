@@ -30,6 +30,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -165,6 +166,21 @@ public class PreviewPanelMouseHandler implements MouseListener, MouseMotionListe
       {
         switch (currentAction)
         {
+          case rotatingSet:
+          {
+            Rectangle2D bb = getGraphicObjects().getBoundingBox();
+            Point2D middle = new Point.Double(bb.getCenterX(), bb.getCenterY());
+            //move back
+            AffineTransform tr = AffineTransform.getTranslateInstance(middle.getX(), middle.getY());
+            //rotate
+            tr.concatenate(AffineTransform.getRotateInstance(1.0/100*Math.max(diff.x, diff.y)));
+            //center
+            tr.concatenate(AffineTransform.getTranslateInstance(-middle.getX(), -middle.getY()));
+            //apply current
+            tr.concatenate(getGraphicObjects().transform);
+            getGraphicObjects().setTransform(tr);
+            break;
+          }
           case resizingSet:
           {
             this.previewPanel.getLastDrawnTransform().createInverse().deltaTransform(diff, diff);
