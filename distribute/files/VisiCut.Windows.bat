@@ -1,1 +1,1 @@
-java -Xms256m -Xmx512m -jar Visicut.jar
+java -Xms256m -Xmx1024m -jar Visicut.jar
