@@ -77,7 +77,7 @@ public class StartPointTest {
     vp.lineto(2200, 1100);
     vp.moveto(2100, 1000);
     vp.lineto(2100,1200);
-    LaserJob job = new LaserJob("startPoint", "666", "bla", 500, null, vp, null);
+    LaserJob job = new LaserJob("startPoint", "123", "bla", 500, null, vp, null);
     instance.sendJob(job);
     JOptionPane.showMessageDialog(null, "Please start the job 'startPoint' and then position your material");
   }

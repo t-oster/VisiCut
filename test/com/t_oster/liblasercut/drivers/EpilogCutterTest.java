@@ -119,7 +119,7 @@ public class EpilogCutterTest
     Raster3dPart r3p = new Raster3dPart(new LaserProperty(80, 100));
     r3p.addImage(new BufferedImageAdapter(getTestImage()), new Point(0, 600));
     System.out.println("Creating Job");
-    LaserJob job = new LaserJob("allparts", "666", "bla", 500, r3p, vp, rp);
+    LaserJob job = new LaserJob("allparts", "123", "bla", 500, r3p, vp, rp);
     System.out.println("Sending Job");
     instance.sendJob(job);
     System.out.println("Done.");

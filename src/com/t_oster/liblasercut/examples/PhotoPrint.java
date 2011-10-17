@@ -55,6 +55,10 @@ import javax.swing.event.ChangeListener;
  * This is an example app which lets you select an Image File,
  * dither algorithm and target size to raster the image in normal raster
  * mode
+ * 
+ * PLEASE NOTE THAT THIS FILE IS CURRENTLY NOT WORKING DUE TO CHANGES IN THE LIBRARY
+ * SINCE THIS WAS ONLY A DEMONSTRATION AND NOT PART OF THE LIBRARY OR VISICUT
+ * IT IS CURRENTLY UNMAINTAINED
  *
  * @author oster
  */
@@ -183,7 +187,7 @@ public class PhotoPrint {
                 vp.lineto(0, 0);
             }
 
-            LaserJob job = new LaserJob("PhotoPrint", "666", "bla", dpi, null, vp, rp);
+            LaserJob job = new LaserJob("PhotoPrint", "123", "bla", dpi, null, vp, rp);
             instance.sendJob(job);
             JOptionPane.showMessageDialog(null, "Please press START on the Lasercutter");
         }
