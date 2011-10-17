@@ -50,6 +50,7 @@ public abstract class SVGObject implements GraphicObject
     Fill_Color,
     Type,
     Group,
+    Id,
   }
 
   /**
@@ -132,6 +133,14 @@ public abstract class SVGObject implements GraphicObject
     {
       switch (Attribute.valueOf(name.replace(" ", "_")))
       {
+        case Id:
+        {
+          if (this.getDecoratee().getId() != null)
+          {
+            result.add(this.getDecoratee().getId());
+          }
+          break;
+        }
         case Group:
         {
           for (SVGElement e : this.getPath(this.getDecoratee()))
