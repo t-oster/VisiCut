@@ -76,21 +76,6 @@ public class GraphicSet extends LinkedList<GraphicObject>
   }
 
   /**
-   * Get the Translate Part of the current Transform
-   * aka the offset, points are moved before rendering
-   * @return 
-   */
-  public AffineTransform getTranslatePart()
-  {
-    return transform == null ? AffineTransform.getTranslateInstance(0, 0) : AffineTransform.getTranslateInstance(transform.getTranslateX(), transform.getTranslateY());
-  }
-
-  public AffineTransform getScalePart()
-  {
-    return transform == null ? AffineTransform.getScaleInstance(1, 1) : AffineTransform.getScaleInstance(transform.getScaleX(), transform.getScaleY());
-  }
-
-  /**
    * Set the value of transform
    *
    * @param transform new value of transform
@@ -107,7 +92,7 @@ public class GraphicSet extends LinkedList<GraphicObject>
 
   /**
    * Returns the BoundingBox of this Set ignoring the Transform,
-   * but using the basicTransform
+   * also ignoring the basicTransform
    * @return 
    */
   public Rectangle2D getOriginalBoundingBox()
@@ -117,10 +102,6 @@ public class GraphicSet extends LinkedList<GraphicObject>
       for (GraphicObject o : this)
       {
         Rectangle2D current = o.getBoundingBox();
-        if (basicTransform != null)
-        {
-          current = Helper.transform(current, basicTransform);
-        }
         if (originalBoundingBoxCache == null)
         {
           originalBoundingBoxCache = current;
