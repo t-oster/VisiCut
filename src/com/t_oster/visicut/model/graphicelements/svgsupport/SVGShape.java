@@ -16,10 +16,6 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.visicut.model.graphicelements.svgsupport;
 
 import com.kitfox.svg.Circle;
@@ -33,7 +29,6 @@ import com.kitfox.svg.Tspan;
 import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
@@ -175,14 +170,11 @@ public class SVGShape extends SVGObject implements ShapeObject
   {
     return this.decoratee;
   }
-  private static final int MAXOVERSHOOT = 10;
 
   @Override
   public Rectangle2D getBoundingBox()
   {
-    Rectangle2D bb = this.getShape().getBounds2D();//super.getBoundingBox();
-    //Add overshoot
-    bb.setRect(bb.getX() - MAXOVERSHOOT, bb.getY() - MAXOVERSHOOT, bb.getWidth() + 2 * MAXOVERSHOOT, bb.getHeight() + 2 * MAXOVERSHOOT);
+    Rectangle2D bb = this.getShape().getBounds2D();
     return bb;
   }
 
