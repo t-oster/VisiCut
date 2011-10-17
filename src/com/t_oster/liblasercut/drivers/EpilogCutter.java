@@ -1,6 +1,7 @@
 /**
  * This file is part of VisiCut.
  * Copyright (C) 2011 Thomas Oster <thomas.oster@rwth-aachen.de>
+ * RWTH Aachen University - 52062 Aachen, Germany
  * 
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
@@ -57,8 +58,6 @@ public class EpilogCutter extends LaserCutter
   {
     300, 500, 600, 1000
   };
-  private static final double BED_WIDTH = 600;//Bed width in mm
-  private static final double BED_HEIGHT = 300;//Bed height in mm
   private static final int MINFOCUS = -500;//Minimal focus value (not mm)
   private static final int MAXFOCUS = 500;//Maximal focus value (not mm)
   private static final double FOCUSWIDTH = 0.0252;//How much mm/unit the focus values are
@@ -345,16 +344,6 @@ public class EpilogCutter extends LaserCutter
       result.add(r);
     }
     return result;
-  }
-
-  public double getBedWidth()
-  {
-    return BED_WIDTH;
-  }
-
-  public double getBedHeight()
-  {
-    return BED_HEIGHT;
   }
 
   /**
@@ -760,9 +749,60 @@ public class EpilogCutter extends LaserCutter
     {
       return "" + this.getPort();
     }
+    else if ("BedWidth".equals(attribute))
+    {
+      return "" + this.getBedWidth();
+    }
+    else if ("BedHeight".equals(attribute))
+    {
+      return "" + this.getBedHeight();
+    }
     return null;
   }
 
+  protected double bedWidth = 600;
+
+  /**
+   * Get the value of bedWidth
+   *
+   * @return the value of bedWidth
+   */
+  public double getBedWidth()
+  {
+    return bedWidth;
+  }
+
+  /**
+   * Set the value of bedWidth
+   *
+   * @param bedWidth new value of bedWidth
+   */
+  public void setBedWidth(double bedWidth)
+  {
+    this.bedWidth = bedWidth;
+  }
+  protected double bedHeight = 300;
+
+  /**
+   * Get the value of bedHeight
+   *
+   * @return the value of bedHeight
+   */
+  public double getBedHeight()
+  {
+    return bedHeight;
+  }
+
+  /**
+   * Set the value of bedHeight
+   *
+   * @param bedHeight new value of bedHeight
+   */
+  public void setBedHeight(double bedHeight)
+  {
+    this.bedHeight = bedHeight;
+  }
+  
   @Override
   public void setSettingValue(String attribute, String value)
   {
@@ -774,10 +814,18 @@ public class EpilogCutter extends LaserCutter
     {
       this.setPort(Integer.parseInt(value));
     }
+    else if ("BedWith".equals(attribute))
+    {
+      this.setBedWidth(Double.parseDouble(value));
+    }
+    else if ("BedHeight".equals(attribute))
+    {
+      this.setBedHeight(Double.parseDouble(value));
+    }
   }
   private String[] attributes = new String[]
   {
-    "Hostname", "Port"
+    "Hostname", "Port", "BedWidth", "BedHeight"
   };
 
   @Override
