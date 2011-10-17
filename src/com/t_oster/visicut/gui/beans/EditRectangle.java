@@ -16,10 +16,6 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.liblasercut.platform.Util;
@@ -39,6 +35,29 @@ import java.awt.geom.Rectangle2D;
 public class EditRectangle extends Rectangle
 {
 
+  protected boolean rotateMode = false;
+
+  /**
+   * Get the value of rotateMode
+   *
+   * @return the value of rotateMode
+   */
+  public boolean isRotateMode()
+  {
+    return rotateMode;
+  }
+
+  /**
+   * Set the value of rotateMode
+   *
+   * @param rotateMode new value of rotateMode
+   */
+  public void setRotateMode(boolean rotateMode)
+  {
+    this.rotateMode = rotateMode;
+  }
+
+  
   private int buttonSize = 10;
 
   public EditRectangle(int x, int y, int width, int height)
@@ -67,6 +86,7 @@ public class EditRectangle extends Rectangle
     BOTTOM_CENTER,
     BOTTOM_RIGHT,}
 
+  public Button[] rotateButtons = new Button[]{Button.TOP_LEFT,Button.TOP_RIGHT,Button.BOTTOM_LEFT, Button.BOTTOM_RIGHT};
   /**
    * Returns the Rectangle of the given Button
    * of an EditRectangle with the given Dimensions
@@ -129,10 +149,22 @@ public class EditRectangle extends Rectangle
       }, 0));
     Rectangle tr = Helper.toRect(Helper.transform(this, cur));
     gg.drawRect(tr.x, tr.y, tr.width, tr.height);
-    for (Button b : Button.values())
+    if (this.rotateMode)
     {
-      Rectangle r = this.getButton(b,tr);
-      gg.fillRect(r.x, r.y, r.width, r.height);
+      gg.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, null, 0));
+      for (Button b: rotateButtons)
+      {
+        Rectangle r = this.getButton(b,tr);
+        gg.drawOval(r.x, r.y, r.width, r.height);
+      }
+    }
+    else
+    {
+      for (Button b : Button.values())
+      {
+        Rectangle r = this.getButton(b,tr);
+        gg.fillRect(r.x, r.y, r.width, r.height);
+      }
     }
     gg.setColor(Color.BLACK);
     int w = (int) Util.px2mm(this.width, 500);

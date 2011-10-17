@@ -53,96 +53,99 @@ public class PreviewPanelMouseHandler implements MouseListener, MouseMotionListe
     this.previewPanel.addMouseMotionListener(this);
   }
 
+  private EditRectangle getEditRect()
+  {
+    return this.previewPanel.getEditRectangle();
+  }
+
+  private GraphicSet getGraphicObjects()
+  {
+    return this.previewPanel.getGraphicObjects();
+  }
+
+  /**
+   * For now this just returns all objects, but later maybe
+   * multiple input files are supported and this should
+   * only return the currently selected one
+   * @return 
+   */
+  private GraphicSet getSelectedSet()
+  {
+    return this.previewPanel.getGraphicObjects();
+  }
+
   private enum MouseAction
   {
 
     movingBackground,
     movingSet,
     resizingSet,
+    rotatingSet,
   };
   private Point lastMousePosition = null;
   private MouseAction currentAction = null;
   private Button currentButton = null;
-  private GraphicSet selectedSet = null;
-  private EditRectangle editRect = null;
 
   public void mouseClicked(MouseEvent me)
   {
+    Rectangle2D bb = getGraphicObjects().getBoundingBox();
+    Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
+    boolean onGraphic = e.contains(me.getPoint());
+    if (onGraphic)
+    {//clicked on the graphic
+      if (getEditRect() != null)
+      {//Already selected => toggle rotate/scale mode
+        //getEditRect().setRotateMode(!getEditRect().isRotateMode());
+        //this.previewPanel.repaint();
+      }
+      else
+      {//not yet select => select in scale mode
+        this.previewPanel.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
+      }
+    }
+    else
+    {//clicked next to graphic => clear selection
+      this.previewPanel.setEditRectangle(null);
+    }
   }
 
   public void mousePressed(MouseEvent evt)
   {
     lastMousePosition = evt.getPoint();
     currentAction = MouseAction.movingBackground;
-    if (editRect != null)
-    {
-      Rectangle2D curRect = Helper.transform(editRect, this.previewPanel.getLastDrawnTransform());
-      Button b = editRect.getButtonByPoint(lastMousePosition, this.previewPanel.getLastDrawnTransform());
+    if (getEditRect() != null)
+    {//something selected
+      Rectangle2D curRect = Helper.transform(getEditRect(), this.previewPanel.getLastDrawnTransform());
+      Button b = getEditRect().getButtonByPoint(lastMousePosition, this.previewPanel.getLastDrawnTransform());
       if (b != null)
-      {
+      {//a button selected
         currentButton = b;
-        currentAction = MouseAction.resizingSet;
+        currentAction = getEditRect().isRotateMode() ? MouseAction.rotatingSet : MouseAction.resizingSet;
       }
       else
-      {
+      {//no button selected
         if (curRect.contains(lastMousePosition))
-        {
+        {//selection in the rectangle
           currentAction = MouseAction.movingSet;
+        }
+        else
+        {
+          currentAction = MouseAction.movingBackground;
         }
       }
     }
-    setCursor(evt.getPoint());
   }
 
   public void mouseReleased(MouseEvent evt)
   {
     if (currentAction == MouseAction.resizingSet)
     {
-      //Apply changes to the EditRectangle to the selectedSet
-      Rectangle2D src = selectedSet.getOriginalBoundingBox();
-      selectedSet.setTransform(Helper.getTransform(src, editRect));
+      //Apply changes to the EditRectangle to the getSelectedSet()
+      Rectangle2D src = getSelectedSet().getOriginalBoundingBox();
+      getSelectedSet().setTransform(Helper.getTransform(src, getEditRect()));
       this.previewPanel.repaint();
     }
-    else
-    {//not resizing
-      if (this.selectedSet != null)
-      {//something selected before
-        if (this.currentAction != MouseAction.movingSet)
-        {
-          editRect = null;
-          this.previewPanel.setEditRectangle(null);
-          selectedSet = null;
-        }
-        else
-        {
-          Rectangle2D bb = selectedSet.getBoundingBox();
-          editRect = new EditRectangle(bb);
-          this.previewPanel.setEditRectangle(editRect);
-        }
-      }
-      else
-      {//nothing selected before
-        if (this.previewPanel.getGraphicObjects() != null)
-        {
-          Rectangle2D bb = this.previewPanel.getGraphicObjects().getBoundingBox();
-          Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
-          if (e.contains(evt.getPoint()))
-          {
-            selectedSet = this.previewPanel.getGraphicObjects();
-            editRect = new EditRectangle(bb);
-            this.previewPanel.setEditRectangle(editRect);
-          }
-          else
-          {
-            selectedSet = null;
-            editRect = null;
-            this.previewPanel.setEditRectangle(null);
-          }
-        }
-      }
-    }
     lastMousePosition = evt.getPoint();
-    setCursor(evt.getPoint());
   }
 
   public void mouseEntered(MouseEvent me)
@@ -170,77 +173,76 @@ public class PreviewPanelMouseHandler implements MouseListener, MouseMotionListe
               case BOTTOM_RIGHT:
               {
                 int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
-                editRect.height += (offset * editRect.height / editRect.width);
-                editRect.width += offset;
+                getEditRect().height += (offset * getEditRect().height / getEditRect().width);
+                getEditRect().width += offset;
                 break;
               }
               case BOTTOM_LEFT:
               {
                 int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
-                editRect.height -= (offset * editRect.height / editRect.width);
-                editRect.x += offset;
-                editRect.width -= offset;
+                getEditRect().height -= (offset * getEditRect().height / getEditRect().width);
+                getEditRect().x += offset;
+                getEditRect().width -= offset;
                 break;
               }
               case TOP_RIGHT:
               {
                 int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : -diff.y;
-                editRect.y -= (offset * editRect.height / editRect.width);
-                editRect.height += (offset * editRect.height / editRect.width);
-                editRect.width += offset;
+                getEditRect().y -= (offset * getEditRect().height / getEditRect().width);
+                getEditRect().height += (offset * getEditRect().height / getEditRect().width);
+                getEditRect().width += offset;
                 break;
               }
               case TOP_LEFT:
               {
                 int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
-                editRect.y += (offset * editRect.height / editRect.width);
-                editRect.height -= (offset * editRect.height / editRect.width);
-                editRect.x += offset;
-                editRect.width -= offset;
+                getEditRect().y += (offset * getEditRect().height / getEditRect().width);
+                getEditRect().height -= (offset * getEditRect().height / getEditRect().width);
+                getEditRect().x += offset;
+                getEditRect().width -= offset;
                 break;
               }
               case CENTER_RIGHT:
               {
-                this.editRect.width += diff.x;
+                this.getEditRect().width += diff.x;
                 break;
               }
               case TOP_CENTER:
               {
-                this.editRect.y += diff.y;
-                this.editRect.height -= diff.y;
+                this.getEditRect().y += diff.y;
+                this.getEditRect().height -= diff.y;
                 break;
               }
               case BOTTOM_CENTER:
               {
-                this.editRect.height += diff.y;
+                this.getEditRect().height += diff.y;
                 break;
               }
               case CENTER_LEFT:
               {
-                this.editRect.x += diff.x;
-                this.editRect.width -= diff.x;
+                this.getEditRect().x += diff.x;
+                this.getEditRect().width -= diff.x;
                 break;
               }
             }
-            this.previewPanel.setEditRectangle(editRect);
+            this.previewPanel.setEditRectangle(getEditRect());
             break;
           }
           case movingSet:
           {
             this.previewPanel.getLastDrawnTransform().createInverse().deltaTransform(diff, diff);
-            if (selectedSet.getTransform() != null)
+            if (getSelectedSet().getTransform() != null)
             {
               AffineTransform tr = AffineTransform.getTranslateInstance(diff.x, diff.y);
-              tr.concatenate(selectedSet.getTransform());
-              selectedSet.setTransform(tr);
+              tr.concatenate(getSelectedSet().getTransform());
+              getSelectedSet().setTransform(tr);
             }
             else
             {
-              selectedSet.setTransform(AffineTransform.getTranslateInstance(diff.x, diff.y));
+              getSelectedSet().setTransform(AffineTransform.getTranslateInstance(diff.x, diff.y));
             }
-            Rectangle2D bb = selectedSet.getBoundingBox();
-            editRect = new EditRectangle(bb);
-            this.previewPanel.setEditRectangle(editRect);
+            Rectangle2D bb = getSelectedSet().getBoundingBox();
+            this.previewPanel.setEditRectangle(new EditRectangle(bb));
             break;
           }
           case movingBackground:
@@ -273,11 +275,23 @@ public class PreviewPanelMouseHandler implements MouseListener, MouseMotionListe
     {
       if (this.previewPanel.getGraphicObjects() != null)
       {
-        if (editRect != null)
+        if (getEditRect() != null)
         {
-          Button b = editRect.getButtonByPoint(p, this.previewPanel.getLastDrawnTransform());
+          Button b = getEditRect().getButtonByPoint(p, this.previewPanel.getLastDrawnTransform());
           if (b != null)
           {
+            if (getEditRect().isRotateMode())
+            {
+              for (Button bb : getEditRect().rotateButtons)
+              {
+                if (bb.equals(b))
+                {//TODO: Create rotate cursor
+                  cursor = Cursor.CROSSHAIR_CURSOR;
+                  break;
+                }
+              }
+              break cursorcheck;
+            }
             switch (b)
             {
               case TOP_RIGHT:
@@ -313,7 +327,7 @@ public class PreviewPanelMouseHandler implements MouseListener, MouseMotionListe
           Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
           if (e.contains(p))
           {
-            cursor = this.editRect == null ? Cursor.HAND_CURSOR : Cursor.MOVE_CURSOR;
+            cursor = this.getEditRect() == null ? Cursor.HAND_CURSOR : Cursor.MOVE_CURSOR;
             break cursorcheck;
           }
         }
