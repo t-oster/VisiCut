@@ -735,6 +735,8 @@ public class EpilogCutter extends LaserCutter
     EpilogCutter result = new EpilogCutter();
     result.hostname = hostname;
     result.port = port;
+    result.bedHeight = bedHeight;
+    result.bedWidth = bedWidth;
     return result;
   }
 
