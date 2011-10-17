@@ -814,7 +814,7 @@ public class EpilogCutter extends LaserCutter
     {
       this.setPort(Integer.parseInt(value));
     }
-    else if ("BedWith".equals(attribute))
+    else if ("BedWidth".equals(attribute))
     {
       this.setBedWidth(Double.parseDouble(value));
     }
