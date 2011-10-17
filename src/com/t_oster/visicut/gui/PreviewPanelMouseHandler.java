@@ -25,6 +25,8 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Cursor;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -34,6 +36,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 /**
  * This class handles the transformations to the background and the
@@ -46,12 +50,26 @@ public class PreviewPanelMouseHandler implements MouseListener, MouseMotionListe
 {
 
   private PreviewPanel previewPanel;
+  private JPopupMenu menu = new JPopupMenu();
+  private JMenuItem resetMenuItem = new JMenuItem("Reset Transformation");
 
   public PreviewPanelMouseHandler(PreviewPanel panel)
   {
     this.previewPanel = panel;
     this.previewPanel.addMouseListener(this);
     this.previewPanel.addMouseMotionListener(this);
+    menu.add(resetMenuItem);
+    resetMenuItem.addActionListener(new ActionListener()
+    {
+
+      public void actionPerformed(ActionEvent ae)
+      {
+        PreviewPanelMouseHandler.this.getGraphicObjects().setTransform(
+          PreviewPanelMouseHandler.this.getGraphicObjects().getBasicTransform());
+        PreviewPanelMouseHandler.this.previewPanel.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
+        PreviewPanelMouseHandler.this.previewPanel.repaint();
+      }
+    });
   }
 
   private EditRectangle getEditRect()
@@ -77,11 +95,10 @@ public class PreviewPanelMouseHandler implements MouseListener, MouseMotionListe
 
   private enum MouseAction
   {
-
     movingBackground,
     movingSet,
     resizingSet,
-    rotatingSet,
+    rotatingSet
   };
   private Point lastMousePosition = null;
   private MouseAction currentAction = null;
@@ -89,24 +106,36 @@ public class PreviewPanelMouseHandler implements MouseListener, MouseMotionListe
 
   public void mouseClicked(MouseEvent me)
   {
-    Rectangle2D bb = getGraphicObjects().getBoundingBox();
-    Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
-    boolean onGraphic = e.contains(me.getPoint());
-    if (onGraphic)
-    {//clicked on the graphic
-      if (getEditRect() != null)
-      {//Already selected => toggle rotate/scale mode
-        //getEditRect().setRotateMode(!getEditRect().isRotateMode());
-        //this.previewPanel.repaint();
+    if (me.getButton() == MouseEvent.BUTTON1)
+    {
+      Rectangle2D bb = getGraphicObjects().getBoundingBox();
+      Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
+      boolean onGraphic = e.contains(me.getPoint());
+      if (onGraphic)
+      {//clicked on the graphic
+        if (getEditRect() != null)
+        {//Already selected => toggle rotate/scale mode
+          //getEditRect().setRotateMode(!getEditRect().isRotateMode());
+          //this.previewPanel.repaint();
+        }
+        else
+        {//not yet select => select in scale mode
+          this.previewPanel.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
+        }
       }
       else
-      {//not yet select => select in scale mode
-        this.previewPanel.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
+      {//clicked next to graphic => clear selection
+        this.previewPanel.setEditRectangle(null);
       }
     }
-    else
-    {//clicked next to graphic => clear selection
-      this.previewPanel.setEditRectangle(null);
+    else if (getEditRect() != null && me.getButton() == MouseEvent.BUTTON3)
+    {
+      Rectangle2D bb = getGraphicObjects().getBoundingBox();
+      Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
+      if (e.contains(me.getPoint()))
+      {
+        this.menu.show(this.previewPanel, me.getX(), me.getY());
+      }
     }
   }
 
@@ -173,7 +202,7 @@ public class PreviewPanelMouseHandler implements MouseListener, MouseMotionListe
             //move back
             AffineTransform tr = AffineTransform.getTranslateInstance(middle.getX(), middle.getY());
             //rotate
-            tr.concatenate(AffineTransform.getRotateInstance(1.0/100*Math.max(diff.x, diff.y)));
+            tr.concatenate(AffineTransform.getRotateInstance(1.0 / 100 * Math.max(diff.x, diff.y)));
             //center
             tr.concatenate(AffineTransform.getTranslateInstance(-middle.getX(), -middle.getY()));
             //apply current
