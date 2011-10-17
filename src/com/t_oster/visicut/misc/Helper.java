@@ -56,6 +56,10 @@ public class Helper
 
   public static Rectangle toRect(Rectangle2D src)
   {
+    if (src==null)
+    {
+      return new Rectangle(0,0,0,0);
+    }
     return new Rectangle((int) src.getX(), (int) src.getY(), (int) src.getWidth(), (int) src.getHeight());
   }
 
