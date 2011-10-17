@@ -949,7 +949,7 @@ public class MainView extends javax.swing.JFrame
     this.showCuttingCb.setEnabled(previewModes);
     this.showEngravingCb.setEnabled(previewModes);
   }
-
+  private File lastDirectory = null;
 private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
   JFileChooser openFileChooser = new JFileChooser();
   openFileChooser.setAcceptAllFileFilterUsed(false);
@@ -967,10 +967,12 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     }, "All supported files");
   openFileChooser.addChoosableFileFilter(allFilter);
   openFileChooser.setFileFilter(allFilter);
+  openFileChooser.setCurrentDirectory(lastDirectory);
   int returnVal = openFileChooser.showOpenDialog(this);
   if (returnVal == JFileChooser.APPROVE_OPTION)
   {
     File file = openFileChooser.getSelectedFile();
+    lastDirectory = file.getParentFile();
     loadFile(file);
   }
 }//GEN-LAST:event_openMenuItemActionPerformed
@@ -1009,7 +1011,8 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
     movingBackground,
     movingSet,
-    resizingSet,};
+    resizingSet,
+  };
   private Point lastMousePosition = null;
   private MouseAction currentAction = null;
   private Button currentButton = null;
@@ -1811,7 +1814,6 @@ private void previewPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:
   {//GEN-HEADEREND:event_jButton2ActionPerformed
     previewPanel.setZoom(previewPanel.getZoom() - (previewPanel.getZoom() / 32));
   }//GEN-LAST:event_jButton2ActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton calculateTimeButton;
