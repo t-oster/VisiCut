@@ -45,6 +45,29 @@ import java.util.Locale;
 public class LaosCutter extends LaserCutter
 {
 
+  protected boolean flipXaxis = false;
+
+  /**
+   * Get the value of flipXaxis
+   *
+   * @return the value of flipXaxis
+   */
+  public boolean isFlipXaxis()
+  {
+    return flipXaxis;
+  }
+
+  /**
+   * Set the value of flipXaxis
+   *
+   * @param flipXaxis new value of flipXaxis
+   */
+  public void setFlipXaxis(boolean flipXaxis)
+  {
+    this.flipXaxis = flipXaxis;
+  }
+
+  
   protected boolean simpleMode = true;
 
   /**
@@ -109,6 +132,11 @@ public class LaosCutter extends LaserCutter
     this.port = port;
   }
 
+  private int px2steps(double px)
+  {
+    return (int) (8.034*px);
+  }
+  
   private byte[] generateVectorGCode(VectorPart vp, int resolution) throws UnsupportedEncodingException
   {
     ByteArrayOutputStream result = new ByteArrayOutputStream();
@@ -132,21 +160,21 @@ public class LaosCutter extends LaserCutter
         case MOVETO:
           if (this.isSimpleMode())
           {
-            out.printf("0 %d %d\n", cmd.getX(), cmd.getY());
+            out.printf("0 %d %d\n", px2steps(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - cmd.getX() : cmd.getX()), px2steps(cmd.getY()));
           }
           else
           {
-            out.printf(Locale.US, "G0 X%f Y%f\n", Util.px2mm(cmd.getX(),resolution), Util.px2mm(cmd.getY(), resolution));
+            out.printf(Locale.US, "G0 X%f Y%f\n", Util.px2mm(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - cmd.getX() : cmd.getX(),resolution), Util.px2mm(cmd.getY(), resolution));
           }
           break;
         case LINETO:
           if (this.isSimpleMode())
           {
-            out.printf("1 %d %d\n", cmd.getX(), cmd.getY());
+            out.printf("1 %d %d\n", px2steps(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - cmd.getX() : cmd.getX()), px2steps(cmd.getY()));
           }
           else
           {//Frequency???
-            out.printf(Locale.US, "G1 X%f Y%f E%d F%d\n", Util.px2mm(cmd.getX(),resolution), Util.px2mm(cmd.getY(),resolution), power, speed);
+            out.printf(Locale.US, "G1 X%f Y%f E%d F%d\n", Util.px2mm(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - cmd.getX() : cmd.getX(),resolution), Util.px2mm(cmd.getY(),resolution), power, speed);
           }
           break;
         case SETPOWER:
@@ -162,7 +190,7 @@ public class LaosCutter extends LaserCutter
         case SETFOCUS:
           if (this.isSimpleMode())
           {
-            out.printf(Locale.US, "2 %d\n", Util.mm2px(cmd.getFocus(),resolution));
+            out.printf(Locale.US, "2 %d\n", (int) Util.mm2px(cmd.getFocus(),resolution));
           }
           else
           {
@@ -287,6 +315,7 @@ public class LaosCutter extends LaserCutter
       settingAttributes.add("GCode");
       settingAttributes.add("BedWidth");
       settingAttributes.add("BedHeight");
+      settingAttributes.add("FlipXaxis");
     }
     return settingAttributes;
   }
@@ -297,6 +326,10 @@ public class LaosCutter extends LaserCutter
     if ("Hostname".equals(attribute))
     {
       return this.getHostname();
+    }
+    else if ("FlipXaxis".equals(attribute))
+    {
+      return this.isFlipXaxis() ? "yes" : "no";
     }
     else if ("Port".equals(attribute))
     {
@@ -332,6 +365,10 @@ public class LaosCutter extends LaserCutter
     {
       this.setSimpleMode(!"yes".equals(value));
     }
+    else if ("FlipXaxis".equals(attribute))
+    {
+      this.setFlipXaxis("yes".equals(value));
+    }
     else if ("BedWidth".equals(attribute))
     {
       this.setBedWidth(Double.parseDouble(value));
@@ -357,6 +394,7 @@ public class LaosCutter extends LaserCutter
     clone.simpleMode = simpleMode;
     clone.bedHeight = bedHeight;
     clone.bedWidth = bedWidth;
+    clone.flipXaxis = flipXaxis;
     return clone;
   }
 }
