@@ -66,8 +66,6 @@ public class LaosCutter extends LaserCutter
   {
     this.flipXaxis = flipXaxis;
   }
-
-  
   protected boolean simpleMode = true;
 
   /**
@@ -134,9 +132,9 @@ public class LaosCutter extends LaserCutter
 
   private int px2steps(double px)
   {
-    return (int) (8.034*px);
+    return (int) (8.034 * px);
   }
-  
+
   private byte[] generateVectorGCode(VectorPart vp, int resolution) throws UnsupportedEncodingException
   {
     ByteArrayOutputStream result = new ByteArrayOutputStream();
@@ -148,7 +146,7 @@ public class LaosCutter extends LaserCutter
       out.print("M106\n");//ventilaton on
       out.print("M151 100\n");//air pressure on
     }
-    
+
     int power = 100;
     int speed = 50;
     int frequency = 500;
@@ -164,7 +162,7 @@ public class LaosCutter extends LaserCutter
           }
           else
           {
-            out.printf(Locale.US, "G0 X%f Y%f\n", Util.px2mm(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - cmd.getX() : cmd.getX(),resolution), Util.px2mm(cmd.getY(), resolution));
+            out.printf(Locale.US, "G0 X%f Y%f\n", Util.px2mm(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - cmd.getX() : cmd.getX(), resolution), Util.px2mm(cmd.getY(), resolution));
           }
           break;
         case LINETO:
@@ -174,13 +172,13 @@ public class LaosCutter extends LaserCutter
           }
           else
           {//Frequency???
-            out.printf(Locale.US, "G1 X%f Y%f E%d F%d\n", Util.px2mm(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - cmd.getX() : cmd.getX(),resolution), Util.px2mm(cmd.getY(),resolution), power, speed);
+            out.printf(Locale.US, "G1 X%f Y%f E%d F%d\n", Util.px2mm(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - cmd.getX() : cmd.getX(), resolution), Util.px2mm(cmd.getY(), resolution), power, speed);
           }
           break;
         case SETPOWER:
           if (this.isSimpleMode())
           {
-            out.printf("7 101 %d\n", cmd.getPower()*100);
+            out.printf("7 101 %d\n", cmd.getPower() * 100);
           }
           else
           {
@@ -190,7 +188,7 @@ public class LaosCutter extends LaserCutter
         case SETFOCUS:
           if (this.isSimpleMode())
           {
-            out.printf(Locale.US, "2 %d\n", (int) Util.mm2px(cmd.getFocus(),resolution));
+            out.printf(Locale.US, "2 %d\n", (int) Util.mm2px(cmd.getFocus(), resolution));
           }
           else
           {
@@ -200,7 +198,7 @@ public class LaosCutter extends LaserCutter
         case SETSPEED:
           if (this.isSimpleMode())
           {
-            out.printf("7 100 %d\n", cmd.getSpeed()*100);
+            out.printf("7 100 %d\n", cmd.getSpeed() * 100);
           }
           else
           {
@@ -218,6 +216,14 @@ public class LaosCutter extends LaserCutter
           }
           break;
       }
+    }
+    if (this.isSimpleMode())
+    {
+      out.printf("0 0 0\n");
+    }
+    else
+    {
+      out.printf(Locale.US, "G0 X%f Y%f\n", 0,0);
     }
     if (!this.isSimpleMode())
     {
