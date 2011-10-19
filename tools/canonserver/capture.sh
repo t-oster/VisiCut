@@ -28,7 +28,6 @@ mogrify -rotate "180>" $FILE
 cat $FILE
 	while read line
 	do
-		echo $line >> requestlog
+		echo $line > /dev/null
 	done
-	echo "--->done" >> requestlog
-	rm $FILE
+	rm -f $FILE
