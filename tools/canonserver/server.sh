@@ -17,6 +17,8 @@
 #     You should have received a copy of the GNU Lesser General Public License
 #     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
 #
+PORT=8088
+IP=$(ifconfig  | grep 'inet Adresse:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
 CAMERAS=$(gphoto2 --auto-detect|tail -n +3)
 if [ "$CAMERAS" == "" ]
 then
@@ -26,7 +28,7 @@ else
 	echo "Detected Cameras:"
 	echo $CAMERAS
 fi
-echo "Starting Webserver. Listening on http://$(hostname):8080"
+echo "Starting Webserver. Listening on http://$IP:$PORT"
 shutdown()
 {
 	echo "Caught SIGTERM"
@@ -35,6 +37,6 @@ shutdown()
 trap 'shutdown' SIGTERM SIGINT
 while :
 do 
-	nc -e ./capture.sh -l -p 8080
+	nc -e ./capture.sh -l -p $PORT
 	echo "Request completed."
 done

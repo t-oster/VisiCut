@@ -17,8 +17,18 @@
 #     You should have received a copy of the GNU Lesser General Public License
 #     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
 #
+FILE=capt0000.jpg
 gphoto2 --capture-image-and-download >/dev/null 2>&1
+mogrify -rotate "180>" $FILE
 	echo -ne "HTTP/1.0 200 OK\r\n"
-	echo -ne "Content-Type: image/jpeg\r\n\r\n"
-	cat capt0000.jpg
-	rm capt0000.jpg
+	echo -ne "Content-Type: image/jpeg\r\n"
+	echo -ne "Content-Length: $(stat -c %s $FILE)\r\n"
+	echo -ne "Connection: close\r\n"
+	echo -ne "\r\n"	
+cat $FILE
+	while read line
+	do
+		echo $line >> requestlog
+	done
+	echo "--->done" >> requestlog
+	rm $FILE
