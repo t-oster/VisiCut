@@ -22,6 +22,7 @@ import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
@@ -75,12 +76,19 @@ public class PreviewPanel extends ZoomablePanel
       if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
       {
         LaserProfile p = PreviewPanel.this.getMaterial().getLaserProfile(m.getProfileName());
-        buffer = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D gg = buffer.createGraphics();
-        gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        //Normalize Rendering to 0,0
-        gg.setTransform(AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY()));
-        p.renderPreview(gg, set, PreviewPanel.this.getMaterial());
+        if (p instanceof RasterProfile)
+        {
+          RasterProfile rp = (RasterProfile) p;
+          buffer = rp.getRenderedPreview(set, material);
+        }
+        else
+        {
+          buffer = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_ARGB);
+          Graphics2D gg = buffer.createGraphics();
+          //Normalize Rendering to 0,0
+          gg.setTransform(AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY()));
+          p.renderPreview(gg, set, PreviewPanel.this.getMaterial());
+        }
       }
       return buffer;
     }

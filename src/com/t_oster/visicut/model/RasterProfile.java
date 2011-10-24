@@ -22,6 +22,7 @@ import com.t_oster.liblasercut.BlackWhiteRaster;
 import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.dithering.DitheringAlgorithm;
 import com.t_oster.liblasercut.platform.Point;
 import com.t_oster.liblasercut.utils.BufferedImageAdapter;
 import com.t_oster.visicut.misc.Helper;
@@ -112,6 +113,50 @@ public class RasterProfile extends LaserProfile
     this.ditherAlgorithm = ditherAlgorithm;
   }
 
+  public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material)
+  {
+    Rectangle2D bb = objects.getBoundingBox();
+    if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
+    {//Create an Image which fits the bounding box
+      final BufferedImage scaledImg = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_ARGB);
+      Graphics2D g = scaledImg.createGraphics();
+      //fill it with white background for dithering
+      g.setColor(Color.white);
+      g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
+      g.setClip(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
+      //render all objects onto the image, moved to the images origin
+      if (objects.getTransform() != null)
+      {
+        Rectangle2D origBB = objects.getOriginalBoundingBox();
+        Rectangle2D targetBB = new Rectangle(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
+        g.setTransform(Helper.getTransform(origBB, targetBB));
+      }
+      for (GraphicObject o : objects)
+      {
+        o.render(g);
+      }
+      BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors)
+      {
+        public void setGreyscale(int x, int y, int greyscale)
+        {
+          if (greyscale == 255)
+          {
+            scaledImg.getAlphaRaster().setPixel(x, y, new int[]{0,0,0});
+          }
+          else if (greyscale == 0)
+          {
+            scaledImg.setRGB(x, y, RasterProfile.this.getColor().getRGB());
+          }
+        }
+      };
+      ad.setColorShift(this.getColorShift());
+      DitheringAlgorithm alg = BlackWhiteRaster.getDitheringAlgorithm(this.getDitherAlgorithm());
+      alg.ditherDirect(ad);
+      return scaledImg;
+    }
+    return null;
+  }
+  
   @Override
   public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material)
   {
