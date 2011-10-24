@@ -32,11 +32,14 @@ echo "Starting Webserver. Listening on http://$IP:$PORT"
 shutdown()
 {
 	echo "Caught SIGTERM"
+	echo "removing fifo"
+	rm fifo
 	exit 0
 }
+mkfifo fifo
 trap 'shutdown' SIGTERM SIGINT
 while :
 do 
-	nc -e ./capture.sh -l -p $PORT
+	nc -l $PORT < fifo | ./capture.sh > fifo
 	echo "Request completed."
 done
