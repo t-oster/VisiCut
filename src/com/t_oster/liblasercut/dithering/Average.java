@@ -27,7 +27,7 @@ public class Average extends  DitheringAlgorithm
   
   protected void doDithering()
   {
-   int lumTotal = 0;
+    long lumTotal = 0;
     int pixelcount = 0;
     int width = src.getWidth();
     int height = src.getHeight();
@@ -41,7 +41,7 @@ public class Average extends  DitheringAlgorithm
       setProgress((100 * pixelcount++) / (2 * height));
     }
 
-    float thresh = lumTotal / height / width;
+    int thresh = (int) (lumTotal / height / width);
     for (int y = 0; y < height; y++)
     {
       for (int x = 0; x < width; x++)

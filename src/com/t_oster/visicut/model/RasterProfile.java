@@ -137,11 +137,12 @@ public class RasterProfile extends LaserProfile
       }
       BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors)
       {
-        public void setGreyscale(int x, int y, int greyscale)
+        @Override
+        public void setGreyScale(int x, int y, int greyscale)
         {
           if (greyscale == 255)
           {
-            scaledImg.getAlphaRaster().setPixel(x, y, new int[]{255,255,255});
+            scaledImg.getAlphaRaster().setPixel(x, y, new int[]{0,0,0});
           }
           else if (greyscale == 0)
           {

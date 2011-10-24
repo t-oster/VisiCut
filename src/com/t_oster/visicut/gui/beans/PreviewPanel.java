@@ -18,7 +18,6 @@
  **/
 package com.t_oster.visicut.gui.beans;
 
-import com.t_oster.liblasercut.platform.Tuple;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserProfile;
@@ -36,7 +35,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -46,9 +44,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
