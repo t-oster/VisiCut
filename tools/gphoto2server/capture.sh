@@ -25,6 +25,8 @@
 FILE=capt0000.jpg
 # Rotation of the image before sending
 ROTATION=180
+# wait for GET
+read line
 
 # delete the file if it exists
 	rm -f $FILE
@@ -43,8 +45,8 @@ ROTATION=180
 	echo -ne "\r\n"	
 #output the file
 	cat $FILE
-#process all sent input
-	while read line
-	do
-		echo $line > /dev/null
-	done
+#process remaining input
+while read line
+do
+	echo $line > /dev/null
+done
