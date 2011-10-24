@@ -304,8 +304,7 @@ public class VisicutModel
       //Write xml to temp file
       XMLEncoder encoder = new XMLEncoder(new FileOutputStream(tmp));
       encoder.setPersistenceDelegate(AffineTransform.class, new PersistenceDelegate()
-      {
-
+      {//Fix for older java versions
         protected Expression instantiate(Object oldInstance, Encoder out)
         {
           AffineTransform tx = (AffineTransform) oldInstance;

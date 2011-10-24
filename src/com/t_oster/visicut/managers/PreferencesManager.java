@@ -22,6 +22,9 @@ import com.t_oster.liblasercut.drivers.EpilogCutter;
 import com.t_oster.visicut.Preferences;
 import com.t_oster.visicut.model.LaserDevice;
 import java.awt.geom.AffineTransform;
+import java.beans.Encoder;
+import java.beans.Expression;
+import java.beans.PersistenceDelegate;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.File;
@@ -124,6 +127,22 @@ public final class PreferencesManager
   {
     FileOutputStream os = new FileOutputStream(f);
     XMLEncoder encoder = new XMLEncoder(os);
+    encoder.setPersistenceDelegate(AffineTransform.class, new PersistenceDelegate()
+      {//Fix for older java versions
+        protected Expression instantiate(Object oldInstance, Encoder out)
+        {
+          AffineTransform tx = (AffineTransform) oldInstance;
+          double[] coeffs = new double[6];
+          tx.getMatrix(coeffs);
+          return new Expression(oldInstance,
+            oldInstance.getClass(),
+            "new",
+            new Object[]
+            {
+              coeffs
+            });
+        }
+      });
     encoder.writeObject(pref);
     encoder.close();
   }
