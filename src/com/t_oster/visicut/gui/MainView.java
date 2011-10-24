@@ -888,16 +888,7 @@ public class MainView extends javax.swing.JFrame
           }
         }
       }
-      if (visicutModel1.getGraphicObjects().size() > 0)
-      {
-        Rectangle2D bb = this.visicutModel1.getGraphicObjects().getBoundingBox();
-        if (bb != null && (bb.getX() < 0 || bb.getY() < 0))
-        {//Move Object to the top left corner
-          AffineTransform trans = AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY());
-          trans.concatenate(visicutModel1.getGraphicObjects().getTransform());
-          visicutModel1.getGraphicObjects().setTransform(trans);
-        }
-      }
+      this.previewPanel.setEditRectangle(null);
       this.progressBar.setIndeterminate(false);
       this.refreshButtonStates();
     }
