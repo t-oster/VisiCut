@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut.gui.beans;
 
+import com.t_oster.liblasercut.platform.Tuple;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserProfile;
@@ -59,23 +60,40 @@ import javax.swing.JOptionPane;
 public class PreviewPanel extends ZoomablePanel
 {
 
-  public PreviewPanel()
+  private class ImageProcessingThread extends Thread
   {
-    this.imageProcessingThread.start();
-  }
-  private final Thread imageProcessingThread = new Thread()
-  {
-
-    public boolean keepRunning = true;
-
-    private BufferedImage renderMapping(Mapping m)
+    private BufferedImage buffer = null;
+    private GraphicSet set;
+    private LaserProfile p;
+    private Rectangle2D bb;
+    private boolean isFinished = false;
+    
+    public Rectangle2D getBoundingBox()
     {
-      GraphicSet set = m.getFilterSet().getMatchingObjects(PreviewPanel.this.graphicObjects);
-      Rectangle2D bb = set.getBoundingBox();
-      BufferedImage buffer = null;
+      return bb;
+    }
+    
+    public BufferedImage getImage()
+    {
+      return buffer;
+    }
+    
+    public ImageProcessingThread(GraphicSet objects, LaserProfile p)
+    {
+      this.set = objects;
+      this.p = p;
+      bb = set.getBoundingBox();
+    }
+    
+    public boolean isFinished()
+    {
+      return isFinished;
+    }
+
+    private void render()
+    {
       if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
       {
-        LaserProfile p = PreviewPanel.this.getMaterial().getLaserProfile(m.getProfileName());
         if (p instanceof RasterProfile)
         {
           RasterProfile rp = (RasterProfile) p;
@@ -90,56 +108,26 @@ public class PreviewPanel extends ZoomablePanel
           p.renderPreview(gg, set, PreviewPanel.this.getMaterial());
         }
       }
-      return buffer;
     }
 
     @Override
     public void run()
     {
-      while (keepRunning)
+      if (bb != null)
       {
-        Mapping toProcess = null;
-        synchronized (PreviewPanel.this.renderBuffer)
-        {
-          for (Mapping m : PreviewPanel.this.renderBuffer.keySet())
-          {
-            if (PreviewPanel.this.renderBuffer.get(m) == null)
-            {
-              toProcess = m;
-              break;
-            }
-          }
-        }
-        if (toProcess != null)
-        {
-          try
-          {
-            BufferedImage result = this.renderMapping(toProcess);
-            synchronized (PreviewPanel.this.renderBuffer)
-            {
-              PreviewPanel.this.renderBuffer.put(toProcess, result);
-            }
-            PreviewPanel.this.repaint();
-          }
-          catch (OutOfMemoryError e)
-          {
-            JOptionPane.showMessageDialog(PreviewPanel.this, "Error: Not enough Memory\nPlease start the Program from the provided shell scripts instead of running the .jar file", "Error: Out of Memory", JOptionPane.ERROR_MESSAGE);
-          }
-        }
         try
         {
-          synchronized (this)
-          {
-            this.wait();
-          }
+          render();
+          this.isFinished = true;
+          PreviewPanel.this.repaint();
         }
-        catch (InterruptedException ex)
+        catch (OutOfMemoryError e)
         {
-          Logger.getLogger(PreviewPanel.class.getName()).log(Level.SEVERE, null, ex);
+          JOptionPane.showMessageDialog(PreviewPanel.this, "Error: Not enough Memory\nPlease start the Program from the provided shell scripts instead of running the .jar file", "Error: Out of Memory", JOptionPane.ERROR_MESSAGE);
         }
       }
     }
-  };
+  }
   protected boolean drawPreview = true;
   public static final String PROP_DRAWPREVIEW = "drawPreview";
 
@@ -375,7 +363,7 @@ public class PreviewPanel extends ZoomablePanel
    * When drawn the offset of the BoundingBox has to be used as Upper Left
    * Corner
    */
-  private final HashMap<Mapping, BufferedImage> renderBuffer = new LinkedHashMap<Mapping, BufferedImage>();
+  private final HashMap<Mapping, ImageProcessingThread> renderBuffer = new LinkedHashMap<Mapping, ImageProcessingThread>();
 
   @Override
   protected void paintComponent(Graphics g)
@@ -384,8 +372,8 @@ public class PreviewPanel extends ZoomablePanel
     if (g instanceof Graphics2D)
     {
       Graphics2D gg = (Graphics2D) g;
-      gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+      //gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      //gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
       if (backgroundImage != null)
       {
         gg.drawRenderedImage(backgroundImage, null);
@@ -454,16 +442,24 @@ public class PreviewPanel extends ZoomablePanel
               {
                 synchronized (renderBuffer)
                 {
-                  BufferedImage img = this.renderBuffer.get(m);
-                  if (img == null || bb.getWidth() != img.getWidth() || bb.getHeight() != img.getHeight())
+                  ImageProcessingThread procThread = this.renderBuffer.get(m);
+                  if (procThread == null || !procThread.isFinished() || bb.getWidth() != procThread.getBoundingBox().getWidth() || bb.getHeight() != procThread.getBoundingBox().getHeight())
                   {//Image not rendered or Size differs
-                    if (!renderBuffer.containsKey(m) || img != null)
+                    if (!renderBuffer.containsKey(m))
                     {//image not yet scheduled for rendering
-                      this.renderBuffer.put(m, null);
+                      ImageProcessingThread thread = new ImageProcessingThread(this.graphicObjects, this.getMaterial().getLaserProfile(m.getProfileName()));
+                      this.renderBuffer.put(m, thread);
+                      thread.start();//start processing thread
                     }
-                    synchronized (imageProcessingThread)
-                    {
-                      imageProcessingThread.notify();
+                    else if (bb.getWidth() != procThread.getBoundingBox().getWidth() || bb.getHeight() != procThread.getBoundingBox().getHeight())
+                    {//Image is (being) rendered with wrong size
+                      if (!procThread.isFinished())
+                      {//stop the old thread if still running
+                        procThread.stop();
+                      }
+                      ImageProcessingThread thread = new ImageProcessingThread(this.graphicObjects, this.getMaterial().getLaserProfile(m.getProfileName()));
+                      this.renderBuffer.put(m, thread);
+                      thread.start();//start processing thread
                     }
                     gg.setColor(Color.GRAY);
                     Rectangle r = Helper.toRect(bb);
@@ -479,7 +475,7 @@ public class PreviewPanel extends ZoomablePanel
                   }
                   else
                   {
-                    gg.drawRenderedImage(img, AffineTransform.getTranslateInstance(bb.getX(), bb.getY()));
+                    gg.drawRenderedImage(procThread.getImage(), AffineTransform.getTranslateInstance(bb.getX(), bb.getY()));
                   }
                 }
               }

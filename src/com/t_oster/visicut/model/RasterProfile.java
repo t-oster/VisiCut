@@ -141,7 +141,7 @@ public class RasterProfile extends LaserProfile
         {
           if (greyscale == 255)
           {
-            scaledImg.getAlphaRaster().setPixel(x, y, new int[]{0,0,0});
+            scaledImg.getAlphaRaster().setPixel(x, y, new int[]{255,255,255});
           }
           else if (greyscale == 0)
           {
