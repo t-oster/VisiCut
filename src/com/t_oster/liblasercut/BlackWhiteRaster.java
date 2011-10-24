@@ -86,19 +86,20 @@ public class BlackWhiteRaster extends TimeIntensiveOperation
   public boolean isBlack(int x, int y)
   {
     int bx = x / 8;
-    int ix = x % 8;
+    int ix = 7 - (x % 8);
     return ((raster[bx][y] & 0xFF) & (int) Math.pow(2,ix)) != 0;
   }
 
   public void setBlack(int x, int y, boolean black)
   {
     int bx = x / 8;
-    int ix = x % 8;
+    int ix = 7 - (x % 8);
     raster[bx][y] = (byte) (((raster[bx][y] & 0xFF) & ~((int) Math.pow(2,ix))) | (black ? (int) Math.pow(2,ix) : 0 ));
   }
 
   /**
    * Returns the Byte where every bit represents one pixel 1=white and 0=black
+   * NOTE THAT THE BITORDER IS [BBWWWWWW] = 0b11111100;
    * @param x the x index of the byte, meaning 0 is the first 8 pixels (0-7), 1 
    * the pixels 8-15 ...
    * @param y the y offset
