@@ -183,7 +183,15 @@ public class EpilogCutter extends LaserCutter
 
   private void sendPjlJob(LaserJob job, byte[] pjlData) throws UnknownHostException, UnsupportedEncodingException, IOException, Exception
   {
-    String localhost = java.net.InetAddress.getLocalHost().getHostName();
+    String localhost = null;
+    try
+    {
+      localhost = java.net.InetAddress.getLocalHost().getHostName();
+    }
+    catch (UnknownHostException e)
+    {
+      localhost = "unknown";
+    }
     PrintStream out = new PrintStream(this.out, true, "US-ASCII");
     out.print("\002\n");
     waitForResponse(0);
@@ -589,11 +597,6 @@ public class EpilogCutter extends LaserCutter
           {
             out.printf("\033*b%dA", -line.size());
             Collections.reverse(line);
-            //reverse every byte bitwise
-            for (int ii = 0; ii < line.size(); ii++)
-            {
-              line.set(ii, Util.reverseBitwise(line.get(ii)));
-            }
           }
           line = encode(line);
           int len = line.size();
@@ -761,7 +764,6 @@ public class EpilogCutter extends LaserCutter
     }
     return null;
   }
-
   protected double bedWidth = 600;
 
   /**
@@ -804,7 +806,7 @@ public class EpilogCutter extends LaserCutter
   {
     this.bedHeight = bedHeight;
   }
-  
+
   @Override
   public void setSettingValue(String attribute, String value)
   {
@@ -867,22 +869,22 @@ public class EpilogCutter extends LaserCutter
           boolean lineEmpty = true;
           for (int x = 0; x < bwr.getWidth(); x++)
           {
-              if (bwr.isBlack(x, y))
-              {
-                lineEmpty = false;
-                break;
-              }
+            if (bwr.isBlack(x, y))
+            {
+              lineEmpty = false;
+              break;
+            }
           }
           if (!lineEmpty)
           {
             int w = bwr.getWidth();
             result += (double) RASTER_LINEOFFSET + (double) w / linespeed;
-            p.x = sp.y%2==0 ? sp.x+w : sp.x;
-            p.y = sp.y+y;
+            p.x = sp.y % 2 == 0 ? sp.x + w : sp.x;
+            p.y = sp.y + y;
           }
           else
           {
-            result+=RASTER_LINEOFFSET;
+            result += RASTER_LINEOFFSET;
           }
         }
       }
@@ -902,18 +904,18 @@ public class EpilogCutter extends LaserCutter
           boolean lineEmpty = true;
           for (int x = 0; x < gsr.getWidth(); x++)
           {
-              if (gsr.getGreyScale(x, y) != 0)
-              {
-                lineEmpty = false;
-                break;
-              }
+            if (gsr.getGreyScale(x, y) != 0)
+            {
+              lineEmpty = false;
+              break;
+            }
           }
           if (!lineEmpty)
           {
             int w = gsr.getWidth();
             result += (double) RASTER3D_LINEOFFSET + (double) w / linespeed;
-            p.x = sp.y%2==0 ? sp.x+w : sp.x;
-            p.y = sp.y+y;
+            p.x = sp.y % 2 == 0 ? sp.x + w : sp.x;
+            p.y = sp.y + y;
           }
         }
       }

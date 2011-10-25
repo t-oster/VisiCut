@@ -26,6 +26,7 @@ import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.RasterPart;
 import com.t_oster.liblasercut.Raster3dPart;
 import com.t_oster.liblasercut.VectorPart;
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
@@ -38,6 +39,7 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -169,6 +171,7 @@ public class VisicutModel
   {
     GraphicSet oldGraphicObjects = this.graphicObjects;
     this.graphicObjects = graphicObjects;
+    this.fitObjectsIntoMaterial();
     propertyChangeSupport.firePropertyChange(PROP_GRAPHICOBJECTS, oldGraphicObjects, graphicObjects);
   }
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -301,8 +304,7 @@ public class VisicutModel
       //Write xml to temp file
       XMLEncoder encoder = new XMLEncoder(new FileOutputStream(tmp));
       encoder.setPersistenceDelegate(AffineTransform.class, new PersistenceDelegate()
-      {
-
+      {//Fix for older java versions
         protected Expression instantiate(Object oldInstance, Encoder out)
         {
           AffineTransform tx = (AffineTransform) oldInstance;
@@ -409,7 +411,46 @@ public class VisicutModel
   {
     MaterialProfile oldMaterial = this.material;
     this.material = material;
+    fitObjectsIntoMaterial();
     propertyChangeSupport.firePropertyChange(PROP_MATERIAL, oldMaterial, material);
+  }
+
+  /**
+   * First moves the Objects into the top left corner, if their origin
+   * is negative. (no matter if material selected)
+   * Then checks if the Objects fit into the material.
+   * If not, it adapts their Transform.
+   */
+  private void fitObjectsIntoMaterial()
+  {
+    if (this.graphicObjects != null)
+    {
+      Rectangle2D bb = this.graphicObjects.getBoundingBox();
+      if (bb != null)
+      {
+        if (bb.getX() < 0 || bb.getY() < 0)
+        {//Move Object's origin to be positive
+          AffineTransform tr = this.graphicObjects.getTransform() == null ? new AffineTransform() : this.graphicObjects.getTransform();
+          tr.translate(bb.getX() < 0 ? -bb.getX(): 0, bb.getY() < 0 ? -bb.getY() : 0);
+          this.graphicObjects.setTransform(tr);
+        }
+        if (this.material != null)
+        {
+          double w = bb.getX() + bb.getWidth();
+          double h = bb.getY() + bb.getHeight();
+          double mw = Util.mm2px(this.material.getWidth(), 500);
+          double mh = Util.mm2px(this.material.getHeight(), 500);
+          if (w > mw || h > mh)
+          {//scale Object to fit material
+            double dw = mw / w;
+            double dh = mh / h;
+            AffineTransform tr = this.graphicObjects.getTransform() == null ? new AffineTransform() : this.graphicObjects.getTransform();
+            tr.scale(Math.min(dw, dh), Math.min(dw, dh));
+            this.graphicObjects.setTransform(tr);
+          }
+        }
+      }
+    }
   }
   protected MappingSet mappings = null;
   public static final String PROP_MAPPINGS = "mappings";
@@ -441,7 +482,7 @@ public class VisicutModel
     RasterPart rp = new RasterPart(new LaserProperty());
     Raster3dPart r3dp = new Raster3dPart(new LaserProperty());
     VectorPart vp = new VectorPart(new LaserProperty());
-    
+
     LaserJob job = new LaserJob(name, "123", "unk", 500, r3dp, vp, rp);
     //Aggregate all Mappings per LaserProfile
     HashMap<LaserProfile, GraphicSet> parts = new LinkedHashMap<LaserProfile, GraphicSet>();
@@ -471,7 +512,7 @@ public class VisicutModel
     job.getVectorPart().setFocus(0);
     return job;
   }
-  
+
   public void sendJob(String name) throws IllegalJobException, SocketTimeoutException, Exception
   {
     LaserCutter instance = this.getSelectedLaserDevice().getLaserCutter();
