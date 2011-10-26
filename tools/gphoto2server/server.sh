@@ -40,6 +40,6 @@ mkfifo fifo
 trap 'shutdown' SIGTERM SIGINT
 while :
 do 
-	nc -l $PORT < fifo | ./capture.sh > fifo
+	netcat -l -p $PORT < fifo | ./capture.sh > fifo
 	echo "Request completed."
 done
