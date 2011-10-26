@@ -25,6 +25,7 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.liblasercut.IllegalJobException;
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.managers.PreferencesManager;
@@ -973,8 +974,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
   box.setModal(true);
   box.setVisible(true);
 }//GEN-LAST:event_aboutMenuItemActionPerformed
-
-    private int jobnumber = 0;
+  private int jobnumber = 0;
 
   private void executeJob()
   {
@@ -1280,6 +1280,15 @@ private void editMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
 private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_materialComboBoxActionPerformed
   //Check if Material supports all Mappings
   MaterialProfile newMaterial = this.materialComboBox.getSelectedItem() instanceof MaterialProfile ? (MaterialProfile) this.materialComboBox.getSelectedItem() : null;
+  if (!Util.differ(newMaterial, visicutModel1.getMaterial()))
+  {
+    return;
+  }
+  if (this.materialComboBox.isDisabled(newMaterial))
+  {
+    this.materialComboBox.setSelectedItem(visicutModel1.getMaterial());
+    return;
+  }
   this.visicutModel1.setMaterial(newMaterial);
   this.customMappingTable.setLaserProfiles(newMaterial == null ? new LinkedList<LaserProfile>() : newMaterial.getLaserProfiles());
   this.refreshComboBoxes();
@@ -1391,11 +1400,21 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         this.predefinedMappingList.setDisabled(m, true, mp == null ? "Lasercutter not supported" : "Material not supported");
       }
     }
+    this.predefinedMappingList.repaint();
   }
 
   private void laserCutterComboBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_laserCutterComboBoxActionPerformed
   {//GEN-HEADEREND:event_laserCutterComboBoxActionPerformed
     LaserDevice newDev = laserCutterComboBox.getSelectedItem() instanceof LaserDevice ? (LaserDevice) laserCutterComboBox.getSelectedItem() : null;
+    if (!Util.differ(newDev, visicutModel1.getSelectedLaserDevice()))
+    {
+      return;
+    }
+    if (this.laserCutterComboBox.isDisabled(newDev))
+    {
+      this.laserCutterComboBox.setSelectedItem(visicutModel1.getSelectedLaserDevice());
+      return;
+    }
     if (newDev != null)
     {
       this.profileManager1.loadMaterials(newDev);
@@ -1440,8 +1459,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     }
   }//GEN-LAST:event_jMenuItem2ActionPerformed
   private MappingSet custom = null;
-
-  
 
   private void calculateTimeButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_calculateTimeButtonActionPerformed
   {//GEN-HEADEREND:event_calculateTimeButtonActionPerformed
