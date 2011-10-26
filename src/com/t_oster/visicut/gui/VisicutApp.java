@@ -36,6 +36,8 @@ import org.jdesktop.application.SingleFrameApplication;
 public class VisicutApp extends SingleFrameApplication
 {
 
+  public static Level GLOBAL_LOG_LEVEL = Level.SEVERE;
+  
   /**
    * At startup create and show the main frame of the application.
    */
@@ -114,6 +116,13 @@ public class VisicutApp extends SingleFrameApplication
     catch (UnsupportedLookAndFeelException ex)
     {
       Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    for (String s:args)
+    {
+      if ("--debug".equals(s) || "-d".equals(s))
+      {
+        GLOBAL_LOG_LEVEL = Level.FINE;
+      }
     }
     try
     {

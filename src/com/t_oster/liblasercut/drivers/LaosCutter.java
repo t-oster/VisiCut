@@ -134,6 +134,8 @@ public class LaosCutter extends LaserCutter
     this.port = port;
   }
 
+  //TOD Add property "steps per mm" or "stepwidth" and adapt px2steps
+  //to be resolution dependent
   private int px2steps(double px)
   {
     return (int) (8.034 * px);
@@ -231,7 +233,7 @@ public class LaosCutter extends LaserCutter
     if (this.isSimpleMode())
     {
       out.printf("0 %d %d\n", px2steps(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - x : x), px2steps(y));
-    }
+    }o  g 
     else
     {
       out.printf(Locale.US, "G0 X%f Y%f\n", Util.px2mm(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - x : x, resolution), Util.px2mm(y, resolution));

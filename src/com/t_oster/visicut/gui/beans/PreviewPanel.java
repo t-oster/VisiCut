@@ -44,6 +44,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -55,72 +57,107 @@ import javax.swing.JOptionPane;
 public class PreviewPanel extends ZoomablePanel
 {
 
+  private Logger logger = Logger.getLogger(PreviewPanel.class.getName());
+  
   private class ImageProcessingThread extends Thread
   {
+
+    private Logger logger = Logger.getLogger(ImageProcessingThread.class.getName());
     private BufferedImage buffer = null;
     private GraphicSet set;
     private LaserProfile p;
     private Rectangle2D bb;
     private boolean isFinished = false;
-    
+
     public Rectangle2D getBoundingBox()
     {
       return bb;
     }
-    
+
     public BufferedImage getImage()
     {
       return buffer;
     }
-    
+
     public ImageProcessingThread(GraphicSet objects, LaserProfile p)
     {
       this.set = objects;
       this.p = p;
       bb = set.getBoundingBox();
+      if (bb == null || bb.getWidth() == 0 || bb.getHeight() == 0)
+      {
+        logger.log(Level.SEVERE, "invalid BoundingBox");
+        throw new IllegalArgumentException("Boundingbox zero");
+      }
     }
-    
-    public boolean isFinished()
+
+    public synchronized boolean isFinished()
     {
       return isFinished;
     }
 
+    private synchronized void setFinished(boolean finished)
+    {
+      this.isFinished = finished;
+    }
+
     private void render()
     {
-      if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
+      if (p instanceof RasterProfile)
       {
-        if (p instanceof RasterProfile)
-        {
-          RasterProfile rp = (RasterProfile) p;
-          buffer = rp.getRenderedPreview(set, material);
-        }
-        else
-        {
-          buffer = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_ARGB);
-          Graphics2D gg = buffer.createGraphics();
-          //Normalize Rendering to 0,0
-          gg.setTransform(AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY()));
-          p.renderPreview(gg, set, PreviewPanel.this.getMaterial());
-        }
+        RasterProfile rp = (RasterProfile) p;
+        buffer = rp.getRenderedPreview(set, material);
+      }
+      else
+      {
+        buffer = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D gg = buffer.createGraphics();
+        //Normalize Rendering to 0,0
+        gg.setTransform(AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY()));
+        p.renderPreview(gg, set, PreviewPanel.this.getMaterial());
       }
     }
 
     @Override
     public void run()
     {
-      if (bb != null)
+      try
       {
+        logger.log(Level.FINE, "Rendering started");
+        long start = System.currentTimeMillis();
+        render();
+        long stop = System.currentTimeMillis();
+        logger.log(Level.FINE, "Rendering finished. Took: "+(stop-start)+" ms");
+      }
+      catch (OutOfMemoryError e)
+      {
+        logger.log(Level.FINE, "Out of memory during rendering. Staring garbage collection");
+        System.gc();
         try
         {
+          logger.log(Level.FINE, "Re started Rendering");
+          long start = System.currentTimeMillis();
           render();
-          this.isFinished = true;
-          PreviewPanel.this.repaint();
+          long stop = System.currentTimeMillis();
+          logger.log(Level.FINE, "2nd Rendering took "+(stop-start)+" ms");
         }
-        catch (OutOfMemoryError e)
+        catch (OutOfMemoryError ee)
         {
           JOptionPane.showMessageDialog(PreviewPanel.this, "Error: Not enough Memory\nPlease start the Program from the provided shell scripts instead of running the .jar file", "Error: Out of Memory", JOptionPane.ERROR_MESSAGE);
         }
       }
+      this.setFinished(true);
+      PreviewPanel.this.repaint();
+      logger.log(Level.FINE, "Thread finished");
+    }
+
+    private void cancel()
+    {
+      logger.log(Level.FINE, "Canceling Thread");
+      this.stop();
+      this.buffer = null;
+      this.set = null;
+      logger.log(Level.FINE, "Thread canceled");
     }
   }
   protected boolean drawPreview = true;
@@ -226,6 +263,21 @@ public class PreviewPanel extends ZoomablePanel
   }
   protected RenderedImage backgroundImage = null;
 
+  public void ClearCache()
+  {
+    synchronized(this.renderBuffer)
+    {
+      for (ImageProcessingThread thr : this.renderBuffer.values())
+      {
+        if (!thr.isFinished())
+        {
+          thr.cancel();
+        }
+      }
+    }
+    this.renderBuffer.clear();
+  }
+  
   /**
    * Get the value of backgroundImage
    *
@@ -442,16 +494,19 @@ public class PreviewPanel extends ZoomablePanel
                   {//Image not rendered or Size differs
                     if (!renderBuffer.containsKey(m))
                     {//image not yet scheduled for rendering
+                      logger.log(Level.FINE, "Starting ImageProcessing Thread for "+m);
                       ImageProcessingThread thread = new ImageProcessingThread(this.graphicObjects, this.getMaterial().getLaserProfile(m.getProfileName()));
                       this.renderBuffer.put(m, thread);
                       thread.start();//start processing thread
                     }
                     else if (bb.getWidth() != procThread.getBoundingBox().getWidth() || bb.getHeight() != procThread.getBoundingBox().getHeight())
                     {//Image is (being) rendered with wrong size
+                      logger.log(Level.FINE, "Image has wrong size");
                       if (!procThread.isFinished())
                       {//stop the old thread if still running
-                        procThread.stop();
+                        procThread.cancel();
                       }
+                      logger.log(Level.FINE, "Starting ImageProcessingThread for"+m);
                       ImageProcessingThread thread = new ImageProcessingThread(this.graphicObjects, this.getMaterial().getLaserProfile(m.getProfileName()));
                       this.renderBuffer.put(m, thread);
                       thread.start();//start processing thread
