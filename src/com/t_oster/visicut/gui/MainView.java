@@ -1516,7 +1516,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
 
   private void setMappings(MappingSet mappings)
   {
-    this.previewPanel.ClearCache();
     this.visicutModel1.setMappings(mappings);
   }
   

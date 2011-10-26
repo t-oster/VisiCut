@@ -20,6 +20,7 @@ package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.platform.Point;
 import com.t_oster.liblasercut.utils.BufferedImageAdapter;
 import com.t_oster.visicut.misc.Helper;
@@ -92,6 +93,11 @@ public class Raster3dProfile extends LaserProfile
   @Override
   public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material)
   {
+    this.renderPreview(gg, objects, material, null);
+  }
+  
+  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material, ProgressListener pl)
+  {
     Rectangle2D bb = objects.getBoundingBox();
     if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
     {
@@ -125,6 +131,10 @@ public class Raster3dProfile extends LaserProfile
             gg.setColor(scaled);
             gg.drawLine((int) bb.getX() + x, (int) bb.getY() + y, (int) bb.getX() + x, (int) bb.getY() + y);
           }
+        }
+        if (pl != null)
+        {
+          pl.progressChanged(this, 100*y/ad.getHeight());
         }
       }
     }

@@ -18,11 +18,13 @@
  **/
 package com.t_oster.visicut.gui.beans;
 
+import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.RasterProfile;
+import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
@@ -44,6 +46,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -59,7 +62,7 @@ public class PreviewPanel extends ZoomablePanel
 
   private Logger logger = Logger.getLogger(PreviewPanel.class.getName());
   
-  private class ImageProcessingThread extends Thread
+  private class ImageProcessingThread extends Thread implements ProgressListener
   {
 
     private Logger logger = Logger.getLogger(ImageProcessingThread.class.getName());
@@ -67,6 +70,7 @@ public class PreviewPanel extends ZoomablePanel
     private GraphicSet set;
     private LaserProfile p;
     private Rectangle2D bb;
+    private int progress = 0;
     private boolean isFinished = false;
 
     public Rectangle2D getBoundingBox()
@@ -79,7 +83,7 @@ public class PreviewPanel extends ZoomablePanel
       return buffer;
     }
 
-    public ImageProcessingThread(GraphicSet objects, LaserProfile p)
+    public ImageProcessingThread(GraphicSet objects, LaserProfile p) 
     {
       this.set = objects;
       this.p = p;
@@ -106,7 +110,7 @@ public class PreviewPanel extends ZoomablePanel
       if (p instanceof RasterProfile)
       {
         RasterProfile rp = (RasterProfile) p;
-        buffer = rp.getRenderedPreview(set, material);
+        buffer = rp.getRenderedPreview(set, material, this);
       }
       else
       {
@@ -114,7 +118,14 @@ public class PreviewPanel extends ZoomablePanel
         Graphics2D gg = buffer.createGraphics();
         //Normalize Rendering to 0,0
         gg.setTransform(AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY()));
-        p.renderPreview(gg, set, PreviewPanel.this.getMaterial());
+        if (p instanceof Raster3dProfile)
+        {
+          ((Raster3dProfile) p).renderPreview(gg, set, PreviewPanel.this.getMaterial(), this);
+        }
+        else
+        {
+          p.renderPreview(gg, set, PreviewPanel.this.getMaterial());
+        }
       }
     }
 
@@ -158,6 +169,22 @@ public class PreviewPanel extends ZoomablePanel
       this.buffer = null;
       this.set = null;
       logger.log(Level.FINE, "Thread canceled");
+    }
+
+    public int getProgress()
+    {
+      return this.progress;
+    }
+    
+    public void progressChanged(Object source, int percent)
+    {
+      this.progress = percent;
+      PreviewPanel.this.repaint();
+    }
+
+    public void taskChanged(Object source, String taskName)
+    {
+      
     }
   }
   protected boolean drawPreview = true;
@@ -490,16 +517,16 @@ public class PreviewPanel extends ZoomablePanel
                 synchronized (renderBuffer)
                 {
                   ImageProcessingThread procThread = this.renderBuffer.get(m);
-                  if (procThread == null || !procThread.isFinished() || bb.getWidth() != procThread.getBoundingBox().getWidth() || bb.getHeight() != procThread.getBoundingBox().getHeight())
+                  if (procThread == null || !procThread.isFinished() || (int) bb.getWidth() != (int) procThread.getBoundingBox().getWidth() || (int) bb.getHeight() != (int) procThread.getBoundingBox().getHeight())
                   {//Image not rendered or Size differs
                     if (!renderBuffer.containsKey(m))
                     {//image not yet scheduled for rendering
                       logger.log(Level.FINE, "Starting ImageProcessing Thread for "+m);
-                      ImageProcessingThread thread = new ImageProcessingThread(this.graphicObjects, this.getMaterial().getLaserProfile(m.getProfileName()));
-                      this.renderBuffer.put(m, thread);
-                      thread.start();//start processing thread
+                      procThread = new ImageProcessingThread(current, this.getMaterial().getLaserProfile(m.getProfileName()));
+                      this.renderBuffer.put(m, procThread);
+                      procThread.start();//start processing thread
                     }
-                    else if (bb.getWidth() != procThread.getBoundingBox().getWidth() || bb.getHeight() != procThread.getBoundingBox().getHeight())
+                    else if ((int) bb.getWidth() != (int) procThread.getBoundingBox().getWidth() || (int) bb.getHeight() != (int) procThread.getBoundingBox().getHeight())
                     {//Image is (being) rendered with wrong size
                       logger.log(Level.FINE, "Image has wrong size");
                       if (!procThread.isFinished())
@@ -507,9 +534,9 @@ public class PreviewPanel extends ZoomablePanel
                         procThread.cancel();
                       }
                       logger.log(Level.FINE, "Starting ImageProcessingThread for"+m);
-                      ImageProcessingThread thread = new ImageProcessingThread(this.graphicObjects, this.getMaterial().getLaserProfile(m.getProfileName()));
-                      this.renderBuffer.put(m, thread);
-                      thread.start();//start processing thread
+                      procThread = new ImageProcessingThread(current, this.getMaterial().getLaserProfile(m.getProfileName()));
+                      this.renderBuffer.put(m, procThread);
+                      procThread.start();//start processing thread
                     }
                     gg.setColor(Color.GRAY);
                     Rectangle r = Helper.toRect(bb);
@@ -519,8 +546,9 @@ public class PreviewPanel extends ZoomablePanel
                     gg.setTransform(new AffineTransform());
                     Point po = new Point(r.x + r.width / 2, r.y + r.height / 2);
                     tmp.transform(po, po);
-                    int w = gg.getFontMetrics().stringWidth("please wait...");
-                    gg.drawString("please wait...", po.x - w / 2, po.y);
+                    String txt = "please wait ("+procThread.getProgress()+"%)";
+                    int w = gg.getFontMetrics().stringWidth(txt);
+                    gg.drawString(txt, po.x - w / 2, po.y);
                     gg.setTransform(tmp);
                   }
                   else
@@ -581,7 +609,7 @@ public class PreviewPanel extends ZoomablePanel
   public void setMappings(MappingSet mappings)
   {
     this.mappings = mappings;
-    this.renderBuffer.clear();
+    this.ClearCache();
     this.repaint();
   }
 

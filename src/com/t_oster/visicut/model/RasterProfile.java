@@ -22,6 +22,7 @@ import com.t_oster.liblasercut.BlackWhiteRaster;
 import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.dithering.DitheringAlgorithm;
 import com.t_oster.liblasercut.platform.Point;
 import com.t_oster.liblasercut.utils.BufferedImageAdapter;
@@ -114,7 +115,11 @@ public class RasterProfile extends LaserProfile
     this.ditherAlgorithm = ditherAlgorithm;
   }
 
-  public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material)
+  public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material){
+    return this.getRenderedPreview(objects, material, null);
+  }
+  
+  public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material, ProgressListener pl)
   {
     Rectangle2D bb = objects.getBoundingBox();
     if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
@@ -153,6 +158,10 @@ public class RasterProfile extends LaserProfile
       };
       ad.setColorShift(this.getColorShift());
       DitheringAlgorithm alg = BlackWhiteRaster.getDitheringAlgorithm(this.getDitherAlgorithm());
+      if (pl != null)
+      {
+        alg.addProgressListener(pl);
+      }
       alg.ditherDirect(ad);
       return scaledImg;
     }
