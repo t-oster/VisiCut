@@ -81,7 +81,7 @@ public class MainView extends javax.swing.JFrame
         }
         else
         {
-          MainView.this.visicutModel1.setMappings(MainView.this.customMappingTable.getResultingMappingSet());
+          MainView.this.setMappings(MainView.this.customMappingTable.getResultingMappingSet());
           MainView.this.refreshButtonStates();
           MainView.this.refreshComboBoxes();
         }
@@ -101,7 +101,7 @@ public class MainView extends javax.swing.JFrame
       }
     });
     this.visicutModel1.setMaterial(null);
-    this.visicutModel1.setMappings(null);
+    this.setMappings(null);
     fillComboBoxes();
     refreshComboBoxes();
     this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
@@ -1136,7 +1136,7 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
       }
       catch (Exception ex)
       {
-        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+        logger.log(Level.SEVERE, null, ex);
         JOptionPane.showMessageDialog(this, "Error saving File: " + ex.getLocalizedMessage());
       }
     }
@@ -1146,6 +1146,8 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
     }
   }
 
+  private Logger logger = Logger.getLogger(MainView.class.getName());
+  
 private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
   this.save();
 }//GEN-LAST:event_saveAsMenuItemActionPerformed
@@ -1498,7 +1500,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   {//GEN-HEADEREND:event_predefinedMappingListValueChanged
     Object selected = this.predefinedMappingList.getSelectedValue();
     MappingSet ms = selected instanceof MappingSet ? (MappingSet) selected : null;
-    this.visicutModel1.setMappings(ms);
+    this.setMappings(ms);
     this.refreshComboBoxes();
     this.refreshButtonStates();
   }//GEN-LAST:event_predefinedMappingListValueChanged
@@ -1512,6 +1514,12 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     }
   }//GEN-LAST:event_customMappingComboBoxActionPerformed
 
+  private void setMappings(MappingSet mappings)
+  {
+    this.previewPanel.ClearCache();
+    this.visicutModel1.setMappings(mappings);
+  }
+  
   private void mappingTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt)//GEN-FIRST:event_mappingTabbedPaneStateChanged
   {//GEN-HEADEREND:event_mappingTabbedPaneStateChanged
     MappingSet mapping = null;
@@ -1527,7 +1535,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     {
       mapping = customMappingTable.getResultingMappingSet();
     }
-    this.visicutModel1.setMappings(mapping);
+    this.setMappings(mapping);
     this.refreshComboBoxes();
     this.refreshButtonStates();
   }//GEN-LAST:event_mappingTabbedPaneStateChanged
@@ -1535,7 +1543,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   private void customMappingPanelMouseExited(java.awt.event.MouseEvent evt)//GEN-FIRST:event_customMappingPanelMouseExited
   {//GEN-HEADEREND:event_customMappingPanelMouseExited
     this.customMappingTable.clearSelection();
-    this.visicutModel1.setMappings(customMappingTable.getResultingMappingSet());
+    this.setMappings(customMappingTable.getResultingMappingSet());
     this.refreshComboBoxes();
     this.refreshButtonStates();
   }//GEN-LAST:event_customMappingPanelMouseExited
