@@ -39,8 +39,7 @@ import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -77,11 +76,22 @@ public class MainView extends javax.swing.JFrame
       {
         if (customMappingTable.getSelectedRowCount() > 0)
         {
+          MainView.this.materialComboBox.setEnabled(false);
+          MainView.this.laserCutterComboBox.setEnabled(false);
+          MainView.this.mappingTabbedPane.setEnabled(false);
           MainView.this.previewPanel.setMappings(MainView.this.customMappingTable.getSelectionMappingSet());
         }
         else
         {
-          MainView.this.setMappings(MainView.this.customMappingTable.getResultingMappingSet());
+          MainView.this.materialComboBox.setEnabled(true);
+          MainView.this.laserCutterComboBox.setEnabled(true);
+          MainView.this.mappingTabbedPane.setEnabled(true);
+          MappingSet set = MainView.this.customMappingTable.getResultingMappingSet();
+          MainView.this.setMappings(set);
+          if (!MainView.this.previewPanel.getMappings().equals(set))
+          {
+            MainView.this.previewPanel.setMappings(set);
+          }
           MainView.this.refreshButtonStates();
           MainView.this.refreshComboBoxes();
         }
@@ -362,22 +372,17 @@ public class MainView extends javax.swing.JFrame
         predefinedMappingPanel.setLayout(predefinedMappingPanelLayout);
         predefinedMappingPanelLayout.setHorizontalGroup(
             predefinedMappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE)
         );
         predefinedMappingPanelLayout.setVerticalGroup(
             predefinedMappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE)
         );
 
         mappingTabbedPane.addTab(resourceMap.getString("predefinedMappingPanel.TabConstraints.tabTitle"), predefinedMappingPanel); // NOI18N
 
         customMappingPanel.setMaximumSize(new java.awt.Dimension(277, 382));
         customMappingPanel.setName("customMappingPanel"); // NOI18N
-        customMappingPanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                customMappingPanelMouseExited(evt);
-            }
-        });
 
         jLabel11.setText(resourceMap.getString("jLabel11.text")); // NOI18N
         jLabel11.setName("jLabel11"); // NOI18N
@@ -402,9 +407,9 @@ public class MainView extends javax.swing.JFrame
                 .addContainerGap()
                 .addComponent(jLabel11)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(customMappingComboBox, 0, 221, Short.MAX_VALUE)
+                .addComponent(customMappingComboBox, 0, 248, Short.MAX_VALUE)
                 .addContainerGap())
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE)
         );
         customMappingPanelLayout.setVerticalGroup(
             customMappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -414,7 +419,7 @@ public class MainView extends javax.swing.JFrame
                     .addComponent(jLabel11)
                     .addComponent(customMappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -427,7 +432,7 @@ public class MainView extends javax.swing.JFrame
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 318, Short.MAX_VALUE)
+                    .addComponent(mappingTabbedPane)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(laserCutterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -438,9 +443,9 @@ public class MainView extends javax.swing.JFrame
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(materialHeightTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
-                                    .addComponent(dimensionWidthTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE))
+                                    .addComponent(materialHeightTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
+                                    .addComponent(dimensionWidthTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -454,7 +459,7 @@ public class MainView extends javax.swing.JFrame
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel10)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(timeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
+                        .addComponent(timeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(calculateTimeButton))))
         );
@@ -486,7 +491,7 @@ public class MainView extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE)
+                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(calculateTimeButton)
@@ -513,6 +518,11 @@ public class MainView extends javax.swing.JFrame
         bindingGroup.addBinding(binding);
 
         PreviewPanelMouseHandler ppMouseHandler = new PreviewPanelMouseHandler(this.previewPanel);
+        previewPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                previewPanelMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout previewPanelLayout = new javax.swing.GroupLayout(previewPanel);
         previewPanel.setLayout(previewPanelLayout);
@@ -522,7 +532,7 @@ public class MainView extends javax.swing.JFrame
         );
         previewPanelLayout.setVerticalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 462, Short.MAX_VALUE)
+            .addGap(0, 500, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -1145,9 +1155,8 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
       System.out.println("File access cancelled by user.");
     }
   }
-
   private Logger logger = Logger.getLogger(MainView.class.getName());
-  
+
 private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
   this.save();
 }//GEN-LAST:event_saveAsMenuItemActionPerformed
@@ -1518,7 +1527,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   {
     this.visicutModel1.setMappings(mappings);
   }
-  
+
   private void mappingTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt)//GEN-FIRST:event_mappingTabbedPaneStateChanged
   {//GEN-HEADEREND:event_mappingTabbedPaneStateChanged
     MappingSet mapping = null;
@@ -1539,14 +1548,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     this.refreshButtonStates();
   }//GEN-LAST:event_mappingTabbedPaneStateChanged
 
-  private void customMappingPanelMouseExited(java.awt.event.MouseEvent evt)//GEN-FIRST:event_customMappingPanelMouseExited
-  {//GEN-HEADEREND:event_customMappingPanelMouseExited
-    this.customMappingTable.clearSelection();
-    this.setMappings(customMappingTable.getResultingMappingSet());
-    this.refreshComboBoxes();
-    this.refreshButtonStates();
-  }//GEN-LAST:event_customMappingPanelMouseExited
-
   private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
   {//GEN-HEADEREND:event_jButton1ActionPerformed
     previewPanel.setZoom(previewPanel.getZoom() + (previewPanel.getZoom() / 32));
@@ -1556,6 +1557,15 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   {//GEN-HEADEREND:event_jButton2ActionPerformed
     previewPanel.setZoom(previewPanel.getZoom() - (previewPanel.getZoom() / 32));
   }//GEN-LAST:event_jButton2ActionPerformed
+
+  private void previewPanelMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_previewPanelMouseClicked
+  {//GEN-HEADEREND:event_previewPanelMouseClicked
+    if (evt.getButton() == MouseEvent.BUTTON1 && this.mappingTabbedPane.getSelectedComponent().equals(this.customMappingPanel)
+      && this.customMappingTable.getSelectedRow() >= 0)
+    {
+      this.customMappingTable.clearSelection();
+    }
+  }//GEN-LAST:event_previewPanelMouseClicked
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton calculateTimeButton;
