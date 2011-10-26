@@ -20,7 +20,6 @@ package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.liblasercut.platform.Tuple;
 import com.t_oster.visicut.gui.ImageListable;
-import com.t_oster.visicut.gui.beans.ImageComboBox;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
@@ -263,6 +262,7 @@ public class CustomMappingTable extends JTable
         return c;
       }
     };
+    this.getColumnModel().getColumn(1).setPreferredWidth(200);
     this.getColumnModel().getColumn(0).setCellRenderer(renderer);
     this.getColumnModel().getColumn(1).setCellRenderer(renderer);
   }
