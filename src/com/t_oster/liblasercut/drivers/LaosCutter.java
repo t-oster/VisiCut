@@ -49,6 +49,14 @@ import java.util.Locale;
 public class LaosCutter extends LaserCutter
 {
 
+  private static final String SETTING_HOSTNAME = "Hostname / IP";
+  private static final String SETTING_PORT = "Port";
+  private static final String SETTING_GCODE = "Use GCode (yes/no)";
+  private static final String SETTING_BEDWIDTH = "Laserbed width";
+  private static final String SETTING_BEDHEIGHT = "Laserbed height";
+  private static final String SETTING_FLIPX = "X axis goes right to left (yes/no)";
+  private static final String SETTING_MMPERSTEP = "mm per Step (for SimpleMode)";
+  
   protected boolean flipXaxis = false;
 
   /**
@@ -134,11 +142,35 @@ public class LaosCutter extends LaserCutter
     this.port = port;
   }
 
+  protected double mmPerStep = 0.006323126711476225;
+
+  /**
+   * Get the value of mmPerStep
+   *
+   * @return the value of mmPerStep
+   */
+  public double getMmPerStep()
+  {
+    return mmPerStep;
+  }
+
+  /**
+   * Set the value of mmPerStep
+   *
+   * @param mmPerStep new value of mmPerStep
+   */
+  public void setMmPerStep(double mmPerStep)
+  {
+    this.mmPerStep = mmPerStep;
+  }
+
+  
   //TOD Add property "steps per mm" or "stepwidth" and adapt px2steps
   //to be resolution dependent
-  private int px2steps(double px)
+  private int px2steps(double px, double dpi)
   {
-    return (int) (8.034 * px);
+    return (int) (Util.px2mm(px, dpi)/this.mmPerStep);
+    //return (int) (8.034 * px);
   }
 
   private byte[] generateVectorGCode(VectorPart vp, int resolution) throws UnsupportedEncodingException
@@ -232,7 +264,7 @@ public class LaosCutter extends LaserCutter
   {
     if (this.isSimpleMode())
     {
-      out.printf("0 %d %d\n", px2steps(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - x : x), px2steps(y));
+      out.printf("0 %d %d\n", px2steps(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - x : x, resolution), px2steps(y, resolution));
     } 
     else
     {
@@ -244,7 +276,7 @@ public class LaosCutter extends LaserCutter
   {
     if (this.isSimpleMode())
     {
-      out.printf("1 %d %d\n", px2steps(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - x : x), px2steps(y));
+      out.printf("1 %d %d\n", px2steps(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - x : x, resolution), px2steps(y, resolution));
     }
     else
     {//Frequency???
@@ -458,12 +490,13 @@ public class LaosCutter extends LaserCutter
     if (settingAttributes == null)
     {
       settingAttributes = new LinkedList<String>();
-      settingAttributes.add("Hostname");
-      settingAttributes.add("Port");
-      settingAttributes.add("GCode");
-      settingAttributes.add("BedWidth");
-      settingAttributes.add("BedHeight");
-      settingAttributes.add("FlipXaxis");
+      settingAttributes.add(SETTING_HOSTNAME);
+      settingAttributes.add(SETTING_PORT);
+      settingAttributes.add(SETTING_GCODE);
+      settingAttributes.add(SETTING_BEDWIDTH);
+      settingAttributes.add(SETTING_BEDHEIGHT);
+      settingAttributes.add(SETTING_FLIPX);
+      settingAttributes.add(SETTING_MMPERSTEP);
     }
     return settingAttributes;
   }
@@ -471,29 +504,33 @@ public class LaosCutter extends LaserCutter
   @Override
   public String getSettingValue(String attribute)
   {
-    if ("Hostname".equals(attribute))
+    if (SETTING_HOSTNAME.equals(attribute))
     {
       return this.getHostname();
     }
-    else if ("FlipXaxis".equals(attribute))
+    else if (SETTING_FLIPX.equals(attribute))
     {
       return this.isFlipXaxis() ? "yes" : "no";
     }
-    else if ("Port".equals(attribute))
+    else if (SETTING_PORT.equals(attribute))
     {
       return "" + this.getPort();
     }
-    else if ("GCode".equals(attribute))
+    else if (SETTING_GCODE.equals(attribute))
     {
       return this.isSimpleMode() ? "no" : "yes";
     }
-    else if ("BedWidth".equals(attribute))
+    else if (SETTING_BEDWIDTH.equals(attribute))
     {
       return "" + this.getBedWidth();
     }
-    else if ("BedHeight".equals(attribute))
+    else if (SETTING_BEDHEIGHT.equals(attribute))
     {
       return "" + this.getBedHeight();
+    }
+    else if (SETTING_MMPERSTEP.equals(attribute))
+    {
+      return "" + this.getMmPerStep();
     }
     return null;
   }
@@ -501,29 +538,33 @@ public class LaosCutter extends LaserCutter
   @Override
   public void setSettingValue(String attribute, String value)
   {
-    if ("Hostname".equals(attribute))
+    if (SETTING_HOSTNAME.equals(attribute))
     {
       this.setHostname(value);
     }
-    else if ("Port".equals(attribute))
+    else if (SETTING_PORT.equals(attribute))
     {
       this.setPort(Integer.parseInt(value));
     }
-    else if ("GCode".equals(attribute))
+    else if (SETTING_GCODE.equals(attribute))
     {
       this.setSimpleMode(!"yes".equals(value));
     }
-    else if ("FlipXaxis".equals(attribute))
+    else if (SETTING_FLIPX.equals(attribute))
     {
       this.setFlipXaxis("yes".equals(value));
     }
-    else if ("BedWidth".equals(attribute))
+    else if (SETTING_BEDWIDTH.equals(attribute))
     {
       this.setBedWidth(Double.parseDouble(value));
     }
-    else if ("BedHeight".equals(attribute))
+    else if (SETTING_BEDHEIGHT.equals(attribute))
     {
       this.setBedHeight(Double.parseDouble(value));
+    }
+    else if (SETTING_MMPERSTEP.equals(attribute))
+    {
+      this.setMmPerStep(Double.parseDouble(value));
     }
   }
 
@@ -543,6 +584,7 @@ public class LaosCutter extends LaserCutter
     clone.bedHeight = bedHeight;
     clone.bedWidth = bedWidth;
     clone.flipXaxis = flipXaxis;
+    clone.mmPerStep = mmPerStep;
     return clone;
   }
 }
