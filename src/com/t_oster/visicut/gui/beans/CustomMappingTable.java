@@ -37,6 +37,7 @@ import java.util.List;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -218,6 +219,7 @@ public class CustomMappingTable extends JTable
   {
     this.values = new LinkedList<Tuple<Object, LaserProfile>>();
     this.setModel(model);
+    this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
     DefaultTableCellRenderer renderer = new DefaultTableCellRenderer()
     {
 
