@@ -171,8 +171,7 @@ public class SVGShape extends SVGObject implements ShapeObject
     return this.decoratee;
   }
 
-  @Override
-  public Rectangle2D getBoundingBox()
+  public Rectangle2D getShapeBoundingBox()
   {
     Rectangle2D bb = this.getShape().getBounds2D();
     return bb;
