@@ -18,11 +18,15 @@
  **/
 package com.t_oster.liblasercut.drivers;
 
+import com.t_oster.liblasercut.BlackWhiteRaster;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
+import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.RasterPart;
 import com.t_oster.liblasercut.VectorCommand;
 import com.t_oster.liblasercut.VectorPart;
+import com.t_oster.liblasercut.platform.Point;
 import com.t_oster.liblasercut.platform.Util;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -156,24 +160,10 @@ public class LaosCutter extends LaserCutter
       switch (cmd.getType())
       {
         case MOVETO:
-          if (this.isSimpleMode())
-          {
-            out.printf("0 %d %d\n", px2steps(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - cmd.getX() : cmd.getX()), px2steps(cmd.getY()));
-          }
-          else
-          {
-            out.printf(Locale.US, "G0 X%f Y%f\n", Util.px2mm(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - cmd.getX() : cmd.getX(), resolution), Util.px2mm(cmd.getY(), resolution));
-          }
+          move(out, cmd.getX(), cmd.getY(), resolution);
           break;
         case LINETO:
-          if (this.isSimpleMode())
-          {
-            out.printf("1 %d %d\n", px2steps(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - cmd.getX() : cmd.getX()), px2steps(cmd.getY()));
-          }
-          else
-          {//Frequency???
-            out.printf(Locale.US, "G1 X%f Y%f E%d F%d\n", Util.px2mm(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - cmd.getX() : cmd.getX(), resolution), Util.px2mm(cmd.getY(), resolution), power, speed);
-          }
+          line(out, cmd.getX(), cmd.getY(), power, speed, frequency, resolution);
           break;
         case SETPOWER:
           if (this.isSimpleMode())
@@ -223,7 +213,153 @@ public class LaosCutter extends LaserCutter
     }
     else
     {
-      out.printf(Locale.US, "G0 X%f Y%f\n", 0,0);
+      out.printf(Locale.US, "G0 X%f Y%f\n", 0, 0);
+    }
+    if (!this.isSimpleMode())
+    {
+      //back to origin and shutdown
+      out.print("G28\n");
+      out.print("M107\n");
+      out.print("M151 0\n");
+      out.print("M0\n");
+    }
+    return result.toByteArray();
+  }
+
+  private void move(PrintStream out, int x, int y, int resolution)
+  {
+    if (this.isSimpleMode())
+    {
+      out.printf("0 %d %d\n", px2steps(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - x : x), px2steps(y));
+    }
+    else
+    {
+      out.printf(Locale.US, "G0 X%f Y%f\n", Util.px2mm(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - x : x, resolution), Util.px2mm(y, resolution));
+    }
+  }
+
+  private void line(PrintStream out, int x, int y, int power, int speed, int frequency, int resolution)
+  {
+    if (this.isSimpleMode())
+    {
+      out.printf("1 %d %d\n", px2steps(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - x : x), px2steps(y));
+    }
+    else
+    {//Frequency???
+      out.printf(Locale.US, "G1 X%f Y%f E%d F%d\n", Util.px2mm(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - x : x, resolution), Util.px2mm(y, resolution), power, speed);
+    }
+  }
+
+  private byte[] generatePseudoRasterGCode(RasterPart rp, int resolution) throws UnsupportedEncodingException
+  {
+    ByteArrayOutputStream result = new ByteArrayOutputStream();
+    PrintStream out = new PrintStream(result, true, "US-ASCII");
+    if (!this.isSimpleMode())
+    {
+      out.print("G28\n");//move to origin
+      out.print("G21\n");//units to mm
+      out.print("M106\n");//ventilaton on
+      out.print("M151 100\n");//air pressure on
+    }
+
+    int power = 100;
+    int speed = 100;
+    int frequency = 500;
+    double focus = 0;
+    for (int i = 0; i < rp.getRasterCount(); i++)
+    {
+      Point off = rp.getRasterStart(i);
+      LaserProperty lp = rp.getLaserProperty(i);
+      if (this.isSimpleMode())
+      {
+        out.printf("7 101 %d\n", lp.getPower() * 100);
+        out.printf(Locale.US, "2 %d\n", (int) Util.mm2px(lp.getFocus(), resolution));
+        out.printf("7 100 %d\n", lp.getSpeed() * 100);
+      }
+      else
+      {
+        power = lp.getPower();
+        focus = lp.getFocus();
+        speed = lp.getSpeed();
+      }
+      boolean dirLeft = true;
+      BlackWhiteRaster r = rp.getImages()[i];
+      for (int y = off.y; y < off.y + r.getHeight(); y++)
+      {
+        if (dirLeft)
+        {
+          int startx = off.x;
+          while (startx < off.x + r.getWidth() && !r.isBlack(startx - off.x, y - off.y))
+          {//skip empty beginning
+            startx++;
+          }
+          //move to start of the line
+          move(out, startx, y, resolution);
+          boolean on = false;
+          for (int x = startx; x < off.x + r.getWidth(); x++)
+          {
+            if (on && !r.isBlack(x - off.x, y - off.y))
+            {
+              line(out, x - 1, y, power, speed, frequency, resolution);
+              on = false;
+            }
+            else if (!on && r.isBlack(x - off.x, y - off.y))
+            {
+              move(out, x - 1, y, resolution);
+              on = true;
+            }
+          }
+          if (on)
+          {
+            line(out, off.x + r.getWidth(), y, power, speed, frequency, resolution);
+          }
+          else
+          {
+            move(out, off.x + r.getWidth(), y, resolution);
+          }
+        }
+        else
+        {
+          int startx = off.x + r.getWidth();
+          while (startx >= off.x && !r.isBlack(startx - off.x, y - off.y))
+          {//skip empty beginning
+            startx--;
+          }
+          //move to start of the line
+          move(out, startx, y, resolution);
+          boolean on = false;
+          for (int x = startx; x >= off.x; x--)
+          {
+            if (on && !r.isBlack(x - off.x, y - off.y))
+            {
+              line(out, x + 1, y, power, speed, frequency, resolution);
+              on = false;
+            }
+            else if (!on && r.isBlack(x - off.x, y - off.y))
+            {
+              move(out, x + 1, y, resolution);
+              on = true;
+            }
+          }
+          if (on)
+          {
+            line(out, off.x, y, power, speed, frequency, resolution);
+          }
+          else
+          {
+            move(out, off.x, y, resolution);
+          }
+        }
+        dirLeft = !dirLeft;
+      }
+    }
+    if (this.isSimpleMode())
+    {
+      out.printf("0 0 0\n");
+    }
+    else
+    {
+      out.printf(Locale.US, "G0 X%f Y%f\n", 0, 0);
     }
     if (!this.isSimpleMode())
     {
@@ -239,9 +375,9 @@ public class LaosCutter extends LaserCutter
   @Override
   public void sendJob(LaserJob job) throws IllegalJobException, Exception
   {
-    if (job.containsRaster() || job.contains3dRaster())
+    if (job.contains3dRaster())
     {
-      throw new IllegalJobException("The LAOS driver currently only supports Vector mode.");
+      throw new IllegalJobException("The LAOS driver currently only supports Vector and Raster mode.");
     }
     Socket connection = new Socket();
     connection.connect(new InetSocketAddress(hostname, port), 3000);
@@ -249,6 +385,10 @@ public class LaosCutter extends LaserCutter
     if (job.containsVector())
     {
       out.write(this.generateVectorGCode(job.getVectorPart(), job.getResolution()));
+    }
+    if (job.containsRaster())
+    {
+      out.write(this.generatePseudoRasterGCode(job.getRasterPart(), job.getResolution()));
     }
     out.close();
   }
