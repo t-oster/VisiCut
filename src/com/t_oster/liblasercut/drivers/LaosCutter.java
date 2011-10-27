@@ -416,13 +416,13 @@ public class LaosCutter extends LaserCutter
     Socket connection = new Socket();
     connection.connect(new InetSocketAddress(hostname, port), 3000);
     BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
-    if (job.containsVector())
-    {
-      out.write(this.generateVectorGCode(job.getVectorPart(), job.getResolution()));
-    }
     if (job.containsRaster())
     {
       out.write(this.generatePseudoRasterGCode(job.getRasterPart(), job.getResolution()));
+    }
+    if (job.containsVector())
+    {
+      out.write(this.generateVectorGCode(job.getVectorPart(), job.getResolution()));
     }
     out.close();
   }
