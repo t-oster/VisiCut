@@ -18,6 +18,8 @@
  **/
 package com.t_oster.visicut.misc;
 
+import com.kitfox.svg.xml.NumberWithUnits;
+import com.t_oster.liblasercut.platform.Util;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -56,9 +58,9 @@ public class Helper
 
   public static Rectangle toRect(Rectangle2D src)
   {
-    if (src==null)
+    if (src == null)
     {
-      return new Rectangle(0,0,0,0);
+      return new Rectangle(0, 0, 0, 0);
     }
     return new Rectangle((int) src.getX(), (int) src.getY(), (int) src.getWidth(), (int) src.getHeight());
   }
@@ -95,14 +97,38 @@ public class Helper
   public static String toHHMMSS(int estimateTime)
   {
     String result = "";
-    int v = estimateTime/3600;
-    result += v < 10 ? "0"+v+":" : ""+v+":";
-    estimateTime=estimateTime%3600;
-    v = estimateTime/60;
-    result += v < 10 ? "0"+v+":" : ""+v+":";
-    estimateTime=estimateTime%60;
+    int v = estimateTime / 3600;
+    result += v < 10 ? "0" + v + ":" : "" + v + ":";
+    estimateTime = estimateTime % 3600;
+    v = estimateTime / 60;
+    result += v < 10 ? "0" + v + ":" : "" + v + ":";
+    estimateTime = estimateTime % 60;
     v = estimateTime;
-    result += v < 10 ? "0"+v : ""+v;
+    result += v < 10 ? "0" + v : "" + v;
     return result;
+  }
+
+  /**
+   * Calculates the size in pixels (with repolution dpi)
+   * of a NumberWithUnits element
+   * @param n
+   * @param dpi 
+   */
+  public static double numberWithUnitsToPx(NumberWithUnits n, int dpi)
+  {
+    switch (n.getUnits())
+    {
+      case NumberWithUnits.UT_MM:
+        return Util.mm2px(n.getValue(), dpi);
+      case NumberWithUnits.UT_CM:
+        return Util.mm2px(10.0 * n.getValue(), dpi);
+      case NumberWithUnits.UT_PX:
+        return n.getValue();
+      case NumberWithUnits.UT_IN:
+        return Util.mm2px(Util.inch2mm(n.getValue()), dpi);
+      default:
+        System.err.println("Unknown SVG unit!!!");
+        return n.getValue();
+    }
   }
 }
