@@ -33,6 +33,7 @@ import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,6 +55,7 @@ public class SVGImporter implements Importer
 {
 
   private SVGUniverse u = new SVGUniverse();
+  private SVGRoot root;
 
   private void importNode(SVGElement e, List<GraphicObject> result)
   {
@@ -90,7 +92,7 @@ public class SVGImporter implements Importer
     try
     {
       URI svg = u.loadSVG(in, name);
-      SVGRoot root = u.getDiagram(svg).getRoot();
+      root = u.getDiagram(svg).getRoot();
       GraphicSet result = new GraphicSet();
       //Inkscape SVG Units are 1/90 inch
       result.setBasicTransform(AffineTransform.getScaleInstance(500d / 90, 500d / 90));
@@ -108,8 +110,12 @@ public class SVGImporter implements Importer
    * SVG default is 90, but AI generates 72??
    * 
    */
-  private int determineResolution(File f)
+  private AffineTransform determineTransformation(SVGRoot root, File f)
   {
+    System.out.println(root.getDeviceWidth());
+    System.out.println(root.getDeviceHeight());
+    Rectangle2D r2d = new Rectangle2D.Double();
+    System.out.println(root.getDeviceRect(r2d));
     BufferedReader in = null;
     int result = 90;
     try
@@ -131,7 +137,7 @@ public class SVGImporter implements Importer
       {
         Logger.getLogger(SVGImporter.class.getName()).log(Level.SEVERE, null, ex);
       }
-      return result;
+      return AffineTransform.getScaleInstance(500d / result, 500d / result);
     }
     catch (FileNotFoundException ex)
     {
@@ -148,7 +154,7 @@ public class SVGImporter implements Importer
         Logger.getLogger(SVGImporter.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
-    return result;
+    return AffineTransform.getScaleInstance(500d / result, 500d / result);
   }
 
   @Override
@@ -157,8 +163,7 @@ public class SVGImporter implements Importer
     try
     {
       GraphicSet result = this.importFile(new FileInputStream(inputFile), inputFile.getName());
-      int dpi = this.determineResolution(inputFile);
-      result.setBasicTransform(AffineTransform.getScaleInstance(500d / dpi, 500d / dpi));
+      result.setBasicTransform(determineTransformation(root, inputFile));
       return result;
     }
     catch (Exception ex)
