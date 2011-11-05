@@ -23,6 +23,7 @@ import com.kitfox.svg.RenderableElement;
 import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.xml.StyleAttribute;
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -219,7 +220,8 @@ public abstract class SVGObject implements GraphicObject
         }
         while (result == null && p != null);
       }
-      return result;
+      AffineTransform tr = this.getAbsoluteTransformation();
+      return Helper.transform(result, tr);
     }
     catch (SVGException ex)
     {
