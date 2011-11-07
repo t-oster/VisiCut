@@ -21,6 +21,7 @@ package com.t_oster.visicut.model.graphicelements.svgsupport;
 import com.kitfox.svg.Defs;
 import com.kitfox.svg.Gradient;
 import com.kitfox.svg.Group;
+import com.kitfox.svg.SVGException;
 import com.t_oster.visicut.model.graphicelements.Importer;
 import com.kitfox.svg.ImageSVG;
 import com.kitfox.svg.PatternSVG;
@@ -28,7 +29,10 @@ import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGRoot;
 import com.kitfox.svg.SVGUniverse;
 import com.kitfox.svg.ShapeElement;
+import com.kitfox.svg.xml.NumberWithUnits;
+import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.visicut.misc.ExtensionFilter;
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
@@ -112,10 +116,44 @@ public class SVGImporter implements Importer
    */
   private AffineTransform determineTransformation(SVGRoot root, File f)
   {
-    System.out.println(root.getDeviceWidth());
-    System.out.println(root.getDeviceHeight());
-    Rectangle2D r2d = new Rectangle2D.Double();
-    System.out.println(root.getDeviceRect(r2d));
+    try
+    {
+      StyleAttribute sty = new StyleAttribute();
+
+      double x=0;
+      double y=0;
+      double width=0;
+      double height=0;
+      if (root.getPres(sty.setName("x")))
+      {
+        x = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), 500);
+      }
+
+      if (root.getPres(sty.setName("y")))
+      {
+        y = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), 500);
+      }
+
+      if (root.getPres(sty.setName("width")))
+      {
+        width = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), 500);
+      }
+      if (root.getPres(sty.setName("height")))
+      {
+        height = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), 500);
+      }
+      if (width != 0 && height != 0 && root.getPres(sty.setName("viewBox")))
+      {
+        float[] coords = sty.getFloatList();
+        Rectangle2D coordinateBox = new Rectangle2D.Double(x,y,width,height);
+        Rectangle2D viewBox = new Rectangle2D.Float(coords[0], coords[1], coords[2], coords[3]);
+        return Helper.getTransform(viewBox, coordinateBox);
+      }
+    }
+    catch (SVGException ex)
+    {
+      Logger.getLogger(SVGImporter.class.getName()).log(Level.SEVERE, null, ex);
+    }
     BufferedReader in = null;
     int result = 90;
     try

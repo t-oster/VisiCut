@@ -141,6 +141,10 @@ public class GraphicSet extends LinkedList<GraphicObject>
           Rectangle2D.union(boundingBoxCache, current, boundingBoxCache);
         }
       }
+      if (boundingBoxCache == null)
+      {
+        return new Rectangle2D.Double();
+      }
     }
     return boundingBoxCache;
   }
