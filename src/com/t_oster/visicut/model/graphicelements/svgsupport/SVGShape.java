@@ -27,6 +27,7 @@ import com.kitfox.svg.ShapeElement;
 import com.kitfox.svg.Text;
 import com.kitfox.svg.Tspan;
 import com.kitfox.svg.xml.StyleAttribute;
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -175,6 +176,30 @@ public class SVGShape extends SVGObject implements ShapeObject
   {
     Rectangle2D bb = this.getShape().getBounds2D();
     return bb;
+  }
+  
+  @Override
+  public Rectangle2D getBoundingBox()
+  {
+    AffineTransform at;
+    try
+    {
+      at = this.getAbsoluteTransformation();
+    }
+    catch (SVGException ex)
+    {
+      Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
+      at = new AffineTransform();
+    }
+    Rectangle2D bb = this.getDecoratee().getShape().getBounds2D();
+    StyleAttribute sa = getStyleAttributeRecursive("stroke-width");
+    if (sa != null)
+    {
+      double w = Helper.numberWithUnitsToPx(sa.getNumberWithUnits(),500);
+      //TODO: get Stroke width with unit and add it to width/height of BB
+      bb.setRect(bb.getX()-w/2, bb.getY()-w/2, bb.getWidth()+w, bb.getHeight()+w);
+    }
+    return Helper.transform(bb, at);
   }
 
   @Override

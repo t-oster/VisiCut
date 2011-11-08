@@ -126,6 +126,8 @@ public class Helper
         return n.getValue();
       case NumberWithUnits.UT_IN:
         return Util.mm2px(Util.inch2mm(n.getValue()), dpi);
+      case NumberWithUnits.UT_UNITLESS:
+        return n.getValue();
       default:
         System.err.println("Unknown SVG unit!!!");
         return n.getValue();
