@@ -46,6 +46,8 @@
 		<string>-Xms256m -Xmx1024m</string>
 		<key>WorkingDirectory</key>
 		<string>$APP_PACKAGE/Contents/Resources/Java</string>
+		<key>SplashFile</key>
+                <string>$APP_PACKAGE/Contents/Resources/Java/Visicut.jar</string>
 	</dict>
 </dict>
 </plist>
