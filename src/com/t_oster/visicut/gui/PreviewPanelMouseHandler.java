@@ -108,9 +108,13 @@ public class PreviewPanelMouseHandler implements MouseListener, MouseMotionListe
   {
     if (me.getButton() == MouseEvent.BUTTON1)
     {
-      Rectangle2D bb = getGraphicObjects().getBoundingBox();
-      Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
-      boolean onGraphic = e.contains(me.getPoint());
+      boolean onGraphic = false;
+      if (getGraphicObjects() != null && getGraphicObjects().getBoundingBox() != null)
+      {
+        Rectangle2D bb = getGraphicObjects().getBoundingBox();
+        Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
+        onGraphic = e.contains(me.getPoint());
+      }
       if (onGraphic)
       {//clicked on the graphic
         if (getEditRect() != null)

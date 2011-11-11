@@ -1473,6 +1473,14 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       }
     }
     this.visicutModel1.setSelectedLaserDevice(newDev);
+    if (this.visicutModel1.getSelectedLaserDevice()== null || this.visicutModel1.getSelectedLaserDevice().getCameraURL() == null || "".equals(this.visicutModel1.getSelectedLaserDevice().getCameraURL()))
+    {
+      this.visicutModel1.setBackgroundImage(null);
+    }
+    else
+    {
+      this.captureImage();
+    }
     refreshComboBoxes();
     this.refreshButtonStates();
   }//GEN-LAST:event_laserCutterComboBoxActionPerformed
