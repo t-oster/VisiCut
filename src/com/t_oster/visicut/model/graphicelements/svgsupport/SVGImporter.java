@@ -29,7 +29,6 @@ import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGRoot;
 import com.kitfox.svg.SVGUniverse;
 import com.kitfox.svg.ShapeElement;
-import com.kitfox.svg.xml.NumberWithUnits;
 import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
@@ -95,6 +94,7 @@ public class SVGImporter implements Importer
   {
     try
     {
+      u.clear();
       URI svg = u.loadSVG(in, name);
       root = u.getDiagram(svg).getRoot();
       GraphicSet result = new GraphicSet();
