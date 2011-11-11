@@ -256,6 +256,7 @@ public class VisicutModel
     GraphicSet gs = new GraphicSet();
     inputFile.deleteOnExit();
     gs = this.loadSetFromFile(inputFile);
+    this.setSourceFile(inputFile);
     if (gs != null)
     {
       gs.setTransform(transform);
@@ -275,11 +276,11 @@ public class VisicutModel
     int len;
     // Create the ZIP file
     ZipOutputStream out = new ZipOutputStream(new FileOutputStream(f));
-    if (this.sourceFile != null)
+    if (this.getSourceFile() != null)
     {
       // Add source GraphicsFile to the Zip File
-      out.putNextEntry(new ZipEntry(this.sourceFile.getName()));
-      in = new FileInputStream(this.sourceFile);
+      out.putNextEntry(new ZipEntry(this.getSourceFile().getName()));
+      in = new FileInputStream(this.getSourceFile());
       // Transfer bytes from the file to the ZIP file
       while ((len = in.read(buf)) > 0)
       {
@@ -382,12 +383,49 @@ public class VisicutModel
 
   public void loadGraphicFile(File f)
   {
+    this.loadGraphicFile(f, false);
+  }
+  
+  public static final String PROP_SOURCEFILE = "sourceFile";
+  
+  /**
+   * Returns the source file of the current Image.
+   * In case of PLF this is a temporary file extracted from the plf
+   * @return 
+   */
+  public File getSourceFile()
+  {
+    return this.sourceFile;
+  }
+  
+  private void setSourceFile(File f)
+  {
+    if (Util.differ(this.sourceFile, f))
+    {
+      File oldValue = this.sourceFile;
+      this.sourceFile = f;
+      this.propertyChangeSupport.firePropertyChange(PROP_SOURCEFILE, oldValue, f);
+    }
+  }
+  
+  public void loadGraphicFile(File f, boolean keepTransform)
+  {
+    AffineTransform at = null;
+    if (keepTransform && this.getGraphicObjects() != null)
+    {
+      at = this.getGraphicObjects().getTransform();
+    }
     GraphicSet gs = this.loadSetFromFile(f);
     if (gs != null)
     {
+      if (at != null)
+      {
+        gs.setTransform(at);
+      }
       this.setGraphicObjects(gs);
-      this.sourceFile = f;
+      this.setSourceFile(f);
     }
+    this.setLoadedFile(null);
   }
   protected MaterialProfile material = null;
   public static final String PROP_MATERIAL = "material";
