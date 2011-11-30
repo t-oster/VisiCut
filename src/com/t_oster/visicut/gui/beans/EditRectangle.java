@@ -168,12 +168,12 @@ public class EditRectangle extends Rectangle
       }
     }
     gg.setColor(Color.BLACK);
-    int w = (int) Util.px2mm(this.width, CONSTANT.PROP_SVG_DPI);
+    int w = (int) Util.px2mm(this.width, (double)CONSTANT.PROP_SVG_DPI);
     String txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     int h = gg.getFontMetrics().getHeight();
     gg.drawString(txt, tr.x+tr.width/2-w/2, tr.y-h);
-    w = (int) Util.px2mm(this.height, CONSTANT.PROP_SVG_DPI);
+    w = (int) Util.px2mm(this.height, (double)CONSTANT.PROP_SVG_DPI);
     txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     gg.drawString(txt, tr.x+tr.width+5, tr.y+tr.height/2);

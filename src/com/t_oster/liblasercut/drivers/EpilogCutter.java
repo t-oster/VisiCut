@@ -88,7 +88,7 @@ public class EpilogCutter extends LaserCutter
   {
     //this("localhost");
     // set some default values
-    this.setDpi(500.0);
+    this.setDpi(CONSTANT.PROP_SVG_DPI);
     this.setBedHeight(300.0);
     this.setBedWidth(599.0);
     //this.setHostname("localhost");
@@ -116,7 +116,7 @@ public class EpilogCutter extends LaserCutter
     propertyChangeSupport.firePropertyChange(PROP_HOSTNAME, oldHostname, hostname);
   }
   // ********* Added by Axel BEGIN *******
-  protected double dpi = 500.0;
+  protected double dpi = CONSTANT.PROP_SVG_DPI;
   public static final String PROP_DPI = "dpi";
   
   /**

@@ -35,6 +35,7 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
+import com.t_oster.visicut.model.CONSTANT;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
@@ -60,7 +61,7 @@ public class SVGImporter implements Importer
   private SVGUniverse u = new SVGUniverse();
   private SVGRoot root;
   //can be overwritten by setDpi() later
-  private int dpi = 500;  
+  private int dpi = CONSTANT.PROP_SVG_DPI;  
 
   private void importNode(SVGElement e, List<GraphicObject> result)
   {
@@ -104,7 +105,7 @@ public class SVGImporter implements Importer
       //result.setBasicTransform(AffineTransform.getScaleInstance(500d / 90, 500d / 90));
       //CONSTANT.PROP_SVG_DPI
       //result.setBasicTransform(AffineTransform.getScaleInstance(1200d / 90, 1200d / 90));
-      System.out.println("importing svg at "+this.getDpi()+" dpi");
+      System.out.println("Importing svg at "+this.getDpi()+" dpi");
       result.setBasicTransform(AffineTransform.getScaleInstance(this.getDpi() / 90, this.getDpi() / 90));
       
       importNode(root, result);

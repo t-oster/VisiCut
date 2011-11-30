@@ -38,7 +38,7 @@ import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.mapping.MappingSet;   
-//import com.t_oster.visicut.model.CONSTANT; 
+import com.t_oster.visicut.model.CONSTANT; 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -479,8 +479,8 @@ public class VisicutModel
         {
           double w = bb.getX() + bb.getWidth();
           double h = bb.getY() + bb.getHeight();
-          double mw = Util.mm2px(this.material.getWidth(), 500);
-          double mh = Util.mm2px(this.material.getHeight(), 500);
+          double mw = Util.mm2px(this.material.getWidth(), CONSTANT.PROP_SVG_DPI);
+          double mh = Util.mm2px(this.material.getHeight(), CONSTANT.PROP_SVG_DPI);
           if (w > mw || h > mh)
           {//scale Object to fit material
             double dw = mw / w;

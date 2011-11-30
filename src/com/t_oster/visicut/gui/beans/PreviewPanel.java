@@ -640,10 +640,10 @@ public class PreviewPanel extends ZoomablePanel
       //todo calculate gridDst from Transform
       double gridDst = 0.1;
       int smalllines = 2;
-      while (Util.mm2px(gridDst, 500) < minDrawDst)
+      while (Util.mm2px(gridDst, CONSTANT.PROP_SVG_DPI) < minDrawDst)
       {
         gridDst *= 2;
-        if (Util.mm2px(gridDst, 500) < minDrawDst)
+        if (Util.mm2px(gridDst, CONSTANT.PROP_SVG_DPI) < minDrawDst)
         {
           gridDst *= 5;
         }
