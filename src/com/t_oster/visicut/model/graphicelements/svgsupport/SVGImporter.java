@@ -59,7 +59,8 @@ public class SVGImporter implements Importer
 
   private SVGUniverse u = new SVGUniverse();
   private SVGRoot root;
-  private int dpi = 500;
+  //can be overwritten by setDpi() later
+  private int dpi = 500;  
 
   private void importNode(SVGElement e, List<GraphicObject> result)
   {

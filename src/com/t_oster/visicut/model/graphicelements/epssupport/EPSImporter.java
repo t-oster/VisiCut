@@ -48,7 +48,9 @@ import org.w3c.dom.Document;
  */
 public class EPSImporter implements Importer
 {
-
+    //can be overwritten by setDpi() later
+  private int dpi = 500;
+  
   public FileFilter getFileFilter()
   {
     return new ExtensionFilter(".eps", "Encapsulated PostScript (*.eps)");
@@ -133,5 +135,13 @@ public class EPSImporter implements Importer
       Logger.getLogger(EPSImporter.class.getName()).log(Level.SEVERE, null, ex);
       throw new ImportException(ex);
     }
+  }
+  public double getDpi()
+  {
+    return this.dpi;
+  }
+  public void setDpi(int dpi)
+  {
+    this.dpi = dpi;
   }
 }

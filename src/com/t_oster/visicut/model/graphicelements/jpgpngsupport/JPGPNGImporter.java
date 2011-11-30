@@ -37,7 +37,9 @@ import javax.swing.filechooser.FileFilter;
  */
 public class JPGPNGImporter implements Importer
 {
-
+  //can be overwritten by setDpi() later
+  private int dpi = 500;
+  
   public GraphicSet importFile(File inputFile) throws ImportException
   {
     try
@@ -73,6 +75,16 @@ public class JPGPNGImporter implements Importer
       }
       
     };
+  }
+  
+  public double getDpi()
+  {
+    return this.dpi;
+  }
+  
+  public void setDpi(int dpi)
+  {
+    this.dpi = dpi;
   }
   
 }

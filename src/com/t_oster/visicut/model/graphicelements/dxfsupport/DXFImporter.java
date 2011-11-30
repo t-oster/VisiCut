@@ -54,7 +54,9 @@ import org.xml.sax.SAXException;
  */
 public class DXFImporter implements Importer
 {
-
+    //can be overwritten by setDpi() later
+  private int dpi = 500;
+  
   public GraphicSet importFile(File inputFile) throws ImportException
   {
     GraphicSet result = new GraphicSet();
@@ -111,5 +113,13 @@ public class DXFImporter implements Importer
   public FileFilter getFileFilter()
   {
     return new ExtensionFilter(".dxf", "AutoCAD DXF Files (*.dxf)");
+  }
+  public double getDpi()
+  {
+    return this.dpi;
+  }
+  public void setDpi(int dpi)
+  {
+    this.dpi = dpi;
   }
 }
