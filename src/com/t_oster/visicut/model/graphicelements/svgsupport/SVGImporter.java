@@ -59,6 +59,7 @@ public class SVGImporter implements Importer
 
   private SVGUniverse u = new SVGUniverse();
   private SVGRoot root;
+  private int dpi = 500;
 
   private void importNode(SVGElement e, List<GraphicObject> result)
   {
@@ -99,7 +100,12 @@ public class SVGImporter implements Importer
       root = u.getDiagram(svg).getRoot();
       GraphicSet result = new GraphicSet();
       //Inkscape SVG Units are 1/90 inch
-      result.setBasicTransform(AffineTransform.getScaleInstance(500d / 90, 500d / 90));
+      //result.setBasicTransform(AffineTransform.getScaleInstance(500d / 90, 500d / 90));
+      //CONSTANT.PROP_SVG_DPI
+      //result.setBasicTransform(AffineTransform.getScaleInstance(1200d / 90, 1200d / 90));
+      System.out.println("importing svg at "+this.getDpi()+" dpi");
+      result.setBasicTransform(AffineTransform.getScaleInstance(this.getDpi() / 90, this.getDpi() / 90));
+      
       importNode(root, result);
       return result;
     }
@@ -126,21 +132,21 @@ public class SVGImporter implements Importer
       double height=0;
       if (root.getPres(sty.setName("x")))
       {
-        x = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), 500);
+        x = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), (int)this.getDpi());
       }
 
       if (root.getPres(sty.setName("y")))
       {
-        y = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), 500);
+        y = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), (int)this.getDpi());
       }
 
       if (root.getPres(sty.setName("width")))
       {
-        width = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), 500);
+        width = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), (int)this.getDpi());
       }
       if (root.getPres(sty.setName("height")))
       {
-        height = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), 500);
+        height = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), (int)this.getDpi());
       }
       if (width != 0 && height != 0 && root.getPres(sty.setName("viewBox")))
       {
@@ -175,7 +181,9 @@ public class SVGImporter implements Importer
       {
         Logger.getLogger(SVGImporter.class.getName()).log(Level.SEVERE, null, ex);
       }
-      return AffineTransform.getScaleInstance(500d / result, 500d / result);
+      //return AffineTransform.getScaleInstance(500d / result, 500d / result);
+      //CONSTANT.PROP_SVG_DPI
+      return AffineTransform.getScaleInstance(this.getDpi() / result, this.getDpi() / result);
     }
     catch (FileNotFoundException ex)
     {
@@ -191,8 +199,10 @@ public class SVGImporter implements Importer
       {
         Logger.getLogger(SVGImporter.class.getName()).log(Level.SEVERE, null, ex);
       }
-    }
-    return AffineTransform.getScaleInstance(500d / result, 500d / result);
+    }  
+    //CONSTANT.PROP_SVG_DPI
+    //return AffineTransform.getScaleInstance(500d / result, 500d / result);
+    return AffineTransform.getScaleInstance(this.getDpi() / result, this.getDpi() / result);
   }
 
   @Override
@@ -213,5 +223,14 @@ public class SVGImporter implements Importer
   public FileFilter getFileFilter()
   {
     return new ExtensionFilter(".svg", "Scalable Vector Graphic (*.svg)");
+  }
+  
+  public double getDpi()
+  {
+    return this.dpi;
+  }
+  public void setDpi(int dpi)
+  {
+    this.dpi = dpi;
   }
 }

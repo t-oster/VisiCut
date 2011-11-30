@@ -30,7 +30,8 @@ import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
-import com.t_oster.visicut.model.mapping.MappingSet;
+import com.t_oster.visicut.model.mapping.MappingSet; 
+import com.t_oster.visicut.model.CONSTANT; 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -347,7 +348,7 @@ public class PreviewPanel extends ZoomablePanel
     {
       if (PreviewPanel.this.backgroundImage == null)
       {
-        PreviewPanel.this.setOuterBounds(new Dimension((int) Util.mm2px(PreviewPanel.this.material.getWidth(), 500), (int) Util.mm2px(PreviewPanel.this.material.getHeight(), 500)));
+        PreviewPanel.this.setOuterBounds(new Dimension((int) Util.mm2px(PreviewPanel.this.material.getWidth(), CONSTANT.PROP_SVG_DPI), (int) Util.mm2px(PreviewPanel.this.material.getHeight(), CONSTANT.PROP_SVG_DPI)));
       }
       PreviewPanel.this.repaint();
     }
@@ -370,7 +371,7 @@ public class PreviewPanel extends ZoomablePanel
       this.material.addPropertyChangeListener(materialObserver);
       if (this.backgroundImage == null)
       {
-        this.setOuterBounds(new Dimension((int) Util.mm2px(this.material.getWidth(), 500), (int) Util.mm2px(this.material.getHeight(), 500)));
+        this.setOuterBounds(new Dimension((int) Util.mm2px(this.material.getWidth(), CONSTANT.PROP_SVG_DPI), (int) Util.mm2px(this.material.getHeight(), CONSTANT.PROP_SVG_DPI)));
       }
     }
     this.renderBuffer.clear();
@@ -464,12 +465,12 @@ public class PreviewPanel extends ZoomablePanel
         if (this.backgroundImage != null)
         {
           gg.setColor(Color.BLACK);
-          gg.drawRect(0, 0, (int) Util.mm2px(material.getWidth(), 500), (int) Util.mm2px(material.getHeight(), 500));
+          gg.drawRect(0, 0, (int) Util.mm2px(material.getWidth(), CONSTANT.PROP_SVG_DPI), (int) Util.mm2px(material.getHeight(), CONSTANT.PROP_SVG_DPI));
         }
         else
         {
           gg.setColor(c == null ? Color.BLUE : c);
-          gg.fillRect(0, 0, (int) Util.mm2px(material.getWidth(), 500), (int) Util.mm2px(material.getHeight(), 500));
+          gg.fillRect(0, 0, (int) Util.mm2px(material.getWidth(), CONSTANT.PROP_SVG_DPI), (int) Util.mm2px(material.getHeight(), CONSTANT.PROP_SVG_DPI));
         }
       }
       if (showGrid)
@@ -650,10 +651,10 @@ public class PreviewPanel extends ZoomablePanel
       gg.setTransform(new AffineTransform());//we dont want the line width to scale with zoom etc
       double mmx = 0;
       int count = 0;
-      for (int x = 0; x < Util.mm2px(this.material.getWidth(), 500); x += Util.mm2px(gridDst, 500))
+      for (int x = 0; x < Util.mm2px(this.material.getWidth(), CONSTANT.PROP_SVG_DPI); x += Util.mm2px(gridDst, CONSTANT.PROP_SVG_DPI))
       {
         Point a = new Point(x, 0);
-        Point b = new Point(x, (int) Util.mm2px(this.material.getHeight(), 500));
+        Point b = new Point(x, (int) Util.mm2px(this.material.getHeight(), CONSTANT.PROP_SVG_DPI));
         trans.transform(a, a);
         trans.transform(b, b);
         if (a.x > 0)//only draw if in viewing range
@@ -685,10 +686,10 @@ public class PreviewPanel extends ZoomablePanel
       }
       double mmy = 0;
       count = 0;
-      for (int y = 0; y < Util.mm2px(this.material.getHeight(), 500); y += Util.mm2px(gridDst, 500))
+      for (int y = 0; y < Util.mm2px(this.material.getHeight(), CONSTANT.PROP_SVG_DPI); y += Util.mm2px(gridDst, CONSTANT.PROP_SVG_DPI))
       {
         Point a = new Point(0, y);
-        Point b = new Point((int) Util.mm2px(this.material.getWidth(), 500), y);
+        Point b = new Point((int) Util.mm2px(this.material.getWidth(), CONSTANT.PROP_SVG_DPI), y);
         trans.transform(a, a);
         trans.transform(b, b);
         if (a.y > 0)

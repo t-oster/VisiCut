@@ -20,6 +20,7 @@ package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.CONSTANT;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -167,12 +168,12 @@ public class EditRectangle extends Rectangle
       }
     }
     gg.setColor(Color.BLACK);
-    int w = (int) Util.px2mm(this.width, 500);
+    int w = (int) Util.px2mm(this.width, CONSTANT.PROP_SVG_DPI);
     String txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     int h = gg.getFontMetrics().getHeight();
     gg.drawString(txt, tr.x+tr.width/2-w/2, tr.y-h);
-    w = (int) Util.px2mm(this.height, 500);
+    w = (int) Util.px2mm(this.height, CONSTANT.PROP_SVG_DPI);
     txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     gg.drawString(txt, tr.x+tr.width+5, tr.y+tr.height/2);

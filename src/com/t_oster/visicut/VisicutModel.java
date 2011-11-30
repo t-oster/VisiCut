@@ -37,7 +37,8 @@ import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
-import com.t_oster.visicut.model.mapping.MappingSet;
+import com.t_oster.visicut.model.mapping.MappingSet;   
+//import com.t_oster.visicut.model.CONSTANT; 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -373,6 +374,8 @@ public class VisicutModel
     try
     {
       GraphicFileImporter im = this.getGraphicFileImporter();
+      LaserCutter instance = this.getSelectedLaserDevice().getLaserCutter();
+      im.setDpi((int)instance.getDpi());
       return im.importFile(f);
     }
     catch (ImportException e)
@@ -520,8 +523,10 @@ public class VisicutModel
     RasterPart rp = new RasterPart(new LaserProperty());
     Raster3dPart r3dp = new Raster3dPart(new LaserProperty());
     VectorPart vp = new VectorPart(new LaserProperty());
-
-    LaserJob job = new LaserJob(name, "123", "unk", 500, r3dp, vp, rp);
+    
+    LaserCutter instance = this.getSelectedLaserDevice().getLaserCutter();
+    
+    LaserJob job = new LaserJob(name, "123", "unk", (int)instance.getDpi(), r3dp, vp, rp);
     //Aggregate all Mappings per LaserProfile
     HashMap<LaserProfile, GraphicSet> parts = new LinkedHashMap<LaserProfile, GraphicSet>();
     for (Mapping m : this.getMappings())

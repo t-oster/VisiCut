@@ -25,6 +25,7 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.liblasercut.LaserCutter;
+import com.t_oster.liblasercut.drivers.EpilogCutter;  //needed for a line 329
 import com.t_oster.visicut.gui.beans.EditableTableProvider;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.model.LaserDevice;
@@ -324,8 +325,31 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
     try
     {
       Class driverclass = Class.forName((String) driver.getSelectedItem());
-      LaserCutter cutter = (LaserCutter) driverclass.newInstance();
-      result.setLaserCutter(cutter);
+      if (driver.getSelectedItem()=="com.t_oster.liblasercut.drivers.EpilogCutter")
+      {
+        
+        EpilogCutter cutter = (EpilogCutter) driverclass.newInstance();
+        // set some default values so that they are present in the settings.xml file
+        // from the beginning on. If they are present from the beginning on then they
+        // can be edited in the gui. (Axel)
+        
+        //todo: move this to the constructor of EpilogCutter
+        /*
+        cutter.setDpi(250.0);
+        cutter.setBedHeight(350.0);
+        cutter.setBedWidth(599.0);
+        cutter.setHostname("localhost");
+        cutter.setPort(515);
+        cutter.setModel("ZING")
+        */
+        result.setLaserCutter(cutter);
+      }
+      else
+      {
+        LaserCutter cutter = (LaserCutter) driverclass.newInstance();
+        result.setLaserCutter(cutter);
+      }
+        
     }
     catch (Exception e)
     {

@@ -27,6 +27,7 @@ package com.t_oster.liblasercut.drivers;
 import com.t_oster.liblasercut.*;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.liblasercut.platform.Point;
+import com.t_oster.visicut.model.CONSTANT; 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -43,6 +44,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 /**
  *
@@ -54,15 +57,19 @@ public class EpilogCutter extends LaserCutter
   public static boolean SIMULATE_COMMUNICATION = false;
   public static final int NETWORK_TIMEOUT = 3000;
   /* Resolutions in DPI */
-  private static final int[] RESOLUTIONS = new int[]
+  private static final int[] RESOLUTIONS_ZING = new int[]
   {
     300, 500, 600, 1000
+  };
+  private static final int[] RESOLUTIONS_HELIX = new int[]
+  {
+    300, 500, 600, 1000, 1200
   };
   private static final int MINFOCUS = -500;//Minimal focus value (not mm)
   private static final int MAXFOCUS = 500;//Maximal focus value (not mm)
   private static final double FOCUSWIDTH = 0.0252;//How much mm/unit the focus values are
-  private String hostname;
-  private int port = 515;
+  //private String hostname;
+  //private int port = 515;
   private Socket connection;
   private InputStream in;
   private OutputStream out;
@@ -79,7 +86,15 @@ public class EpilogCutter extends LaserCutter
 
   public EpilogCutter()
   {
-    this("localhost");
+    //this("localhost");
+    // set some default values
+    this.setDpi(500.0);
+    this.setBedHeight(300.0);
+    this.setBedWidth(599.0);
+    //this.setHostname("localhost");
+    this.setHostname(CONSTANT.PROP_CUTTER_STATICIP);
+    this.setPort(515);
+    this.setModel("ZING");
   }
 
   public EpilogCutter(String hostname)
@@ -87,6 +102,8 @@ public class EpilogCutter extends LaserCutter
     this.hostname = hostname;
   }
 
+  protected String hostname = "127.0.0.1";
+  public static final String PROP_HOSTNAME = "hostname";
   public String getHostname()
   {
     return this.hostname;
@@ -94,8 +111,85 @@ public class EpilogCutter extends LaserCutter
 
   public void setHostname(String hostname)
   {
+    String oldHostname = this.hostname;
     this.hostname = hostname;
+    propertyChangeSupport.firePropertyChange(PROP_HOSTNAME, oldHostname, hostname);
   }
+  // ********* Added by Axel BEGIN *******
+  protected double dpi = 500.0;
+  public static final String PROP_DPI = "dpi";
+  
+  /**
+   * Get the value of dpi
+   *
+   * @return the value of dpi
+   */
+  public double getDpi()
+  {
+    return dpi;
+  }
+  
+  /**
+   * Set the value of dpi
+   *
+   * @param description new value of dpi
+   */
+  public void setDpi(double dpi)
+  {
+    double oldDpi = this.dpi;
+    this.dpi = dpi;
+    propertyChangeSupport.firePropertyChange(PROP_DPI, oldDpi, dpi);
+  }
+
+  protected String model = "zing";
+  public static final String PROP_MODEL = "model";
+  
+  /**
+   * Get the value of model
+   *
+   * @return the value of model
+   */
+  public String getModel()
+  {
+    return model;
+  }
+  
+  /**
+   * Set the value of model
+   *
+   * @param description new value of model
+   */
+  public void setModel(String model)
+  {
+    String oldModel = this.model;
+    this.model = model;
+    propertyChangeSupport.firePropertyChange(PROP_MODEL, oldModel, model);
+  }
+  
+  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+  /**
+   * Add PropertyChangeListener.
+   *
+   * @param listener
+   */
+  public void addPropertyChangeListener(PropertyChangeListener listener)
+  {
+    propertyChangeSupport.addPropertyChangeListener(listener);
+  }
+
+  /**
+   * Remove PropertyChangeListener.
+   *
+   * @param listener
+   */
+  public void removePropertyChangeListener(PropertyChangeListener listener)
+  {
+    propertyChangeSupport.removePropertyChangeListener(listener);
+  }
+
+  
+  // ********* Added by Axel END *********
 
   private void waitForResponse(int expected) throws IOException, Exception
   {
@@ -303,7 +397,7 @@ public class EpilogCutter extends LaserCutter
 
       if (w > this.getBedWidth() || h > this.getBedHeight())
       {
-        throw new IllegalJobException("The Job is too big (" + w + "x" + h + ") for the Laser bed (" + this.getBedHeight() + "x" + this.getBedHeight() + ")");
+        throw new IllegalJobException("The Job is too big (" + w + "x" + h + ") for the Laser bed (" + this.getBedHeight() + "x" + this.getBedWidth() + ")");
       }
       for (int i = 0; i < job.getRaster3dPart().getRasterCount(); i++)
       {
@@ -346,8 +440,17 @@ public class EpilogCutter extends LaserCutter
 
   public List<Integer> getResolutions()
   {
-    List<Integer> result = new LinkedList();
-    for (int r : RESOLUTIONS)
+    List<Integer> result = new LinkedList(); 
+    int[] resolutions; 
+    if (this.getModel().toLowerCase().equals("helix"))
+    {
+      resolutions = RESOLUTIONS_HELIX;
+    }
+    else
+    {
+      resolutions = RESOLUTIONS_ZING;
+    }
+    for (int r : resolutions)
     {
       result.add(r);
     }
@@ -722,14 +825,22 @@ public class EpilogCutter extends LaserCutter
     return pjlJob.toByteArray();
   }
 
+  protected int port = 515;
+  public static final String PROP_PORT = "port";
+  
   public int getPort()
   {
     return this.port;
   }
 
-  public void setPort(int Port)
+  public void setPort(int port)
   {
-    this.port = Port;
+    double oldPort = this.port;
+    //was
+    //this.port = Port;
+    // should rather be 
+    this.port = port;
+    propertyChangeSupport.firePropertyChange(PROP_PORT, oldPort, port);
   }
 
   @Override
@@ -740,6 +851,8 @@ public class EpilogCutter extends LaserCutter
     result.port = port;
     result.bedHeight = bedHeight;
     result.bedWidth = bedWidth;
+    result.dpi = dpi;
+    result.model = model;
     return result;
   }
 
@@ -762,9 +875,20 @@ public class EpilogCutter extends LaserCutter
     {
       return "" + this.getBedHeight();
     }
+    else if ("Dpi".equals(attribute))
+    {
+      return "" + this.getDpi();
+    }
+    else if ("Model".equals(attribute))
+    {
+      return "" + this.getModel();
+    }
     return null;
   }
-  protected double bedWidth = 600;
+  
+  protected double bedWidth = 600.0;
+  public static final String PROP_BEDWIDTH = "bedWidth";
+  //protected double bedWidth = CONSTANT.PROP_CUTTER_BEDWIDTH;
 
   /**
    * Get the value of bedWidth
@@ -783,10 +907,15 @@ public class EpilogCutter extends LaserCutter
    */
   public void setBedWidth(double bedWidth)
   {
+    double oldBedWidth = this.bedWidth;
     this.bedWidth = bedWidth;
+    propertyChangeSupport.firePropertyChange(PROP_BEDWIDTH, oldBedWidth, bedWidth);
   }
-  protected double bedHeight = 300;
-
+  
+  
+  //protected double bedHeight = CONSTANT.PROP_CUTTER_BEDHEIGHT;
+  protected double bedHeight = 300.0;
+  public static final String PROP_BEDHEIGHT = "bedHeight";
   /**
    * Get the value of bedHeight
    *
@@ -804,9 +933,27 @@ public class EpilogCutter extends LaserCutter
    */
   public void setBedHeight(double bedHeight)
   {
+    double oldBedHeight = this.bedHeight;
     this.bedHeight = bedHeight;
+    propertyChangeSupport.firePropertyChange(PROP_BEDHEIGHT, oldBedHeight, bedHeight);
   }
-
+  
+  /* not needed anymore if we assure that the settings.xml contains
+  
+  <void property="laserCutter"> 
+       
+ 	   <void property="dpi"> 
+        <double>1200.0</double> 
+       </void>
+        
+  </void>
+      
+   within a <object class="com.t_oster.visicut.model.LaserDevice"> child.
+  */
+  //protected double dpi = CONSTANT.PROP_CUTTER_DPI;
+  
+  
+  
   @Override
   public void setSettingValue(String attribute, String value)
   {
@@ -826,10 +973,18 @@ public class EpilogCutter extends LaserCutter
     {
       this.setBedHeight(Double.parseDouble(value));
     }
+    else if ("Dpi".equals(attribute))
+    {
+      this.setDpi(Double.parseDouble(value));
+    }
+    else if ("Model".equals(attribute))
+    {
+      this.setModel(value);
+    }
   }
   private String[] attributes = new String[]
   {
-    "Hostname", "Port", "BedWidth", "BedHeight"
+    "Hostname", "Port", "BedWidth", "BedHeight", "Dpi", "Model"
   };
 
   @Override
