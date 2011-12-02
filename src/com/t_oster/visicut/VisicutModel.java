@@ -58,7 +58,6 @@ import java.net.SocketTimeoutException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -75,6 +74,56 @@ public class VisicutModel
 {
 
   public static final FileFilter PLFFilter = new ExtensionFilter(".plf", "VisiCut Portable Laser Format (*.plf)");
+  
+  private static VisicutModel instance;
+  
+  public static VisicutModel getInstance()
+  {
+    if (instance == null){
+      instance = new VisicutModel();
+    }
+    return instance;
+  }
+  
+  // has to have a public constructor for use as Bean
+  public VisicutModel()
+  {
+    if (instance != null){
+      System.err.println("VisicutModel is singelton, should be only initialized once");
+    }
+    instance = this;
+  }
+  
+  protected Integer resolution = 500;
+  public static final String PROP_RESOLUTION = "resolution";
+
+  public Integer getResolution()
+  {
+    return resolution;
+  }
+  /**
+   * Returns the selected Resolution.
+   * If no resoultion is selected, it returns 500 for convenience
+   *
+   * @return the value of resolution
+   */
+  public int getValidResolution()
+  {
+    return resolution == null ? 500 : resolution;
+  }
+
+  /**
+   * Set the value of resolution
+   *
+   * @param resolution new value of resolution
+   */
+  public void setResolution(Integer resolution)
+  {
+    Integer oldResolution = this.resolution;
+    this.resolution = resolution;
+    propertyChangeSupport.firePropertyChange(PROP_RESOLUTION, oldResolution, resolution);
+  }
+
   protected LaserDevice selectedLaserDevice = null;
   public static final String PROP_SELECTEDLASERDEVICE = "selectedLaserDevice";
 
@@ -476,8 +525,8 @@ public class VisicutModel
         {
           double w = bb.getX() + bb.getWidth();
           double h = bb.getY() + bb.getHeight();
-          double mw = Util.mm2px(this.material.getWidth(), 500);
-          double mh = Util.mm2px(this.material.getHeight(), 500);
+          double mw = Util.mm2px(this.material.getWidth(), this.getValidResolution());
+          double mh = Util.mm2px(this.material.getHeight(), this.getValidResolution());
           if (w > mw || h > mh)
           {//scale Object to fit material
             double dw = mw / w;
@@ -521,7 +570,7 @@ public class VisicutModel
     Raster3dPart r3dp = new Raster3dPart(new LaserProperty());
     VectorPart vp = new VectorPart(new LaserProperty());
 
-    LaserJob job = new LaserJob(name, "123", "unk", 500, r3dp, vp, rp);
+    LaserJob job = new LaserJob(name, "123", "unk", this.getValidResolution(), r3dp, vp, rp);
     //Aggregate all Mappings per LaserProfile
     HashMap<LaserProfile, GraphicSet> parts = new LinkedHashMap<LaserProfile, GraphicSet>();
     for (Mapping m : this.getMappings())

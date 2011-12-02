@@ -19,7 +19,6 @@
 package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.liblasercut.ProgressListener;
-import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
@@ -187,6 +186,30 @@ public class PreviewPanel extends ZoomablePanel
       
     }
   }
+  protected Integer resolution = 500;
+
+  /**
+   * Get the value of resolution
+   *
+   * @return the value of resolution
+   */
+  public Integer getResolution()
+  {
+    return resolution;
+  }
+
+  /**
+   * Set the value of resolution
+   *
+   * @param resolution new value of resolution
+   */
+  public void setResolution(Integer resolution)
+  {
+    this.resolution = resolution == null ? 500 : resolution;
+    this.setMaterial(this.getMaterial());
+  }
+
+  
   protected boolean drawPreview = true;
   public static final String PROP_DRAWPREVIEW = "drawPreview";
 
@@ -347,7 +370,7 @@ public class PreviewPanel extends ZoomablePanel
     {
       if (PreviewPanel.this.backgroundImage == null)
       {
-        PreviewPanel.this.setOuterBounds(new Dimension((int) Util.mm2px(PreviewPanel.this.material.getWidth(), 500), (int) Util.mm2px(PreviewPanel.this.material.getHeight(), 500)));
+        PreviewPanel.this.setOuterBounds(new Dimension((int) Helper.mm2px(PreviewPanel.this.material.getWidth()), (int) Helper.mm2px(PreviewPanel.this.material.getHeight())));
       }
       PreviewPanel.this.repaint();
     }
@@ -370,7 +393,7 @@ public class PreviewPanel extends ZoomablePanel
       this.material.addPropertyChangeListener(materialObserver);
       if (this.backgroundImage == null)
       {
-        this.setOuterBounds(new Dimension((int) Util.mm2px(this.material.getWidth(), 500), (int) Util.mm2px(this.material.getHeight(), 500)));
+        this.setOuterBounds(new Dimension((int) Helper.mm2px(this.material.getWidth()), (int) Helper.mm2px(this.material.getHeight())));
       }
     }
     this.renderBuffer.clear();
@@ -464,12 +487,12 @@ public class PreviewPanel extends ZoomablePanel
         if (this.backgroundImage != null)
         {
           gg.setColor(Color.BLACK);
-          gg.drawRect(0, 0, (int) Util.mm2px(material.getWidth(), 500), (int) Util.mm2px(material.getHeight(), 500));
+          gg.drawRect(0, 0, (int) Helper.mm2px(material.getWidth()), (int) Helper.mm2px(material.getHeight()));
         }
         else
         {
           gg.setColor(c == null ? Color.BLUE : c);
-          gg.fillRect(0, 0, (int) Util.mm2px(material.getWidth(), 500), (int) Util.mm2px(material.getHeight(), 500));
+          gg.fillRect(0, 0, (int) Helper.mm2px(material.getWidth()), (int) Helper.mm2px(material.getHeight()));
         }
       }
       if (showGrid)
@@ -639,10 +662,10 @@ public class PreviewPanel extends ZoomablePanel
       //todo calculate gridDst from Transform
       double gridDst = 0.1;
       int smalllines = 2;
-      while (Util.mm2px(gridDst, 500) < minDrawDst)
+      while (Helper.mm2px(gridDst) < minDrawDst)
       {
         gridDst *= 2;
-        if (Util.mm2px(gridDst, 500) < minDrawDst)
+        if (Helper.mm2px(gridDst) < minDrawDst)
         {
           gridDst *= 5;
         }
@@ -650,10 +673,10 @@ public class PreviewPanel extends ZoomablePanel
       gg.setTransform(new AffineTransform());//we dont want the line width to scale with zoom etc
       double mmx = 0;
       int count = 0;
-      for (int x = 0; x < Util.mm2px(this.material.getWidth(), 500); x += Util.mm2px(gridDst, 500))
+      for (int x = 0; x < Helper.mm2px(this.material.getWidth()); x += Helper.mm2px(gridDst))
       {
         Point a = new Point(x, 0);
-        Point b = new Point(x, (int) Util.mm2px(this.material.getHeight(), 500));
+        Point b = new Point(x, (int) Helper.mm2px(this.material.getHeight()));
         trans.transform(a, a);
         trans.transform(b, b);
         if (a.x > 0)//only draw if in viewing range
@@ -685,10 +708,10 @@ public class PreviewPanel extends ZoomablePanel
       }
       double mmy = 0;
       count = 0;
-      for (int y = 0; y < Util.mm2px(this.material.getHeight(), 500); y += Util.mm2px(gridDst, 500))
+      for (int y = 0; y < Helper.mm2px(this.material.getHeight()); y += Helper.mm2px(gridDst))
       {
         Point a = new Point(0, y);
-        Point b = new Point((int) Util.mm2px(this.material.getWidth(), 500), y);
+        Point b = new Point((int) Helper.mm2px(this.material.getWidth()), y);
         trans.transform(a, a);
         trans.transform(b, b);
         if (a.y > 0)
