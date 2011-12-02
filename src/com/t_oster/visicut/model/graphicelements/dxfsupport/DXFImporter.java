@@ -28,6 +28,7 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.Importer;
 import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
+import com.t_oster.visicut.model.CONSTANT;
 import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,7 +55,9 @@ import org.xml.sax.SAXException;
  */
 public class DXFImporter implements Importer
 {
-
+    //can be overwritten by setDpi() later
+  private int dpi = CONSTANT.PROP_SVG_DPI;
+  
   public GraphicSet importFile(File inputFile) throws ImportException
   {
     GraphicSet result = new GraphicSet();
@@ -98,8 +101,9 @@ public class DXFImporter implements Importer
       result = svgimp.importFile(in, inputFile.getName());
       //start the output
       //Assume the DXF has been created with mm units
-      result.setBasicTransform(AffineTransform.getScaleInstance(500d*Util.mm2inch(1), 500d*Util.mm2inch(1)));
-
+      //result.setBasicTransform(AffineTransform.getScaleInstance(500d*Util.mm2inch(1), 500d*Util.mm2inch(1)));
+      result.setBasicTransform(AffineTransform.getScaleInstance(CONSTANT.PROP_SVG_DPI*Util.mm2inch(1), CONSTANT.PROP_SVG_DPI*Util.mm2inch(1)));
+      
     }
     catch (Exception ex)
     {
@@ -111,5 +115,13 @@ public class DXFImporter implements Importer
   public FileFilter getFileFilter()
   {
     return new ExtensionFilter(".dxf", "AutoCAD DXF Files (*.dxf)");
+  }
+  public double getDpi()
+  {
+    return this.dpi;
+  }
+  public void setDpi(int dpi)
+  {
+    this.dpi = dpi;
   }
 }

@@ -94,7 +94,7 @@ public class VectorProfile extends LaserProfile
     for (GraphicObject e : objects)
     {
       gg.setColor(this.getColor());
-      Stroke s = new BasicStroke((int) Util.mm2px(this.getWidth(), 500));
+      Stroke s = new BasicStroke((int) Util.mm2px(this.getWidth(), CONSTANT.PROP_SVG_DPI));
       gg.setStroke(s);
       Shape sh = (e instanceof ShapeObject) ? ((ShapeObject) e).getShape() : e.getBoundingBox();
       if (objects.getTransform() != null)

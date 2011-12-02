@@ -34,5 +34,7 @@ public interface Importer
   
   FileFilter getFileFilter();
   GraphicSet importFile(File inputFile) throws ImportException;
+  void setDpi(int dpi);
+  double getDpi(); 
   
 }

@@ -21,6 +21,7 @@ package com.t_oster.visicut.model;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.drivers.EpilogCutter;
 import com.t_oster.visicut.gui.ImageListable;
+//import com.t_oster.visicut.model.CONSTANT; 
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -228,6 +229,7 @@ public class LaserDevice implements ImageListable
   {
     propertyChangeSupport.removePropertyChangeListener(listener);
   }
+
 
   @Override
   public LaserDevice clone()

@@ -130,6 +130,12 @@ public class LaosCutter extends LaserCutter
   public int getPort()
   {
     return port;
+  } 
+  
+  protected double dpi = 500.0;
+  public double getDpi()
+  {
+    return dpi;
   }
 
   /**

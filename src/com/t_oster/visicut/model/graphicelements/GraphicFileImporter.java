@@ -21,8 +21,8 @@
  * and open the template in the editor.
  */
 package com.t_oster.visicut.model.graphicelements;
-
 import com.t_oster.visicut.misc.MultiFilter;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
@@ -41,7 +41,7 @@ public class GraphicFileImporter implements Importer
 {
 
   private List<Importer> importers = new LinkedList<Importer>();
-
+  private int dpi;
   /**
    * Tries to load all importerClasses and creates a GraphicFileImporter
    * which uses all given Importers to import files
@@ -88,6 +88,11 @@ public class GraphicFileImporter implements Importer
       {
         if (i.getFileFilter().accept(inputFile))
         {
+          //todo: use the dpi setting that is set for the currentLaser
+          System.out.println("Cutter is configured to use "+(int)this.getDpi()+" dpi");
+          //i.setDpi(CONSTANT.PROP_SVG_DPI);
+          i.setDpi((int)this.getDpi()); 
+          
           GraphicSet gs = i.importFile(inputFile);
           return gs;
         }
@@ -109,5 +114,14 @@ public class GraphicFileImporter implements Importer
   public FileFilter getFileFilter()
   {
     return new MultiFilter(this.getFileFilters(), "Alle supported Files");
+  }
+  
+  public double getDpi()
+  {
+    return this.dpi;
+  }
+  public void setDpi(int dpi)
+  {
+    this.dpi = dpi;
   }
 }

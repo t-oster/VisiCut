@@ -21,6 +21,7 @@ package com.t_oster.visicut.managers;
 import com.t_oster.liblasercut.drivers.EpilogCutter;
 import com.t_oster.visicut.Preferences;
 import com.t_oster.visicut.model.LaserDevice;
+import com.t_oster.visicut.model.CONSTANT; 
 import java.awt.geom.AffineTransform;
 import java.beans.Encoder;
 import java.beans.Expression;
@@ -89,18 +90,23 @@ public final class PreferencesManager
       "com.t_oster.liblasercut.drivers.LaosCutter"
     });
     LaserDevice epilog = new LaserDevice();
-    epilog.setLaserCutter(new EpilogCutter("137.226.56.228"));
+    epilog.setLaserCutter(new EpilogCutter(CONSTANT.PROP_CUTTER_STATICIP));
     epilog.setName("Epilog ZING @ Fablab");
     epilog.setMaterialsPath("settings/cutters/epilog/materials");
     epilog.setDescription("The Epilog ZING 30W Laser which is in the Fablab");
     epilog.setCameraURL("http://137.226.56.115:8080/defaultbackground.jpg");
     epilog.setThumbnailPath("settings/cutters/epilog/epilog.png");
+    // the following calls are now in the constructor of the EpilogCutter
+    //epilog.setDpi(500);
+    //epilog.setHostname(CONSTANT.PROP_CUTTER_STATICIP);
+    //epilog.setPort(515);
+    //epilog.setModel("ZING");
     epilog.setCameraCalibration(new AffineTransform(0.19630256844482077,0.0,0.0,0.19954840530623766,124.33334350585938,484.3333282470703));
     preferences.setLaserDevices(new LinkedList<LaserDevice>());
     preferences.getLaserDevices().add(epilog);
     preferences.setDefaultLaserDevice(0);
     LaserDevice trotec = new LaserDevice();
-    trotec.setLaserCutter(new EpilogCutter("137.226.56.228"));
+    trotec.setLaserCutter(new EpilogCutter(CONSTANT.PROP_CUTTER_STATICIP));
     trotec.setName("Trotec SP 1500 !@ Fablab");
     trotec.setMaterialsPath("settings/cutters/trotec/materials");
     trotec.setDescription("The Trotec SP 1500 Laser which is not in the Fablab");

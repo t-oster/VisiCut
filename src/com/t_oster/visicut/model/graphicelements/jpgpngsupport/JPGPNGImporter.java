@@ -25,6 +25,7 @@ package com.t_oster.visicut.model.graphicelements.jpgpngsupport;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.Importer;
+import com.t_oster.visicut.model.CONSTANT;
 import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
@@ -37,14 +38,17 @@ import javax.swing.filechooser.FileFilter;
  */
 public class JPGPNGImporter implements Importer
 {
-
+  //can be overwritten by setDpi() later
+  private int dpi = CONSTANT.PROP_SVG_DPI;
+  
   public GraphicSet importFile(File inputFile) throws ImportException
   {
     try
     {
       GraphicSet result = new GraphicSet();
       //TODO: Get Real Resolution
-      result.setBasicTransform(AffineTransform.getScaleInstance(500d/72, 500d/72));
+      //result.setBasicTransform(AffineTransform.getScaleInstance(500d/72, 500d/72));
+      result.setBasicTransform(AffineTransform.getScaleInstance(this.getDpi() / 72, this.getDpi() / 72));
       result.add(new JPGPNGImage(ImageIO.read(inputFile)));
       return result;
     }
@@ -73,6 +77,16 @@ public class JPGPNGImporter implements Importer
       }
       
     };
+  }
+  
+  public double getDpi()
+  {
+    return this.dpi;
+  }
+  
+  public void setDpi(int dpi)
+  {
+    this.dpi = dpi;
   }
   
 }

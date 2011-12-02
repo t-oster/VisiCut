@@ -23,6 +23,7 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.Importer;
 import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
+import com.t_oster.visicut.model.CONSTANT;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
@@ -48,7 +49,9 @@ import org.w3c.dom.Document;
  */
 public class EPSImporter implements Importer
 {
-
+    //can be overwritten by setDpi() later
+  private int dpi = CONSTANT.PROP_SVG_DPI;
+  
   public FileFilter getFileFilter()
   {
     return new ExtensionFilter(".eps", "Encapsulated PostScript (*.eps)");
@@ -125,7 +128,8 @@ public class EPSImporter implements Importer
       svgGenerator.stream(new FileWriter(tmp));
       GraphicSet result = new SVGImporter().importFile(tmp);
       //Assume the EPS has been created with 72DPI (from Inkscape)
-      result.setBasicTransform(AffineTransform.getScaleInstance(500d / 72, 500d / 72));
+      //result.setBasicTransform(AffineTransform.getScaleInstance(500d / 72, 500d / 72));
+      result.setBasicTransform(AffineTransform.getScaleInstance(this.getDpi() / 72, this.getDpi() / 72));
       return result;
     }
     catch (Exception ex)
@@ -133,5 +137,13 @@ public class EPSImporter implements Importer
       Logger.getLogger(EPSImporter.class.getName()).log(Level.SEVERE, null, ex);
       throw new ImportException(ex);
     }
+  }
+  public double getDpi()
+  {
+    return this.dpi;
+  }
+  public void setDpi(int dpi)
+  {
+    this.dpi = dpi;
   }
 }

@@ -18,7 +18,9 @@
  **/
 package com.t_oster.visicut.model;
 
+
 import com.t_oster.visicut.gui.ImageListable;
+import com.t_oster.visicut.model.CONSTANT;
 import java.awt.Color;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -161,7 +163,7 @@ public class MaterialProfile implements ImageListable, Cloneable
   {
     this.name = name;
   }
-  protected int width = 600;
+  protected int width = CONSTANT.PROP_CUTTER_MATERIALWIDTH;
   public static final String PROP_WIDTH = "width";
 
   /**
@@ -232,7 +234,7 @@ public class MaterialProfile implements ImageListable, Cloneable
     propertyChangeSupport.firePropertyChange(PROP_DEPTH, oldDepth, depth);
   }
 
-  protected int height = 300;
+  protected int height = CONSTANT.PROP_CUTTER_MATERIALHEIGHT;
   public static final String PROP_HEIGHT = "height";
 
   /**

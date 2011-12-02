@@ -17,6 +17,7 @@
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.t_oster.visicut.model.graphicelements.svgsupport;
+import com.t_oster.visicut.model.CONSTANT; 
 
 import com.kitfox.svg.Circle;
 import com.kitfox.svg.Line;
@@ -195,7 +196,7 @@ public class SVGShape extends SVGObject implements ShapeObject
     StyleAttribute sa = getStyleAttributeRecursive("stroke-width");
     if (sa != null)
     {
-      double w = Helper.numberWithUnitsToPx(sa.getNumberWithUnits(),500);
+      double w = Helper.numberWithUnitsToPx(sa.getNumberWithUnits(),CONSTANT.PROP_SVG_DPI);
       //TODO: get Stroke width with unit and add it to width/height of BB
       bb.setRect(bb.getX()-w/2, bb.getY()-w/2, bb.getWidth()+w, bb.getHeight()+w);
     }

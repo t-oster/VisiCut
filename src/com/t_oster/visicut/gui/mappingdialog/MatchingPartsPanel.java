@@ -29,6 +29,7 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import com.t_oster.visicut.model.CONSTANT; 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -338,7 +339,7 @@ public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionList
               Shape s = (e instanceof ShapeObject) ? ((ShapeObject) e).getShape() : e.getBoundingBox();
               s = set.getTransform().createTransformedShape(s);
               gg.setColor(Color.red);
-              Stroke st = new BasicStroke((int) Util.mm2px(((VectorProfile) p).getWidth(), 500));
+              Stroke st = new BasicStroke((int) Util.mm2px(((VectorProfile) p).getWidth(), CONSTANT.PROP_SVG_DPI));
               gg.setStroke(st);
               gg.draw(s);
             }

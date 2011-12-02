@@ -62,6 +62,15 @@ public abstract class LaserCutter implements Cloneable
    * configuring the Lasercutter (eg. IP, Port...)
    * @return 
    */
+
+  public abstract double getDpi();
+  
+  /**
+   * Returns a List of Attributes, needed for 
+   * configuring the Lasercutter (eg. IP, Port...)
+   * @return 
+   */
+
   public abstract List<String> getSettingAttributes();
   
   /**

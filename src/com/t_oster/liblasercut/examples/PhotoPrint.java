@@ -28,7 +28,8 @@ import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.liblasercut.drivers.EpilogCutter;
 import com.t_oster.liblasercut.utils.BufferedImageAdapter;
 import com.t_oster.liblasercut.platform.Point;
-import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.liblasercut.platform.Util; 
+import com.t_oster.visicut.model.CONSTANT; 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -82,7 +83,8 @@ public class PhotoPrint {
         } catch (IOException ex) {
             error(ex.getMessage());
         }
-        int dpi = 500;
+        //int dpi = 500;
+        int dpi = CONSTANT.PROP_PHOTO_DPI;
         try {
             dpi = Integer.parseInt(JOptionPane.showInputDialog(null, "Please select DPI", "" + dpi));
         } catch (NumberFormatException e) {
@@ -168,7 +170,7 @@ public class PhotoPrint {
         if (JOptionPane.showConfirmDialog(
                 null, prev, "Waehlen Sie einen Algorithmus aus", JOptionPane.OK_CANCEL_OPTION)
                 == JOptionPane.OK_OPTION) {
-            EpilogCutter instance = new EpilogCutter("137.226.56.228");
+            EpilogCutter instance = new EpilogCutter(CONSTANT.PROP_CUTTER_STATICIP);
             //JComboBox material = new JComboBox();
             //for (MaterialProperty mp : instance.getMaterialPropertys()) {
             //    material.addItem(mp);
