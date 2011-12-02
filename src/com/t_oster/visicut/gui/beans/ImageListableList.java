@@ -63,7 +63,7 @@ public class ImageListableList extends JList
 //            File f = new File(item.getThumbnailPath());
 //            if (f.exists())
 //            {
-//              label += "<td height=80><img width=64 height=64 src=file://" + f.getAbsolutePath() + "/></td>";
+//              label += "<td height=80>"+Helper.imgTag(f, 64, 64)+"</td>";
 //            }
 //          }
           if (ImageListableList.this.isDisabled(o))

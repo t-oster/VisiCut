@@ -251,7 +251,7 @@ public class CustomMappingTable extends JTable
               File f = new File(item.getThumbnailPath());
               if (f.exists())
               {
-                label += "<td height=80><img width=64 height=64 src=file://" + f.getAbsolutePath() + "/></td>";
+                label += Helper.imgTag(f, 64, 64)+"</td>";
               }
             }
             label += "</td><td width=3><td>" + item.getName() + "</td></tr></table></html>";

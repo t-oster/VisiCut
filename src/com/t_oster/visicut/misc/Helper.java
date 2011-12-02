@@ -26,6 +26,10 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class contains frequently used conversion methods
@@ -34,7 +38,27 @@ import java.awt.geom.Rectangle2D;
  */
 public class Helper
 {
-
+/**
+   * Generates an HTML img-Tag for the given file with given size
+   * @param f
+   * @param width
+   * @param height
+   * @return 
+   */
+  public static String imgTag(File f, int width, int height)
+  {
+    String size = width > 0 && height > 0 ? "width="+width+" height="+height:"";
+    try
+    {
+      return "<img "+size+" src=\""+f.toURI().toURL()+"\"/>";
+    }
+    catch (MalformedURLException ex)
+    {
+      Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, null, ex);
+      return "<img "+size+" src=\"file://"+f.getAbsolutePath()+"\"/>";
+    }
+  }
+  
   /**
    * Returns an AffineTransform, which transformes src to dest
    * and constists of a scale and translate component

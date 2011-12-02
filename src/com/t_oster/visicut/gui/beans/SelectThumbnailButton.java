@@ -19,6 +19,7 @@
 package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.visicut.misc.ExtensionFilter;
+import com.t_oster.visicut.misc.Helper;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -102,7 +103,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
       File f = new File(thumbnailPath);
       if (f.exists())
       {
-        this.setText("<html><table cellpadding=3><tr><td><img width=64 height=64 src=file://" + f.getAbsolutePath() + "/></td></tr></table></html>");
+        this.setText("<html><table cellpadding=3><tr><td>"+Helper.imgTag(f, 64, 64)+"</td></tr></table></html>");
       }
       else
       {
