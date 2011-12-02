@@ -20,6 +20,7 @@ package com.t_oster.visicut.misc;
 
 import com.kitfox.svg.xml.NumberWithUnits;
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.VisicutModel;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -94,6 +95,28 @@ public class Helper
   }
   
 /**
+   * Returns how many mm correspont to the given length in pixels
+   * with respect to the current resolution
+   * @param mm
+   * @return 
+   */
+  public static double px2mm(double px)
+  {
+    return Util.px2mm(px, VisicutModel.getInstance().getValidResolution());
+  }
+  
+  /**
+   * Returns how many pixels correspont to the given length in mm
+   * with respect to the current resolution
+   * @param mm
+   * @return 
+   */
+  public static double mm2px(double mm)
+  {
+    return Util.mm2px(mm, VisicutModel.getInstance().getValidResolution());
+  }
+  
+  /**
    * Generates an HTML img-Tag for the given file with given size
    * @param f
    * @param width

@@ -18,7 +18,7 @@
  **/
 package com.t_oster.visicut.gui.mappingdialog;
 
-import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.gui.beans.ZoomablePanel;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
@@ -338,7 +338,7 @@ public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionList
               Shape s = (e instanceof ShapeObject) ? ((ShapeObject) e).getShape() : e.getBoundingBox();
               s = set.getTransform().createTransformedShape(s);
               gg.setColor(Color.red);
-              Stroke st = new BasicStroke((int) Util.mm2px(((VectorProfile) p).getWidth(), 500));
+              Stroke st = new BasicStroke((int) Helper.mm2px(((VectorProfile) p).getWidth()));
               gg.setStroke(st);
               gg.draw(s);
             }

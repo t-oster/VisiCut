@@ -32,8 +32,8 @@ import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.VectorPart;
-import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.VisicutModel;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -75,8 +75,8 @@ public class CamCalibrationDialog extends javax.swing.JDialog
 
   protected BufferedImage backgroundImage = null;
   public static final String PROP_BACKGROUNDIMAGE = "backgroundImage";
-  public Point laserUpperLeft = new Point((int) Util.mm2px(0, 500), (int) Util.mm2px(0, 500));
-  public Point laserLowerRight = new Point((int) Util.mm2px(600, 500), (int) Util.mm2px(300, 500));
+  public Point laserUpperLeft = new Point((int) Helper.mm2px(0), (int) Helper.mm2px(0));
+  public Point laserLowerRight = new Point((int) Helper.mm2px(600), (int) Helper.mm2px(300));
 
 
   /**
@@ -137,8 +137,8 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     {
       double width = this.laserCutter.getBedWidth();
       double height = this.laserCutter.getBedHeight();
-      laserUpperLeft = new Point((int) Util.mm2px(width * 20 / 100, 500), (int) Util.mm2px(height * 20 / 100, 500));
-      laserLowerRight = new Point((int) Util.mm2px(width * 80 / 100, 500), (int) Util.mm2px(height * 80 / 100, 500));
+      laserUpperLeft = new Point((int) Helper.mm2px(width * 20 / 100), (int) Helper.mm2px(height * 20 / 100));
+      laserLowerRight = new Point((int) Helper.mm2px(width * 80 / 100), (int) Helper.mm2px(height * 80 / 100));
       refreshImagePoints();
     }
   }
@@ -374,7 +374,7 @@ private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
       vp.moveto(p.x, p.y - size / 2);
       vp.lineto(p.x, p.y + size / 2);
     }
-    LaserJob job = new LaserJob("Calibration", "VisiCut Calibration Page", "visicut", 500, null, vp, null);
+    LaserJob job = new LaserJob("Calibration", "VisiCut Calibration Page", "visicut", VisicutModel.getInstance().getValidResolution(), null, vp, null);
     this.laserCutter.sendJob(job);
     JOptionPane.showMessageDialog(this, "Please press 'START' on the Lasercutter");
   }
