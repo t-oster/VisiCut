@@ -121,6 +121,14 @@ public class VisicutModel
   {
     Integer oldResolution = this.resolution;
     this.resolution = resolution;
+    if (this.getGraphicObjects() != null)
+    {
+    AffineTransform tr = this.graphicObjects.getTransform();
+    int n = resolution != null ? resolution : 500;
+    int o = oldResolution != null ? oldResolution : 500;
+    tr.scale((double) n/o, (double) n/o);
+    this.getGraphicObjects().setTransform(tr);
+    }
     propertyChangeSupport.firePropertyChange(PROP_RESOLUTION, oldResolution, resolution);
   }
 
@@ -271,6 +279,10 @@ public class VisicutModel
       {
         XMLDecoder decoder = new XMLDecoder(zip.getInputStream(entry));
         transform = (AffineTransform) decoder.readObject();
+        if (this.getValidResolution() != 500)
+        {//visicut files are 500dpi based
+          transform.scale(this.getValidResolution()/500d, this.getValidResolution()/500d);
+        }
       }
       else if (name.equals("mappings.xml"))
       {
@@ -348,6 +360,10 @@ public class VisicutModel
     }
     while (tmp.exists());
     AffineTransform at = this.getGraphicObjects().getTransform();
+    if (this.getValidResolution() != 500)
+    {//visicut files are 500dpi based
+      at.scale(500d/this.getValidResolution(), 500d/this.getValidResolution());
+    }
     if (at != null)
     {
       out.putNextEntry(new ZipEntry("transform.xml"));
@@ -422,7 +438,14 @@ public class VisicutModel
     try
     {
       GraphicFileImporter im = this.getGraphicFileImporter();
-      return im.importFile(f);
+      GraphicSet set = im.importFile(f);
+      if (this.getValidResolution() != 500)
+      {//Default resolution changed => scale loaded set
+        AffineTransform tr = set.getBasicTransform();
+        tr.scale(this.getValidResolution()/500, this.getValidResolution()/500);
+        set.setBasicTransform(tr);
+      }
+      return set;
     }
     catch (ImportException e)
     {
