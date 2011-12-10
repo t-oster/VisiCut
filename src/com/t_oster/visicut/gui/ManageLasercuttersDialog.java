@@ -49,9 +49,9 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
    *
    * @return the value of defaultLaserCutter
    */
-  public int getDefaultLaserCutter()
+  public LaserDevice getDefaultLaserCutter()
   {
-    return defaultIndex;
+    return defaultDev;
   }
 
   /**
@@ -59,13 +59,13 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
    *
    * @param defaultLaserCutter new value of defaultLaserCutter
    */
-  public void setDefaultLaserCutter(int idx)
+  public void setDefaultLaserCutter(LaserDevice dev)
   {
-    int oldIdx = this.defaultIndex;
-    this.defaultIndex = idx;
-    firePropertyChange(PROP_DEFAULTLASERCUTTER, oldIdx, idx);
+    LaserDevice oldDev = this.defaultDev;
+    this.defaultDev = dev;
+    firePropertyChange(PROP_DEFAULTLASERCUTTER, oldDev, dev);
   }
-  private int defaultIndex;
+  private LaserDevice defaultDev;
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   protected List<LaserDevice> laserCutters = null;
   public static final String PROP_LASERCUTTERS = "laserCutters";
@@ -129,13 +129,13 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
 
     private String[] columns = new String[]
     {
-      "Name", "Driver", "Default"
+      "Name", "Driver"
     };
 
     @Override
     public Class<?> getColumnClass(int i)
     {
-      return i < 2 ? String.class : Boolean.class;
+      return String.class;
     }
 
     @Override
@@ -165,15 +165,6 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
         case 0:
           c.setName((String) o);
           return;
-        case 2:
-          if ((Boolean) o.equals(true))
-          {
-            int old = ManageLasercuttersDialog.this.defaultIndex;
-            ManageLasercuttersDialog.this.defaultIndex = y;
-            this.fireTableCellUpdated(old, 2);
-            this.fireTableCellUpdated(y, 2);
-          }
-          return;
       }
     }
 
@@ -196,8 +187,6 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
           }
           return cls;
         }
-        case 2:
-          return (y == ManageLasercuttersDialog.this.defaultIndex);
 
       }
       return null;
@@ -206,7 +195,7 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
     @Override
     public boolean isCellEditable(int y, int x)
     {
-      return x == 0 || x == 2;
+      return x == 0;
     }
   };
 

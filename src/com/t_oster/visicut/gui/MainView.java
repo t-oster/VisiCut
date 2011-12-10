@@ -34,18 +34,17 @@ import com.t_oster.visicut.gui.beans.ImageComboBox;
 import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
-import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -115,21 +114,16 @@ public class MainView extends javax.swing.JFrame
         }
       }
     });
-    this.visicutModel1.setMaterial(null);
-    this.setMappings(null);
+    this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
     fillComboBoxes();
     refreshComboBoxes();
-    this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
-
-    int def = this.visicutModel1.getPreferences().getDefaultLaserDevice();
-    if (def + 1 < this.laserCutterComboBox.getItemCount())
-    {
-      this.laserCutterComboBox.setSelectedIndex(def + 1);
-    }
+    
     if (this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null)
     {
       this.captureImage();
     }
+    
+    
     String[] args = VisicutApp.getApplication().getProgramArguments();
     for (String s : args)
     {
@@ -140,6 +134,39 @@ public class MainView extends javax.swing.JFrame
       }
     }
 
+    this.addWindowListener(new WindowListener(){
+
+      public void windowOpened(WindowEvent e)
+      {
+      }
+
+      public void windowClosing(WindowEvent e)
+      {
+        MainView.this.visicutModel1.updatePreferences();
+      }
+
+      public void windowClosed(WindowEvent e)
+      {
+        System.out.println("closed");
+      }
+
+      public void windowIconified(WindowEvent e)
+      {
+      }
+
+      public void windowDeiconified(WindowEvent e)
+      {
+      }
+
+      public void windowActivated(WindowEvent e)
+      {
+      }
+
+      public void windowDeactivated(WindowEvent e)
+      {
+      }
+      
+    });
   }
 
   /*
@@ -162,14 +189,16 @@ public class MainView extends javax.swing.JFrame
         this.laserCutterComboBox.setSelectedItem(ld);
       }
     }
+    Integer res = this.visicutModel1.getResolution();
     this.resolutionComboBox.removeAllItems();
     this.resolutionComboBox.addItem(null);
     this.resolutionComboBox.setSelectedIndex(0);
     for (Integer i:resolutions)
     {
       this.resolutionComboBox.addItem(i);
-      if (this.visicutModel1.getValidResolution() == i)
+      if (i.equals(res))
       {
+        System.out.println("Equals: "+i+" and "+res);
         this.resolutionComboBox.setSelectedItem(i);
       }
     }
@@ -910,6 +939,7 @@ public class MainView extends javax.swing.JFrame
     }// </editor-fold>//GEN-END:initComponents
 
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
+      this.visicutModel1.updatePreferences();
       System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
@@ -997,6 +1027,17 @@ public class MainView extends javax.swing.JFrame
     boolean previewModes = this.visicutModel1.getMappings() != null && this.visicutModel1.getMaterial() != null && this.visicutModel1.getMappings().size() > 0;
     this.showCuttingCb.setEnabled(previewModes);
     this.showEngravingCb.setEnabled(previewModes);
+    if (this.visicutModel1.getSelectedLaserDevice() == null || this.visicutModel1.getMaterial() == null 
+      || this.visicutModel1.getMappings() == null || this.visicutModel1.getResolution() == null)
+    {
+      this.executeJobButton.setEnabled(false);
+      this.executeJobMenuItem.setEnabled(false);
+    }
+    else
+    {
+      this.executeJobButton.setEnabled(true);
+      this.executeJobMenuItem.setEnabled(true);
+    }
   }
   private File lastDirectory = null;
 private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
@@ -1437,7 +1478,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       }
     }
   }//GEN-LAST:event_materialMenuItemActionPerformed
-
+ 
   /**
    * Disables all impossible combinations
    */
@@ -1447,16 +1488,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     MaterialProfile mp = this.visicutModel1.getMaterial();
     MappingSet mappings = this.visicutModel1.getMappings();
     Integer res = this.visicutModel1.getResolution();
-    if (ld == null || mp == null || mappings == null || res == null)
-    {
-      this.executeJobButton.setEnabled(false);
-      this.executeJobMenuItem.setEnabled(false);
-    }
-    else
-    {
-      this.executeJobButton.setEnabled(true);
-      this.executeJobMenuItem.setEnabled(true);
-    }
     for (int i = 1; i < this.laserCutterComboBox.getItemCount(); i++)
     {
       LaserDevice cld = (LaserDevice) this.laserCutterComboBox.getItemAt(i);
@@ -1555,13 +1586,12 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   {//GEN-HEADEREND:event_jMenuItem2ActionPerformed
     ManageLasercuttersDialog d = new ManageLasercuttersDialog(this, true);
     d.setLaserCutters(this.visicutModel1.getPreferences().getLaserDevices());
-    d.setDefaultLaserCutter(this.visicutModel1.getPreferences().getDefaultLaserDevice());
+    d.setDefaultLaserCutter(this.visicutModel1.getPreferences().getLastLaserDevice());
     d.setVisible(true);
     List<LaserDevice> result = d.getLaserCutters();
     if (result != null)
     {
       this.visicutModel1.getPreferences().setLaserDevices(result);
-      this.visicutModel1.getPreferences().setDefaultLaserDevice(d.getDefaultLaserCutter());
       try
       {
         PreferencesManager.getInstance().savePreferences();
@@ -1694,13 +1724,13 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
 private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resolutionComboBoxActionPerformed
   //Check if Lasercutter supports Resolution
   Integer newResolution = this.resolutionComboBox.getSelectedItem() instanceof Integer ? (Integer) this.resolutionComboBox.getSelectedItem() : null;
-  if (!Util.differ(newResolution, (Integer) visicutModel1.getValidResolution()))
+  if (!Util.differ(newResolution, (Integer) visicutModel1.getResolution()))
   {
     return;
   }
   if (this.resolutionComboBox.isDisabled(newResolution))
   {
-    this.resolutionComboBox.setSelectedItem((Integer) visicutModel1.getValidResolution());
+    this.resolutionComboBox.setSelectedItem((Integer) visicutModel1.getResolution());
     return;
   }
   this.visicutModel1.setResolution(newResolution);

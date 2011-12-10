@@ -29,6 +29,7 @@ import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.managers.MappingManager;
+import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
@@ -59,6 +60,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -205,10 +208,28 @@ public class VisicutModel
     this.preferences = preferences;
     propertyChangeSupport.firePropertyChange(PROP_PREFERENCES, oldPreferences, preferences);
     this.graphicFileImporter = null;
+    this.setSelectedLaserDevice(this.preferences.getLastLaserDevice());
+     this.setMaterial(this.preferences.getLastMaterial());
+    this.setResolution(this.preferences.getLastResolution());
   }
   protected GraphicSet graphicObjects = null;
   public static final String PROP_GRAPHICOBJECTS = "graphicObjects";
 
+  public void updatePreferences()
+  {
+    this.preferences.setLastLaserDevice(this.getSelectedLaserDevice());
+    this.preferences.setLastMaterial(this.getMaterial());
+    this.preferences.setLastResolution(this.getResolution());
+    try
+    {
+      PreferencesManager.getInstance().savePreferences();
+    }
+    catch (FileNotFoundException ex)
+    {
+      Logger.getLogger(VisicutModel.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
+  
   /**
    * Get the value of graphicObjects
    *
