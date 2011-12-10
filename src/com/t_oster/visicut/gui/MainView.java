@@ -133,7 +133,7 @@ public class MainView extends javax.swing.JFrame
         this.loadFile(f);
       }
     }
-
+    //Window listener for capturing close and save preferences before exiting
     this.addWindowListener(new WindowListener(){
 
       public void windowOpened(WindowEvent e)
@@ -147,7 +147,6 @@ public class MainView extends javax.swing.JFrame
 
       public void windowClosed(WindowEvent e)
       {
-        System.out.println("closed");
       }
 
       public void windowIconified(WindowEvent e)
