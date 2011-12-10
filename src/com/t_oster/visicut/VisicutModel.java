@@ -126,11 +126,9 @@ public class VisicutModel
     this.resolution = resolution;
     if (this.getGraphicObjects() != null)
     {
-    AffineTransform tr = this.graphicObjects.getTransform();
     int n = resolution != null ? resolution : 500;
     int o = oldResolution != null ? oldResolution : 500;
-    tr.scale((double) n/o, (double) n/o);
-    this.getGraphicObjects().setTransform(tr);
+    this.getGraphicObjects().getTransform().scale((double) n/o, (double) n/o);
     }
     propertyChangeSupport.firePropertyChange(PROP_RESOLUTION, oldResolution, resolution);
   }
