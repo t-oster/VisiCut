@@ -19,6 +19,7 @@
 package com.t_oster.visicut;
 
 import com.t_oster.visicut.model.LaserDevice;
+import com.t_oster.visicut.model.MaterialProfile;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.List;
@@ -30,32 +31,75 @@ public class Preferences
   {
   }
   
+  protected MaterialProfile lastMaterial = null;
+
+  /**
+   * Get the value of lastMaterial
+   *
+   * @return the value of lastMaterial
+   */
+  public MaterialProfile getLastMaterial()
+  {
+    return lastMaterial;
+  }
+
+  /**
+   * Set the value of lastMaterial
+   *
+   * @param lastMaterial new value of lastMaterial
+   */
+  public void setLastMaterial(MaterialProfile lastMaterial)
+  {
+    this.lastMaterial = lastMaterial;
+  }
+
+  protected Integer lastResolution = null;
+
+  /**
+   * Get the value of lastResolution
+   *
+   * @return the value of lastResolution
+   */
+  public Integer getLastResolution()
+  {
+    return lastResolution;
+  }
+
+  /**
+   * Set the value of lastResolution
+   *
+   * @param lastResolution new value of lastResolution
+   */
+  public void setLastResolution(Integer lastResolution)
+  {
+    this.lastResolution = lastResolution;
+  }
+
+  protected LaserDevice lastLaserDevice = null;
+
+  /**
+   * Get the value of lastLaserDevice
+   *
+   * @return the value of lastLaserDevice
+   */
+  public LaserDevice getLastLaserDevice()
+  {
+    return lastLaserDevice;
+  }
+
+  /**
+   * Set the value of lastLaserDevice
+   *
+   * @param lastLaserDevice new value of lastLaserDevice
+   */
+  public void setLastLaserDevice(LaserDevice lastLaserDevice)
+  {
+    this.lastLaserDevice = lastLaserDevice;
+  }
+
+  
   protected List<LaserDevice> laserDevices = null;
   public static final String PROP_LASERDEVICES = "laserDevices";
-  protected int defaultLaserDevice = 0;
-  public static final String PROP_DEFAULTLASERDEVICE = "defaultLaserDevice";
-
-  /**
-   * Get the value of defaultLaserDevice
-   *
-   * @return the value of defaultLaserDevice
-   */
-  public int getDefaultLaserDevice()
-  {
-    return defaultLaserDevice;
-  }
-
-  /**
-   * Set the value of defaultLaserDevice
-   *
-   * @param defaultLaserDevice new value of defaultLaserDevice
-   */
-  public void setDefaultLaserDevice(int defaultLaserDevice)
-  {
-    int oldDefaultLaserDevice = this.defaultLaserDevice;
-    this.defaultLaserDevice = defaultLaserDevice;
-    propertyChangeSupport.firePropertyChange(PROP_DEFAULTLASERDEVICE, oldDefaultLaserDevice, defaultLaserDevice);
-  }
 
   /**
    * Get the value of laserDevices
