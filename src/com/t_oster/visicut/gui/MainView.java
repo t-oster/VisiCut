@@ -197,7 +197,6 @@ public class MainView extends javax.swing.JFrame
       this.resolutionComboBox.addItem(i);
       if (i.equals(res))
       {
-        System.out.println("Equals: "+i+" and "+res);
         this.resolutionComboBox.setSelectedItem(i);
       }
     }

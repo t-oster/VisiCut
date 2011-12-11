@@ -99,7 +99,16 @@ public final class PreferencesManager
     epilog.setCameraCalibration(new AffineTransform(0.19630256844482077,0.0,0.0,0.19954840530623766,124.33334350585938,484.3333282470703));
     preferences.setLaserDevices(new LinkedList<LaserDevice>());
     preferences.getLaserDevices().add(epilog);
-    preferences.setDefaultLaserDevice(0);
+    preferences.setLastLaserDevice(epilog);
+    LaserDevice trotec = new LaserDevice();
+    trotec.setLaserCutter(new EpilogCutter("137.226.56.228"));
+    trotec.setName("Trotec SP 1500 !@ Fablab");
+    trotec.setMaterialsPath("settings/cutters/trotec/materials");
+    trotec.setDescription("The Trotec SP 1500 Laser which is not in the Fablab");
+    trotec.setCameraURL("http://137.226.56.115:8080/defaultbackground.jpg");
+    trotec.setThumbnailPath("settings/cutters/trotec/trotec.png");
+    trotec.setCameraCalibration(new AffineTransform(0.19630256844482077,0.0,0.0,0.19954840530623766,124.33334350585938,484.3333282470703));
+    preferences.getLaserDevices().add(trotec);
   }
 
   public Preferences getPreferences()
