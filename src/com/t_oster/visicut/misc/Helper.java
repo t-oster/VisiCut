@@ -94,7 +94,7 @@ public class Helper
     return res;
   }
   
-/**
+  /**
    * Returns how many mm correspont to the given length in pixels
    * with respect to the current resolution
    * @param mm
