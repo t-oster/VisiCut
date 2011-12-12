@@ -51,16 +51,21 @@ public class Helper
     {
       return null;
     }
-    File f = new File(fileB); 
-    String[] trg = f.getAbsolutePath().split(File.separator);
-    String[] src = fileA.getAbsoluteFile().getParent().split(File.separator);
+    File f = new File(fileB);
+    String separator = File.separator.equals("\\") ? "\\\\" : File.separator;
+    String[] trg = f.getAbsolutePath().split(separator);
+    String[] src = fileA.getAbsoluteFile().getParent().split(separator);
     int i =0;
     //remove equal parts at the beginning
     while (i < src.length && i < trg.length && src[i].equals(trg[i]))
     {
       i++;
     }
-    String result = "";
+    String result = "./";
+    if (i==0)
+    {//no common base path=>return absolute path of fileB
+      return fileB.replace(File.separator, "/");
+    }
     for (int k = i;k<src.length;k++)
     {
       result += "../";
@@ -87,6 +92,14 @@ public class Helper
     if (fileB == null)
     {
       return null;
+    }
+    if (!fileB.startsWith("./"))
+    {//fileB is absolute
+      return fileB;
+    }
+    else
+    {
+      fileB = fileB.substring(2);
     }
     String xmlDir = fileA.getAbsoluteFile().getParent();
     String res = xmlDir + File.separator + (fileB != null ? fileB.replace("/", File.separator) : "");

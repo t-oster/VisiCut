@@ -585,6 +585,11 @@ public class EpilogCutter extends LaserCutter
           line.remove(0);
           jump++;
         }
+        //Remove trailing zeroes
+        while (line.size() > 0 && line.get(line.size()-1) == 0)
+        {
+          line.remove(line.size()-1);
+        }
         if (line.size() > 0)
         {
           out.printf("\033*p%dX", sp.x + jump * 8);

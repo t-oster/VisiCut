@@ -1,103 +1,97 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<java version="1.6.0_22" class="java.beans.XMLDecoder">
- <object class="com.t_oster.visicut.Preferences">
-  <void property="availableImporters">
-   <array class="java.lang.String" length="4">
-    <void index="0">
-     <string>com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter</string>
-    </void>
-    <void index="1">
-     <string>com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter</string>
-    </void>
-    <void index="2">
-     <string>com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter</string>
-    </void>
-    <void index="3">
-     <string>com.t_oster.visicut.model.graphicelements.epssupport.EPSImporter</string>
-    </void>
-   </array>
-  </void>
-  <void property="availableLasercutterDrivers">
-   <array class="java.lang.String" length="2">
-    <void index="0">
-     <string>com.t_oster.liblasercut.drivers.EpilogCutter</string>
-    </void>
-    <void index="1">
-     <string>com.t_oster.liblasercut.drivers.LaosCutter</string>
-    </void>
-   </array>
-  </void>
-  <void property="defaultLaserDevice">
-   <int>1</int>
-  </void>
-  <void property="laserDevices">
-   <object class="java.util.LinkedList">
-    <void method="add">
-     <object class="com.t_oster.visicut.model.LaserDevice">
-      <void property="cameraCalibration">
-       <object class="java.awt.geom.AffineTransform">
-        <array class="double" length="6">
-         <void index="0">
-          <double>1.0</double>
-         </void>
-         <void index="3">
-          <double>1.0</double>
-         </void>
-        </array>
-       </object>
-      </void>
-      <void property="cameraURL">
-       <string>http://localhost:8088/bla.jpg</string>
-      </void>
-      <void property="description">
-       <string>The Epilog ZING 30W Laser which is in the Fablab</string>
-      </void>
-      <void property="laserCutter">
-       <void property="hostname">
-        <string>137.226.56.228</string>
-       </void>
-      </void>
-      <void property="materialsPath">
-       <string>settings/cutters/epilog/materials</string>
-      </void>
-      <void property="name">
-       <string>Epilog ZING @ Fablab</string>
-      </void>
-      <void property="thumbnailPath">
-       <string>settings/cutters/epilog/epilog.png</string>
-      </void>
-     </object>
-    </void>
-    <void method="add">
-     <object class="com.t_oster.visicut.model.LaserDevice">
-      <void property="laserCutter">
-       <object class="com.t_oster.liblasercut.drivers.LaosCutter">
-        <void property="bedHeight">
-         <double>190.0</double>
-        </void>
-        <void property="bedWidth">
-         <double>190.0</double>
-        </void>
-        <void property="flipXaxis">
-         <boolean>true</boolean>
-        </void>
-        <void property="hostname">
-         <string>192.168.1.111</string>
-        </void>
-        <void property="port">
-         <int>2000</int>
-        </void>
-       </object>
-      </void>
-      <void property="materialsPath">
-       <string>/home/thommy/NetBeansProjects/Visicut/settings/cutters/epilog/materials</string>
-      </void>
-      <void property="name">
-       <string>LAOS Test Cutter</string>
-      </void>
-     </object>
-    </void>
-   </object>
-  </void>
- </object>
-</java>
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0_25" class="java.beans.XMLDecoder"> 
+ <object class="com.t_oster.visicut.Preferences"> 
+  <void property="availableImporters"> 
+   <array class="java.lang.String" length="4"> 
+    <void index="0"> 
+     <string>com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter</string> 
+    </void> 
+    <void index="1"> 
+     <string>com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter</string> 
+    </void> 
+    <void index="2"> 
+     <string>com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter</string> 
+    </void> 
+    <void index="3"> 
+     <string>com.t_oster.visicut.model.graphicelements.epssupport.EPSImporter</string> 
+    </void> 
+   </array> 
+  </void> 
+  <void property="availableLasercutterDrivers"> 
+   <array class="java.lang.String" length="2"> 
+    <void index="0"> 
+     <string>com.t_oster.liblasercut.drivers.EpilogCutter</string> 
+    </void> 
+    <void index="1"> 
+     <string>com.t_oster.liblasercut.drivers.LaosCutter</string> 
+    </void> 
+   </array> 
+  </void> 
+  <void property="laserDevices"> 
+   <object class="java.util.LinkedList"> 
+    <void method="add"> 
+     <object class="com.t_oster.visicut.model.LaserDevice"> 
+      <void property="cameraCalibration"> 
+       <object class="java.awt.geom.AffineTransform"> 
+        <array class="double" length="6"> 
+         <void index="0"> 
+          <double>1.0</double> 
+         </void> 
+         <void index="3"> 
+          <double>1.0</double> 
+         </void> 
+        </array> 
+       </object> 
+      </void> 
+      <void property="description"> 
+       <string>The Epilog ZING 30W Laser which is in the Fablab</string> 
+      </void> 
+      <void property="laserCutter"> 
+       <void property="hostname"> 
+        <string>137.226.56.228</string> 
+       </void> 
+      </void> 
+      <void property="materialsPath"> 
+       <string>//psf/Home/Desktop/VisiCutMaterialDb/EpilogZING</string> 
+      </void> 
+      <void property="name"> 
+       <string>Epilog ZING @ Fablab</string> 
+      </void> 
+      <void property="thumbnailPath"> 
+       <string>./././cutters/epilog/epilog.png</string> 
+      </void> 
+     </object> 
+    </void> 
+    <void method="add"> 
+     <object class="com.t_oster.visicut.model.LaserDevice"> 
+      <void property="laserCutter"> 
+       <object class="com.t_oster.liblasercut.drivers.LaosCutter"> 
+        <void property="bedHeight"> 
+         <double>190.0</double> 
+        </void> 
+        <void property="bedWidth"> 
+         <double>190.0</double> 
+        </void> 
+        <void property="flipXaxis"> 
+         <boolean>true</boolean> 
+        </void> 
+        <void property="hostname"> 
+         <string>192.168.1.111</string> 
+        </void> 
+        <void property="port"> 
+         <int>2000</int> 
+        </void> 
+       </object> 
+      </void> 
+      <void property="materialsPath"> 
+       <string>./././../../../../../home/thommy/NetBeansProjects/Visicut/settings/cutters/epilog/materials</string> 
+      </void> 
+      <void property="name"> 
+       <string>LAOS Test Cutter</string> 
+      </void> 
+     </object> 
+    </void> 
+   </object> 
+  </void> 
+ </object> 
+</java> 
