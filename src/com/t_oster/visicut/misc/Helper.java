@@ -38,6 +38,61 @@ import java.util.logging.Logger;
  */
 public class Helper
 {
+  
+  /**
+   * Gives the relative path of fileB relative to the parentDirectory
+   * of fileA, separated with "/"
+   * @param fileA the file whose parent is used as ancor
+   * @param fileB the absolute path of a file whit platform dependant separator.
+   */
+  public static String getRelativePath(File fileA, String fileB)
+  {
+    if (fileB == null)
+    {
+      return null;
+    }
+    File f = new File(fileB); 
+    String[] trg = f.getAbsolutePath().split(File.separator);
+    String[] src = fileA.getAbsoluteFile().getParent().split(File.separator);
+    int i =0;
+    //remove equal parts at the beginning
+    while (i < src.length && i < trg.length && src[i].equals(trg[i]))
+    {
+      i++;
+    }
+    String result = "";
+    for (int k = i;k<src.length;k++)
+    {
+      result += "../";
+    }
+    int j=i;
+    while (j < trg.length)
+    {
+      result += (i!=j ? "/" : "") + trg[j];
+      j++;
+    }
+    return result;
+  }
+  
+  /**
+   * Gets the absolute path (with platform dependant separator)
+   * of the file represented by fileB relative to the parent
+   * directory of fileA
+   * @param fileA the File whose parent is the relative ancor
+   * @param fileB a relative path with "/" as separator
+   * @return 
+   */
+  public static String getAbsolutePath(File fileA, String fileB)
+  {
+    if (fileB == null)
+    {
+      return null;
+    }
+    String xmlDir = fileA.getAbsoluteFile().getParent();
+    String res = xmlDir + File.separator + (fileB != null ? fileB.replace("/", File.separator) : "");
+    return res;
+  }
+  
 /**
    * Generates an HTML img-Tag for the given file with given size
    * @param f

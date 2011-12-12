@@ -152,25 +152,6 @@ public abstract class LaserProfile implements ImageListable, Cloneable
     this.thumbnailPath = thumbnailPath;
   }
 
-  /**
-   * Get the value of previewThumbnail
-   *
-   * @return the value of previewThumbnail
-   */
-  public File getPreviewThumbnail()
-  {
-    return new File(this.thumbnailPath);
-  }
-
-  /**
-   * Set the value of previewThumbnail
-   *
-   * @param previewThumbnail new value of previewThumbnail
-   */
-  public void setPreviewThumbnail(File previewThumbnail)
-  {
-    this.thumbnailPath = previewThumbnail.getPath();
-  }
   protected String name = "Unnamed Profile";
 
   /**
