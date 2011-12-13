@@ -22,6 +22,7 @@ import com.t_oster.visicut.gui.ImageListable;
 import java.awt.Color;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.text.Collator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ import java.util.List;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class MaterialProfile implements ImageListable, Cloneable
+public class MaterialProfile implements ImageListable, Cloneable, Comparable
 {
   
   protected String description = null;
@@ -281,5 +282,14 @@ public class MaterialProfile implements ImageListable, Cloneable
       cp.laserProfiles.add(lp.clone());
     }
     return cp;
+  }
+
+  public int compareTo(Object t)
+  {
+    if (t instanceof MaterialProfile)
+    {
+      return Collator.getInstance().compare(this.name, ((MaterialProfile) t).getName());
+    }
+    return 1;
   }
 }

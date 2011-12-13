@@ -34,19 +34,17 @@ import com.t_oster.visicut.gui.beans.ImageComboBox;
 import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
-import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -1083,6 +1081,7 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
         }
       }
     }
+    Collections.sort(result);
     return result;
   }
 
