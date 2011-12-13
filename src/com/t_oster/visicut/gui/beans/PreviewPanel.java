@@ -204,7 +204,14 @@ public class PreviewPanel extends ZoomablePanel
    */
   public void setResolution(Integer resolution)
   {
+    int oldResolution = this.resolution == null ? 500 : this.resolution;
     this.resolution = resolution == null ? 500 : resolution;
+    Point ctr = this.getCenter();
+    if (ctr != null)
+    {
+      AffineTransform.getScaleInstance((double) this.resolution/oldResolution, (double) this.resolution/oldResolution).transform(ctr, ctr);
+      this.setCenter(ctr);
+    }
     this.setMaterial(this.getMaterial());
     if (this.editRectangle != null)
     {
