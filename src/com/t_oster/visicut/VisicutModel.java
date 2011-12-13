@@ -128,7 +128,9 @@ public class VisicutModel
     {
     int n = resolution != null ? resolution : 500;
     int o = oldResolution != null ? oldResolution : 500;
-    this.getGraphicObjects().getTransform().scale((double) n/o, (double) n/o);
+    this.getGraphicObjects().getTransform().preConcatenate(AffineTransform.getScaleInstance((double) n/o, (double) n/o));
+    //explicitly set the transform to clean BoundingBox caches
+    this.getGraphicObjects().setTransform(this.getGraphicObjects().getTransform());
     }
     propertyChangeSupport.firePropertyChange(PROP_RESOLUTION, oldResolution, resolution);
   }

@@ -45,7 +45,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -207,6 +206,10 @@ public class PreviewPanel extends ZoomablePanel
   {
     this.resolution = resolution == null ? 500 : resolution;
     this.setMaterial(this.getMaterial());
+    if (this.editRectangle != null)
+    {
+      this.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
+    }
   }
 
   
