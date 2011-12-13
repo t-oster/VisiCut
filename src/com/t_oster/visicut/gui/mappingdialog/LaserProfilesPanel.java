@@ -24,6 +24,7 @@ import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.BoxLayout;
@@ -161,9 +162,10 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
   {
     JiconRadioButton b = new JiconRadioButton();
     b.setLabelText(l.getName());
-    if (l.getPreviewThumbnail().exists())
+    File thumb = new File(l.getThumbnailPath());
+    if (thumb.exists())
     {
-      b.setLabelIcon(l.getPreviewThumbnail());
+      b.setLabelIcon(thumb);
     }
     b.addActionListener(this);
     b.setToolTipText(l.getDescription());

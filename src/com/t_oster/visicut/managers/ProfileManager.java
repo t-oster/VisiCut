@@ -18,14 +18,10 @@
  **/
 package com.t_oster.visicut.managers;
 
-import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
-import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
-import com.t_oster.visicut.model.RasterProfile;
-import com.t_oster.visicut.model.VectorProfile;
-import java.awt.Color;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
@@ -89,17 +85,32 @@ public class ProfileManager
 
   public void saveProfile(MaterialProfile mp, File f) throws FileNotFoundException
   {
+    mp.setThumbnailPath(Helper.getRelativePath(f, mp.getThumbnailPath()));
+    for (LaserProfile lp:mp.getLaserProfiles())
+    {
+      lp.setThumbnailPath(Helper.getRelativePath(f, lp.getThumbnailPath()));
+    }
     FileOutputStream out = new FileOutputStream(f);
     XMLEncoder enc = new XMLEncoder(out);
     enc.writeObject(mp);
     enc.close();
+    mp.setThumbnailPath(Helper.getAbsolutePath(f, mp.getThumbnailPath()));
+    for (LaserProfile lp:mp.getLaserProfiles())
+    {
+      lp.setThumbnailPath(Helper.getAbsolutePath(f, lp.getThumbnailPath()));
+    }
   }
-
+  
   public MaterialProfile loadProfile(File f) throws FileNotFoundException, IOException
   {
     FileInputStream fin = new FileInputStream(f);
     MaterialProfile result = this.loadProfile(fin);
     fin.close();
+    result.setThumbnailPath(Helper.getAbsolutePath(f, result.getThumbnailPath()));
+    for (LaserProfile lp:result.getLaserProfiles())
+    {
+      lp.setThumbnailPath(Helper.getAbsolutePath(f, lp.getThumbnailPath()));
+    }
     return result;
   }
 
