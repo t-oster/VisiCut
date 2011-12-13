@@ -454,27 +454,20 @@ public class VisicutModel
     return graphicFileImporter;
   }
 
-  private GraphicSet loadSetFromFile(File f)
+  private GraphicSet loadSetFromFile(File f) throws ImportException
   {
-    try
-    {
-      GraphicFileImporter im = this.getGraphicFileImporter();
-      GraphicSet set = im.importFile(f);
-      if (this.getValidResolution() != 500)
-      {//Default resolution changed => scale loaded set
-        AffineTransform tr = set.getBasicTransform();
-        tr.scale(this.getValidResolution()/500, this.getValidResolution()/500);
-        set.setBasicTransform(tr);
-      }
-      return set;
+    GraphicFileImporter im = this.getGraphicFileImporter();
+    GraphicSet set = im.importFile(f);
+    if (this.getValidResolution() != 500)
+    {//Default resolution changed => scale loaded set
+      AffineTransform tr = set.getBasicTransform();
+      tr.scale(this.getValidResolution()/500, this.getValidResolution()/500);
+      set.setBasicTransform(tr);
     }
-    catch (ImportException e)
-    {
-      return null;
-    }
+    return set;
   }
 
-  public void loadGraphicFile(File f)
+  public void loadGraphicFile(File f) throws ImportException
   {
     this.loadGraphicFile(f, false);
   }
@@ -501,7 +494,7 @@ public class VisicutModel
     }
   }
   
-  public void loadGraphicFile(File f, boolean keepTransform)
+  public void loadGraphicFile(File f, boolean keepTransform) throws ImportException
   {
     AffineTransform at = null;
     if (keepTransform && this.getGraphicObjects() != null)
