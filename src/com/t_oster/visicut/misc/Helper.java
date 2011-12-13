@@ -238,7 +238,7 @@ public class Helper
       case NumberWithUnits.UT_CM:
         return Util.mm2px(10.0 * n.getValue(), dpi);
       case NumberWithUnits.UT_PX:
-        return n.getValue();
+        return n.getValue()*dpi/72;
       case NumberWithUnits.UT_IN:
         return Util.mm2px(Util.inch2mm(n.getValue()), dpi);
       case NumberWithUnits.UT_UNITLESS:
