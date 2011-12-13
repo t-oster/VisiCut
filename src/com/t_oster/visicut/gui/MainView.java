@@ -48,6 +48,7 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -1172,6 +1173,7 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
         }
       }
     }
+    Collections.sort(result);
     return result;
   }
 
