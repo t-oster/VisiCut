@@ -1717,7 +1717,16 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
   }
   else if (this.visicutModel1.getSourceFile() != null && this.visicutModel1.getSourceFile().isFile())
   {
-    this.visicutModel1.loadGraphicFile(this.visicutModel1.getSourceFile(), true);
+    try
+    {
+      this.visicutModel1.loadGraphicFile(this.visicutModel1.getSourceFile(), true);
+    }    
+    catch (Exception e)
+    {
+      this.progressBar.setIndeterminate(false);
+      e.printStackTrace();
+      JOptionPane.showMessageDialog(this, "Error while opening '" + this.visicutModel1.getSourceFile().getName() + "':\n" + e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
   }
 }//GEN-LAST:event_reloadMenuItemActionPerformed
 
