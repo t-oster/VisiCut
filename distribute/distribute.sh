@@ -25,6 +25,10 @@ zip -r VisiCut-$VERSION.zip visicut/
 echo "Creating Mac OS Bundle"
 cp -r "mac/VisiCut.app" .
 cp -r "visicut" "VisiCut.app/Contents/Resources/Java"
+echo "Updating Bundle Info"
+cp "VisiCut.app/Contents/Info.plist" .
+cat Info.plist|sed s#VISICUTVERSION#"$VERSION"#g > VisiCut.app/Contents/Info.plist
+rm Info.plist
 echo "Compressing Mac OS Bundle"
 rm -r VisiCutMac-*.zip
 zip -r VisiCutMac-$VERSION.zip VisiCut.app
