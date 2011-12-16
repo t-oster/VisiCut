@@ -39,12 +39,14 @@ import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import java.awt.FileDialog;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -118,13 +120,13 @@ public class MainView extends javax.swing.JFrame
     this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
     fillComboBoxes();
     refreshComboBoxes();
-    
+
     if (this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null)
     {
       this.captureImage();
     }
-    
-    
+
+
     String[] args = VisicutApp.getApplication().getProgramArguments();
     for (String s : args)
     {
@@ -135,7 +137,8 @@ public class MainView extends javax.swing.JFrame
       }
     }
     //Window listener for capturing close and save preferences before exiting
-    this.addWindowListener(new WindowListener(){
+    this.addWindowListener(new WindowListener()
+    {
 
       public void windowOpened(WindowEvent e)
       {
@@ -165,7 +168,6 @@ public class MainView extends javax.swing.JFrame
       public void windowDeactivated(WindowEvent e)
       {
       }
-      
     });
   }
 
@@ -175,7 +177,7 @@ public class MainView extends javax.swing.JFrame
   private void fillComboBoxes()
   {
     HashSet<Integer> resolutions = new LinkedHashSet<Integer>();
-    
+
     LaserDevice sld = this.visicutModel1.getSelectedLaserDevice();
     this.laserCutterComboBox.removeAllItems();
     this.laserCutterComboBox.addItem(null);
@@ -193,7 +195,7 @@ public class MainView extends javax.swing.JFrame
     this.resolutionComboBox.removeAllItems();
     this.resolutionComboBox.addItem(null);
     this.resolutionComboBox.setSelectedIndex(0);
-    for (Integer i:resolutions)
+    for (Integer i : resolutions)
     {
       this.resolutionComboBox.addItem(i);
       if (i.equals(res))
@@ -1026,7 +1028,7 @@ public class MainView extends javax.swing.JFrame
     boolean previewModes = this.visicutModel1.getMappings() != null && this.visicutModel1.getMaterial() != null && this.visicutModel1.getMappings().size() > 0;
     this.showCuttingCb.setEnabled(previewModes);
     this.showEngravingCb.setEnabled(previewModes);
-    if (this.visicutModel1.getSelectedLaserDevice() == null || this.visicutModel1.getMaterial() == null 
+    if (this.visicutModel1.getSelectedLaserDevice() == null || this.visicutModel1.getMaterial() == null
       || this.visicutModel1.getMappings() == null || this.visicutModel1.getResolution() == null)
     {
       this.executeJobButton.setEnabled(false);
@@ -1040,29 +1042,58 @@ public class MainView extends javax.swing.JFrame
   }
   private File lastDirectory = null;
 private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
-  JFileChooser openFileChooser = new JFileChooser();
-  openFileChooser.setAcceptAllFileFilterUsed(false);
-  openFileChooser.addChoosableFileFilter(VisicutModel.PLFFilter);
-  for (FileFilter f : this.visicutModel1.getGraphicFileImporter().getFileFilters())
-  {
-    openFileChooser.addChoosableFileFilter(f);
-  }
-  FileFilter allFilter =
+  final FileFilter allFilter =
     new MultiFilter(
     new FileFilter[]
     {
       this.visicutModel1.getGraphicFileImporter().getFileFilter(),
       VisicutModel.PLFFilter
     }, "All supported files");
-  openFileChooser.addChoosableFileFilter(allFilter);
-  openFileChooser.setFileFilter(allFilter);
-  openFileChooser.setCurrentDirectory(lastDirectory);
-  int returnVal = openFileChooser.showOpenDialog(this);
-  if (returnVal == JFileChooser.APPROVE_OPTION)
+
+  //On Mac os, awt.FileDialog looks more native
+  if (System.getProperty("os.name").toLowerCase().contains("mac"))
   {
-    File file = openFileChooser.getSelectedFile();
-    lastDirectory = file.getParentFile();
-    loadFile(file);
+    FileDialog openFileChooser = new FileDialog(this, "Please select a file");
+    openFileChooser.setMode(FileDialog.LOAD);
+    if (lastDirectory != null)
+    {
+      openFileChooser.setDirectory(lastDirectory.getAbsolutePath());
+    }
+    openFileChooser.setFilenameFilter(new FilenameFilter()
+    {
+
+      public boolean accept(File dir, String file)
+      {
+        return allFilter.accept(new File(dir, file));
+      }
+    });
+    openFileChooser.setVisible(true);
+    if (openFileChooser.getFile() != null)
+    {
+      File file = new File(openFileChooser.getFile());
+      lastDirectory = file.getParentFile();
+      loadFile(file);
+    }
+  }
+  else
+  {
+    JFileChooser openFileChooser = new JFileChooser();
+    openFileChooser.setAcceptAllFileFilterUsed(false);
+    openFileChooser.addChoosableFileFilter(VisicutModel.PLFFilter);
+    for (FileFilter f : this.visicutModel1.getGraphicFileImporter().getFileFilters())
+    {
+      openFileChooser.addChoosableFileFilter(f);
+    }
+    openFileChooser.addChoosableFileFilter(allFilter);
+    openFileChooser.setFileFilter(allFilter);
+    openFileChooser.setCurrentDirectory(lastDirectory);
+    int returnVal = openFileChooser.showOpenDialog(this);
+    if (returnVal == JFileChooser.APPROVE_OPTION)
+    {
+      File file = openFileChooser.getSelectedFile();
+      lastDirectory = file.getParentFile();
+      loadFile(file);
+    }
   }
 }//GEN-LAST:event_openMenuItemActionPerformed
 
@@ -1243,10 +1274,33 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
 
   private void save()
   {
-    int returnVal = saveFileChooser.showSaveDialog(this);
-    if (returnVal == JFileChooser.APPROVE_OPTION)
+    File file = null;
+    //On Mac os, awt.FileDialog looks more native
+    if (System.getProperty("os.name").toLowerCase().contains("mac"))
     {
-      File file = saveFileChooser.getSelectedFile();
+      FileDialog dialog = new java.awt.FileDialog(this);
+      dialog.setMode(FileDialog.SAVE);
+      if (lastDirectory != null)
+      {
+        dialog.setDirectory(lastDirectory.getAbsolutePath());
+      }
+      dialog.setVisible(true);
+      if (dialog.getFile() != null)
+      {
+        file = new File(dialog.getFile());
+      }
+    }
+    else
+    {
+      saveFileChooser.setCurrentDirectory(lastDirectory);
+      if (saveFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+      {
+        file = saveFileChooser.getSelectedFile();
+      }
+    }
+    if (file != null)
+    {
+      lastDirectory = file.getParentFile();
       if (!file.getName().endsWith("plf"))
       {
         file = new File(file.getAbsolutePath() + ".plf");
@@ -1278,7 +1332,7 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
     this.saveMenuItem.setEnabled(this.visicutModel1.getLoadedFile() != null);
     if (this.visicutModel1.getLoadedFile() != null)
     {
-      this.setTitle("VisiCut - "+this.visicutModel1.getLoadedFile().getName());
+      this.setTitle("VisiCut - " + this.visicutModel1.getLoadedFile().getName());
     }
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDLASERDEVICE))
@@ -1293,12 +1347,12 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_SOURCEFILE))
   {
-    this.reloadMenuItem.setEnabled(this.visicutModel1.getSourceFile()!=null);
+    this.reloadMenuItem.setEnabled(this.visicutModel1.getSourceFile() != null);
     if (this.visicutModel1.getLoadedFile() == null)
     {
-      this.setTitle(this.visicutModel1.getSourceFile() == null ? 
-        "VisiCut" 
-        : "VisiCut - "+this.visicutModel1.getSourceFile().getName());
+      this.setTitle(this.visicutModel1.getSourceFile() == null
+        ? "VisiCut"
+        : "VisiCut - " + this.visicutModel1.getSourceFile().getName());
     }
   }
 }//GEN-LAST:event_visicutModel1PropertyChange
@@ -1478,7 +1532,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       }
     }
   }//GEN-LAST:event_materialMenuItemActionPerformed
- 
+
   /**
    * Disables all impossible combinations
    */
@@ -1519,7 +1573,8 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     for (int i = 1; i < this.resolutionComboBox.getItemCount(); i++)
     {
       Integer r = (Integer) this.resolutionComboBox.getItemAt(i);
-      if (ld == null || ld.getLaserCutter().getResolutions().contains(r)){
+      if (ld == null || ld.getLaserCutter().getResolutions().contains(r))
+      {
         this.resolutionComboBox.setDisabled(r, false);
       }
       else
@@ -1570,7 +1625,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       }
     }
     this.visicutModel1.setSelectedLaserDevice(newDev);
-    if (this.visicutModel1.getSelectedLaserDevice()== null || this.visicutModel1.getSelectedLaserDevice().getCameraURL() == null || "".equals(this.visicutModel1.getSelectedLaserDevice().getCameraURL()))
+    if (this.visicutModel1.getSelectedLaserDevice() == null || this.visicutModel1.getSelectedLaserDevice().getCameraURL() == null || "".equals(this.visicutModel1.getSelectedLaserDevice().getCameraURL()))
     {
       this.visicutModel1.setBackgroundImage(null);
     }
@@ -1705,22 +1760,22 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
 private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadMenuItemActionPerformed
   if (this.visicutModel1.getLoadedFile() != null && this.visicutModel1.getLoadedFile().isFile())
   {
-      try
-      {
-        this.visicutModel1.loadFromFile(this.mappingManager1, this.visicutModel1.getLoadedFile());
-      }
-      catch (Exception ex)
-      {
-        JOptionPane.showMessageDialog(this, "Error reloading File:\n"+ex.getMessage(), "Error", JOptionPane.ERROR);
-        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-      }
+    try
+    {
+      this.visicutModel1.loadFromFile(this.mappingManager1, this.visicutModel1.getLoadedFile());
+    }
+    catch (Exception ex)
+    {
+      JOptionPane.showMessageDialog(this, "Error reloading File:\n" + ex.getMessage(), "Error", JOptionPane.ERROR);
+      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
   else if (this.visicutModel1.getSourceFile() != null && this.visicutModel1.getSourceFile().isFile())
   {
     try
     {
       this.visicutModel1.loadGraphicFile(this.visicutModel1.getSourceFile(), true);
-    }    
+    }
     catch (Exception e)
     {
       this.progressBar.setIndeterminate(false);
@@ -1746,7 +1801,6 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
   this.refreshComboBoxes();
   this.refreshButtonStates();
 }//GEN-LAST:event_resolutionComboBoxActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton calculateTimeButton;
