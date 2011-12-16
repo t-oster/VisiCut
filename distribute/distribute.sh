@@ -1,4 +1,24 @@
 #!/bin/bash
+echo "Get latest MaterialDB from git?(Y/n)"
+read test
+if [ "$test" != "n" ]
+then
+	pushd files/settings
+	if [ -d VisiCut-MaterialDB/.git ]
+	then
+		echo "already git => we pull"
+		pushd VisiCut-MaterialDB
+		git pull
+		popd
+	else
+		echo "we have to clone the repository first"
+		rm -rf VisiCut-MaterialDB
+		git clone https://t-oster@github.com/t-oster/VisiCut-MaterialDB.git
+	fi
+	popd
+	echo "sucessfully updated"
+fi
+
 echo "Determining Version:"
 VERSION=$(cat ../src/com/t_oster/visicut/gui/resources/VisicutApp.properties |grep Application.version)
 VERSION=${VERSION#*=}
