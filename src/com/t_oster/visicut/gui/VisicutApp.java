@@ -117,6 +117,13 @@ public class VisicutApp extends SingleFrameApplication
     {
       Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
     }
+    if ("GTK look and feel".equals(UIManager.getLookAndFeel().getName()))
+    {//new GTK file chooser if we're on Gnome etc
+      //disabled due to a bug in gtkjfilechooser, will be re-enabled as soon
+      //as they resolve the bug
+      //https://code.google.com/p/gtkjfilechooser/issues/detail?can=2&start=0&num=100&q=&colspec=ID%20Type%20Status%20Priority%20Milestone%20Owner%20Summary&groupby=&sort=&id=82
+      //UIManager.put("FileChooserUI", "eu.kostia.gtkjfilechooser.ui.GtkFileChooserUI");
+    }
     for (String s:args)
     {
       if ("--debug".equals(s) || "-d".equals(s))
