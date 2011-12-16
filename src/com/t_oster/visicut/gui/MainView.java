@@ -76,6 +76,10 @@ public class MainView extends javax.swing.JFrame
   public MainView()
   {
     initComponents();
+    if (System.getProperty("os.name").toLowerCase().contains("mac"))
+    {//Mac OS has its own exit menu
+      fileMenu.remove(exitMenuItem);
+    }
     this.customMappingTable.getSelectionModel().addListSelectionListener(new ListSelectionListener()
     {
 
