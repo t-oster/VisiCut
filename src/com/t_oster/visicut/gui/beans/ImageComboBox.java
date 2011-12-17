@@ -128,7 +128,7 @@ public class ImageComboBox extends JComboBox
   public ImageComboBox()
   {
     //For MAC Os displaying the correct size
-    if (System.getProperty("os.name").toLowerCase().contains("mac"))
+    if (Helper.isMacOS())
     {
       Color bg = (Color) UIManager.get("ComboBox.background");
       Color fg = (Color) UIManager.get("ComboBox.foreground");

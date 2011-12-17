@@ -21,6 +21,7 @@
  */
 package com.t_oster.visicut.gui;
 
+import com.t_oster.visicut.misc.Helper;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -85,7 +86,7 @@ public class VisicutApp extends SingleFrameApplication
   public static void main(String[] args)
   {
     //Mac Specific
-    if (System.getProperty("os.name").toLowerCase().contains("mac"))
+    if (Helper.isMacOS())
     {
       System.setProperty("apple.laf.useScreenMenuBar", "true");
       System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Visicut");

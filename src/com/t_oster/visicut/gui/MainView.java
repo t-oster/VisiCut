@@ -76,7 +76,7 @@ public class MainView extends javax.swing.JFrame
   public MainView()
   {
     initComponents();
-    if (System.getProperty("os.name").toLowerCase().contains("mac"))
+    if (Helper.isMacOS())
     {//Mac OS has its own exit menu
       fileMenu.remove(exitMenuItem);
     }
@@ -1055,7 +1055,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     }, "All supported files");
 
   //On Mac os, awt.FileDialog looks more native
-  if (System.getProperty("os.name").toLowerCase().contains("mac"))
+  if (Helper.isMacOS())
   {
     FileDialog openFileChooser = new FileDialog(this, "Please select a file");
     openFileChooser.setMode(FileDialog.LOAD);
@@ -1280,7 +1280,7 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
   {
     File file = null;
     //On Mac os, awt.FileDialog looks more native
-    if (System.getProperty("os.name").toLowerCase().contains("mac"))
+    if (Helper.isMacOS())
     {
       FileDialog dialog = new java.awt.FileDialog(this);
       dialog.setMode(FileDialog.SAVE);

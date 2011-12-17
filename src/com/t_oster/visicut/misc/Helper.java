@@ -40,6 +40,11 @@ import java.util.logging.Logger;
 public class Helper
 {
   
+  public static boolean isMacOS()
+  {
+    return System.getProperty("os.name").toLowerCase().contains("mac");
+  }
+  
   /**
    * Gives the relative path of fileB relative to the parentDirectory
    * of fileA, separated with "/"
