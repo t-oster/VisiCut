@@ -31,6 +31,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.plaf.metal.MetalComboBoxUI;
@@ -42,13 +43,19 @@ import javax.swing.plaf.metal.MetalComboBoxUI;
 public class ImageComboBox extends JComboBox
 {
 
-  private DefaultListCellRenderer cellrenderer = new DefaultListCellRenderer()
+  private class ModifiedRenderer implements ListCellRenderer
   {
 
-    @Override
+    private ListCellRenderer decoratee;
+    
+    public ModifiedRenderer(ListCellRenderer decoratee)
+    {
+      this.decoratee = decoratee;
+    }
+    
     public Component getListCellRendererComponent(JList jlist, Object o, int i, boolean bln, boolean bln1)
     {
-      Component c = super.getListCellRendererComponent(jlist, o, i, bln, bln1);
+      Component c = decoratee.getListCellRendererComponent(jlist, o, i, bln, bln1);
       if (c instanceof JLabel)
       {
         JLabel l = (JLabel) c;
@@ -100,7 +107,9 @@ public class ImageComboBox extends JComboBox
       }
       return c;
     }
-  };
+    
+  }
+  
   private Map<Object, String> disableReasons = new LinkedHashMap<Object, String>();
 
   public void setDisabled(Object o, boolean disabled, String reason)
@@ -128,6 +137,8 @@ public class ImageComboBox extends JComboBox
   public ImageComboBox()
   {
     //For MAC Os displaying the correct size
+    //TOOD: Check if this is still necessary with
+    //modified renderer
     if (Helper.isMacOS())
     {
       Color bg = (Color) UIManager.get("ComboBox.background");
@@ -136,7 +147,7 @@ public class ImageComboBox extends JComboBox
       UIManager.put("ComboBox.selectionForeground", fg);
       this.setUI(new MetalComboBoxUI());
     }
-    this.setRenderer(cellrenderer);
+    this.setRenderer(new ModifiedRenderer(this.getRenderer()));
     this.addActionListener(new ActionListener()
     {
 
