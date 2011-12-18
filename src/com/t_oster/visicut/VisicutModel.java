@@ -88,13 +88,10 @@ public class VisicutModel
     return instance;
   }
   
-  // has to have a public constructor for use as Bean
-  public VisicutModel()
+  // restict constructor access
+  private VisicutModel()
   {
-    if (instance != null){
-      System.err.println("VisicutModel is singelton, should be only initialized once");
-    }
-    instance = this;
+    
   }
   
   protected Integer resolution = 500;
