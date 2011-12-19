@@ -563,6 +563,7 @@ public class VisicutModel
           AffineTransform tr = this.graphicObjects.getTransform() == null ? new AffineTransform() : this.graphicObjects.getTransform();
           tr.translate(bb.getX() < 0 ? -bb.getX(): 0, bb.getY() < 0 ? -bb.getY() : 0);
           this.graphicObjects.setTransform(tr);
+          bb = this.graphicObjects.getBoundingBox();
         }
         if (this.material != null)
         {
