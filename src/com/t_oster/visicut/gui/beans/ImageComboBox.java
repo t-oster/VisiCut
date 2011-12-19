@@ -27,13 +27,11 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 
 /**
@@ -137,14 +135,8 @@ public class ImageComboBox extends JComboBox
   public ImageComboBox()
   {
     //For MAC Os displaying the correct size
-    //TOOD: Check if this is still necessary with
-    //modified renderer
     if (Helper.isMacOS())
     {
-      Color bg = (Color) UIManager.get("ComboBox.background");
-      Color fg = (Color) UIManager.get("ComboBox.foreground");
-      UIManager.put("ComboBox.selectionBackground", bg);
-      UIManager.put("ComboBox.selectionForeground", fg);
       this.setUI(new MetalComboBoxUI());
     }
     this.setRenderer(new ModifiedRenderer(this.getRenderer()));

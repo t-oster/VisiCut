@@ -138,6 +138,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="executeJobMenuItem">
               <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Ctrl+P"/>
+                </Property>
                 <Property name="text" type="java.lang.String" resourceKey="executeJobMenuItem.text"/>
                 <Property name="name" type="java.lang.String" value="executeJobMenuItem" noResource="true"/>
               </Properties>
@@ -199,22 +202,22 @@
                 </BindingProperty>
               </BindingProperties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
+            <MenuItem class="javax.swing.JMenuItem" name="zoomInMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="com.t_oster.visicut.gui.MainView" id="zoomIn" methodName="zoomIn"/>
                 </Property>
-                <Property name="text" type="java.lang.String" resourceKey="jMenuItem1.text"/>
-                <Property name="name" type="java.lang.String" value="jMenuItem1" noResource="true"/>
+                <Property name="text" type="java.lang.String" resourceKey="zoomInMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="zoomInMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem3">
+            <MenuItem class="javax.swing.JMenuItem" name="zoomOutMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="com.t_oster.visicut.gui.MainView" id="zoomOut" methodName="zoomOut"/>
                 </Property>
-                <Property name="text" type="java.lang.String" resourceKey="jMenuItem3.text"/>
-                <Property name="name" type="java.lang.String" value="jMenuItem3" noResource="true"/>
+                <Property name="text" type="java.lang.String" resourceKey="zoomOutMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="zoomOutMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
           </SubComponents>
@@ -345,13 +348,13 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="mappingTabbedPane" alignment="0" pref="388" max="32767" attributes="0"/>
+                      <Component id="mappingTabbedPane" alignment="0" pref="414" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="jLabel3" alignment="0" pref="388" max="32767" attributes="1"/>
+                              <Component id="jLabel3" alignment="0" pref="414" max="32767" attributes="1"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="dimensionWidthTextField" min="-2" pref="132" max="-2" attributes="1"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -379,7 +382,7 @@
                                           <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
-                                  <EmptySpace pref="20" max="32767" attributes="0"/>
+                                  <EmptySpace pref="55" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -393,8 +396,8 @@
                       </Group>
                       <Group type="102" alignment="1" attributes="0">
                           <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="materialComboBox" alignment="0" pref="376" max="32767" attributes="1"/>
-                              <Component id="laserCutterComboBox" alignment="1" pref="376" max="32767" attributes="1"/>
+                              <Component id="materialComboBox" alignment="0" pref="397" max="32767" attributes="1"/>
+                              <Component id="laserCutterComboBox" alignment="1" pref="397" max="32767" attributes="1"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -437,7 +440,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="mappingTabbedPane" pref="361" max="32767" attributes="0"/>
+                  <Component id="mappingTabbedPane" pref="411" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="calculateTimeButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -595,12 +598,12 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="0" pref="380" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" alignment="0" pref="393" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="0" pref="320" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" alignment="0" pref="365" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -649,10 +652,10 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="customMappingComboBox" pref="293" max="32767" attributes="0"/>
+                          <Component id="customMappingComboBox" pref="302" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jScrollPane2" alignment="0" pref="380" max="32767" attributes="0"/>
+                      <Component id="jScrollPane2" alignment="0" pref="393" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
@@ -664,7 +667,7 @@
                               <Component id="customMappingComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane2" pref="259" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" pref="296" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
