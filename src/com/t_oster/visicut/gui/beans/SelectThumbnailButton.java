@@ -20,9 +20,12 @@ package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FilenameFilter;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
@@ -114,23 +117,56 @@ public class SelectThumbnailButton extends JButton implements ActionListener
 
   public void actionPerformed(ActionEvent ae)
   {
-    JFileChooser fc = new JFileChooser();
-    fc.setAcceptAllFileFilterUsed(false);
-    fc.addChoosableFileFilter(new ExtensionFilter(".png", "PNG Files (*.png)"));
-    if (getDefaultDirectory() != null)
+    if (true || Helper.isMacOS())
     {
-      fc.setCurrentDirectory(getDefaultDirectory());
+      FileDialog fd = new FileDialog((Frame) null, "Please select a thumbnail");
+      fd.setMode(FileDialog.LOAD);
+      fd.setFilenameFilter(new FilenameFilter()
+      {
+
+        public boolean accept(File file, String string)
+        {
+          return string.toLowerCase().endsWith("png");
+        }
+        
+      });
+      if (getDefaultDirectory() != null)
+      {
+        fd.setDirectory(getDefaultDirectory().getAbsolutePath());
+      }
+      if (getThumbnailPath() != null)
+      {
+        File tb = new File(getThumbnailPath());
+        fd.setDirectory(tb.getParent());
+        fd.setFile(tb.getName());
+      }
+      fd.setVisible(true);
+      if (fd.getFile() != null)
+      {
+        File tb = new File(fd.getDirectory(), fd.getFile());
+        setThumbnailPath(tb.getAbsolutePath());
+      }
     }
-    if (getThumbnailPath() != null)
+    else
     {
-      fc.setSelectedFile(new File(getThumbnailPath()));
-      fc.setCurrentDirectory(new File(getThumbnailPath()).getParentFile());
-    }
-    fc.setDialogType(JFileChooser.OPEN_DIALOG);
-    if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
-    {
-      File thumb = fc.getSelectedFile();
-      setThumbnailPath(thumb.getPath());
+      JFileChooser fc = new JFileChooser();
+      fc.setAcceptAllFileFilterUsed(false);
+      fc.addChoosableFileFilter(new ExtensionFilter(".png", "PNG Files (*.png)"));
+      if (getDefaultDirectory() != null)
+      {
+        fc.setCurrentDirectory(getDefaultDirectory());
+      }
+      if (getThumbnailPath() != null)
+      {
+        fc.setSelectedFile(new File(getThumbnailPath()));
+        fc.setCurrentDirectory(new File(getThumbnailPath()).getParentFile());
+      }
+      fc.setDialogType(JFileChooser.OPEN_DIALOG);
+      if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+      {
+        File thumb = fc.getSelectedFile();
+        setThumbnailPath(thumb.getPath());
+      }
     }
   }
 }
