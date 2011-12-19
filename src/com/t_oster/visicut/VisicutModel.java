@@ -56,9 +56,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -211,18 +214,9 @@ public class VisicutModel
     this.preferences = preferences;
     propertyChangeSupport.firePropertyChange(PROP_PREFERENCES, oldPreferences, preferences);
     this.graphicFileImporter = null;
-    if (this.selectedLaserDevice == null)
-    {
-      this.setSelectedLaserDevice(this.preferences.getLastLaserDevice());
-    }
-    if (this.material == null)
-    {
-      this.setMaterial(this.preferences.getLastMaterial());
-    }
-    if (this.resolution == null)
-    {
-      this.setResolution(this.preferences.getLastResolution());
-    }
+    this.setSelectedLaserDevice(this.preferences.getLastLaserDevice());
+    this.setMaterial(this.preferences.getLastMaterial());
+    this.setResolution(this.preferences.getLastResolution());
   }
   protected GraphicSet graphicObjects = null;
   public static final String PROP_GRAPHICOBJECTS = "graphicObjects";
@@ -613,6 +607,101 @@ public class VisicutModel
     propertyChangeSupport.firePropertyChange(PROP_MAPPINGS, oldMappings, mappings);
   }
 
+  /**
+   * returns true iff the combination is supported
+   * @param ld
+   * @param mp
+   * @param ms
+   * @return 
+   */
+  public boolean supported(LaserDevice ld, MaterialProfile mp, MappingSet ms)
+  {
+    if (ld == null && mp == null)
+    {
+      return true;
+    }
+    for (MaterialProfile m : ld != null ? ProfileManager.getInstance().getMaterials(ld) : getAllMaterials())
+    {
+      if (mp != null && m.getName().equals(mp.getName()))
+      {
+        if (ms == null)
+        {
+          return true;
+        }
+        else
+        {
+          boolean mappingOK = true;
+          for (Mapping map : ms)
+          {
+            if (m.getLaserProfile(map.getProfileName()) == null)
+            {
+              mappingOK = false;
+              break;
+            }
+          }
+          if (mappingOK)
+          {
+            return true;
+          }
+        }
+      }
+      else
+      {
+        if (mp == null)
+        {
+          boolean mappingOK = true;
+          if (ms != null)
+          {
+            for (Mapping map : ms)
+            {
+              if (m.getLaserProfile(map.getProfileName()) == null)
+              {
+                mappingOK = false;
+                break;
+              }
+            }
+          }
+          if (mappingOK)
+          {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+  
+  /**
+   * Returns a list of MaterialProfiles
+   * for all available lasercutters. Aggregated by name and Depth
+   * @return 
+   */
+  public List<MaterialProfile> getAllMaterials()
+  {
+    List<MaterialProfile> result = new LinkedList<MaterialProfile>();
+    for (LaserDevice ld : PreferencesManager.getInstance().getPreferences().getLaserDevices())
+    {
+      for (MaterialProfile mp : ProfileManager.getInstance().getMaterials(ld))
+      {
+        boolean found = false;
+        for (MaterialProfile pp : result)
+        {
+          if (pp.getName().equals(mp.getName()) && pp.getDepth() == mp.getDepth())
+          {
+            found = true;
+            break;
+          }
+        }
+        if (!found)
+        {
+          result.add(mp);
+        }
+      }
+    }
+    Collections.sort(result);
+    return result;
+  }
+  
   private LaserJob prepareJob(String name)
   {
     RasterPart rp = new RasterPart(new LaserProperty());

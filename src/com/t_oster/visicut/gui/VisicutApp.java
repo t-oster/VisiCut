@@ -18,10 +18,20 @@
  **/
 package com.t_oster.visicut.gui;
 
+import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.managers.MappingManager;
+import com.t_oster.visicut.managers.PreferencesManager;
+import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.LaserDevice;
+import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.ImportException;
+import com.t_oster.visicut.model.mapping.MappingSet;
 import java.io.File;
+import java.net.SocketTimeoutException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -38,14 +48,16 @@ public class VisicutApp extends SingleFrameApplication
 {
 
   public static Level GLOBAL_LOG_LEVEL = Level.SEVERE;
-  
+
   /**
    * At startup create and show the main frame of the application.
    */
   @Override
   protected void startup()
   {
+    VisicutModel.getInstance().setPreferences(PreferencesManager.getInstance().getPreferences());
     this.processProgramArguments(arguments);
+
     show(new MainView());
   }
 
@@ -137,11 +149,18 @@ public class VisicutApp extends SingleFrameApplication
       System.exit(1);
     }
   }
-  
+
   public void processProgramArguments(String[] args)
   {
-    boolean nogui = false;
-    for (int i=0;i<args.length;i++)
+    String laserdevice = null;
+    String material = null;
+    Integer resolution = null;
+    String mapping = null;
+    String file = null;
+    Float height = null;
+    VisicutModel model = VisicutModel.getInstance();
+    boolean execute = false;
+    for (int i = 0; i < args.length; i++)
     {
       String s = args[i];
       if (s.startsWith("-"))
@@ -154,76 +173,210 @@ public class VisicutApp extends SingleFrameApplication
         {
           System.out.println("Usage: visicut [-h]");
           System.out.println("\t visicut [options] [<filename>]");
-          System.out.println("\t visicut [options] --execute filename" );
-          System.out.println(" --nogui\t disable UI (only valid with --execute)");
+          System.out.println("\t visicut [options] --execute filename");
           System.out.println(" --resolution");
           System.out.println(" --material");
           System.out.println(" --laserdevice");
           System.out.println(" --mapping");
           System.exit(0);
         }
-        else if ("--nogui".equals(s))
+        else if ("--total-height".equals(s))
         {
-          nogui = true;
+          height = Float.parseFloat(args[++i]);
         }
         else if ("--resolution".equals(s))
         {
-          try
-          {
-            int resolution = Integer.parseInt(args[i+1]);
-            VisicutModel.getInstance().setResolution(resolution);
-          }
-          catch (Exception e)
-          {
-            System.err.println("Invalid resolution");
-            System.exit(1);
-          }
-        }
-        else if ("--material".equals(s))
-        {
-          //...
+          resolution = Integer.parseInt(args[++i]);
         }
         else if ("--laserdevice".equals(s))
         {
-          //...
+          laserdevice = args[++i];
+        }
+        else if ("--material".equals(s))
+        {
+          material = args[++i];
         }
         else if ("--mapping".equals(s))
         {
-          //...
+          mapping = args[++i];
+        }
+        else if ("--execute".equals(s))
+        {
+          execute = true;
         }
         else
         {
-          System.err.println("Unknown command line option: "+s);
+          System.err.println("Unknown command line option: " + s);
           System.err.println("Use -h or --help for help");
           System.exit(1);
         }
       }
       else
       {
-        File f = new File(s);
-        if (f.exists())
+        if (file == null)
         {
-          try
-          {
-            VisicutModel.getInstance().loadGraphicFile(f);
-          }
-          catch (ImportException ex)
-          {
-            if (nogui)
-            {
-              ex.printStackTrace();
-              System.err.println("Could not load file "+f.getName());
-              System.exit(1);
-            }
-            else
-            {
-              JOptionPane.showMessageDialog(null, "Could not load file "+f.getName(), "Error", JOptionPane.ERROR);
-              System.exit(1);
-            }
-          }
+          file = s;
+        }
+        else
+        {
+          System.err.println("More than one file is not supported yet");
         }
       }
     }
+    if (laserdevice != null)
+    {
+      search:
+      {
+        for (LaserDevice ld : PreferencesManager.getInstance().getPreferences().getLaserDevices())
+        {
+          if (ld.getName().equals(laserdevice))
+          {
+            VisicutModel.getInstance().setSelectedLaserDevice(ld);
+            break search;
+          }
+        }
+        System.err.println("No such Laserdevice: " + laserdevice);
+      }
+    }
+    if (material != null)
+    {
+      LaserDevice cld = model.getSelectedLaserDevice();
+      search:
+      {
+        List<LaserDevice> devs = null;
+        if (cld == null)
+        {
+          devs = PreferencesManager.getInstance().getPreferences().getLaserDevices();
+        }
+        else
+        {
+          devs = new LinkedList<LaserDevice>();
+          devs.add(cld);
+        }
+        for (LaserDevice ld : devs)
+        {
+
+          for (MaterialProfile mp : ProfileManager.getInstance().getMaterials(ld))
+          {
+            if (material.equals(mp.getName()))
+            {
+              model.setMaterial(mp);
+              break search;
+            }
+          }
+        }
+        System.err.println("Material " + material + " not available");
+      }
+    }
+    if (height != null)
+    {
+      if (!execute)
+      {
+        System.err.append("Total-height parameter takes only effect with --execute");
+      }
+      if (model.getMaterial() != null)
+      {
+        model.getMaterial().setDepth(height);
+      }
+    }
+    if (resolution != null)
+    {
+      try
+      {
+        model.setResolution(resolution);
+      }
+      catch (Exception e)
+      {
+        System.err.println("Invalid resolution");
+        System.exit(1);
+      }
+    }
+    if (mapping != null)
+    {
+      search:
+      {
+        for (MappingSet ms : MappingManager.getInstance().getMappingSets())
+        {
+          if (mapping.equals(ms.getName()))
+          {
+            model.setMappings(ms);
+            break search;
+          }
+        }
+        System.err.println("No such Mapping: " + mapping);
+      }
+    }
+    if (file != null)
+    {
+      File f = new File(file);
+      if (!f.isFile() || !f.exists())
+      {
+        System.err.println("Can not find file: " + file);
+        System.exit(1);
+      }
+      try
+      {
+        if (file.toLowerCase().endsWith("plf"))
+        {
+          model.loadFromFile(MappingManager.getInstance(), f);
+        }
+        else
+        {
+          model.loadGraphicFile(f);
+        }
+      }
+      catch (Exception ex)
+      {
+        Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
+        System.err.println("Error loading file "+f+" :"+ex.getMessage());
+        System.exit(1);
+      }
+    }
+    if (execute)
+    {
+      if (model.getGraphicObjects() == null || model.getGraphicObjects().size() == 0)
+      {
+        System.err.println("Nothing to cut/engrave");
+        System.exit(1);
+      }
+      if (model.getSelectedLaserDevice() == null)
+      {
+        System.err.println("No Laserdevice selected");
+        System.exit(1);
+      }
+      if (model.getMaterial() == null)
+      {
+        System.err.println("No Material selected");
+        System.exit(1);
+      }
+      if (model.getMappings() == null)
+      {
+        System.err.println("No Mapping selected");
+        System.exit(1);
+      }
+      if (!model.supported(model.getSelectedLaserDevice(), model.getMaterial(), model.getMappings()))
+      {
+        System.err.println("Combination of Laserdevice, Material and Mapping is not supported");
+        System.exit(1);
+      }
+      if (!model.getSelectedLaserDevice().getLaserCutter().getResolutions().contains(model.getValidResolution()))
+      {
+        System.err.println("Resolution " + model.getValidResolution() + " is not supported by " + model.getSelectedLaserDevice().getName());
+        System.exit(1);
+      }
+      try
+      {
+        VisicutModel.getInstance().sendJob("VisiCut 1");
+      }
+      catch (Exception ex)
+      {
+        Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
+        System.err.println("Job could not be executed: "+ex.getMessage());
+        System.exit(1);
+      }
+      System.out.println("Job was sucessfully sent.");
+      System.out.println("Please press START on the Lasercutter");
+      System.exit(0);
+    }
   }
-  
 }

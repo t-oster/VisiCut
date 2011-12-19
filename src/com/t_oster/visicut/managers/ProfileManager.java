@@ -45,12 +45,31 @@ import java.util.logging.Logger;
 public class ProfileManager
 {
 
+  private static ProfileManager instance;
+  
+  public static ProfileManager getInstance()
+  {
+    if (instance == null)
+    {
+      instance = new ProfileManager();
+    }
+    return instance;
+  }
+  
   protected List<MaterialProfile> materials;
   public static final String PROP_MATERIALS = "materials";
   private File dir;
 
+  /*
+   * Need a public constructior for UI manager
+   * Do not use. Use getInstance instead
+   */
   public ProfileManager()
   {
+    if (instance != null)
+    {
+      System.err.println("ProfileManager should not be instanciated directly");
+    }
     this.materials = new LinkedList<MaterialProfile>();
   }
 

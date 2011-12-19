@@ -44,8 +44,27 @@ import java.util.logging.Logger;
 public class MappingManager
 {
 
+  private static MappingManager instance;
+  
+  public static MappingManager getInstance()
+  {
+    if (instance == null)
+    {
+      instance = new MappingManager();
+    }
+    return instance;
+  }
+  
+  /**
+   * Need public constructor for UI Editor.
+   * Do not use. Use getInstance instead
+   */
   public MappingManager()
   {
+    if (instance != null)
+    {
+      System.err.println("Should not directly instanctiate MappingManager");
+    }
     mappingSets = new LinkedList<MappingSet>();
     loadFromDirectory();
   }
