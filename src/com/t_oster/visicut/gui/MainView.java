@@ -24,6 +24,7 @@
  */
 package com.t_oster.visicut.gui;
 
+import com.apple.eawt.AppEvent.AboutEvent;
 import com.apple.eawt.AppEvent.QuitEvent;
 import com.apple.eawt.QuitResponse;
 import com.t_oster.liblasercut.IllegalJobException;
@@ -158,6 +159,13 @@ public class MainView extends javax.swing.JFrame
         {
           MainView.this.visicutModel1.updatePreferences();
           System.exit(0);
+        }
+      });
+      macApplication.setAboutHandler(new com.apple.eawt.AboutHandler() {
+
+        public void handleAbout(AboutEvent ae)
+        {
+          MainView.this.aboutMenuItemActionPerformed(null);
         }
       });
     }
