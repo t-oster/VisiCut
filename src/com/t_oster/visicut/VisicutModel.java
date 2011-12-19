@@ -561,7 +561,7 @@ public class VisicutModel
         if (bb.getX() < 0 || bb.getY() < 0)
         {//Move Object's origin to be positive
           AffineTransform tr = this.graphicObjects.getTransform() == null ? new AffineTransform() : this.graphicObjects.getTransform();
-          tr.translate(bb.getX() < 0 ? -bb.getX(): 0, bb.getY() < 0 ? -bb.getY() : 0);
+          tr.preConcatenate(tr.getTranslateInstance(bb.getX() < 0 ? -bb.getX(): 0, bb.getY() < 0 ? -bb.getY() : 0));
           this.graphicObjects.setTransform(tr);
           bb = this.graphicObjects.getBoundingBox();
         }
@@ -576,7 +576,7 @@ public class VisicutModel
             double dw = mw / w;
             double dh = mh / h;
             AffineTransform tr = this.graphicObjects.getTransform() == null ? new AffineTransform() : this.graphicObjects.getTransform();
-            tr.scale(Math.min(dw, dh), Math.min(dw, dh));
+            tr.preConcatenate(AffineTransform.getScaleInstance(Math.min(dw, dh), Math.min(dw, dh))  );
             this.graphicObjects.setTransform(tr);
           }
         }
