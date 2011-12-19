@@ -606,7 +606,7 @@ public class MainView extends javax.swing.JFrame
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${resolution}"), previewPanel, org.jdesktop.beansbinding.BeanProperty.create("resolution"), "ResolutionToPanel");
         bindingGroup.addBinding(binding);
 
-        PreviewPanelMouseHandler ppMouseHandler = new PreviewPanelMouseHandler(this.previewPanel);
+        PreviewPanelKeyboardMouseHandler ppMouseHandler = new PreviewPanelKeyboardMouseHandler(this.previewPanel);
         previewPanel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 previewPanelMouseClicked(evt);
@@ -1821,6 +1821,8 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
 
   private void previewPanelMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_previewPanelMouseClicked
   {//GEN-HEADEREND:event_previewPanelMouseClicked
+    //TODO: Check if this is still necessary since PreviewPanel is now Focusable
+    //(customMappingTable should react on focus loss)
     if (evt.getButton() == MouseEvent.BUTTON1 && this.mappingTabbedPane.getSelectedComponent().equals(this.customMappingPanel)
       && this.customMappingTable.getSelectedRow() >= 0)
     {

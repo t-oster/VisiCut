@@ -27,6 +27,8 @@ import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -46,28 +48,29 @@ import javax.swing.JPopupMenu;
  * 
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class PreviewPanelMouseHandler implements MouseListener, MouseMotionListener
+public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMotionListener, KeyListener
 {
 
   private PreviewPanel previewPanel;
   private JPopupMenu menu = new JPopupMenu();
   private JMenuItem resetMenuItem = new JMenuItem("Reset Transformation");
 
-  public PreviewPanelMouseHandler(PreviewPanel panel)
+  public PreviewPanelKeyboardMouseHandler(PreviewPanel panel)
   {
     this.previewPanel = panel;
     this.previewPanel.addMouseListener(this);
     this.previewPanel.addMouseMotionListener(this);
+    this.previewPanel.addKeyListener(this);
     menu.add(resetMenuItem);
     resetMenuItem.addActionListener(new ActionListener()
     {
 
       public void actionPerformed(ActionEvent ae)
       {
-        PreviewPanelMouseHandler.this.getGraphicObjects().setTransform(
-          PreviewPanelMouseHandler.this.getGraphicObjects().getBasicTransform());
-        PreviewPanelMouseHandler.this.previewPanel.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
-        PreviewPanelMouseHandler.this.previewPanel.repaint();
+        PreviewPanelKeyboardMouseHandler.this.getGraphicObjects().setTransform(
+          PreviewPanelKeyboardMouseHandler.this.getGraphicObjects().getBasicTransform());
+        PreviewPanelKeyboardMouseHandler.this.previewPanel.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
+        PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
       }
     });
   }
@@ -93,8 +96,34 @@ public class PreviewPanelMouseHandler implements MouseListener, MouseMotionListe
     return this.previewPanel.getGraphicObjects();
   }
 
+  public void keyTyped(KeyEvent key)
+  {
+  }
+
+  public void keyPressed(KeyEvent ke)
+  {
+    if (this.getEditRect() != null)
+    {
+      int diffx=0;
+      int diffy=0;
+      switch (ke.getKeyCode())
+      {
+        case KeyEvent.VK_LEFT: diffx-=10;break;
+        case KeyEvent.VK_RIGHT: diffx+=10;break;
+        case KeyEvent.VK_UP: diffy-=10;break;
+        case KeyEvent.VK_DOWN: diffy+=10;break;
+      }
+      this.moveSet(diffx,diffy);
+    }
+  }
+
+  public void keyReleased(KeyEvent ke)
+  {
+  }
+
   private enum MouseAction
   {
+
     movingBackground,
     movingSet,
     resizingSet,
@@ -106,6 +135,7 @@ public class PreviewPanelMouseHandler implements MouseListener, MouseMotionListe
 
   public void mouseClicked(MouseEvent me)
   {
+    this.previewPanel.requestFocus();
     if (me.getButton() == MouseEvent.BUTTON1)
     {
       boolean onGraphic = false;
@@ -280,18 +310,7 @@ public class PreviewPanelMouseHandler implements MouseListener, MouseMotionListe
           case movingSet:
           {
             this.previewPanel.getLastDrawnTransform().createInverse().deltaTransform(diff, diff);
-            if (getSelectedSet().getTransform() != null)
-            {
-              AffineTransform tr = AffineTransform.getTranslateInstance(diff.x, diff.y);
-              tr.concatenate(getSelectedSet().getTransform());
-              getSelectedSet().setTransform(tr);
-            }
-            else
-            {
-              getSelectedSet().setTransform(AffineTransform.getTranslateInstance(diff.x, diff.y));
-            }
-            Rectangle2D bb = getSelectedSet().getBoundingBox();
-            this.previewPanel.setEditRectangle(new EditRectangle(bb));
+            this.moveSet(diff.x, diff.y);
             break;
           }
           case movingBackground:
@@ -306,10 +325,30 @@ public class PreviewPanelMouseHandler implements MouseListener, MouseMotionListe
       }
       catch (NoninvertibleTransformException ex)
       {
-        Logger.getLogger(PreviewPanelMouseHandler.class.getName()).log(Level.SEVERE, null, ex);
+        Logger.getLogger(PreviewPanelKeyboardMouseHandler.class.getName()).log(Level.SEVERE, null, ex);
       }
       lastMousePosition = evt.getPoint();
     }
+  }
+
+  private void moveSet(int diffX, int diffY)
+  {
+    if (diffX == 0 && diffY == 0)
+    {
+      return;
+    }
+    if (getSelectedSet().getTransform() != null)
+    {
+      AffineTransform tr = AffineTransform.getTranslateInstance(diffX, diffY);
+      tr.concatenate(getSelectedSet().getTransform());
+      getSelectedSet().setTransform(tr);
+    }
+    else
+    {
+      getSelectedSet().setTransform(AffineTransform.getTranslateInstance(diffX, diffY));
+    }
+    Rectangle2D bb = getSelectedSet().getBoundingBox();
+    this.previewPanel.setEditRectangle(new EditRectangle(bb));
   }
 
   public void mouseMoved(MouseEvent evt)
