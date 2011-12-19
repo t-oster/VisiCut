@@ -45,7 +45,6 @@ import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.FileDialog;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
@@ -55,7 +54,6 @@ import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -995,6 +993,9 @@ public class MainView extends javax.swing.JFrame
       this.progressBar.setIndeterminate(true);
       if (VisicutModel.PLFFilter.accept(file))
       {
+        //Set Panel to Predefined Mappings because there the loaded mapping will appear    
+        this.mappingTabbedPane.setSelectedComponent(this.predefinedMappingPanel);
+        this.custom = null;
         this.visicutModel1.loadFromFile(this.mappingManager1, file);
         if (this.custom == null)
         {
@@ -1030,6 +1031,7 @@ public class MainView extends javax.swing.JFrame
           }
         }
       }
+      this.previewPanel.setZoom(100);
       this.previewPanel.setEditRectangle(null);
       this.progressBar.setIndeterminate(false);
       this.refreshButtonStates();
@@ -1370,6 +1372,7 @@ private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 
 private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newMenuItemActionPerformed
   this.previewPanel.setEditRectangle(null);
+  this.previewPanel.setZoom(100);
   this.visicutModel1.setGraphicObjects(new GraphicSet());
 }//GEN-LAST:event_newMenuItemActionPerformed
 
@@ -1603,6 +1606,15 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       this.laserCutterComboBox.setSelectedItem(visicutModel1.getSelectedLaserDevice());
       return;
     }
+    this.visicutModel1.setSelectedLaserDevice(newDev);
+    if (this.visicutModel1.getSelectedLaserDevice() == null || this.visicutModel1.getSelectedLaserDevice().getCameraURL() == null || "".equals(this.visicutModel1.getSelectedLaserDevice().getCameraURL()))
+    {
+      this.visicutModel1.setBackgroundImage(null);
+    }
+    else
+    {
+      this.captureImage();
+    }
     if (newDev != null)
     {
       this.profileManager1.loadMaterials(newDev);
@@ -1617,15 +1629,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
           }
         }
       }
-    }
-    this.visicutModel1.setSelectedLaserDevice(newDev);
-    if (this.visicutModel1.getSelectedLaserDevice() == null || this.visicutModel1.getSelectedLaserDevice().getCameraURL() == null || "".equals(this.visicutModel1.getSelectedLaserDevice().getCameraURL()))
-    {
-      this.visicutModel1.setBackgroundImage(null);
-    }
-    else
-    {
-      this.captureImage();
     }
     refreshComboBoxes();
     this.refreshButtonStates();
