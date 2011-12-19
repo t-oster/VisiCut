@@ -152,68 +152,77 @@ public class VisicutApp extends SingleFrameApplication
     Float height = null;
     VisicutModel model = VisicutModel.getInstance();
     boolean execute = false;
-    for (int i = 0; i < args.length; i++)
+    try
     {
-      String s = args[i];
-      if (s.startsWith("-"))
+      for (int i = 0; i < args.length; i++)
       {
-        if ("--debug".equals(s) || "-d".equals(s))
+        String s = args[i];
+        if (s.startsWith("-"))
         {
-          GLOBAL_LOG_LEVEL = Level.FINE;
-        }
-        else if ("--help".equals(s) || "-h".equals(s))
-        {
-          System.out.println("Usage: visicut [-h]");
-          System.out.println("\t visicut [options] [<filename>]");
-          System.out.println("\t visicut [options] --execute filename");
-          System.out.println(" --resolution");
-          System.out.println(" --material");
-          System.out.println(" --laserdevice");
-          System.out.println(" --mapping");
-          System.exit(0);
-        }
-        else if ("--total-height".equals(s))
-        {
-          height = Float.parseFloat(args[++i]);
-        }
-        else if ("--resolution".equals(s))
-        {
-          resolution = Integer.parseInt(args[++i]);
-        }
-        else if ("--laserdevice".equals(s))
-        {
-          laserdevice = args[++i];
-        }
-        else if ("--material".equals(s))
-        {
-          material = args[++i];
-        }
-        else if ("--mapping".equals(s))
-        {
-          mapping = args[++i];
-        }
-        else if ("--execute".equals(s))
-        {
-          execute = true;
+          if ("--debug".equals(s) || "-d".equals(s))
+          {
+            GLOBAL_LOG_LEVEL = Level.FINE;
+          }
+          else if ("--help".equals(s) || "-h".equals(s))
+          {
+            System.out.println("Usage: visicut [-h]");
+            System.out.println("\t visicut [options] [<filename>]");
+            System.out.println("\t visicut [options] --execute filename");
+            System.out.println(" --resolution");
+            System.out.println(" --material");
+            System.out.println(" --laserdevice");
+            System.out.println(" --mapping");
+            System.exit(0);
+          }
+          else if ("--total-height".equals(s))
+          {
+            height = Float.parseFloat(args[++i]);
+          }
+          else if ("--resolution".equals(s))
+          {
+            resolution = Integer.parseInt(args[++i]);
+          }
+          else if ("--laserdevice".equals(s))
+          {
+            laserdevice = args[++i];
+          }
+          else if ("--material".equals(s))
+          {
+            material = args[++i];
+          }
+          else if ("--mapping".equals(s))
+          {
+            mapping = args[++i];
+          }
+          else if ("--execute".equals(s))
+          {
+            execute = true;
+          }
+          else
+          {
+            System.err.println("Unknown command line option: " + s);
+            System.err.println("Use -h or --help for help");
+            System.exit(1);
+          }
         }
         else
         {
-          System.err.println("Unknown command line option: " + s);
-          System.err.println("Use -h or --help for help");
-          System.exit(1);
+          if (file == null)
+          {
+            file = s;
+          }
+          else
+          {
+            System.err.println("More than one file is not supported yet");
+          }
         }
       }
-      else
-      {
-        if (file == null)
-        {
-          file = s;
-        }
-        else
-        {
-          System.err.println("More than one file is not supported yet");
-        }
-      }
+    }
+    catch (Exception e)
+    {
+      System.err.println("Bad command line argumantes.");
+      System.err.println("Use -h or --help for help");
+      System.exit(1);
     }
     if (laserdevice != null)
     {

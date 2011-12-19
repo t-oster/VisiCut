@@ -1,6 +1,6 @@
 # Maintainer: Thomas Oster <thomas.oster@rwth-aachen.de>
 pkgname=visicut-git
-pkgver=20110923
+pkgver=20111219
 pkgrel=1
 pkgdesc="A userfriendly tool to create, save and send Jobs to a Lasercutter"
 arch=(any)
@@ -19,7 +19,7 @@ source=()
 noextract=()
 md5sums=() #generate with 'makepkg -g'
 
-_gitroot=git://github.com/t-oster/VisiCut.git
+_gitroot=../../../
 _gitname=master
 
 build() {
