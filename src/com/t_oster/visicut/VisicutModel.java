@@ -305,7 +305,7 @@ public class VisicutModel
         transform = (AffineTransform) decoder.readObject();
         if (this.getValidResolution() != 500)
         {//visicut files are 500dpi based
-          transform.scale(this.getValidResolution()/500d, this.getValidResolution()/500d);
+          transform.preConcatenate(AffineTransform.getScaleInstance(((double) this.getValidResolution())/500d, ((double) this.getValidResolution())/500d));
         }
       }
       else if (name.equals("mappings.xml"))
@@ -386,7 +386,7 @@ public class VisicutModel
     AffineTransform at = this.getGraphicObjects().getTransform();
     if (this.getValidResolution() != 500)
     {//visicut files are 500dpi based
-      at.scale(500d/this.getValidResolution(), 500d/this.getValidResolution());
+      at.preConcatenate(AffineTransform.getScaleInstance(500d/this.getValidResolution(), 500d/this.getValidResolution()));
     }
     if (at != null)
     {
