@@ -1133,6 +1133,29 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
   private void executeJob()
   {
+    //Adapt Settings before execute
+    AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true);
+    MaterialProfile mp = this.visicutModel1.getMaterial().clone();
+    List<String> usedProfileNames = new LinkedList<String>();
+    for (Mapping m:this.visicutModel1.getMappings())
+    {
+      usedProfileNames.add(m.getProfileName());
+    }
+    List<LaserProfile> usedProfiles = new LinkedList<LaserProfile>();
+    for (LaserProfile lp:mp.getLaserProfiles())
+    {
+      if (usedProfileNames.contains(lp.getName()))
+      {
+        usedProfiles.add(lp);
+      }
+    }
+    mp.setLaserProfiles(usedProfiles);
+    asd.setMaterialProfile(mp);
+    asd.setVisible(true);
+    if (asd.getMaterialProfile() != null)
+    {
+      this.visicutModel1.setMaterial(asd.getMaterialProfile());
+    }
     new Thread()
     {
 
