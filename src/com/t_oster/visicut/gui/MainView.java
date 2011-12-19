@@ -24,6 +24,8 @@
  */
 package com.t_oster.visicut.gui;
 
+import com.apple.eawt.AppEvent.QuitEvent;
+import com.apple.eawt.QuitResponse;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.ExtensionFilter;
@@ -146,6 +148,18 @@ public class MainView extends javax.swing.JFrame
       {
         this.loadFile(f);
       }
+    }
+    if (Helper.isMacOS())
+    {
+      com.apple.eawt.Application macApplication = com.apple.eawt.Application.getApplication();
+      macApplication.setQuitHandler(new com.apple.eawt.QuitHandler() {
+
+        public void handleQuitRequestWith(QuitEvent qe, QuitResponse qr)
+        {
+          MainView.this.visicutModel1.updatePreferences();
+          System.exit(0);
+        }
+      });
     }
     //Window listener for capturing close and save preferences before exiting
     this.addWindowListener(new WindowListener()
