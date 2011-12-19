@@ -1083,7 +1083,8 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     openFileChooser.setVisible(true);
     if (openFileChooser.getFile() != null)
     {
-      File file = new File(openFileChooser.getFile());
+      lastDirectory = new File(openFileChooser.getDirectory());
+      File file = new File(lastDirectory, openFileChooser.getFile());
       lastDirectory = file.getParentFile();
       loadFile(file);
     }
