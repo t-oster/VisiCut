@@ -13,7 +13,7 @@ then
 	else
 		echo "we have to clone the repository first"
 		rm -rf VisiCut-MaterialDB
-		git clone https://t-oster@github.com/t-oster/VisiCut-MaterialDB.git
+		git clone git://github.com/t-oster/VisiCut-MaterialDB.git
 	fi
 	popd
 	echo "sucessfully updated"
