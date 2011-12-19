@@ -139,17 +139,6 @@ public class MainView extends javax.swing.JFrame
     {
       this.captureImage();
     }
-
-
-    String[] args = VisicutApp.getApplication().getProgramArguments();
-    for (String s : args)
-    {
-      File f = new File(s);
-      if (f.exists())
-      {
-        this.loadFile(f);
-      }
-    }
     if (Helper.isMacOS())
     {
       com.apple.eawt.Application macApplication = com.apple.eawt.Application.getApplication();

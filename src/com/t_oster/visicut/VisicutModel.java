@@ -100,7 +100,7 @@ public class VisicutModel
     }
   }
   
-  protected Integer resolution = 500;
+  protected Integer resolution = null;
   public static final String PROP_RESOLUTION = "resolution";
 
   public Integer getResolution()
@@ -211,9 +211,18 @@ public class VisicutModel
     this.preferences = preferences;
     propertyChangeSupport.firePropertyChange(PROP_PREFERENCES, oldPreferences, preferences);
     this.graphicFileImporter = null;
-    this.setSelectedLaserDevice(this.preferences.getLastLaserDevice());
-     this.setMaterial(this.preferences.getLastMaterial());
-    this.setResolution(this.preferences.getLastResolution());
+    if (this.selectedLaserDevice == null)
+    {
+      this.setSelectedLaserDevice(this.preferences.getLastLaserDevice());
+    }
+    if (this.material == null)
+    {
+      this.setMaterial(this.preferences.getLastMaterial());
+    }
+    if (this.resolution == null)
+    {
+      this.setResolution(this.preferences.getLastResolution());
+    }
   }
   protected GraphicSet graphicObjects = null;
   public static final String PROP_GRAPHICOBJECTS = "graphicObjects";

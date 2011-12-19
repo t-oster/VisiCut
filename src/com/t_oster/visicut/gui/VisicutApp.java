@@ -16,12 +16,12 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * JepilogApp.java
- */
 package com.t_oster.visicut.gui;
 
+import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.graphicelements.ImportException;
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -45,6 +45,7 @@ public class VisicutApp extends SingleFrameApplication
   @Override
   protected void startup()
   {
+    this.processProgramArguments(arguments);
     show(new MainView());
   }
 
@@ -125,13 +126,6 @@ public class VisicutApp extends SingleFrameApplication
       //https://code.google.com/p/gtkjfilechooser/issues/detail?can=2&start=0&num=100&q=&colspec=ID%20Type%20Status%20Priority%20Milestone%20Owner%20Summary&groupby=&sort=&id=82
       //UIManager.put("FileChooserUI", "eu.kostia.gtkjfilechooser.ui.GtkFileChooserUI");
     }
-    for (String s:args)
-    {
-      if ("--debug".equals(s) || "-d".equals(s))
-      {
-        GLOBAL_LOG_LEVEL = Level.FINE;
-      }
-    }
     try
     {
       launch(VisicutApp.class, args);
@@ -143,4 +137,93 @@ public class VisicutApp extends SingleFrameApplication
       System.exit(1);
     }
   }
+  
+  public void processProgramArguments(String[] args)
+  {
+    boolean nogui = false;
+    for (int i=0;i<args.length;i++)
+    {
+      String s = args[i];
+      if (s.startsWith("-"))
+      {
+        if ("--debug".equals(s) || "-d".equals(s))
+        {
+          GLOBAL_LOG_LEVEL = Level.FINE;
+        }
+        else if ("--help".equals(s) || "-h".equals(s))
+        {
+          System.out.println("Usage: visicut [-h]");
+          System.out.println("\t visicut [options] [<filename>]");
+          System.out.println("\t visicut [options] --execute filename" );
+          System.out.println(" --nogui\t disable UI (only valid with --execute)");
+          System.out.println(" --resolution");
+          System.out.println(" --material");
+          System.out.println(" --laserdevice");
+          System.out.println(" --mapping");
+          System.exit(0);
+        }
+        else if ("--nogui".equals(s))
+        {
+          nogui = true;
+        }
+        else if ("--resolution".equals(s))
+        {
+          try
+          {
+            int resolution = Integer.parseInt(args[i+1]);
+            VisicutModel.getInstance().setResolution(resolution);
+          }
+          catch (Exception e)
+          {
+            System.err.println("Invalid resolution");
+            System.exit(1);
+          }
+        }
+        else if ("--material".equals(s))
+        {
+          //...
+        }
+        else if ("--laserdevice".equals(s))
+        {
+          //...
+        }
+        else if ("--mapping".equals(s))
+        {
+          //...
+        }
+        else
+        {
+          System.err.println("Unknown command line option: "+s);
+          System.err.println("Use -h or --help for help");
+          System.exit(1);
+        }
+      }
+      else
+      {
+        File f = new File(s);
+        if (f.exists())
+        {
+          try
+          {
+            VisicutModel.getInstance().loadGraphicFile(f);
+          }
+          catch (ImportException ex)
+          {
+            if (nogui)
+            {
+              ex.printStackTrace();
+              System.err.println("Could not load file "+f.getName());
+              System.exit(1);
+            }
+            else
+            {
+              JOptionPane.showMessageDialog(null, "Could not load file "+f.getName(), "Error", JOptionPane.ERROR);
+              System.exit(1);
+            }
+          }
+        }
+      }
+    }
+  }
+  
 }
