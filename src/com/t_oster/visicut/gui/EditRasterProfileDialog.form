@@ -35,13 +35,13 @@
                       <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="1">
-                              <Component id="jComboBox1" pref="206" max="32767" attributes="0"/>
+                              <Component id="jComboBox1" pref="211" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="chooseColorButton1" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="jTextField1" alignment="0" pref="334" max="32767" attributes="1"/>
+                          <Component id="jTextField1" alignment="0" pref="336" max="32767" attributes="1"/>
                           <Component id="jTextField2" alignment="0" min="-2" pref="300" max="-2" attributes="1"/>
                           <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>

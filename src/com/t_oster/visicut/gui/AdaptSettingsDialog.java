@@ -10,12 +10,16 @@
  */
 package com.t_oster.visicut.gui;
 
+import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.visicut.gui.beans.EditableTablePanel;
 import com.t_oster.visicut.gui.beans.EditableTableProvider;
 import com.t_oster.visicut.model.LaserProfile;
+import com.t_oster.visicut.model.LaserPropertyBean;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -26,14 +30,14 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
 
   private List<EditableTablePanel> panels = new LinkedList<EditableTablePanel>();
   private MaterialProfile mp;
-  
+
   /** Creates new form AdaptSettingsDialog */
   public AdaptSettingsDialog(java.awt.Frame parent, boolean modal)
   {
     super(parent, modal);
     initComponents();
   }
-  
+
   /**
    * Loads the given MaterialProfile into the Window.
    * All changes to the window occur instantly to this
@@ -50,25 +54,43 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
       for (LaserProfile lp : mp.getLaserProfiles())
       {
         EditableTablePanel panel = new EditableTablePanel();
+        LaserProfileTableModel model = new LaserProfileTableModel();
+        model.setLaserProfile(lp);
+        panel.setObjects((List) lp.getLaserProperties());
+        panel.setTableModel(model);
+        final boolean isVector = lp instanceof VectorProfile;
         panel.setProvider(new EditableTableProvider()
         {
 
           public Object getNewInstance()
           {
-            throw new UnsupportedOperationException("Not supported yet.");
+            return new LaserProperty();
           }
 
           public Object editObject(Object o)
           {
-            throw new UnsupportedOperationException("Not supported yet.");
+            if (o instanceof LaserProperty)
+            {
+              EditLaserPropertyPanel d = new EditLaserPropertyPanel();
+              d.setShowFrequency(isVector);
+              d.setLaserProperty(new LaserPropertyBean(((LaserProperty) o).clone()));
+              if (JOptionPane.showConfirmDialog(AdaptSettingsDialog.this, d, "Edit Laser Property", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
+              {
+                return d.getLaserProperty().getLaserProperty();
+              }
+              else
+              {
+                return null;
+              }
+            }
+            return o;
           }
-          
         });
         this.jTabbedPane1.add(lp.getName(), panel);
       }
     }
   }
-  
+
   /**
    * Returns the MaterialProfile provided by setMaterialProfile.
    * IF Cancel was pressed, it is set to null

@@ -287,6 +287,7 @@ public class MainView extends javax.swing.JFrame
         showCuttingCb = new javax.swing.JCheckBox();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        cbEditBeforeExecute = new javax.swing.JCheckBox();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -723,6 +724,9 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
+        cbEditBeforeExecute.setText(resourceMap.getString("cbEditBeforeExecute.text")); // NOI18N
+        cbEditBeforeExecute.setName("cbEditBeforeExecute"); // NOI18N
+
         menuBar.setName("menuBar"); // NOI18N
 
         fileMenu.setMnemonic('f');
@@ -912,7 +916,10 @@ public class MainView extends javax.swing.JFrame
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(executeJobButton)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(cbEditBeforeExecute)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(executeJobButton))
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
@@ -924,7 +931,9 @@ public class MainView extends javax.swing.JFrame
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(executeJobButton))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(executeJobButton)
+                            .addComponent(cbEditBeforeExecute)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1133,28 +1142,42 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
   private void executeJob()
   {
-    //Adapt Settings before execute
-    AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true);
-    MaterialProfile mp = this.visicutModel1.getMaterial().clone();
-    List<String> usedProfileNames = new LinkedList<String>();
-    for (Mapping m:this.visicutModel1.getMappings())
+    final boolean profileChanged;
+    final MaterialProfile oldMaterial = this.visicutModel1.getMaterial();
+    if (this.cbEditBeforeExecute.isSelected())
     {
-      usedProfileNames.add(m.getProfileName());
-    }
-    List<LaserProfile> usedProfiles = new LinkedList<LaserProfile>();
-    for (LaserProfile lp:mp.getLaserProfiles())
-    {
-      if (usedProfileNames.contains(lp.getName()))
+      //Adapt Settings before execute
+      AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true);
+      MaterialProfile mp = this.visicutModel1.getMaterial().clone();
+      List<String> usedProfileNames = new LinkedList<String>();
+      for (Mapping m:this.visicutModel1.getMappings())
       {
-        usedProfiles.add(lp);
+        usedProfileNames.add(m.getProfileName());
+      }
+      List<LaserProfile> usedProfiles = new LinkedList<LaserProfile>();
+      for (LaserProfile lp:mp.getLaserProfiles())
+      {
+        if (usedProfileNames.contains(lp.getName()))
+        {
+          usedProfiles.add(lp);
+        }
+      }
+      mp.setLaserProfiles(usedProfiles);
+      asd.setMaterialProfile(mp);
+      asd.setVisible(true);
+      if (asd.getMaterialProfile() != null)
+      {
+        profileChanged = true;
+        this.visicutModel1.setMaterial(asd.getMaterialProfile());
+      }
+      else
+      {
+        profileChanged = false;
       }
     }
-    mp.setLaserProfiles(usedProfiles);
-    asd.setMaterialProfile(mp);
-    asd.setVisible(true);
-    if (asd.getMaterialProfile() != null)
+    else
     {
-      this.visicutModel1.setMaterial(asd.getMaterialProfile());
+      profileChanged = false;
     }
     new Thread()
     {
@@ -1171,6 +1194,23 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
           MainView.this.visicutModel1.sendJob("VisiCut " + jobnumber);
           MainView.this.progressBar.setIndeterminate(false);
           JOptionPane.showMessageDialog(MainView.this, "Job was sent as 'VisiCut " + jobnumber + "'\n\n Please:\n- Close the lid\n- Switch the Ventilation on\n- and press START on the Lasercutter:\n     " + MainView.this.visicutModel1.getSelectedLaserDevice().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
+          if (profileChanged)
+          {
+            if (JOptionPane.showConfirmDialog(MainView.this, "The LaserProfile has been changed. Do you want to keep your changes?", "Profile Changed", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
+            {
+              //Replace changed profiles on oldMaterial
+              MaterialProfile newMp = MainView.this.visicutModel1.getMaterial();
+              for (LaserProfile lp :newMp.getLaserProfiles())
+              {
+                oldMaterial.getLaserProfiles().set(
+                  oldMaterial.getLaserProfiles().indexOf(
+                  oldMaterial.getLaserProfile(lp.getName())), 
+                lp);
+              }
+              MainView.this.profileManager1.saveProfile(oldMaterial, MainView.this.visicutModel1.getSelectedLaserDevice());
+            }
+            VisicutModel.getInstance().setMaterial(oldMaterial);
+          }
         }
         catch (Exception ex)
         {
@@ -1181,6 +1221,10 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
           else
           {
             JOptionPane.showMessageDialog(MainView.this, "Error: " + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+          }
+          if (profileChanged)
+          {
+            VisicutModel.getInstance().setMaterial(oldMaterial);
           }
         }
         MainView.this.executeJobButton.setEnabled(true);
@@ -1833,6 +1877,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JButton calculateTimeButton;
     private javax.swing.JMenuItem calibrateCameraMenuItem;
     private javax.swing.JButton captureImageButton;
+    private javax.swing.JCheckBox cbEditBeforeExecute;
     private javax.swing.JComboBox customMappingComboBox;
     private javax.swing.JPanel customMappingPanel;
     private com.t_oster.visicut.gui.beans.CustomMappingTable customMappingTable;

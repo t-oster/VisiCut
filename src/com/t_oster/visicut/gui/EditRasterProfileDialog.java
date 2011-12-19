@@ -65,76 +65,6 @@ public class EditRasterProfileDialog extends javax.swing.JDialog implements Edit
     }
     return o;
   }
-
-  private class LaserPropertiesTableModel extends DefaultTableModel
-  {
-
-    public void setRasterProfile(RasterProfile rp)
-    {
-      this.rp = rp;
-    }
-    private RasterProfile rp = null;
-    private String[] columnNames = new String[]
-    {
-      "Power", "Speed", "Focus"
-    };
-
-    @Override
-    public int getColumnCount()
-    {
-      return columnNames.length;
-    }
-
-    @Override
-    public String getColumnName(int i)
-    {
-      return columnNames[i];
-    }
-
-    @Override
-    public Object getValueAt(int y, int x)
-    {
-      switch (x)
-      {
-        case 0:
-          return rp.getLaserProperties().get(y).getPower();
-        case 1:
-          return rp.getLaserProperties().get(y).getSpeed();
-        case 2:
-          return rp.getLaserProperties().get(y).getFocus();
-      }
-      return null;
-    }
-
-    @Override
-    public boolean isCellEditable(int i, int i1)
-    {
-      return true;
-    }
-
-    @Override
-    public void setValueAt(Object o, int y, int x)
-    {
-      switch (x)
-      {
-        case 0:
-          rp.getLaserProperties().get(y).setPower(Integer.parseInt(o.toString()));
-          return;
-        case 1:
-          rp.getLaserProperties().get(y).setSpeed(Integer.parseInt(o.toString()));
-          return;
-        case 2:
-          rp.getLaserProperties().get(y).setFocus(Float.parseFloat(o.toString()));
-          return;
-      }
-    }
-
-    @Override
-    public int getRowCount()
-    {
-      return rp == null ? 0 : rp.getLaserProperties().size();
-    }
-  }
   protected File defaultDirectory = null;
 
   /**
@@ -212,9 +142,9 @@ public class EditRasterProfileDialog extends javax.swing.JDialog implements Edit
     RasterProfile oldCurrentRasterProfile = this.currentRasterProfile;
     this.currentRasterProfile = currentRasterProfile;
     firePropertyChange(PROP_CURRENTRASTERPROFILE, oldCurrentRasterProfile, currentRasterProfile);
-    this.listModel.setRasterProfile(currentRasterProfile);
+    this.listModel.setLaserProfile(currentRasterProfile);
   }
-  private LaserPropertiesTableModel listModel = new LaserPropertiesTableModel();
+  private LaserProfileTableModel listModel = new LaserProfileTableModel();
 
   /** Creates new form EditRasterProfileDialog */
   public EditRasterProfileDialog(java.awt.Frame parent, boolean modal)

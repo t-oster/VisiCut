@@ -291,7 +291,11 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="cbEditBeforeExecute" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
+                  </Group>
                   <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -306,7 +310,10 @@
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jPanel2" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="executeJobButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbEditBeforeExecute" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -911,6 +918,12 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="cbEditBeforeExecute">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="cbEditBeforeExecute.text"/>
+        <Property name="name" type="java.lang.String" value="cbEditBeforeExecute" noResource="true"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

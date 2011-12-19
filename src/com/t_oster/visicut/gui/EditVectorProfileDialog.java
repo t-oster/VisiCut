@@ -65,81 +65,6 @@ public class EditVectorProfileDialog extends javax.swing.JDialog implements Edit
     }
     return o;
   }
-
-  private class LaserPropertiesTableModel extends DefaultTableModel
-  {
-
-    public void setVectorProfile(VectorProfile vp)
-    {
-      this.vp = vp;
-    }
-    private VectorProfile vp = null;
-    private String[] columnNames = new String[]
-    {
-      "Power", "Speed", "Frequency", "Focus"
-    };
-
-    @Override
-    public int getColumnCount()
-    {
-      return columnNames.length;
-    }
-
-    @Override
-    public String getColumnName(int i)
-    {
-      return columnNames[i];
-    }
-
-    @Override
-    public Object getValueAt(int y, int x)
-    {
-      switch (x)
-      {
-        case 0:
-          return vp.getLaserProperties().get(y).getPower();
-        case 1:
-          return vp.getLaserProperties().get(y).getSpeed();
-        case 2:
-          return vp.getLaserProperties().get(y).getFrequency();
-        case 3:
-          return vp.getLaserProperties().get(y).getFocus();
-      }
-      return null;
-    }
-
-    @Override
-    public boolean isCellEditable(int i, int i1)
-    {
-      return true;
-    }
-
-    @Override
-    public void setValueAt(Object o, int y, int x)
-    {
-      switch (x)
-      {
-        case 0:
-          vp.getLaserProperties().get(y).setPower(Integer.parseInt(o.toString()));
-          return;
-        case 1:
-          vp.getLaserProperties().get(y).setSpeed(Integer.parseInt(o.toString()));
-          return;
-        case 2:
-          vp.getLaserProperties().get(y).setFrequency(Integer.parseInt(o.toString()));
-          return;
-        case 3:
-          vp.getLaserProperties().get(y).setFocus(Float.parseFloat(o.toString()));
-          return;
-      }
-    }
-
-    @Override
-    public int getRowCount()
-    {
-      return vp == null ? 0 : vp.getLaserProperties().size();
-    }
-  }
   protected File defaultDirectory = null;
 
   /**
@@ -218,9 +143,9 @@ public class EditVectorProfileDialog extends javax.swing.JDialog implements Edit
     VectorProfile oldCurrentVectorProfile = this.currentVectorProfile;
     this.currentVectorProfile = currentVectorProfile;
     firePropertyChange(PROP_CURRENTVECTORPROFILE, oldCurrentVectorProfile, currentVectorProfile);
-    this.listModel.setVectorProfile(currentVectorProfile);
+    this.listModel.setLaserProfile(currentVectorProfile);
   }
-  private LaserPropertiesTableModel listModel = new LaserPropertiesTableModel();
+  private LaserProfileTableModel listModel = new LaserProfileTableModel();
 
   /** Creates new form EditVectorProfileDialog */
   public EditVectorProfileDialog(java.awt.Frame parent, boolean modal)
