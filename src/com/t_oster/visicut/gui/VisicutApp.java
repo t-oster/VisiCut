@@ -55,9 +55,6 @@ public class VisicutApp extends SingleFrameApplication
   @Override
   protected void startup()
   {
-    VisicutModel.getInstance().setPreferences(PreferencesManager.getInstance().getPreferences());
-    this.processProgramArguments(arguments);
-
     show(new MainView());
   }
 
@@ -79,18 +76,13 @@ public class VisicutApp extends SingleFrameApplication
   {
     return Application.getInstance(VisicutApp.class);
   }
-  private String[] arguments;
-
-  public String[] getProgramArguments()
-  {
-    return arguments;
-  }
 
   @Override
   protected void initialize(String[] args)
   {
+    VisicutModel.getInstance().setPreferences(PreferencesManager.getInstance().getPreferences());
+    this.processProgramArguments(args);
     super.initialize(args);
-    this.arguments = args;
   }
 
   /**
