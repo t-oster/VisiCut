@@ -88,10 +88,16 @@ public class VisicutModel
     return instance;
   }
   
-  // restict constructor access
-  private VisicutModel()
+  /**
+   * This Constructor is only for the UI Editor to run properly
+   * Do not use. use getInstance() instead.
+   */
+  public VisicutModel()
   {
-    
+    if (instance != null)
+    {
+      System.err.println("Should not use public Constructor of VisicutModel");
+    }
   }
   
   protected Integer resolution = 500;
