@@ -628,11 +628,6 @@ public class MainView extends javax.swing.JFrame
         bindingGroup.addBinding(binding);
 
         com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler ppMouseHandler = new com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler(this.previewPanel);
-        previewPanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                previewPanelMouseClicked(evt);
-            }
-        });
 
         javax.swing.GroupLayout previewPanelLayout = new javax.swing.GroupLayout(previewPanel);
         previewPanel.setLayout(previewPanelLayout);
@@ -1750,17 +1745,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   {//GEN-HEADEREND:event_jButton2ActionPerformed
     previewPanel.setZoom(previewPanel.getZoom() - (previewPanel.getZoom() / 32));
   }//GEN-LAST:event_jButton2ActionPerformed
-
-  private void previewPanelMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_previewPanelMouseClicked
-  {//GEN-HEADEREND:event_previewPanelMouseClicked
-    //TODO: Check if this is still necessary since PreviewPanel is now Focusable
-    //(customMappingTable should react on focus loss)
-    if (evt.getButton() == MouseEvent.BUTTON1 && this.mappingTabbedPane.getSelectedComponent().equals(this.customMappingPanel)
-      && this.customMappingTable.getSelectedRow() >= 0)
-    {
-      this.customMappingTable.clearSelection();
-    }
-  }//GEN-LAST:event_previewPanelMouseClicked
 
 private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadMenuItemActionPerformed
   if (this.visicutModel1.getLoadedFile() != null && this.visicutModel1.getLoadedFile().isFile())

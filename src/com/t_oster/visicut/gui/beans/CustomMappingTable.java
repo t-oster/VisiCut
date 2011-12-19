@@ -30,6 +30,8 @@ import com.t_oster.visicut.model.mapping.MappingFilter;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
@@ -219,6 +221,21 @@ public class CustomMappingTable extends JTable
     this.values = new LinkedList<Tuple<Object, LaserProfile>>();
     this.setModel(model);
     this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
+    this.addFocusListener(new FocusListener(){
+
+      public void focusGained(FocusEvent fe)
+      {
+      }
+
+      public void focusLost(FocusEvent fe)
+      {
+        if (!fe.isTemporary() && !(fe.getOppositeComponent() instanceof ImageComboBox))
+        {
+          CustomMappingTable.this.clearSelection();
+        }
+      }
+      
+    });
     DefaultTableCellRenderer renderer = new DefaultTableCellRenderer()
     {
 
