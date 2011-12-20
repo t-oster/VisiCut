@@ -26,11 +26,13 @@ package com.t_oster.visicut.gui;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.model.LaserDevice;
+import com.t_oster.visicut.misc.Helper;
 import java.io.File;
 import java.util.Arrays;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import java.awt.FileDialog;
 
 /**
  *
@@ -427,19 +429,43 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
 
   private void jButton3ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton3ActionPerformed
   {//GEN-HEADEREND:event_jButton3ActionPerformed
-    JFileChooser fs = new JFileChooser();
-    fs.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    fs.setDialogType(JFileChooser.OPEN_DIALOG);
-    if (currentLaserDevice.getMaterialsPath() != null)
-    {
-      fs.setCurrentDirectory(new File(currentLaserDevice.getMaterialsPath()));
-    }
-    if (fs.showDialog(this, "Please Select a Directory") == JFileChooser.APPROVE_OPTION)
-    {
-      File dir = fs.getSelectedFile();
-      if (dir.isDirectory())
+    if (Helper.isMacOS())
+    {//use native dialog to select directories
+      System.setProperty("apple.awt.fileDialogForDirectories", "true");
+      FileDialog fd = new FileDialog(this, "Please select a material directory");
+      fd.setMode(FileDialog.LOAD);
+      if (currentLaserDevice.getMaterialsPath() != null)
       {
-        currentLaserDevice.setMaterialsPath(dir.getPath());
+        fd.setDirectory(currentLaserDevice.getMaterialsPath());
+      }
+      fd.setVisible(true);
+      if (fd.getFile() != null)
+      {
+        File dir = new File(fd.getDirectory());
+        dir = new File(dir, fd.getFile());
+        if (dir.isDirectory())
+        {
+          currentLaserDevice.setMaterialsPath(dir.getAbsolutePath());
+        }
+      }
+      System.setProperty("apple.awt.fileDialogForDirectories", "false");
+    }
+    else
+    {
+      JFileChooser fs = new JFileChooser();
+      fs.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      fs.setDialogType(JFileChooser.OPEN_DIALOG);
+      if (currentLaserDevice.getMaterialsPath() != null)
+      {
+        fs.setCurrentDirectory(new File(currentLaserDevice.getMaterialsPath()));
+      }
+      if (fs.showDialog(this, "Please Select a Directory") == JFileChooser.APPROVE_OPTION)
+      {
+        File dir = fs.getSelectedFile();
+        if (dir.isDirectory())
+        {
+          currentLaserDevice.setMaterialsPath(dir.getPath());
+        }
       }
     }
 
