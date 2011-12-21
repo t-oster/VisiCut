@@ -1,7 +1,9 @@
 PREFIX?=/usr
 all: jar
 
-jar:
+src/com/t_oster/visicut/gui/resources/splash.png: splashsource.svg src/com/t_oster/visicut/gui/resources/VisicutApp.properties
+	./generatesplash.sh
+jar: src/com/t_oster/visicut/gui/resources/splash.png
 	ant jar
 clean:
 	ant clean
