@@ -115,10 +115,11 @@ public class RasterProfile extends LaserProfile
     this.ditherAlgorithm = ditherAlgorithm;
   }
 
-  public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material){
+  public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material)
+  {
     return this.getRenderedPreview(objects, material, null);
   }
-  
+
   public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material, ProgressListener pl)
   {
     Rectangle2D bb = objects.getBoundingBox();
@@ -143,12 +144,16 @@ public class RasterProfile extends LaserProfile
       }
       BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors)
       {
+
         @Override
         public void setGreyScale(int x, int y, int greyscale)
         {
           if (greyscale == 255)
           {
-            scaledImg.getAlphaRaster().setPixel(x, y, new int[]{0,0,0});
+            scaledImg.getAlphaRaster().setPixel(x, y, new int[]
+              {
+                0, 0, 0
+              });
           }
           else if (greyscale == 0)
           {
@@ -167,7 +172,7 @@ public class RasterProfile extends LaserProfile
     }
     return null;
   }
-  
+
   @Override
   public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material)
   {
@@ -180,14 +185,15 @@ public class RasterProfile extends LaserProfile
   }
 
   @Override
-  public void addToLaserJob(LaserJob job, GraphicSet objects)
+  public void addToLaserJob(LaserJob job, GraphicSet set)
   {
-    //TODO
-    for (LaserProperty prop : this.getLaserProperties())
+    //Decompose Objects if their distance is big enough
+    for (GraphicSet objects  : this.decompose(set))
     {
       Rectangle2D bb = objects.getBoundingBox();
       if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
       {
+        //First render them on an empty image
         BufferedImage scaledImg = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g = scaledImg.createGraphics();
         g.setColor(Color.white);
@@ -205,11 +211,14 @@ public class RasterProfile extends LaserProfile
         {
           o.render(g);
         }
+        //Then dither this image
         BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors);
         ad.setColorShift(this.getColorShift());
         BlackWhiteRaster bw = new BlackWhiteRaster(ad, this.getDitherAlgorithm());
-        //TODO: THIS IS INEFFICIENT BECAUSE FOR EACH PROPERTY WE DITHER AGAIN
-        job.getRasterPart().addImage(bw, prop, new Point((int) bb.getX(), (int) bb.getY()));
+        for (LaserProperty prop : this.getLaserProperties())
+        {//and add it to the raster part as often as defined in the profile
+          job.getRasterPart().addImage(bw, prop, new Point((int) bb.getX(), (int) bb.getY()));
+        }
       }
     }
   }

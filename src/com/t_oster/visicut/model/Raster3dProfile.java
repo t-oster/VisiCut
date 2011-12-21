@@ -95,7 +95,7 @@ public class Raster3dProfile extends LaserProfile
   {
     this.renderPreview(gg, objects, material, null);
   }
-  
+
   public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material, ProgressListener pl)
   {
     Rectangle2D bb = objects.getBoundingBox();
@@ -124,9 +124,9 @@ public class Raster3dProfile extends LaserProfile
       {
         for (int x = 0; x < ad.getWidth(); x++)
         {
-          if (ad.getGreyScale(x, y)<255)
+          if (ad.getGreyScale(x, y) < 255)
           {
-            double f = (double) ad.getGreyScale(x, y)/255;
+            double f = (double) ad.getGreyScale(x, y) / 255;
             Color scaled = getColorBetween(this.getColor(), material.getColor(), f);
             gg.setColor(scaled);
             gg.drawLine((int) bb.getX() + x, (int) bb.getY() + y, (int) bb.getX() + x, (int) bb.getY() + y);
@@ -134,7 +134,7 @@ public class Raster3dProfile extends LaserProfile
         }
         if (pl != null)
         {
-          pl.progressChanged(this, 100*y/ad.getHeight());
+          pl.progressChanged(this, 100 * y / ad.getHeight());
         }
       }
     }
@@ -157,16 +157,15 @@ public class Raster3dProfile extends LaserProfile
     int ba = a.getBlue();
     int bb = b.getBlue();
     return new Color(
-      (int)(ra+factor*(rb-ra)),
-      (int)(ga+factor*(gb-ga)),
-      (int)(ba+factor*(bb-ba))
-      );
+      (int) (ra + factor * (rb - ra)),
+      (int) (ga + factor * (gb - ga)),
+      (int) (ba + factor * (bb - ba)));
   }
-  
+
   @Override
-  public void addToLaserJob(LaserJob job, GraphicSet objects)
+  public void addToLaserJob(LaserJob job, GraphicSet set)
   {
-    for (LaserProperty prop : this.getLaserProperties())
+    for (GraphicSet objects : this.decompose(set))
     {
       Rectangle2D bb = objects.getBoundingBox();
       if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
@@ -190,7 +189,10 @@ public class Raster3dProfile extends LaserProfile
         }
         BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors);
         ad.setColorShift(this.getColorShift());
-        job.getRaster3dPart().addImage(ad, prop, new Point((int) bb.getX(), (int) bb.getY()));
+        for (LaserProperty prop : this.getLaserProperties())
+        {
+          job.getRaster3dPart().addImage(ad, prop, new Point((int) bb.getX(), (int) bb.getY()));
+        }
       }
     }
   }
