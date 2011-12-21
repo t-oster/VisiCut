@@ -212,6 +212,13 @@ public abstract class LaserProfile implements ImageListable, Cloneable
   public LinkedList<GraphicSet> decompose(GraphicSet set)
   {
     LinkedList<GraphicSet> result = new LinkedList<GraphicSet>();
+    //TODO: Develope a good algorithm. For now we just
+    //return a set containing a single set
+    if (true)
+    {
+      result.add(set);
+      return result;
+    }
     for (GraphicObject o:set)
     {
       //We assign every Object to a result bin
@@ -239,6 +246,8 @@ public abstract class LaserProfile implements ImageListable, Cloneable
         s.add(o);
       }
     }
+    //Now merge the bins until no one is near enough
+    //TODO: Efficient merging?
     return result;
   }
   
