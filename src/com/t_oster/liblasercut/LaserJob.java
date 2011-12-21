@@ -88,7 +88,7 @@ public class LaserJob
 
   public boolean containsVector()
   {
-    return vPart != null && vPart.getCommandList().length > 0;
+    return vPart != null && vPart.getCommandList().length > 3;//every vector part starts with 3 commands
   }
 
   public boolean containsRaster()
