@@ -182,6 +182,7 @@ public class RasterProfile extends LaserProfile
   @Override
   public void addToLaserJob(LaserJob job, GraphicSet objects)
   {
+    //TODO
     for (LaserProperty prop : this.getLaserProperties())
     {
       Rectangle2D bb = objects.getBoundingBox();
@@ -207,6 +208,7 @@ public class RasterProfile extends LaserProfile
         BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors);
         ad.setColorShift(this.getColorShift());
         BlackWhiteRaster bw = new BlackWhiteRaster(ad, this.getDitherAlgorithm());
+        //TODO: THIS IS INEFFICIENT BECAUSE FOR EACH PROPERTY WE DITHER AGAIN
         job.getRasterPart().addImage(bw, prop, new Point((int) bb.getX(), (int) bb.getY()));
       }
     }

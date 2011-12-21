@@ -39,12 +39,53 @@ import java.util.logging.Logger;
  */
 public class Helper
 {
-  
+
+  /**
+   * Returns the distance between two Rectangles
+   * @param r first rectangle
+   * @param q second rectangle
+   * @return Distance between two rectangles
+   */
+  public static double distance(Rectangle2D r, Rectangle2D q)
+  {
+    double qx0 = q.getX();
+    double qy0 = q.getY();
+    double qx1 = q.getX()+q.getWidth();
+    double qy1 = q.getY()+q.getHeight();
+    double rx0 = r.getX();
+    double ry0 = r.getY();
+    double rx1 = r.getX()+r.getWidth();
+    double ry1 = r.getY()+r.getHeight();
+    //Check for Overlap
+    if (qx0 <= rx1 && qy0 <= ry1 && rx0 <= qx1 && ry0 <= qy1)
+    {
+      return 0;
+    }
+    double d = 0;
+    if (rx0 > qx1)
+    {
+      d += (rx0 - qx1) * (rx0 - qx1);
+    }
+    else if (qx0 > rx1)
+    {
+      d += (qx0 - rx1) * (qx0 - rx1);
+    }
+    if (ry0 > qy1)
+    {
+      d += (ry0 - qy1) * (ry0 - qy1);
+    }
+    else if (qy0 > ry1)
+    {
+      d += (qy0 - ry1) * (qy0 - ry1);
+    }
+    return Math.sqrt(d);
+  }
+
   public static boolean isMacOS()
   {
     return System.getProperty("os.name").toLowerCase().contains("mac");
   }
-  
+
   /**
    * Gives the relative path of fileB relative to the parentDirectory
    * of fileA, separated with "/"
@@ -61,30 +102,30 @@ public class Helper
     String separator = File.separator.equals("\\") ? "\\\\" : File.separator;
     String[] trg = f.getAbsolutePath().split(separator);
     String[] src = fileA.getAbsoluteFile().getParent().split(separator);
-    int i =0;
+    int i = 0;
     //remove equal parts at the beginning
     while (i < src.length && i < trg.length && src[i].equals(trg[i]))
     {
       i++;
     }
     String result = "./";
-    if (i==0)
+    if (i == 0)
     {//no common base path=>return absolute path of fileB
       return fileB.replace(File.separator, "/");
     }
-    for (int k = i;k<src.length;k++)
+    for (int k = i; k < src.length; k++)
     {
       result += "../";
     }
-    int j=i;
+    int j = i;
     while (j < trg.length)
     {
-      result += (i!=j ? "/" : "") + trg[j];
+      result += (i != j ? "/" : "") + trg[j];
       j++;
     }
     return result;
   }
-  
+
   /**
    * Gets the absolute path (with platform dependant separator)
    * of the file represented by fileB relative to the parent
@@ -111,7 +152,7 @@ public class Helper
     String res = xmlDir + File.separator + (fileB != null ? fileB.replace("/", File.separator) : "");
     return res;
   }
-  
+
   /**
    * Returns how many mm correspont to the given length in pixels
    * with respect to the current resolution
@@ -122,7 +163,7 @@ public class Helper
   {
     return Util.px2mm(px, VisicutModel.getInstance().getValidResolution());
   }
-  
+
   /**
    * Returns how many pixels correspont to the given length in mm
    * with respect to the current resolution
@@ -133,7 +174,7 @@ public class Helper
   {
     return Util.mm2px(mm, VisicutModel.getInstance().getValidResolution());
   }
-  
+
   /**
    * Generates an HTML img-Tag for the given file with given size
    * @param f
@@ -143,18 +184,18 @@ public class Helper
    */
   public static String imgTag(File f, int width, int height)
   {
-    String size = width > 0 && height > 0 ? "width="+width+" height="+height:"";
+    String size = width > 0 && height > 0 ? "width=" + width + " height=" + height : "";
     try
     {
-      return "<img "+size+" src=\""+f.toURI().toURL()+"\"/>";
+      return "<img " + size + " src=\"" + f.toURI().toURL() + "\"/>";
     }
     catch (MalformedURLException ex)
     {
       Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, null, ex);
-      return "<img "+size+" src=\"file://"+f.getAbsolutePath()+"\"/>";
+      return "<img " + size + " src=\"file://" + f.getAbsolutePath() + "\"/>";
     }
   }
-  
+
   /**
    * Returns an AffineTransform, which transformes src to dest
    * and constists of a scale and translate component
@@ -243,7 +284,7 @@ public class Helper
       case NumberWithUnits.UT_CM:
         return Util.mm2px(10.0 * n.getValue(), dpi);
       case NumberWithUnits.UT_PX:
-        return n.getValue()*dpi/72;
+        return n.getValue() * dpi / 72;
       case NumberWithUnits.UT_IN:
         return Util.mm2px(Util.inch2mm(n.getValue()), dpi);
       case NumberWithUnits.UT_UNITLESS:

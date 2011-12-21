@@ -21,9 +21,12 @@ package com.t_oster.visicut.model;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.visicut.gui.ImageListable;
+import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
@@ -199,4 +202,44 @@ public abstract class LaserProfile implements ImageListable, Cloneable
 
   @Override
   public abstract LaserProfile clone();
+  
+  /**
+   * Decomposes a GraphicSet into disjoint paths which
+   * have a distance bigger than the sum of their lengths
+   * @param set
+   * @return 
+   */
+  public LinkedList<GraphicSet> decompose(GraphicSet set)
+  {
+    LinkedList<GraphicSet> result = new LinkedList<GraphicSet>();
+    for (GraphicObject o:set)
+    {
+      //We assign every Object to a result bin
+      //first we get the dimension of the object
+      Rectangle2D bb = o.getBoundingBox();
+      if (set.getTransform() != null)
+      {//and transform it accordingly
+        bb = Helper.transform(bb, set.getTransform());
+      }
+      findBin:
+      {//now we see if we have a bin which is near enough
+        for (GraphicSet s:result)
+        {
+          Rectangle2D sbb = s.getBoundingBox();
+          if (Helper.distance(bb, sbb) < Math.min(bb.getWidth()+sbb.getWidth(), bb.getHeight()+sbb.getHeight()))
+          {
+            s.add(o);
+            break findBin;
+          }
+        }
+        //no bin found => create a new one
+        GraphicSet s = new GraphicSet();
+        s.setBasicTransform(set.getBasicTransform());
+        s.setTransform(set.getTransform());
+        s.add(o);
+      }
+    }
+    return result;
+  }
+  
 }

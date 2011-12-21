@@ -170,6 +170,19 @@ public class GraphicSet extends LinkedList<GraphicObject>
   }
 
   @Override
+  public boolean add(GraphicObject o)
+  {
+    this.boundingBoxCache = null;
+    return super.add(o);
+  }
+  
+  public boolean remove(GraphicObject o)
+  {
+    this.boundingBoxCache = null;
+    return super.remove(o);
+  }
+  
+  @Override
   public GraphicSet clone()
   {
     GraphicSet result = new GraphicSet();
