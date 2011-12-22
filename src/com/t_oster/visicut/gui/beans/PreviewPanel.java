@@ -294,7 +294,6 @@ public class PreviewPanel extends ZoomablePanel
     this.firePropertyChange("showGrid", oldShowGrid, showGrid);
     this.repaint();
   }
-  protected AffineTransform previewTransformation = AffineTransform.getTranslateInstance(40, 150);
   private AffineTransform lastDrawnTransform = null;
 
   public AffineTransform getLastDrawnTransform()
@@ -302,26 +301,6 @@ public class PreviewPanel extends ZoomablePanel
     return lastDrawnTransform;
   }
 
-  /**
-   * Get the value of previewTransformation
-   *
-   * @return the value of previewTransformation
-   */
-  public AffineTransform getPreviewTransformation()
-  {
-    return previewTransformation;
-  }
-
-  /**
-   * Set the value of previewTransformation
-   *
-   * @param previewTransformation new value of previewTransformation
-   */
-  public void setPreviewTransformation(AffineTransform previewTransformation)
-  {
-    this.previewTransformation = previewTransformation;
-    this.repaint();
-  }
   protected RenderedImage backgroundImage = null;
 
   public void ClearCache()
@@ -485,12 +464,6 @@ public class PreviewPanel extends ZoomablePanel
       if (backgroundImage != null)
       {
         gg.drawRenderedImage(backgroundImage, null);
-        if (this.previewTransformation != null)
-        {
-          AffineTransform current = gg.getTransform();
-          current.concatenate(this.getPreviewTransformation());
-          gg.setTransform(current);
-        }
       }
       if (this.material != null)
       {
