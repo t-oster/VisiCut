@@ -20,6 +20,7 @@ package com.t_oster.visicut.gui;
 
 import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
+import com.t_oster.visicut.gui.beans.EditRectangle.ParameterField;
 import com.t_oster.visicut.gui.beans.PreviewPanel;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
@@ -431,6 +432,15 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       {
         if (getEditRect() != null)
         {
+          //Check for text curso
+          for (ParameterField param : EditRectangle.ParameterField.values())
+          {
+            if (getEditRect().getParameterFieldBounds(param).contains(p))
+            {
+              cursor = Cursor.TEXT_CURSOR;
+              break cursorcheck;
+            }
+          }
           Button b = getEditRect().getButtonByPoint(p, this.previewPanel.getLastDrawnTransform());
           if (b != null)
           {
