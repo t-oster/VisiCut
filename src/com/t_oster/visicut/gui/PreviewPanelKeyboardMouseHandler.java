@@ -68,7 +68,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       public void actionPerformed(ActionEvent ae)
       {
         PreviewPanelKeyboardMouseHandler.this.getGraphicObjects().setTransform(
-          PreviewPanelKeyboardMouseHandler.this.getGraphicObjects().getBasicTransform());
+        PreviewPanelKeyboardMouseHandler.this.getGraphicObjects().getBasicTransform());
         PreviewPanelKeyboardMouseHandler.this.previewPanel.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
         PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
       }
@@ -113,12 +113,28 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
         case KeyEvent.VK_UP: diffy-=10;break;
         case KeyEvent.VK_DOWN: diffy+=10;break;
       }
-      this.moveSet(diffx,diffy);
+      if (ke.isShiftDown())
+      {
+        this.getEditRect().width += diffx;
+        this.getEditRect().height += diffy;
+        this.previewPanel.repaint();
+      }
+      else
+      {
+        this.moveSet(diffx,diffy);
+      }
     }
   }
 
   public void keyReleased(KeyEvent ke)
   {
+    if (ke.getKeyCode() == KeyEvent.VK_SHIFT)
+    {
+      //Apply changes to the EditRectangle to the getSelectedSet()
+      Rectangle2D src = getSelectedSet().getOriginalBoundingBox();
+      getSelectedSet().setTransform(Helper.getTransform(src, getEditRect()));
+      this.previewPanel.repaint();
+    }
   }
 
   private enum MouseAction
