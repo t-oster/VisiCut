@@ -1287,7 +1287,7 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
       dialog.setVisible(true);
       if (dialog.getFile() != null)
       {
-        file = new File(dialog.getFile());
+        file = new File(new File(dialog.getDirectory()), dialog.getFile());
       }
     }
     else
