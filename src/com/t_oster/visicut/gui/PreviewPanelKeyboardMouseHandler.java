@@ -39,6 +39,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 /**
@@ -68,7 +69,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       public void actionPerformed(ActionEvent ae)
       {
         PreviewPanelKeyboardMouseHandler.this.getGraphicObjects().setTransform(
-        PreviewPanelKeyboardMouseHandler.this.getGraphicObjects().getBasicTransform());
+          PreviewPanelKeyboardMouseHandler.this.getGraphicObjects().getBasicTransform());
         PreviewPanelKeyboardMouseHandler.this.previewPanel.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
         PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
       }
@@ -104,14 +105,22 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   {
     if (this.getEditRect() != null)
     {
-      int diffx=0;
-      int diffy=0;
+      int diffx = 0;
+      int diffy = 0;
       switch (ke.getKeyCode())
       {
-        case KeyEvent.VK_LEFT: diffx-=10;break;
-        case KeyEvent.VK_RIGHT: diffx+=10;break;
-        case KeyEvent.VK_UP: diffy-=10;break;
-        case KeyEvent.VK_DOWN: diffy+=10;break;
+        case KeyEvent.VK_LEFT:
+          diffx -= 10;
+          break;
+        case KeyEvent.VK_RIGHT:
+          diffx += 10;
+          break;
+        case KeyEvent.VK_UP:
+          diffy -= 10;
+          break;
+        case KeyEvent.VK_DOWN:
+          diffy += 10;
+          break;
       }
       if (ke.isShiftDown())
       {
@@ -121,7 +130,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       }
       else
       {
-        this.moveSet(diffx,diffy);
+        this.moveSet(diffx, diffy);
       }
     }
   }
@@ -149,9 +158,49 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   private MouseAction currentAction = null;
   private Button currentButton = null;
 
+  private void positionSetX(double x)
+  {
+    double isX = this.getSelectedSet().getBoundingBox().getX();
+    double newX = Helper.mm2px(x);
+    this.moveSet((int) (newX - isX), 0);
+  }
+
+  private void positionSetY(double y)
+  {
+    double isY = this.getSelectedSet().getBoundingBox().getY();
+    double newY = Helper.mm2px(y);
+    this.moveSet(0, (int) (newY - isY));
+  }
+
   public void mouseClicked(MouseEvent me)
   {
     this.previewPanel.requestFocus();
+    if (me.getButton() == MouseEvent.BUTTON1 && this.getEditRect() != null)
+    {//Check if clicked on one of the parameters Button
+      try
+      {
+        if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.X).contains(me.getPoint()))
+        {
+
+          double x = Double.parseDouble(JOptionPane.showInternalInputDialog(previewPanel, "left Offset"));
+          this.positionSetX(x * 10);
+          this.previewPanel.repaint();
+          return;
+        }
+        if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.Y).contains(me.getPoint()))
+        {
+
+          double y = Double.parseDouble(JOptionPane.showInternalInputDialog(previewPanel, "top Offset"));
+          this.positionSetY(y * 10);
+          this.previewPanel.repaint();
+          return;
+        }
+        //TODO: Same with Width and Height, also accept ","
+      }
+      catch (Exception e)
+      {
+      }
+    }
     if (me.getButton() == MouseEvent.BUTTON1)
     {
       boolean onGraphic = false;

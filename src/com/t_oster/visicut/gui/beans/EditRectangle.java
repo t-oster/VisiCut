@@ -135,6 +135,39 @@ public class EditRectangle extends Rectangle
   private Color textColor = Color.BLACK;
   private Color buttonColor = lineColor;
   
+  public enum ParameterField
+  {
+    X,
+    Y,
+    WIDTH,
+    HEIGHT
+  }
+  
+  private Rectangle[] parameterFieldBounds = new Rectangle[]{
+    new Rectangle(),
+    new Rectangle(),
+    new Rectangle(),
+    new Rectangle()
+  };
+  /**
+   * Returns the Bounds of the textFields
+   * displaying the given parameter
+   * in Panel Coordinates
+   * @param pmf
+   * @return 
+   */
+  public Rectangle getParameterFieldBounds(ParameterField pmf)
+  {
+    switch (pmf)
+    {
+      case X: return parameterFieldBounds[0];
+      case Y: return parameterFieldBounds[1];
+      case WIDTH: return parameterFieldBounds[2];
+      case HEIGHT: return parameterFieldBounds[3];
+    }
+    return null;
+  }
+  
   /**
    * Renders the Edit Rectangle on the given Graphics2D.
    * The Rectangle coordinates are transformed according
@@ -182,11 +215,13 @@ public class EditRectangle extends Rectangle
     w = gg.getFontMetrics().stringWidth(txt);
     int h = gg.getFontMetrics().getHeight();
     gg.drawString(txt, tr.x+tr.width/2-w/2, tr.y+tr.height+h);
+    this.parameterFieldBounds[2].setBounds(tr.x+tr.width/2-w/2, tr.y+tr.height+h, w, h);
     //draw the height
     w = (int) Helper.px2mm(this.height);
     txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     gg.drawString(txt, tr.x+tr.width+5, tr.y+tr.height/2);
+    this.parameterFieldBounds[3].setBounds(tr.x+tr.width+5, tr.y+tr.height/2, w, h);
     //draw lines from the left and upper center
     gg.setColor(lineColor);
     Point zero = new Point(0, 0);
@@ -200,11 +235,13 @@ public class EditRectangle extends Rectangle
     w = gg.getFontMetrics().stringWidth(txt);
     h = gg.getFontMetrics().getHeight();
     gg.drawString(txt, tr.x-w-10, tr.y+tr.height/2+h);
+    this.parameterFieldBounds[0].setBounds(tr.x-w-10, tr.y+tr.height/2+h, w, h);
     //draw the top offset
     w = (int) Helper.px2mm(this.y);
     txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     gg.drawString(txt, tr.x+tr.width/2+5, tr.y-h);
+    this.parameterFieldBounds[1].setBounds(tr.x+tr.width/2+5, tr.y-h, w, h);
     //reset transform
     gg.setTransform(cur);
   }
