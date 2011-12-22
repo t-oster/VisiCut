@@ -136,14 +136,19 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     }
   }
 
+  private void applyEditRectoToSet()
+  {
+    //Apply changes to the EditRectangle to the getSelectedSet()
+    Rectangle2D src = getSelectedSet().getOriginalBoundingBox();
+    getSelectedSet().setTransform(Helper.getTransform(src, getEditRect()));
+    this.previewPanel.repaint();
+  }
+  
   public void keyReleased(KeyEvent ke)
   {
     if (ke.getKeyCode() == KeyEvent.VK_SHIFT)
     {
-      //Apply changes to the EditRectangle to the getSelectedSet()
-      Rectangle2D src = getSelectedSet().getOriginalBoundingBox();
-      getSelectedSet().setTransform(Helper.getTransform(src, getEditRect()));
-      this.previewPanel.repaint();
+      this.applyEditRectoToSet();
     }
   }
 
@@ -159,48 +164,56 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   private MouseAction currentAction = null;
   private Button currentButton = null;
 
-  private void positionSetX(double x)
+  private boolean checkParameterFieldClick(MouseEvent me)
   {
-    double isX = this.getSelectedSet().getBoundingBox().getX();
-    double newX = Helper.mm2px(x);
-    this.moveSet((int) (newX - isX), 0);
-  }
-
-  private void positionSetY(double y)
-  {
-    double isY = this.getSelectedSet().getBoundingBox().getY();
-    double newY = Helper.mm2px(y);
-    this.moveSet(0, (int) (newY - isY));
-  }
-
-  public void mouseClicked(MouseEvent me)
-  {
-    this.previewPanel.requestFocus();
     if (me.getButton() == MouseEvent.BUTTON1 && this.getEditRect() != null)
     {//Check if clicked on one of the parameters Button
-      try
+    try
       {
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.X).contains(me.getPoint()))
         {
-
           double x = Double.parseDouble(JOptionPane.showInternalInputDialog(previewPanel, "left Offset"));
-          this.positionSetX(x * 10);
-          this.previewPanel.repaint();
-          return;
+          this.getEditRect().x = (int) Helper.mm2px(x*10);
+          this.applyEditRectoToSet();
+          return true;
         }
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.Y).contains(me.getPoint()))
         {
 
           double y = Double.parseDouble(JOptionPane.showInternalInputDialog(previewPanel, "top Offset"));
-          this.positionSetY(y * 10);
-          this.previewPanel.repaint();
-          return;
+          this.getEditRect().y = (int) Helper.mm2px(y*10);
+          this.applyEditRectoToSet();
+          return true;
         }
-        //TODO: Same with Width and Height, also accept ","
+        if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.WIDTH).contains(me.getPoint()))
+        {
+          double w = Double.parseDouble(JOptionPane.showInternalInputDialog(previewPanel, "width"));
+          this.getEditRect().width = (int) Helper.mm2px(w*10);
+          this.applyEditRectoToSet();
+          return true;
+        }
+        if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.HEIGHT).contains(me.getPoint()))
+        {
+          double h = Double.parseDouble(JOptionPane.showInternalInputDialog(previewPanel, "height"));
+          this.getEditRect().height = (int) Helper.mm2px(h*10);
+          this.applyEditRectoToSet();
+          return true;
+        }
       }
       catch (Exception e)
       {
       }
+    }
+    return false;
+  }
+    
+  
+  public void mouseClicked(MouseEvent me)
+  {
+    this.previewPanel.requestFocus();
+    if (this.checkParameterFieldClick(me))
+    {
+      return;
     }
     if (me.getButton() == MouseEvent.BUTTON1)
     {
@@ -432,7 +445,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       {
         if (getEditRect() != null)
         {
-          //Check for text curso
+          //Check for text cursor
           for (ParameterField param : EditRectangle.ParameterField.values())
           {
             if (getEditRect().getParameterFieldBounds(param).contains(p))
