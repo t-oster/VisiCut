@@ -26,6 +26,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -130,6 +131,10 @@ public class EditRectangle extends Rectangle
     return null;
   }
   
+  private Color lineColor = new Color(104,146,255);
+  private Color textColor = Color.BLACK;
+  private Color buttonColor = lineColor;
+  
   /**
    * Renders the Edit Rectangle on the given Graphics2D.
    * The Rectangle coordinates are transformed according
@@ -140,9 +145,11 @@ public class EditRectangle extends Rectangle
    */
   public void render(Graphics2D gg)
   {
+    //reset transform for drawing same (text and line) size on every zoom level
     AffineTransform cur = gg.getTransform();
     gg.setTransform(AffineTransform.getRotateInstance(0));
-    gg.setColor(new Color(104,146,255));
+    //draw the rectangle
+    gg.setColor(lineColor);
     gg.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, new float[]
       {
         10, 10
@@ -160,22 +167,45 @@ public class EditRectangle extends Rectangle
     }
     else
     {
+      //draw the corner buttons
+      gg.setColor(buttonColor);
       for (Button b : Button.values())
       {
         Rectangle r = this.getButton(b,tr);
         gg.fillRect(r.x, r.y, r.width, r.height);
       }
     }
-    gg.setColor(Color.BLACK);
+    //draw the width
+    gg.setColor(textColor);
     int w = (int) Helper.px2mm(this.width);
     String txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     int h = gg.getFontMetrics().getHeight();
-    gg.drawString(txt, tr.x+tr.width/2-w/2, tr.y-h);
+    gg.drawString(txt, tr.x+tr.width/2-w/2, tr.y+tr.height+h);
+    //draw the height
     w = (int) Helper.px2mm(this.height);
     txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     gg.drawString(txt, tr.x+tr.width+5, tr.y+tr.height/2);
+    //draw lines from the left and upper center
+    gg.setColor(lineColor);
+    Point zero = new Point(0, 0);
+    cur.transform(zero, zero);
+    gg.drawLine(zero.x, tr.y+tr.height/2, tr.x, tr.y+tr.height/2);
+    gg.drawLine(tr.x+tr.width/2, zero.y, tr.x+tr.width/2, tr.y);
+    //draw the left
+    gg.setColor(textColor);
+    w = (int) Helper.px2mm(this.x);
+    txt = (w/10)+","+(w%10)+" cm";
+    w = gg.getFontMetrics().stringWidth(txt);
+    h = gg.getFontMetrics().getHeight();
+    gg.drawString(txt, tr.x-w-10, tr.y+tr.height/2+h);
+    //draw the top offset
+    w = (int) Helper.px2mm(this.y);
+    txt = (w/10)+","+(w%10)+" cm";
+    w = gg.getFontMetrics().stringWidth(txt);
+    gg.drawString(txt, tr.x+tr.width/2+5, tr.y-h);
+    //reset transform
     gg.setTransform(cur);
   }
 }
