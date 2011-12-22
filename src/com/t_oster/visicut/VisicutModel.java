@@ -735,7 +735,6 @@ public class VisicutModel
     {
       e.getKey().addToLaserJob(job, e.getValue(), material.getDepth());
     }
-    job.getVectorPart().setFocus(0);
     return job;
   }
 

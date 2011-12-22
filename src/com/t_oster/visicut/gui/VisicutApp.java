@@ -18,7 +18,6 @@
  **/
 package com.t_oster.visicut.gui;
 
-import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.PreferencesManager;
@@ -26,10 +25,8 @@ import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.MaterialProfile;
-import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.io.File;
-import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -163,15 +160,36 @@ public class VisicutApp extends SingleFrameApplication
           {
             GLOBAL_LOG_LEVEL = Level.FINE;
           }
+          else if ("--gtkfilechooser".equals(s))
+          {
+            if ("GTK look and feel".equals(UIManager.getLookAndFeel().getName()))
+            {
+              UIManager.put("FileChooserUI", "eu.kostia.gtkjfilechooser.ui.GtkFileChooserUI");
+            }
+            else
+            {
+              System.err.println("GTK look and feel not enabled, cannot apply GtkFileChooser");
+            }
+          }
+          else if ("--version".equals(s) || "-v".equals(s))
+          {
+            org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(VisicutApp.class);
+            System.out.println(resourceMap.getString("Application.title")+" Version "+resourceMap.getString("Application.version")+" (c) 2011 by T.Oster, Media Computing Group, RWTH Aachen University");
+            System.out.println("This Software is licensed under the GNU Lesser General Public License (LGPL)");
+            System.exit(0);
+          }
           else if ("--help".equals(s) || "-h".equals(s))
           {
-            System.out.println("Usage: visicut [-h]");
+            System.out.println("Usage: visicut [-h|--help|-v|--version]");
             System.out.println("\t visicut [options] [<filename>]");
             System.out.println("\t visicut [options] --execute filename");
-            System.out.println(" --resolution");
-            System.out.println(" --material");
-            System.out.println(" --laserdevice");
-            System.out.println(" --mapping");
+            System.out.println("Options are:");
+            System.out.println(" --resolution <resolution in DPI e.g. 500>");
+            System.out.println(" --material <materialname e.g. \"Acrylic Glass 2mm\">");
+            System.out.println(" --laserdevice <laserdevice e.g. \"Epilog ZING @ Miltons Office\">");
+            System.out.println(" --mapping <mapping e.g. \"Cut\">");
+            System.out.println(" --total-height <Height in mm e.g. \"2.5\"> (only valid with --execute)");
+            System.out.println(" --gtkfilechooser (experimental)");
             System.exit(0);
           }
           else if ("--total-height".equals(s))

@@ -703,7 +703,7 @@ public class EpilogCutter extends LaserCutter
       }
     }
     //Reset Focus to 0
-    //out.printf("WF%d;", 0);
+    out.printf("WF%d;", 0);
     return result.toByteArray();
   }
 

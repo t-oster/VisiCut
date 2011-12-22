@@ -23,6 +23,7 @@ import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.Raster3dPart;
 import com.t_oster.liblasercut.RasterPart;
 import com.t_oster.liblasercut.VectorCommand;
 import com.t_oster.liblasercut.VectorPart;
@@ -164,27 +165,15 @@ public class LaosCutter extends LaserCutter
     this.mmPerStep = mmPerStep;
   }
 
-  
-  //TOD Add property "steps per mm" or "stepwidth" and adapt px2steps
-  //to be resolution dependent
   private int px2steps(double px, double dpi)
   {
     return (int) (Util.px2mm(px, dpi)/this.mmPerStep);
-    //return (int) (8.034 * px);
   }
 
   private byte[] generateVectorGCode(VectorPart vp, int resolution) throws UnsupportedEncodingException
   {
     ByteArrayOutputStream result = new ByteArrayOutputStream();
     PrintStream out = new PrintStream(result, true, "US-ASCII");
-    if (!this.isSimpleMode())
-    {
-      out.print("G28\n");//move to origin
-      out.print("G21\n");//units to mm
-      out.print("M106\n");//ventilaton on
-      out.print("M151 100\n");//air pressure on
-    }
-
     int power = 100;
     int speed = 50;
     int frequency = 500;
@@ -241,22 +230,6 @@ public class LaosCutter extends LaserCutter
           break;
       }
     }
-    if (this.isSimpleMode())
-    {
-      out.printf("0 0 0\n");
-    }
-    else
-    {
-      out.printf(Locale.US, "G0 X%f Y%f\n", 0, 0);
-    }
-    if (!this.isSimpleMode())
-    {
-      //back to origin and shutdown
-      out.print("G28\n");
-      out.print("M107\n");
-      out.print("M151 0\n");
-      out.print("M0\n");
-    }
     return result.toByteArray();
   }
 
@@ -272,10 +245,28 @@ public class LaosCutter extends LaserCutter
     }
   }
 
+  private int currentPower = -1;
+  private int currentSpeed = -1;
+  private int currentFrequency = -1;
   private void line(PrintStream out, int x, int y, int power, int speed, int frequency, int resolution)
   {
     if (this.isSimpleMode())
     {
+      if (currentPower != power)
+      {
+        out.printf("7 101 %d\n", power * 100);
+        currentPower = power;
+      }
+      if (currentSpeed != speed)
+      {
+        out.printf("7 100 %d\n", speed * 100);
+        currentSpeed = speed;
+      }
+      if (currentFrequency != frequency)
+      {
+        out.printf("7 102 %d\n", frequency);
+        currentFrequency = frequency;
+      }
       out.printf("1 %d %d\n", px2steps(isFlipXaxis() ? Util.mm2px(bedWidth, resolution) - x : x, resolution), px2steps(y, resolution));
     }
     else
@@ -284,7 +275,205 @@ public class LaosCutter extends LaserCutter
     }
   }
 
+  private byte[] generatePseudoRaster3dGCode(Raster3dPart rp, int resolution) throws UnsupportedEncodingException
+  {
+    ByteArrayOutputStream result = new ByteArrayOutputStream();
+    PrintStream out = new PrintStream(result, true, "US-ASCII");
+    boolean dirRight = true;
+    for (int raster = 0; raster < rp.getRasterCount(); raster++)
+    {
+      Point rasterStart = rp.getRasterStart(raster);
+      LaserProperty prop = rp.getLaserProperty(raster);
+      //Set focus
+      if (this.isSimpleMode())
+      {
+        out.printf(Locale.US, "2 %d\n", (int) Util.mm2px(prop.getFocus(), resolution));
+      }
+      else
+      {
+        //TODO: Focus in GCode????
+      }
+      for (int line = 0; line < rp.getRasterHeight(raster); line++)
+      {
+        Point lineStart = rasterStart.clone();
+        lineStart.y += line;
+        List<Byte> bytes = rp.getRasterLine(raster, line);
+        //remove heading zeroes
+        while (bytes.size() > 0 && bytes.get(0) == 0)
+        {
+          bytes.remove(0);
+          lineStart.x += 1;
+        }
+        //remove trailing zeroes
+        while (bytes.size() > 0 && bytes.get(bytes.size()-1) == 0)
+        {
+          bytes.remove(bytes.size()-1);
+        }
+        if (bytes.size() > 0)
+        {
+          if (dirRight)
+          {
+            //move to the first nonempyt point of the line
+            move(out, lineStart.x, lineStart.y, resolution);
+            byte old = bytes.get(0);
+            for (int pix = 0; pix < bytes.size(); pix++)
+            {
+              if (bytes.get(pix) != old)
+              {
+                if (old == 0)
+                {
+                  move(out, lineStart.x+pix, lineStart.y, resolution);
+                }
+                else
+                {
+                  line(out, lineStart.x+pix-1, lineStart.y, prop.getPower()*(0xFF&old)/255, prop.getSpeed(), prop.getFrequency(), resolution);
+                  move(out, lineStart.x+pix, lineStart.y, resolution);
+                }
+                old = bytes.get(pix);
+              }
+            }
+            //last point is also not "white"
+            line(out, lineStart.x+bytes.size()-1, lineStart.y, prop.getPower()*(0xFF&bytes.get(bytes.size()-1))/255, prop.getSpeed(), prop.getFrequency(), resolution);
+          }
+          else
+          {
+            //move to the last nonempty point of the line
+            move(out, lineStart.x+bytes.size()-1, lineStart.y, resolution);
+            byte old = bytes.get(bytes.size()-1);
+            for (int pix=bytes.size()-1; pix >=0; pix--)
+            {
+              if (bytes.get(pix) != old || pix == 0)
+              {
+                if (old == 0)
+                {
+                  move(out, lineStart.x+pix, lineStart.y, resolution);
+                }
+                else
+                {
+                  line(out, lineStart.x+pix+1, lineStart.y, prop.getPower()*(0xFF&old)/255, prop.getSpeed(), prop.getFrequency(), resolution);
+                  move(out, lineStart.x+pix, lineStart.y, resolution);
+                }
+                old = bytes.get(pix);
+              }
+            }
+            //last point is also not "white"
+            line(out, lineStart.x, lineStart.y, prop.getPower()*(0xFF&bytes.get(0))/255, prop.getSpeed(), prop.getFrequency(), resolution);
+          }
+        }
+        dirRight = !dirRight;
+      }
+    }
+    return result.toByteArray();
+  }
+  
   private byte[] generatePseudoRasterGCode(RasterPart rp, int resolution) throws UnsupportedEncodingException
+  {
+    ByteArrayOutputStream result = new ByteArrayOutputStream();
+    PrintStream out = new PrintStream(result, true, "US-ASCII");
+    boolean dirRight = true;
+    for (int raster = 0; raster < rp.getRasterCount(); raster++)
+    {
+      Point rasterStart = rp.getRasterStart(raster);
+      LaserProperty prop = rp.getLaserProperty(raster);
+      //Set focus
+      if (this.isSimpleMode())
+      {
+        out.printf(Locale.US, "2 %d\n", (int) Util.mm2px(prop.getFocus(), resolution));
+      }
+      else
+      {
+        //TODO: Focus in GCode????
+      }
+      for (int line = 0; line < rp.getRasterHeight(raster); line++)
+      {
+        Point lineStart = rasterStart.clone();
+        lineStart.y += line;
+        //Convert BlackWhite line into line of 0 and 255 bytes
+        BlackWhiteRaster bwr = rp.getImages()[raster];
+        List<Byte> bytes = new LinkedList<Byte>();
+        boolean lookForStart = true;
+        for (int x=0;x<bwr.getWidth();x++)
+        {
+          if (lookForStart)
+          {
+            if (bwr.isBlack(x, line))
+            {
+              lookForStart = false;
+              bytes.add((byte) 255);
+            }
+            else
+            {
+              lineStart.x+=1;
+            }
+          }
+          else
+          {
+            bytes.add(bwr.isBlack(x, line) ? (byte) 255 : (byte) 0);
+          }
+        }
+        //remove trailing zeroes
+        while (bytes.size() > 0 && bytes.get(bytes.size()-1) == 0)
+        {
+          bytes.remove(bytes.size()-1);
+        }
+        if (bytes.size() > 0)
+        {
+          if (dirRight)
+          {
+            //move to the first nonempyt point of the line
+            move(out, lineStart.x, lineStart.y, resolution);
+            byte old = bytes.get(0);
+            for (int pix = 0; pix < bytes.size(); pix++)
+            {
+              if (bytes.get(pix) != old)
+              {
+                if (old == 0)
+                {
+                  move(out, lineStart.x+pix, lineStart.y, resolution);
+                }
+                else
+                {
+                  line(out, lineStart.x+pix-1, lineStart.y, prop.getPower()*(0xFF&old)/255, prop.getSpeed(), prop.getFrequency(), resolution);
+                  move(out, lineStart.x+pix, lineStart.y, resolution);
+                }
+                old = bytes.get(pix);
+              }
+            }
+            //last point is also not "white"
+            line(out, lineStart.x+bytes.size()-1, lineStart.y, prop.getPower()*(0xFF&bytes.get(bytes.size()-1))/255, prop.getSpeed(), prop.getFrequency(), resolution);
+          }
+          else
+          {
+            //move to the last nonempty point of the line
+            move(out, lineStart.x+bytes.size()-1, lineStart.y, resolution);
+            byte old = bytes.get(bytes.size()-1);
+            for (int pix=bytes.size()-1; pix >=0; pix--)
+            {
+              if (bytes.get(pix) != old || pix == 0)
+              {
+                if (old == 0)
+                {
+                  move(out, lineStart.x+pix, lineStart.y, resolution);
+                }
+                else
+                {
+                  line(out, lineStart.x+pix+1, lineStart.y, prop.getPower()*(0xFF&old)/255, prop.getSpeed(), prop.getFrequency(), resolution);
+                  move(out, lineStart.x+pix, lineStart.y, resolution);
+                }
+                old = bytes.get(pix);
+              }
+            }
+            //last point is also not "white"
+            line(out, lineStart.x, lineStart.y, prop.getPower()*(0xFF&bytes.get(0))/255, prop.getSpeed(), prop.getFrequency(), resolution);
+          }
+        }
+        dirRight = !dirRight;
+      }
+    }
+    return result.toByteArray();
+  }
+
+  private byte[] generateInitializationCode() throws UnsupportedEncodingException
   {
     ByteArrayOutputStream result = new ByteArrayOutputStream();
     PrintStream out = new PrintStream(result, true, "US-ASCII");
@@ -295,127 +484,47 @@ public class LaosCutter extends LaserCutter
       out.print("M106\n");//ventilaton on
       out.print("M151 100\n");//air pressure on
     }
-
-    int power = 100;
-    int speed = 100;
-    int frequency = 500;
-    double focus = 0;
-    for (int i = 0; i < rp.getRasterCount(); i++)
-    {
-      Point off = rp.getRasterStart(i);
-      LaserProperty lp = rp.getLaserProperty(i);
-      if (this.isSimpleMode())
-      {
-        out.printf("7 101 %d\n", lp.getPower() * 100);
-        out.printf(Locale.US, "2 %d\n", (int) Util.mm2px(lp.getFocus(), resolution));
-        out.printf("7 100 %d\n", lp.getSpeed() * 100);
-      }
-      else
-      {
-        power = lp.getPower();
-        focus = lp.getFocus();
-        speed = lp.getSpeed();
-      }
-      boolean dirLeft = true;
-      BlackWhiteRaster r = rp.getImages()[i];
-      for (int y = off.y; y < off.y + r.getHeight(); y++)
-      {
-        if (dirLeft)
-        {
-          int startx = off.x;
-          while (startx < off.x + r.getWidth() && !r.isBlack(startx - off.x, y - off.y))
-          {//skip empty beginning
-            startx++;
-          }
-          //move to start of the line
-          move(out, startx, y, resolution);
-          boolean on = false;
-          for (int x = startx; x < off.x + r.getWidth(); x++)
-          {
-            if (on && !r.isBlack(x - off.x, y - off.y))
-            {
-              line(out, x - 1, y, power, speed, frequency, resolution);
-              on = false;
-            }
-            else if (!on && r.isBlack(x - off.x, y - off.y))
-            {
-              move(out, x - 1, y, resolution);
-              on = true;
-            }
-          }
-          if (on)
-          {
-            line(out, off.x + r.getWidth(), y, power, speed, frequency, resolution);
-          }
-          else
-          {
-            move(out, off.x + r.getWidth(), y, resolution);
-          }
-        }
-        else
-        {
-          int startx = off.x + r.getWidth();
-          while (startx >= off.x && !r.isBlack(startx - off.x, y - off.y))
-          {//skip empty beginning
-            startx--;
-          }
-          //move to start of the line
-          move(out, startx, y, resolution);
-          boolean on = false;
-          for (int x = startx; x >= off.x; x--)
-          {
-            if (on && !r.isBlack(x - off.x, y - off.y))
-            {
-              line(out, x + 1, y, power, speed, frequency, resolution);
-              on = false;
-            }
-            else if (!on && r.isBlack(x - off.x, y - off.y))
-            {
-              move(out, x + 1, y, resolution);
-              on = true;
-            }
-          }
-          if (on)
-          {
-            line(out, off.x, y, power, speed, frequency, resolution);
-          }
-          else
-          {
-            move(out, off.x, y, resolution);
-          }
-        }
-        dirLeft = !dirLeft;
-      }
-    }
+    return result.toByteArray();
+  }
+  
+  private byte[] generateShutdownCode() throws UnsupportedEncodingException
+  {
+    ByteArrayOutputStream result = new ByteArrayOutputStream();
+    PrintStream out = new PrintStream(result, true, "US-ASCII");
+    //back to origin and shutdown
     if (this.isSimpleMode())
     {
       out.printf("0 0 0\n");
+      //Set focus to 0
+      out.printf(Locale.US, "2 %d\n", 0);
     }
     else
     {
       out.printf(Locale.US, "G0 X%f Y%f\n", 0, 0);
-    }
-    if (!this.isSimpleMode())
-    {
-      //back to origin and shutdown
       out.print("G28\n");
       out.print("M107\n");
       out.print("M151 0\n");
       out.print("M0\n");
+      //TODO: Set focus to 0 in GCod??
     }
     return result.toByteArray();
   }
-
+  
   @Override
   public void sendJob(LaserJob job) throws IllegalJobException, Exception
   {
-    if (job.contains3dRaster())
-    {
-      throw new IllegalJobException("The LAOS driver currently only supports Vector and Raster mode.");
-    }
+    this.currentFrequency = -1;
+    this.currentPower = -1;
+    this.currentSpeed = -1;
     Socket connection = new Socket();
     connection.connect(new InetSocketAddress(hostname, port), 3000);
     BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
+    //TODO: 
+    out.write(this.generateInitializationCode());
+    if (job.contains3dRaster())
+    {
+      out.write(this.generatePseudoRaster3dGCode(job.getRaster3dPart(), job.getResolution()));
+    }
     if (job.containsRaster())
     {
       out.write(this.generatePseudoRasterGCode(job.getRasterPart(), job.getResolution()));
@@ -424,6 +533,7 @@ public class LaosCutter extends LaserCutter
     {
       out.write(this.generateVectorGCode(job.getVectorPart(), job.getResolution()));
     }
+    out.write(this.generateShutdownCode());
     out.close();
   }
   private List<Integer> resolutions;
@@ -433,6 +543,8 @@ public class LaosCutter extends LaserCutter
   {
     if (resolutions == null)
     {
+      //TODO: Calculate possible resolutions
+      //according to mm/step
       resolutions = Arrays.asList(new Integer[]
         {
           500
