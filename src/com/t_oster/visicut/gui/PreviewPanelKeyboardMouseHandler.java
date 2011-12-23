@@ -141,7 +141,6 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     //Apply changes to the EditRectangle to the getSelectedSet()
     Rectangle2D src = getSelectedSet().getOriginalBoundingBox();
     getSelectedSet().setTransform(Helper.getTransform(src, getEditRect()));
-    this.previewPanel.repaint();
   }
   
   public void keyReleased(KeyEvent ke)
@@ -166,6 +165,13 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
 
   private boolean checkParameterFieldClick(MouseEvent me)
   {
+    //TODO: Bug
+    /*
+    * If this transormation is applied, everything is correct,
+     * but the setCursor position and the whole mouse event
+     * things are on the wrong place. Deselecting the rectangle
+     * and selecting again resolves that.
+     */
     if (me.getButton() == MouseEvent.BUTTON1 && this.getEditRect() != null)
     {//Check if clicked on one of the parameters Button
     try
@@ -283,10 +289,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   {
     if (currentAction == MouseAction.resizingSet)
     {
-      //Apply changes to the EditRectangle to the getSelectedSet()
-      Rectangle2D src = getSelectedSet().getOriginalBoundingBox();
-      getSelectedSet().setTransform(Helper.getTransform(src, getEditRect()));
-      this.previewPanel.repaint();
+      this.applyEditRectoToSet();
     }
     lastMousePosition = evt.getPoint();
   }
