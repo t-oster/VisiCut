@@ -208,7 +208,7 @@ public class EditRectangle extends Rectangle
     }
     //draw the width
     gg.setColor(textColor);
-    int w = (int) Helper.px2mm(this.width);
+    int w = (int) Math.round(Helper.px2mm(this.width));
     String txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     int ascend = gg.getFontMetrics().getAscent();
@@ -216,7 +216,7 @@ public class EditRectangle extends Rectangle
     gg.drawString(txt, tr.x+tr.width/2-w/2, tr.y+tr.height+h);
     this.parameterFieldBounds[2].setBounds(tr.x+tr.width/2-w/2, tr.y+tr.height+h-ascend, w, h);
     //draw the height
-    w = (int) Helper.px2mm(this.height);
+    w = (int) Math.round(Helper.px2mm(this.height));
     txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     gg.drawString(txt, tr.x+tr.width+5, tr.y+tr.height/2);
@@ -229,14 +229,14 @@ public class EditRectangle extends Rectangle
     gg.drawLine(tr.x+tr.width/2, zero.y, tr.x+tr.width/2, tr.y);
     //draw the left
     gg.setColor(textColor);
-    w = (int) Helper.px2mm(this.x);
+    w = (int) Math.round(Helper.px2mm(this.x));
     txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     h = gg.getFontMetrics().getHeight();
     gg.drawString(txt, tr.x-w-10, tr.y+tr.height/2+h);
     this.parameterFieldBounds[0].setBounds(tr.x-w-10, tr.y+tr.height/2+h-ascend, w, h);
     //draw the top offset
-    w = (int) Helper.px2mm(this.y);
+    w = (int) Math.round(Helper.px2mm(this.y));
     txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     gg.drawString(txt, tr.x+tr.width/2+5, tr.y-h);

@@ -166,7 +166,8 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
 
   private double askDouble(String text, double initial)
   {
-    String result = JOptionPane.showInputDialog(previewPanel, text, ""+initial);
+    int mm = (int) Math.round(initial*10);
+    String result = JOptionPane.showInputDialog(previewPanel, text, ""+(mm/10)+"."+(mm%10));
     return Double.parseDouble(result);
   }
   
