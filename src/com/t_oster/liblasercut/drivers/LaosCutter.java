@@ -189,14 +189,7 @@ public class LaosCutter extends LaserCutter
           line(out, cmd.getX(), cmd.getY(), power, speed, frequency, resolution);
           break;
         case SETPOWER:
-          if (this.isSimpleMode())
-          {
-            out.printf("7 101 %d\n", cmd.getPower() * 100);
-          }
-          else
-          {
-            power = cmd.getPower();
-          }
+          power = cmd.getPower();
           break;
         case SETFOCUS:
           if (this.isSimpleMode())
@@ -209,24 +202,10 @@ public class LaosCutter extends LaserCutter
           }
           break;
         case SETSPEED:
-          if (this.isSimpleMode())
-          {
-            out.printf("7 100 %d\n", cmd.getSpeed() * 100);
-          }
-          else
-          {
-            speed = cmd.getSpeed();
-          }
+          speed = cmd.getSpeed();
           break;
         case SETFREQUENCY:
-          if (this.isSimpleMode())
-          {
-            out.printf("7 102 %d\n", cmd.getFrequency());
-          }
-          else
-          {
-            frequency = cmd.getFrequency();
-          }
+          frequency = cmd.getFrequency();
           break;
       }
     }
