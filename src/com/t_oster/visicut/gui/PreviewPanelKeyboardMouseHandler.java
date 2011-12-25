@@ -141,6 +141,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     //Apply changes to the EditRectangle to the getSelectedSet()
     Rectangle2D src = getSelectedSet().getOriginalBoundingBox();
     getSelectedSet().setTransform(Helper.getTransform(src, getEditRect()));
+    this.previewPanel.repaint();
   }
   
   public void keyReleased(KeyEvent ke)
@@ -163,6 +164,12 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   private MouseAction currentAction = null;
   private Button currentButton = null;
 
+  private double askDouble(String text, double initial)
+  {
+    String result = JOptionPane.showInputDialog(previewPanel, text, ""+initial);
+    return Double.parseDouble(result);
+  }
+  
   private boolean checkParameterFieldClick(MouseEvent me)
   {
     //TODO: Bug
@@ -178,7 +185,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       {
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.X).contains(me.getPoint()))
         {
-          double x = Double.parseDouble(JOptionPane.showInternalInputDialog(previewPanel, "left Offset"));
+          double x = askDouble("left Offset", Helper.px2mm(this.getEditRect().x)/10);
           this.getEditRect().x = (int) Helper.mm2px(x*10);
           this.applyEditRectoToSet();
           return true;
@@ -186,21 +193,21 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.Y).contains(me.getPoint()))
         {
 
-          double y = Double.parseDouble(JOptionPane.showInternalInputDialog(previewPanel, "top Offset"));
+          double y = askDouble("top Offset", Helper.px2mm(this.getEditRect().y)/10);
           this.getEditRect().y = (int) Helper.mm2px(y*10);
           this.applyEditRectoToSet();
           return true;
         }
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.WIDTH).contains(me.getPoint()))
         {
-          double w = Double.parseDouble(JOptionPane.showInternalInputDialog(previewPanel, "width"));
+          double w = askDouble("width", Helper.px2mm(this.getEditRect().width)/10);
           this.getEditRect().width = (int) Helper.mm2px(w*10);
           this.applyEditRectoToSet();
           return true;
         }
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.HEIGHT).contains(me.getPoint()))
         {
-          double h = Double.parseDouble(JOptionPane.showInternalInputDialog(previewPanel, "height"));
+          double h = askDouble("height", Helper.px2mm(this.getEditRect().height)/10);
           this.getEditRect().height = (int) Helper.mm2px(h*10);
           this.applyEditRectoToSet();
           return true;
