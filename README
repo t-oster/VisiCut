@@ -4,4 +4,10 @@ a userfriendy, platform-independent tool for preparing, saving and sending jobs 
 
 For more information please look at the project page at:
 
-www.hci.rwth-aachen.de/visicut
+www.visicut.org
+
+LibLaserCut
+
+For controlling Lasercutters, VisiCut uses the LibLaserCut. The sources can be found here: https://github.com/t-oster/LibLaserCut
+
+Feel free to create your own, personal Lasercutter Applications
