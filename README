@@ -4,4 +4,8 @@ a userfriendy, platform-independent tool for preparing, saving and sending jobs 
 
 For more information please look at the project page at:
 
-www.hci.rwth-aachen.de/visicut
+www.hci.rwth-aachen.de/visicut 
+
+------------------------------
+
+This fork is based on VisiCut version 1.2.4. It is just a temporary version that contains the most urgent changes needed to get VisiCut to work with an Epilog Helix. For more Info please visit http://www.fablab-hamburg.org/2011/12/27/howto-lasercut/#Installation_von_VisiCut and check https://github.com/t-oster/VisiCut for newer versions that might make this fork obsolete.
