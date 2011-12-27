@@ -1,0 +1,7 @@
+start with:
+
+java -jar dist/VisiCut.jar
+
+compile with:
+
+ant jar 
