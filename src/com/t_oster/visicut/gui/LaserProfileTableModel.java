@@ -20,15 +20,16 @@ class LaserProfileTableModel extends DefaultTableModel
     this.lp = lp;
     if (lp instanceof VectorProfile)
     {
-      columnNames = new String[]{"Power", "Speed", "Frequency", "Focus"};
+      columnNames = new String[]{"Power", "Speed", "Focus", "Frequency"};
     }
     else
     {
-      columnNames = new String[]{"Power", "Speed", "Frequency"};
+      columnNames = new String[]{"Power", "Speed", "Focus"};
     }
+    this.fireTableStructureChanged();
   }
   private LaserProfile lp = null;
-  private String[] columnNames = new String[]{"Power", "Speed", "Frequency", "Focus"};
+  private String[] columnNames = new String[]{"Power", "Speed", "Focus", "Frequency"};
 
   @Override
   public int getColumnCount()
@@ -52,9 +53,9 @@ class LaserProfileTableModel extends DefaultTableModel
       case 1:
         return lp.getLaserProperties().get(y).getSpeed();
       case 2:
-        return lp.getLaserProperties().get(y).getFrequency();
-      case 3:
         return lp.getLaserProperties().get(y).getFocus();
+      case 3:
+        return lp.getLaserProperties().get(y).getFrequency();
     }
     return null;
   }
@@ -77,10 +78,10 @@ class LaserProfileTableModel extends DefaultTableModel
         lp.getLaserProperties().get(y).setSpeed(Integer.parseInt(o.toString()));
         return;
       case 2:
-        lp.getLaserProperties().get(y).setFrequency(Integer.parseInt(o.toString()));
+        lp.getLaserProperties().get(y).setFocus(Float.parseFloat(o.toString()));
         return;
       case 3:
-        lp.getLaserProperties().get(y).setFocus(Float.parseFloat(o.toString()));
+        lp.getLaserProperties().get(y).setFrequency(Integer.parseInt(o.toString()));
         return;
     }
   }

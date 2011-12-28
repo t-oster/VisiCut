@@ -30,7 +30,6 @@ import com.t_oster.visicut.model.LaserPropertyBean;
 import com.t_oster.visicut.model.Raster3dProfile;
 import java.io.File;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *

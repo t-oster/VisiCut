@@ -1197,6 +1197,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       else
       {
         profileChanged = false;
+        return;
       }
     }
     else
@@ -1477,6 +1478,18 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     this.materialComboBox.setSelectedItem(visicutModel1.getMaterial());
     return;
   }
+  //replace MaterialProfile with the one from the current laser
+  if (newMaterial != null && this.visicutModel1.getSelectedLaserDevice() != null)
+  {
+    for(MaterialProfile mp : this.profileManager1.getMaterials(this.visicutModel1.getSelectedLaserDevice()))
+    {
+      if (mp.getName().equals(newMaterial.getName()))
+      {
+        newMaterial = mp;
+        break;
+      }
+    }
+  }
   this.visicutModel1.setMaterial(newMaterial);
   this.customMappingTable.setLaserProfiles(newMaterial == null ? new LinkedList<LaserProfile>() : newMaterial.getLaserProfiles());
   this.refreshComboBoxes();
@@ -1626,7 +1639,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       {
         for (MaterialProfile mp : this.profileManager1.getMaterials())
         {
-          if (mp.getName().equals(this.visicutModel1.getMaterial().getName()) && mp.getDepth() == this.visicutModel1.getMaterial().getDepth())
+          if (mp.getName().equals(this.visicutModel1.getMaterial().getName()))
           {
             this.visicutModel1.setMaterial(mp);
             break;
