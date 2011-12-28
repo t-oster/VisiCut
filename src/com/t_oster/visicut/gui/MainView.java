@@ -45,6 +45,8 @@ import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.FileDialog;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
@@ -60,6 +62,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -196,8 +199,33 @@ public class MainView extends javax.swing.JFrame
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_LOADEDFILE, null, null));
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDLASERDEVICE, null, null));
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SOURCEFILE, null, null));
+    this.refreshRecentFilesMenu();
   }
 
+  /**
+   * Fills the recent files menu from the current
+   * list in preferences
+   */
+  private void refreshRecentFilesMenu()
+  {
+    this.recentFilesMenu.removeAll();
+    for (String p: this.visicutModel1.getPreferences().getRecentFiles())
+    {
+      final File f = new File(p);
+      if (f.isFile())
+      {
+        JMenuItem i = new JMenuItem(f.getName());
+        i.addActionListener(new ActionListener(){
+          public void actionPerformed(ActionEvent ae)
+          {
+            loadFile(f);
+          }
+        });
+        this.recentFilesMenu.add(i);
+      }
+    }
+  }
+  
   /*
    * Initially fills LaserCutter,Material and Mapping ComboBox with all possible Elements
    */
@@ -315,6 +343,7 @@ public class MainView extends javax.swing.JFrame
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
         openMenuItem = new javax.swing.JMenuItem();
+        recentFilesMenu = new javax.swing.JMenu();
         reloadMenuItem = new javax.swing.JMenuItem();
         saveMenuItem = new javax.swing.JMenuItem();
         saveAsMenuItem = new javax.swing.JMenuItem();
@@ -770,6 +799,10 @@ public class MainView extends javax.swing.JFrame
         });
         fileMenu.add(openMenuItem);
 
+        recentFilesMenu.setText(resourceMap.getString("recentFilesMenu.text")); // NOI18N
+        recentFilesMenu.setName("recentFilesMenu"); // NOI18N
+        fileMenu.add(recentFilesMenu);
+
         reloadMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
         reloadMenuItem.setText(resourceMap.getString("reloadMenuItem.text")); // NOI18N
         reloadMenuItem.setToolTipText(resourceMap.getString("reloadMenuItem.toolTipText")); // NOI18N
@@ -979,6 +1012,27 @@ public class MainView extends javax.swing.JFrame
   public void loadFile(File file)
   {
     final File fileToLoad = file;
+    lastDirectory = file.getParentFile();
+    //refresh recent files
+    List<String> recent = this.visicutModel1.getPreferences().getRecentFiles();
+    recent.remove(file.getAbsolutePath());
+    recent.add(0, file.getAbsolutePath());
+    if (recent.size() > 5)
+    {
+      for (int i=recent.size()-1;i>=5;i--)
+      {
+        recent.remove(i);
+      }
+    }
+    this.refreshRecentFilesMenu();
+    try
+    {
+      PreferencesManager.getInstance().savePreferences();
+    }
+    catch (FileNotFoundException ex)
+    {
+      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+    }
     new Thread()
     {
 
@@ -1106,9 +1160,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     openFileChooser.setVisible(true);
     if (openFileChooser.getFile() != null)
     {
-      lastDirectory = new File(openFileChooser.getDirectory());
       File file = new File(lastDirectory, openFileChooser.getFile());
-      lastDirectory = file.getParentFile();
       loadFile(file);
     }
   }
@@ -1128,7 +1180,6 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     if (returnVal == JFileChooser.APPROVE_OPTION)
     {
       File file = openFileChooser.getSelectedFile();
-      lastDirectory = file.getParentFile();
       loadFile(file);
     }
   }
@@ -1864,6 +1915,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
     private com.t_oster.visicut.managers.ProfileManager profileManager1;
     private javax.swing.JProgressBar progressBar;
+    private javax.swing.JMenu recentFilesMenu;
     private javax.swing.JMenuItem reloadMenuItem;
     private com.t_oster.visicut.gui.beans.ImageComboBox resolutionComboBox;
     private javax.swing.JMenuItem saveAsMenuItem;

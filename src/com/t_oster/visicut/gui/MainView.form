@@ -73,6 +73,12 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="openMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
+            <Menu class="javax.swing.JMenu" name="recentFilesMenu">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="recentFilesMenu.text"/>
+                <Property name="name" type="java.lang.String" value="recentFilesMenu" noResource="true"/>
+              </Properties>
+            </Menu>
             <MenuItem class="javax.swing.JMenuItem" name="reloadMenuItem">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">

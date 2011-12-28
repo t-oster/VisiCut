@@ -22,6 +22,7 @@ import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.MaterialProfile;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Preferences
@@ -30,6 +31,29 @@ public class Preferences
   public Preferences()
   {
   }
+  
+  protected List<String> recentFiles = new LinkedList<String>();
+
+  /**
+   * Get the value of recentFiles
+   *
+   * @return the value of recentFiles
+   */
+  public List<String> getRecentFiles()
+  {
+    return recentFiles;
+  }
+
+  /**
+   * Set the value of recentFiles
+   *
+   * @param recentFiles new value of recentFiles
+   */
+  public void setRecentFiles(List<String> recentFiles)
+  {
+    this.recentFiles = recentFiles;
+  }
+
   
   protected MaterialProfile lastMaterial = null;
 
