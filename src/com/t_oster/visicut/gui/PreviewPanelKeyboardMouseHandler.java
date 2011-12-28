@@ -39,6 +39,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -168,6 +170,17 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   {
     int mm = (int) Math.round(initial*10);
     String result = JOptionPane.showInputDialog(previewPanel, text, ""+(mm/10)+"."+(mm%10));
+    result = result.replace(",", ".");
+    try
+    {
+      ScriptEngineManager mgr = new ScriptEngineManager();
+      ScriptEngine engine = mgr.getEngineByName("JavaScript");
+      result = engine.eval(result).toString();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
     return Double.parseDouble(result);
   }
   
