@@ -59,6 +59,32 @@ import javax.swing.JOptionPane;
 public class PreviewPanel extends ZoomablePanel
 {
 
+  /**
+   * This transform is for mapping lasercutter
+   * coordinates on the image from the camera
+   */
+  private AffineTransform previewTransformation;
+  /**
+   * Get the value of previewTransformation
+   *
+   * @return the value of previewTransformation
+   */
+  public AffineTransform getPreviewTransformation()
+  {
+    return previewTransformation;
+  }
+
+  /**
+   * Set the value of previewTransformation
+   *
+   * @param previewTransformation new value of previewTransformation
+   */
+  public void setPreviewTransformation(AffineTransform previewTransformation)
+  {
+    this.previewTransformation = previewTransformation;
+    this.repaint();
+  }
+  
   private Logger logger = Logger.getLogger(PreviewPanel.class.getName());
   
   private class ImageProcessingThread extends Thread implements ProgressListener
@@ -464,6 +490,12 @@ public class PreviewPanel extends ZoomablePanel
       if (backgroundImage != null)
       {
         gg.drawRenderedImage(backgroundImage, null);
+        if (this.previewTransformation != null)
+        {
+          AffineTransform current = gg.getTransform();
+          current.concatenate(this.getPreviewTransformation());
+          gg.setTransform(current);
+        }
       }
       if (this.material != null)
       {
