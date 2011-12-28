@@ -1187,6 +1187,11 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 
   private void editMappings()
   {
+    if (this.visicutModel1.getGraphicObjects() == null || this.visicutModel1.getGraphicObjects().size()==0)
+    {
+      JOptionPane.showMessageDialog(this, "Please load a file before editing mappings", "Info", JOptionPane.ERROR_MESSAGE);
+      return;
+    }
     List<MappingSet> mappingsets = new LinkedList<MappingSet>();
     for (MappingSet m : this.mappingManager1.getMappingSets())
     {

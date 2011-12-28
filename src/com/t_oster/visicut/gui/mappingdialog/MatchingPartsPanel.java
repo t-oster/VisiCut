@@ -168,7 +168,7 @@ public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionList
     if (graphicElements != null)
     {
       Rectangle2D bb = graphicElements.getBoundingBox();
-      if (bb != null)
+      if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
       {
         this.setOuterBounds(new Dimension((int) (bb.getWidth()), (int) (bb.getHeight())));
         this.renderBuffer = new BufferedImage((int) (bb.getWidth()), (int) (bb.getHeight()), BufferedImage.TYPE_INT_RGB);
