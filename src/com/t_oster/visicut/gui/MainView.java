@@ -1160,7 +1160,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     openFileChooser.setVisible(true);
     if (openFileChooser.getFile() != null)
     {
-      File file = new File(lastDirectory, openFileChooser.getFile());
+      File file = new File(new File(openFileChooser.getDirectory()), openFileChooser.getFile());
       loadFile(file);
     }
   }
