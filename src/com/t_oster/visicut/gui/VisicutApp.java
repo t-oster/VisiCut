@@ -18,6 +18,8 @@
  **/
 package com.t_oster.visicut.gui;
 
+import com.t_oster.liblasercut.LaserCutter;
+import com.t_oster.liblasercut.LibInfo;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.PreferencesManager;
@@ -174,7 +176,15 @@ public class VisicutApp extends SingleFrameApplication
           else if ("--version".equals(s) || "-v".equals(s))
           {
             org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(VisicutApp.class);
-            System.out.println(resourceMap.getString("Application.title")+" Version "+resourceMap.getString("Application.version")+" (c) 2011 by T.Oster, Media Computing Group, RWTH Aachen University");
+            System.out.println(resourceMap.getString("Application.title")+"\t\t Version: "+resourceMap.getString("Application.version"));
+            System.out.println(""
+              + "LibLaserCut\t Version: "+LibInfo.getVersion());
+            System.out.println("\n\tSupported Drivers:");
+            for (Class c:LibInfo.getSupportedDrivers())
+            {
+              System.out.println("\tModel: "+((LaserCutter) c.newInstance()).getModelName()+"\t Driver:"+c.getCanonicalName());
+            }
+            System.out.println("\n(c) 2011 by T.Oster, Media Computing Group, RWTH Aachen University");
             System.out.println("This Software is licensed under the GNU Lesser General Public License (LGPL)");
             System.exit(0);
           }

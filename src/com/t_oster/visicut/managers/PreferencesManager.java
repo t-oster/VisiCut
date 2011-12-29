@@ -19,6 +19,8 @@
 package com.t_oster.visicut.managers;
 
 import com.t_oster.liblasercut.drivers.EpilogCutter;
+import com.t_oster.liblasercut.drivers.EpilogHelix;
+import com.t_oster.liblasercut.drivers.EpilogZing;
 import com.t_oster.visicut.Preferences;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
@@ -90,7 +92,7 @@ public final class PreferencesManager
       "com.t_oster.liblasercut.drivers.LaosCutter"
     });
     LaserDevice epilog = new LaserDevice();
-    epilog.setLaserCutter(new EpilogCutter("137.226.56.228"));
+    epilog.setLaserCutter(new EpilogZing("137.226.56.228"));
     epilog.setName("Epilog ZING @ Fablab");
     epilog.setMaterialsPath("cutters/epilog/materials");
     epilog.setDescription("The Epilog ZING 30W Laser which is in the Fablab");
@@ -100,15 +102,15 @@ public final class PreferencesManager
     preferences.setLaserDevices(new LinkedList<LaserDevice>());
     preferences.getLaserDevices().add(epilog);
     preferences.setLastLaserDevice(epilog);
-    LaserDevice trotec = new LaserDevice();
-    trotec.setLaserCutter(new EpilogCutter("137.226.56.228"));
-    trotec.setName("Trotec SP 1500 !@ Fablab");
-    trotec.setMaterialsPath("settings/cutters/trotec/materials");
-    trotec.setDescription("The Trotec SP 1500 Laser which is not in the Fablab");
-    trotec.setCameraURL("http://137.226.56.115:8080/defaultbackground.jpg");
-    trotec.setThumbnailPath("settings/cutters/trotec/trotec.png");
-    trotec.setCameraCalibration(new AffineTransform(0.19630256844482077,0.0,0.0,0.19954840530623766,124.33334350585938,484.3333282470703));
-    preferences.getLaserDevices().add(trotec);
+    LaserDevice legend = new LaserDevice();
+    legend.setLaserCutter(new EpilogHelix("137.226.56.228"));
+    legend.setName("Epilog HELIX");
+    legend.setMaterialsPath("settings/cutters/trotec/materials");
+    legend.setDescription("The Trotec SP 1500 Laser which is not in the Fablab");
+    legend.setCameraURL("http://137.226.56.115:8080/defaultbackground.jpg");
+    legend.setThumbnailPath("settings/cutters/trotec/trotec.png");
+    legend.setCameraCalibration(new AffineTransform(0.19630256844482077,0.0,0.0,0.19954840530623766,124.33334350585938,484.3333282470703));
+    preferences.getLaserDevices().add(legend);
   }
 
   public Preferences getPreferences()

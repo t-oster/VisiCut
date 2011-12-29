@@ -20,6 +20,7 @@ package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.drivers.EpilogCutter;
+import com.t_oster.liblasercut.drivers.EpilogZing;
 import com.t_oster.visicut.gui.ImageListable;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeListener;
@@ -58,7 +59,7 @@ public class LaserDevice implements ImageListable
     propertyChangeSupport.firePropertyChange(PROP_MATERIALSPATH, oldMaterialsPath, materialsPath);
   }
 
-  protected LaserCutter laserCutter = new EpilogCutter();
+  protected LaserCutter laserCutter = new EpilogZing();
   public static final String PROP_LASERCUTTER = "laserCutter";
 
   /**

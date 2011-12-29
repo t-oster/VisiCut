@@ -18,7 +18,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.liblasercut;
+package com.t_oster.visicut.misc;
 
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;

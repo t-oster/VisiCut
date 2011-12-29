@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut;
 
+import com.t_oster.liblasercut.LibInfo;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.MaterialProfile;
 import java.beans.PropertyChangeListener;
@@ -151,12 +152,23 @@ public class Preferences
 
   /**
    * Get the value of availableLasercutterDrivers
+   * and adds all Builtin classes of LibLaserCut
    *
    * @return the value of availableLasercutterDrivers
    */
   public String[] getAvailableLasercutterDrivers()
   {
-    return availableLasercutterDrivers;
+    Class[] builtin = LibInfo.getSupportedDrivers();
+    String[] result = new String[builtin.length + (availableLasercutterDrivers != null ? availableLasercutterDrivers.length : 0)];
+    for (int i=0;i<builtin.length;i++)
+    {
+      result[i]=builtin[i].getCanonicalName();
+    }
+    if (availableLasercutterDrivers!=null)
+    {
+      System.arraycopy(availableLasercutterDrivers, 0, result, builtin.length, availableLasercutterDrivers.length);
+    }
+    return result;
   }
 
   /**
