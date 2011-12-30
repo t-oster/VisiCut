@@ -4,6 +4,16 @@
   <void method="add">
    <object class="com.t_oster.visicut.model.mapping.Mapping">
     <void property="a">
+     <object class="com.t_oster.visicut.model.mapping.FilterSet"/>
+    </void>
+    <void property="b">
+     <string>Engrave Drawing</string>
+    </void>
+   </object>
+  </void>
+  <void method="add">
+   <object class="com.t_oster.visicut.model.mapping.Mapping">
+    <void property="a">
      <object class="com.t_oster.visicut.model.mapping.FilterSet">
       <void property="useOuterShape">
        <boolean>true</boolean>
@@ -15,18 +25,11 @@
     </void>
    </object>
   </void>
-  <void method="add">
-   <object class="com.t_oster.visicut.model.mapping.Mapping">
-    <void property="a">
-     <object class="com.t_oster.visicut.model.mapping.FilterSet"/>
-    </void>
-    <void property="b">
-     <string>Engrave Photo</string>
-    </void>
-   </object>
+  <void property="description">
+   <string>Engraved everything using the Average Dithering algorithm and cuts the outline</string>
   </void>
   <void property="name">
-   <string>Engrave Photo + Cut outline</string>
+   <string>Engrave Drawing + Cut Outline</string>
   </void>
  </object>
 </java>
