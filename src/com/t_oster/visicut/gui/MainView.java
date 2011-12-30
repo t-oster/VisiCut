@@ -28,6 +28,7 @@ import com.apple.eawt.AppEvent.AboutEvent;
 import com.apple.eawt.AppEvent.QuitEvent;
 import com.apple.eawt.QuitResponse;
 import com.t_oster.liblasercut.IllegalJobException;
+import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
@@ -37,6 +38,7 @@ import com.t_oster.visicut.gui.beans.ImageComboBox;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.MultiFilter;
+import com.t_oster.visicut.misc.ProgressWindow;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
@@ -1266,14 +1268,31 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       @Override
       public void run()
       {
-        MainView.this.progressBar.setIndeterminate(true);
+        ProgressListener pl = new ProgressListener()
+        {
+          public void progressChanged(Object o, int i)
+          {
+            MainView.this.progressBar.setValue(i);
+            MainView.this.progressBar.repaint();
+          }
+          public void taskChanged(Object o, String string)
+          {
+            MainView.this.progressBar.setString(string);
+          }   
+        };
+        MainView.this.progressBar.setMinimum(0);
+        MainView.this.progressBar.setMaximum(100);
+        MainView.this.progressBar.setValue(1);
+        MainView.this.progressBar.setStringPainted(true);
         MainView.this.executeJobButton.setEnabled(false);
         MainView.this.executeJobMenuItem.setEnabled(false);
         try
         {
           jobnumber++;
-          MainView.this.visicutModel1.sendJob("VisiCut " + jobnumber);
-          MainView.this.progressBar.setIndeterminate(false);
+          MainView.this.visicutModel1.sendJob("VisiCut " + jobnumber, pl);
+          MainView.this.progressBar.setValue(0);
+          MainView.this.progressBar.setString("");
+          MainView.this.progressBar.setStringPainted(false);
           JOptionPane.showMessageDialog(MainView.this, "Job was sent as 'VisiCut " + jobnumber + "'\n\n Please:\n- Close the lid\n- Switch the Ventilation on\n- and press START on the Lasercutter:\n     " + MainView.this.visicutModel1.getSelectedLaserDevice().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
           if (profileChanged)
           {

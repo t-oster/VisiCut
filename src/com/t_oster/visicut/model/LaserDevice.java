@@ -19,7 +19,6 @@
 package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.LaserCutter;
-import com.t_oster.liblasercut.drivers.EpilogCutter;
 import com.t_oster.liblasercut.drivers.EpilogZing;
 import com.t_oster.visicut.gui.ImageListable;
 import java.awt.geom.AffineTransform;

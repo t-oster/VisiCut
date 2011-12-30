@@ -23,6 +23,7 @@ import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.RasterPart;
 import com.t_oster.liblasercut.Raster3dPart;
 import com.t_oster.liblasercut.VectorPart;
@@ -738,11 +739,28 @@ public class VisicutModel
     return job;
   }
 
-  public void sendJob(String name) throws IllegalJobException, SocketTimeoutException, Exception
+  public void sendJob(String name) throws IllegalJobException, Exception
   {
-    LaserCutter instance = this.getSelectedLaserDevice().getLaserCutter();
+    this.sendJob(name, null);
+  }
+  
+  public void sendJob(String name, ProgressListener pl) throws IllegalJobException, SocketTimeoutException, Exception
+  {
+    LaserCutter lasercutter = this.getSelectedLaserDevice().getLaserCutter();
+    if (pl != null) 
+    {
+      pl.taskChanged(this, "preparing job");
+    }
     LaserJob job = this.prepareJob(name);
-    instance.sendJob(job);
+    if (pl != null)
+    {
+      pl.taskChanged(this, "sending job");
+      lasercutter.sendJob(job, pl);
+    }
+    else
+    {
+      lasercutter.sendJob(job);
+    }
   }
 
   private void setLoadedFile(File f)

@@ -18,7 +18,6 @@
  **/
 package com.t_oster.visicut.managers;
 
-import com.t_oster.liblasercut.drivers.EpilogCutter;
 import com.t_oster.liblasercut.drivers.EpilogHelix;
 import com.t_oster.liblasercut.drivers.EpilogZing;
 import com.t_oster.visicut.Preferences;
@@ -87,10 +86,7 @@ public final class PreferencesManager
       "com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter",
       "com.t_oster.visicut.model.graphicelements.epssupport.EPSImporter"
     });
-    preferences.setAvailableLasercutterDrivers(new String[]{
-      "com.t_oster.liblasercut.drivers.EpilogCutter",
-      "com.t_oster.liblasercut.drivers.LaosCutter"
-    });
+    preferences.setAvailableLasercutterDrivers(new String[]{});
     LaserDevice epilog = new LaserDevice();
     epilog.setLaserCutter(new EpilogZing("137.226.56.228"));
     epilog.setName("Epilog ZING @ Fablab");

@@ -20,6 +20,8 @@
  */
 package com.t_oster.visicut.misc;
 
+import java.awt.Dialog;
+import java.awt.Frame;
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -42,10 +44,24 @@ public class ProgressWindow extends JDialog
   private JProgressBar progBar;
   private JLabel label;
   private JLabel percent;
-  private int min;
-  private int max;
-  private int state;
+  private int min = 0;
+  private int max = 100;
+  private int state = 0;
+  private String title = "Fortschritt";
+  private String text = "...";
 
+  public ProgressWindow(Frame parent, boolean modal)
+  {
+    super(parent, modal);
+    this.initializeComponents();
+  }
+  
+  public ProgressWindow(Dialog parent, boolean modal)
+  {
+    super(parent, modal);
+    this.initializeComponents();
+  }
+  
   public ProgressWindow()
   {
     this(0, 100);
@@ -63,6 +79,15 @@ public class ProgressWindow extends JDialog
 
   public ProgressWindow(String title, String text, int min, int max)
   {
+    this.title = title;
+    this.text = text;
+    this.min = min;
+    this.max = max;
+    this.initializeComponents();
+  }
+  
+  private void initializeComponents()
+  {
     this.setTitle(title);
     this.setLocationByPlatform(true);
     this.setResizable(false);
@@ -77,7 +102,7 @@ public class ProgressWindow extends JDialog
     mainPanel.add(label);
     this.setContentPane(mainPanel);
     this.pack();
-    this.setState(min, max, 0);
+    this.setState(min, max, state);
   }
 
   public void setText(String text)
