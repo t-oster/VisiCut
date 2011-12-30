@@ -23,8 +23,11 @@ import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.MaterialProfile;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class Preferences
 {
@@ -158,17 +161,16 @@ public class Preferences
    */
   public String[] getAvailableLasercutterDrivers()
   {
-    Class[] builtin = LibInfo.getSupportedDrivers();
-    String[] result = new String[builtin.length + (availableLasercutterDrivers != null ? availableLasercutterDrivers.length : 0)];
-    for (int i=0;i<builtin.length;i++)
+    Set<String> result = new LinkedHashSet<String>();
+    for (Class c : LibInfo.getSupportedDrivers())
     {
-      result[i]=builtin[i].getCanonicalName();
+      result.add(c.getCanonicalName());
     }
     if (availableLasercutterDrivers!=null)
     {
-      System.arraycopy(availableLasercutterDrivers, 0, result, builtin.length, availableLasercutterDrivers.length);
+      result.addAll(Arrays.asList(availableLasercutterDrivers));
     }
-    return result;
+    return result.toArray(new String[0]);
   }
 
   /**
