@@ -49,6 +49,7 @@ public abstract class SVGObject implements GraphicObject
     Stroke_Width,
     Stroke_Color,
     Fill_Color,
+    Color,
     Type,
     Group,
     Id,

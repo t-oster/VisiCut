@@ -134,6 +134,20 @@ public class SVGShape extends SVGObject implements ShapeObject
         result.add("Shape");
         break;
       }
+      case Color:
+      {
+        StyleAttribute sa = getStyleAttributeRecursive("stroke");
+        if (sa != null && sa.getColorValue() != null)
+        {
+          result.add(sa.getColorValue());
+        }
+        sa = getStyleAttributeRecursive("fill");
+        if (sa != null && sa.getColorValue() != null)
+        {
+          result.add(sa.getColorValue());
+        }
+        break;
+      }
       case Stroke_Color:
       {
         StyleAttribute sa = getStyleAttributeRecursive("stroke");
