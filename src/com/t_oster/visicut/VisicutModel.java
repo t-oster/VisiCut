@@ -498,7 +498,7 @@ public class VisicutModel
     if (this.getValidResolution() != 500)
     {//Default resolution changed => scale loaded set
       AffineTransform tr = set.getBasicTransform();
-      tr.scale(this.getValidResolution()/500, this.getValidResolution()/500);
+      tr.scale(((double) this.getValidResolution())/500, ((double) this.getValidResolution())/500);
       set.setBasicTransform(tr);
     }
     return set;
