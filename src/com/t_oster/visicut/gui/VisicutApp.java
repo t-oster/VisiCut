@@ -324,6 +324,14 @@ public class VisicutApp extends SingleFrameApplication
     {
       search:
       {
+        for (MappingSet ms : model.generateDefaultMappings())
+        {
+          if (mapping.equals(ms.getName()))
+          {
+            model.setMappings(ms);
+            break search;
+          }
+        }
         for (MappingSet ms : MappingManager.getInstance().getMappingSets())
         {
           if (mapping.equals(ms.getName()))

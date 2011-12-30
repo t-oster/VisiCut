@@ -18,9 +18,6 @@
  **/
 package com.t_oster.visicut.managers;
 
-import com.t_oster.visicut.model.mapping.FilterSet;
-import com.t_oster.visicut.model.mapping.Mapping;
-import com.t_oster.visicut.model.mapping.MappingFilter;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

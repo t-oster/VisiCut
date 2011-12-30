@@ -39,6 +39,7 @@ import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
+import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -61,9 +62,11 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -102,6 +105,33 @@ public class VisicutModel
     {
       System.err.println("Should not use public Constructor of VisicutModel");
     }
+  }
+  
+  /**
+     * Generates an Everything=> Profile mapping for every
+     * Occuring MaterialProfile
+     * @return 
+     */
+  public List<MappingSet> generateDefaultMappings()
+  {
+    List<MappingSet> result = new LinkedList<MappingSet>();
+    Set<String> profiles = new LinkedHashSet<String>();
+    for (MaterialProfile mp : this.getAllMaterials())
+    {
+      for (LaserProfile lp:mp.getLaserProfiles())
+      {
+        if (!profiles.contains(lp.getName()))
+        {
+          profiles.add(lp.getName());
+          MappingSet set = new MappingSet();
+          set.add(new Mapping(new FilterSet(), lp.getName()));
+          set.setName("Everything=>"+lp.getName());
+          set.setDescription("An auto-generated mapping");
+          result.add(set);
+        }
+      }
+    }
+    return result;
   }
   
   protected Integer resolution = null;

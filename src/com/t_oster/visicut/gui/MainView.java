@@ -276,6 +276,14 @@ public class MainView extends javax.swing.JFrame
     this.predefinedMappingList.clearList();
     this.predefinedMappingList.addItem("no mapping");
     this.predefinedMappingList.setSelectedIndex(0);
+    for (MappingSet m : this.visicutModel1.generateDefaultMappings())
+    {
+      this.predefinedMappingList.addItem(m);
+      if (m.equals(ss))
+      {
+        this.predefinedMappingList.setSelectedValue(m, true);
+      }
+    }
     for (MappingSet m : this.mappingManager1.getMappingSets())
     {
       this.predefinedMappingList.addItem(m);
