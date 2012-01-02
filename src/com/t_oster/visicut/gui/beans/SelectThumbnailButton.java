@@ -117,7 +117,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
 
   public void actionPerformed(ActionEvent ae)
   {
-    if (true || Helper.isMacOS())
+    if (Helper.isMacOS())
     {
       FileDialog fd = new FileDialog((Frame) null, "Please select a thumbnail");
       fd.setMode(FileDialog.LOAD);
