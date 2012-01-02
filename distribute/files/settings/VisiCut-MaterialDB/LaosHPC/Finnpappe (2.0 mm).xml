@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0_25" class="java.beans.XMLDecoder"> 
+ <object class="com.t_oster.visicut.model.MaterialProfile"> 
+  <void property="color"> 
+   <object class="java.awt.Color"> 
+    <int>195</int> 
+    <int>130</int> 
+    <int>40</int> 
+    <int>255</int> 
+   </object> 
+  </void> 
+  <void property="depth"> 
+   <float>2.0</float> 
+  </void> 
+  <void property="description"> 
+   <string>a paper based material</string> 
+  </void> 
+  <void property="laserProfiles"> 
+   <void method="add"> 
+    <object class="com.t_oster.visicut.model.VectorProfile"> 
+     <void property="color"> 
+      <object class="java.awt.Color"> 
+       <int>71</int> 
+       <int>71</int> 
+       <int>53</int> 
+       <int>255</int> 
+      </object> 
+     </void> 
+     <void property="description"> 
+      <string>A completely cut through line</string> 
+     </void> 
+     <void property="isCut"> 
+      <boolean>true</boolean> 
+     </void> 
+     <void property="laserProperties"> 
+      <void method="add"> 
+       <object class="com.t_oster.liblasercut.LaserProperty"> 
+        <void property="power"> 
+         <int>80</int> 
+        </void> 
+       </object> 
+      </void> 
+     </void> 
+     <void property="thumbnailPath"> 
+      <string>./Finnpappe/cutline.png</string> 
+     </void> 
+     <void property="width"> 
+      <float>0.5</float> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="add"> 
+    <object class="com.t_oster.visicut.model.VectorProfile"> 
+     <void property="color"> 
+      <object class="java.awt.Color"> 
+       <int>82</int> 
+       <int>80</int> 
+       <int>59</int> 
+       <int>255</int> 
+      </object> 
+     </void> 
+     <void property="laserProperties"> 
+      <void method="add"> 
+       <object class="com.t_oster.liblasercut.LaserProperty"> 
+        <void property="focus"> 
+         <float>10.0</float> 
+        </void> 
+        <void property="power"> 
+         <int>70</int> 
+        </void> 
+       </object> 
+      </void> 
+     </void> 
+     <void property="name"> 
+      <string>Engraved Line</string> 
+     </void> 
+     <void property="thumbnailPath"> 
+      <string>./Finnpappe/bigline.png</string> 
+     </void> 
+     <void property="width"> 
+      <float>1.5</float> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="add"> 
+    <object class="com.t_oster.visicut.model.RasterProfile"> 
+     <void property="color"> 
+      <object class="java.awt.Color"> 
+       <int>152</int> 
+       <int>75</int> 
+       <int>0</int> 
+       <int>255</int> 
+      </object> 
+     </void> 
+     <void property="description"> 
+      <string>Engraves every pixel which is darker than the average pixel</string> 
+     </void> 
+     <void property="laserProperties"> 
+      <void method="add"> 
+       <object class="com.t_oster.liblasercut.LaserProperty"> 
+        <void property="power"> 
+         <int>80</int> 
+        </void> 
+       </object> 
+      </void> 
+     </void> 
+     <void property="thumbnailPath"> 
+      <string>./Finnpappe/average.png</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="add"> 
+    <object class="com.t_oster.visicut.model.RasterProfile"> 
+     <void property="color"> 
+      <object class="java.awt.Color"> 
+       <int>152</int> 
+       <int>75</int> 
+       <int>0</int> 
+       <int>255</int> 
+      </object> 
+     </void> 
+     <void property="description"> 
+      <string>Tries to represent colors by density</string> 
+     </void> 
+     <void property="ditherAlgorithm"> 
+      <object class="com.t_oster.liblasercut.BlackWhiteRaster$DitherAlgorithm" method="valueOf"> 
+       <string>FLOYD_STEINBERG</string> 
+      </object> 
+     </void> 
+     <void property="laserProperties"> 
+      <void method="add"> 
+       <object class="com.t_oster.liblasercut.LaserProperty"> 
+        <void property="power"> 
+         <int>80</int> 
+        </void> 
+       </object> 
+      </void> 
+     </void> 
+     <void property="name"> 
+      <string>Engrave Photo</string> 
+     </void> 
+     <void property="thumbnailPath"> 
+      <string>./Finnpappe/floydsteinberg.png</string> 
+     </void> 
+    </object> 
+   </void> 
+   <void method="add"> 
+    <object class="com.t_oster.visicut.model.Raster3dProfile"> 
+     <void property="color"> 
+      <object class="java.awt.Color"> 
+       <int>152</int> 
+       <int>75</int> 
+       <int>48</int> 
+       <int>0</int> 
+      </object> 
+     </void> 
+     <void property="description"> 
+      <string>Scales the Laserpower to pixel darkness</string> 
+     </void> 
+     <void property="laserProperties"> 
+      <void method="add"> 
+       <object class="com.t_oster.liblasercut.LaserProperty"> 
+        <void property="power"> 
+         <int>80</int> 
+        </void> 
+       </object> 
+      </void> 
+     </void> 
+     <void property="thumbnailPath"> 
+      <string>./Finnpappe/3d.png</string> 
+     </void> 
+    </object> 
+   </void> 
+  </void> 
+  <void property="name"> 
+   <string>Finnpappe</string> 
+  </void> 
+  <void property="thumbnailPath"> 
+   <string>./Finnpappe/profile.png</string> 
+  </void> 
+ </object> 
+</java> 
