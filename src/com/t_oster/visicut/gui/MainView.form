@@ -610,12 +610,12 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="0" pref="415" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" alignment="0" pref="411" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="0" pref="370" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" alignment="0" pref="364" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -664,10 +664,10 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="customMappingComboBox" pref="328" max="32767" attributes="0"/>
+                          <Component id="customMappingComboBox" pref="324" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jScrollPane2" alignment="0" pref="415" max="32767" attributes="0"/>
+                      <Component id="jScrollPane2" alignment="0" pref="411" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
@@ -679,7 +679,7 @@
                               <Component id="customMappingComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane2" pref="309" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" pref="303" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -864,7 +864,9 @@
                   <Component id="showEngravingCb" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="showCuttingCb" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="45" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="cbPhoto" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -874,6 +876,7 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="showEngravingCb" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="showCuttingCb" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbPhoto" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -908,6 +911,17 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="showCuttingCbActionPerformed"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="cbPhoto">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="cbPhoto.text"/>
+            <Property name="name" type="java.lang.String" value="cbPhoto" noResource="true"/>
+          </Properties>
+          <BindingProperties>
+            <BindingProperty name="selected" source="previewPanel" sourcePath="${showBackgroundImage}" target="cbPhoto" targetPath="selected" updateStrategy="0" immediately="false">
+              <Property name="name" type="java.lang.String" value="showBgImage"/>
+            </BindingProperty>
+          </BindingProperties>
         </Component>
       </SubComponents>
     </Container>

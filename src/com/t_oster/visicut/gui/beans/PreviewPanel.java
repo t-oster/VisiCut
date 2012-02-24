@@ -343,7 +343,37 @@ public class PreviewPanel extends ZoomablePanel
     }
     this.renderBuffer.clear();
   }
-  
+  protected boolean showBackgroundImage = true;
+
+  /**
+   * Get the value of showBackgroundImage
+   *
+   * @return the value of showBackgroundImage
+   */
+  public boolean isShowBackgroundImage()
+  {
+    return showBackgroundImage;
+  }
+
+  /**
+   * Set the value of showBackgroundImage
+   *
+   * @param showBackgroundImage new value of showBackgroundImage
+   */
+  public void setShowBackgroundImage(boolean showBackgroundImage)
+  {
+    this.showBackgroundImage = showBackgroundImage;
+    if (this.backgroundImage != null && this.showBackgroundImage)
+    {
+      this.setOuterBounds(new Dimension(backgroundImage.getWidth(), backgroundImage.getHeight()));
+    }
+    else
+    {
+      this.setOuterBounds(new Dimension((int) Helper.mm2px(this.material.getWidth()), (int) Helper.mm2px(this.material.getHeight())));
+    }
+    this.repaint();
+  }
+
   /**
    * Get the value of backgroundImage
    *
@@ -362,9 +392,13 @@ public class PreviewPanel extends ZoomablePanel
   public void setBackgroundImage(RenderedImage backgroundImage)
   {
     this.backgroundImage = backgroundImage;
-    if (this.backgroundImage != null)
+    if (this.backgroundImage != null && this.showBackgroundImage)
     {
       this.setOuterBounds(new Dimension(backgroundImage.getWidth(), backgroundImage.getHeight()));
+    }
+    else
+    {
+      this.setOuterBounds(new Dimension((int) Helper.mm2px(this.material.getWidth()), (int) Helper.mm2px(this.material.getHeight())));
     }
     this.repaint();
   }
@@ -384,7 +418,7 @@ public class PreviewPanel extends ZoomablePanel
 
     public void propertyChange(PropertyChangeEvent pce)
     {
-      if (PreviewPanel.this.backgroundImage == null)
+      if (PreviewPanel.this.backgroundImage == null || !PreviewPanel.this.showBackgroundImage)
       {
         PreviewPanel.this.setOuterBounds(new Dimension((int) Helper.mm2px(PreviewPanel.this.material.getWidth()), (int) Helper.mm2px(PreviewPanel.this.material.getHeight())));
       }
@@ -407,7 +441,7 @@ public class PreviewPanel extends ZoomablePanel
     if (this.material != null)
     {
       this.material.addPropertyChangeListener(materialObserver);
-      if (this.backgroundImage == null)
+      if (this.backgroundImage == null || !this.showBackgroundImage)
       {
         this.setOuterBounds(new Dimension((int) Helper.mm2px(this.material.getWidth()), (int) Helper.mm2px(this.material.getHeight())));
       }
@@ -460,7 +494,7 @@ public class PreviewPanel extends ZoomablePanel
   public void setGraphicObjects(GraphicSet graphicObjects)
   {
     this.graphicObjects = graphicObjects;
-    if (graphicObjects != null && this.backgroundImage == null && this.material == null)
+    if (graphicObjects != null && (this.backgroundImage == null || !this.showBackgroundImage) && this.material == null)
     {
       Rectangle bb = Helper.toRect(this.graphicObjects.getBoundingBox());
       this.setOuterBounds(new Dimension(bb.x + bb.width, bb.y + bb.height));
@@ -487,7 +521,7 @@ public class PreviewPanel extends ZoomablePanel
       Graphics2D gg = (Graphics2D) g;
       gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
       gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-      if (backgroundImage != null)
+      if (backgroundImage != null && showBackgroundImage)
       {
         gg.drawRenderedImage(backgroundImage, null);
         if (this.previewTransformation != null)
@@ -500,7 +534,7 @@ public class PreviewPanel extends ZoomablePanel
       if (this.material != null)
       {
         Color c = this.material.getColor();
-        if (this.backgroundImage != null)
+        if (this.backgroundImage != null && showBackgroundImage)
         {
           gg.setColor(Color.BLACK);
           gg.drawRect(0, 0, (int) Helper.mm2px(material.getWidth()), (int) Helper.mm2px(material.getHeight()));
