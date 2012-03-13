@@ -109,6 +109,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
         }
       }
     });
+    this.jTable1.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
   }
   protected LaserDevice laserDevice = null;
   public static final String PROP_LASERDEVICE = "laserDevice";
