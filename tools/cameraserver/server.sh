@@ -18,8 +18,27 @@
 #     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
 #
 PORT=8088
-IP=$(ifconfig  | grep 'inet Adresse:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
-CAMERAS=$(gphoto2 --auto-detect|tail -n +3)
+source config.sh
+if [ "$TOOL" == "gphoto2" ]
+then
+	if [ ! -x "$GPHOTO2BIN" ]
+	then
+		echo "Could not find gphoto2 ($GPHOTO2BIN)"
+		exit 1
+	fi
+	CAMERAS=$("$GPHOTO2BIN" --auto-detect|tail -n +3)
+elif [ "$TOOL" == "snap" ]
+then
+	if [ ! -x "$SNAPBIN" ]
+	then
+		echo "Could not find gphoto2 ($SNAPBIN)"
+		exit 1
+	fi
+	CAMERAS=$($SNAPBIN -l|tail -n +1)
+else
+	echo "Error: Unknown tool $TOOL"
+	exit 1
+fi
 if [ "$CAMERAS" == "" ]
 then
 	echo "Error: No camera detected"
@@ -28,7 +47,11 @@ else
 	echo "Detected Cameras:"
 	echo $CAMERAS
 fi
-echo "Starting Webserver. Listening on http://$IP:$PORT"
+echo "Starting Webserver. Listening on http://localhost:$PORT"
+echo ""
+echo "VisiCut Users: Please set your Camera URL to http://localhost:$PORT/visicam.jpg"
+echo ""
+echo "Pleas press Ctrl+C to exit the server"
 shutdown()
 {
 	echo "Caught SIGTERM"
@@ -36,10 +59,21 @@ shutdown()
 	rm fifo
 	exit 0
 }
+rm -f fifo
 mkfifo fifo
 trap 'shutdown' SIGTERM SIGINT
 while :
 do 
-	netcat -l -p $PORT < fifo | ./capture.sh > fifo
+	echo "Waiting for Connection..."
+	if [ -x "$(which netcat)" ]
+	then
+		netcat -l -p $PORT < fifo | ./capture.sh > fifo
+	elif [ -x "$(which nc)" ]
+	then
+		nc -l $PORT < fifo | ./capture.sh > fifo
+	else
+		echo "Neither netcat, nor nc seems to work"
+		exit 1
+	fi
 	echo "Request completed."
 done
