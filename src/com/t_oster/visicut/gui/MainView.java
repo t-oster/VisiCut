@@ -1307,11 +1307,12 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         try
         {
           jobnumber++;
-          MainView.this.visicutModel1.sendJob("VisiCut " + jobnumber, pl);
+          String prefix = MainView.this.visicutModel1.getSelectedLaserDevice().getJobPrefix();
+          MainView.this.visicutModel1.sendJob(prefix+jobnumber, pl);
           MainView.this.progressBar.setValue(0);
           MainView.this.progressBar.setString("");
           MainView.this.progressBar.setStringPainted(false);
-          JOptionPane.showMessageDialog(MainView.this, "Job was sent as 'VisiCut " + jobnumber + "'\n\n Please:\n- Close the lid\n- Switch the Ventilation on\n- and press START on the Lasercutter:\n     " + MainView.this.visicutModel1.getSelectedLaserDevice().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
+          JOptionPane.showMessageDialog(MainView.this, "Job was sent as '"+ prefix + jobnumber + "'\n\n Please:\n- Close the lid\n- Switch the Ventilation on\n- and press START on the Lasercutter:\n     " + MainView.this.visicutModel1.getSelectedLaserDevice().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
           if (profileChanged)
           {
             if (JOptionPane.showConfirmDialog(MainView.this, "The LaserProfile has been changed. Do you want to keep your changes?", "Profile Changed", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)

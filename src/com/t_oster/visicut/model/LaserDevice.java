@@ -33,6 +33,31 @@ import java.beans.PropertyChangeSupport;
 public class LaserDevice implements ImageListable
 {
 
+  protected String jobPrefix = "visicut ";
+  public static final String PROP_JOBPREFIX = "jobPrefix";
+
+  /**
+   * Get the value of jobPrefix
+   *
+   * @return the value of jobPrefix
+   */
+  public String getJobPrefix()
+  {
+    return jobPrefix;
+  }
+
+  /**
+   * Set the value of jobPrefix
+   *
+   * @param jobPrefix new value of jobPrefix
+   */
+  public void setJobPrefix(String jobPrefix)
+  {
+    String oldJobPrefix = this.jobPrefix;
+    this.jobPrefix = jobPrefix;
+    propertyChangeSupport.firePropertyChange(PROP_JOBPREFIX, oldJobPrefix, jobPrefix);
+  }
+  
   protected String materialsPath = null;
   public static final String PROP_MATERIALSPATH = "materialsPath";
 
