@@ -1346,6 +1346,8 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             VisicutModel.getInstance().setMaterial(oldMaterial);
           }
         }
+        MainView.this.progressBar.setString("");
+        MainView.this.progressBar.setValue(0);
         MainView.this.executeJobButton.setEnabled(true);
         MainView.this.executeJobMenuItem.setEnabled(true);
       }
