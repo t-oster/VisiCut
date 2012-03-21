@@ -1,0 +1,49 @@
+# Maintainer: Thomas Oster <thomas.oster@rwth-aachen.de>
+pkgname=visicut-git
+pkgver=20120321
+pkgrel=1
+pkgdesc="A userfriendly tool to create, save and send Jobs to a Lasercutter"
+arch=(any)
+url="http://hci.rwth-aachen.de/visicut"
+license=('LGPL')
+groups=()
+depends=('java-environment' 'bash')
+makedepends=('git' 'apache-ant')
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=install
+source=(plf-mime.xml)
+noextract=()
+md5sums=('023d09901b9075e86821a23953e82710')
+
+_gitroot=../../../
+_gitname=master
+
+build() {
+  cd "$srcdir"
+  msg "Connecting to GIT server...."
+
+  if [[ -d "$_gitname" ]]; then
+    cd "$_gitname" && git pull origin
+    msg "The local files are updated."
+  else
+    git clone "$_gitroot" "$_gitname"
+  fi
+
+  msg "GIT checkout done or server timeout"
+  msg "Starting build..."
+
+  rm -rf "$srcdir/$_gitname-build"
+  git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+  cd "$srcdir/$_gitname-build"
+
+  make
+}
+
+package() {
+  cd "$srcdir/$_gitname-build"
+  make DESTDIR="$pkgdir/" install
+}

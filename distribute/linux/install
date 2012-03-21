@@ -1,0 +1,19 @@
+post_install() {
+	[[ -x usr/bin/xdg-icon-resource ]] && xdg-icon-resource install --context mimetypes --size 48 /usr/share/pixmaps/visicut.png x-application-plf || true
+	[[ -x usr/bin/xdg-mime ]] && xdg-mime install plf-mime.xml || true
+	[[ -x usr/bin/update-desktop-database ]] && update-desktop-database -q || true
+	[[ -x usr/bin/gtk-update-icon-cache ]] && gtk-update-icon-cache -q -t -f usr/share/icons/hicolor || true
+}
+
+post_upgrade() {
+	[[ -x usr/bin/update-desktop-database ]] && update-desktop-database -q || true
+	[[ -x usr/bin/gtk-update-icon-cache ]] && gtk-update-icon-cache -q -t -f usr/share/icons/hicolor || true
+}
+
+
+post_remove() {
+	[[ -x usr/bin/xdg-icon-resource ]] && xdg-icon-resource uninstall --context mimetypes --size 48 x-application-plf || true
+	[[ -x usr/bin/xdg-mime ]] && xdg-mime uninstall plf-mime.xml || true
+	[[ -x usr/bin/update-desktop-database ]] && update-desktop-database -q || true
+	[[ -x usr/bin/gtk-update-icon-cache ]] && gtk-update-icon-cache -q -t -f usr/share/icons/hicolor || true
+}

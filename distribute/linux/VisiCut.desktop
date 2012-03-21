@@ -6,5 +6,5 @@ Exec=/usr/bin/visicut %F
 Terminal=false
 Type=Application
 Categories=Graphics;VectorGraphics;GTK;
-MimeType=image/svg+xml;image/x-eps;image/jpeg;image/png;
+MimeType=image/svg+xml;image/x-eps;image/jpeg;image/png;application/x-plf;
 StartupNotify=true
