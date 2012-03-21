@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=VisiCut
 Comment=A userfriendly tool to create, save and send Jobs to a Lasercutter
-Icon=/usr/share/pixmaps/visicut.png
-Exec=/usr/bin/visicut %F
+Icon=visicut
+Exec=visicut %F
 Terminal=false
 Type=Application
 Categories=Graphics;VectorGraphics;GTK;
