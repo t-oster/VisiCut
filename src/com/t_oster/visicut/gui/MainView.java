@@ -1075,18 +1075,21 @@ public class MainView extends javax.swing.JFrame
         this.mappingTabbedPane.setSelectedComponent(this.predefinedMappingPanel);
         this.custom = null;
         this.visicutModel1.loadFromFile(this.mappingManager1, file);
-        if (this.custom == null)
+        if (this.visicutModel1.getMappings() != null)
         {
-          custom = this.visicutModel1.getMappings();
-          custom.setName("Loaded Mapping");
-          this.predefinedMappingList.addItem(custom);
+          if (this.custom == null)
+          {
+            custom = this.visicutModel1.getMappings();
+            custom.setName("Loaded Mapping");
+            this.predefinedMappingList.addItem(custom);
+          }
+          else
+          {
+            custom.clear();
+            custom.addAll(this.visicutModel1.getMappings());
+          }
+          this.predefinedMappingList.setSelectedValue(custom, true);
         }
-        else
-        {
-          custom.clear();
-          custom.addAll(this.visicutModel1.getMappings());
-        }
-        this.predefinedMappingList.setSelectedValue(custom, true);
       }
       else
       {

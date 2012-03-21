@@ -72,6 +72,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -367,18 +368,32 @@ public class VisicutModel
         in.close();
       }
     }
-    if (loadedMappings == null || transform == null || inputFile == null || !inputFile.exists())
+    if (loadedMappings == null)
+    {
+      JOptionPane.showMessageDialog(null, "Could not load Mapping from PLF File");
+    }
+    else
+    {
+      this.setMappings(loadedMappings);
+    }
+    if (transform == null)
+    {
+      JOptionPane.showMessageDialog(null, "Could not load Transform from PLF File");
+    }
+    if (inputFile == null || !inputFile.exists())
     {
       throw new ImportException("Corrupted Input File");
     }
-    this.setMappings(loadedMappings);
     GraphicSet gs = new GraphicSet();
     inputFile.deleteOnExit();
     gs = this.loadSetFromFile(inputFile);
     this.setSourceFile(inputFile);
     if (gs != null)
     {
-      gs.setTransform(transform);
+      if (transform != null)
+      {
+        gs.setTransform(transform);
+      }
       this.setGraphicObjects(gs);
       this.setLoadedFile(f);
     }
