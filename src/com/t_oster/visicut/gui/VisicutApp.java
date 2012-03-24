@@ -267,7 +267,6 @@ public class VisicutApp extends SingleFrameApplication
     {
       if (!ApplicationInstanceManager.registerInstance(port, (file != null ? file : "")))
       {
-        System.out.println("Another instance of this application is already running.  Exiting.");
         System.exit(0);
       }
       ApplicationInstanceManager.setApplicationInstanceListener(new ApplicationInstanceListener()
