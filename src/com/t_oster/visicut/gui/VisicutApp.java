@@ -24,6 +24,8 @@ import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.managers.ProfileManager;
+import com.t_oster.visicut.misc.ApplicationInstanceListener;
+import com.t_oster.visicut.misc.ApplicationInstanceManager;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.MaterialProfile;
@@ -47,6 +49,8 @@ public class VisicutApp extends SingleFrameApplication
 {
 
   public static Level GLOBAL_LOG_LEVEL = Level.SEVERE;
+  
+  private MainView mainView;
 
   /**
    * At startup create and show the main frame of the application.
@@ -54,7 +58,8 @@ public class VisicutApp extends SingleFrameApplication
   @Override
   protected void startup()
   {
-    show(new MainView());
+    mainView = new MainView();
+    show(mainView);
   }
 
   /**
@@ -69,7 +74,7 @@ public class VisicutApp extends SingleFrameApplication
 
   /**
    * A convenient static getter for the application instance.
-   * @return the instance of JepilogApp
+   * @return the instance of VisicutApp
    */
   public static VisicutApp getApplication()
   {
@@ -146,6 +151,7 @@ public class VisicutApp extends SingleFrameApplication
     String laserdevice = null;
     String material = null;
     Integer resolution = null;
+    Integer port = null;
     String mapping = null;
     String file = null;
     Float height = null;
@@ -161,6 +167,10 @@ public class VisicutApp extends SingleFrameApplication
           if ("--debug".equals(s) || "-d".equals(s))
           {
             GLOBAL_LOG_LEVEL = Level.FINE;
+          }
+          else if ("--singleinstanceport".equals(s))
+          {
+            port = Integer.parseInt(args[++i]);
           }
           else if ("--gtkfilechooser".equals(s))
           {
@@ -199,6 +209,7 @@ public class VisicutApp extends SingleFrameApplication
             System.out.println(" --laserdevice <laserdevice e.g. \"Epilog ZING @ Miltons Office\">");
             System.out.println(" --mapping <mapping e.g. \"Cut\">");
             System.out.println(" --total-height <Height in mm e.g. \"2.5\"> (only valid with --execute)");
+            System.out.println(" --singleinstanceport <port> (Tries to open the given port, to check for running instances)");
             System.out.println(" --gtkfilechooser (experimental)");
             System.exit(0);
           }
@@ -251,6 +262,26 @@ public class VisicutApp extends SingleFrameApplication
       System.err.println("Bad command line argumantes.");
       System.err.println("Use -h or --help for help");
       System.exit(1);
+    }
+    if (port != null)
+    {
+      if (!ApplicationInstanceManager.registerInstance(port, (file != null ? file : "")))
+      {
+        System.out.println("Another instance of this application is already running.  Exiting.");
+        System.exit(0);
+      }
+      ApplicationInstanceManager.setApplicationInstanceListener(new ApplicationInstanceListener()
+      {
+
+        public void newInstanceCreated(String message)
+        {
+          if (!"".equals(message))
+          {
+            VisicutApp.this.mainView.loadFile(new File(message));
+          }
+          VisicutApp.this.mainView.requestFocus();
+        }
+      });
     }
     if (laserdevice != null)
     {
