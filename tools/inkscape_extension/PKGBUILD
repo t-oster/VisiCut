@@ -22,7 +22,7 @@ changelog=
 source=(visicut_export.inx visicut_export.py)
 noextract=()
 md5sums=('2e52f274b2219e791767333d74b2613a'
-         '001e47006069e1e5a65fd3a85beab99c')
+         '791c66cf90e57a5e4371c27b88a0d661')
 
 package() {
   cd "$srcdir"

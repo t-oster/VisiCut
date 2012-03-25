@@ -64,13 +64,13 @@
          <boolean>true</boolean>
         </void>
         <void property="hostname">
-         <string>192.168.1.111</string>
+         <string>192.168.123.111</string>
         </void>
         <void property="port">
-         <int>2000</int>
+         <int>69</int>
         </void>
         <void property="useTftp">
-         <boolean>false</boolean>
+         <boolean>true</boolean>
         </void>
        </object>
       </void>
