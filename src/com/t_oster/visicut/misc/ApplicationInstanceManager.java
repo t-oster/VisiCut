@@ -48,8 +48,7 @@ public class ApplicationInstanceManager {
         // if success, listen to socket for new instance message, return true
         // if unable to open, connect to existing and send new instance message, return false
         try {
-            final ServerSocket socket = new ServerSocket(port, 10, InetAddress
-                    .getLocalHost());
+            final ServerSocket socket = new ServerSocket(port, 10, InetAddress.getByName(null));
             Thread instanceListenerThread = new Thread(new Runnable() {
                 public void run() {
                     boolean socketClosed = false;
