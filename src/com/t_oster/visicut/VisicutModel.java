@@ -755,7 +755,7 @@ public class VisicutModel
     Raster3dPart r3dp = new Raster3dPart(new LaserProperty());
     VectorPart vp = new VectorPart(new LaserProperty());
 
-    LaserJob job = new LaserJob(name, "123", "unk", this.getValidResolution(), r3dp, vp, rp);
+    LaserJob job = new LaserJob(name, name, "visicut", this.getValidResolution(), r3dp, vp, rp);
     //Aggregate all Mappings per LaserProfile
     HashMap<LaserProfile, GraphicSet> parts = new LinkedHashMap<LaserProfile, GraphicSet>();
     for (Mapping m : this.getMappings())
