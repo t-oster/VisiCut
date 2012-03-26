@@ -124,7 +124,7 @@
   <image
      width="128"
      height="128"
-     xlink:href="file:///home/thommy/NetBeansProjects/Visicut/icon.png"
+     xlink:href="icon.png"
      id="image3047"
      x="136.51875"
      y="96.804039" />
@@ -175,7 +175,7 @@
   <image
      width="104.72314"
      height="28.260265"
-     xlink:href="file:///home/thommy/NetBeansProjects/Visicut/rwth.png"
+     xlink:href="rwth.png"
      id="image3151"
      x="11.716106"
      y="263.53952"
