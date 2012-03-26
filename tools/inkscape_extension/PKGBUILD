@@ -21,9 +21,9 @@ install=
 changelog=
 source=(visicut_export.inx visicut_export.py daemonize.py)
 noextract=()
-md5sums=('2e52f274b2219e791767333d74b2613a'
-         '791c66cf90e57a5e4371c27b88a0d661'
-	 '2a711e173eeab0d913ed5a6e2b87e9fb')
+md5sums=('6528d3855d29c6dbf214a2cfd821e89a'
+         '149f73f0cfee79315fe5de3bb5a981f0'
+         '2a711e173eeab0d913ed5a6e2b87e9fb')
 
 package() {
   cd "$srcdir"
