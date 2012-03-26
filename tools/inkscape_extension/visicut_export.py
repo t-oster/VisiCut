@@ -56,4 +56,6 @@ tree = etree.parse(filename)
 if len(elements) > 0:
 	removeAllButThem(tree.getroot(), elements)
 tree.write(filename+".svg")
+import daemonize
+daemonize.createDaemon()
 Popen([VISICUTBIN]+arguments+[filename+".svg"])
