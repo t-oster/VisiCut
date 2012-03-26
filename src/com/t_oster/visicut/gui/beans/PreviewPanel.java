@@ -396,7 +396,7 @@ public class PreviewPanel extends ZoomablePanel
     {
       this.setOuterBounds(new Dimension(backgroundImage.getWidth(), backgroundImage.getHeight()));
     }
-    else
+    else if (this.material != null)
     {
       this.setOuterBounds(new Dimension((int) Helper.mm2px(this.material.getWidth()), (int) Helper.mm2px(this.material.getHeight())));
     }
