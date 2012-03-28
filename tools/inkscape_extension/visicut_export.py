@@ -26,7 +26,7 @@ from lxml import etree
 from subprocess import Popen
 # Store the IDs of selected Elements
 elements=[]
-arguments=[]
+arguments=["--singleinstanceport", "65432"]
 VISICUTBIN="visicut"
 
 for arg in sys.argv[1:]:
