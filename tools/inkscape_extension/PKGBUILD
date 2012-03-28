@@ -1,6 +1,6 @@
 # Maintainer: Thomas Oster <thomas.oster@rwth-aachen.de>
 pkgname=inkscape-extension-visicut
-pkgver=0.2
+pkgver=0.3
 pkgrel=1
 epoch=
 pkgdesc="An extension to run VisiCut on all selected elements directly from Inkscape"
@@ -22,7 +22,7 @@ changelog=
 source=(visicut_export.inx visicut_export.py daemonize.py)
 noextract=()
 md5sums=('6528d3855d29c6dbf214a2cfd821e89a'
-         '149f73f0cfee79315fe5de3bb5a981f0'
+         '21e1bb2ef5d882e68e7eb9b60d23d381'
          '2a711e173eeab0d913ed5a6e2b87e9fb')
 
 package() {
