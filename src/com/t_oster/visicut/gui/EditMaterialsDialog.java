@@ -24,8 +24,11 @@
  */
 package com.t_oster.visicut.gui;
 
+import com.t_oster.liblasercut.BlackWhiteRaster;
+import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.visicut.gui.beans.EditableTableProvider;
-import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.*;
+import java.awt.Color;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
@@ -219,7 +222,48 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
   public Object getNewInstance()
   {
-    return new MaterialProfile();
+    MaterialProfile np = new MaterialProfile();
+    np.setName("Unnamed Material");
+    np.setColor(Color.LIGHT_GRAY);
+    np.setDepth(2);
+    List<LaserProfile> lps = new LinkedList<LaserProfile>();
+    VectorProfile l = new VectorProfile();
+    l.setName("Cut Line");
+    l.setDescription("A completely cut through line");
+    l.setColor(Color.black);
+    l.setIsCut(true);
+    List<LaserProperty> ll = new LinkedList<LaserProperty>();
+    ll.add(new LaserProperty());
+    l.setLaserProperties(ll);
+    lps.add(l);
+    RasterProfile r = new RasterProfile();
+    r.setName("Engrave Drawing");
+    r.setDescription("Engraving with sharp edges");
+    r.setColor(Color.black);
+    r.setDitherAlgorithm(BlackWhiteRaster.DitherAlgorithm.AVERAGE);
+    ll = new LinkedList<LaserProperty>();
+    ll.add(new LaserProperty());
+    r.setLaserProperties(ll);
+    lps.add(r);
+    r = new RasterProfile();
+    r.setName("Engrave Photo");
+    r.setDescription("Engraving with the Floyd-Steinberg algorithm for good luminance approximation.");
+    r.setColor(Color.black);
+    r.setDitherAlgorithm(BlackWhiteRaster.DitherAlgorithm.FLOYD_STEINBERG);
+    ll = new LinkedList<LaserProperty>();
+    ll.add(new LaserProperty());
+    r.setLaserProperties(ll);
+    lps.add(r);
+    Raster3dProfile r3 = new Raster3dProfile();
+    r3.setName("Engrave 3d");
+    r3.setDescription("Dark colors get engraved deeper than bright colors.");
+    r3.setColor(Color.black);
+    ll = new LinkedList<LaserProperty>();
+    ll.add(new LaserProperty());
+    r3.setLaserProperties(ll);
+    lps.add(r3);
+    np.setLaserProfiles(lps);
+    return np;
   }
 
   public Object editObject(Object o)
