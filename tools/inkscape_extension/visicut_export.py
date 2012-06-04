@@ -98,9 +98,12 @@ try:
   if which(VISICUTBIN) == None:
     sys.stderr.write("Error: Can't find VisiCut at '"+VISICUTBIN+"'. Please start VisiCut manually, add '"+VISICUTBIN+"' to the PATH Variable or change the VISICUTBIN variable in the Inkscape Extension.\n")
   else:
-    from subprocess import Popen    
-    import daemonize
-    daemonize.createDaemon()
+    try:
+      from subprocess import Popen    
+      import daemonize
+      daemonize.createDaemon()
+    except:
+      sys.stderr.write("Could not daemonize. Sorry, but Inkscape was blocked until VisiCut is closed")
     Popen([VISICUTBIN]+arguments+[filename+".svg"])
 except:
   sys.stderr.write("Can not start VisiCut ("+str(sys.exc_info()[0])+"). Please start manually or change the VISICUTBIN variable in the Inkscape-Extension script\n")
