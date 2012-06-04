@@ -1,6 +1,6 @@
 # Maintainer: Thomas Oster <thomas.oster@rwth-aachen.de>
 pkgname=visicut-git
-pkgver=20120329
+pkgver=20120604
 pkgrel=1
 pkgdesc="A userfriendly tool to create, save and send Jobs to a Lasercutter"
 arch=(any)
