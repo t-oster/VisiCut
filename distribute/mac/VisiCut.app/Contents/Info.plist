@@ -37,6 +37,8 @@
 		<string>1.5+</string>
 		<key>MainClass</key>
 		<string>com.t_oster.visicut.gui.VisicutApp</string>
+		<key>Arguments</key>
+		<string>--singleinstanceport 6543</string>
 		<key>Properties</key>
 		<dict>
 			<key>apple.laf.useScreenMenuBar</key>
