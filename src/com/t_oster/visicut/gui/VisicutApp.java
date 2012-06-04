@@ -274,7 +274,7 @@ public class VisicutApp extends SingleFrameApplication
 
         public void newInstanceCreated(String message)
         {
-          if (!"".equals(message))
+          if (message != null && !"".equals(message))
           {
             VisicutApp.this.mainView.loadFile(new File(message));
           }
