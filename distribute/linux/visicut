@@ -14,4 +14,4 @@ if [ ! -d $HOME/.visicut ]; then
 	cp -r $DIR/settings $HOME/.visicut
 fi
 cd $HOME/.visicut
-java -Xms256m -Xmx1024m -classpath $JARS -jar $DIR/Visicut.jar "$@"
+java -Xms256m -Xmx1024m -classpath $JARS -jar $DIR/Visicut.jar --singleinstanceport 6543 "$@"

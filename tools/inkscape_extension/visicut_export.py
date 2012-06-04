@@ -23,11 +23,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import sys
 from lxml import etree
-from subprocess import Popen
+SINGLEINSTANCEPORT=6543
+VISICUTBIN="visicut"
 # Store the IDs of selected Elements
 elements=[]
-arguments=["--singleinstanceport", "6543"]
-VISICUTBIN="visicut"
 
 for arg in sys.argv[1:]:
 	if arg[0] == "-":
@@ -51,11 +50,22 @@ def removeAllButThem(element, elements):
 			else:
 				keepSubtree = True
 		return keepSubtree
-
+# Strip SVG to only contain selected elements
 tree = etree.parse(filename)
 if len(elements) > 0:
 	removeAllButThem(tree.getroot(), elements)
 tree.write(filename+".svg")
+# Try to connect to running VisiCut instance
+import socket
+s=socket.socket()
+if s.connect(("localhost", SINGLEINSTANCEPORT)):
+	s.send(filename+".svg\n")
+	s.close()
+	sys.exit(0)
+# Try to start own VisiCut instance
+arguments=["--singleinstanceport", str(SINGLEINSTANCEPORT)]
+VISICUTBIN="visicut"
+from subprocess import Popen
 import daemonize
 daemonize.createDaemon()
 Popen([VISICUTBIN]+arguments+[filename+".svg"])
