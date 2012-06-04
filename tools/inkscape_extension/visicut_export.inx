@@ -3,7 +3,6 @@
   <_name>Open with VisiCut</_name>
   <id>visicut.export</id>
   <dependency type="executable" location="extensions">visicut_export.py</dependency>
-  <dependency type="executable" location="extensions">daemonize.py</dependency>
   
   <effect needs-live-preview="false">
         <object-type>path</object-type>
