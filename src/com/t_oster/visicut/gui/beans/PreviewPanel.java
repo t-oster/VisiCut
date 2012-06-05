@@ -686,16 +686,6 @@ public class PreviewPanel extends ZoomablePanel
     this.repaint();
   }
 
-  public void mouseDragged(MouseEvent me)
-  {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  public void mouseMoved(MouseEvent me)
-  {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
   private void drawGrid(Graphics2D gg)
   {
     if (this.material != null)
