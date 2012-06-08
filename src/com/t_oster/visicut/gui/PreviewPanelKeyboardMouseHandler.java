@@ -412,13 +412,23 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
           }
           case movingSet:
           {
-            this.previewPanel.getLastDrawnTransform().createInverse().deltaTransform(diff, diff);
+            AffineTransform tr = this.previewPanel.getLastDrawnTransform();
+            if (this.previewPanel.isShowBackgroundImage() && this.previewPanel.getBackgroundImage() != null && this.previewPanel.getPreviewTransformation() != null)
+            {
+              tr.concatenate(this.previewPanel.getPreviewTransformation().createInverse());
+            }
+            tr.createInverse().deltaTransform(diff, diff);
             this.moveSet(diff.x, diff.y);
             break;
           }
           case movingBackground:
           {
-            this.previewPanel.getLastDrawnTransform().createInverse().deltaTransform(diff, diff);
+            AffineTransform tr = this.previewPanel.getLastDrawnTransform();
+            if (this.previewPanel.isShowBackgroundImage() && this.previewPanel.getBackgroundImage() != null && this.previewPanel.getPreviewTransformation() != null)
+            {
+              tr.concatenate(this.previewPanel.getPreviewTransformation().createInverse());
+            }
+            tr.createInverse().deltaTransform(diff, diff);
             Point center = this.previewPanel.getCenter();
             center.translate(-diff.x, -diff.y);
             this.previewPanel.setCenter(center);
