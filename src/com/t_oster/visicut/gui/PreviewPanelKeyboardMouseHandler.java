@@ -1,31 +1,35 @@
 /**
- * This file is part of VisiCut.
- * Copyright (C) 2011 Thomas Oster <thomas.oster@rwth-aachen.de>
- * RWTH Aachen University - 52062 Aachen, Germany
- * 
- *     VisiCut is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU Lesser General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- * 
- *    VisiCut is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU Lesser General Public License for more details.
- * 
- *     You should have received a copy of the GNU Lesser General Public License
- *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ * This file is part of VisiCut. Copyright (C) 2011 Thomas Oster
+ * <thomas.oster@rwth-aachen.de> RWTH Aachen University - 52062 Aachen, Germany
+ *
+ * VisiCut is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * VisiCut is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with VisiCut. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package com.t_oster.visicut.gui;
 
+import com.t_oster.liblasercut.BlackWhiteRaster;
+import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
 import com.t_oster.visicut.gui.beans.EditRectangle.ParameterField;
 import com.t_oster.visicut.gui.beans.PreviewPanel;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Cursor;
 import java.awt.Point;
+import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -41,15 +45,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 /**
- * This class handles the transformations to the background and the
- * selected graphics set, which are applyable via mouse in the preview panel
- * (Main View)
- * 
+ * This class handles the transformations to the background and the selected
+ * graphics set, which are applyable via mouse in the preview panel (Main View)
+ *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMotionListener, KeyListener
@@ -57,6 +61,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
 
   private PreviewPanel previewPanel;
   private JPopupMenu menu = new JPopupMenu();
+  private JMenu dithermenu = new JMenu("Dithering");
   private JMenuItem resetMenuItem = new JMenuItem("Reset Transformation");
 
   public PreviewPanelKeyboardMouseHandler(PreviewPanel panel)
@@ -77,6 +82,23 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
         PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
       }
     });
+    menu.add(dithermenu);
+    for (final BlackWhiteRaster.DitherAlgorithm da : BlackWhiteRaster.DitherAlgorithm.values())
+    {
+      JMenuItem item = new JMenuItem(da.name());
+      item.addActionListener(new ActionListener()
+      {
+
+        public void actionPerformed(ActionEvent ae)
+        {
+          ((RasterProfile) VisicutModel.getInstance().getMaterial().getLaserProfile(
+            VisicutModel.getInstance().getMappings().getLast().getProfileName())).setDitherAlgorithm(da);
+          PreviewPanelKeyboardMouseHandler.this.previewPanel.ClearCache();
+          PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
+        }
+      });
+      dithermenu.add(item);
+    }
   }
 
   private EditRectangle getEditRect()
@@ -90,10 +112,10 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   }
 
   /**
-   * For now this just returns all objects, but later maybe
-   * multiple input files are supported and this should
-   * only return the currently selected one
-   * @return 
+   * For now this just returns all objects, but later maybe multiple input files
+   * are supported and this should only return the currently selected one
+   *
+   * @return
    */
   private GraphicSet getSelectedSet()
   {
@@ -145,7 +167,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     getSelectedSet().setTransform(Helper.getTransform(src, getEditRect()));
     this.previewPanel.repaint();
   }
-  
+
   public void keyReleased(KeyEvent ke)
   {
     if (ke.getKeyCode() == KeyEvent.VK_SHIFT)
@@ -168,8 +190,8 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
 
   private double askDouble(String text, double initial)
   {
-    int mm = (int) Math.round(initial*10);
-    String result = JOptionPane.showInputDialog(previewPanel, text, ""+(mm/10)+"."+(mm%10));
+    int mm = (int) Math.round(initial * 10);
+    String result = JOptionPane.showInputDialog(previewPanel, text, "" + (mm / 10) + "." + (mm % 10));
     result = result.replace(",", ".");
     try
     {
@@ -183,46 +205,45 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     }
     return Double.parseDouble(result);
   }
-  
+
   private boolean checkParameterFieldClick(MouseEvent me)
   {
     //TODO: Bug
     /*
-    * If this transormation is applied, everything is correct,
-     * but the setCursor position and the whole mouse event
-     * things are on the wrong place. Deselecting the rectangle
-     * and selecting again resolves that.
+     * If this transormation is applied, everything is correct, but the
+     * setCursor position and the whole mouse event things are on the wrong
+     * place. Deselecting the rectangle and selecting again resolves that.
      */
     if (me.getButton() == MouseEvent.BUTTON1 && this.getEditRect() != null)
     {//Check if clicked on one of the parameters Button
-    try
+      try
       {
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.X).contains(me.getPoint()))
         {
-          double x = askDouble("left Offset", Helper.px2mm(this.getEditRect().x)/10);
-          this.getEditRect().x = (int) Helper.mm2px(x*10);
+          double x = askDouble("left Offset", Helper.px2mm(this.getEditRect().x) / 10);
+          this.getEditRect().x = (int) Helper.mm2px(x * 10);
           this.applyEditRectoToSet();
           return true;
         }
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.Y).contains(me.getPoint()))
         {
 
-          double y = askDouble("top Offset", Helper.px2mm(this.getEditRect().y)/10);
-          this.getEditRect().y = (int) Helper.mm2px(y*10);
+          double y = askDouble("top Offset", Helper.px2mm(this.getEditRect().y) / 10);
+          this.getEditRect().y = (int) Helper.mm2px(y * 10);
           this.applyEditRectoToSet();
           return true;
         }
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.WIDTH).contains(me.getPoint()))
         {
-          double w = askDouble("width", Helper.px2mm(this.getEditRect().width)/10);
-          this.getEditRect().width = (int) Helper.mm2px(w*10);
+          double w = askDouble("width", Helper.px2mm(this.getEditRect().width) / 10);
+          this.getEditRect().width = (int) Helper.mm2px(w * 10);
           this.applyEditRectoToSet();
           return true;
         }
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.HEIGHT).contains(me.getPoint()))
         {
-          double h = askDouble("height", Helper.px2mm(this.getEditRect().height)/10);
-          this.getEditRect().height = (int) Helper.mm2px(h*10);
+          double h = askDouble("height", Helper.px2mm(this.getEditRect().height) / 10);
+          this.getEditRect().height = (int) Helper.mm2px(h * 10);
           this.applyEditRectoToSet();
           return true;
         }
@@ -233,8 +254,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     }
     return false;
   }
-    
-  
+
   public void mouseClicked(MouseEvent me)
   {
     this.previewPanel.requestFocus();
@@ -274,6 +294,14 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
       if (e.contains(me.getPoint()))
       {
+        try{
+        this.dithermenu.setEnabled(VisicutModel.getInstance().getMaterial().getLaserProfile(
+            VisicutModel.getInstance().getMappings().getLast().getProfileName()) instanceof RasterProfile);
+        }
+        catch (NullPointerException ex)
+        {
+          this.dithermenu.setEnabled(false);
+        }
         this.menu.show(this.previewPanel, me.getX(), me.getY());
       }
     }
