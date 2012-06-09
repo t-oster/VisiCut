@@ -18,10 +18,7 @@
  **/
 package com.t_oster.visicut.model.graphicelements.svgsupport;
 
-import com.kitfox.svg.Group;
-import com.kitfox.svg.RenderableElement;
-import com.kitfox.svg.SVGElement;
-import com.kitfox.svg.SVGException;
+import com.kitfox.svg.*;
 import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
@@ -147,9 +144,16 @@ public abstract class SVGObject implements GraphicObject
         {
           for (SVGElement e : this.getPath(this.getDecoratee()))
           {
-            if (e instanceof Group)
+            //Exclude SVGRoot, because is not a real group
+            if (e instanceof Group && !(e instanceof SVGRoot))
             {
               String id = ((Group) e).getId();
+              //Use Inkscape-Labels instead of IDs for Groups (e.g. on Layers)
+              StyleAttribute s = ((Group) e).getPresAbsolute("inkscape:label");
+              if (s != null && s.getStringValue() != null)
+              {
+                id = s.getStringValue();
+              }
               if (id != null)
               {
                 result.add(id);
