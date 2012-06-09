@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0_31" class="java.beans.XMLDecoder"> 
+ <object class="com.t_oster.visicut.model.mapping.MappingSet"> 
+  <void method="add"> 
+   <object class="com.t_oster.visicut.model.mapping.Mapping"> 
+    <void property="a"> 
+     <object class="com.t_oster.visicut.model.mapping.FilterSet"> 
+      <void method="add"> 
+       <object class="com.t_oster.visicut.model.mapping.MappingFilter"> 
+        <void property="attribute"> 
+         <string>Group</string> 
+        </void> 
+        <void property="value"> 
+         <string>cut</string> 
+        </void> 
+       </object> 
+      </void> 
+     </object> 
+    </void> 
+    <void property="b"> 
+     <string>Cut Line</string> 
+    </void> 
+   </object> 
+  </void> 
+  <void method="add"> 
+   <object class="com.t_oster.visicut.model.mapping.Mapping"> 
+    <void property="a"> 
+     <object class="com.t_oster.visicut.model.mapping.FilterSet"> 
+      <void method="add"> 
+       <object class="com.t_oster.visicut.model.mapping.MappingFilter"> 
+        <void property="attribute"> 
+         <string>Group</string> 
+        </void> 
+        <void property="value"> 
+         <string>engrave</string> 
+        </void> 
+       </object> 
+      </void> 
+     </object> 
+    </void> 
+    <void property="b"> 
+     <string>Engrave Drawing</string> 
+    </void> 
+   </object> 
+  </void> 
+  <void property="description"> 
+   <string>two layers: one called cut and one called engrave</string> 
+  </void> 
+  <void property="name"> 
+   <string>cut_and_engrave</string> 
+  </void> 
+ </object> 
+</java> 
