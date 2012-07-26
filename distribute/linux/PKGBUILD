@@ -31,7 +31,7 @@ build() {
     rm -rf "$_gitname"
   fi
   msg "Connecting to GIT server...."
-  git clone "$_gitroot" "$_gitname"
+  git clone --recursive "$_gitroot" "$_gitname"
 
   msg "GIT checkout done or server timeout"
   msg "Starting build..."
