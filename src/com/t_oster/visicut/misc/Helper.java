@@ -226,6 +226,35 @@ public class Helper
     return new Rectangle((int) src.getX(), (int) src.getY(), (int) src.getWidth(), (int) src.getHeight());
   }
 
+  /**
+   * Returns the smalles BoundingBox, which contains a number of Poins
+   * @param points
+   * @return 
+   */
+  public static Rectangle2D smallestBoundingBox(java.awt.Point.Double[] points)
+  {
+    double minX = points[0].x;
+    double minY = points[0].y;
+    double maxX = points[0].x;
+    double maxY = points[0].y;
+    for (java.awt.Point.Double p:points)
+    {
+      if (p.x < minX) {minX = p.x;}
+      if (p.y < minY) {minY = p.y;}
+      if (p.x > maxX) {maxX = p.x;}
+      if (p.y > maxY) {maxY = p.y;}
+    }
+    return new Rectangle.Double(minX, minY, maxX-minX, maxY - minY);
+  }
+  
+  /**
+   * Returns a rectangle (parralel to x and y axis), which contains
+   * the given rectangle after the given transform. If the transform
+   * contains a rotation, the resulting rectangle is the smallest bounding-box
+   * @param src
+   * @param at
+   * @return 
+   */
   public static Rectangle2D transform(Rectangle2D src, AffineTransform at)
   {
     if (at == null)
@@ -234,11 +263,16 @@ public class Helper
     }
     else
     {
-      java.awt.Point.Double p = new java.awt.Point.Double(src.getX(), src.getY());
-      at.transform(p, p);
-      java.awt.Point.Double d = new java.awt.Point.Double((src.getX() + src.getWidth()), (src.getY() + src.getHeight()));
-      at.transform(d, d);
-      return new Rectangle.Double(p.x, p.y, d.x - p.x, d.y - p.y);
+      java.awt.Point.Double[] points = new java.awt.Point.Double[4];
+      points[0] = new java.awt.Point.Double(src.getX(), src.getY());
+      points[1] = new java.awt.Point.Double(src.getX(), src.getY()+src.getHeight());
+      points[2] = new java.awt.Point.Double(src.getX()+src.getWidth(), src.getY());
+      points[3] = new java.awt.Point.Double(src.getX()+src.getWidth(), src.getY()+src.getHeight());
+      for (int i=0;i<4;i++)
+      {
+        at.transform(points[i], points[i]);
+      }
+      return smallestBoundingBox(points);
     }
   }
 
