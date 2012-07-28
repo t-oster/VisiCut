@@ -66,6 +66,16 @@ public class SVGImporter implements Importer
     {//Ignore Patterns,Gradients and Children
       return;
     }
+    StyleAttribute display = e.getStyleAbsolute("display");
+    if (display != null && "none".equals(display.getStringValue()))
+    {
+      return;
+    }
+    StyleAttribute visibility = e.getStyleAbsolute("visibility");
+    if (visibility != null && "hidden".equals(visibility.getStringValue()))
+    {
+      return;
+    }
     if (e instanceof ShapeElement && !(e instanceof Group))
     {
       if (((ShapeElement) e).getShape() != null)
