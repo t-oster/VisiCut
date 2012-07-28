@@ -1,4 +1,5 @@
 #!/usr/bin/env python2 
+# -*- coding: utf-8 -*-
 '''
 This extension strips everything which is not selected from
 the current svg, saves it under "<currenttmpfilename>.svg" and
@@ -69,17 +70,53 @@ def which(program):
 
 
 # Strip SVG to only contain selected elements
+# LXML version
+def stripSVG_lxml(src,dest,elements):
+	try:
+		from lxml import etree
+		tree = etree.parse(src)
+		if len(elements) > 0:
+			removeAllButThem(tree.getroot(), elements)
+		tree.write(dest)
+	except:
+		sys.stderr.write("Python-LXML not installed. Can only send complete SVG\n")
+		import shutil
+		shutil.copyfile(src, dest)
 
-try:
-	from lxml import etree
-	tree = etree.parse(filename)
-	if len(elements) > 0:
-		removeAllButThem(tree.getroot(), elements)
-	tree.write(filename+".svg")
-except:
-	sys.stderr.write("Python-LXML not installed. Can only send complete SVG\n")
+# Strip SVG to only contain selected elements, convert objects to paths, unlink clones
+# Inkscape version: takes care of special cases where the selected objects depend on non-selected ones.
+# Examples are linked clones, flowtext limited to a shape and linked flowtext boxes (overflow into the next box).
+#
+# Inkscape is called with certain "verbs" (gui actions) to do the required cleanup
+# The idea is similar to http://bazaar.launchpad.net/~nikitakit/inkscape/svg2sif/view/head:/share/extensions/synfig_prepare.py#L181 , but more primitive - there is no need for more complicated preprocessing here
+def stripSVG_inkscape(src,dest,elements):
+	# Selection commands: select items, invert selection, delete
+	selection=[]
+	for el in elements:
+		selection += ["--select="+el]
+	if len(elements)>0:
+		#selection += ["--verb=FitCanvasToSelection"] # TODO add a user configuration option whether to keep the page size (and by this the position relative to the page)
+		selection += ["--verb=EditInvertInAllLayers","--verb=EditDelete"]
 	import shutil
-	shutil.copyfile(filename, filename+".svg")
+	shutil.copyfile(src, dest)
+	hidegui=["--without-gui"]
+	# currently this only works with gui  because of a bug in inkscape: https://bugs.launchpad.net/inkscape/+bug/843260
+	hidegui=[]
+	
+	from subprocess import call
+	call(["inkscape"]+hidegui+[dest,"--verb=UnlockAllInAllLayers","--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers","--verb=EditUnlinkClone","--verb=ObjectToPath","--verb=FileSave","--verb=FileClose"])
+	# visicut accepts inkscape-svg - no need to export as plain svg
+	# call(["inkscape","--without-gui",dest,"--export-plain-svg="+dest])
+
+# replace this by stripSVG_lxml to try out old, simple behaviour - TODO make this user configurable
+stripSVG_inkscape(src=filename,dest=filename+".svg",elements=elements)
+
+# SVG -> PDF -> SVG (unused idea, pixelates some items, sometimes crashes inkscape)
+# TODO make this user configurable
+#call(["inkscape","-z",filename+".svg","-T","--export-pdf="+filename+".clean.pdf"])
+#call(["inkscape","-z",filename+".clean.pdf","--export-plain-svg="+filename+".clean.svg"])
+#call(["inkscape","-z",filename+".clean.svg","--verb=EditSelectAllInAllLayers","--verb=SelectionUnGroup","--verb=FileSave","--verb=FileClose"])
+
 # Try to connect to running VisiCut instance
 try:
   import socket
