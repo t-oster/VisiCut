@@ -1336,6 +1336,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         }
         catch (Exception ex)
         {
+          ex.printStackTrace();
           if (ex instanceof IllegalJobException && ex.getMessage().startsWith("Illegal Focus value"))
           {
             JOptionPane.showMessageDialog(MainView.this, "You Material is too high for automatic Focussing.\nPlease focus manually and set the total height to 0.", "Error", JOptionPane.ERROR_MESSAGE);
