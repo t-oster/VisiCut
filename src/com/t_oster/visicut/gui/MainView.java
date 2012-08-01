@@ -1343,7 +1343,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
           }
           else
           {
-            JOptionPane.showMessageDialog(MainView.this, "Error: " + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(MainView.this, "Error ("+ex.getClass().toString()+"):" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
           }
           if (profileChanged)
           {
