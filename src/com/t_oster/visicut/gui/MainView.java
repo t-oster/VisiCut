@@ -1624,7 +1624,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       {
         try
         {
-          for (MaterialProfile mp : this.profileManager1.getMaterials(ld))
+          for (MaterialProfile mp : this.profileManager1.getMaterials(ld).toArray(new MaterialProfile[0]))
           {
             this.profileManager1.deleteProfile(mp, ld);
           }
