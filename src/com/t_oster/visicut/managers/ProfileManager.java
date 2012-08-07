@@ -27,10 +27,7 @@ import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -218,6 +215,7 @@ public class ProfileManager
     }
     this.dir = new File(ld.getMaterialsPath() != null ? ld.getMaterialsPath() : "settings/materials");
     List<MaterialProfile> result = this.loadFromDirectory(dir);
+    Collections.sort(result);
     this.materialsCache.put(ld, result);
     return result;
   }

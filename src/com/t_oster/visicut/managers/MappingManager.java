@@ -29,6 +29,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -87,6 +89,13 @@ public class MappingManager
         }
       }
     }
+    Collections.sort(this.mappingSets, new Comparator<MappingSet>(){
+
+      public int compare(MappingSet t, MappingSet t1)
+      {
+        return t.getName().compareTo(t1.getName());
+      }
+    });
   }
 
   protected List<MappingSet> mappingSets = null;
