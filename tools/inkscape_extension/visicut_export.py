@@ -112,7 +112,7 @@ def stripSVG_inkscape(src,dest,elements):
 		inkscape=subprocess.Popen(command, stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
 		inkscape_output=inkscape.communicate()[0]
 		errors = False
-		# see if the output contains someting interesting (an error or an important warnings)
+		# see if the output contains someting interesting (an error or an important warning)
 		for line in inkscape_output.splitlines():
 			# ignore empty/blank lines
 			if (line.isspace() or line==""):
