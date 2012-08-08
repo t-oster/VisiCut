@@ -116,7 +116,7 @@ public final class PreferencesManager
 
   public void savePreferences() throws FileNotFoundException
   {
-    if (new File("settings").isDirectory())
+    if (new File("settings").isDirectory() || new File("settings").mkdir())
     {
       this.savePreferences(preferences, new File("settings/settings.xml"));
     }

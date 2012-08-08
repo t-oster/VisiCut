@@ -36,6 +36,7 @@ import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.model.LaserDevice;
+import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
@@ -777,9 +778,21 @@ public class VisicutModel
         parts.put(p, set);
       }
     }
+    //Add all non-cutting parts to the laserjob
     for (Entry<LaserProfile, GraphicSet> e : parts.entrySet())
     {
-      e.getKey().addToLaserJob(job, e.getValue(), material.getDepth());
+      if (!(e.getKey() instanceof VectorProfile) || !((VectorProfile)e.getKey()).isIsCut())
+      {
+        e.getKey().addToLaserJob(job, e.getValue(), material.getDepth());
+      }
+    }
+    //Add all cutting parts to the end of the laserjob
+    for (Entry<LaserProfile, GraphicSet> e : parts.entrySet())
+    {
+      if (e.getKey() instanceof VectorProfile && ((VectorProfile)e.getKey()).isIsCut())
+      {
+        e.getKey().addToLaserJob(job, e.getValue(), material.getDepth());
+      }
     }
     return job;
   }

@@ -1523,6 +1523,10 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         public void run()
         {
           MainView.this.captureImageButton.setEnabled(false);
+          MainView.this.progressBar.setStringPainted(true);
+          MainView.this.progressBar.setString("Capturing Photo...");
+          MainView.this.progressBar.setIndeterminate(true);
+          MainView.this.progressBar.repaint();
           try
           {
             URL src = new URL(MainView.this.visicutModel1.getSelectedLaserDevice().getCameraURL());
@@ -1535,10 +1539,17 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
               }
               MainView.this.visicutModel1.setBackgroundImage(back);
             }
+            MainView.this.progressBar.setString("");
+            MainView.this.progressBar.setStringPainted(false);
+            MainView.this.progressBar.setIndeterminate(false);
+            MainView.this.progressBar.repaint();
           }
           catch (Exception ex)
           {
-            JOptionPane.showMessageDialog(MainView.this, "Error loading Image:" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+            MainView.this.progressBar.setString("Error capturing photo");
+            MainView.this.progressBar.setIndeterminate(false);
+            MainView.this.progressBar.repaint();
           }
           MainView.this.captureImageButton.setEnabled(true);
           MainView.this.capturing = false;
