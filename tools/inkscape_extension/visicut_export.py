@@ -108,10 +108,8 @@ def stripSVG_inkscape(src,dest,elements):
 	command = ["inkscape"]+hidegui+[dest,"--verb=UnlockAllInAllLayers","--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers","--verb=EditUnlinkClone","--verb=ObjectToPath","--verb=FileSave","--verb=FileClose"]
 	inkscape_output="(not yet run)"
 	try:
-		# inkscape output with annoying warnings is redirected to devnull
-		# TODO keep output and show it in case of errors
+		# run inkscape, buffer output
 		inkscape=subprocess.Popen(command, stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-		#open(os.devnull,"w"),stderr=open(os.devnull,"w"))
 		inkscape_output=inkscape.communicate()[0]
 		errors = False
 		# see if the output contains someting interesting (an error or an important warnings)
