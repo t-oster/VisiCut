@@ -103,8 +103,30 @@ def stripSVG_inkscape(src,dest,elements):
 	# currently this only works with gui  because of a bug in inkscape: https://bugs.launchpad.net/inkscape/+bug/843260
 	hidegui=[]
 	
-	from subprocess import call
-	call(["inkscape"]+hidegui+[dest,"--verb=UnlockAllInAllLayers","--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers","--verb=EditUnlinkClone","--verb=ObjectToPath","--verb=FileSave","--verb=FileClose"])
+	import subprocess
+	import os
+	command = ["inkscape"]+hidegui+[dest,"--verb=UnlockAllInAllLayers","--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers","--verb=EditUnlinkClone","--verb=ObjectToPath","--verb=FileSave","--verb=FileClose"]
+	inkscape_output="(not yet run)"
+	try:
+		# run inkscape, buffer output
+		inkscape=subprocess.Popen(command, stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+		inkscape_output=inkscape.communicate()[0]
+		errors = False
+		# see if the output contains someting interesting (an error or an important warning)
+		for line in inkscape_output.splitlines():
+			# ignore empty/blank lines
+			if (line.isspace() or line==""):
+				continue
+			# ignore GTK_IS_MISC warnings - they occur sometimes (at least in debian squeeze) even if everything works perfectly
+			if "gtk_misc_set_alignment: assertion `GTK_IS_MISC (misc)' failed" in line:
+				continue
+			# something else happened - notify the user
+			errors = True
+		if errors:
+			sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect.\nInkscape's output was:\n" + inkscape_output)
+	except:
+		sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect. Exception information: \n" + str(sys.exc_info()[0]) + "Inkscape's output was:\n" + inkscape_output)
+	
 	# visicut accepts inkscape-svg - no need to export as plain svg
 	# call(["inkscape","--without-gui",dest,"--export-plain-svg="+dest])
 
