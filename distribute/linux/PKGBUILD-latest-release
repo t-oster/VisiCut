@@ -1,7 +1,7 @@
 # Maintainer: Thomas Oster
 pkgname=visicut
-pkgver=1.3.2
-pkgrel=2
+pkgver=1.3.5
+pkgrel=1
 pkgdesc="A userfriendly tool to generate, save and send Jobs to a Lasercutter"
 arch=(any)
 url="http://visicut.org"
@@ -18,13 +18,23 @@ backup=()
 options=()
 install=install
 changelog=
-source=(https://github.com/t-oster/VisiCut/tarball/$pkgver plf-mime.xml)
-md5sums=('1c83c41c2acbdd819b5af99b9f5d18d4'
-         '023d09901b9075e86821a23953e82710')
+source=(
+https://github.com/t-oster/VisiCut/tarball/$pkgver 
+plf-mime.xml
+https://github.com/t-oster/LibLaserCut/tarball/visicut$pkgver
+)
+md5sums=('2168eb8653f036f0409d2c8835d24ee9'
+         '023d09901b9075e86821a23953e82710'
+         'b61950ed7a4dadec4fd8b6c0a0cf61cf')
+
 _gitdir=t-oster-VisiCut-
 
 build() {
   cd "$srcdir/${_gitdir}"*
+  rm -rf lib/LibLaserCut
+  echo "inserting LibLaserCut..."
+  mv ../t-oster-LibLaserCut-* lib/LibLaserCut
+  echo "Compiling..."
   make
 }
 
