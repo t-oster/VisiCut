@@ -54,6 +54,29 @@ zip -r VisiCut-$VERSION.zip visicut/
 
 echo ""
 echo "****************************************************************"
+echo "Windows Version: Needs nsis"
+echo "Build Windows Version (Y/n)?"
+read answer
+if [ "$answer" != "n" ]
+then
+  echo "Creating Windows installer"
+  mkdir wintmp
+  cp windows/* wintmp/
+  mv visicut wintmp/stream
+  cat windows/installer.nsi|sed s#VISICUTVERSION#"$VERSION"#g > wintmp/installer.nsi
+  cp ../tools/inkscape_extension/* wintmp/
+  cat ../tools/inkscape_extension/visicut_export.py|sed 's#"visicut"#"visicut.exe"#g' > wintmp/visicut_export.py
+  pushd wintmp
+  makensis installer.nsi
+  popd
+  mv wintmp/stream visicut
+  mv wintmp/setup.exe VisiCut-$VERSION-Windows-Installer.exe
+  rm -rf wintmp
+fi
+
+
+echo ""
+echo "****************************************************************"
 echo "Mac OS Version: Building the Mac OS Version should work on all platforms"
 echo "Build Mac OS Version (Y/n)?"
 read answer

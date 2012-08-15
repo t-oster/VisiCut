@@ -14,7 +14,7 @@ ShowInstDetails nevershow
 ;You want to change the next two lines too
 !define CLASSPATH ".;lib"
 !define JARFILE "Visicut.jar"
-!define VMARGS "-Xms256m -Xmx1024m"
+!define VMARGS "-Xms256m -Xmx512m"
 !define PRGARGS "--singleinstanceport 6543"
 
 !include "FileFunc.nsh"
