@@ -12,6 +12,7 @@
 !include "MUI.nsh"
 !include "Sections.nsh"
 !include "EnvVarUpdate.nsh"
+!include "FileAssociation.nsh"
  
 Var InstallJRE
 Var JREPath
@@ -169,6 +170,10 @@ File /r "stream\"
   ; instert visicut to path
   ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR" 
 
+  ; register file extensions
+  ${registerExtension} "$INSTDIR\VisiCut.exe" ".plf" "VisiCut Portable Laser File"
+  ${registerExtension} "$INSTDIR\VisiCut.exe" ".svg" "SVG File"
+  
   SetOutPath "$PROGRAMFILES\Inkscape\share\extensions"
   file "visicut_export.inx"
   file "visicut_export.py"
@@ -346,8 +351,13 @@ FunctionEnd
  
 Section "Uninstall"
 
-  ; instert visicut to path
+  ; remove visicut from path
   ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR"
+
+  ; remove file associations
+  ${unregisterExtension} ".plf" "VisiCut Portable Laser File"
+  ${unregisterExtension} ".svg" "SVG File"
+  
  
   ; remove registry keys
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ShortName}"
