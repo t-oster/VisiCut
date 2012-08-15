@@ -51,6 +51,7 @@ public class VisicutApp extends SingleFrameApplication
   public static Level GLOBAL_LOG_LEVEL = Level.SEVERE;
   
   private MainView mainView;
+  private File loadedFile;
 
   /**
    * At startup create and show the main frame of the application.
@@ -58,7 +59,7 @@ public class VisicutApp extends SingleFrameApplication
   @Override
   protected void startup()
   {
-    mainView = new MainView();
+    mainView = loadedFile == null ? new MainView() : new MainView(loadedFile);
     show(mainView);
   }
 
@@ -391,6 +392,7 @@ public class VisicutApp extends SingleFrameApplication
         {
           model.loadGraphicFile(f);
         }
+        this.loadedFile = f;
       }
       catch (Exception ex)
       {

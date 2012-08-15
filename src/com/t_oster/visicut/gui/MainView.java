@@ -81,6 +81,13 @@ public class MainView extends javax.swing.JFrame
 {
 
   private boolean initComplete = false;
+  
+  public MainView(File loadedFile)
+  {
+    this();
+    this.loadFileReal(loadedFile);
+  }
+  
   /** Creates new form MainView */
   public MainView()
   {
