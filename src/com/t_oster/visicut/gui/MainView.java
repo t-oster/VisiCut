@@ -1553,7 +1553,6 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
           }
           catch (Exception ex)
           {
-            ex.printStackTrace();
             MainView.this.progressBar.setString("Error capturing photo");
             MainView.this.progressBar.setIndeterminate(false);
             MainView.this.progressBar.repaint();
