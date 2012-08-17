@@ -156,21 +156,14 @@ public class Helper
     basePath = f;
   }
   
-  /**
-   * If the given path is a successor of the parent-path,
-   * only the relative path is given back.
-   * Otherwise the path is not modified
-   * @param path
-   * @return 
-   */
-  public static String removeBasePath(String path)
+  public static String removeParentPath(File parent, String path)
   {
     if (path == null)
     {
       return null;
     }
     File p = new File(path);
-    File bp = getBasePath();
+    File bp = parent;
     String result = p.getName();
     while (p.getParentFile() != null)
     {
@@ -184,6 +177,31 @@ public class Helper
     return path;
   }
   
+  public static String addParentPath(File parent, String path)
+  {
+    if (path == null)
+    {
+      return null;
+    }
+    if (!(new File(path).isAbsolute()))
+    {
+      return new File(parent, path).getAbsolutePath();
+    }
+    return path;
+  }
+  
+  /**
+   * If the given path is a successor of the parent-path,
+   * only the relative path is given back.
+   * Otherwise the path is not modified
+   * @param path
+   * @return 
+   */
+  public static String removeBasePath(String path)
+  {
+    return removeParentPath(getBasePath(), path);
+  }
+  
   /**
    * If the given path is relative, the base-path is prepended
    * @param parent
@@ -192,15 +210,7 @@ public class Helper
    */
   public static String addBasePath(String path)
   {
-    if (path == null)
-    {
-      return null;
-    }
-    if (!(new File(path).isAbsolute()))
-    {
-      return new File(getBasePath(), path).getAbsolutePath();
-    }
-    return path;
+    return addParentPath(getBasePath(), path);
   }
   
   /**

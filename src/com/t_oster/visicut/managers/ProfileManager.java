@@ -98,19 +98,19 @@ public class ProfileManager
 
   public void saveProfile(MaterialProfile mp, File f) throws FileNotFoundException
   {
-    mp.setThumbnailPath(Helper.removeBasePath(mp.getThumbnailPath()));
+    mp.setThumbnailPath(Helper.removeParentPath(f.getParentFile(), mp.getThumbnailPath()));
     for (LaserProfile lp:mp.getLaserProfiles())
     {
-      lp.setThumbnailPath(Helper.removeBasePath(lp.getThumbnailPath()));
+      lp.setThumbnailPath(Helper.removeParentPath(f.getParentFile(), lp.getThumbnailPath()));
     }
     FileOutputStream out = new FileOutputStream(f);
     XMLEncoder enc = new XMLEncoder(out);
     enc.writeObject(mp);
     enc.close();
-    mp.setThumbnailPath(Helper.addBasePath(mp.getThumbnailPath()));
+    mp.setThumbnailPath(Helper.addParentPath(f.getParentFile(), mp.getThumbnailPath()));
     for (LaserProfile lp:mp.getLaserProfiles())
     {
-      lp.setThumbnailPath(Helper.addBasePath(lp.getThumbnailPath()));
+      lp.setThumbnailPath(Helper.addParentPath(f.getParentFile(), lp.getThumbnailPath()));
     }
   }
   
@@ -119,10 +119,10 @@ public class ProfileManager
     FileInputStream fin = new FileInputStream(f);
     MaterialProfile result = this.loadProfile(fin);
     fin.close();
-    result.setThumbnailPath(Helper.addBasePath(result.getThumbnailPath()));
+    result.setThumbnailPath(Helper.addParentPath(f.getParentFile(), result.getThumbnailPath()));
     for (LaserProfile lp:result.getLaserProfiles())
     {
-      lp.setThumbnailPath(Helper.addBasePath(lp.getThumbnailPath()));
+      lp.setThumbnailPath(Helper.addParentPath(f.getParentFile(), lp.getThumbnailPath()));
     }
     return result;
   }
