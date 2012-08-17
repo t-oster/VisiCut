@@ -28,9 +28,12 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URLDecoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 
 /**
  * This class contains frequently used conversion methods
@@ -85,74 +88,82 @@ public class Helper
   {
     return System.getProperty("os.name").toLowerCase().contains("mac");
   }
-
-  /**
-   * Gives the relative path of fileB relative to the parentDirectory
-   * of fileA, separated with "/"
-   * @param fileA the file whose parent is used as ancor
-   * @param fileB the absolute path of a file whit platform dependant separator.
-   */
-  public static String getRelativePath(File fileA, String fileB)
+  
+  public static File getVisiCutFolder()
   {
-    if (fileB == null)
+    try
     {
-      return null;
+      String path = Helper.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+      if (path == null)
+      {
+        return null;
+      }
+      String decodedPath = URLDecoder.decode(path, "UTF-8");
+      File folder = new File(decodedPath);
+      return folder.isDirectory() ? folder : folder.getParentFile();
     }
-    File f = new File(fileB);
-    String separator = File.separator.equals("\\") ? "\\\\" : File.separator;
-    String[] trg = f.getAbsolutePath().split(separator);
-    String[] src = fileA.getAbsoluteFile().getParent().split(separator);
-    int i = 0;
-    //remove equal parts at the beginning
-    while (i < src.length && i < trg.length && src[i].equals(trg[i]))
+    catch (UnsupportedEncodingException ex)
     {
-      i++;
+      Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, null, ex);
     }
-    String result = "./";
-    if (i == 0)
-    {//no common base path=>return absolute path of fileB
-      return fileB.replace(File.separator, "/");
-    }
-    for (int k = i; k < src.length; k++)
+    return null;
+  }
+  
+  protected static File basePath;
+  
+  public static File getBasePath()
+  {
+    if (basePath == null)
     {
-      result += "../";
+      basePath = new File(FileUtils.getUserDirectory(), ".visicut");
     }
-    int j = i;
-    while (j < trg.length)
-    {
-      result += (i != j ? "/" : "") + trg[j];
-      j++;
-    }
-    return result;
+    return basePath;
   }
 
+  public static void setBasePath(File f)
+  {
+    basePath = f;
+  }
+  
   /**
-   * Gets the absolute path (with platform dependant separator)
-   * of the file represented by fileB relative to the parent
-   * directory of fileA
-   * @param fileA the File whose parent is the relative ancor
-   * @param fileB a relative path with "/" as separator
+   * If the given path is a successor of the parent-path,
+   * only the relative path is given back.
+   * Otherwise the path is not modified
+   * @param path
    * @return 
    */
-  public static String getAbsolutePath(File fileA, String fileB)
+  public static String removeBasePath(String path)
   {
-    if (fileB == null)
+    File p = new File(path);
+    File bp = getBasePath();
+    String result = p.getName();
+    while (p.getParentFile() != null)
     {
-      return null;
+      p = p.getParentFile();
+      if (p.getAbsolutePath().equals(bp.getAbsolutePath()))
+      {
+        return result;
+      }
+      result = p.getName() + "/" + result;
     }
-    if (!fileB.startsWith("./"))
-    {//fileB is absolute
-      return fileB;
-    }
-    else
-    {
-      fileB = fileB.substring(2);
-    }
-    String xmlDir = fileA.getAbsoluteFile().getParent();
-    String res = xmlDir + File.separator + (fileB != null ? fileB.replace("/", File.separator) : "");
-    return res;
+    return path;
   }
-
+  
+  /**
+   * If the given path is relative, the base-path is prepended
+   * @param parent
+   * @param path
+   * @return 
+   */
+  public static String addBasePath(String path)
+  {
+    if (!(new File(path).isAbsolute()))
+    {
+      return new File(getBasePath(), path).getAbsolutePath();
+    }
+    return path;
+  }
+  
   /**
    * Returns how many mm correspont to the given length in pixels
    * with respect to the current resolution

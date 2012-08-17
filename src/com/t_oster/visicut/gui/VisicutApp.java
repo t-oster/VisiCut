@@ -155,6 +155,7 @@ public class VisicutApp extends SingleFrameApplication
     Integer port = null;
     String mapping = null;
     String file = null;
+    String basepath = null;
     Float height = null;
     VisicutModel model = VisicutModel.getInstance();
     boolean execute = false;
@@ -168,6 +169,10 @@ public class VisicutApp extends SingleFrameApplication
           if ("--debug".equals(s) || "-d".equals(s))
           {
             GLOBAL_LOG_LEVEL = Level.FINE;
+          }
+          else if ("--basepath".equals(s) || "-b".equals(s))
+          {
+            basepath = args[++i];
           }
           else if ("--singleinstanceport".equals(s))
           {
@@ -211,6 +216,7 @@ public class VisicutApp extends SingleFrameApplication
             System.out.println(" --mapping <mapping e.g. \"Cut\">");
             System.out.println(" --total-height <Height in mm e.g. \"2.5\"> (only valid with --execute)");
             System.out.println(" --singleinstanceport <port> (Tries to open the given port, to check for running instances)");
+            System.out.println(" --basepath <path> \t Sets VisiCuts settings directory (default is $HOME/.visicut)");
             System.out.println(" --gtkfilechooser (experimental)");
             System.exit(0);
           }
@@ -263,6 +269,10 @@ public class VisicutApp extends SingleFrameApplication
       System.err.println("Bad command line argumantes.");
       System.err.println("Use -h or --help for help");
       System.exit(1);
+    }
+    if (basepath != null)
+    {
+      Helper.setBasePath(new File(basepath));
     }
     if (port != null)
     {

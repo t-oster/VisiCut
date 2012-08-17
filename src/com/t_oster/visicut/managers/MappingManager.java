@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut.managers;
 
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -70,7 +71,7 @@ public class MappingManager
 
   private void loadFromDirectory()
   {
-    File dir = new File("settings/mappings");
+    File dir = new File(Helper.getBasePath(), "settings/mappings");
     if (dir.isDirectory())
     {
       for (File f : dir.listFiles())
@@ -150,7 +151,7 @@ public class MappingManager
    */
   public void saveAllMappings()
   {
-    File dir = new File("settings/mappings");
+    File dir = new File(Helper.getBasePath(), "settings/mappings");
     if (dir.exists() && dir.isDirectory())
     {
       for (File f:dir.listFiles())
@@ -189,9 +190,9 @@ public class MappingManager
 
   private void saveMappings()
   {
-    if (new File("settings").isDirectory())
+    if (new File(Helper.getBasePath(), "settings").isDirectory())
     {
-      File dir = new File("settings/mappings");
+      File dir = new File(Helper.getBasePath(), "settings/mappings");
       if (!dir.exists())
       {
         dir.mkdir();

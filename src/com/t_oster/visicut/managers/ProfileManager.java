@@ -98,19 +98,19 @@ public class ProfileManager
 
   public void saveProfile(MaterialProfile mp, File f) throws FileNotFoundException
   {
-    mp.setThumbnailPath(Helper.getRelativePath(f, mp.getThumbnailPath()));
+    mp.setThumbnailPath(Helper.removeBasePath(mp.getThumbnailPath()));
     for (LaserProfile lp:mp.getLaserProfiles())
     {
-      lp.setThumbnailPath(Helper.getRelativePath(f, lp.getThumbnailPath()));
+      lp.setThumbnailPath(Helper.removeBasePath(lp.getThumbnailPath()));
     }
     FileOutputStream out = new FileOutputStream(f);
     XMLEncoder enc = new XMLEncoder(out);
     enc.writeObject(mp);
     enc.close();
-    mp.setThumbnailPath(Helper.getAbsolutePath(f, mp.getThumbnailPath()));
+    mp.setThumbnailPath(Helper.addBasePath(mp.getThumbnailPath()));
     for (LaserProfile lp:mp.getLaserProfiles())
     {
-      lp.setThumbnailPath(Helper.getAbsolutePath(f, lp.getThumbnailPath()));
+      lp.setThumbnailPath(Helper.addBasePath(lp.getThumbnailPath()));
     }
   }
   
@@ -119,10 +119,10 @@ public class ProfileManager
     FileInputStream fin = new FileInputStream(f);
     MaterialProfile result = this.loadProfile(fin);
     fin.close();
-    result.setThumbnailPath(Helper.getAbsolutePath(f, result.getThumbnailPath()));
+    result.setThumbnailPath(Helper.addBasePath(result.getThumbnailPath()));
     for (LaserProfile lp:result.getLaserProfiles())
     {
-      lp.setThumbnailPath(Helper.getAbsolutePath(f, lp.getThumbnailPath()));
+      lp.setThumbnailPath(Helper.addBasePath(lp.getThumbnailPath()));
     }
     return result;
   }
@@ -188,7 +188,7 @@ public class ProfileManager
     {
       materialsCache.get(selectedLaserDevice).add(result);
     }
-    this.saveProfile(result, new File(selectedLaserDevice.getMaterialsPath() + "/" + result.toString() + ".xml"));
+    this.saveProfile(result, new File(selectedLaserDevice.getMaterialsPath(), result.toString() + ".xml"));
   }
 
   public void deleteProfile(MaterialProfile m, LaserDevice selectedLaserDevice)
@@ -197,7 +197,7 @@ public class ProfileManager
     {
       materialsCache.get(selectedLaserDevice).remove(m);
     }
-    new File(selectedLaserDevice.getMaterialsPath() + "/" + m.toString() + ".xml").delete();
+    new File(selectedLaserDevice.getMaterialsPath(), m.toString() + ".xml").delete();
   }
 
   private Map<LaserDevice,List<MaterialProfile>> materialsCache = new LinkedHashMap<LaserDevice,List<MaterialProfile>>();
@@ -213,7 +213,7 @@ public class ProfileManager
     {
       return this.materialsCache.get(ld);
     }
-    this.dir = new File(ld.getMaterialsPath() != null ? ld.getMaterialsPath() : "settings/materials");
+    this.dir = ld.getMaterialsPath() != null ? new File(ld.getMaterialsPath()) : new File(Helper.getBasePath(), "settings/materials");
     List<MaterialProfile> result = this.loadFromDirectory(dir);
     Collections.sort(result);
     this.materialsCache.put(ld, result);
