@@ -28,6 +28,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLDecoder;
@@ -89,6 +91,35 @@ public class Helper
     return System.getProperty("os.name").toLowerCase().contains("mac");
   }
   
+  public static void installInkscapeExtension() throws FileNotFoundException, IOException
+  {
+    File src = new File(getVisiCutFolder(), "inkscape_extension");
+    if (!src.exists() || !src.isDirectory())
+    {
+      throw new FileNotFoundException("Not a directory: "+src);
+    }
+    File trg = new File(new File(new File(FileUtils.getUserDirectory(), ".config"), "inkscape"), "extensions");
+    if (!trg.exists() && !trg.mkdirs())
+    {
+      throw new FileNotFoundException("Can't create directory: "+trg);
+    }
+    for (File f :src.listFiles())
+    {
+      if (f.getName().toLowerCase().endsWith("inx") || f.getName().toLowerCase().endsWith("py"))
+      {
+        try
+        {
+          FileUtils.copyFileToDirectory(f, trg);
+        }
+        catch (java.lang.NoSuchMethodError er)
+        {
+          er.printStackTrace();
+          throw new FileNotFoundException("Bug in apache Commons-IO");
+        }
+      }
+    }
+  }
+  
   public static File getVisiCutFolder()
   {
     try
@@ -134,6 +165,10 @@ public class Helper
    */
   public static String removeBasePath(String path)
   {
+    if (path == null)
+    {
+      return null;
+    }
     File p = new File(path);
     File bp = getBasePath();
     String result = p.getName();
@@ -157,6 +192,10 @@ public class Helper
    */
   public static String addBasePath(String path)
   {
+    if (path == null)
+    {
+      return null;
+    }
     if (!(new File(path).isAbsolute()))
     {
       return new File(getBasePath(), path).getAbsolutePath();
@@ -338,5 +377,11 @@ public class Helper
         System.err.println("Unknown SVG unit!!!");
         return n.getValue();
     }
+  }
+
+  public static boolean isInkscapeExtensionInstallable()
+  {
+    File is = new File(getVisiCutFolder(), "inkscape_extension");
+    return is.exists() && is.isDirectory();
   }
 }

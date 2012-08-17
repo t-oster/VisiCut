@@ -48,6 +48,9 @@ cp ../LICENSE visicut/
 rm visicut/README.TXT
 chmod +x visicut/*.jar
 chmod +x visicut/VisiCut.*
+mkdir -p visicut/inkscape_extension
+cp ../tools/inkscape_extension/*.py visicut/inkscape_extension/
+cp ../tools/inkscape_extension/*.inx visicut/inkscape_extension/
 echo "Compressing content..."
 rm VisiCut-*.zip
 zip -r VisiCut-$VERSION.zip visicut/

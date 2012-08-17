@@ -209,6 +209,28 @@ public class MainView extends javax.swing.JFrame
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDLASERDEVICE, null, null));
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SOURCEFILE, null, null));
     this.refreshRecentFilesMenu();
+    if (Helper.isInkscapeExtensionInstallable())
+    {
+      javax.swing.JMenu extras = new javax.swing.JMenu("Extras");
+      javax.swing.JMenuItem install = new javax.swing.JMenuItem("Install Inkscape-Extension...");
+      extras.add(install);
+      install.addActionListener(new ActionListener(){
+
+        public void actionPerformed(ActionEvent ae)
+        {
+          try
+          {
+            Helper.installInkscapeExtension();
+            JOptionPane.showMessageDialog(MainView.this, "Installed extension successfully");
+          }
+          catch (Exception e)
+          {
+            JOptionPane.showMessageDialog(MainView.this, "There was an Error during the Installation: "+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+          }
+        }
+      });
+      this.menuBar.add(extras);
+    }
   }
 
   /**
