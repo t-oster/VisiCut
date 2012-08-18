@@ -1,6 +1,6 @@
 # Maintainer: Thomas Oster
 pkgname=visicut
-pkgver=1.3.5
+pkgver=1.4
 pkgrel=1
 pkgdesc="A userfriendly tool to generate, save and send Jobs to a Lasercutter"
 arch=(any)
@@ -21,7 +21,7 @@ changelog=
 source=(
 https://github.com/t-oster/VisiCut/tarball/$pkgver 
 plf-mime.xml
-https://github.com/t-oster/LibLaserCut/tarball/visicut$pkgver
+https://github.com/t-oster/LibLaserCut/tarball/1.7
 )
 md5sums=('2168eb8653f036f0409d2c8835d24ee9'
          '023d09901b9075e86821a23953e82710'
