@@ -2,6 +2,5 @@
 # VisiCut Linux Starter
 script="`readlink -f "${BASH_SOURCE[0]}"`"
 DIR="`dirname "$script"`"
-#find java libraries and separate them with colon
-JARS=$(find $DIR/lib/ -name \*.jar | xargs echo | sed s/\ /:/g)
-java -Xms256m -Xmx1024m -classpath $JARS -jar $DIR/Visicut.jar --singleinstanceport 6543 "$@"
+cd $DIR
+java -Xms256m -Xmx1024m -jar Visicut.jar --singleinstanceport 6543 "$@"
