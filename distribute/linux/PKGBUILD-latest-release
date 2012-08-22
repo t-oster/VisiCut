@@ -23,9 +23,10 @@ https://github.com/t-oster/VisiCut/tarball/$pkgver
 plf-mime.xml
 https://github.com/t-oster/LibLaserCut/tarball/1.7
 )
-md5sums=('d42eabf6d10a18bff0f62029234a8366'
+md5sums=('1af434491a0fb3bf9210dc7966a04d2e'
          '023d09901b9075e86821a23953e82710'
          '7a2133ff5af7d9c99fc6a41f51c80996')
+
 _gitdir=t-oster-VisiCut-
 
 build() {
