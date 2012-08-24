@@ -35,7 +35,6 @@ import java.net.MalformedURLException;
 import java.net.URLDecoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FileUtils;
 
 /**
  * This class contains frequently used conversion methods
