@@ -138,6 +138,7 @@ public class Helper
           }
           w.write(line);
           w.newLine();
+          line = r.readLine();
         }
         w.flush();
         w.close();
