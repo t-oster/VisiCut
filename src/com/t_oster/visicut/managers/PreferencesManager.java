@@ -21,6 +21,7 @@ package com.t_oster.visicut.managers;
 import com.t_oster.liblasercut.drivers.EpilogZing;
 import com.t_oster.liblasercut.drivers.LaosCutter;
 import com.t_oster.visicut.Preferences;
+import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import java.awt.geom.AffineTransform;
@@ -36,7 +37,6 @@ import java.io.FileOutputStream;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FileUtils;
 
 /**
  *
