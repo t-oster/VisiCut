@@ -23,9 +23,38 @@
 	<key>CFBundleShortVersionString</key>
 	<string>VISICUTVERSION</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2011, Thomas Oster, Media Computing Group, RWTH Aachen University. This Software is licensed under the GNU Lesser Public License (LGPL) version 3.</string>
+	<string>Copyright © 2012, Thomas Oster, Media Computing Group, RWTH Aachen University. This Software is licensed under the GNU Lesser Public License (LGPL) version 3.</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+    		<dict>
+        		<key>CFBundleTypeExtensions</key>
+        		<array>
+            			<string>plf</string>
+        		</array>
+        		<key>CFBundleTypeIconFile</key>
+        		<string>MacIcon</string>
+        		<key>CFBundleTypeName</key>
+        		<string>VisiCut Portable Laser File</string>
+        		<key>CFBundleTypeRole</key>
+        		<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
+    		</dict>
+		<dict>
+        		<key>CFBundleTypeExtensions</key>
+        		<array>
+            			<string>jpg</string>
+				<string>jpeg</string>
+				<string>png</string>
+				<string>svg</string>
+				<string>dxf</string>
+        		</array>
+        		<key>CFBundleTypeRole</key>
+        		<string>Viewer</string>
+    		</dict>
+	</array>
 	<key>Java</key>
 	<dict>
 		<key>ClassPath</key>
@@ -34,7 +63,7 @@
 			<string>$JAVAROOT/lib</string>
 		</array>
 		<key>JVMVersion</key>
-		<string>1.5+</string>
+		<string>1.6+</string>
 		<key>MainClass</key>
 		<string>com.t_oster.visicut.gui.VisicutApp</string>
 		<key>Arguments</key>
