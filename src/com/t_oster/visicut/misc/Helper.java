@@ -27,8 +27,12 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -90,6 +94,11 @@ public class Helper
     return System.getProperty("os.name").toLowerCase().contains("mac");
   }
   
+  public static boolean isWindows()
+  {
+    return System.getProperty("os.name").toLowerCase().contains("windows");
+  }
+  
   public static void installInkscapeExtension() throws FileNotFoundException, IOException
   {
     File src = new File(getVisiCutFolder(), "inkscape_extension");
@@ -104,7 +113,38 @@ public class Helper
     }
     for (File f :src.listFiles())
     {
-      if (f.getName().toLowerCase().endsWith("inx") || f.getName().toLowerCase().endsWith("py"))
+      if ("visicut_export.py".equals(f.getName()))
+      {
+        File target = new File(trg, "visicut_export.py");
+        BufferedReader r = new BufferedReader(new FileReader(f));
+        BufferedWriter w = new BufferedWriter(new FileWriter(target));
+        String line = r.readLine();
+        while (line != null)
+        {
+          if ("VISICUTBIN=\"visicut\"".equals(line))
+          {
+            if (isMacOS())
+            {
+              line = "VISICUTBIN=\""+new File(getVisiCutFolder(), "VisiCut.MacOS").getAbsolutePath()+"\"";
+            }
+            else if (isWindows())
+            {
+              line = "VISICUTBIN=\""+new File(getVisiCutFolder(), "VisiCut.exe").getAbsolutePath()+"\"";
+            }
+            else
+            {
+              line = "VISICUTBIN=\""+new File(getVisiCutFolder(), "VisiCut.Linux").getAbsolutePath()+"\"";
+            }
+          }
+          w.write(line);
+          w.newLine();
+          line = r.readLine();
+        }
+        w.flush();
+        w.close();
+        r.close();
+      }
+      else if (f.getName().toLowerCase().endsWith("inx") || f.getName().toLowerCase().endsWith("py"))
       {
         try
         {
