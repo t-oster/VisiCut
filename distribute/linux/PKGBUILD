@@ -21,7 +21,7 @@ noextract=()
 md5sums=('023d09901b9075e86821a23953e82710')
 
 _gitroot=../../../
-_gitname=master
+_gitname=develop
 
 build() {
   cd "$srcdir"
@@ -41,7 +41,7 @@ build() {
   cd "$srcdir/$_gitname-build"
 
 # Update Version number to gitbuild
-  VERSION=$(git describe --tags --long)
+  VERSION=$(date +%Y%m%d)-git
   mv src/com/t_oster/visicut/gui/resources/VisicutApp.properties VisicutApp.properties
   cat VisicutApp.properties|sed "s#version = .*#version = $VERSION#g#" > src/com/t_oster/visicut/gui/resources/VisicutApp.properties
   rm VisicutApp.properties
