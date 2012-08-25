@@ -130,14 +130,19 @@ def stripSVG_inkscape(src,dest,elements):
 	# visicut accepts inkscape-svg - no need to export as plain svg
 	# call(["inkscape","--without-gui",dest,"--export-plain-svg="+dest])
 
-# replace this by stripSVG_lxml to try out old, simple behaviour - TODO make this user configurable
-stripSVG_inkscape(src=filename,dest=filename+".svg",elements=elements)
+# Try to use inkscape to strip unused elements, but if not in PATH, try to use
+# lxml
+if which("inkscape") == None:
+  stripSVG_lxml(src,dest,elements)
+else
+  stripSVG_inkscape(src=filename,dest=filename+".svg",elements=elements)
 
 # SVG -> PDF -> SVG (unused idea, pixelates some items, sometimes crashes inkscape)
 # TODO make this user configurable
-#call(["inkscape","-z",filename+".svg","-T","--export-pdf="+filename+".clean.pdf"])
-#call(["inkscape","-z",filename+".clean.pdf","--export-plain-svg="+filename+".clean.svg"])
-#call(["inkscape","-z",filename+".clean.svg","--verb=EditSelectAllInAllLayers","--verb=SelectionUnGroup","--verb=FileSave","--verb=FileClose"])
+#if which("inkscape") != None:
+#  call(["inkscape","-z",filename+".svg","-T","--export-pdf="+filename+".clean.pdf"])
+#  call(["inkscape","-z",filename+".clean.pdf","--export-plain-svg="+filename+".clean.svg"])
+#  call(["inkscape","-z",filename+".clean.svg","--verb=EditSelectAllInAllLayers","--verb=SelectionUnGroup","--verb=FileSave","--verb=FileClose"])
 
 # Try to connect to running VisiCut instance
 try:
