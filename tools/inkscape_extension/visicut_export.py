@@ -23,8 +23,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
 import sys
+import os
 SINGLEINSTANCEPORT=6543
 VISICUTBIN="visicut"
+INKSCAPEBIN="inkscape"
+#If on Windows, add .exe extension
+if "windows" in os.name:
+  if not VISICUTBIN.lower().endswith(".exe"):
+    VISICUTBIN += ".exe"
+  if not INKSCAPEBIN.lower().endswith(".exe"):
+    INKSCAPEBIN += ".exe"
 # Store the IDs of selected Elements
 elements=[]
 
@@ -52,7 +60,6 @@ def removeAllButThem(element, elements):
 		return keepSubtree
 
 def which(program):
-  import os
   def is_exe(fpath):
     return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
@@ -105,7 +112,7 @@ def stripSVG_inkscape(src,dest,elements):
 	
 	import subprocess
 	import os
-	command = ["inkscape"]+hidegui+[dest,"--verb=UnlockAllInAllLayers","--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers","--verb=EditUnlinkClone","--verb=ObjectToPath","--verb=FileSave","--verb=FileClose"]
+	command = [INKSCAPEBIN]+hidegui+[dest,"--verb=UnlockAllInAllLayers","--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers","--verb=EditUnlinkClone","--verb=ObjectToPath","--verb=FileSave","--verb=FileClose"]
 	inkscape_output="(not yet run)"
 	try:
 		# run inkscape, buffer output
@@ -128,21 +135,21 @@ def stripSVG_inkscape(src,dest,elements):
 		sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect. Exception information: \n" + str(sys.exc_info()[0]) + "Inkscape's output was:\n" + inkscape_output)
 	
 	# visicut accepts inkscape-svg - no need to export as plain svg
-	# call(["inkscape","--without-gui",dest,"--export-plain-svg="+dest])
+	# call([INKSCAPEBIN,"--without-gui",dest,"--export-plain-svg="+dest])
 
 # Try to use inkscape to strip unused elements, but if not in PATH, try to use
 # lxml
-if which("inkscape") == None:
+if which(INKSCAPEBIN) == None:
   stripSVG_lxml(src,dest,elements)
 else
   stripSVG_inkscape(src=filename,dest=filename+".svg",elements=elements)
 
 # SVG -> PDF -> SVG (unused idea, pixelates some items, sometimes crashes inkscape)
 # TODO make this user configurable
-#if which("inkscape") != None:
-#  call(["inkscape","-z",filename+".svg","-T","--export-pdf="+filename+".clean.pdf"])
-#  call(["inkscape","-z",filename+".clean.pdf","--export-plain-svg="+filename+".clean.svg"])
-#  call(["inkscape","-z",filename+".clean.svg","--verb=EditSelectAllInAllLayers","--verb=SelectionUnGroup","--verb=FileSave","--verb=FileClose"])
+#if which(INKSCAPEBIN) != None:
+#  call([INKSCAPEBIN,"-z",filename+".svg","-T","--export-pdf="+filename+".clean.pdf"])
+#  call([INKSCAPEBIN,"-z",filename+".clean.pdf","--export-plain-svg="+filename+".clean.svg"])
+#  call([INKSCAPEBIN,"-z",filename+".clean.svg","--verb=EditSelectAllInAllLayers","--verb=SelectionUnGroup","--verb=FileSave","--verb=FileClose"])
 
 # Try to connect to running VisiCut instance
 try:
