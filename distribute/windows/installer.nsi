@@ -174,11 +174,6 @@ File /r "stream\"
   ${registerExtension} "$INSTDIR\VisiCut.exe" ".plf" "VisiCut Portable Laser File"
   ${registerExtension} "$INSTDIR\VisiCut.exe" ".svg" "SVG File"
   
-  SetOutPath "$PROGRAMFILES\Inkscape\share\extensions"
-  file "visicut_export.inx"
-  file "visicut_export.py"
-  file "daemonize.py" 
- 
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
  
@@ -364,12 +359,6 @@ Section "Uninstall"
   DeleteRegKey HKLM  "SOFTWARE\${Vendor}\${AppName}"
   ; remove shortcuts, if any.
   Delete "$SMPROGRAMS\${AppName}\*.*"
-
-  Delete "$PROGRAMFILES\Inkscape\share\extensions\visicut_export.inx"
-  Delete "$PROGRAMFILES\Inkscape\share\extensions\visicut_export.py"
-  Delete "$PROGRAMFILES\Inkscape\share\extensions\daemonize.py" 
-  Delete "$PROGRAMFILES\Inkscape\share\extensions\daemonize.pyc" 
- 
 
   ; remove files
   RMDir /r "$INSTDIR"
