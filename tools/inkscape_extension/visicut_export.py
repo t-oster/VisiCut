@@ -37,27 +37,27 @@ if "windows" in os.name:
 elements=[]
 
 for arg in sys.argv[1:]:
-	if arg[0] == "-":
-		if len(arg) >= 5 and arg[0:5] == "--id=":
-			elements +=[arg[5:]]
-		elif len(arg) >= 13 and arg[0:13] == "--visicutbin=":
-			VISICUTBIN=arg[13:]
-		else:
-			arguments += [arg]
-	else:
-		filename = arg
+ if arg[0] == "-":
+  if len(arg) >= 5 and arg[0:5] == "--id=":
+   elements +=[arg[5:]]
+  elif len(arg) >= 13 and arg[0:13] == "--visicutbin=":
+   VISICUTBIN=arg[13:]
+  else:
+   arguments += [arg]
+ else:
+  filename = arg
 
 def removeAllButThem(element, elements):
-	if element.get('id') in elements:
-		return True
-	else:
-		keepSubtree = False
-		for e in element:
-			if not removeAllButThem(e, elements):
-				element.remove(e)
-			else:
-				keepSubtree = True
-		return keepSubtree
+ if element.get('id') in elements:
+  return True
+ else:
+  keepSubtree = False
+  for e in element:
+   if not removeAllButThem(e, elements):
+    element.remove(e)
+   else:
+    keepSubtree = True
+  return keepSubtree
 
 def which(program):
   def is_exe(fpath):
@@ -79,16 +79,16 @@ def which(program):
 # Strip SVG to only contain selected elements
 # LXML version
 def stripSVG_lxml(src,dest,elements):
-	try:
-		from lxml import etree
-		tree = etree.parse(src)
-		if len(elements) > 0:
-			removeAllButThem(tree.getroot(), elements)
-		tree.write(dest)
-	except:
-		sys.stderr.write("Python-LXML not installed. Can only send complete SVG\n")
-		import shutil
-		shutil.copyfile(src, dest)
+ try:
+  from lxml import etree
+  tree = etree.parse(src)
+  if len(elements) > 0:
+   removeAllButThem(tree.getroot(), elements)
+  tree.write(dest)
+ except:
+  sys.stderr.write("Python-LXML not installed. Can only send complete SVG\n")
+  import shutil
+  shutil.copyfile(src, dest)
 
 # Strip SVG to only contain selected elements, convert objects to paths, unlink clones
 # Inkscape version: takes care of special cases where the selected objects depend on non-selected ones.
@@ -97,45 +97,45 @@ def stripSVG_lxml(src,dest,elements):
 # Inkscape is called with certain "verbs" (gui actions) to do the required cleanup
 # The idea is similar to http://bazaar.launchpad.net/~nikitakit/inkscape/svg2sif/view/head:/share/extensions/synfig_prepare.py#L181 , but more primitive - there is no need for more complicated preprocessing here
 def stripSVG_inkscape(src,dest,elements):
-	# Selection commands: select items, invert selection, delete
-	selection=[]
-	for el in elements:
-		selection += ["--select="+el]
-	if len(elements)>0:
-		#selection += ["--verb=FitCanvasToSelection"] # TODO add a user configuration option whether to keep the page size (and by this the position relative to the page)
-		selection += ["--verb=EditInvertInAllLayers","--verb=EditDelete"]
-	import shutil
-	shutil.copyfile(src, dest)
-	hidegui=["--without-gui"]
-	# currently this only works with gui  because of a bug in inkscape: https://bugs.launchpad.net/inkscape/+bug/843260
-	hidegui=[]
-	
-	import subprocess
-	import os
-	command = [INKSCAPEBIN]+hidegui+[dest,"--verb=UnlockAllInAllLayers","--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers","--verb=EditUnlinkClone","--verb=ObjectToPath","--verb=FileSave","--verb=FileClose"]
-	inkscape_output="(not yet run)"
-	try:
-		# run inkscape, buffer output
-		inkscape=subprocess.Popen(command, stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-		inkscape_output=inkscape.communicate()[0]
-		errors = False
-		# see if the output contains someting interesting (an error or an important warning)
-		for line in inkscape_output.splitlines():
-			# ignore empty/blank lines
-			if (line.isspace() or line==""):
-				continue
-			# ignore GTK_IS_MISC warnings - they occur sometimes (at least in debian squeeze) even if everything works perfectly
-			if "gtk_misc_set_alignment: assertion `GTK_IS_MISC (misc)' failed" in line:
-				continue
-			# something else happened - notify the user
-			errors = True
-		if errors:
-			sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect.\nInkscape's output was:\n" + inkscape_output)
-	except:
-		sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect. Exception information: \n" + str(sys.exc_info()[0]) + "Inkscape's output was:\n" + inkscape_output)
-	
-	# visicut accepts inkscape-svg - no need to export as plain svg
-	# call([INKSCAPEBIN,"--without-gui",dest,"--export-plain-svg="+dest])
+ # Selection commands: select items, invert selection, delete
+ selection=[]
+ for el in elements:
+  selection += ["--select="+el]
+ if len(elements)>0:
+  #selection += ["--verb=FitCanvasToSelection"] # TODO add a user configuration option whether to keep the page size (and by this the position relative to the page)
+  selection += ["--verb=EditInvertInAllLayers","--verb=EditDelete"]
+ import shutil
+ shutil.copyfile(src, dest)
+ hidegui=["--without-gui"]
+ # currently this only works with gui  because of a bug in inkscape: https://bugs.launchpad.net/inkscape/+bug/843260
+ hidegui=[]
+ 
+ import subprocess
+ import os
+ command = [INKSCAPEBIN]+hidegui+[dest,"--verb=UnlockAllInAllLayers","--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers","--verb=EditUnlinkClone","--verb=ObjectToPath","--verb=FileSave","--verb=FileClose"]
+ inkscape_output="(not yet run)"
+ try:
+  # run inkscape, buffer output
+  inkscape=subprocess.Popen(command, stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+  inkscape_output=inkscape.communicate()[0]
+  errors = False
+  # see if the output contains someting interesting (an error or an important warning)
+  for line in inkscape_output.splitlines():
+   # ignore empty/blank lines
+   if (line.isspace() or line==""):
+    continue
+   # ignore GTK_IS_MISC warnings - they occur sometimes (at least in debian squeeze) even if everything works perfectly
+   if "gtk_misc_set_alignment: assertion `GTK_IS_MISC (misc)' failed" in line:
+    continue
+   # something else happened - notify the user
+   errors = True
+  if errors:
+   sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect.\nInkscape's output was:\n" + inkscape_output)
+ except:
+  sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect. Exception information: \n" + str(sys.exc_info()[0]) + "Inkscape's output was:\n" + inkscape_output)
+ 
+ # visicut accepts inkscape-svg - no need to export as plain svg
+ # call([INKSCAPEBIN,"--without-gui",dest,"--export-plain-svg="+dest])
 
 # Try to use inkscape to strip unused elements, but if not in PATH, try to use
 # lxml
