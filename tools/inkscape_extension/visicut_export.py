@@ -141,7 +141,7 @@ def stripSVG_inkscape(src,dest,elements):
 # lxml
 if which(INKSCAPEBIN) == None:
   stripSVG_lxml(src,dest,elements)
-else
+else:
   stripSVG_inkscape(src=filename,dest=filename+".svg",elements=elements)
 
 # SVG -> PDF -> SVG (unused idea, pixelates some items, sometimes crashes inkscape)
