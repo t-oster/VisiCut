@@ -107,13 +107,9 @@ public final class PreferencesManager
       try
       {
         System.out.println("Copying default settings...");
-        FileUtils.copyDirectoryToDirectory(new File(vc, "settings"), bp);
+        FileUtils.copyDirectoryToDirectory(new File(vc, "settings"), new File(bp, "settings"));
         System.out.println("done.");
         return;
-      }
-      catch (java.lang.NoSuchMethodError nsm)
-      {
-        System.err.println("Can't copy because of Error in apache-commons-io");
       }
       catch (Exception ex)
       {
