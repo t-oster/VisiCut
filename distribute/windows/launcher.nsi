@@ -10,6 +10,7 @@ OutFile "VisiCut.exe"
 SilentInstall silent
 AutoCloseWindow true
 ShowInstDetails nevershow
+RequestExecutionLevel user
  
 ;You want to change the next two lines too
 !define CLASSPATH ".;lib"
