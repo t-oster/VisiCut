@@ -127,8 +127,8 @@ def stripSVG_inkscape(src,dest,elements):
    # ignore GTK_IS_MISC warnings - they occur sometimes (at least in debian squeeze) even if everything works perfectly
    if "gtk_misc_set_alignment: assertion `GTK_IS_MISC (misc)' failed" in line:
     continue
-   # something else happened - notify the user
-   errors = True
+   # something else happened - but since inkscape outputs much stuff, don't notify the user
+   errors = False # True
   if errors:
    sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect.\nInkscape's output was:\n" + inkscape_output)
  except:
