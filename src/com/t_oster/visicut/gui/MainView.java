@@ -25,6 +25,7 @@
 package com.t_oster.visicut.gui;
 
 import com.apple.eawt.AppEvent.AboutEvent;
+import com.apple.eawt.AppEvent.OpenFilesEvent;
 import com.apple.eawt.AppEvent.QuitEvent;
 import com.apple.eawt.QuitResponse;
 import com.t_oster.liblasercut.IllegalJobException;
@@ -167,6 +168,13 @@ public class MainView extends javax.swing.JFrame
         public void handleAbout(AboutEvent ae)
         {
           MainView.this.aboutMenuItemActionPerformed(null);
+        }
+      });
+      macApplication.setOpenFileHandler(new com.apple.eawt.OpenFilesHandler() {
+
+        public void openFiles(OpenFilesEvent ofe)
+        {
+          MainView.this.loadFile(ofe.getFiles().get(0));
         }
       });
     }
