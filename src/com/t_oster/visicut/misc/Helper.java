@@ -107,6 +107,11 @@ public class Helper
       throw new FileNotFoundException("Not a directory: "+src);
     }
     File trg = new File(new File(new File(FileUtils.getUserDirectory(), ".config"), "inkscape"), "extensions");
+    if (isWindows())
+    {
+        trg = new File(new File(new File(FileUtils.getUserDirectory(), "Application Data"), "inkscape"), "extensions");
+    }
+
     if (!trg.exists() && !trg.mkdirs())
     {
       throw new FileNotFoundException("Can't create directory: "+trg);
