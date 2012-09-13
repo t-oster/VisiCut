@@ -140,7 +140,7 @@ def stripSVG_inkscape(src,dest,elements):
 # Try to use inkscape to strip unused elements, but if not in PATH, try to use
 # lxml
 if which(INKSCAPEBIN) == None:
-  stripSVG_lxml(src,dest,elements)
+  stripSVG_lxml(src=filename,dest=filename+".svg",elements=elements)
 else:
   stripSVG_inkscape(src=filename,dest=filename+".svg",elements=elements)
 
