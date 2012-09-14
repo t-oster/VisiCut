@@ -35,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -102,19 +103,36 @@ public final class PreferencesManager
     }
     //Try to copy skeleton from VisiCut's program folder
     File vc = Helper.getVisiCutFolder();
-    if (vc != null && vc.isDirectory() && new File(vc, "settings").isDirectory())
+    if (vc != null && vc.isDirectory())
     {
-      try
+      if (new File(vc, "examples").isDirectory())
       {
-        System.out.println("Copying default settings...");
-        FileUtils.copyDirectoryToDirectory(new File(vc, "settings"), new File(bp, "settings"));
-        System.out.println("done.");
-        return;
+        try
+        {
+          System.out.println("Copying examples...");
+          FileUtils.copyDirectoryToDirectory(new File(vc, "examples"), new File(bp, "examples"));
+          System.out.println("done.");
+        }
+        catch (Exception ex)
+        {
+          Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
+          System.err.println("Can't copy default settings.");
+        }
       }
-      catch (Exception ex)
+      if (new File(vc, "settings").isDirectory())
       {
-        Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
-        System.err.println("Can't copy default settings.");
+        try
+        {
+          System.out.println("Copying default settings...");
+          FileUtils.copyDirectoryToDirectory(new File(vc, "settings"), new File(bp, "settings"));
+          System.out.println("done.");
+          return;
+        }
+        catch (Exception ex)
+        {
+          Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
+          System.err.println("Can't copy default settings.");
+        }
       }
     }
     System.err.println("No default settings found. Generating some...");
@@ -131,6 +149,32 @@ public final class PreferencesManager
     }
   }
 
+  private List<String> exampleFilenames = null;
+  public List<String> getExampleFilenames()
+  {
+    if (exampleFilenames == null)
+    {
+      exampleFilenames = new LinkedList<String>();
+      File dir = new File(Helper.getBasePath(), "examples");
+      if (dir.exists() && dir.isDirectory())
+      {
+        for(File f : dir.listFiles())
+        {
+          if (f.isFile())
+          {
+            exampleFilenames.add(f.getName());
+          }
+        }
+      }
+    }
+    return exampleFilenames;
+  }
+  
+  public File getExampleFile(String name)
+  {
+    return new File(new File(Helper.getBasePath(), "examples"), name);
+  }
+  
   public Preferences getPreferences()
   {
     if (preferences == null)

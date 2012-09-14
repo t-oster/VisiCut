@@ -39,7 +39,6 @@ import com.t_oster.visicut.gui.beans.ImageComboBox;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.MultiFilter;
-import com.t_oster.visicut.misc.ProgressWindow;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
@@ -239,6 +238,23 @@ public class MainView extends javax.swing.JFrame
       });
       this.menuBar.add(extras);
     }
+    ActionListener exampleItemClicked = new ActionListener(){
+
+      public void actionPerformed(ActionEvent ae)
+      {
+        if (!"".equals(ae.getActionCommand()))
+        {
+          MainView.this.loadFile(PreferencesManager.getInstance().getExampleFile(ae.getActionCommand()));
+        }
+      }
+    };
+    for (String example : PreferencesManager.getInstance().getExampleFilenames())
+    {
+      JMenuItem item = new JMenuItem(example);
+      item.setActionCommand(example);
+      item.addActionListener(exampleItemClicked);
+      this.jmExamples.add(item);
+    }
   }
 
   /**
@@ -387,6 +403,7 @@ public class MainView extends javax.swing.JFrame
         newMenuItem = new javax.swing.JMenuItem();
         openMenuItem = new javax.swing.JMenuItem();
         recentFilesMenu = new javax.swing.JMenu();
+        jmExamples = new javax.swing.JMenu();
         reloadMenuItem = new javax.swing.JMenuItem();
         saveMenuItem = new javax.swing.JMenuItem();
         saveAsMenuItem = new javax.swing.JMenuItem();
@@ -596,8 +613,7 @@ public class MainView extends javax.swing.JFrame
                                     .addGroup(jPanel2Layout.createSequentialGroup()
                                         .addComponent(resolutionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jLabel12)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                        .addComponent(jLabel12)))))
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel10)
@@ -679,7 +695,7 @@ public class MainView extends javax.swing.JFrame
         );
         previewPanelLayout.setVerticalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 504, Short.MAX_VALUE)
+            .addGap(0, 510, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -822,6 +838,10 @@ public class MainView extends javax.swing.JFrame
         recentFilesMenu.setText(resourceMap.getString("recentFilesMenu.text")); // NOI18N
         recentFilesMenu.setName("recentFilesMenu"); // NOI18N
         fileMenu.add(recentFilesMenu);
+
+        jmExamples.setText(resourceMap.getString("jmExamples.text")); // NOI18N
+        jmExamples.setName("jmExamples"); // NOI18N
+        fileMenu.add(jmExamples);
 
         reloadMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
         reloadMenuItem.setText(resourceMap.getString("reloadMenuItem.text")); // NOI18N
@@ -1957,6 +1977,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JMenu jmExamples;
     private com.t_oster.visicut.gui.beans.ImageComboBox laserCutterComboBox;
     private com.t_oster.visicut.managers.MappingManager mappingManager1;
     private javax.swing.JTabbedPane mappingTabbedPane;
