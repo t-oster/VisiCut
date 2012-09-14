@@ -268,6 +268,7 @@ public final class PreferencesManager
 
   public void importSettings(File file) throws ZipException, IOException
   {
+    FileUtils.cleanDirectory(Helper.getBasePath());
     FileUtils.unzipToDirectory(file, Helper.getBasePath());
     this.exampleFilenames = null;
     this.preferences = null;

@@ -199,4 +199,30 @@ public class FileUtils
     }
     zip.close();
   }
+
+  public static void deleteRecursively(File f)
+  {
+    if (f.exists())
+    {
+      if (f.isDirectory())
+      {
+        for(File ff:f.listFiles())
+        {
+          deleteRecursively(ff);
+        }
+      }
+      f.delete();
+    }
+  }
+  
+  public static void cleanDirectory(File dir)
+  {
+    if (dir.exists() && dir.isDirectory())
+    {
+      for(File f: dir.listFiles())
+      {
+        deleteRecursively(f);
+      }
+    }
+  }
 }
