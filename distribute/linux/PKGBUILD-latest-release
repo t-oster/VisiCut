@@ -41,4 +41,5 @@ build() {
 package() {
   cd "$srcdir/${_gitdir}"*
   make DESTDIR="$pkgdir/" install
+  cp "$srcdir/plf-mime.xml" "$pkgdir/usr/share/visicut/"
 }

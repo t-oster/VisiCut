@@ -52,5 +52,6 @@ rm VisicutApp.properties
 package() {
   cd "$srcdir/$_gitname-build"
   make DESTDIR="$pkgdir/" install
+  cp "$srcdir/plf-mime.xml" "$pkgdir/usr/share/visicut/"
 }
 
