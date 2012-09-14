@@ -126,10 +126,11 @@ read answer
 if [ "$answer" != "n" ]
 then
   cd linux
-  makepkg
+  cat PKGBUILD | sed "s#pkgver=VERSION#pkgver=$VERSION#g" > PKGBUILD-tmp
+  makepkg -p PKGBUILD-tmp
   mv *.pkg.tar.xz ../
   echo "Cleaning up..."
-  rm -rf src pkg
+  rm -rf src pkg PKGBUILD-tmp
   cd ..
 fi
 

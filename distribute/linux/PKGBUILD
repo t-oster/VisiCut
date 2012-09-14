@@ -1,6 +1,6 @@
 # Maintainer: Thomas Oster <thomas.oster@rwth-aachen.de>
-pkgname=visicut-git
-pkgver=20120813
+pkgname=visicut
+pkgver=VERSION
 pkgrel=1
 pkgdesc="A userfriendly tool to create, save and send Jobs to a Lasercutter"
 arch=(any)
@@ -24,11 +24,6 @@ _gitroot=../../../
 build() {
   cd "$srcdir"
   cd ../../../
-  # Update Version number to gitbuild
-  VERSION=$(date +%Y%m%d)-git
-  mv src/com/t_oster/visicut/gui/resources/VisicutApp.properties VisicutApp.properties
-  cat VisicutApp.properties|sed "s#version = .*#version = $VERSION#g#" > src/com/t_oster/visicut/gui/resources/VisicutApp.properties
-  rm VisicutApp.properties
   make
 }
 
