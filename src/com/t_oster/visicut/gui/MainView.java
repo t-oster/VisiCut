@@ -55,6 +55,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -238,8 +239,10 @@ public class MainView extends javax.swing.JFrame
       });
       this.menuBar.add(extras);
     }
-    ActionListener exampleItemClicked = new ActionListener(){
+    this.refreshExampleMenu();
+  }
 
+  private ActionListener exampleItemClicked = new ActionListener(){
       public void actionPerformed(ActionEvent ae)
       {
         if (!"".equals(ae.getActionCommand()))
@@ -248,6 +251,10 @@ public class MainView extends javax.swing.JFrame
         }
       }
     };
+  
+  private void refreshExampleMenu()
+  {
+    jmExamples.removeAll();
     for (String example : PreferencesManager.getInstance().getExampleFilenames())
     {
       JMenuItem item = new JMenuItem(example);
@@ -256,7 +263,7 @@ public class MainView extends javax.swing.JFrame
       this.jmExamples.add(item);
     }
   }
-
+  
   /**
    * Fills the recent files menu from the current
    * list in preferences
@@ -415,6 +422,8 @@ public class MainView extends javax.swing.JFrame
         editMappingMenuItem = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         materialMenuItem = new javax.swing.JMenuItem();
+        jmExportSettings = new javax.swing.JMenuItem();
+        jmImportSettings = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
         zoomInMenuItem = new javax.swing.JMenuItem();
@@ -944,6 +953,24 @@ public class MainView extends javax.swing.JFrame
         jMenu1.add(materialMenuItem);
 
         editMenu.add(jMenu1);
+
+        jmExportSettings.setText(resourceMap.getString("jmExportSettings.text")); // NOI18N
+        jmExportSettings.setName("jmExportSettings"); // NOI18N
+        jmExportSettings.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmExportSettingsActionPerformed(evt);
+            }
+        });
+        editMenu.add(jmExportSettings);
+
+        jmImportSettings.setText(resourceMap.getString("jmImportSettings.text")); // NOI18N
+        jmImportSettings.setName("jmImportSettings"); // NOI18N
+        jmImportSettings.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmImportSettingsActionPerformed(evt);
+            }
+        });
+        editMenu.add(jmImportSettings);
 
         menuBar.add(editMenu);
 
@@ -1941,6 +1968,109 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
   this.refreshComboBoxes();
   this.refreshButtonStates();
 }//GEN-LAST:event_resolutionComboBoxActionPerformed
+
+  private void jmExportSettingsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmExportSettingsActionPerformed
+  {//GEN-HEADEREND:event_jmExportSettingsActionPerformed
+    File file = null;
+    //On Mac os, awt.FileDialog looks more native
+    if (Helper.isMacOS())
+    {
+      FileDialog dialog = new java.awt.FileDialog(this);
+      dialog.setMode(FileDialog.SAVE);
+      if (lastDirectory != null)
+      {
+        dialog.setDirectory(lastDirectory.getAbsolutePath());
+      }
+      dialog.setVisible(true);
+      if (dialog.getFile() != null)
+      {
+        file = new File(new File(dialog.getDirectory()), dialog.getFile());
+      }
+    }
+    else
+    {
+      JFileChooser chooser = new JFileChooser();
+      chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+      chooser.setCurrentDirectory(lastDirectory);
+      if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+      {
+        file = chooser.getSelectedFile();
+      }
+    }
+    if (file != null)
+    {
+      if (!file.getName().toLowerCase().endsWith("zip"))
+      {
+        file = new File(file.getParentFile(), file.getName()+".zip");
+      }
+      try
+      {
+        PreferencesManager.getInstance().exportSettings(file);
+      }
+      catch (Exception ex)
+      {
+        JOptionPane.showMessageDialog(this, "Error: "+ex.getLocalizedMessage());
+        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+  }//GEN-LAST:event_jmExportSettingsActionPerformed
+
+  private void jmImportSettingsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmImportSettingsActionPerformed
+  {//GEN-HEADEREND:event_jmImportSettingsActionPerformed
+    if (JOptionPane.showConfirmDialog(this, "This will overwrite all your settings including Lasercutters and materials\nDo you want to proceed?", "Warning", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
+    {
+      return;
+    }
+    try
+    {
+      final FileFilter zipFilter = new ExtensionFilter("zip", "Zipped Settings (*.zip)");
+      //On Mac os, awt.FileDialog looks more native
+      if (Helper.isMacOS())
+      {
+        FileDialog openFileChooser = new FileDialog(this, "Please select a file");
+        openFileChooser.setMode(FileDialog.LOAD);
+        if (lastDirectory != null)
+        {
+          openFileChooser.setDirectory(lastDirectory.getAbsolutePath());
+        }
+        openFileChooser.setFilenameFilter(new FilenameFilter()
+        {
+
+          public boolean accept(File dir, String file)
+          {
+            return zipFilter.accept(new File(dir, file));
+          }
+        });
+        openFileChooser.setVisible(true);
+        if (openFileChooser.getFile() != null)
+        {
+          File file = new File(new File(openFileChooser.getDirectory()), openFileChooser.getFile());
+          PreferencesManager.getInstance().importSettings(file);
+        }
+      }
+      else
+      {
+        JFileChooser openFileChooser = new JFileChooser();
+        openFileChooser.setAcceptAllFileFilterUsed(false);
+        openFileChooser.addChoosableFileFilter(zipFilter);
+        openFileChooser.setFileFilter(zipFilter);
+        openFileChooser.setCurrentDirectory(lastDirectory);
+        int returnVal = openFileChooser.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
+          File file = openFileChooser.getSelectedFile();
+          PreferencesManager.getInstance().importSettings(file);
+          this.fillComboBoxes();
+          this.refreshExampleMenu();
+        }
+      }
+    }
+    catch (Exception e)
+    {
+      JOptionPane.showMessageDialog(this, "Error: "+e.getLocalizedMessage());
+    }
+  }//GEN-LAST:event_jmImportSettingsActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton calculateTimeButton;
@@ -1978,6 +2108,8 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JMenu jmExamples;
+    private javax.swing.JMenuItem jmExportSettings;
+    private javax.swing.JMenuItem jmImportSettings;
     private com.t_oster.visicut.gui.beans.ImageComboBox laserCutterComboBox;
     private com.t_oster.visicut.managers.MappingManager mappingManager1;
     private javax.swing.JTabbedPane mappingTabbedPane;

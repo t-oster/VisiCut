@@ -20,9 +20,16 @@ package com.t_oster.visicut.misc;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.FileChannel;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 /**
  *
@@ -123,5 +130,73 @@ public class FileUtils
     {
       destFile.setLastModified(srcFile.lastModified());
     }
+  }
+  
+  private static void addDirectoryToZip(ZipOutputStream out, File dir, String prefix) throws IOException
+  {
+    FileInputStream in;
+    byte[] buf = new byte[1024];
+    int len;
+    if (dir.isDirectory())
+    {
+      for (File f:dir.listFiles())
+      {
+        if (f.isDirectory())
+        {
+          addDirectoryToZip(out, f, prefix+"/"+f.getName());
+        }
+        else if (f.isFile())
+        {
+          out.putNextEntry(new ZipEntry(prefix+"/"+f.getName()));
+          in = new FileInputStream(f);
+          // Transfer bytes from the file to the ZIP file
+          while ((len = in.read(buf)) > 0)
+          {
+            out.write(buf, 0, len);
+          }
+          in.close();
+          // Complete the entry
+          out.closeEntry();    
+        }
+      }
+    }
+  }
+
+  public static void zipDirectory(File dir, File file) throws FileNotFoundException, IOException
+  {
+    // Create the ZIP file
+    ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file));
+    addDirectoryToZip(out, dir, "");
+    out.close();
+  }
+  
+  public static void unzipToDirectory(File file, File dir) throws ZipException, IOException
+  {
+    ZipFile zip = new ZipFile(file);
+    Enumeration entries = zip.entries();
+    File inputFile = null;
+    while (entries.hasMoreElements())
+    {
+      ZipEntry entry = (ZipEntry) entries.nextElement();
+      String name = entry.getName();
+      inputFile = new File(dir, name);
+      File parent = inputFile.getParentFile();
+      if (!parent.exists())
+      {
+        parent.mkdirs();
+      }
+      byte[] buf = new byte[1024];
+      InputStream in = zip.getInputStream(entry);
+      FileOutputStream out = new FileOutputStream(inputFile);
+      // Transfer bytes from the file to the ZIP file
+      int len;
+      while ((len = in.read(buf)) > 0)
+      {
+        out.write(buf, 0, len);
+      }
+      out.close();
+      in.close();
+    }
+    zip.close();
   }
 }

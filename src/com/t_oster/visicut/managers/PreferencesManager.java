@@ -34,10 +34,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipException;
 
 /**
  *
@@ -257,5 +259,17 @@ public final class PreferencesManager
       ld.setMaterialsPath(Helper.addBasePath(ld.getMaterialsPath()));
     }
     return p;
+  }
+
+  public void exportSettings(File file) throws FileNotFoundException, IOException
+  {
+    FileUtils.zipDirectory(Helper.getBasePath(), file);
+  }
+
+  public void importSettings(File file) throws ZipException, IOException
+  {
+    FileUtils.unzipToDirectory(file, Helper.getBasePath());
+    this.exampleFilenames = null;
+    this.preferences = null;
   }
 }
