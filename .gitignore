@@ -3,6 +3,8 @@
 /dist/
 /distribute/VisiCut*.zip
 /distribute/*.deb
+/distribute/*.exe
 /distribute/*.pkg.tar.xz
+/distribute/visicut/
 /distribute/VisiCut.app/
 /settings/
