@@ -99,6 +99,11 @@ public class Helper
     return System.getProperty("os.name").toLowerCase().contains("windows");
   }
   
+  public static boolean isWindowsXP()
+  {
+    return isWindows() && System.getProperty("os.name").toLowerCase().contains("xp");
+  }
+  
   public static void installInkscapeExtension() throws FileNotFoundException, IOException
   {
     File src = new File(getVisiCutFolder(), "inkscape_extension");
@@ -106,10 +111,18 @@ public class Helper
     {
       throw new FileNotFoundException("Not a directory: "+src);
     }
-    File trg = new File(new File(new File(FileUtils.getUserDirectory(), ".config"), "inkscape"), "extensions");
-    if (isWindows())
+    File trg = null;
+    if (isWindowsXP())
+    {
+        trg = new File(new File(FileUtils.getUserDirectory(), ".inkscape"), "extensions");
+    }
+    else if (isWindows())
     {
         trg = new File(new File(new File(FileUtils.getUserDirectory(), "Application Data"), "inkscape"), "extensions");
+    }
+    else
+    {
+      trg = new File(new File(new File(FileUtils.getUserDirectory(), ".config"), "inkscape"), "extensions");
     }
 
     if (!trg.exists() && !trg.mkdirs())
