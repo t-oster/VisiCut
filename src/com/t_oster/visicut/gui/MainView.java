@@ -61,6 +61,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -1290,28 +1291,52 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 }//GEN-LAST:event_aboutMenuItemActionPerformed
   private int jobnumber = 0;
 
-  private void executeJob()
+  private void executeJob() throws FileNotFoundException
   {
+    //we need to get the profile with this name for the current lasercutter
+    LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
+    String materialname = this.visicutModel1.getMaterial().getName();
+    MaterialProfile material = this.profileManager1.getMaterial(device, materialname);
+    if (material == null)
+    {
+      //clone current material
+      material = this.visicutModel1.getMaterial().clone();
+      //remove all the profiles
+      material.setLaserProfiles(new LinkedList<LaserProfile>());
+      //save it for the selected lasercutter
+      this.profileManager1.saveProfile(material, device);
+    }
+    this.visicutModel1.setMaterial(material);
+    //get all profiles used in the job
+    //and check if they're supported yet
+    boolean unknownProfileUsed = false;
+    Set<String> usedProfileNames = new LinkedHashSet<String>();
+    for (Mapping m:this.visicutModel1.getMappings())
+    {
+      usedProfileNames.add(m.getProfileName());
+      if (material.getLaserProfile(m.getProfileName()) == null)
+      {
+        unknownProfileUsed = true;
+      }
+    }
+    
     final boolean profileChanged;
     final MaterialProfile oldMaterial = this.visicutModel1.getMaterial();
-    if (this.cbEditBeforeExecute.isSelected())
+    if (this.cbEditBeforeExecute.isSelected() || unknownProfileUsed)
     {
+      if (unknownProfileUsed)
+      {
+        JOptionPane.showMessageDialog(this, "For some profile you selected, there are no lasercutter settings yet\nYou will have to enter them in the following dialog.");
+      }
       //Adapt Settings before execute
       AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true);
-      MaterialProfile mp = this.visicutModel1.getMaterial().clone();
-      //TODO: refactor using a Set you idiot....
-      List<String> usedProfileNames = new LinkedList<String>();
-      for (Mapping m:this.visicutModel1.getMappings())
-      {
-        usedProfileNames.add(m.getProfileName());
-      }
+      MaterialProfile mp = this.visicutModel1.getMaterial().clone(); 
       List<LaserProfile> usedProfiles = new LinkedList<LaserProfile>();
-      for (LaserProfile lp:mp.getLaserProfiles())
+      for (String profilename:usedProfileNames)
       {
-        if (usedProfileNames.contains(lp.getName()))
-        {
-          usedProfiles.add(lp);
-        }
+        LaserProfile lp = mp.getLaserProfile(profilename);
+        if (lp == null)
+        usedProfiles.add(lp);
       }
       mp.setLaserProfiles(usedProfiles);
       asd.setMaterialProfile(mp);

@@ -783,7 +783,7 @@ public class VisicutModel
     {
       if (!(e.getKey() instanceof VectorProfile) || !((VectorProfile)e.getKey()).isIsCut())
       {
-        e.getKey().addToLaserJob(job, e.getValue(), material.getDepth());
+        e.getKey().addToLaserJob(job, e.getValue(), material.getDepth(), ProfileManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey()));
       }
     }
     //Add all cutting parts to the end of the laserjob
@@ -791,7 +791,7 @@ public class VisicutModel
     {
       if (e.getKey() instanceof VectorProfile && ((VectorProfile)e.getKey()).isIsCut())
       {
-        e.getKey().addToLaserJob(job, e.getValue(), material.getDepth());
+        e.getKey().addToLaserJob(job, e.getValue(), material.getDepth(), ProfileManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey()));
       }
     }
     return job;

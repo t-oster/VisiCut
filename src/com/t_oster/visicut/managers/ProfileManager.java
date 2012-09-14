@@ -67,6 +67,11 @@ public class ProfileManager
     this.materials = new LinkedList<MaterialProfile>();
   }
 
+  public List<LaserProperty> getLaserProperties(LaserDevice ld, MaterialProfile mp, LaserProfile lp)
+  {
+    throw new UnsupportedOperationException("not implemented");
+  }
+  
   public void loadMaterials(LaserDevice l)
   {
     this.materials = this.getMaterials(l);
@@ -218,5 +223,17 @@ public class ProfileManager
     Collections.sort(result);
     this.materialsCache.put(ld, result);
     return result;
+  }
+
+  public MaterialProfile getMaterial(LaserDevice device, String name)
+  {
+    for (MaterialProfile mp : this.getMaterials(device))
+    {
+      if (name.equals(mp.getName()))
+      {
+        return mp;
+      }
+    }
+    return null;
   }
 }

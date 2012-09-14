@@ -29,6 +29,7 @@ import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.util.List;
 
 /**
  * This class represents a Line Profile,
@@ -114,9 +115,9 @@ public class VectorProfile extends LaserProfile
   }
 
   @Override
-  public void addToLaserJob(LaserJob job, GraphicSet objects)
+  public void addToLaserJob(LaserJob job, GraphicSet objects, List<LaserProperty> laserProperties)
   {
-    for (LaserProperty prop : this.getLaserProperties())
+    for (LaserProperty prop : laserProperties)
     {
       job.getVectorPart().setCurrentCuttingProperty(prop);
       ShapeConverter conv = new ShapeConverter();
@@ -142,11 +143,6 @@ public class VectorProfile extends LaserProfile
     cp.name = name;
     cp.thumbnailPath = thumbnailPath;
     cp.width = width;
-    //cp.laserProperties = new LinkedList<LaserProperty>();
-    for (LaserProperty l : this.getLaserProperties())
-    {
-      cp.laserProperties.add(l.clone());
-    }
     return cp;
   }
 }

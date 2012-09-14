@@ -36,6 +36,7 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 /**
  * This Class represents a profile, describing
@@ -185,7 +186,7 @@ public class RasterProfile extends LaserProfile
   }
 
   @Override
-  public void addToLaserJob(LaserJob job, GraphicSet set)
+  public void addToLaserJob(LaserJob job, GraphicSet set, List<LaserProperty> laserProperties)
   {
     //Decompose Objects if their distance is big enough
     for (GraphicSet objects  : this.decompose(set))
@@ -215,7 +216,7 @@ public class RasterProfile extends LaserProfile
         BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors);
         ad.setColorShift(this.getColorShift());
         BlackWhiteRaster bw = new BlackWhiteRaster(ad, this.getDitherAlgorithm());
-        for (LaserProperty prop : this.getLaserProperties())
+        for (LaserProperty prop : laserProperties)
         {//and add it to the raster part as often as defined in the profile
           job.getRasterPart().addImage(bw, prop, new Point((int) bb.getX(), (int) bb.getY()));
         }
@@ -234,11 +235,6 @@ public class RasterProfile extends LaserProfile
     rp.invertColors = this.invertColors;
     rp.name = this.name;
     rp.thumbnailPath = this.thumbnailPath;
-    //rp.laserProperties = new LinkedList<LaserProperty>();
-    for (LaserProperty l : this.getLaserProperties())
-    {
-      rp.laserProperties.add(l.clone());
-    }
     return rp;
   }
 }

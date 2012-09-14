@@ -29,7 +29,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -64,30 +63,6 @@ public abstract class LaserProfile implements ImageListable, Cloneable
     this.description = description;
   }
 
-  protected List<LaserProperty> laserProperties = new LinkedList<LaserProperty>();
-  public static final String PROP_LASERPROPERTIES = "laserProperties";
-
-  /**
-   * Get the value of laserProperties
-   *
-   * @return the value of laserProperties
-   */
-  public List<LaserProperty> getLaserProperties()
-  {
-    return laserProperties;
-  }
-
-  /**
-   * Set the value of laserProperties
-   *
-   * @param laserProperties new value of laserProperties
-   */
-  public void setLaserProperties(List<LaserProperty> laserProperties)
-  {
-    List<LaserProperty> oldLaserProperties = this.laserProperties;
-    this.laserProperties = laserProperties;
-    propertyChangeSupport.firePropertyChange(PROP_LASERPROPERTIES, oldLaserProperties, laserProperties);
-  }
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
   /**
@@ -133,7 +108,7 @@ public abstract class LaserProfile implements ImageListable, Cloneable
     this.color = color;
   }
   
-  protected String thumbnailPath = "/home/thommy/NetBeansProjects/jepilog/materials/Fliess/bigcut.png";
+  protected String thumbnailPath = null;
 
   /**
    * Get the value of thumbnailPath
@@ -179,16 +154,16 @@ public abstract class LaserProfile implements ImageListable, Cloneable
 
   public abstract void renderPreview(Graphics2D g, GraphicSet objects, MaterialProfile material);
 
-  public abstract void addToLaserJob(LaserJob job, GraphicSet objects);
+  public abstract void addToLaserJob(LaserJob job, GraphicSet objects, List<LaserProperty> laserProperties);
 
-  public void addToLaserJob(LaserJob job, GraphicSet set, float focusOffset)
+  public void addToLaserJob(LaserJob job, GraphicSet set, List<LaserProperty> laserProperties, float focusOffset)
   {
-    for (LaserProperty p:this.getLaserProperties())
+    for (LaserProperty p:laserProperties)
     {
       p.setFocus(p.getFocus()+focusOffset);
     }
-    this.addToLaserJob(job, set);
-    for (LaserProperty p:this.getLaserProperties())
+    this.addToLaserJob(job, set, laserProperties);
+    for (LaserProperty p:laserProperties)
     {
       p.setFocus(p.getFocus()-focusOffset);
     }

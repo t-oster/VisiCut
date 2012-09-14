@@ -32,6 +32,7 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 /**
  * This Class represents a profile, describing
@@ -163,7 +164,7 @@ public class Raster3dProfile extends LaserProfile
   }
 
   @Override
-  public void addToLaserJob(LaserJob job, GraphicSet set)
+  public void addToLaserJob(LaserJob job, GraphicSet set, List<LaserProperty> laserProperties)
   {
     for (GraphicSet objects : this.decompose(set))
     {
@@ -189,7 +190,7 @@ public class Raster3dProfile extends LaserProfile
         }
         BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors);
         ad.setColorShift(this.getColorShift());
-        for (LaserProperty prop : this.getLaserProperties())
+        for (LaserProperty prop : laserProperties)
         {
           job.getRaster3dPart().addImage(ad, prop, new Point((int) bb.getX(), (int) bb.getY()));
         }
@@ -207,11 +208,6 @@ public class Raster3dProfile extends LaserProfile
     rp.invertColors = this.invertColors;
     rp.name = this.name;
     rp.thumbnailPath = this.thumbnailPath;
-    //rp.laserProperties = new LinkedList<LaserProperty>();
-    for (LaserProperty l : this.getLaserProperties())
-    {
-      rp.laserProperties.add(l.clone());
-    }
     return rp;
   }
 }
