@@ -608,18 +608,18 @@ public class VisicutModel
         if (bb.getX() < 0 || bb.getY() < 0)
         {//Move Object's origin to be positive
           AffineTransform tr = this.graphicObjects.getTransform() == null ? new AffineTransform() : this.graphicObjects.getTransform();
-          tr.preConcatenate(tr.getTranslateInstance(bb.getX() < 0 ? -bb.getX(): 0, bb.getY() < 0 ? -bb.getY() : 0));
+          tr.preConcatenate(AffineTransform.getTranslateInstance(bb.getX() < 0 ? -bb.getX(): 0, bb.getY() < 0 ? -bb.getY() : 0));
           this.graphicObjects.setTransform(tr);
           bb = this.graphicObjects.getBoundingBox();
         }
-        if (this.material != null)
+        if (this.selectedLaserDevice != null)
         {
           double w = bb.getX() + bb.getWidth();
           double h = bb.getY() + bb.getHeight();
-          double mw = Util.mm2px(this.material.getWidth(), this.getValidResolution());
-          double mh = Util.mm2px(this.material.getHeight(), this.getValidResolution());
+          double mw = Util.mm2px(this.selectedLaserDevice.getLaserCutter().getBedWidth(), this.getValidResolution());
+          double mh = Util.mm2px(this.selectedLaserDevice.getLaserCutter().getBedHeight(), this.getValidResolution());
           if (w > mw || h > mh)
-          {//scale Object to fit material
+          {//scale Object to fit laser-bed
             double dw = mw / w;
             double dh = mh / h;
             AffineTransform tr = this.graphicObjects.getTransform() == null ? new AffineTransform() : this.graphicObjects.getTransform();

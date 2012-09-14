@@ -162,30 +162,6 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
   {
     this.name = name;
   }
-  protected int width = 600;
-  public static final String PROP_WIDTH = "width";
-
-  /**
-   * Get the value of width
-   *
-   * @return the value of width
-   */
-  public int getWidth()
-  {
-    return width;
-  }
-
-  /**
-   * Set the value of width
-   *
-   * @param width new value of width
-   */
-  public void setWidth(int width)
-  {
-    int oldWidth = this.width;
-    this.width = width;
-    propertyChangeSupport.firePropertyChange(PROP_WIDTH, oldWidth, width);
-  }
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
   /**
@@ -233,32 +209,6 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
     propertyChangeSupport.firePropertyChange(PROP_DEPTH, oldDepth, depth);
   }
 
-  protected int height = 300;
-  public static final String PROP_HEIGHT = "height";
-
-  /**
-   * Get the value of height
-   *
-   * @return the value of height
-   */
-  public int getHeight()
-  {
-    return height;
-  }
-
-  /**
-   * Set the value of height
-   *
-   * @param height new value of height
-   */
-  public void setHeight(int height)
-  {
-    int oldHeight = this.height;
-    this.height = height;
-    propertyChangeSupport.firePropertyChange(PROP_HEIGHT, oldHeight, height);
-  }
-
-
   @Override
   public String toString()
   {
@@ -273,9 +223,7 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
     cp.color = this.color;
     cp.depth = this.depth;
     cp.description = this.description;
-    cp.height = this.height;
     cp.thumbnailPath = this.thumbnailPath;
-    cp.width = this.width;
     cp.laserProfiles = new LinkedList<LaserProfile>();
     for (LaserProfile lp:this.laserProfiles)
     {

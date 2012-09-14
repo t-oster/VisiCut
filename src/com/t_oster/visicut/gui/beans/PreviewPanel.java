@@ -18,8 +18,11 @@
  **/
 package com.t_oster.visicut.gui.beans;
 
+import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.ProgressListener;
+import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.RasterProfile;
@@ -37,7 +40,6 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -59,6 +61,28 @@ import javax.swing.JOptionPane;
 public class PreviewPanel extends ZoomablePanel
 {
 
+  private double bedWidth = 600;
+  private double bedHeight = 300;
+  
+  public PreviewPanel()
+  {
+    VisicutModel.getInstance().addPropertyChangeListener(new PropertyChangeListener(){
+
+      public void propertyChange(PropertyChangeEvent pce)
+      {
+        if (VisicutModel.PROP_SELECTEDLASERDEVICE.equals(pce.getPropertyName()))
+        {
+          if (pce.getNewValue() != null && pce.getNewValue() instanceof LaserDevice)
+          {
+            LaserCutter lc = ((LaserDevice) pce.getNewValue()).getLaserCutter();
+            PreviewPanel.this.bedWidth = lc.getBedWidth();
+            PreviewPanel.this.bedHeight = lc.getBedHeight();
+          }
+        }
+      }
+    });
+  }
+  
   /**
    * This transform is for mapping lasercutter
    * coordinates on the image from the camera
@@ -369,7 +393,7 @@ public class PreviewPanel extends ZoomablePanel
     }
     else
     {
-      this.setOuterBounds(new Dimension((int) Helper.mm2px(this.material.getWidth()), (int) Helper.mm2px(this.material.getHeight())));
+      this.setOuterBounds(new Dimension((int) Helper.mm2px(this.bedWidth), (int) Helper.mm2px(this.bedHeight)));
     }
     this.repaint();
   }
@@ -396,9 +420,9 @@ public class PreviewPanel extends ZoomablePanel
     {
       this.setOuterBounds(new Dimension(backgroundImage.getWidth(), backgroundImage.getHeight()));
     }
-    else if (this.material != null)
+    else
     {
-      this.setOuterBounds(new Dimension((int) Helper.mm2px(this.material.getWidth()), (int) Helper.mm2px(this.material.getHeight())));
+      this.setOuterBounds(new Dimension((int) Helper.mm2px(this.bedWidth), (int) Helper.mm2px(this.bedHeight)));
     }
     this.repaint();
   }
@@ -413,19 +437,7 @@ public class PreviewPanel extends ZoomablePanel
   {
     return material;
   }
-  private PropertyChangeListener materialObserver = new PropertyChangeListener()
-  {
-
-    public void propertyChange(PropertyChangeEvent pce)
-    {
-      if (PreviewPanel.this.backgroundImage == null || !PreviewPanel.this.showBackgroundImage)
-      {
-        PreviewPanel.this.setOuterBounds(new Dimension((int) Helper.mm2px(PreviewPanel.this.material.getWidth()), (int) Helper.mm2px(PreviewPanel.this.material.getHeight())));
-      }
-      PreviewPanel.this.repaint();
-    }
-  };
-
+  
   /**
    * Set the value of material
    *
@@ -433,19 +445,7 @@ public class PreviewPanel extends ZoomablePanel
    */
   public void setMaterial(MaterialProfile material)
   {
-    if (this.material != null)
-    {
-      this.material.removePropertyChangeListener(materialObserver);
-    }
     this.material = material;
-    if (this.material != null)
-    {
-      this.material.addPropertyChangeListener(materialObserver);
-      if (this.backgroundImage == null || !this.showBackgroundImage)
-      {
-        this.setOuterBounds(new Dimension((int) Helper.mm2px(this.material.getWidth()), (int) Helper.mm2px(this.material.getHeight())));
-      }
-    }
     this.renderBuffer.clear();
     this.repaint();
   }
@@ -531,19 +531,15 @@ public class PreviewPanel extends ZoomablePanel
           gg.setTransform(current);
         }
       }
-      if (this.material != null)
+      if (this.backgroundImage != null && showBackgroundImage)
       {
-        Color c = this.material.getColor();
-        if (this.backgroundImage != null && showBackgroundImage)
-        {
-          gg.setColor(Color.BLACK);
-          gg.drawRect(0, 0, (int) Helper.mm2px(material.getWidth()), (int) Helper.mm2px(material.getHeight()));
-        }
-        else
-        {
-          gg.setColor(c == null ? Color.BLUE : c);
-          gg.fillRect(0, 0, (int) Helper.mm2px(material.getWidth()), (int) Helper.mm2px(material.getHeight()));
-        }
+        gg.setColor(Color.BLACK);
+        gg.drawRect(0, 0, (int) Helper.mm2px(this.bedWidth), (int) Helper.mm2px(this.bedHeight));
+      }
+      else
+      {
+        gg.setColor(this.material != null && this.material.getColor() != null ? this.material.getColor() : Color.WHITE);
+        gg.fillRect(0, 0, (int) Helper.mm2px(this.bedWidth), (int) Helper.mm2px(this.bedHeight));
       }
       if (showGrid)
       {
@@ -688,100 +684,95 @@ public class PreviewPanel extends ZoomablePanel
 
   private void drawGrid(Graphics2D gg)
   {
-    if (this.material != null)
+    /**
+     * The minimal distance of 2 grid lines in Pixel
+     */
+    int minPixelDst = 40;
+    AffineTransform trans = gg.getTransform();
+    double minDrawDst = minPixelDst / trans.getScaleX();
+    /**
+     * The grid distance in mm
+     */
+    //todo calculate gridDst from Transform
+    double gridDst = 0.1;
+    int smalllines = 2;
+    while (Helper.mm2px(gridDst) < minDrawDst)
     {
-      /**
-       * The minimal distance of 2 grid lines in Pixel
-       */
-      int minPixelDst = 40;
-      AffineTransform trans = gg.getTransform();
-      double minDrawDst = minPixelDst / trans.getScaleX();
-      /**
-       * The grid distance in mm
-       */
-      //todo calculate gridDst from Transform
-      double gridDst = 0.1;
-      int smalllines = 2;
-      while (Helper.mm2px(gridDst) < minDrawDst)
+      gridDst *= 2;
+      if (Helper.mm2px(gridDst) < minDrawDst)
       {
-        gridDst *= 2;
-        if (Helper.mm2px(gridDst) < minDrawDst)
-        {
-          gridDst *= 5;
-        }
+        gridDst *= 5;
       }
-      gg.setTransform(new AffineTransform());//we dont want the line width to scale with zoom etc
-      double mmx = 0;
-      int count = 0;
-      for (int x = 0; x < Helper.mm2px(this.material.getWidth()); x += Helper.mm2px(gridDst))
-      {
-        Point a = new Point(x, 0);
-        Point b = new Point(x, (int) Helper.mm2px(this.material.getHeight()));
-        trans.transform(a, a);
-        trans.transform(b, b);
-        if (a.x > 0)//only draw if in viewing range
-        {
-          if (a.x > this.getWidth())
-          {
-            break;
-          }
-          gg.drawLine(a.x, a.y, b.x, b.y);
-          if (++count >= smalllines)
-          {
-            String txt;
-            float mm = ((float) Math.round((float) (10 * mmx))) / 10;
-            if ((int) mm == mm)
-            {
-              txt = "" + (int) mm;
-            }
-            else
-            {
-              txt = "" + mm;
-            }
-            int w = gg.getFontMetrics().stringWidth(txt);
-            int h = gg.getFontMetrics().getHeight();
-            gg.drawString(txt, a.x - w / 2, 5 + h);
-            count = 0;
-          }
-        }
-        mmx += gridDst;
-      }
-      double mmy = 0;
-      count = 0;
-      for (int y = 0; y < Helper.mm2px(this.material.getHeight()); y += Helper.mm2px(gridDst))
-      {
-        Point a = new Point(0, y);
-        Point b = new Point((int) Helper.mm2px(this.material.getWidth()), y);
-        trans.transform(a, a);
-        trans.transform(b, b);
-        if (a.y > 0)
-        {
-          if (a.y > this.getHeight())
-          {
-            break;
-          }
-          gg.drawLine(a.x, a.y, b.x, b.y);
-          if (++count >= smalllines)
-          {
-            String txt;
-            float mm = ((float) Math.round((float) (10 * mmy))) / 10;
-            if ((int) mm == mm)
-            {
-              txt = "" + (int) mm;
-            }
-            else
-            {
-              txt = "" + mm;
-            }
-            int w = gg.getFontMetrics().stringWidth(txt);
-            int h = gg.getFontMetrics().getHeight();
-            gg.drawString(txt, 5, a.y);
-            count = 0;
-          }
-        }
-        mmy += gridDst;
-      }
-      gg.setTransform(trans);
     }
+    gg.setTransform(new AffineTransform());//we dont want the line width to scale with zoom etc
+    double mmx = 0;
+    int count = 0;
+    for (int x = 0; x < Helper.mm2px(this.bedWidth); x += Helper.mm2px(gridDst))
+    {
+      Point a = new Point(x, 0);
+      Point b = new Point(x, (int) Helper.mm2px(this.bedHeight));
+      trans.transform(a, a);
+      trans.transform(b, b);
+      if (a.x > 0)//only draw if in viewing range
+      {
+        if (a.x > this.getWidth())
+        {
+          break;
+        }
+        gg.drawLine(a.x, a.y, b.x, b.y);
+        if (++count >= smalllines)
+        {
+          String txt;
+          float mm = ((float) Math.round((float) (10 * mmx))) / 10;
+          if ((int) mm == mm)
+          {
+            txt = "" + (int) mm;
+          }
+          else
+          {
+            txt = "" + mm;
+          }
+          int w = gg.getFontMetrics().stringWidth(txt);
+          int h = gg.getFontMetrics().getHeight();
+          gg.drawString(txt, a.x - w / 2, 5 + h);
+          count = 0;
+        }
+      }
+      mmx += gridDst;
+    }
+    double mmy = 0;
+    count = 0;
+    for (int y = 0; y < Helper.mm2px(this.bedHeight); y += Helper.mm2px(gridDst))
+    {
+      Point a = new Point(0, y);
+      Point b = new Point((int) Helper.mm2px(this.bedWidth), y);
+      trans.transform(a, a);
+      trans.transform(b, b);
+      if (a.y > 0)
+      {
+        if (a.y > this.getHeight())
+        {
+          break;
+        }
+        gg.drawLine(a.x, a.y, b.x, b.y);
+        if (++count >= smalllines)
+        {
+          String txt;
+          float mm = ((float) Math.round((float) (10 * mmy))) / 10;
+          if ((int) mm == mm)
+          {
+            txt = "" + (int) mm;
+          }
+          else
+          {
+            txt = "" + mm;
+          }
+          gg.drawString(txt, 5, a.y);
+          count = 0;
+        }
+      }
+      mmy += gridDst;
+    }
+    gg.setTransform(trans);
   }
 }
