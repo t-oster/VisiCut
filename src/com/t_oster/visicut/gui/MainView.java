@@ -1299,6 +1299,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       //Adapt Settings before execute
       AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true);
       MaterialProfile mp = this.visicutModel1.getMaterial().clone();
+      //TODO: refactor using a Set you idiot....
       List<String> usedProfileNames = new LinkedList<String>();
       for (Mapping m:this.visicutModel1.getMappings())
       {
@@ -1721,25 +1722,9 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       {
         this.laserCutterComboBox.setDisabled(cld, true, "Resolution not supported");
       }
-      else if (this.visicutModel1.supported(cld, mp, mappings))
+      else
       {
         this.laserCutterComboBox.setDisabled(cld, false);
-      }
-      else
-      {
-        this.laserCutterComboBox.setDisabled(cld, true, mappings == null ? "Material not supported" : "Mapping not supported");
-      }
-    }
-    for (int i = 1; i < this.materialComboBox.getItemCount(); i++)
-    {
-      MaterialProfile m = (MaterialProfile) this.materialComboBox.getItemAt(i);
-      if (this.visicutModel1.supported(ld, m, mappings))
-      {
-        this.materialComboBox.setDisabled(m, false);
-      }
-      else
-      {
-        this.materialComboBox.setDisabled(m, true, mappings == null ? "Lasercutter not supported" : "Mapping not supported");
       }
     }
     for (int i = 1; i < this.resolutionComboBox.getItemCount(); i++)
@@ -1754,19 +1739,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         this.resolutionComboBox.setDisabled(r, true, "Resolution not supported by Lasercutter");
       }
     }
-    for (int i = 1; i < this.predefinedMappingList.getItemCount(); i++)
-    {
-      MappingSet m = (MappingSet) this.predefinedMappingList.getItemAt(i);
-      if (this.visicutModel1.supported(ld, mp, m))
-      {
-        this.predefinedMappingList.setDisabled(m, false);
-      }
-      else
-      {
-        this.predefinedMappingList.setDisabled(m, true, mp == null ? "Lasercutter not supported" : "Material not supported");
-      }
-    }
-    this.predefinedMappingList.repaint();
   }
 
   private void laserCutterComboBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_laserCutterComboBoxActionPerformed
