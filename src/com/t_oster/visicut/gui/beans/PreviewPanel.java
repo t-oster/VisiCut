@@ -77,6 +77,7 @@ public class PreviewPanel extends ZoomablePanel
             LaserCutter lc = ((LaserDevice) pce.getNewValue()).getLaserCutter();
             PreviewPanel.this.bedWidth = lc.getBedWidth();
             PreviewPanel.this.bedHeight = lc.getBedHeight();
+            PreviewPanel.this.repaint();
           }
         }
       }
@@ -268,6 +269,7 @@ public class PreviewPanel extends ZoomablePanel
     {
       this.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
     }
+    this.setShowBackgroundImage(this.showBackgroundImage);
   }
 
   
@@ -519,7 +521,7 @@ public class PreviewPanel extends ZoomablePanel
     if (g instanceof Graphics2D)
     {
       Graphics2D gg = (Graphics2D) g;
-      gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+      gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
       if (backgroundImage != null && showBackgroundImage)
       {
