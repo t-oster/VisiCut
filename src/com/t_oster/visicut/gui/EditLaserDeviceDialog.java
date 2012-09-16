@@ -26,13 +26,9 @@ package com.t_oster.visicut.gui;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.model.LaserDevice;
-import com.t_oster.visicut.misc.Helper;
-import java.io.File;
 import java.util.Arrays;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import java.awt.FileDialog;
 
 /**
  *
@@ -380,10 +376,6 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
       if ("".equals(currentLaserDevice.getCameraURL()))
       {
         currentLaserDevice.setCameraURL(null);
-      }
-      if (currentLaserDevice.getMaterialsPath() == null || !new File(currentLaserDevice.getMaterialsPath()).isDirectory())
-      {
-        throw new Exception("The materials directory must be a valid directory");
       }
       if (currentLaserDevice.getName() == null || currentLaserDevice.getName().equals(""))
       {
