@@ -29,8 +29,10 @@ import com.t_oster.visicut.gui.beans.EditableTableProvider;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.model.LaserDevice;
 import java.beans.PropertyChangeSupport;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -178,7 +180,7 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
           return c.getName();
         case 1:
         {
-          String cls = c.getLaserCutter().getClass().toString();
+          String cls = c.getLaserCutter().getModelName();
           String[] parts = cls.split("\\.");
           if (parts.length > 1)
           {
@@ -300,10 +302,23 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
   public Object getNewInstance()
   {
     JComboBox driver = new JComboBox();
+    Map<String, String> driverClassnames = new LinkedHashMap<String,String>();
     driver.setEditable(true);
     for (String s:PreferencesManager.getInstance().getPreferences().getAvailableLasercutterDrivers())
     {
-      driver.addItem(s);
+      String modelName = s;
+      //try to instanciate class to get readable name
+      try
+      {
+        Class driverclass = Class.forName(s);
+        LaserCutter cutter = (LaserCutter) driverclass.newInstance();
+        modelName = cutter.getModelName();
+      }
+      catch (Exception e)
+      {
+      }
+      driverClassnames.put(modelName, s);
+      driver.addItem(modelName);
     }
     if (JOptionPane.showConfirmDialog(this, driver, "Please select a driver", JOptionPane.OK_CANCEL_OPTION)==JOptionPane.CANCEL_OPTION)
     {
@@ -312,7 +327,7 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
     LaserDevice result = new LaserDevice();
     try
     {
-      Class driverclass = Class.forName((String) driver.getSelectedItem());
+      Class driverclass = Class.forName(driverClassnames.get((String) driver.getSelectedItem()));
       LaserCutter cutter = (LaserCutter) driverclass.newInstance();
       result.setLaserCutter(cutter);
     }
