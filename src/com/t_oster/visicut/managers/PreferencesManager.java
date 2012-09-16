@@ -104,18 +104,21 @@ public final class PreferencesManager
     File vc = Helper.getVisiCutFolder();
     if (vc != null && vc.isDirectory())
     {
-      if (new File(vc, "examples").isDirectory())
+      for (String folder : new String[]{"examples", "profiles", "materials", "mappings", "devices", "laserprofiles"})
       {
-        try
+      if (new File(vc, "examples").isDirectory())
         {
-          System.out.println("Copying examples...");
-          FileUtils.copyDirectoryToDirectory(new File(vc, "examples"), new File(bp, "examples"));
-          System.out.println("done.");
-        }
-        catch (Exception ex)
-        {
-          Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
-          System.err.println("Can't copy default settings.");
+          try
+          {
+            System.out.println("Copying "+folder+"...");
+            FileUtils.copyDirectoryToDirectory(new File(vc, folder), new File(bp, folder));
+            System.out.println("done.");
+          }
+          catch (Exception ex)
+          {
+            Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Can't copy default settings.");
+          }
         }
       }
       if (new File(vc, "settings").isDirectory())
