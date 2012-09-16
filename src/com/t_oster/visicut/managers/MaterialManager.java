@@ -112,6 +112,10 @@ public class MaterialManager
   
   public void saveProfile(MaterialProfile mp, File f) throws FileNotFoundException
   {
+    if (!f.getParentFile().exists())
+    {
+      f.getParentFile().mkdirs();
+    }
     mp.setThumbnailPath(Helper.removeParentPath(f.getParentFile(), mp.getThumbnailPath()));
     FileOutputStream out = new FileOutputStream(f);
     XMLEncoder enc = new XMLEncoder(out);

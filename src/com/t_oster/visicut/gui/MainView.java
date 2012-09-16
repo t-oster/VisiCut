@@ -1262,7 +1262,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   }
 }//GEN-LAST:event_openMenuItemActionPerformed
 
-  private void editMappings()
+  private void editMappings() throws FileNotFoundException
   {
     if (this.visicutModel1.getGraphicObjects() == null || this.visicutModel1.getGraphicObjects().size()==0)
     {
@@ -1283,7 +1283,6 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     if (mappingsets != null)
     {
       this.mappingManager1.setMappingSets(mappingsets);
-      this.mappingManager1.saveAllMappings();
       this.fillComboBoxes();
       this.refreshComboBoxes();
       this.previewPanel.repaint();
@@ -1619,7 +1618,14 @@ private void captureImageButtonActionPerformed(java.awt.event.ActionEvent evt) {
 }//GEN-LAST:event_captureImageButtonActionPerformed
 
 private void editMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMappingMenuItemActionPerformed
-  this.editMappings();
+    try
+    {
+      this.editMappings();
+    }
+    catch (FileNotFoundException ex)
+    {
+      this.showErrorMessage(ex);
+    }
 }//GEN-LAST:event_editMappingMenuItemActionPerformed
 
 private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_materialComboBoxActionPerformed

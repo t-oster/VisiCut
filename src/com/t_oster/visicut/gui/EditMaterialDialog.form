@@ -222,6 +222,11 @@
         <Property name="text" type="java.lang.String" resourceKey="chooseCutColorButton.text"/>
         <Property name="name" type="java.lang.String" value="chooseCutColorButton" noResource="true"/>
       </Properties>
+      <BindingProperties>
+        <BindingProperty name="selectedColor" source="Form" sourcePath="${currentMaterial.cutColor}" target="chooseCutColorButton" targetPath="selectedColor" updateStrategy="0" immediately="false">
+          <Property name="name" type="java.lang.String" value="cutColor"/>
+        </BindingProperty>
+      </BindingProperties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel7">
       <Properties>
@@ -234,6 +239,11 @@
         <Property name="text" type="java.lang.String" resourceKey="chooseEngraveButton.text"/>
         <Property name="name" type="java.lang.String" value="chooseEngraveButton" noResource="true"/>
       </Properties>
+      <BindingProperties>
+        <BindingProperty name="selectedColor" source="Form" sourcePath="${currentMaterial.engraveColor}" target="chooseEngraveButton" targetPath="selectedColor" updateStrategy="0" immediately="false">
+          <Property name="name" type="java.lang.String" value="engraveColor"/>
+        </BindingProperty>
+      </BindingProperties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel8">
       <Properties>

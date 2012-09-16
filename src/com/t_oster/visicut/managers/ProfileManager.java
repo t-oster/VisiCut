@@ -90,19 +90,33 @@ public class ProfileManager
     return new File(this.getProfilesDircetory(), Helper.toPathName(mp.getName())+".xml");
   }
   
-  public void deleteProfile(LaserProfile mp)
+  public void removeProfile(LaserProfile mp)
+  {
+    this.getMap().remove(mp.getName());
+    this.deleteProfile(mp);
+  }
+  
+  private void deleteProfile(LaserProfile mp)
   {
     File f = getProfilePath(mp);
     if (f.exists())
     {
       f.delete();
     }
-    this.getMap().remove(mp.getName());
   }
   
-  public void saveProfile(LaserProfile mp) throws FileNotFoundException
+  public void addProfile(LaserProfile mp) throws FileNotFoundException
   {
-    File f = this.getProfilePath(mp);
+    this.saveProfile(mp, this.getProfilePath(mp));
+    this.getMap().put(mp.getName(), mp);
+  }
+  
+  public void saveProfile(LaserProfile mp, File f) throws FileNotFoundException
+  {
+    if (!f.getParentFile().exists())
+    {
+      f.getParentFile().mkdirs();
+    }
     mp.setThumbnailPath(Helper.removeParentPath(f.getParentFile(), mp.getThumbnailPath()));
     FileOutputStream out = new FileOutputStream(f);
     XMLEncoder enc = new XMLEncoder(out);

@@ -24,66 +24,15 @@
  */
 package com.t_oster.visicut.gui;
 
-import com.t_oster.liblasercut.LaserProperty;
-import com.t_oster.visicut.gui.beans.EditableTableProvider;
-import com.t_oster.visicut.model.LaserPropertyBean;
 import com.t_oster.visicut.model.Raster3dProfile;
-import java.io.File;
-import javax.swing.JOptionPane;
 
 /**
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class EditRaster3dProfileDialog extends javax.swing.JDialog implements EditableTableProvider
+public class EditRaster3dProfileDialog extends javax.swing.JDialog
 {
 
-  public Object getNewInstance()
-  {
-    return new LaserProperty();
-  }
-
-  public Object editObject(Object o)
-  {
-    if (o instanceof LaserProperty)
-    {
-      EditLaserPropertyPanel d = new EditLaserPropertyPanel();
-      d.setLaserProperty(new LaserPropertyBean(((LaserProperty) o).clone()));
-      d.setShowFrequency(false);
-      if (JOptionPane.showConfirmDialog(this, d, "Edit Laser Property", JOptionPane.OK_CANCEL_OPTION)== JOptionPane.OK_OPTION)
-      {
-        return d.getLaserProperty().getLaserProperty();
-      }
-      else
-      {
-        return null;
-      }
-    }
-    return o;
-  }
-
-  protected File defaultDirectory = null;
-
-  /**
-   * Get the value of defaultDirectory
-   *
-   * @return the value of defaultDirectory
-   */
-  public File getDefaultDirectory()
-  {
-    return defaultDirectory;
-  }
-
-  /**
-   * Set the value of defaultDirectory
-   *
-   * @param defaultDirectory new value of defaultDirectory
-   */
-  public void setDefaultDirectory(File defaultDirectory)
-  {
-    this.defaultDirectory = defaultDirectory;
-    this.selectThumbnailButton1.setDefaultDirectory(defaultDirectory);
-  }
   protected Raster3dProfile rasterProfile = null;
   public static final String PROP_RASTERPROFILE = "rasterProfile";
 
@@ -140,14 +89,12 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog implements Ed
     this.currentRasterProfile = currentRasterProfile;
     firePropertyChange(PROP_CURRENTRASTERPROFILE, oldCurrentRasterProfile, currentRasterProfile);
   }
-  private LaserPropertiesTableModel listModel = new LaserPropertiesTableModel();
-
+  
   /** Creates new form EditRasterProfileDialog */
   public EditRaster3dProfileDialog(java.awt.Frame parent, boolean modal)
   {
     super(parent, modal);
     initComponents();
-    this.editableTablePanel1.setTableModel(listModel);
   }
 
   /** This method is called from within the constructor to
@@ -160,17 +107,13 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog implements Ed
     private void initComponents() {
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
-        jLabel3 = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         selectThumbnailButton1 = new com.t_oster.visicut.gui.beans.SelectThumbnailButton();
-        chooseColorButton1 = new com.t_oster.visicut.gui.beans.ChooseColorButton();
-        editableTablePanel1 = new com.t_oster.visicut.gui.beans.EditableTablePanel();
         jCheckBox1 = new javax.swing.JCheckBox();
         jSlider1 = new javax.swing.JSlider();
         jLabel6 = new javax.swing.JLabel();
@@ -179,9 +122,6 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog implements Ed
         setName("Form"); // NOI18N
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(EditRaster3dProfileDialog.class);
-        jLabel3.setText(resourceMap.getString("jLabel3.text")); // NOI18N
-        jLabel3.setName("jLabel3"); // NOI18N
-
         jButton4.setText(resourceMap.getString("jButton4.text")); // NOI18N
         jButton4.setName("jButton4"); // NOI18N
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -197,9 +137,6 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog implements Ed
                 jButton3ActionPerformed(evt);
             }
         });
-
-        jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
-        jLabel5.setName("jLabel5"); // NOI18N
 
         jTextField2.setName("jTextField2"); // NOI18N
 
@@ -220,17 +157,6 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog implements Ed
         selectThumbnailButton1.setName("selectThumbnailButton1"); // NOI18N
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentRasterProfile.thumbnailPath}"), selectThumbnailButton1, org.jdesktop.beansbinding.BeanProperty.create("thumbnailPath"), "thumbnailbt");
-        bindingGroup.addBinding(binding);
-
-        chooseColorButton1.setName("chooseColorButton1"); // NOI18N
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentRasterProfile.color}"), chooseColorButton1, org.jdesktop.beansbinding.BeanProperty.create("selectedColor"), "color");
-        bindingGroup.addBinding(binding);
-
-        editableTablePanel1.setName("editableTablePanel1"); // NOI18N
-        editableTablePanel1.setProvider(this);
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentRasterProfile.laserProperties}"), editableTablePanel1, org.jdesktop.beansbinding.BeanProperty.create("objects"), "laserprops");
         bindingGroup.addBinding(binding);
 
         jCheckBox1.setText(resourceMap.getString("jCheckBox1.text")); // NOI18N
@@ -264,19 +190,13 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog implements Ed
                             .addComponent(jCheckBox1))
                         .addGap(28, 28, 28)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(chooseColorButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 345, Short.MAX_VALUE)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
                             .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel1)))
-                    .addComponent(editableTablePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jButton4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton3))
-                    .addComponent(jLabel3)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addGap(21, 21, 21)
@@ -298,19 +218,12 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog implements Ed
                     .addComponent(jLabel2)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(8, 8, 8)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(chooseColorButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jCheckBox1))
+                .addComponent(jCheckBox1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel6)
                     .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(19, 19, 19)
-                .addComponent(jLabel3)
-                .addGap(18, 18, 18)
-                .addComponent(editableTablePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton3)
                     .addComponent(jButton4))
@@ -335,15 +248,11 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog implements Ed
    * @param args the command line arguments
    */
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private com.t_oster.visicut.gui.beans.ChooseColorButton chooseColorButton1;
-    private com.t_oster.visicut.gui.beans.EditableTablePanel editableTablePanel1;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JSlider jSlider1;
     private javax.swing.JTextField jTextField1;

@@ -95,8 +95,7 @@ public class EditMaterialDialog extends javax.swing.JDialog {
      * @return the value of currentMaterial
      */
     public MaterialProfile getCurrentMaterial() {
-      throw new RuntimeException("SET BINDING FOR CUT/ENGRAVE-COLOR in EditMaterialDialog");
-        //return currentMaterial;
+      return currentMaterial;
     }
 
     /**
@@ -207,11 +206,17 @@ public class EditMaterialDialog extends javax.swing.JDialog {
         chooseCutColorButton.setText(resourceMap.getString("chooseCutColorButton.text")); // NOI18N
         chooseCutColorButton.setName("chooseCutColorButton"); // NOI18N
 
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentMaterial.cutColor}"), chooseCutColorButton, org.jdesktop.beansbinding.BeanProperty.create("selectedColor"), "cutColor");
+        bindingGroup.addBinding(binding);
+
         jLabel7.setText(resourceMap.getString("jLabel7.text")); // NOI18N
         jLabel7.setName("jLabel7"); // NOI18N
 
         chooseEngraveButton.setText(resourceMap.getString("chooseEngraveButton.text")); // NOI18N
         chooseEngraveButton.setName("chooseEngraveButton"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentMaterial.engraveColor}"), chooseEngraveButton, org.jdesktop.beansbinding.BeanProperty.create("selectedColor"), "engraveColor");
+        bindingGroup.addBinding(binding);
 
         jLabel8.setText(resourceMap.getString("jLabel8.text")); // NOI18N
         jLabel8.setName("jLabel8"); // NOI18N

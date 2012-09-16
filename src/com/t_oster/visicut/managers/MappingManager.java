@@ -65,13 +65,11 @@ public class MappingManager
     {
       System.err.println("Should not directly instanctiate MappingManager");
     }
-    mappingSets = new LinkedList<MappingSet>();
-    loadFromDirectory();
   }
 
-  private void loadFromDirectory()
+  private List<MappingSet> loadFromDirectory(File dir)
   {
-    File dir = new File(Helper.getBasePath(), "settings/mappings");
+    List<MappingSet> result = new LinkedList<MappingSet>();
     if (dir.isDirectory())
     {
       for (File f : dir.listFiles())
@@ -81,7 +79,7 @@ public class MappingManager
           try
           {
             MappingSet s = this.loadMappingSet(f);
-            this.mappingSets.add(s);
+            result.add(s);
           }
           catch (Exception ex)
           {
@@ -90,13 +88,14 @@ public class MappingManager
         }
       }
     }
-    Collections.sort(this.mappingSets, new Comparator<MappingSet>(){
+    Collections.sort(result, new Comparator<MappingSet>(){
 
       public int compare(MappingSet t, MappingSet t1)
       {
         return t.getName().compareTo(t1.getName());
       }
     });
+    return result;
   }
 
   protected List<MappingSet> mappingSets = null;
@@ -109,6 +108,10 @@ public class MappingManager
    */
   public List<MappingSet> getMappingSets()
   {
+    if (mappingSets == null)
+    {
+      mappingSets = this.loadFromDirectory(this.getMappingsDirectory());
+    }
     return mappingSets;
   }
 
@@ -117,52 +120,32 @@ public class MappingManager
    *
    * @param mappingSets new value of mappingSets
    */
-  public void setMappingSets(List<MappingSet> mappingSets)
+  public void setMappingSets(List<MappingSet> mappingSets) throws FileNotFoundException
   {
-    List<MappingSet> oldMappingSets = this.mappingSets;
-    this.mappingSets = mappingSets;
-    propertyChangeSupport.firePropertyChange(PROP_MAPPINGSETS, oldMappingSets, mappingSets);
-  }
-  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
-  /**
-   * Add PropertyChangeListener.
-   *
-   * @param listener
-   */
-  public void addPropertyChangeListener(PropertyChangeListener listener)
-  {
-    propertyChangeSupport.addPropertyChangeListener(listener);
-  }
-
-  /**
-   * Remove PropertyChangeListener.
-   *
-   * @param listener
-   */
-  public void removePropertyChangeListener(PropertyChangeListener listener)
-  {
-    propertyChangeSupport.removePropertyChangeListener(listener);
-  }
-
-  /**
-   * Deletes all Mappings in the Mapping directory and saves
-   * the current Mappings.
-   */
-  public void saveAllMappings()
-  {
-    File dir = new File(Helper.getBasePath(), "settings/mappings");
-    if (dir.exists() && dir.isDirectory())
+    for (MappingSet mp:this.getMappingSets().toArray(new MappingSet[0]))
     {
-      for (File f:dir.listFiles())
-      {
-        if (f.isFile() && f.getAbsolutePath().toLowerCase().endsWith(".xml"))
-        {
-          f.delete();
-        }
-      }
+      this.removeMappingSet(mp);
     }
-    this.saveMappings();
+    for (MappingSet mp:mappingSets)
+    {
+      this.addMappingSet(mp);
+    }
+  }
+  
+  private File getMappingsDirectory()
+  {
+    return new File(Helper.getBasePath(), "mappings");
+  }
+  
+  private File getMappingSetPath(MappingSet ms)
+  {
+    return new File(getMappingsDirectory(), Helper.toPathName(ms.getName())+".xml");
+  }
+  
+  public void addMappingSet(MappingSet pref) throws FileNotFoundException
+  {
+    this.getMappingSets().add(pref);
+    saveMappingSet(pref, this.getMappingSetPath(pref));
   }
 
   public void saveMappingSet(MappingSet pref, File f) throws FileNotFoundException
@@ -188,26 +171,19 @@ public class MappingManager
     return p;
   }
 
-  private void saveMappings()
+  private void deleteMappingSet(MappingSet mp)
   {
-    if (new File(Helper.getBasePath(), "settings").isDirectory())
+    File f = this.getMappingSetPath(mp);
+    if (f.exists())
     {
-      File dir = new File(Helper.getBasePath(), "settings/mappings");
-      if (!dir.exists())
-      {
-        dir.mkdir();
-      }
-      for (MappingSet s : this.mappingSets)
-      {
-        try
-        {
-          this.saveMappingSet(s, new File(dir, s.getName() + ".xml"));
-        }
-        catch (FileNotFoundException ex)
-        {
-          Logger.getLogger(MappingManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-      }
+      f.delete();
     }
   }
+  
+  private void removeMappingSet(MappingSet mp)
+  {
+    this.deleteMappingSet(mp);
+    this.getMappingSets().remove(mp);
+  }
+
 }
