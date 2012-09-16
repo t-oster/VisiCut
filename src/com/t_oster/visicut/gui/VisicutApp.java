@@ -376,7 +376,7 @@ public class VisicutApp extends SingleFrameApplication
             break search;
           }
         }
-        for (MappingSet ms : MappingManager.getInstance().getMappingSets())
+        for (MappingSet ms : MappingManager.getInstance().getAll())
         {
           if (mapping.equals(ms.getName()))
           {

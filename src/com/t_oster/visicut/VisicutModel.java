@@ -245,10 +245,13 @@ public class VisicutModel
     Preferences oldPreferences = this.preferences;
     this.preferences = preferences;
     propertyChangeSupport.firePropertyChange(PROP_PREFERENCES, oldPreferences, preferences);
-    this.graphicFileImporter = null;
-    this.setSelectedLaserDevice(this.preferences.getLastLaserDevice());
-    this.setMaterial(this.preferences.getLastMaterial());
-    this.setResolution(this.preferences.getLastResolution());
+    if (this.preferences != null)
+    {
+      this.graphicFileImporter = null;
+      this.setSelectedLaserDevice(this.preferences.getLastLaserDevice());
+      this.setMaterial(this.preferences.getLastMaterial());
+      this.setResolution(this.preferences.getLastResolution());
+    }
   }
   protected GraphicSet graphicObjects = null;
   public static final String PROP_GRAPHICOBJECTS = "graphicObjects";
@@ -345,7 +348,7 @@ public class VisicutModel
       }
       else if (name.equals("mappings.xml"))
       {
-        loadedMappings = mm.loadMappingSet(zip.getInputStream(entry));
+        loadedMappings = mm.loadFromFile(zip.getInputStream(entry));
       }
       else
       {
@@ -470,7 +473,7 @@ public class VisicutModel
       out.closeEntry();
     }
     out.putNextEntry(new ZipEntry("mappings.xml"));
-    mm.saveMappingSet(this.getMappings(), tmp);
+    mm.save(this.getMappings(), tmp);
     in = new FileInputStream(tmp);
     // Transfer bytes from the file to the ZIP file
     while ((len = in.read(buf)) > 0)

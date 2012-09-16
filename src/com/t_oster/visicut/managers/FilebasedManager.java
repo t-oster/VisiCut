@@ -49,7 +49,7 @@ public abstract class FilebasedManager<T>
         {
           try
           {
-            T prof = this.loadElement(f);
+            T prof = this.loadFromFile(f);
             //if file was wrongly named, correct the name
             if (!(f.getName().equals(this.getObjectPath(prof).getName())))
             {
@@ -69,6 +69,11 @@ public abstract class FilebasedManager<T>
   }
 
   protected abstract String getSubfolderName();
+  
+  public void reload()
+  {
+    this.objects = null;
+  }
   
   private File getObjectsDirectory()
   {
@@ -151,10 +156,10 @@ public abstract class FilebasedManager<T>
     this.setThumbnail(mp, Helper.addParentPath(f.getParentFile(), this.getThumbnail(mp)));
   }
   
-  public T loadElement(File f) throws FileNotFoundException, IOException
+  public T loadFromFile(File f) throws FileNotFoundException, IOException
   {
     FileInputStream fin = new FileInputStream(f);
-    T result = this.loadProfile(fin);
+    T result = this.loadFromFile(fin);
     this.setThumbnail(result, Helper.addParentPath(f.getParentFile(), this.getThumbnail(result)));
     if (this.getThumbnail(result) == null && this.generateThumbnailPath(result).exists())
     {
@@ -164,7 +169,7 @@ public abstract class FilebasedManager<T>
     return result;
   }
 
-  public T loadProfile(InputStream in)
+  public T loadFromFile(InputStream in)
   {
     XMLDecoder dec = new XMLDecoder(in);
     T result = (T) dec.readObject();

@@ -368,7 +368,7 @@ public class MainView extends javax.swing.JFrame
         this.predefinedMappingList.setSelectedValue(m, true);
       }
     }
-    for (MappingSet m : this.mappingManager1.getMappingSets())
+    for (MappingSet m : this.mappingManager1.getAll())
     {
       this.predefinedMappingList.addItem(m);
       if (m.equals(ss))
@@ -1311,7 +1311,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
       return;
     }
     List<MappingSet> mappingsets = new LinkedList<MappingSet>();
-    for (MappingSet m : this.mappingManager1.getMappingSets())
+    for (MappingSet m : this.mappingManager1.getAll())
     {
       mappingsets.add(m.clone());
     }
@@ -1323,7 +1323,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     mappingsets = d.getMappingSets();
     if (mappingsets != null)
     {
-      this.mappingManager1.setMappingSets(mappingsets);
+      this.mappingManager1.setAll(mappingsets);
       this.fillComboBoxes();
       this.previewPanel.repaint();
     }
