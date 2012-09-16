@@ -504,7 +504,7 @@ public class VisicutModel
   {
     if (graphicFileImporter == null)
     {
-      graphicFileImporter = new GraphicFileImporter(this.preferences.availableImporters);
+      graphicFileImporter = new GraphicFileImporter(this.preferences.getAvailableImporters());
     }
     return graphicFileImporter;
   }

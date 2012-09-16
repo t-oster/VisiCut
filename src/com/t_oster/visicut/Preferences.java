@@ -158,7 +158,12 @@ public class Preferences
   }
 
   
-  protected String[] availableImporters = null;
+  protected String[] availableImporters = new String[]{
+    "com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter",
+    "com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter",
+    "com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter",
+    "com.t_oster.visicut.model.graphicelements.epssupport.EPSImporter"
+  };
 
   /**
    * Get the value of availableImporters
@@ -177,7 +182,10 @@ public class Preferences
    */
   public void setAvailableImporters(String[] availableImporters)
   {
-    this.availableImporters = availableImporters;
+    if (availableImporters != null)
+    {
+      this.availableImporters = availableImporters;
+    }
   }
 
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);

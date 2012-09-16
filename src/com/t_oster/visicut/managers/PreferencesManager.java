@@ -20,8 +20,6 @@ package com.t_oster.visicut.managers;
 
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LibInfo;
-import com.t_oster.liblasercut.drivers.EpilogZing;
-import com.t_oster.liblasercut.drivers.LaosCutter;
 import com.t_oster.visicut.Preferences;
 import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
