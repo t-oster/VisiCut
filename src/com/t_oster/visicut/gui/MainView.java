@@ -1895,7 +1895,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
           }
           else
           {
-            ProfileManager.getInstance().addProfile(lp);
+            ProfileManager.getInstance().add(lp);
           }
         }
       }
@@ -2093,7 +2093,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
   {//GEN-HEADEREND:event_jmManageLaserprofilesActionPerformed
     EditProfilesDialog d = new EditProfilesDialog(this, true);
     List<LaserProfile> profiles = new LinkedList<LaserProfile>();
-    profiles.addAll(ProfileManager.getInstance().getProfiles());
+    profiles.addAll(ProfileManager.getInstance().getAll());
     d.setProfiles(profiles);
     d.setVisible(true);
     List<LaserProfile> result = d.getProfiles();
@@ -2101,7 +2101,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     {
       try
       {
-        ProfileManager.getInstance().setProfiles(result);
+        ProfileManager.getInstance().setAll(result);
       }
       catch (FileNotFoundException ex)
       {

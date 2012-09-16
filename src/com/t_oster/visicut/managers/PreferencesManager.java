@@ -130,19 +130,19 @@ public final class PreferencesManager
     cut.setDescription("Cut through the material");
     cut.setIsCut(true);
     cut.setWidth(1f);
-    ProfileManager.getInstance().addProfile(cut);
+    ProfileManager.getInstance().add(cut);
     VectorProfile mark = new VectorProfile();
     mark.setName("mark");
     mark.setDescription("Cut through the material");
     mark.setIsCut(true);
     mark.setWidth(1f);
-    ProfileManager.getInstance().addProfile(mark);
+    ProfileManager.getInstance().add(mark);
     RasterProfile engrave = new RasterProfile();
     engrave.setName("engrave");
-    ProfileManager.getInstance().addProfile(engrave);
+    ProfileManager.getInstance().add(engrave);
     Raster3dProfile engrave3d = new Raster3dProfile();
     engrave3d.setName("engrave 3d");
-    ProfileManager.getInstance().addProfile(engrave3d);
+    ProfileManager.getInstance().add(engrave3d);
     
   }
 

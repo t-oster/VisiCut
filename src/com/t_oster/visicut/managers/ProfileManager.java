@@ -20,7 +20,9 @@ package com.t_oster.visicut.managers;
 
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserProfile;
-import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.Raster3dProfile;
+import com.t_oster.visicut.model.RasterProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
@@ -33,7 +35,7 @@ import java.util.logging.Logger;
  * 
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class ProfileManager
+public class ProfileManager extends FilebasedManager<LaserProfile>
 {
 
   private static ProfileManager instance;
@@ -46,9 +48,6 @@ public class ProfileManager
     }
     return instance;
   }
-  
-  protected Map<String, LaserProfile> profiles;
-  
   /*
    * Need a public constructior for UI manager
    * Do not use. Use getInstance instead
@@ -61,129 +60,64 @@ public class ProfileManager
     }
   }
 
-  private List<LaserProfile> loadFromDirectory(File dir)
-  {
-    List<LaserProfile> result = new LinkedList<LaserProfile>();
-    if (dir.isDirectory())
-    {
-      for (File f : dir.listFiles())
-      {
-        if (f.isFile() && f.getAbsolutePath().toLowerCase().endsWith(".xml"))
-        {
-          try
-          {
-            LaserProfile prof = this.loadProfile(f);
-            result.add(prof);
-          }
-          catch (Exception ex)
-          {
-            Logger.getLogger(ProfileManager.class.getName()).log(Level.SEVERE, null, ex);
-          }
-        }
-      }
-    }
-    return result;
-  }
-
-  private File getProfilePath(LaserProfile mp)
-  {
-    return new File(this.getProfilesDircetory(), Helper.toPathName(mp.getName())+".xml");
-  }
-  
-  public void removeProfile(LaserProfile mp)
-  {
-    this.getMap().remove(mp.getName());
-    this.deleteProfile(mp);
-  }
-  
-  private void deleteProfile(LaserProfile mp)
-  {
-    File f = getProfilePath(mp);
-    if (f.exists())
-    {
-      f.delete();
-    }
-  }
-  
-  public void addProfile(LaserProfile mp) throws FileNotFoundException
-  {
-    this.saveProfile(mp, this.getProfilePath(mp));
-    this.getMap().put(mp.getName(), mp);
-  }
-  
-  public void saveProfile(LaserProfile mp, File f) throws FileNotFoundException
-  {
-    if (!f.getParentFile().exists())
-    {
-      f.getParentFile().mkdirs();
-    }
-    mp.setThumbnailPath(Helper.removeParentPath(f.getParentFile(), mp.getThumbnailPath()));
-    FileOutputStream out = new FileOutputStream(f);
-    XMLEncoder enc = new XMLEncoder(out);
-    enc.writeObject(mp);
-    enc.close();
-    mp.setThumbnailPath(Helper.addParentPath(f.getParentFile(), mp.getThumbnailPath()));
-  }
-  
-  public LaserProfile loadProfile(File f) throws FileNotFoundException, IOException
-  {
-    FileInputStream fin = new FileInputStream(f);
-    LaserProfile result = this.loadProfile(fin);
-    result.setThumbnailPath(Helper.addParentPath(f.getParentFile(), result.getThumbnailPath()));
-    fin.close();
-    return result;
-  }
-
-  public LaserProfile loadProfile(InputStream in)
-  {
-    XMLDecoder dec = new XMLDecoder(in);
-    LaserProfile result = (LaserProfile) dec.readObject();
-    return result;
-  }
-
-  private Map<String, LaserProfile> getMap()
-  {
-    if (profiles == null)
-    {
-      profiles = new LinkedHashMap<String, LaserProfile>();
-      for(LaserProfile lp:this.loadFromDirectory(this.getProfilesDircetory()))
-      {
-        profiles.put(lp.getName(), lp);
-      }
-    }
-    return profiles;
-  }
-  
-  /**
-   * Get the value of materials
-   *
-   * @return the value of materials
-   */
-  public Collection<LaserProfile> getProfiles()
-  {
-    return getMap().values();
-  }
-
   public LaserProfile getProfileByName(String profileName)
   {
-    return getMap().get(profileName);
+    for (LaserProfile l:this.getAll())
+    {
+      if (profileName.equals(l.getName()))
+      {
+        return l;
+      }
+    }
+    return null;
   }
 
-  private File getProfilesDircetory()
+  @Override
+  protected String getSubfolderName()
   {
-    return new File(Helper.getBasePath(), "profiles");
+    return "profiles";
   }
 
-  public void setProfiles(List<LaserProfile> result) throws FileNotFoundException
+  @Override
+  public String getThumbnail(LaserProfile o)
   {
-    for (LaserProfile lp:this.getProfiles().toArray(new LaserProfile[0]))
+    return o.getThumbnailPath();
+  }
+
+  @Override
+  public void setThumbnail(LaserProfile o, String f)
+  {
+    o.setThumbnailPath(f);
+  }
+
+  private Comparator<LaserProfile> comp = new Comparator<LaserProfile>(){
+
+    public int compare(LaserProfile t, LaserProfile t1)
     {
-      this.removeProfile(lp);
+      if (t instanceof VectorProfile && !(t1 instanceof VectorProfile))
+      {
+        return 1;
+      }
+      else if (!(t instanceof VectorProfile) && t1 instanceof VectorProfile)
+      {
+        return -1;
+      }
+      if (t instanceof RasterProfile && t1 instanceof Raster3dProfile)
+      {
+        return 1;
+      }
+      if (t instanceof Raster3dProfile && t1 instanceof RasterProfile)
+      {
+        return -1;
+      }
+      return t.getName().compareTo(t1.getName());
     }
-    for (LaserProfile lp:result)
-    {
-      this.addProfile(lp);
-    }
+  };
+  
+  @Override
+  protected Comparator<LaserProfile> getComparator()
+  {
+    return comp;
   }
 
 }

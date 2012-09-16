@@ -99,7 +99,7 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
     this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     List<LaserProfile> rasterProfiles = new LinkedList<LaserProfile>();
     boolean lineProfileHere = false;
-    for (LaserProfile l : ProfileManager.getInstance().getProfiles())
+    for (LaserProfile l : ProfileManager.getInstance().getAll())
     {
       if (!(l instanceof VectorProfile))
       {//Sort Vector from Raster Profiles

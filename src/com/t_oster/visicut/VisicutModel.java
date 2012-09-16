@@ -120,7 +120,7 @@ public class VisicutModel
   {
     List<MappingSet> result = new LinkedList<MappingSet>();
     Set<String> profiles = new LinkedHashSet<String>();
-    for (LaserProfile lp:ProfileManager.getInstance().getProfiles())
+    for (LaserProfile lp:ProfileManager.getInstance().getAll())
     {
       if (!profiles.contains(lp.getName()))
       {
