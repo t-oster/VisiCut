@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut.managers;
 
+import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.MaterialProfile;
 import java.beans.XMLDecoder;
@@ -106,6 +107,11 @@ public class MaterialManager
     return new File(getMaterialsDirectory(), Helper.toPathName(mp.toString())+".xml");
   }
   
+  private File getMaterialThumbnailPath(MaterialProfile mp)
+  {
+    return new File(getMaterialsDirectory(), Helper.toPathName(mp.toString())+".png");
+  }
+  
   public void removeProfile(MaterialProfile mp)
   {
     this.materials.remove(mp);
@@ -119,12 +125,24 @@ public class MaterialManager
     {
       f.delete();
     }
+    f = getMaterialThumbnailPath(mp);
+    if (f.exists())
+    {
+      f.delete();
+    }
   }
   
   public void addProfile(MaterialProfile mp) throws FileNotFoundException
   {
     this.saveProfile(mp, this.getMaterialPath(mp));
     this.materials.add(mp);
+    Collections.sort(this.materials, new Comparator<MaterialProfile>(){
+
+      public int compare(MaterialProfile t, MaterialProfile t1)
+      {
+        return t.getName().compareTo(t1.getName());
+      }
+    });
   }
   
   public void saveProfile(MaterialProfile mp, File f) throws FileNotFoundException
@@ -132,6 +150,21 @@ public class MaterialManager
     if (!f.getParentFile().exists())
     {
       f.getParentFile().mkdirs();
+    }
+    //if thumbnail has not the right path, copy the referenced image
+    File thumb = this.getMaterialThumbnailPath(mp);
+    File curThumb = new File(mp.getThumbnailPath());
+    if (curThumb.exists() && !curThumb.getAbsolutePath().equals(thumb.getAbsolutePath()))
+    {
+      try
+      {
+        FileUtils.copyFile(curThumb, thumb, false);
+        mp.setThumbnailPath(thumb.getAbsolutePath());
+      }
+      catch (IOException ex)
+      {
+        Logger.getLogger(MaterialManager.class.getName()).log(Level.SEVERE, null, ex);
+      }
     }
     mp.setThumbnailPath(Helper.removeParentPath(f.getParentFile(), mp.getThumbnailPath()));
     FileOutputStream out = new FileOutputStream(f);
@@ -146,6 +179,10 @@ public class MaterialManager
     FileInputStream fin = new FileInputStream(f);
     MaterialProfile result = this.loadProfile(fin);
     result.setThumbnailPath(Helper.addParentPath(f.getParentFile(), result.getThumbnailPath()));
+    if (result.getThumbnailPath() == null && this.getMaterialThumbnailPath(result).exists())
+    {
+      result.setThumbnailPath(this.getMaterialThumbnailPath(result).getAbsolutePath());
+    }
     fin.close();
     return result;
   }
@@ -175,7 +212,7 @@ public class MaterialManager
   {
     for(MaterialProfile m:this.getMaterials().toArray(new MaterialProfile[0]))
     {
-      this.deleteProfile(m);
+      this.removeProfile(m);
     }
     for (MaterialProfile m:mats)
     {
