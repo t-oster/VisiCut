@@ -459,6 +459,6 @@ public class Helper
    */
   public static String toPathName(String name)
   {
-    return name.replace("?", "_");
+    return name.replace("?", "_").replace("/", "_").replace("\\", "_");
   }
 }

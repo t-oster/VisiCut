@@ -63,7 +63,7 @@ public class LaserPropertyManager
   {
     File laserprofiles = new File(Helper.getBasePath(), "laserprofiles");
     File deviceprofiles = new File(laserprofiles, Helper.toPathName(ld.getName()));
-    File material = new File(deviceprofiles, Helper.toPathName(mp.getName()));
+    File material = new File(new File(deviceprofiles, Helper.toPathName(mp.getName())), mp.getDepth()+"mm");
     File profile = new File(material, Helper.toPathName(lp.getName())+".xml");
     return profile;
   }
