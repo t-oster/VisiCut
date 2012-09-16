@@ -18,7 +18,7 @@
  **/
 package com.t_oster.visicut.managers;
 
-import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.LaserDevice;
 import java.util.*;
 
 /**
@@ -26,25 +26,25 @@ import java.util.*;
  * 
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class MaterialManager extends FilebasedManager<MaterialProfile>
+public class LaserDeviceManager extends FilebasedManager<LaserDevice>
 {
 
-  private static MaterialManager instance;
+  private static LaserDeviceManager instance;
   
-  public static MaterialManager getInstance()
+  public static LaserDeviceManager getInstance()
   {
     if (instance == null)
     {
-      instance = new MaterialManager();
+      instance = new LaserDeviceManager();
     }
     return instance;
   }
-    
+  
   /*
    * Need a public constructior for UI manager
    * Do not use. Use getInstance instead
    */
-  public MaterialManager()
+  public LaserDeviceManager()
   {
     if (instance != null)
     {
@@ -55,26 +55,26 @@ public class MaterialManager extends FilebasedManager<MaterialProfile>
   @Override
   protected String getSubfolderName()
   {
-    return "materials";
+    return "devices";
   }
 
   @Override
-  public String getThumbnail(MaterialProfile o)
+  public String getThumbnail(LaserDevice o)
   {
     return o.getThumbnailPath();
   }
 
   @Override
-  public void setThumbnail(MaterialProfile o, String f)
+  public void setThumbnail(LaserDevice o, String f)
   {
     o.setThumbnailPath(f);
   }
 
-  private Comparator<MaterialProfile> comparator = new Comparator<MaterialProfile>()
+  private Comparator<LaserDevice> comparator = new Comparator<LaserDevice>()
   {
-    public int compare(MaterialProfile t, MaterialProfile t1)
+    public int compare(LaserDevice t, LaserDevice t1)
     {
-      return t.toString().compareTo(t1.toString());
+      return t.getName().compareTo(t1.getName());
     }
   };
   

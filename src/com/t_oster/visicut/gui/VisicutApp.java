@@ -21,6 +21,7 @@ package com.t_oster.visicut.gui;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LibInfo;
 import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.PreferencesManager;
@@ -313,7 +314,7 @@ public class VisicutApp extends SingleFrameApplication
     {
       search:
       {
-        for (LaserDevice ld : PreferencesManager.getInstance().getPreferences().getLaserDevices())
+        for (LaserDevice ld : LaserDeviceManager.getInstance().getAll())
         {
           if (ld.getName().equals(laserdevice))
           {
@@ -329,7 +330,7 @@ public class VisicutApp extends SingleFrameApplication
       LaserDevice cld = model.getSelectedLaserDevice();
       search:
       {
-        for (MaterialProfile mp : MaterialManager.getInstance().getMaterials())
+        for (MaterialProfile mp : MaterialManager.getInstance().getAll())
         {
           if (material.equals(mp.getName()))
           {

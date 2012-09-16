@@ -41,34 +41,14 @@ import javax.swing.JRadioButton;
 public class LaserProfilesPanel extends JPanel implements ActionListener
 {
 
-  protected MaterialProfile material = new MaterialProfile();
   private ButtonGroup group = new ButtonGroup();
   private List<JiconRadioButton> buttons = new LinkedList<JiconRadioButton>();
 
   public LaserProfilesPanel()
   {
+    this.fillLaserProfiles();
   }
 
-  /**
-   * Get the value of material
-   *
-   * @return the value of material
-   */
-  public MaterialProfile getMaterial()
-  {
-    return material;
-  }
-
-  /**
-   * Set the value of material
-   *
-   * @param material new value of material
-   */
-  public void setMaterial(MaterialProfile material)
-  {
-    this.material = material;
-    this.refresh();
-  }
   protected LaserProfile selectedLaserProfile = null;
   public static final String PROP_SELECTEDLASERPROFILE = "selectedLaserProfile";
 
@@ -114,15 +94,8 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
     this.repaint();
   }
 
-  private void refresh()
+  private void fillLaserProfiles()
   {
-    for (JRadioButton b : this.buttons)
-    {
-      this.group.remove(b);
-      b.removeActionListener(this);
-      this.remove(b);
-    }
-    this.buttons.clear();
     this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     List<LaserProfile> rasterProfiles = new LinkedList<LaserProfile>();
     boolean lineProfileHere = false;
@@ -160,10 +133,13 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
   {
     JiconRadioButton b = new JiconRadioButton();
     b.setLabelText(l.getName());
-    File thumb = new File(l.getThumbnailPath());
-    if (thumb.exists())
+    if (l.getThumbnailPath() != null)
     {
-      b.setLabelIcon(thumb);
+      File thumb = new File(l.getThumbnailPath());
+      if (thumb.exists())
+      {
+        b.setLabelIcon(thumb);
+      }
     }
     b.addActionListener(this);
     b.setToolTipText(l.getDescription());

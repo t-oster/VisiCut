@@ -90,6 +90,10 @@ public class LaserPropertyManager
   public void saveLaserProperties(LaserDevice ld, MaterialProfile mp, LaserProfile lp, List<LaserProperty> lps) throws FileNotFoundException
   {
     File f = getLaserPropertiesFile(ld, mp, lp);
+    if (!f.getParentFile().exists())
+    {
+      f.getParentFile().mkdirs();
+    }
     FileOutputStream out = new FileOutputStream(f);
     XMLEncoder enc = new XMLEncoder(out);
     enc.writeObject(lps);

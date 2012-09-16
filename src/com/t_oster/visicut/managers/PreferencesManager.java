@@ -64,7 +64,7 @@ public final class PreferencesManager
   {
   }
 
-  private void generateDefault()
+  private void generateDefault() throws FileNotFoundException
   {
     preferences = new Preferences();
     preferences.setAvailableImporters(new String[]
@@ -79,17 +79,16 @@ public final class PreferencesManager
     epilog.setName("Epilog ZING");
     epilog.setDescription("The Epilog ZING 30W Laser which is in the Fablab");
     //epilog.setCameraURL("http://137.226.56.115:8080/defaultbackground.jpg");
-    //epilog.setThumbnailPath("settings/epilogcutter.png");
+    //epilog.setThumbnailPath("settings/epilog-zingcutter.png");
     epilog.setCameraCalibration(new AffineTransform(0.19630256844482077, 0.0, 0.0, 0.19954840530623766, 124.33334350585938, 484.3333282470703));
-    preferences.setLaserDevices(new LinkedList<LaserDevice>());
-    preferences.getLaserDevices().add(epilog);
+    LaserDeviceManager.getInstance().add(epilog);
     preferences.setLastLaserDevice(epilog);
     LaserDevice laos = new LaserDevice();
     laos.setLaserCutter(new LaosCutter());
     laos.setName("Laos HPC");
-    //laos.setThumbnailPath("settings/laoscutter.png");
+    //laos.setThumbnailPath("settings/laos-hpc.png");
     laos.setCameraCalibration(new AffineTransform(0.19630256844482077, 0.0, 0.0, 0.19954840530623766, 124.33334350585938, 484.3333282470703));
-    preferences.getLaserDevices().add(laos);
+    LaserDeviceManager.getInstance().add(laos);
   }
 
   private void initializeSettingDirectory()
@@ -135,11 +134,11 @@ public final class PreferencesManager
         }
       }
     }
-    System.err.println("No default settings found. Generating some...");
-    this.generateDefault();
-    System.out.println("Saving generated settings...");
     try
     {
+      System.err.println("No default settings found. Generating some...");
+      this.generateDefault();
+      System.out.println("Saving generated settings...");
       this.savePreferences();
     }
     catch (FileNotFoundException ex)
@@ -192,7 +191,14 @@ public final class PreferencesManager
       {
         Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
         System.err.println("Can't load settings. Using default ones...");
-        this.generateDefault();
+        try
+        {
+          this.generateDefault();
+        }
+        catch (FileNotFoundException ex1)
+        {
+          Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex1);
+        }
       }
     }
     return preferences;
@@ -213,10 +219,6 @@ public final class PreferencesManager
   
   public void savePreferences(Preferences pref, File f) throws FileNotFoundException
   {
-    for (LaserDevice ld : pref.getLaserDevices())
-    {
-      ld.setThumbnailPath(Helper.removeBasePath(ld.getThumbnailPath()));
-    }
     FileOutputStream os = new FileOutputStream(f);
     XMLEncoder encoder = new XMLEncoder(os);
     encoder.setPersistenceDelegate(AffineTransform.class, new PersistenceDelegate()
@@ -237,10 +239,6 @@ public final class PreferencesManager
     });
     encoder.writeObject(pref);
     encoder.close();
-    for (LaserDevice ld : pref.getLaserDevices())
-    {
-      ld.setThumbnailPath(Helper.addBasePath(ld.getThumbnailPath()));
-    }
   }
 
   public Preferences loadPreferences(File f) throws FileNotFoundException
@@ -249,10 +247,6 @@ public final class PreferencesManager
     XMLDecoder decoder = new XMLDecoder(os);
     Preferences p = (Preferences) decoder.readObject();
     decoder.close();
-    for (LaserDevice ld : p.getLaserDevices())
-    {
-      ld.setThumbnailPath(Helper.addBasePath(ld.getThumbnailPath()));
-    }
     return p;
   }
 

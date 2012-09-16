@@ -25,39 +25,12 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.visicut.model.MaterialProfile;
-import java.io.File;
 
 /**
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class EditMaterialDialog extends javax.swing.JDialog {
-
-  protected File defaultDirectory = null;
-
-  /**
-   * Get the value of defaultDirectory
-   *
-   * @return the value of defaultDirectory
-   */
-  public File getDefaultDirectory()
-  {
-    return defaultDirectory;
-  }
-
-  /**
-   * Set the value of defaultDirectory for finding the Thumbnail
-   *
-   * @param defaultDirectory new value of defaultDirectory
-   */
-  public void setDefaultDirectory(File defaultDirectory)
-  {
-    this.defaultDirectory = defaultDirectory;
-    if (defaultDirectory != null)
-    {
-      this.selectThumbnailButton1.setDefaultDirectory(defaultDirectory);
-    }
-  }
 
     protected MaterialProfile material = null;
     public static final String PROP_MATERIAL = "material";
@@ -241,8 +214,8 @@ public class EditMaterialDialog extends javax.swing.JDialog {
                         .addGap(29, 29, 29)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
+                            .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
@@ -250,7 +223,7 @@ public class EditMaterialDialog extends javax.swing.JDialog {
                                         .addGap(3, 3, 3)
                                         .addComponent(jLabel6))
                                     .addComponent(chooseCutColorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel8)

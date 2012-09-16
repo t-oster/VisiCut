@@ -37,6 +37,7 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.ImageComboBox;
+import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.MaterialManager;
@@ -308,6 +309,22 @@ public class MainView extends javax.swing.JFrame
     }
   }
   
+  private void refreshMaterialComboBox()
+  {
+    MaterialProfile sp = this.visicutModel1.getMaterial();
+    this.materialComboBox.removeAllItems();
+    this.materialComboBox.addItem(null);
+    this.materialComboBox.setSelectedIndex(0);
+    for (MaterialProfile mp : MaterialManager.getInstance().getAll())
+    {
+      this.materialComboBox.addItem(mp);
+      if (sp != null && sp.getName().equals(mp.getName()))
+      {
+        this.materialComboBox.setSelectedItem(mp);
+      }
+    }
+  }
+  
   /*
    * Initially fills LaserCutter,Material and Mapping ComboBox with all possible Elements
    */
@@ -319,7 +336,7 @@ public class MainView extends javax.swing.JFrame
     this.laserCutterComboBox.removeAllItems();
     this.laserCutterComboBox.addItem(null);
     this.laserCutterComboBox.setSelectedIndex(0);
-    for (LaserDevice ld : PreferencesManager.getInstance().getPreferences().getLaserDevices())
+    for (LaserDevice ld : LaserDeviceManager.getInstance().getAll())
     {
       this.laserCutterComboBox.addItem(ld);
       resolutions.addAll(ld.getLaserCutter().getResolutions());
@@ -340,18 +357,7 @@ public class MainView extends javax.swing.JFrame
         this.resolutionComboBox.setSelectedItem(i);
       }
     }
-    MaterialProfile sp = this.visicutModel1.getMaterial();
-    this.materialComboBox.removeAllItems();
-    this.materialComboBox.addItem(null);
-    this.materialComboBox.setSelectedIndex(0);
-    for (MaterialProfile mp : MaterialManager.getInstance().getMaterials())
-    {
-      this.materialComboBox.addItem(mp);
-      if (sp != null && sp.getName().equals(mp.getName()))
-      {
-        this.materialComboBox.setSelectedItem(mp);
-      }
-    }
+    this.refreshMaterialComboBox();
     MappingSet ss = this.visicutModel1.getMappings();
     this.predefinedMappingList.clearList();
     this.predefinedMappingList.addItem("no mapping");
@@ -413,6 +419,7 @@ public class MainView extends javax.swing.JFrame
         jLabel8 = new javax.swing.JLabel();
         resolutionComboBox = new com.t_oster.visicut.gui.beans.ImageComboBox();
         jLabel12 = new javax.swing.JLabel();
+        btAddMaterial = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
         executeJobButton = new javax.swing.JButton();
@@ -557,7 +564,7 @@ public class MainView extends javax.swing.JFrame
         );
         predefinedMappingPanelLayout.setVerticalGroup(
             predefinedMappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
         );
 
         mappingTabbedPane.addTab(resourceMap.getString("predefinedMappingPanel.TabConstraints.tabTitle"), predefinedMappingPanel); // NOI18N
@@ -600,7 +607,7 @@ public class MainView extends javax.swing.JFrame
                     .addComponent(jLabel11)
                     .addComponent(customMappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -618,6 +625,14 @@ public class MainView extends javax.swing.JFrame
 
         jLabel12.setText(resourceMap.getString("jLabel12.text")); // NOI18N
         jLabel12.setName("jLabel12"); // NOI18N
+
+        btAddMaterial.setText(resourceMap.getString("btAddMaterial.text")); // NOI18N
+        btAddMaterial.setName("btAddMaterial"); // NOI18N
+        btAddMaterial.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btAddMaterialActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -652,15 +667,18 @@ public class MainView extends javax.swing.JFrame
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(calculateTimeButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(materialComboBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE)
-                            .addComponent(laserCutterComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE))
+                        .addComponent(laserCutterComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE)
                         .addContainerGap())
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addContainerGap(378, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(materialComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btAddMaterial)
                         .addContainerGap())))
         );
         jPanel2Layout.setVerticalGroup(
@@ -673,7 +691,9 @@ public class MainView extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btAddMaterial))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
@@ -687,7 +707,7 @@ public class MainView extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
                 .addGap(54, 54, 54)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(calculateTimeButton)
@@ -1350,8 +1370,9 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         {
           JOptionPane.showMessageDialog(this, "For some profile you selected, there are no lasercutter settings yet\nYou will have to enter them in the following dialog.");
         }
+        String heading = "Settings for "+device.getName()+" with material "+material.toString();
         //Adapt Settings before execute
-        AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true);
+        AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true, heading);
         asd.setLaserProperties(usedSettings);
         asd.setVisible(true);
         Map<LaserProfile, List<LaserProperty>> result = asd.getLaserProperties();
@@ -1671,16 +1692,15 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   private void materialMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_materialMenuItemActionPerformed
   {//GEN-HEADEREND:event_materialMenuItemActionPerformed
     EditMaterialsDialog d = new EditMaterialsDialog(this, true);
-    d.setMaterials(MaterialManager.getInstance().getMaterials());
+    d.setMaterials(MaterialManager.getInstance().getAll());
     d.setVisible(true);
     List<MaterialProfile> result = d.getMaterials();
     if (result != null)
     {
       try
       {
-        MaterialManager.getInstance().setMaterials(result);
-        this.fillComboBoxes();
-        this.refreshComboBoxes();
+        MaterialManager.getInstance().setAll(result);
+        this.refreshMaterialComboBox();
       }
       catch (FileNotFoundException ex)
       {
@@ -1757,16 +1777,15 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem2ActionPerformed
   {//GEN-HEADEREND:event_jMenuItem2ActionPerformed
     ManageLasercuttersDialog d = new ManageLasercuttersDialog(this, true);
-    d.setLaserCutters(this.visicutModel1.getPreferences().getLaserDevices());
+    d.setLaserCutters(LaserDeviceManager.getInstance().getAll());
     d.setDefaultLaserCutter(this.visicutModel1.getPreferences().getLastLaserDevice());
     d.setVisible(true);
     List<LaserDevice> result = d.getLaserCutters();
     if (result != null)
     {
-      this.visicutModel1.getPreferences().setLaserDevices(result);
       try
       {
-        PreferencesManager.getInstance().savePreferences();
+        LaserDeviceManager.getInstance().setAll(result);
       }
       catch (FileNotFoundException ex)
       {
@@ -2117,8 +2136,31 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     }
   }//GEN-LAST:event_jmManageLaserprofilesActionPerformed
 
+  private void btAddMaterialActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btAddMaterialActionPerformed
+  {//GEN-HEADEREND:event_btAddMaterialActionPerformed
+    MaterialProfile m = new MaterialProfile();
+    EditMaterialDialog d = new EditMaterialDialog(this, true);
+    d.setMaterial(m);
+    d.setVisible(true);
+    m = d.getMaterial();
+    if (m != null)
+    {
+      try
+      {
+        MaterialManager.getInstance().add(m);
+        this.refreshMaterialComboBox();
+        this.materialComboBox.setSelectedItem(m);
+      }
+      catch (FileNotFoundException ex)
+      {
+        this.showErrorMessage(ex);
+      }
+    }
+  }//GEN-LAST:event_btAddMaterialActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JButton btAddMaterial;
     private javax.swing.JButton calculateTimeButton;
     private javax.swing.JMenuItem calibrateCameraMenuItem;
     private javax.swing.JButton captureImageButton;

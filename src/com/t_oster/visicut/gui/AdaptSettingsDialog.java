@@ -40,12 +40,14 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
 
   private List<EditableTablePanel> panels = new LinkedList<EditableTablePanel>();
   private Map<LaserProfile, List<LaserProperty>> map;
+  private boolean okPressed = false;
 
   /** Creates new form AdaptSettingsDialog */
-  public AdaptSettingsDialog(java.awt.Frame parent, boolean modal)
+  public AdaptSettingsDialog(java.awt.Frame parent, boolean modal, String heading)
   {
     super(parent, modal);
     initComponents();
+    this.heading.setText(heading);
   }
 
   /**
@@ -108,7 +110,7 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
    */
   public Map<LaserProfile, List<LaserProperty>> getLaserProperties()
   {
-    return this.map;
+    return this.okPressed ? this.map : null;
   }
 
   /** This method is called from within the constructor to
@@ -124,6 +126,7 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
         editableTablePanel1 = new com.t_oster.visicut.gui.beans.EditableTablePanel();
         btOK = new javax.swing.JButton();
         btCancel = new javax.swing.JButton();
+        heading = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
@@ -150,22 +153,31 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
             }
         });
 
+        heading.setText(resourceMap.getString("heading.text")); // NOI18N
+        heading.setName("heading"); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(280, Short.MAX_VALUE)
-                .addComponent(btCancel)
-                .addGap(18, 18, 18)
-                .addComponent(btOK)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btCancel)
+                        .addGap(18, 18, 18)
+                        .addComponent(btOK))
+                    .addComponent(heading)
+                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE))
                 .addContainerGap())
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(heading)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btOK)
@@ -178,6 +190,7 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
 
   private void btOKActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btOKActionPerformed
   {//GEN-HEADEREND:event_btOKActionPerformed
+    this.okPressed = true;
     this.setVisible(false);
   }//GEN-LAST:event_btOKActionPerformed
 
@@ -191,6 +204,7 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
     private javax.swing.JButton btCancel;
     private javax.swing.JButton btOK;
     private com.t_oster.visicut.gui.beans.EditableTablePanel editableTablePanel1;
+    private javax.swing.JLabel heading;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 

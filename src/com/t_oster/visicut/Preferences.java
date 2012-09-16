@@ -125,32 +125,6 @@ public class Preferences
     this.lastLaserDevice = lastLaserDevice;
   }
 
-  
-  protected List<LaserDevice> laserDevices = null;
-  public static final String PROP_LASERDEVICES = "laserDevices";
-
-  /**
-   * Get the value of laserDevices
-   *
-   * @return the value of laserDevices
-   */
-  public List<LaserDevice> getLaserDevices()
-  {
-    return laserDevices;
-  }
-
-  /**
-   * Set the value of laserDevices
-   *
-   * @param laserDevices new value of laserDevices
-   */
-  public void setLaserDevices(List<LaserDevice> laserDevices)
-  {
-    List<LaserDevice> oldLaserDevices = this.laserDevices;
-    this.laserDevices = laserDevices;
-    propertyChangeSupport.firePropertyChange(PROP_LASERDEVICES, oldLaserDevices, laserDevices);
-  }
-
   protected String[] availableLasercutterDrivers = null;
 
   /**
