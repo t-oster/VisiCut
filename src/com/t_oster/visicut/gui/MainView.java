@@ -149,7 +149,6 @@ public class MainView extends javax.swing.JFrame
             MainView.this.previewPanel.setMappings(set);
           }
           MainView.this.refreshButtonStates();
-          MainView.this.refreshComboBoxes();
         }
       }
     });
@@ -167,7 +166,6 @@ public class MainView extends javax.swing.JFrame
       }
     });
     fillComboBoxes();
-    refreshComboBoxes();
 
     if (this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null)
     {
@@ -1327,7 +1325,6 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     {
       this.mappingManager1.setMappingSets(mappingsets);
       this.fillComboBoxes();
-      this.refreshComboBoxes();
       this.previewPanel.repaint();
     }
   }
@@ -1341,6 +1338,25 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
   private void executeJob()
   {
+    if (!this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions().contains(this.visicutModel1.getResolution()))
+    {
+      int dist = -1;
+      int res = 0;
+      int soll = this.visicutModel1.getResolution();
+      for(int r : this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions())
+      {
+        if (dist == -1 || dist > Math.abs(soll-r))
+        {
+          dist = Math.abs(soll-r);
+          res = r;
+        }
+      }
+      if (JOptionPane.showConfirmDialog(this, "The Lasercutter you selected, does not support "+soll+"dpi\nDo you want to use "+res+"dpi instead?", "Question", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+      {
+        return;
+      }
+      this.resolutionComboBox.setSelectedItem((Integer) res);
+    }
     try
     {
       LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
@@ -1685,7 +1701,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     return;
   }
   this.visicutModel1.setMaterial(newMaterial);
-  this.refreshComboBoxes();
   this.refreshButtonStates();
 }//GEN-LAST:event_materialComboBoxActionPerformed
 
@@ -1713,41 +1728,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   {
     JOptionPane.showMessageDialog(this, "Error ("+cause.getClass().getSimpleName()+"): "+cause.getLocalizedMessage(), "An Error occured", JOptionPane.ERROR_MESSAGE);
   }
-  
-  /**
-   * Disables all impossible combinations
-   */
-  private void refreshComboBoxes()
-  {
-    LaserDevice ld = this.visicutModel1.getSelectedLaserDevice();
-    MaterialProfile mp = this.visicutModel1.getMaterial();
-    MappingSet mappings = this.visicutModel1.getMappings();
-    Integer res = this.visicutModel1.getResolution();
-    for (int i = 1; i < this.laserCutterComboBox.getItemCount(); i++)
-    {
-      LaserDevice cld = (LaserDevice) this.laserCutterComboBox.getItemAt(i);
-      if (res != null && !cld.getLaserCutter().getResolutions().contains(res))
-      {
-        this.laserCutterComboBox.setDisabled(cld, true, "Resolution not supported");
-      }
-      else
-      {
-        this.laserCutterComboBox.setDisabled(cld, false);
-      }
-    }
-    for (int i = 1; i < this.resolutionComboBox.getItemCount(); i++)
-    {
-      Integer r = (Integer) this.resolutionComboBox.getItemAt(i);
-      if (ld == null || ld.getLaserCutter().getResolutions().contains(r))
-      {
-        this.resolutionComboBox.setDisabled(r, false);
-      }
-      else
-      {
-        this.resolutionComboBox.setDisabled(r, true, "Resolution not supported by Lasercutter");
-      }
-    }
-  }
 
   private void laserCutterComboBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_laserCutterComboBoxActionPerformed
   {//GEN-HEADEREND:event_laserCutterComboBoxActionPerformed
@@ -1770,7 +1750,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     {
       this.captureImage();
     }
-    refreshComboBoxes();
     this.refreshButtonStates();
   }//GEN-LAST:event_laserCutterComboBoxActionPerformed
 
@@ -1792,7 +1771,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         JOptionPane.showMessageDialog(this, "Error saving preferences: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       }
       this.fillComboBoxes();
-      this.refreshComboBoxes();
     }
   }//GEN-LAST:event_jMenuItem2ActionPerformed
   private MappingSet custom = null;
@@ -1952,7 +1930,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     {
       this.showErrorMessage(ex);
     }
-    this.refreshComboBoxes();
     this.refreshButtonStates();
   }//GEN-LAST:event_mappingTabbedPaneStateChanged
 
@@ -2007,7 +1984,6 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     return;
   }
   this.visicutModel1.setResolution(newResolution);
-  this.refreshComboBoxes();
   this.refreshButtonStates();
 }//GEN-LAST:event_resolutionComboBoxActionPerformed
 
@@ -2132,7 +2108,6 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
         this.showErrorMessage(ex);
       }
       this.fillComboBoxes();
-      this.refreshComboBoxes();
     }
   }//GEN-LAST:event_jmManageLaserprofilesActionPerformed
 
