@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.7.0_07" class="java.beans.XMLDecoder">
+ <object class="com.t_oster.visicut.model.LaserDevice">
+  <void property="name">
+   <string>Epilog Mini</string>
+  </void>
+  <void property="thumbnailPath">
+   <string>Epilog Mini.png</string>
+  </void>
+ </object>
+</java>

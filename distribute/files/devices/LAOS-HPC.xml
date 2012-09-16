@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.7.0_07" class="java.beans.XMLDecoder">
+ <object class="com.t_oster.visicut.model.LaserDevice">
+  <void property="laserCutter">
+   <object class="com.t_oster.liblasercut.drivers.LaosCutter"/>
+  </void>
+  <void property="name">
+   <string>LAOS-HPC</string>
+  </void>
+  <void property="thumbnailPath">
+   <string>LAOS-HPC.png</string>
+  </void>
+ </object>
+</java>

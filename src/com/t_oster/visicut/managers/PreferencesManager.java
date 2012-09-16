@@ -18,12 +18,19 @@
  */
 package com.t_oster.visicut.managers;
 
+import com.t_oster.liblasercut.LaserCutter;
+import com.t_oster.liblasercut.LibInfo;
 import com.t_oster.liblasercut.drivers.EpilogZing;
 import com.t_oster.liblasercut.drivers.LaosCutter;
 import com.t_oster.visicut.Preferences;
 import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
+import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.Raster3dProfile;
+import com.t_oster.visicut.model.RasterProfile;
+import com.t_oster.visicut.model.VectorProfile;
+import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.beans.Encoder;
 import java.beans.Expression;
@@ -74,21 +81,69 @@ public final class PreferencesManager
         "com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter",
         "com.t_oster.visicut.model.graphicelements.epssupport.EPSImporter"
       });
-    LaserDevice epilog = new LaserDevice();
-    epilog.setLaserCutter(new EpilogZing("137.226.56.228"));
-    epilog.setName("Epilog ZING");
-    epilog.setDescription("The Epilog ZING 30W Laser which is in the Fablab");
-    //epilog.setCameraURL("http://137.226.56.115:8080/defaultbackground.jpg");
-    //epilog.setThumbnailPath("settings/epilog-zingcutter.png");
-    epilog.setCameraCalibration(new AffineTransform(0.19630256844482077, 0.0, 0.0, 0.19954840530623766, 124.33334350585938, 484.3333282470703));
-    LaserDeviceManager.getInstance().add(epilog);
-    preferences.setLastLaserDevice(epilog);
-    LaserDevice laos = new LaserDevice();
-    laos.setLaserCutter(new LaosCutter());
-    laos.setName("Laos HPC");
-    //laos.setThumbnailPath("settings/laos-hpc.png");
-    laos.setCameraCalibration(new AffineTransform(0.19630256844482077, 0.0, 0.0, 0.19954840530623766, 124.33334350585938, 484.3333282470703));
-    LaserDeviceManager.getInstance().add(laos);
+    //Create a Laserdevice for each known driver
+    for (Class laserdriver : LibInfo.getSupportedDrivers())
+    {
+      try
+      {
+        LaserDevice dev = new LaserDevice();
+        LaserCutter lc = (LaserCutter) laserdriver.newInstance();
+        dev.setLaserCutter(lc);
+        dev.setName(lc.getModelName());
+        dev.setThumbnailPath(new File(Helper.getBasePath(), "devices/"+lc.getModelName()+".png").getAbsolutePath());
+        LaserDeviceManager.getInstance().add(dev);
+        if (preferences.getLastLaserDevice() == null)
+        {
+          preferences.setLastLaserDevice(dev);
+          preferences.setLastResolution(lc.getResolutions().get(lc.getResolutions().size()-1));
+        }
+      }
+      catch (InstantiationException ex)
+      {
+        Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      catch (IllegalAccessException ex)
+      {
+        Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+    //generate default materials
+    MaterialProfile mp = new MaterialProfile();
+    mp.setName("Paper");
+    mp.setColor(Color.WHITE);
+    mp.setCutColor(Color.RED);
+    mp.setEngraveColor(Color.DARK_GRAY);
+    mp.setDepth(0.1f);
+    MaterialManager.getInstance().add(mp);
+    mp = new MaterialProfile();
+    mp.setName("Acrylic");
+    mp.setColor(Color.BLUE);
+    mp.setCutColor(Color.RED);
+    mp.setEngraveColor(Color.WHITE);
+    mp.setDepth(2f);
+    MaterialManager.getInstance().add(mp);
+    preferences.setLastMaterial(mp);
+    
+    //generate default Profiles
+    VectorProfile cut = new VectorProfile();
+    cut.setName("cut");
+    cut.setDescription("Cut through the material");
+    cut.setIsCut(true);
+    cut.setWidth(1f);
+    ProfileManager.getInstance().addProfile(cut);
+    VectorProfile mark = new VectorProfile();
+    mark.setName("mark");
+    mark.setDescription("Cut through the material");
+    mark.setIsCut(true);
+    mark.setWidth(1f);
+    ProfileManager.getInstance().addProfile(mark);
+    RasterProfile engrave = new RasterProfile();
+    engrave.setName("engrave");
+    ProfileManager.getInstance().addProfile(engrave);
+    Raster3dProfile engrave3d = new Raster3dProfile();
+    engrave3d.setName("engrave 3d");
+    ProfileManager.getInstance().addProfile(engrave3d);
+    
   }
 
   private void initializeSettingDirectory()

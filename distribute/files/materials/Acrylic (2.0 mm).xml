@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.7.0_07" class="java.beans.XMLDecoder">
+ <object class="com.t_oster.visicut.model.MaterialProfile">
+  <void property="color">
+   <object class="java.awt.Color">
+    <int>0</int>
+    <int>0</int>
+    <int>255</int>
+    <int>255</int>
+   </object>
+  </void>
+  <void property="cutColor">
+   <object class="java.awt.Color">
+    <int>255</int>
+    <int>0</int>
+    <int>0</int>
+    <int>255</int>
+   </object>
+  </void>
+  <void property="depth">
+   <float>2.0</float>
+  </void>
+  <void property="engraveColor">
+   <object class="java.awt.Color">
+    <int>255</int>
+    <int>255</int>
+    <int>255</int>
+    <int>255</int>
+   </object>
+  </void>
+  <void property="name">
+   <string>Acrylic</string>
+  </void>
+ </object>
+</java>

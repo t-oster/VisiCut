@@ -20,8 +20,6 @@ package com.t_oster.visicut.managers;
 
 import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
-import com.t_oster.visicut.model.LaserDevice;
-import com.t_oster.visicut.model.MaterialProfile;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
@@ -114,8 +112,8 @@ public abstract class FilebasedManager<T>
   
   public void add(T mp) throws FileNotFoundException
   {
-    this.save(mp, this.getObjectPath(mp));
     this.getAll().add(mp);
+    this.save(mp, this.getObjectPath(mp));
     Collections.sort(this.objects, getComparator());
   }
   
