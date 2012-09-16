@@ -33,6 +33,32 @@ import java.beans.PropertyChangeSupport;
 public class LaserDevice implements ImageListable
 {
 
+  protected String jobSentText = "Job was sent as '$jobname'\nPlease:\n-Close the lid\n-Turn on the Ventilation\n-And press 'start' on the Lasercutter $name";
+  public static final String PROP_JOBSENTTEXT = "jobSentText";
+
+  /**
+   * Get the value of jobSentText
+   *
+   * @return the value of jobSentText
+   */
+  public String getJobSentText()
+  {
+    return jobSentText;
+  }
+
+  /**
+   * Set the value of jobSentText
+   *
+   * @param jobSentText new value of jobSentText
+   */
+  public void setJobSentText(String jobSentText)
+  {
+    String oldJobSentText = this.jobSentText;
+    this.jobSentText = jobSentText;
+    propertyChangeSupport.firePropertyChange(PROP_JOBSENTTEXT, oldJobSentText, jobSentText);
+  }
+
+  
   protected String jobPrefix = "visicut ";
   public static final String PROP_JOBPREFIX = "jobPrefix";
 

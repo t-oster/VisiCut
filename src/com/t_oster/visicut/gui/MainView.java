@@ -1439,7 +1439,9 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             MainView.this.progressBar.setValue(0);
             MainView.this.progressBar.setString("");
             MainView.this.progressBar.setStringPainted(false);
-            JOptionPane.showMessageDialog(MainView.this, "Job was sent as '"+ prefix + jobnumber + "'\n\n Please:\n- Close the lid\n- Switch the Ventilation on\n- and press START on the Lasercutter:\n     " + MainView.this.visicutModel1.getSelectedLaserDevice().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
+            String txt = MainView.this.visicutModel1.getSelectedLaserDevice().getJobSentText();
+            txt = txt.replace("$jobname", prefix + jobnumber).replace("$name", MainView.this.visicutModel1.getSelectedLaserDevice().getName());
+            JOptionPane.showMessageDialog(MainView.this, txt, "Job sent", JOptionPane.INFORMATION_MESSAGE);
           }
           catch (Exception ex)
           {
