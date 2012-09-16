@@ -497,10 +497,21 @@ public class PreviewPanel extends ZoomablePanel
   public void setGraphicObjects(GraphicSet graphicObjects)
   {
     this.graphicObjects = graphicObjects;
-    if (graphicObjects != null && (this.backgroundImage == null || !this.showBackgroundImage) && this.material == null)
+    int bw = (int) Helper.mm2px(bedWidth);
+    int bh = (int) Helper.mm2px(bedHeight);  
+    if (this.graphicObjects != null)
     {
       Rectangle bb = Helper.toRect(this.graphicObjects.getBoundingBox());
-      this.setOuterBounds(new Dimension(bb.x + bb.width, bb.y + bb.height));
+      int w = bb.x + bb.width;
+      int h = bb.y + bb.height;
+      if (w > bw || h > bh)
+      {
+        this.setOuterBounds(new Dimension((int) Math.max(bw, w), (int) Math.max(bh, h)));
+      }
+    }
+    else
+    {
+      this.setOuterBounds(new Dimension(bw, bh));
     }
     this.renderBuffer.clear();
     this.repaint();
