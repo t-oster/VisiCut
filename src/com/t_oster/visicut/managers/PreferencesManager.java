@@ -258,6 +258,10 @@ public final class PreferencesManager
           Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex1);
         }
       }
+      if (preferences == null)
+      {
+        preferences = new Preferences();
+      }
     }
     return preferences;
   }
@@ -319,5 +323,9 @@ public final class PreferencesManager
     FileUtils.unzipToDirectory(file, Helper.getBasePath());
     this.exampleFilenames = null;
     this.preferences = null;
+    LaserDeviceManager.getInstance().reload();
+    MappingManager.getInstance().reload();
+    MaterialManager.getInstance().reload();
+    ProfileManager.getInstance().reload();
   }
 }
