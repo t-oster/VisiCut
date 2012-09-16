@@ -685,12 +685,13 @@ public class VisicutModel
         parts.put(p, set);
       }
     }
+    float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() ? 0 : this.material.getDepth();
     //Add all non-cutting parts to the laserjob
     for (Entry<LaserProfile, GraphicSet> e : parts.entrySet())
     {
       if (!(e.getKey() instanceof VectorProfile) || !((VectorProfile)e.getKey()).isIsCut())
       {
-        e.getKey().addToLaserJob(job, e.getValue(), LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey()), material.getDepth());
+        e.getKey().addToLaserJob(job, e.getValue(), LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey()), focusOffset);
       }
     }
     //Add all cutting parts to the end of the laserjob
@@ -698,7 +699,7 @@ public class VisicutModel
     {
       if (e.getKey() instanceof VectorProfile && ((VectorProfile)e.getKey()).isIsCut())
       {
-        e.getKey().addToLaserJob(job, e.getValue(), LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey()), material.getDepth());
+        e.getKey().addToLaserJob(job, e.getValue(), LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey()), focusOffset);
       }
     }
     return job;
