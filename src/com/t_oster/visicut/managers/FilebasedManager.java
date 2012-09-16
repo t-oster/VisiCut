@@ -115,7 +115,7 @@ public abstract class FilebasedManager<T>
   public void add(T mp) throws FileNotFoundException
   {
     this.save(mp, this.getObjectPath(mp));
-    this.objects.add(mp);
+    this.getAll().add(mp);
     Collections.sort(this.objects, getComparator());
   }
   
