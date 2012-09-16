@@ -143,9 +143,8 @@ public class EditVectorProfileDialog extends javax.swing.JDialog implements Edit
     VectorProfile oldCurrentVectorProfile = this.currentVectorProfile;
     this.currentVectorProfile = currentVectorProfile;
     firePropertyChange(PROP_CURRENTVECTORPROFILE, oldCurrentVectorProfile, currentVectorProfile);
-    this.listModel.setLaserProfile(currentVectorProfile);
   }
-  private LaserProfileTableModel listModel = new LaserProfileTableModel();
+  private LaserPropertiesTableModel listModel = new LaserPropertiesTableModel();
 
   /** Creates new form EditVectorProfileDialog */
   public EditVectorProfileDialog(java.awt.Frame parent, boolean modal)

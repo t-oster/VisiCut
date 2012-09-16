@@ -128,7 +128,7 @@ public class Raster3dProfile extends LaserProfile
           if (ad.getGreyScale(x, y) < 255)
           {
             double f = (double) ad.getGreyScale(x, y) / 255;
-            Color scaled = getColorBetween(this.getColor(), material.getColor(), f);
+            Color scaled = getColorBetween(material.getEngraveColor(), material.getColor(), f);
             gg.setColor(scaled);
             gg.drawLine((int) bb.getX() + x, (int) bb.getY() + y, (int) bb.getX() + x, (int) bb.getY() + y);
           }
@@ -202,7 +202,6 @@ public class Raster3dProfile extends LaserProfile
   public LaserProfile clone()
   {
     Raster3dProfile rp = new Raster3dProfile();
-    rp.color = this.color;
     rp.colorShift = this.colorShift;
     rp.description = this.description;
     rp.invertColors = this.invertColors;

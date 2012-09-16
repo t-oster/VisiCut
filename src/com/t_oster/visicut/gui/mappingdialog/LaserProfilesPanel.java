@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut.gui.mappingdialog;
 
+import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.RasterProfile;
@@ -122,40 +123,37 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
       this.remove(b);
     }
     this.buttons.clear();
-    if (this.getMaterial() != null && this.getMaterial().getLaserProfiles() != null)
+    this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    List<LaserProfile> rasterProfiles = new LinkedList<LaserProfile>();
+    boolean lineProfileHere = false;
+    for (LaserProfile l : ProfileManager.getInstance().getProfiles())
     {
-      this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-      List<LaserProfile> rasterProfiles = new LinkedList<LaserProfile>();
-      boolean lineProfileHere = false;
-      for (LaserProfile l : this.getMaterial().getLaserProfiles())
-      {
-        if (!(l instanceof VectorProfile))
-        {//Sort Vector from Raster Profiles
-          rasterProfiles.add(l);
-          continue;
-        }
-        if (!lineProfileHere)
-        {
-          lineProfileHere=true;
-          JLabel lab = new JLabel("Line Profiles:");
-          lab.setToolTipText("Line Profiles can only use Vectorgraphics.\nThe Laser will follow the lines in the graphic and cut or engrave,\nindependant of the line width");
-          this.add(lab);
-        }
-        this.addProfileButton(l);
+      if (!(l instanceof VectorProfile))
+      {//Sort Vector from Raster Profiles
+        rasterProfiles.add(l);
+        continue;
       }
-      if (rasterProfiles.size()>0)
+      if (!lineProfileHere)
       {
-        JLabel l = new JLabel("Raster Profiles");
-        l.setToolTipText("Raster Profiles can use any kind of graphics.\nThe Graphic will be rastered and lasered line by line.");
-        this.add(l);
+        lineProfileHere=true;
+        JLabel lab = new JLabel("Line Profiles:");
+        lab.setToolTipText("Line Profiles can only use Vectorgraphics.\nThe Laser will follow the lines in the graphic and cut or engrave,\nindependant of the line width");
+        this.add(lab);
       }
-      for (LaserProfile l:rasterProfiles)
-      {
-        this.addProfileButton(l);
-      }
-      this.setVisible(true);
-      this.validate();
+      this.addProfileButton(l);
     }
+    if (rasterProfiles.size()>0)
+    {
+      JLabel l = new JLabel("Raster Profiles");
+      l.setToolTipText("Raster Profiles can use any kind of graphics.\nThe Graphic will be rastered and lasered line by line.");
+      this.add(l);
+    }
+    for (LaserProfile l:rasterProfiles)
+    {
+      this.addProfileButton(l);
+    }
+    this.setVisible(true);
+    this.validate();
   }
 
   private void addProfileButton(LaserProfile l)
@@ -182,7 +180,7 @@ public class LaserProfilesPanel extends JPanel implements ActionListener
       JiconRadioButton b = (JiconRadioButton) ae.getSource();
       if (b.isSelected())
       {
-        this.setSelectedLaserProfile(this.material.getLaserProfile(b.getLabelText()));
+        this.setSelectedLaserProfile(ProfileManager.getInstance().getProfileByName(b.getLabelText()));
       }
     }
   }

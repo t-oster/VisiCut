@@ -451,4 +451,14 @@ public class Helper
     File is = new File(getVisiCutFolder(), "inkscape_extension");
     return is.exists() && is.isDirectory();
   }
+
+  /**
+   * Converts a string into a valid path name 
+   * @param name
+   * @return 
+   */
+  public static String toPathName(String name)
+  {
+    return name.replace("?", "_");
+  }
 }

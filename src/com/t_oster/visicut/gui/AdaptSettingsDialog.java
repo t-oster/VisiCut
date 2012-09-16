@@ -28,6 +28,7 @@ import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JOptionPane;
 
 /**
@@ -38,7 +39,7 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
 {
 
   private List<EditableTablePanel> panels = new LinkedList<EditableTablePanel>();
-  private MaterialProfile mp;
+  private Map<LaserProfile, List<LaserProperty>> map;
 
   /** Creates new form AdaptSettingsDialog */
   public AdaptSettingsDialog(java.awt.Frame parent, boolean modal)
@@ -53,19 +54,19 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
    * MaterialProfile
    * @param mp 
    */
-  public void setMaterialProfile(MaterialProfile mp)
+  public void setLaserProperties(Map<LaserProfile, List<LaserProperty>> map)
   {
-    this.mp = mp;
+    this.map = map;
     this.panels.clear();
     this.jTabbedPane1.removeAll();
-    if (mp != null)
+    if (map != null)
     {
-      for (LaserProfile lp : mp.getLaserProfiles())
+      for (LaserProfile lp : map.keySet())
       {
         EditableTablePanel panel = new EditableTablePanel();
-        LaserProfileTableModel model = new LaserProfileTableModel();
-        model.setLaserProfile(lp);
-        panel.setObjects((List) lp.getLaserProperties());
+        LaserPropertiesTableModel model = new LaserPropertiesTableModel();
+        model.setLaserProperties(map.get(lp), lp instanceof VectorProfile);
+        panel.setObjects((List) map.get(lp));
         panel.setTableModel(model);
         final boolean isVector = lp instanceof VectorProfile;
         panel.setProvider(new EditableTableProvider()
@@ -105,9 +106,9 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
    * IF Cancel was pressed, it is set to null
    * @return 
    */
-  public MaterialProfile getMaterialProfile()
+  public Map<LaserProfile, List<LaserProperty>> getLaserProperties()
   {
-    return this.mp;
+    return this.map;
   }
 
   /** This method is called from within the constructor to
@@ -182,7 +183,7 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
 
   private void btCancelActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btCancelActionPerformed
   {//GEN-HEADEREND:event_btCancelActionPerformed
-    this.mp = null;
+    this.map = null;
     this.setVisible(false);
   }//GEN-LAST:event_btCancelActionPerformed
 
@@ -192,4 +193,5 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
     private com.t_oster.visicut.gui.beans.EditableTablePanel editableTablePanel1;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
+
 }

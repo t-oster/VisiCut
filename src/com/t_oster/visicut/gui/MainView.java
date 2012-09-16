@@ -29,6 +29,7 @@ import com.apple.eawt.AppEvent.OpenFilesEvent;
 import com.apple.eawt.AppEvent.QuitEvent;
 import com.apple.eawt.QuitResponse;
 import com.t_oster.liblasercut.IllegalJobException;
+import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.ExtensionFilter;
@@ -36,7 +37,9 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.ImageComboBox;
+import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.managers.MappingManager;
+import com.t_oster.visicut.managers.MaterialManager;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.LaserDevice;
@@ -58,9 +61,12 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -325,7 +331,7 @@ public class MainView extends javax.swing.JFrame
     this.materialComboBox.removeAllItems();
     this.materialComboBox.addItem(null);
     this.materialComboBox.setSelectedIndex(0);
-    for (MaterialProfile mp : this.visicutModel1.getAllMaterials())
+    for (MaterialProfile mp : MaterialManager.getInstance().getMaterials())
     {
       this.materialComboBox.addItem(mp);
       if (sp != null && sp.getName().equals(mp.getName()))
@@ -366,7 +372,7 @@ public class MainView extends javax.swing.JFrame
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         visicutModel1 = VisicutModel.getInstance();
-        profileManager1 = ProfileManager.getInstance();
+        profileManager1 = MaterialManager.getInstance();
         filesDropSupport1 = new com.t_oster.visicut.gui.beans.FilesDropSupport();
         mappingManager1 = MappingManager.getInstance();
         saveFileChooser = new javax.swing.JFileChooser();
@@ -1291,148 +1297,114 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 }//GEN-LAST:event_aboutMenuItemActionPerformed
   private int jobnumber = 0;
 
-  private void executeJob() throws FileNotFoundException
+  private void executeJob()
   {
-    //we need to get the profile with this name for the current lasercutter
-    LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
-    String materialname = this.visicutModel1.getMaterial().getName();
-    MaterialProfile material = this.profileManager1.getMaterial(device, materialname);
-    if (material == null)
+    try
     {
-      //clone current material
-      material = this.visicutModel1.getMaterial().clone();
-      //remove all the profiles
-      material.setLaserProfiles(new LinkedList<LaserProfile>());
-      //save it for the selected lasercutter
-      this.profileManager1.saveProfile(material, device);
-    }
-    this.visicutModel1.setMaterial(material);
-    //get all profiles used in the job
-    //and check if they're supported yet
-    boolean unknownProfileUsed = false;
-    Set<String> usedProfileNames = new LinkedHashSet<String>();
-    for (Mapping m:this.visicutModel1.getMappings())
-    {
-      usedProfileNames.add(m.getProfileName());
-      if (material.getLaserProfile(m.getProfileName()) == null)
+      LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
+      MaterialProfile material = this.visicutModel1.getMaterial();
+      //get all profiles used in the job
+      //and check if they're supported yet
+      boolean unknownProfilesUsed = false;
+      Map<LaserProfile, List<LaserProperty>> usedSettings = new LinkedHashMap<LaserProfile, List<LaserProperty>>();
+      for (Mapping m:this.visicutModel1.getMappings())
       {
-        unknownProfileUsed = true;
+        LaserProfile profile = ProfileManager.getInstance().getProfileByName(m.getProfileName());
+        List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(device, material, profile);
+        if (props == null)
+        {
+          unknownProfilesUsed = true;
+          usedSettings.put(profile, new LinkedList<LaserProperty>());
+        }
+        else
+        {
+          usedSettings.put(profile, props);
+        }
       }
-    }
-    
-    final boolean profileChanged;
-    final MaterialProfile oldMaterial = this.visicutModel1.getMaterial();
-    if (this.cbEditBeforeExecute.isSelected() || unknownProfileUsed)
-    {
-      if (unknownProfileUsed)
-      {
-        JOptionPane.showMessageDialog(this, "For some profile you selected, there are no lasercutter settings yet\nYou will have to enter them in the following dialog.");
-      }
-      //Adapt Settings before execute
-      AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true);
-      MaterialProfile mp = this.visicutModel1.getMaterial().clone(); 
-      List<LaserProfile> usedProfiles = new LinkedList<LaserProfile>();
-      for (String profilename:usedProfileNames)
-      {
-        LaserProfile lp = mp.getLaserProfile(profilename);
-        if (lp == null)
-        usedProfiles.add(lp);
-      }
-      mp.setLaserProfiles(usedProfiles);
-      asd.setMaterialProfile(mp);
-      asd.setVisible(true);
-      if (asd.getMaterialProfile() != null)
-      {
-        profileChanged = true;
-        this.visicutModel1.setMaterial(asd.getMaterialProfile());
-      }
-      else
-      {
-        profileChanged = false;
-        return;
-      }
-    }
-    else
-    {
-      profileChanged = false;
-    }
-    new Thread()
-    {
 
-      @Override
-      public void run()
+      if (this.cbEditBeforeExecute.isSelected() || unknownProfilesUsed)
       {
-        ProgressListener pl = new ProgressListener()
+        if (unknownProfilesUsed)
         {
-          public void progressChanged(Object o, int i)
-          {
-            MainView.this.progressBar.setValue(i);
-            MainView.this.progressBar.repaint();
-          }
-          public void taskChanged(Object o, String string)
-          {
-            MainView.this.progressBar.setString(string);
-          }   
-        };
-        MainView.this.progressBar.setMinimum(0);
-        MainView.this.progressBar.setMaximum(100);
-        MainView.this.progressBar.setValue(1);
-        MainView.this.progressBar.setStringPainted(true);
-        MainView.this.executeJobButton.setEnabled(false);
-        MainView.this.executeJobMenuItem.setEnabled(false);
-        try
-        {
-          jobnumber++;
-          String prefix = MainView.this.visicutModel1.getSelectedLaserDevice().getJobPrefix();
-          MainView.this.visicutModel1.sendJob(prefix+jobnumber, pl);
-          MainView.this.progressBar.setValue(0);
-          MainView.this.progressBar.setString("");
-          MainView.this.progressBar.setStringPainted(false);
-          JOptionPane.showMessageDialog(MainView.this, "Job was sent as '"+ prefix + jobnumber + "'\n\n Please:\n- Close the lid\n- Switch the Ventilation on\n- and press START on the Lasercutter:\n     " + MainView.this.visicutModel1.getSelectedLaserDevice().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
-          if (profileChanged)
-          {
-            if (JOptionPane.showConfirmDialog(MainView.this, "The LaserProfile has been changed. Do you want to keep your changes?", "Profile Changed", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
-            {
-              //Replace changed profiles on oldMaterial
-              MaterialProfile newMp = MainView.this.visicutModel1.getMaterial();
-              for (LaserProfile lp :newMp.getLaserProfiles())
-              {
-                oldMaterial.getLaserProfiles().set(
-                  oldMaterial.getLaserProfiles().indexOf(
-                  oldMaterial.getLaserProfile(lp.getName())), 
-                lp);
-              }
-              MainView.this.profileManager1.saveProfile(oldMaterial, MainView.this.visicutModel1.getSelectedLaserDevice());
-            }
-            VisicutModel.getInstance().setMaterial(oldMaterial);
-          }
+          JOptionPane.showMessageDialog(this, "For some profile you selected, there are no lasercutter settings yet\nYou will have to enter them in the following dialog.");
         }
-        catch (Exception ex)
-        {
-          ex.printStackTrace();
-          if (ex instanceof IllegalJobException && ex.getMessage().startsWith("Illegal Focus value"))
-          {
-            JOptionPane.showMessageDialog(MainView.this, "You Material is too high for automatic Focussing.\nPlease focus manually and set the total height to 0.", "Error", JOptionPane.ERROR_MESSAGE);
-          }
-          else
-          {
-            JOptionPane.showMessageDialog(MainView.this, "Error ("+ex.getClass().toString()+"):" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-          }
-          if (profileChanged)
-          {
-            VisicutModel.getInstance().setMaterial(oldMaterial);
-          }
+        //Adapt Settings before execute
+        AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true);
+        asd.setLaserProperties(usedSettings);
+        asd.setVisible(true);
+        Map<LaserProfile, List<LaserProperty>> result = asd.getLaserProperties();
+        if (result == null)
+        {//user cancelled
+          return;
         }
-        MainView.this.progressBar.setString("");
-        MainView.this.progressBar.setValue(0);
-        MainView.this.executeJobButton.setEnabled(true);
-        MainView.this.executeJobMenuItem.setEnabled(true);
+        //save changes
+        for (Entry<LaserProfile, List<LaserProperty>> e:result.entrySet())
+        {
+          LaserPropertyManager.getInstance().saveLaserProperties(device, material, e.getKey(), e.getValue());
+        }
       }
-    }.start();
+      new Thread()
+      {
+
+        @Override
+        public void run()
+        {
+          ProgressListener pl = new ProgressListener()
+          {
+            public void progressChanged(Object o, int i)
+            {
+              MainView.this.progressBar.setValue(i);
+              MainView.this.progressBar.repaint();
+            }
+            public void taskChanged(Object o, String string)
+            {
+              MainView.this.progressBar.setString(string);
+            }   
+          };
+          MainView.this.progressBar.setMinimum(0);
+          MainView.this.progressBar.setMaximum(100);
+          MainView.this.progressBar.setValue(1);
+          MainView.this.progressBar.setStringPainted(true);
+          MainView.this.executeJobButton.setEnabled(false);
+          MainView.this.executeJobMenuItem.setEnabled(false);
+          try
+          {
+            jobnumber++;
+            String prefix = MainView.this.visicutModel1.getSelectedLaserDevice().getJobPrefix();
+            MainView.this.visicutModel1.sendJob(prefix+jobnumber, pl);
+            MainView.this.progressBar.setValue(0);
+            MainView.this.progressBar.setString("");
+            MainView.this.progressBar.setStringPainted(false);
+            JOptionPane.showMessageDialog(MainView.this, "Job was sent as '"+ prefix + jobnumber + "'\n\n Please:\n- Close the lid\n- Switch the Ventilation on\n- and press START on the Lasercutter:\n     " + MainView.this.visicutModel1.getSelectedLaserDevice().getName(), "Job sent", JOptionPane.INFORMATION_MESSAGE);
+          }
+          catch (Exception ex)
+          {
+            ex.printStackTrace();
+            if (ex instanceof IllegalJobException && ex.getMessage().startsWith("Illegal Focus value"))
+            {
+              JOptionPane.showMessageDialog(MainView.this, "You Material is too high for automatic Focussing.\nPlease focus manually and set the total height to 0.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            else
+            {
+              JOptionPane.showMessageDialog(MainView.this, "Error ("+ex.getClass().toString()+"):" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+          }
+          MainView.this.progressBar.setString("");
+          MainView.this.progressBar.setValue(0);
+          MainView.this.executeJobButton.setEnabled(true);
+          MainView.this.executeJobMenuItem.setEnabled(true);
+        }
+      }.start();
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+      JOptionPane.showMessageDialog(MainView.this, "Error ("+ex.getClass().toString()+"):" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
   }
 
 private void executeJobButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobButtonActionPerformed
-  this.executeJob();
+    this.executeJob();
 }//GEN-LAST:event_executeJobButtonActionPerformed
 
 private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)//GEN-FIRST:event_filesDropSupport1PropertyChange
@@ -1662,75 +1634,37 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     this.materialComboBox.setSelectedItem(visicutModel1.getMaterial());
     return;
   }
-  //replace MaterialProfile with the one from the current laser
-  if (newMaterial != null && this.visicutModel1.getSelectedLaserDevice() != null)
-  {
-    for(MaterialProfile mp : this.profileManager1.getMaterials(this.visicutModel1.getSelectedLaserDevice()))
-    {
-      if (mp.getName().equals(newMaterial.getName()))
-      {
-        newMaterial = mp;
-        break;
-      }
-    }
-  }
   this.visicutModel1.setMaterial(newMaterial);
-  this.customMappingTable.setLaserProfiles(newMaterial == null ? new LinkedList<LaserProfile>() : newMaterial.getLaserProfiles());
   this.refreshComboBoxes();
   this.refreshButtonStates();
 }//GEN-LAST:event_materialComboBoxActionPerformed
 
   private void materialMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_materialMenuItemActionPerformed
   {//GEN-HEADEREND:event_materialMenuItemActionPerformed
-    ImageComboBox laserDevs = new ImageComboBox();
-    for (LaserDevice ld : this.visicutModel1.getPreferences().getLaserDevices())
+    EditMaterialsDialog d = new EditMaterialsDialog(this, true);
+    d.setMaterials(MaterialManager.getInstance().getMaterials());
+    d.setVisible(true);
+    List<MaterialProfile> result = d.getMaterials();
+    if (result != null)
     {
-      laserDevs.addItem(ld);
-      if (ld.equals(this.visicutModel1.getSelectedLaserDevice()))
+      try
       {
-        laserDevs.setSelectedItem(ld);
+        MaterialManager.getInstance().setMaterials(result);
+        this.fillComboBoxes();
+        this.refreshComboBoxes();
       }
-    }
-    if (laserDevs.getItemCount() == 0)
-    {
-      JOptionPane.showMessageDialog(this, "You have to add at least one Lasercutter first.", "Error", JOptionPane.ERROR_MESSAGE);
-      return;
-    }
-    if (JOptionPane.showConfirmDialog(this, laserDevs, "Please choose a Lasercutter", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
-    {
-      LaserDevice ld = (LaserDevice) laserDevs.getSelectedItem();
-      EditMaterialsDialog d = new EditMaterialsDialog(this, true);
-      d.setMaterials(this.profileManager1.getMaterials(ld));
-      d.setDefaultDirecoty(new File(ld.getMaterialsPath()));
-      d.setVisible(true);
-      List<MaterialProfile> result = d.getMaterials();
-      if (result != null)
+      catch (FileNotFoundException ex)
       {
-        try
-        {
-          for (MaterialProfile mp : this.profileManager1.getMaterials(ld).toArray(new MaterialProfile[0]))
-          {
-            this.profileManager1.deleteProfile(mp, ld);
-          }
-          for (MaterialProfile mp : result)
-          {
-            this.profileManager1.saveProfile(mp, ld);
-          }
-          if (ld.equals(this.visicutModel1.getSelectedLaserDevice()))
-          {
-            this.profileManager1.loadMaterials(ld);
-          }
-          this.fillComboBoxes();
-          this.refreshComboBoxes();
-        }
-        catch (FileNotFoundException ex)
-        {
-          JOptionPane.showMessageDialog(this, "Error saving Profile: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        this.showErrorMessage(ex);
       }
     }
   }//GEN-LAST:event_materialMenuItemActionPerformed
 
+  public void showErrorMessage(Exception cause)
+  {
+    JOptionPane.showMessageDialog(this, "Error ("+cause.getClass().getSimpleName()+"): "+cause.getLocalizedMessage(), "An Error occured", JOptionPane.ERROR_MESSAGE);
+  }
+  
   /**
    * Disables all impossible combinations
    */
@@ -1787,21 +1721,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     {
       this.captureImage();
     }
-    if (newDev != null)
-    {
-      this.profileManager1.loadMaterials(newDev);
-      if (this.visicutModel1.getMaterial() != null)
-      {
-        for (MaterialProfile mp : this.profileManager1.getMaterials())
-        {
-          if (mp.getName().equals(this.visicutModel1.getMaterial().getName()))
-          {
-            this.visicutModel1.setMaterial(mp);
-            break;
-          }
-        }
-      }
-    }
     refreshComboBoxes();
     this.refreshButtonStates();
   }//GEN-LAST:event_laserCutterComboBoxActionPerformed
@@ -1837,11 +1756,18 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
 
       public void run()
       {
-        MainView.this.calculateTimeButton.setEnabled(false);
-        MainView.this.progressBar.setIndeterminate(true);
-        MainView.this.timeLabel.setText(Helper.toHHMMSS(MainView.this.visicutModel1.estimateTime()));
-        MainView.this.progressBar.setIndeterminate(false);
-        MainView.this.calculateTimeButton.setEnabled(true);
+        try
+        {
+          MainView.this.calculateTimeButton.setEnabled(false);
+          MainView.this.progressBar.setIndeterminate(true);
+          MainView.this.timeLabel.setText(Helper.toHHMMSS(MainView.this.visicutModel1.estimateTime()));
+          MainView.this.progressBar.setIndeterminate(false);
+          MainView.this.calculateTimeButton.setEnabled(true);
+        }
+        catch (Exception ex)
+        {
+          MainView.this.showErrorMessage(ex);
+        }
       }
     }.start();
   }//GEN-LAST:event_calculateTimeButtonActionPerformed
@@ -2119,7 +2045,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     private com.t_oster.visicut.gui.beans.ImageListableList predefinedMappingList;
     private javax.swing.JPanel predefinedMappingPanel;
     private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
-    private com.t_oster.visicut.managers.ProfileManager profileManager1;
+    private com.t_oster.visicut.managers.MaterialManager profileManager1;
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JMenu recentFilesMenu;
     private javax.swing.JMenuItem reloadMenuItem;

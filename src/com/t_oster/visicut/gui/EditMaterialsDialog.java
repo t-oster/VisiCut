@@ -40,28 +40,6 @@ import java.util.List;
 public class EditMaterialsDialog extends javax.swing.JDialog implements EditableTableProvider
 {
 
-  protected File defaultDirecoty = null;
-
-  /**
-   * Get the value of defaultDirecoty
-   *
-   * @return the value of defaultDirecoty
-   */
-  public File getDefaultDirecoty()
-  {
-    return defaultDirecoty;
-  }
-
-  /**
-   * Set the value of defaultDirecoty
-   *
-   * @param defaultDirecoty new value of defaultDirecoty
-   */
-  public void setDefaultDirecoty(File defaultDirecoty)
-  {
-    this.defaultDirecoty = defaultDirecoty;
-  }
-
   protected List<MaterialProfile> currentMaterials = null;
   public static final String PROP_CURRENTMATERIALS = "currentMaterials";
 
@@ -225,44 +203,9 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     MaterialProfile np = new MaterialProfile();
     np.setName("Unnamed Material");
     np.setColor(Color.LIGHT_GRAY);
+    np.setCutColor(Color.BLACK);
+    np.setEngraveColor(Color.DARK_GRAY);
     np.setDepth(2);
-    List<LaserProfile> lps = new LinkedList<LaserProfile>();
-    VectorProfile l = new VectorProfile();
-    l.setName("Cut Line");
-    l.setDescription("A completely cut through line");
-    l.setColor(Color.black);
-    l.setIsCut(true);
-    List<LaserProperty> ll = new LinkedList<LaserProperty>();
-    ll.add(new LaserProperty());
-    l.setLaserProperties(ll);
-    lps.add(l);
-    RasterProfile r = new RasterProfile();
-    r.setName("Engrave Drawing");
-    r.setDescription("Engraving with sharp edges");
-    r.setColor(Color.black);
-    r.setDitherAlgorithm(BlackWhiteRaster.DitherAlgorithm.AVERAGE);
-    ll = new LinkedList<LaserProperty>();
-    ll.add(new LaserProperty());
-    r.setLaserProperties(ll);
-    lps.add(r);
-    r = new RasterProfile();
-    r.setName("Engrave Photo");
-    r.setDescription("Engraving with the Floyd-Steinberg algorithm for good luminance approximation.");
-    r.setColor(Color.black);
-    r.setDitherAlgorithm(BlackWhiteRaster.DitherAlgorithm.FLOYD_STEINBERG);
-    ll = new LinkedList<LaserProperty>();
-    ll.add(new LaserProperty());
-    r.setLaserProperties(ll);
-    lps.add(r);
-    Raster3dProfile r3 = new Raster3dProfile();
-    r3.setName("Engrave 3d");
-    r3.setDescription("Dark colors get engraved deeper than bright colors.");
-    r3.setColor(Color.black);
-    ll = new LinkedList<LaserProperty>();
-    ll.add(new LaserProperty());
-    r3.setLaserProperties(ll);
-    lps.add(r3);
-    np.setLaserProfiles(lps);
     return np;
   }
 
@@ -270,7 +213,6 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   {
     EditMaterialDialog d = new EditMaterialDialog(null, true);
     d.setMaterial((MaterialProfile) o);
-    d.setDefaultDirectory(defaultDirecoty);
     d.setVisible(true);
     return d.getMaterial();
   }

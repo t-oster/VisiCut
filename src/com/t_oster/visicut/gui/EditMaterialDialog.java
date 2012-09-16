@@ -24,21 +24,14 @@
  */
 package com.t_oster.visicut.gui;
 
-import com.t_oster.visicut.gui.beans.EditableTableProvider;
 import com.t_oster.visicut.model.MaterialProfile;
-import com.t_oster.visicut.model.RasterProfile;
-import com.t_oster.visicut.model.Raster3dProfile;
-import com.t_oster.visicut.model.VectorProfile;
 import java.io.File;
-import java.util.List;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 
 /**
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class EditMaterialDialog extends javax.swing.JDialog implements EditableTableProvider {
+public class EditMaterialDialog extends javax.swing.JDialog {
 
   protected File defaultDirectory = null;
 
@@ -102,7 +95,8 @@ public class EditMaterialDialog extends javax.swing.JDialog implements EditableT
      * @return the value of currentMaterial
      */
     public MaterialProfile getCurrentMaterial() {
-        return currentMaterial;
+      throw new RuntimeException("SET BINDING FOR CUT/ENGRAVE-COLOR in EditMaterialDialog");
+        //return currentMaterial;
     }
 
     /**
@@ -114,8 +108,6 @@ public class EditMaterialDialog extends javax.swing.JDialog implements EditableT
         MaterialProfile oldCurrentMaterial = this.currentMaterial;
         this.currentMaterial = currentMaterial;
         firePropertyChange(PROP_CURRENTMATERIAL, oldCurrentMaterial, currentMaterial);
-        //Bug: Beansbinding does not work properly, so we set it manually
-        this.editableTablePanel1.setObjects((List) currentMaterial.getLaserProfiles());
     }
 
     /** Creates new form EditMaterialDialog */
@@ -143,11 +135,13 @@ public class EditMaterialDialog extends javax.swing.JDialog implements EditableT
         jLabel5 = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
         selectThumbnailButton1 = new com.t_oster.visicut.gui.beans.SelectThumbnailButton();
-        chooseColorButton1 = new com.t_oster.visicut.gui.beans.ChooseColorButton();
-        editableTablePanel1 = new com.t_oster.visicut.gui.beans.EditableTablePanel();
+        materialColorButton = new com.t_oster.visicut.gui.beans.ChooseColorButton();
         jLabel6 = new javax.swing.JLabel();
+        chooseCutColorButton = new com.t_oster.visicut.gui.beans.ChooseColorButton();
+        jLabel7 = new javax.swing.JLabel();
+        chooseEngraveButton = new com.t_oster.visicut.gui.beans.ChooseColorButton();
+        jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
@@ -196,60 +190,71 @@ public class EditMaterialDialog extends javax.swing.JDialog implements EditableT
             }
         });
 
-        jLabel3.setText(resourceMap.getString("jLabel3.text")); // NOI18N
-        jLabel3.setName("jLabel3"); // NOI18N
-
         selectThumbnailButton1.setName("selectThumbnailButton1"); // NOI18N
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentMaterial.thumbnailPath}"), selectThumbnailButton1, org.jdesktop.beansbinding.BeanProperty.create("thumbnailPath"), "thumbnailbt");
         bindingGroup.addBinding(binding);
 
-        chooseColorButton1.setText(resourceMap.getString("chooseColorButton1.text")); // NOI18N
-        chooseColorButton1.setName("chooseColorButton1"); // NOI18N
+        materialColorButton.setText(resourceMap.getString("materialColorButton.text")); // NOI18N
+        materialColorButton.setName("materialColorButton"); // NOI18N
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentMaterial.color}"), chooseColorButton1, org.jdesktop.beansbinding.BeanProperty.create("selectedColor"), "selectedColor");
-        bindingGroup.addBinding(binding);
-
-        editableTablePanel1.setName("editableTablePanel1"); // NOI18N
-        editableTablePanel1.setProvider(this);
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentMaterial.laserProfiles}"), editableTablePanel1, org.jdesktop.beansbinding.BeanProperty.create("objects"), "Laser Profiles to Table Model");
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentMaterial.color}"), materialColorButton, org.jdesktop.beansbinding.BeanProperty.create("selectedColor"), "selectedColor");
         bindingGroup.addBinding(binding);
 
         jLabel6.setText(resourceMap.getString("jLabel6.text")); // NOI18N
         jLabel6.setName("jLabel6"); // NOI18N
 
+        chooseCutColorButton.setText(resourceMap.getString("chooseCutColorButton.text")); // NOI18N
+        chooseCutColorButton.setName("chooseCutColorButton"); // NOI18N
+
+        jLabel7.setText(resourceMap.getString("jLabel7.text")); // NOI18N
+        jLabel7.setName("jLabel7"); // NOI18N
+
+        chooseEngraveButton.setText(resourceMap.getString("chooseEngraveButton.text")); // NOI18N
+        chooseEngraveButton.setName("chooseEngraveButton"); // NOI18N
+
+        jLabel8.setText(resourceMap.getString("jLabel8.text")); // NOI18N
+        jLabel8.setName("jLabel8"); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(editableTablePanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 472, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(selectThumbnailButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4))
-                        .addGap(29, 29, 29)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(3, 3, 3)
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(chooseColorButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jButton4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton3))
-                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(selectThumbnailButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel7))
+                        .addGap(29, 29, 29)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
+                            .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(3, 3, 3)
+                                        .addComponent(jLabel6))
+                                    .addComponent(chooseCutColorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel8)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(chooseEngraveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel5)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(materialColorButton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -270,14 +275,16 @@ public class EditMaterialDialog extends javax.swing.JDialog implements EditableT
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chooseColorButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(materialColorButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5)
                     .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(editableTablePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(chooseCutColorButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8)
+                    .addComponent(chooseEngraveButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton3)
                     .addComponent(jButton4))
@@ -301,62 +308,23 @@ public class EditMaterialDialog extends javax.swing.JDialog implements EditableT
       this.setVisible(false);
   }//GEN-LAST:event_jButton4ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private com.t_oster.visicut.gui.beans.ChooseColorButton chooseColorButton1;
-    private com.t_oster.visicut.gui.beans.EditableTablePanel editableTablePanel1;
+    private com.t_oster.visicut.gui.beans.ChooseColorButton chooseCutColorButton;
+    private com.t_oster.visicut.gui.beans.ChooseColorButton chooseEngraveButton;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField4;
+    private com.t_oster.visicut.gui.beans.ChooseColorButton materialColorButton;
     private com.t_oster.visicut.gui.beans.SelectThumbnailButton selectThumbnailButton1;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
-    public Object getNewInstance() {
-        JComboBox choose = new JComboBox();
-        choose.addItem("Line Profile");
-        choose.addItem("Raster Profile");
-        choose.addItem("Raster3d Profile");
-        if (JOptionPane.showConfirmDialog(this, choose, "Which kind of Profile?", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
-            if (choose.getSelectedItem().equals("Line Profile")) {
-                return new VectorProfile();
-            } else if (choose.getSelectedItem().equals("Raster Profile")) {
-                return new RasterProfile();
-            } else if (choose.getSelectedItem().equals("Raster3d Profile")) {
-                return new Raster3dProfile();
-            }
-
-        }
-        return null;
-    }
-
-    public Object editObject(Object selected) {
-        if (selected instanceof VectorProfile) {
-            EditVectorProfileDialog d = new EditVectorProfileDialog(null, true);
-            d.setVectorProfile((VectorProfile) selected);
-            d.setDefaultDirectory(defaultDirectory);
-            d.setVisible(true);
-            return d.getVectorProfile();
-        } else if (selected instanceof RasterProfile) {
-            EditRasterProfileDialog d = new EditRasterProfileDialog(null, true);
-            d.setRasterProfile((RasterProfile) selected);
-            d.setDefaultDirectory(defaultDirectory);
-            d.setVisible(true);
-            return d.getRasterProfile();
-        } else if (selected instanceof Raster3dProfile) {
-            EditRaster3dProfileDialog d = new EditRaster3dProfileDialog(null, true);
-            d.setRasterProfile((Raster3dProfile) selected);
-            d.setDefaultDirectory(defaultDirectory);
-            d.setVisible(true);
-            return d.getRasterProfile();
-        }
-
-        return null;
-    }
 }

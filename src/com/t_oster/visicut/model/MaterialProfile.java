@@ -77,6 +77,50 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
     this.thumbnailPath = thumbnailPath;
   }
 
+  protected Color engraveColor = new Color(0, 0, 0);
+
+  /**
+   * Get the value of color
+   *
+   * @return the value of color
+   */
+  public Color getEngraveColor()
+  {
+    return engraveColor;
+  }
+
+  /**
+   * Set the value of color
+   *
+   * @param color new value of color
+   */
+  public void setEngraveColor(Color color)
+  {
+    this.engraveColor = color;
+  }
+  
+  protected Color cutColor = new Color(0, 0, 0);
+
+  /**
+   * Get the value of color
+   *
+   * @return the value of color
+   */
+  public Color getCutColor()
+  {
+    return cutColor;
+  }
+
+  /**
+   * Set the value of color
+   *
+   * @param color new value of color
+   */
+  public void setCutColor(Color color)
+  {
+    this.cutColor = color;
+  }
+  
   protected Color color = null;
 
   /**
@@ -98,49 +142,7 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
   {
     this.color = color;
   }
-  protected List<LaserProfile> laserProfiles = new LinkedList<LaserProfile>();
-  public static final String PROP_LASERPROFILES = "laserProfiles";
-
-  /**
-   * Get the value of laserProfiles
-   *
-   * @return the value of laserProfiles
-   */
-  public List<LaserProfile> getLaserProfiles()
-  {
-    return laserProfiles;
-  }
-
-  /**
-   * Set the value of laserProfiles
-   *
-   * @param laserProfiles new value of laserProfiles
-   */
-  public void setLaserProfiles(List<LaserProfile> laserProfiles)
-  {
-    List<LaserProfile> oldLaserProfiles = this.laserProfiles;
-    this.laserProfiles = laserProfiles;
-    propertyChangeSupport.firePropertyChange(PROP_LASERPROFILES, oldLaserProfiles, laserProfiles);
-  }
-
-  
-  /**
-   * Returns the LaserProfile with the given Name.
-   * If no Profile with this name is available,
-   * null is returned.
-   */
-  public LaserProfile getLaserProfile(String name)
-  {
-    for (LaserProfile p :this.laserProfiles)
-    {
-      if (p.getName().equals(name))
-      {
-        return p;
-      }
-    }
-    return null;
-  }
-
+    
   protected String name = "Unnamed Material";
 
   /**
@@ -224,11 +226,6 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
     cp.depth = this.depth;
     cp.description = this.description;
     cp.thumbnailPath = this.thumbnailPath;
-    cp.laserProfiles = new LinkedList<LaserProfile>();
-    for (LaserProfile lp:this.laserProfiles)
-    {
-      cp.laserProfiles.add(lp.clone());
-    }
     return cp;
   }
 

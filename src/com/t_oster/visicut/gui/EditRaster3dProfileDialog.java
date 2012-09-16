@@ -139,9 +139,8 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog implements Ed
     Raster3dProfile oldCurrentRasterProfile = this.currentRasterProfile;
     this.currentRasterProfile = currentRasterProfile;
     firePropertyChange(PROP_CURRENTRASTERPROFILE, oldCurrentRasterProfile, currentRasterProfile);
-    this.listModel.setLaserProfile(currentRasterProfile);
   }
-  private LaserProfileTableModel listModel = new LaserProfileTableModel();
+  private LaserPropertiesTableModel listModel = new LaserPropertiesTableModel();
 
   /** Creates new form EditRasterProfileDialog */
   public EditRaster3dProfileDialog(java.awt.Frame parent, boolean modal)

@@ -24,6 +24,7 @@ import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
 import com.t_oster.visicut.gui.beans.EditRectangle.ParameterField;
 import com.t_oster.visicut.gui.beans.PreviewPanel;
+import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
@@ -91,7 +92,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
 
         public void actionPerformed(ActionEvent ae)
         {
-          ((RasterProfile) VisicutModel.getInstance().getMaterial().getLaserProfile(
+          ((RasterProfile) ProfileManager.getInstance().getProfileByName(
             VisicutModel.getInstance().getMappings().getLast().getProfileName())).setDitherAlgorithm(da);
           PreviewPanelKeyboardMouseHandler.this.previewPanel.ClearCache();
           PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
@@ -295,7 +296,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       if (e.contains(me.getPoint()))
       {
         try{
-        this.dithermenu.setEnabled(VisicutModel.getInstance().getMaterial().getLaserProfile(
+        this.dithermenu.setEnabled(ProfileManager.getInstance().getProfileByName(
             VisicutModel.getInstance().getMappings().getLast().getProfileName()) instanceof RasterProfile);
         }
         catch (NullPointerException ex)

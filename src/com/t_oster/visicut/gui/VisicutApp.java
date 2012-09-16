@@ -21,16 +21,21 @@ package com.t_oster.visicut.gui;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LibInfo;
 import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.PreferencesManager;
+import com.t_oster.visicut.managers.MaterialManager;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.ApplicationInstanceListener;
 import com.t_oster.visicut.misc.ApplicationInstanceManager;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -86,7 +91,18 @@ public class VisicutApp extends SingleFrameApplication
   protected void initialize(String[] args)
   {
     VisicutModel.getInstance().setPreferences(PreferencesManager.getInstance().getPreferences());
-    this.processProgramArguments(args);
+    try
+    {
+      this.processProgramArguments(args);
+    }
+    catch (FileNotFoundException ex)
+    {
+      Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    catch (IOException ex)
+    {
+      Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
+    }
     super.initialize(args);
   }
 
@@ -147,7 +163,7 @@ public class VisicutApp extends SingleFrameApplication
     }
   }
 
-  public void processProgramArguments(String[] args)
+  public void processProgramArguments(String[] args) throws FileNotFoundException, IOException
   {
     String laserdevice = null;
     String material = null;
@@ -313,26 +329,12 @@ public class VisicutApp extends SingleFrameApplication
       LaserDevice cld = model.getSelectedLaserDevice();
       search:
       {
-        List<LaserDevice> devs = null;
-        if (cld == null)
+        for (MaterialProfile mp : MaterialManager.getInstance().getMaterials())
         {
-          devs = PreferencesManager.getInstance().getPreferences().getLaserDevices();
-        }
-        else
-        {
-          devs = new LinkedList<LaserDevice>();
-          devs.add(cld);
-        }
-        for (LaserDevice ld : devs)
-        {
-
-          for (MaterialProfile mp : ProfileManager.getInstance().getMaterials(ld))
+          if (material.equals(mp.getName()))
           {
-            if (material.equals(mp.getName()))
-            {
-              model.setMaterial(mp);
-              break search;
-            }
+            model.setMaterial(mp);
+            break search;
           }
         }
         System.err.println("Material " + material + " not available");
@@ -433,11 +435,16 @@ public class VisicutApp extends SingleFrameApplication
         System.err.println("No Mapping selected");
         System.exit(1);
       }
-      if (!model.supported(model.getSelectedLaserDevice(), model.getMaterial(), model.getMappings()))
+      //check if all settings are available
+      for (Mapping ms : model.getMappings())
       {
-        System.err.println("Combination of Laserdevice, Material and Mapping is not supported");
-        System.exit(1);
+        if (LaserPropertyManager.getInstance().getLaserProperties(model.getSelectedLaserDevice(), model.getMaterial(), ProfileManager.getInstance().getProfileByName(ms.getProfileName())) == null)
+        {
+          System.err.println("Combination of Laserdevice, Material and Mapping is not supported");
+          System.exit(1);
+        }
       }
+      
       if (!model.getSelectedLaserDevice().getLaserCutter().getResolutions().contains(model.getValidResolution()))
       {
         System.err.println("Resolution " + model.getValidResolution() + " is not supported by " + model.getSelectedLaserDevice().getName());

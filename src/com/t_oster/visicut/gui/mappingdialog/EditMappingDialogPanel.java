@@ -170,16 +170,6 @@ public class EditMappingDialogPanel extends javax.swing.JPanel implements Editab
     MaterialProfile oldMaterial = this.material;
     this.material = material;
     firePropertyChange(PROP_MATERIAL, oldMaterial, material);
-    if (material != null)
-    {
-      this.imageComboBox1.removeAllItems();
-      for (LaserProfile p : material.getLaserProfiles())
-      {
-        this.imageComboBox1.addItem(p);
-      }
-      //For adding eventually missing Laserprofile  
-      this.setCurrentMapping(this.getCurrentMapping());
-    }
   }
   protected Mapping currentMapping = new Mapping();
   ;

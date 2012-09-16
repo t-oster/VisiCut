@@ -20,6 +20,7 @@ package com.t_oster.visicut.gui.mappingdialog;
 
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.gui.beans.ZoomablePanel;
+import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
@@ -315,7 +316,7 @@ public class MatchingPartsPanel extends ZoomablePanel implements MouseMotionList
       if (this.getSelectedMapping() != null)
       {
         GraphicSet set = this.getSelectedMapping().getFilterSet().getMatchingObjects(this.graphicElements);
-        LaserProfile p = material == null ? null : this.material.getLaserProfile(this.getSelectedMapping().getProfileName());
+        LaserProfile p = ProfileManager.getInstance().getProfileByName(this.getSelectedMapping().getProfileName());
         //set.setTransform(scaleTrans);
         if (this.previewMode)
         {

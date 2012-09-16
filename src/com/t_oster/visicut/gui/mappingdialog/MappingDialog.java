@@ -25,6 +25,7 @@
 package com.t_oster.visicut.gui.mappingdialog;
 
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
@@ -400,10 +401,7 @@ public class MappingDialog extends javax.swing.JDialog
       this.setSelectedFilters(null);
       if (selectedMapping.getProfileName() != null)
       {
-        if (this.material != null && this.material.getLaserProfile(selectedMapping.getProfileName()) != null)
-        {
-          this.setSelectedLProfile(this.material.getLaserProfile(selectedMapping.getProfileName()));
-        }
+        this.setSelectedLProfile(ProfileManager.getInstance().getProfileByName(selectedMapping.getProfileName()));
       }
     }
   }

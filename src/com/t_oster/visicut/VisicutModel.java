@@ -28,12 +28,14 @@ import com.t_oster.liblasercut.RasterPart;
 import com.t_oster.liblasercut.Raster3dPart;
 import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.managers.MaterialManager;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.VectorProfile;
@@ -118,19 +120,16 @@ public class VisicutModel
   {
     List<MappingSet> result = new LinkedList<MappingSet>();
     Set<String> profiles = new LinkedHashSet<String>();
-    for (MaterialProfile mp : this.getAllMaterials())
+    for (LaserProfile lp:ProfileManager.getInstance().getProfiles())
     {
-      for (LaserProfile lp:mp.getLaserProfiles())
+      if (!profiles.contains(lp.getName()))
       {
-        if (!profiles.contains(lp.getName()))
-        {
-          profiles.add(lp.getName());
-          MappingSet set = new MappingSet();
-          set.add(new Mapping(new FilterSet(), lp.getName()));
-          set.setName("Everything=>"+lp.getName());
-          set.setDescription("An auto-generated mapping");
-          result.add(set);
-        }
+        profiles.add(lp.getName());
+        MappingSet set = new MappingSet();
+        set.add(new Mapping(new FilterSet(), lp.getName()));
+        set.setName("Everything=>"+lp.getName());
+        set.setDescription("An auto-generated mapping");
+        result.add(set);
       }
     }
     return result;
@@ -404,7 +403,7 @@ public class VisicutModel
     }
   }
 
-  public void saveToFile(ProfileManager pm, MappingManager mm, File f) throws FileNotFoundException, IOException
+  public void saveToFile(MaterialManager pm, MappingManager mm, File f) throws FileNotFoundException, IOException
   {
     FileInputStream in;
     byte[] buf = new byte[1024];
@@ -654,103 +653,8 @@ public class VisicutModel
     this.mappings = mappings;
     propertyChangeSupport.firePropertyChange(PROP_MAPPINGS, oldMappings, mappings);
   }
-
-  /**
-   * returns true iff the combination is supported
-   * @param ld
-   * @param mp
-   * @param ms
-   * @return 
-   */
-  public boolean supported(LaserDevice ld, MaterialProfile mp, MappingSet ms)
-  {
-    if (ld == null && mp == null)
-    {
-      return true;
-    }
-    for (MaterialProfile m : ld != null ? ProfileManager.getInstance().getMaterials(ld) : getAllMaterials())
-    {
-      if (mp != null && m.getName().equals(mp.getName()))
-      {
-        if (ms == null)
-        {
-          return true;
-        }
-        else
-        {
-          boolean mappingOK = true;
-          for (Mapping map : ms)
-          {
-            if (m.getLaserProfile(map.getProfileName()) == null)
-            {
-              mappingOK = false;
-              break;
-            }
-          }
-          if (mappingOK)
-          {
-            return true;
-          }
-        }
-      }
-      else
-      {
-        if (mp == null)
-        {
-          boolean mappingOK = true;
-          if (ms != null)
-          {
-            for (Mapping map : ms)
-            {
-              if (m.getLaserProfile(map.getProfileName()) == null)
-              {
-                mappingOK = false;
-                break;
-              }
-            }
-          }
-          if (mappingOK)
-          {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-  
-  /**
-   * Returns a list of MaterialProfiles
-   * for all available lasercutters. Aggregated by name and Depth
-   * @return 
-   */
-  public List<MaterialProfile> getAllMaterials()
-  {
-    List<MaterialProfile> result = new LinkedList<MaterialProfile>();
-    for (LaserDevice ld : PreferencesManager.getInstance().getPreferences().getLaserDevices())
-    {
-      for (MaterialProfile mp : ProfileManager.getInstance().getMaterials(ld))
-      {
-        boolean found = false;
-        for (MaterialProfile pp : result)
-        {
-          if (pp.getName().equals(mp.getName()) && pp.getDepth() == mp.getDepth())
-          {
-            found = true;
-            break;
-          }
-        }
-        if (!found)
-        {
-          result.add(mp);
-        }
-      }
-    }
-    Collections.sort(result);
-    return result;
-  }
-  
-  private LaserJob prepareJob(String name)
+    
+  private LaserJob prepareJob(String name) throws FileNotFoundException, IOException
   {
     RasterPart rp = new RasterPart(new LaserProperty());
     Raster3dPart r3dp = new Raster3dPart(new LaserProperty());
@@ -762,7 +666,7 @@ public class VisicutModel
     for (Mapping m : this.getMappings())
     {
       GraphicSet set = m.getA().getMatchingObjects(this.getGraphicObjects());
-      LaserProfile p = material.getLaserProfile(m.getProfileName());
+      LaserProfile p = ProfileManager.getInstance().getProfileByName(m.getProfileName());
       if (parts.containsKey(p))
       {
         for (GraphicObject e : set)
@@ -783,7 +687,7 @@ public class VisicutModel
     {
       if (!(e.getKey() instanceof VectorProfile) || !((VectorProfile)e.getKey()).isIsCut())
       {
-        e.getKey().addToLaserJob(job, e.getValue(), material.getDepth(), ProfileManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey()));
+        e.getKey().addToLaserJob(job, e.getValue(), LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey()), material.getDepth());
       }
     }
     //Add all cutting parts to the end of the laserjob
@@ -791,7 +695,7 @@ public class VisicutModel
     {
       if (e.getKey() instanceof VectorProfile && ((VectorProfile)e.getKey()).isIsCut())
       {
-        e.getKey().addToLaserJob(job, e.getValue(), material.getDepth(), ProfileManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey()));
+        e.getKey().addToLaserJob(job, e.getValue(), LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey()), material.getDepth());
       }
     }
     return job;
@@ -828,7 +732,7 @@ public class VisicutModel
     this.propertyChangeSupport.firePropertyChange(PROP_LOADEDFILE, oldLoadedFile, f);
   }
 
-  public int estimateTime()
+  public int estimateTime() throws FileNotFoundException, IOException
   {
     LaserCutter instance = this.getSelectedLaserDevice().getLaserCutter();
     LaserJob job = this.prepareJob("calc");

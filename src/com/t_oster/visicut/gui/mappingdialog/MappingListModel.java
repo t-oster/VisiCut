@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut.gui.mappingdialog;
 
+import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
@@ -151,7 +152,7 @@ public class MappingListModel extends DefaultTableModel
   @Override
   public boolean isCellEditable(int y, int x)
   {
-    return x==2 && material != null && material.getLaserProfile(mappings.get(y).getProfileName()) instanceof VectorProfile;
+    return x==2 && material != null && ProfileManager.getInstance().getProfileByName(mappings.get(y).getProfileName()) instanceof VectorProfile;
   }
 
   @Override

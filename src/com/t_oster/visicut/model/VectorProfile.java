@@ -94,7 +94,7 @@ public class VectorProfile extends LaserProfile
   {
     for (GraphicObject e : objects)
     {
-      gg.setColor(this.getColor());
+      gg.setColor(material.getCutColor());
       Stroke s = new BasicStroke((int) Helper.mm2px(this.getWidth()));
       gg.setStroke(s);
       Shape sh = (e instanceof ShapeObject) ? ((ShapeObject) e).getShape() : e.getBoundingBox();
@@ -137,7 +137,6 @@ public class VectorProfile extends LaserProfile
   public LaserProfile clone()
   {
     VectorProfile cp = new VectorProfile();
-    cp.color = color;
     cp.description = description;
     cp.isCut = isCut;
     cp.name = name;

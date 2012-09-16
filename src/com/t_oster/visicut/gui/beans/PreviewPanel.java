@@ -21,6 +21,7 @@ package com.t_oster.visicut.gui.beans;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
@@ -573,9 +574,9 @@ public class PreviewPanel extends ZoomablePanel
             }
             gg.setTransform(bak);
           }
-          else if (this.getMaterial().getLaserProfile(m.getProfileName()) != null)
+          else if (ProfileManager.getInstance().getProfileByName(m.getProfileName()) != null)
           {//Render only parts the material supports, or where Profile = null
-            LaserProfile p = m.getProfileName() == null ? null : this.material.getLaserProfile(m.getProfileName());
+            LaserProfile p = ProfileManager.getInstance().getProfileByName(m.getProfileName());
             GraphicSet current = m.getFilterSet().getMatchingObjects(this.graphicObjects);
             Rectangle2D bb = current.getBoundingBox();
             if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
@@ -591,7 +592,7 @@ public class PreviewPanel extends ZoomablePanel
                     if (!renderBuffer.containsKey(m))
                     {//image not yet scheduled for rendering
                       logger.log(Level.FINE, "Starting ImageProcessing Thread for "+m);
-                      procThread = new ImageProcessingThread(current, this.getMaterial().getLaserProfile(m.getProfileName()));
+                      procThread = new ImageProcessingThread(current, p);
                       this.renderBuffer.put(m, procThread);
                       procThread.start();//start processing thread
                     }
@@ -603,7 +604,7 @@ public class PreviewPanel extends ZoomablePanel
                         procThread.cancel();
                       }
                       logger.log(Level.FINE, "Starting ImageProcessingThread for"+m);
-                      procThread = new ImageProcessingThread(current, this.getMaterial().getLaserProfile(m.getProfileName()));
+                      procThread = new ImageProcessingThread(current, p);
                       this.renderBuffer.put(m, procThread);
                       procThread.start();//start processing thread
                     }

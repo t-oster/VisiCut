@@ -10,9 +10,9 @@
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="VisicutModel.getInstance()"/>
       </AuxValues>
     </Component>
-    <Component class="com.t_oster.visicut.managers.ProfileManager" name="profileManager1">
+    <Component class="com.t_oster.visicut.managers.MaterialManager" name="profileManager1">
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="ProfileManager.getInstance()"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="com.t_oster.visicut.managers.MaterialManager.getInstance()"/>
       </AuxValues>
     </Component>
     <Component class="com.t_oster.visicut.gui.beans.FilesDropSupport" name="filesDropSupport1">

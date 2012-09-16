@@ -124,6 +124,7 @@ public class RasterProfile extends LaserProfile
   public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material, ProgressListener pl)
   {
     Rectangle2D bb = objects.getBoundingBox();
+    final Color engraveColor = material.getEngraveColor();
     if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
     {//Create an Image which fits the bounding box
       final BufferedImage scaledImg = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -158,7 +159,7 @@ public class RasterProfile extends LaserProfile
           }
           else if (greyscale == 0)
           {
-            scaledImg.setRGB(x, y, RasterProfile.this.getColor().getRGB());
+            scaledImg.setRGB(x, y, engraveColor.getRGB());
           }
         }
       };
@@ -228,7 +229,6 @@ public class RasterProfile extends LaserProfile
   public LaserProfile clone()
   {
     RasterProfile rp = new RasterProfile();
-    rp.color = this.color;
     rp.colorShift = this.colorShift;
     rp.description = this.description;
     rp.ditherAlgorithm = this.ditherAlgorithm;

@@ -19,7 +19,6 @@
 package com.t_oster.visicut.managers;
 
 import com.t_oster.visicut.misc.Helper;
-import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
@@ -33,27 +32,27 @@ import java.util.logging.Logger;
  * 
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class ProfileManager
+public class MaterialManager
 {
 
-  private static ProfileManager instance;
+  private static MaterialManager instance;
   
-  public static ProfileManager getInstance()
+  public static MaterialManager getInstance()
   {
     if (instance == null)
     {
-      instance = new ProfileManager();
+      instance = new MaterialManager();
     }
     return instance;
   }
   
-  protected Map<String, LaserProfile> profiles;
+  protected List<MaterialProfile> materials = null;
   
   /*
    * Need a public constructior for UI manager
    * Do not use. Use getInstance instead
    */
-  public ProfileManager()
+  public MaterialManager()
   {
     if (instance != null)
     {
@@ -61,9 +60,9 @@ public class ProfileManager
     }
   }
 
-  private List<LaserProfile> loadFromDirectory(File dir)
+  private List<MaterialProfile> loadFromDirectory(File dir)
   {
-    List<LaserProfile> result = new LinkedList<LaserProfile>();
+    List<MaterialProfile> result = new LinkedList<MaterialProfile>();
     if (dir.isDirectory())
     {
       for (File f : dir.listFiles())
@@ -72,12 +71,12 @@ public class ProfileManager
         {
           try
           {
-            LaserProfile prof = this.loadProfile(f);
+            MaterialProfile prof = this.loadProfile(f);
             result.add(prof);
           }
           catch (Exception ex)
           {
-            Logger.getLogger(ProfileManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MaterialManager.class.getName()).log(Level.SEVERE, null, ex);
           }
         }
       }
@@ -85,24 +84,34 @@ public class ProfileManager
     return result;
   }
 
-  private File getProfilePath(LaserProfile mp)
+  private File getMaterialPath(MaterialProfile mp)
   {
-    return new File(this.getProfilesDircetory(), Helper.toPathName(mp.getName())+".xml");
+    return new File(new File(Helper.getBasePath(), "materials"), Helper.toPathName(mp.getName())+".xml");
   }
   
-  public void deleteProfile(LaserProfile mp)
+  public void removeProfile(MaterialProfile mp)
   {
-    File f = getProfilePath(mp);
+    this.materials.remove(mp);
+    this.deleteProfile(mp);
+  }
+  
+  private void deleteProfile(MaterialProfile mp)
+  {
+    File f = getMaterialPath(mp);
     if (f.exists())
     {
       f.delete();
     }
-    this.getMap().remove(mp.getName());
   }
   
-  public void saveProfile(LaserProfile mp) throws FileNotFoundException
+  public void addProfile(MaterialProfile mp) throws FileNotFoundException
   {
-    File f = this.getProfilePath(mp);
+    this.saveProfile(mp, this.getMaterialPath(mp));
+    this.materials.add(mp);
+  }
+  
+  public void saveProfile(MaterialProfile mp, File f) throws FileNotFoundException
+  {
     mp.setThumbnailPath(Helper.removeParentPath(f.getParentFile(), mp.getThumbnailPath()));
     FileOutputStream out = new FileOutputStream(f);
     XMLEncoder enc = new XMLEncoder(out);
@@ -111,53 +120,46 @@ public class ProfileManager
     mp.setThumbnailPath(Helper.addParentPath(f.getParentFile(), mp.getThumbnailPath()));
   }
   
-  public LaserProfile loadProfile(File f) throws FileNotFoundException, IOException
+  public MaterialProfile loadProfile(File f) throws FileNotFoundException, IOException
   {
     FileInputStream fin = new FileInputStream(f);
-    LaserProfile result = this.loadProfile(fin);
+    MaterialProfile result = this.loadProfile(fin);
     result.setThumbnailPath(Helper.addParentPath(f.getParentFile(), result.getThumbnailPath()));
     fin.close();
     return result;
   }
 
-  public LaserProfile loadProfile(InputStream in)
+  public MaterialProfile loadProfile(InputStream in)
   {
     XMLDecoder dec = new XMLDecoder(in);
-    LaserProfile result = (LaserProfile) dec.readObject();
+    MaterialProfile result = (MaterialProfile) dec.readObject();
     return result;
   }
 
-  private Map<String, LaserProfile> getMap()
-  {
-    if (profiles == null)
-    {
-      profiles = new LinkedHashMap<String, LaserProfile>();
-      for(LaserProfile lp:this.loadFromDirectory(this.getProfilesDircetory()))
-      {
-        profiles.put(lp.getName(), lp);
-      }
-    }
-    return profiles;
-  }
-  
   /**
    * Get the value of materials
    *
    * @return the value of materials
    */
-  public Collection<LaserProfile> getProfiles()
+  public List<MaterialProfile> getMaterials()
   {
-    return getMap().values();
+    if (materials == null)
+    {
+      materials = this.loadFromDirectory(new File(Helper.getBasePath(), "materials"));
+    }
+    return materials;
   }
 
-  public LaserProfile getProfileByName(String profileName)
+  public void setMaterials(List<MaterialProfile> mats) throws FileNotFoundException
   {
-    return getMap().get(profileName);
-  }
-
-  private File getProfilesDircetory()
-  {
-    return new File(Helper.getBasePath(), "profiles");
+    for(MaterialProfile m:this.getMaterials().toArray(new MaterialProfile[0]))
+    {
+      this.deleteProfile(m);
+    }
+    for (MaterialProfile m:mats)
+    {
+      this.addProfile(m);
+    }
   }
 
 }
