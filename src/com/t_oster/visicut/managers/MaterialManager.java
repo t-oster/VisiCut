@@ -151,22 +151,25 @@ public class MaterialManager
     {
       f.getParentFile().mkdirs();
     }
-    //if thumbnail has not the right path, copy the referenced image
-    File thumb = this.getMaterialThumbnailPath(mp);
-    File curThumb = new File(mp.getThumbnailPath());
-    if (curThumb.exists() && !curThumb.getAbsolutePath().equals(thumb.getAbsolutePath()))
+    if (mp.getThumbnailPath() != null)
     {
-      try
+      //if thumbnail has not the right path, copy the referenced image
+      File thumb = this.getMaterialThumbnailPath(mp);
+      File curThumb = new File(mp.getThumbnailPath());
+      if (curThumb.exists() && !curThumb.getAbsolutePath().equals(thumb.getAbsolutePath()))
       {
-        FileUtils.copyFile(curThumb, thumb, false);
-        mp.setThumbnailPath(thumb.getAbsolutePath());
+        try
+        {
+          FileUtils.copyFile(curThumb, thumb, false);
+          mp.setThumbnailPath(thumb.getAbsolutePath());
+        }
+        catch (IOException ex)
+        {
+          Logger.getLogger(MaterialManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
       }
-      catch (IOException ex)
-      {
-        Logger.getLogger(MaterialManager.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      mp.setThumbnailPath(Helper.removeParentPath(f.getParentFile(), mp.getThumbnailPath()));
     }
-    mp.setThumbnailPath(Helper.removeParentPath(f.getParentFile(), mp.getThumbnailPath()));
     FileOutputStream out = new FileOutputStream(f);
     XMLEncoder enc = new XMLEncoder(out);
     enc.writeObject(mp);
