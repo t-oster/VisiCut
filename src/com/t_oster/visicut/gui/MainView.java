@@ -64,6 +64,8 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -347,7 +349,10 @@ public class MainView extends javax.swing.JFrame
     this.resolutionComboBox.removeAllItems();
     this.resolutionComboBox.addItem(null);
     this.resolutionComboBox.setSelectedIndex(0);
-    for (Integer i : resolutions)
+    List<Integer> resolutions_ord = new LinkedList<Integer>();
+    resolutions_ord.addAll(resolutions);
+    Collections.sort(resolutions_ord);
+    for (Integer i : resolutions_ord)
     {
       this.resolutionComboBox.addItem(i);
       if (i.equals(res))
