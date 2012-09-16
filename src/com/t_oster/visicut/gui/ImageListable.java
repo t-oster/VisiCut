@@ -24,7 +24,6 @@ package com.t_oster.visicut.gui;
  */
 public interface ImageListable
 {
-  public String getName();
   public String getDescription();
   public String getThumbnailPath();
 }

@@ -112,7 +112,7 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog
         jTextField2 = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        tfName = new javax.swing.JTextField();
         selectThumbnailButton1 = new com.t_oster.visicut.gui.beans.SelectThumbnailButton();
         jCheckBox1 = new javax.swing.JCheckBox();
         jSlider1 = new javax.swing.JSlider();
@@ -149,9 +149,9 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog
         jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
         jLabel1.setName("jLabel1"); // NOI18N
 
-        jTextField1.setName("jTextField1"); // NOI18N
+        tfName.setName("tfName"); // NOI18N
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentRasterProfile.name}"), jTextField1, org.jdesktop.beansbinding.BeanProperty.create("text"), "Name");
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentRasterProfile.name}"), tfName, org.jdesktop.beansbinding.BeanProperty.create("text"), "Name");
         bindingGroup.addBinding(binding);
 
         selectThumbnailButton1.setName("selectThumbnailButton1"); // NOI18N
@@ -189,10 +189,11 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog
                             .addComponent(selectThumbnailButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jCheckBox1))
                         .addGap(28, 28, 28)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                            .addComponent(jLabel1)
+                            .addComponent(tfName))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jButton4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -211,7 +212,7 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(tfName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(selectThumbnailButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -255,9 +256,19 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JSlider jSlider1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private com.t_oster.visicut.gui.beans.SelectThumbnailButton selectThumbnailButton1;
+    private javax.swing.JTextField tfName;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
+
+  void setNameEditable(boolean b)
+  {
+    tfName.setEnabled(b);
+  }
+
+  void setCancelable(boolean b)
+  {
+    this.jButton4.setVisible(false);
+  }
 }

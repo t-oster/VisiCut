@@ -46,6 +46,9 @@ import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.Raster3dProfile;
+import com.t_oster.visicut.model.RasterProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
@@ -71,7 +74,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.Box;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
@@ -129,7 +135,14 @@ public class MainView extends javax.swing.JFrame
           MainView.this.laserCutterComboBox.setEnabled(true);
           MainView.this.mappingTabbedPane.setEnabled(true);
           MappingSet set = MainView.this.customMappingTable.getResultingMappingSet();
-          MainView.this.setMappings(set);
+          try
+          {
+            MainView.this.setMappings(set);
+          }
+          catch (FileNotFoundException ex)
+          {
+            MainView.this.showErrorMessage(ex);
+          }
           if (!MainView.this.previewPanel.getMappings().equals(set))
           {
             MainView.this.previewPanel.setMappings(set);
@@ -372,7 +385,7 @@ public class MainView extends javax.swing.JFrame
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         visicutModel1 = VisicutModel.getInstance();
-        profileManager1 = MaterialManager.getInstance();
+        profileManager1 = com.t_oster.visicut.managers.MaterialManager.getInstance();
         filesDropSupport1 = new com.t_oster.visicut.gui.beans.FilesDropSupport();
         mappingManager1 = MappingManager.getInstance();
         saveFileChooser = new javax.swing.JFileChooser();
@@ -427,6 +440,7 @@ public class MainView extends javax.swing.JFrame
         executeJobMenuItem = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
         editMappingMenuItem = new javax.swing.JMenuItem();
+        jmManageLaserprofiles = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         materialMenuItem = new javax.swing.JMenuItem();
         jmExportSettings = new javax.swing.JMenuItem();
@@ -711,7 +725,7 @@ public class MainView extends javax.swing.JFrame
         );
         previewPanelLayout.setVerticalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 510, Short.MAX_VALUE)
+            .addGap(0, 504, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -940,6 +954,15 @@ public class MainView extends javax.swing.JFrame
             }
         });
         jMenu1.add(editMappingMenuItem);
+
+        jmManageLaserprofiles.setText(resourceMap.getString("jmManageLaserprofiles.text")); // NOI18N
+        jmManageLaserprofiles.setName("jmManageLaserprofiles"); // NOI18N
+        jmManageLaserprofiles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmManageLaserprofilesActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jmManageLaserprofiles);
 
         jMenuItem2.setText(resourceMap.getString("jMenuItem2.text")); // NOI18N
         jMenuItem2.setName("jMenuItem2"); // NOI18N
@@ -1798,11 +1821,17 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
 
   private void predefinedMappingListValueChanged(javax.swing.event.ListSelectionEvent evt)//GEN-FIRST:event_predefinedMappingListValueChanged
   {//GEN-HEADEREND:event_predefinedMappingListValueChanged
-    Object selected = this.predefinedMappingList.getSelectedValue();
-    MappingSet ms = selected instanceof MappingSet ? (MappingSet) selected : null;
-    this.setMappings(ms);
-    this.refreshComboBoxes();
-    this.refreshButtonStates();
+    try
+    {
+      Object selected = this.predefinedMappingList.getSelectedValue();
+      MappingSet ms = selected instanceof MappingSet ? (MappingSet) selected : null;
+      this.setMappings(ms);
+      this.refreshButtonStates();
+    }
+    catch (FileNotFoundException ex)
+    {
+      this.showErrorMessage(ex);
+    }
   }//GEN-LAST:event_predefinedMappingListValueChanged
 
   private void customMappingComboBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_customMappingComboBoxActionPerformed
@@ -1814,8 +1843,66 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     }
   }//GEN-LAST:event_customMappingComboBoxActionPerformed
 
-  private void setMappings(MappingSet mappings)
+  private void setMappings(MappingSet mappings) throws FileNotFoundException
   {
+    if (mappings != null)
+    {
+      //Check if each mapped profile already exists
+      for(Mapping m:mappings)
+      {
+        if (ProfileManager.getInstance().getProfileByName(m.getProfileName()) == null)
+        {
+          LaserProfile lp = null;
+          Box box = Box.createVerticalBox();
+          box.add(new JLabel("The Profile '"+m.getProfileName()+"' is unknown."));
+          box.add(new JLabel("What kind of profile should it be?"));
+          JComboBox choose = new JComboBox();
+          choose.addItem("Line Profile");
+          choose.addItem("Raster Profile");
+          choose.addItem("Raster3d Profile");
+          box.add(choose);
+          JOptionPane.showMessageDialog(this, box, "Which kind of Profile?", JOptionPane.OK_OPTION);
+          if (choose.getSelectedItem().equals("Line Profile")) {
+            EditVectorProfileDialog d = new EditVectorProfileDialog(null, true);
+            VectorProfile p = new VectorProfile();
+            p.setName(m.getProfileName());
+            d.setVectorProfile(p);
+            d.setNameEditable(false);
+            d.setCancelable(false);
+            d.setVisible(true);
+            lp = d.getVectorProfile();
+          } else if (choose.getSelectedItem().equals("Raster Profile")) {
+            EditRasterProfileDialog d = new EditRasterProfileDialog(null, true);
+            RasterProfile p = new RasterProfile();
+            p.setName(m.getProfileName());
+            d.setRasterProfile(p);
+            d.setNameEditable(false);
+            d.setCancelable(false);
+            d.setVisible(true);
+            lp = d.getRasterProfile();
+          } else if (choose.getSelectedItem().equals("Raster3d Profile")) {
+            EditRaster3dProfileDialog d = new EditRaster3dProfileDialog(null, true);
+            Raster3dProfile p = new Raster3dProfile();
+            p.setName(m.getProfileName());
+            d.setRasterProfile(p);
+            d.setNameEditable(false);
+            d.setCancelable(false);
+            d.setVisible(true);
+            lp = d.getRasterProfile();
+          }
+          if (lp == null)
+          {
+            JOptionPane.showMessageDialog(this, "You have to create a new profile");
+            this.setMappings(mappings);
+            return;
+          }
+          else
+          {
+            ProfileManager.getInstance().addProfile(lp);
+          }
+        }
+      }
+    }
     this.visicutModel1.setMappings(mappings);
   }
 
@@ -1838,7 +1925,14 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     {
       mapping = customMappingTable.getResultingMappingSet();
     }
-    this.setMappings(mapping);
+    try
+    {
+      this.setMappings(mapping);
+    }
+    catch (FileNotFoundException ex)
+    {
+      this.showErrorMessage(ex);
+    }
     this.refreshComboBoxes();
     this.refreshButtonStates();
   }//GEN-LAST:event_mappingTabbedPaneStateChanged
@@ -2000,6 +2094,29 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     }
   }//GEN-LAST:event_jmImportSettingsActionPerformed
 
+  private void jmManageLaserprofilesActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmManageLaserprofilesActionPerformed
+  {//GEN-HEADEREND:event_jmManageLaserprofilesActionPerformed
+    EditProfilesDialog d = new EditProfilesDialog(this, true);
+    List<LaserProfile> profiles = new LinkedList<LaserProfile>();
+    profiles.addAll(ProfileManager.getInstance().getProfiles());
+    d.setProfiles(profiles);
+    d.setVisible(true);
+    List<LaserProfile> result = d.getProfiles();
+    if (result != null)
+    {
+      try
+      {
+        ProfileManager.getInstance().setProfiles(result);
+      }
+      catch (FileNotFoundException ex)
+      {
+        this.showErrorMessage(ex);
+      }
+      this.fillComboBoxes();
+      this.refreshComboBoxes();
+    }
+  }//GEN-LAST:event_jmManageLaserprofilesActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton calculateTimeButton;
@@ -2039,6 +2156,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JMenu jmExamples;
     private javax.swing.JMenuItem jmExportSettings;
     private javax.swing.JMenuItem jmImportSettings;
+    private javax.swing.JMenuItem jmManageLaserprofiles;
     private com.t_oster.visicut.gui.beans.ImageComboBox laserCutterComboBox;
     private com.t_oster.visicut.managers.MappingManager mappingManager1;
     private javax.swing.JTabbedPane mappingTabbedPane;

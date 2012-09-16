@@ -23,8 +23,6 @@ import java.awt.Color;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.text.Collator;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  *

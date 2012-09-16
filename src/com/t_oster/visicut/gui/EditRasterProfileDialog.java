@@ -16,8 +16,6 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-
-
 /*
  * EditRasterProfileDialog.java
  *
@@ -92,14 +90,14 @@ public class EditRasterProfileDialog extends javax.swing.JDialog
     this.currentRasterProfile = currentRasterProfile;
     firePropertyChange(PROP_CURRENTRASTERPROFILE, oldCurrentRasterProfile, currentRasterProfile);
   }
-  
+
   /** Creates new form EditRasterProfileDialog */
   public EditRasterProfileDialog(java.awt.Frame parent, boolean modal)
   {
     super(parent, modal);
     initComponents();
     jComboBox1.removeAllItems();
-    for (DitherAlgorithm a: BlackWhiteRaster.DitherAlgorithm.values())
+    for (DitherAlgorithm a : BlackWhiteRaster.DitherAlgorithm.values())
     {
       jComboBox1.addItem(a);
     }
@@ -121,7 +119,7 @@ public class EditRasterProfileDialog extends javax.swing.JDialog
         jTextField2 = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        tfName = new javax.swing.JTextField();
         jComboBox1 = new javax.swing.JComboBox();
         selectThumbnailButton1 = new com.t_oster.visicut.gui.beans.SelectThumbnailButton();
         jCheckBox1 = new javax.swing.JCheckBox();
@@ -162,9 +160,9 @@ public class EditRasterProfileDialog extends javax.swing.JDialog
         jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
         jLabel1.setName("jLabel1"); // NOI18N
 
-        jTextField1.setName("jTextField1"); // NOI18N
+        tfName.setName("tfName"); // NOI18N
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentRasterProfile.name}"), jTextField1, org.jdesktop.beansbinding.BeanProperty.create("text"), "Name");
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentRasterProfile.name}"), tfName, org.jdesktop.beansbinding.BeanProperty.create("text"), "Name");
         bindingGroup.addBinding(binding);
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -215,7 +213,7 @@ public class EditRasterProfileDialog extends javax.swing.JDialog
                             .addComponent(jCheckBox1))
                         .addGap(28, 28, 28)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                            .addComponent(tfName, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
                             .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
                             .addComponent(jLabel1)
                             .addComponent(jComboBox1, 0, 300, Short.MAX_VALUE)
@@ -230,7 +228,7 @@ public class EditRasterProfileDialog extends javax.swing.JDialog
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(tfName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(selectThumbnailButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -281,9 +279,19 @@ public class EditRasterProfileDialog extends javax.swing.JDialog
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JSlider jSlider1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private com.t_oster.visicut.gui.beans.SelectThumbnailButton selectThumbnailButton1;
+    private javax.swing.JTextField tfName;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
+
+  void setNameEditable(boolean b)
+  {
+    tfName.setEnabled(b);
+  }
+
+  void setCancelable(boolean b)
+  {
+    this.jButton4.setVisible(false);
+  }
 }

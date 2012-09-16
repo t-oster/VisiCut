@@ -271,7 +271,7 @@ public class CustomMappingTable extends JTable
                 label += Helper.imgTag(f, 64, 64)+"</td>";
               }
             }
-            label += "</td><td width=3><td>" + item.getName() + "</td></tr></table></html>";
+            label += "</td><td width=3><td>" + item.toString() + "</td></tr></table></html>";
             l.setText(label);
             l.setToolTipText(item.getDescription());
           }

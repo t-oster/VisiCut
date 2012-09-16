@@ -186,9 +186,6 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
         jLabel5 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jLabel7 = new javax.swing.JLabel();
-        jTextField6 = new javax.swing.JTextField();
-        jButton3 = new javax.swing.JButton();
         selectThumbnailButton1 = new com.t_oster.visicut.gui.beans.SelectThumbnailButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -250,23 +247,6 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
             }
         });
 
-        jLabel7.setText(resourceMap.getString("jLabel7.text")); // NOI18N
-        jLabel7.setName("jLabel7"); // NOI18N
-
-        jTextField6.setToolTipText(resourceMap.getString("jTextField6.toolTipText")); // NOI18N
-        jTextField6.setName("jTextField6"); // NOI18N
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.materialsPath}"), jTextField6, org.jdesktop.beansbinding.BeanProperty.create("text"), "path");
-        bindingGroup.addBinding(binding);
-
-        jButton3.setText(resourceMap.getString("jButton3.text")); // NOI18N
-        jButton3.setName("jButton3"); // NOI18N
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-
         selectThumbnailButton1.setName("selectThumbnailButton1"); // NOI18N
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.thumbnailPath}"), selectThumbnailButton1, org.jdesktop.beansbinding.BeanProperty.create("thumbnailPath"), "thumbnailbutton");
@@ -304,26 +284,21 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 386, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel3)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel4)
                             .addComponent(selectThumbnailButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6))
-                        .addGap(26, 26, 26)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel4))
+                        .addGap(32, 32, 32)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jComboBox1, 0, 274, Short.MAX_VALUE)
                             .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
                             .addComponent(jLabel1)
                             .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
                             .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jTextField6, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton3))
                             .addComponent(tfJobPrefix, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -353,11 +328,6 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3)
-                    .addComponent(jLabel7))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -367,7 +337,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
@@ -446,53 +416,9 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     }
   }//GEN-LAST:event_jButton1ActionPerformed
 
-  private void jButton3ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton3ActionPerformed
-  {//GEN-HEADEREND:event_jButton3ActionPerformed
-    if (Helper.isMacOS())
-    {//use native dialog to select directories
-      System.setProperty("apple.awt.fileDialogForDirectories", "true");
-      FileDialog fd = new FileDialog(this, "Please select a material directory");
-      fd.setMode(FileDialog.LOAD);
-      if (currentLaserDevice.getMaterialsPath() != null)
-      {
-        fd.setDirectory(currentLaserDevice.getMaterialsPath());
-      }
-      fd.setVisible(true);
-      if (fd.getFile() != null)
-      {
-        File dir = new File(fd.getDirectory());
-        dir = new File(dir, fd.getFile());
-        if (dir.isDirectory())
-        {
-          currentLaserDevice.setMaterialsPath(dir.getAbsolutePath());
-        }
-      }
-      System.setProperty("apple.awt.fileDialogForDirectories", "false");
-    }
-    else
-    {
-      JFileChooser fs = new JFileChooser();
-      fs.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-      fs.setDialogType(JFileChooser.OPEN_DIALOG);
-      if (currentLaserDevice.getMaterialsPath() != null)
-      {
-        fs.setCurrentDirectory(new File(currentLaserDevice.getMaterialsPath()));
-      }
-      if (fs.showDialog(this, "Please Select a Directory") == JFileChooser.APPROVE_OPTION)
-      {
-        File dir = fs.getSelectedFile();
-        if (dir.isDirectory())
-        {
-          currentLaserDevice.setMaterialsPath(dir.getPath());
-        }
-      }
-    }
-
-  }//GEN-LAST:event_jButton3ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -500,13 +426,11 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField6;
     private com.t_oster.visicut.gui.beans.SelectThumbnailButton selectThumbnailButton1;
     private javax.swing.JTextField tfJobPrefix;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;

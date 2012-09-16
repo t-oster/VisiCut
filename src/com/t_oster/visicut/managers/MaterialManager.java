@@ -72,6 +72,11 @@ public class MaterialManager
           try
           {
             MaterialProfile prof = this.loadProfile(f);
+            //if file was wrongly named, correct the name
+            if (!(f.getName().equals(this.getMaterialPath(prof).getName())))
+            {
+              f.renameTo(new File(f.getParent(), this.getMaterialPath(prof).getName()));
+            }
             result.add(prof);
           }
           catch (Exception ex)
@@ -81,12 +86,24 @@ public class MaterialManager
         }
       }
     }
+    Collections.sort(result, new Comparator<MaterialProfile>(){
+
+      public int compare(MaterialProfile t, MaterialProfile t1)
+      {
+        return t.getName().compareTo(t1.getName());
+      }
+    });
     return result;
   }
 
+  private File getMaterialsDirectory()
+  {
+    return new File(Helper.getBasePath(), "materials");
+  }
+  
   private File getMaterialPath(MaterialProfile mp)
   {
-    return new File(new File(Helper.getBasePath(), "materials"), Helper.toPathName(mp.getName())+".xml");
+    return new File(getMaterialsDirectory(), Helper.toPathName(mp.toString())+".xml");
   }
   
   public void removeProfile(MaterialProfile mp)
@@ -149,7 +166,7 @@ public class MaterialManager
   {
     if (materials == null)
     {
-      materials = this.loadFromDirectory(new File(Helper.getBasePath(), "materials"));
+      materials = this.loadFromDirectory(getMaterialsDirectory());
     }
     return materials;
   }

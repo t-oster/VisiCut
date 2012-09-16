@@ -41,7 +41,7 @@
                       </Group>
                       <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jTextField1" alignment="0" pref="300" max="32767" attributes="1"/>
+                          <Component id="tfName" alignment="0" pref="300" max="32767" attributes="1"/>
                           <Component id="jTextField2" alignment="0" pref="300" max="32767" attributes="1"/>
                           <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="jComboBox1" alignment="0" pref="300" max="32767" attributes="0"/>
@@ -61,7 +61,7 @@
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jTextField1" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfName" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Component id="selectThumbnailButton1" min="-2" max="-2" attributes="0"/>
               </Group>
@@ -142,12 +142,12 @@
         <Property name="name" type="java.lang.String" value="jLabel1" noResource="true"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="jTextField1">
+    <Component class="javax.swing.JTextField" name="tfName">
       <Properties>
-        <Property name="name" type="java.lang.String" value="jTextField1" noResource="true"/>
+        <Property name="name" type="java.lang.String" value="tfName" noResource="true"/>
       </Properties>
       <BindingProperties>
-        <BindingProperty name="text" source="Form" sourcePath="${currentRasterProfile.name}" target="jTextField1" targetPath="text" updateStrategy="0" immediately="false">
+        <BindingProperty name="text" source="Form" sourcePath="${currentRasterProfile.name}" target="tfName" targetPath="text" updateStrategy="0" immediately="false">
           <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
           <Property name="name" type="java.lang.String" value="Name"/>
         </BindingProperty>

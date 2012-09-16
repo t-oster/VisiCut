@@ -70,13 +70,13 @@ public class ImageListableList extends JList
           {
             label += "<td width=3><td>";
             label += "<font color=" + Helper.toHtmlRGB((Color) UIManager.get("ComboBox.disabledForeground")) + ">";
-            label += item.getName() + " (" + ImageListableList.this.disableReasons.get(o) + ")</font></td></tr></table></html>";
+            label += item.toString() + " (" + ImageListableList.this.disableReasons.get(o) + ")</font></td></tr></table></html>";
             l.setFocusable(false);
             l.setEnabled(false);
           }
           else
           {
-            label += "</td><td width=3><td>" + item.getName() + "</td></tr></table></html>";
+            label += "</td><td width=3><td>" + item.toString() + "</td></tr></table></html>";
           }
           l.setText(label);
           l.setToolTipText(item.getDescription());

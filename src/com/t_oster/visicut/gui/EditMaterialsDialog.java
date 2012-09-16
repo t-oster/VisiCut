@@ -24,12 +24,9 @@
  */
 package com.t_oster.visicut.gui;
 
-import com.t_oster.liblasercut.BlackWhiteRaster;
-import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.visicut.gui.beans.EditableTableProvider;
 import com.t_oster.visicut.model.*;
 import java.awt.Color;
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 

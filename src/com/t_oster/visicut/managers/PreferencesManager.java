@@ -77,7 +77,6 @@ public final class PreferencesManager
     LaserDevice epilog = new LaserDevice();
     epilog.setLaserCutter(new EpilogZing("137.226.56.228"));
     epilog.setName("Epilog ZING");
-    epilog.setMaterialsPath("settings/materials/epilog");
     epilog.setDescription("The Epilog ZING 30W Laser which is in the Fablab");
     //epilog.setCameraURL("http://137.226.56.115:8080/defaultbackground.jpg");
     //epilog.setThumbnailPath("settings/epilogcutter.png");
@@ -88,7 +87,6 @@ public final class PreferencesManager
     LaserDevice laos = new LaserDevice();
     laos.setLaserCutter(new LaosCutter());
     laos.setName("Laos HPC");
-    laos.setMaterialsPath("settings/materials/laos");
     //laos.setThumbnailPath("settings/laoscutter.png");
     laos.setCameraCalibration(new AffineTransform(0.19630256844482077, 0.0, 0.0, 0.19954840530623766, 124.33334350585938, 484.3333282470703));
     preferences.getLaserDevices().add(laos);
@@ -218,7 +216,6 @@ public final class PreferencesManager
     for (LaserDevice ld : pref.getLaserDevices())
     {
       ld.setThumbnailPath(Helper.removeBasePath(ld.getThumbnailPath()));
-      ld.setMaterialsPath(Helper.removeBasePath(ld.getMaterialsPath()));
     }
     FileOutputStream os = new FileOutputStream(f);
     XMLEncoder encoder = new XMLEncoder(os);
@@ -243,7 +240,6 @@ public final class PreferencesManager
     for (LaserDevice ld : pref.getLaserDevices())
     {
       ld.setThumbnailPath(Helper.addBasePath(ld.getThumbnailPath()));
-      ld.setMaterialsPath(Helper.addBasePath(ld.getMaterialsPath()));
     }
   }
 
@@ -256,7 +252,6 @@ public final class PreferencesManager
     for (LaserDevice ld : p.getLaserDevices())
     {
       ld.setThumbnailPath(Helper.addBasePath(ld.getThumbnailPath()));
-      ld.setMaterialsPath(Helper.addBasePath(ld.getMaterialsPath()));
     }
     return p;
   }

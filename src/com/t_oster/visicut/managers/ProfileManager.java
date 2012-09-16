@@ -174,4 +174,16 @@ public class ProfileManager
     return new File(Helper.getBasePath(), "profiles");
   }
 
+  public void setProfiles(List<LaserProfile> result) throws FileNotFoundException
+  {
+    for (LaserProfile lp:this.getProfiles().toArray(new LaserProfile[0]))
+    {
+      this.removeProfile(lp);
+    }
+    for (LaserProfile lp:result)
+    {
+      this.addProfile(lp);
+    }
+  }
+
 }
