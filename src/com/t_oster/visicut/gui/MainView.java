@@ -2042,57 +2042,64 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
 
   private void jmImportSettingsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmImportSettingsActionPerformed
   {//GEN-HEADEREND:event_jmImportSettingsActionPerformed
-    if (JOptionPane.showConfirmDialog(this, "This will overwrite all your settings including Lasercutters and materials\nDo you want to proceed?", "Warning", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
+    switch (JOptionPane.showConfirmDialog(this, "This will overwrite all your settings including Lasercutters and materials\nDo you want to backup your settings before?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE))
     {
-      return;
-    }
-    try
-    {
-      final FileFilter zipFilter = new ExtensionFilter("zip", "Zipped Settings (*.zip)");
-      //On Mac os, awt.FileDialog looks more native
-      if (Helper.isMacOS())
+      case JOptionPane.YES_OPTION:
       {
-        FileDialog openFileChooser = new FileDialog(this, "Please select a file");
-        openFileChooser.setMode(FileDialog.LOAD);
-        if (lastDirectory != null)
+        this.jmExportSettingsActionPerformed(null);
+        //no break statement, because we want to import after export
+      }
+      case JOptionPane.NO_OPTION:
+      {
+        try
         {
-          openFileChooser.setDirectory(lastDirectory.getAbsolutePath());
-        }
-        openFileChooser.setFilenameFilter(new FilenameFilter()
-        {
-
-          public boolean accept(File dir, String file)
+          final FileFilter zipFilter = new ExtensionFilter("zip", "Zipped Settings (*.zip)");
+          //On Mac os, awt.FileDialog looks more native
+          if (Helper.isMacOS())
           {
-            return zipFilter.accept(new File(dir, file));
+            FileDialog openFileChooser = new FileDialog(this, "Please select a file");
+            openFileChooser.setMode(FileDialog.LOAD);
+            if (lastDirectory != null)
+            {
+              openFileChooser.setDirectory(lastDirectory.getAbsolutePath());
+            }
+            openFileChooser.setFilenameFilter(new FilenameFilter()
+            {
+
+              public boolean accept(File dir, String file)
+              {
+                return zipFilter.accept(new File(dir, file));
+              }
+            });
+            openFileChooser.setVisible(true);
+            if (openFileChooser.getFile() != null)
+            {
+              File file = new File(new File(openFileChooser.getDirectory()), openFileChooser.getFile());
+              PreferencesManager.getInstance().importSettings(file);
+            }
           }
-        });
-        openFileChooser.setVisible(true);
-        if (openFileChooser.getFile() != null)
+          else
+          {
+            JFileChooser openFileChooser = new JFileChooser();
+            openFileChooser.setAcceptAllFileFilterUsed(false);
+            openFileChooser.addChoosableFileFilter(zipFilter);
+            openFileChooser.setFileFilter(zipFilter);
+            openFileChooser.setCurrentDirectory(lastDirectory);
+            int returnVal = openFileChooser.showOpenDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION)
+            {
+              File file = openFileChooser.getSelectedFile();
+              PreferencesManager.getInstance().importSettings(file);
+              this.fillComboBoxes();
+              this.refreshExampleMenu();
+            }
+          }
+        }
+        catch (Exception e)
         {
-          File file = new File(new File(openFileChooser.getDirectory()), openFileChooser.getFile());
-          PreferencesManager.getInstance().importSettings(file);
+          JOptionPane.showMessageDialog(this, "Error: "+e.getLocalizedMessage());
         }
       }
-      else
-      {
-        JFileChooser openFileChooser = new JFileChooser();
-        openFileChooser.setAcceptAllFileFilterUsed(false);
-        openFileChooser.addChoosableFileFilter(zipFilter);
-        openFileChooser.setFileFilter(zipFilter);
-        openFileChooser.setCurrentDirectory(lastDirectory);
-        int returnVal = openFileChooser.showOpenDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION)
-        {
-          File file = openFileChooser.getSelectedFile();
-          PreferencesManager.getInstance().importSettings(file);
-          this.fillComboBoxes();
-          this.refreshExampleMenu();
-        }
-      }
-    }
-    catch (Exception e)
-    {
-      JOptionPane.showMessageDialog(this, "Error: "+e.getLocalizedMessage());
     }
   }//GEN-LAST:event_jmImportSettingsActionPerformed
 
