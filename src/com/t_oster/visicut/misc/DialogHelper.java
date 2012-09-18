@@ -79,6 +79,7 @@ public class DialogHelper
 
   public void showErrorMessage(Exception cause, String text)
   {
+    cause.printStackTrace();
     JOptionPane.showMessageDialog(parent, text + "\nError (" + cause.getClass().getSimpleName() + "): " + cause.getLocalizedMessage(), title + " Error", JOptionPane.ERROR_MESSAGE);
   }
 

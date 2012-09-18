@@ -1374,12 +1374,24 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         if (props == null)
         {
           unknownProfilesUsed = true;
-          usedSettings.put(profile, new LinkedList<LaserProperty>());
+          props = new LinkedList<LaserProperty>();
         }
-        else
-        {
-          usedSettings.put(profile, props);
+        if (props.isEmpty())
+        {//we have to add at least one sample for the dialog to know the kind of LaserPropery
+          if (profile instanceof RasterProfile)
+          {
+            props.add(device.getLaserCutter().getLaserPropertyForRasterPart());
+          }
+          else if (profile instanceof VectorProfile)
+          {
+            props.add(device.getLaserCutter().getLaserPropertyForVectorPart());
+          }
+          else if (profile instanceof Raster3dProfile)
+          {
+            props.add(device.getLaserCutter().getLaserPropertyForRaster3dPart());
+          }
         }
+        usedSettings.put(profile, props);
       }
 
       if (this.cbEditBeforeExecute.isSelected() || unknownProfilesUsed)
@@ -1391,7 +1403,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         String heading = "Settings for "+device.getName()+" with material "+material.toString();
         //Adapt Settings before execute
         AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true, heading);
-        asd.setLaserProperties(usedSettings);
+        asd.setLaserProperties(usedSettings, this.visicutModel1.getSelectedLaserDevice().getLaserCutter());
         asd.setVisible(true);
         Map<LaserProfile, List<LaserProperty>> result = asd.getLaserProperties();
         if (result == null)

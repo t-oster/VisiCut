@@ -362,7 +362,8 @@ private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     {
       throw new Exception("No Lasercutter selected");
     }
-    VectorPart vp = new VectorPart(new LaserProperty());
+    //TODO: Use current material settings here
+    VectorPart vp = new VectorPart(laserCutter.getLaserPropertyForVectorPart());
     int size = 100;
     for (Point p : new Point[]
       {

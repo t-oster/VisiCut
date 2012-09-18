@@ -17,22 +17,35 @@ import javax.swing.table.DefaultTableModel;
 class LaserPropertiesTableModel extends DefaultTableModel
 {
 
-  public void setLaserProperties(List<LaserProperty> lp, boolean showFrequency)
+  public void setLaserProperties(List<LaserProperty> lp)
   {
     this.lp = lp;
-    if (showFrequency)
+    if (lp.isEmpty())
     {
-      columnNames = new String[]{"Power", "Speed", "Focus", "Frequency"};
+      columnNames = new String[]{"no property given ;("};
     }
     else
     {
-      columnNames = new String[]{"Power", "Speed", "Focus"};
+      columnNames = lp.get(0).getPropertyNames();
     }
     this.fireTableStructureChanged();
   }
   private List<LaserProperty> lp = null;
-  private String[] columnNames = new String[]{"Power", "Speed", "Focus", "Frequency"};
+  private String[] columnNames = new String[]{"No property given ;("};
 
+  @Override
+  public Class getColumnClass(int x)
+  {
+    if (lp.isEmpty())
+    {
+      return String.class;
+    }
+    else
+    {
+      return lp.get(0).getPropertyClass(this.columnNames[x]);
+    }
+  }
+  
   @Override
   public int getColumnCount()
   {
@@ -48,18 +61,7 @@ class LaserPropertiesTableModel extends DefaultTableModel
   @Override
   public Object getValueAt(int y, int x)
   {
-    switch (x)
-    {
-      case 0:
-        return lp.get(y).getPower();
-      case 1:
-        return lp.get(y).getSpeed();
-      case 2:
-        return lp.get(y).getFocus();
-      case 3:
-        return lp.get(y).getFrequency();
-    }
-    return null;
+    return lp.get(y).getProperty(this.columnNames[x]);
   }
 
   @Override
@@ -71,21 +73,7 @@ class LaserPropertiesTableModel extends DefaultTableModel
   @Override
   public void setValueAt(Object o, int y, int x)
   {
-    switch (x)
-    {
-      case 0:
-        lp.get(y).setPower(Integer.parseInt(o.toString()));
-        return;
-      case 1:
-        lp.get(y).setSpeed(Integer.parseInt(o.toString()));
-        return;
-      case 2:
-        lp.get(y).setFocus(Float.parseFloat(o.toString()));
-        return;
-      case 3:
-        lp.get(y).setFrequency(Integer.parseInt(o.toString()));
-        return;
-    }
+    lp.get(y).setProperty(this.columnNames[x], o);
   }
 
   @Override

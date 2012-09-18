@@ -38,6 +38,8 @@ import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.managers.MaterialManager;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.model.LaserDevice;
+import com.t_oster.visicut.model.Raster3dProfile;
+import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
@@ -659,17 +661,27 @@ public class VisicutModel
     
   private LaserJob prepareJob(String name) throws FileNotFoundException, IOException
   {
-    RasterPart rp = new RasterPart(new LaserProperty());
-    Raster3dPart r3dp = new Raster3dPart(new LaserProperty());
-    VectorPart vp = new VectorPart(new LaserProperty());
-
-    LaserJob job = new LaserJob(name, name, "visicut", this.getValidResolution(), r3dp, vp, rp);
+    boolean containsRaster = false;
+    boolean containsVector = false;
+    boolean containsRaster3d = false;
     //Aggregate all Mappings per LaserProfile
     HashMap<LaserProfile, GraphicSet> parts = new LinkedHashMap<LaserProfile, GraphicSet>();
     for (Mapping m : this.getMappings())
     {
       GraphicSet set = m.getA().getMatchingObjects(this.getGraphicObjects());
       LaserProfile p = ProfileManager.getInstance().getProfileByName(m.getProfileName());
+      if (p instanceof VectorProfile)
+      {
+        containsVector = true;
+      }
+      else if (p instanceof RasterProfile)
+      {
+        containsRaster = true;
+      }
+      else if (p instanceof Raster3dProfile)
+      {
+        containsRaster3d = true;
+      }
       if (parts.containsKey(p))
       {
         for (GraphicObject e : set)
@@ -685,13 +697,21 @@ public class VisicutModel
         parts.put(p, set);
       }
     }
+    
+    LaserCutter lc = this.getSelectedLaserDevice().getLaserCutter();
+    RasterPart rp = containsRaster ? new RasterPart(lc.getLaserPropertyForRasterPart()) : null;
+    Raster3dPart r3dp = containsRaster3d ? new Raster3dPart(lc.getLaserPropertyForRaster3dPart()) : null;
+    VectorPart vp = containsVector ? new VectorPart(lc.getLaserPropertyForVectorPart()) : null;
+    LaserJob job = new LaserJob(name, name, "visicut", this.getValidResolution(), r3dp, vp, rp);
+    
     float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() ? 0 : this.material.getDepth();
     //Add all non-cutting parts to the laserjob
     for (Entry<LaserProfile, GraphicSet> e : parts.entrySet())
     {
       if (!(e.getKey() instanceof VectorProfile) || !((VectorProfile)e.getKey()).isIsCut())
       {
-        e.getKey().addToLaserJob(job, e.getValue(), LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey()), focusOffset);
+        List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey());
+        e.getKey().addToLaserJob(job, e.getValue(), this.addFocusOffset(props, focusOffset));
       }
     }
     //Add all cutting parts to the end of the laserjob
@@ -699,7 +719,8 @@ public class VisicutModel
     {
       if (e.getKey() instanceof VectorProfile && ((VectorProfile)e.getKey()).isIsCut())
       {
-        e.getKey().addToLaserJob(job, e.getValue(), LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey()), focusOffset);
+        List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey());
+        e.getKey().addToLaserJob(job, e.getValue(), this.addFocusOffset(props, focusOffset));
       }
     }
     return job;
@@ -741,5 +762,33 @@ public class VisicutModel
     LaserCutter instance = this.getSelectedLaserDevice().getLaserCutter();
     LaserJob job = this.prepareJob("calc");
     return instance.estimateJobDuration(job);
+  }
+
+  private List<LaserProperty> addFocusOffset(List<LaserProperty> props, float focusOffset)
+  {
+    if (focusOffset == 0 || props.isEmpty() || props.get(0).getPropertyClass("focus") == null)
+    {
+      return props;
+    }
+    List<LaserProperty> result = new LinkedList<LaserProperty>();
+    for(LaserProperty p:props)
+    {
+      LaserProperty c = p.clone();
+      Object foc = c.getProperty("focus");
+      if (foc instanceof Integer)
+      {
+        c.setProperty("focus", (Integer) (((Integer) foc)+ (int) focusOffset));
+      }
+      else if (foc instanceof Float)
+      {
+        c.setProperty("focus", (Float) foc + focusOffset);
+      }
+      else if (foc instanceof Double)
+      {
+        c.setProperty("focus", (Double) (((Double) foc)+ (double) focusOffset));
+      }
+      result.add(c);
+    }
+    return result;
   }
 }

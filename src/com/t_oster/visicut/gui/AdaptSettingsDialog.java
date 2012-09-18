@@ -19,17 +19,19 @@
 
 package com.t_oster.visicut.gui;
 
+import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.visicut.gui.beans.EditableTablePanel;
 import com.t_oster.visicut.gui.beans.EditableTableProvider;
+import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.model.LaserProfile;
-import com.t_oster.visicut.model.LaserPropertyBean;
-import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.Raster3dProfile;
+import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import javax.swing.JOptionPane;
+import java.util.Map.Entry;
 
 /**
  *
@@ -38,6 +40,7 @@ import javax.swing.JOptionPane;
 public class AdaptSettingsDialog extends javax.swing.JDialog
 {
 
+  private DialogHelper dialog = new DialogHelper(this, "VisiCut");
   private List<EditableTablePanel> panels = new LinkedList<EditableTablePanel>();
   private Map<LaserProfile, List<LaserProperty>> map;
   private boolean okPressed = false;
@@ -56,45 +59,47 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
    * MaterialProfile
    * @param mp 
    */
-  public void setLaserProperties(Map<LaserProfile, List<LaserProperty>> map)
+  public void setLaserProperties(Map<LaserProfile, List<LaserProperty>> map, final LaserCutter lc)
   {
     this.map = map;
     this.panels.clear();
     this.jTabbedPane1.removeAll();
     if (map != null)
     {
-      for (LaserProfile lp : map.keySet())
+      for (final LaserProfile lp : map.keySet())
       {
+        if (map.get(lp).isEmpty())
+        {
+          throw new IllegalArgumentException("Every profile must at least contain one LaserProperty");
+        }
         EditableTablePanel panel = new EditableTablePanel();
         LaserPropertiesTableModel model = new LaserPropertiesTableModel();
-        model.setLaserProperties(map.get(lp), lp instanceof VectorProfile);
+        model.setLaserProperties(map.get(lp));
         panel.setObjects((List) map.get(lp));
         panel.setTableModel(model);
-        final boolean isVector = lp instanceof VectorProfile;
+        panel.setEditButtonVisible(false);
         panel.setProvider(new EditableTableProvider()
         {
 
           public Object getNewInstance()
           {
-            return new LaserProperty();
+            if (lp instanceof RasterProfile)
+            {
+              return lc.getLaserPropertyForRasterPart();
+            }
+            else if (lp instanceof Raster3dProfile)
+            {
+              return lc.getLaserPropertyForRaster3dPart();
+            }
+            else if (lp instanceof VectorProfile)
+            {
+              return lc.getLaserPropertyForVectorPart();
+            }
+            throw new IllegalArgumentException("LaserProfile is not from Raster,Vector,Raster3d");
           }
 
           public Object editObject(Object o)
           {
-            if (o instanceof LaserProperty)
-            {
-              EditLaserPropertyPanel d = new EditLaserPropertyPanel();
-              d.setShowFrequency(isVector);
-              d.setLaserProperty(new LaserPropertyBean(((LaserProperty) o).clone()));
-              if (JOptionPane.showConfirmDialog(AdaptSettingsDialog.this, d, "Edit Laser Property", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
-              {
-                return d.getLaserProperty().getLaserProperty();
-              }
-              else
-              {
-                return null;
-              }
-            }
             return o;
           }
         });
@@ -190,6 +195,15 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
 
   private void btOKActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btOKActionPerformed
   {//GEN-HEADEREND:event_btOKActionPerformed
+    //check if every propertylist contains at least one entry
+    for(Entry<LaserProfile, List<LaserProperty>> e:this.map.entrySet())
+    {
+      if (e.getValue() == null || e.getValue().isEmpty())
+      {
+        dialog.showInfoMessage("The profile '"+e.getKey().getName()+"' has to contain at least one LaserProperty");
+        return;
+      }
+    }
     this.okPressed = true;
     this.setVisible(false);
   }//GEN-LAST:event_btOKActionPerformed

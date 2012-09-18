@@ -65,6 +65,11 @@ public final class PreferencesManager
   }
   private Preferences preferences;
   
+  private File getPreferencesPath()
+  {
+    return new File(new File(Helper.getBasePath(), "settings"), "settings.xml");
+  }
+  
   private PreferencesManager()
   {
   }
@@ -241,7 +246,7 @@ public final class PreferencesManager
       }
       try
       {
-        preferences = this.loadPreferences(new File(Helper.getBasePath(), "settings/settings.xml"));
+        preferences = this.loadPreferences(this.getPreferencesPath());
       }
       catch (FileNotFoundException ex)
       {
@@ -266,10 +271,11 @@ public final class PreferencesManager
 
   public void savePreferences() throws FileNotFoundException
   {
-    File settingsDir = new File(Helper.getBasePath(), "settings");
+    File target = this.getPreferencesPath();
+    File settingsDir = target.getParentFile();
     if (settingsDir.isDirectory() || settingsDir.mkdirs())
     {
-      this.savePreferences(preferences, new File(settingsDir, "settings.xml"));
+      this.savePreferences(preferences, target);
     }
     else
     {
