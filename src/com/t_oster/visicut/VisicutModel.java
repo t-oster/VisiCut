@@ -28,6 +28,7 @@ import com.t_oster.liblasercut.RasterPart;
 import com.t_oster.liblasercut.Raster3dPart;
 import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.managers.MappingManager;
@@ -250,8 +251,28 @@ public class VisicutModel
     if (this.preferences != null)
     {
       this.graphicFileImporter = null;
-      this.setSelectedLaserDevice(this.preferences.getLastLaserDevice());
-      this.setMaterial(this.preferences.getLastMaterial());
+      if (this.preferences.lastLaserDevice != null)
+      {
+        for (LaserDevice ld : LaserDeviceManager.getInstance().getAll())
+        {
+          if (this.preferences.lastLaserDevice.equals(ld.getName()))
+          {
+            this.setSelectedLaserDevice(ld);
+            break;
+          }
+        }
+      }
+      if (this.preferences.lastMaterial != null)
+      {
+        for (MaterialProfile mp : MaterialManager.getInstance().getAll())
+        {
+          if (this.preferences.lastMaterial.equals(mp.getName()))
+          {
+            this.setMaterial(mp);
+            break;
+          }
+        }
+      }
       this.setResolution(this.preferences.getLastResolution());
     }
   }
@@ -260,8 +281,8 @@ public class VisicutModel
 
   public void updatePreferences()
   {
-    this.preferences.setLastLaserDevice(this.getSelectedLaserDevice());
-    this.preferences.setLastMaterial(this.getMaterial());
+    this.preferences.setLastLaserDevice(this.getSelectedLaserDevice().getName());
+    this.preferences.setLastMaterial(this.getMaterial().getName());
     this.preferences.setLastResolution(this.getResolution());
     try
     {

@@ -1762,7 +1762,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   {//GEN-HEADEREND:event_jMenuItem2ActionPerformed
     ManageLasercuttersDialog d = new ManageLasercuttersDialog(this, true);
     d.setLaserCutters(LaserDeviceManager.getInstance().getAll());
-    d.setDefaultLaserCutter(this.visicutModel1.getPreferences().getLastLaserDevice());
     d.setVisible(true);
     List<LaserDevice> result = d.getLaserCutters();
     if (result != null)

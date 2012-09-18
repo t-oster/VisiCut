@@ -59,14 +59,14 @@ public class Preferences
   }
 
   
-  protected MaterialProfile lastMaterial = null;
+  protected String lastMaterial = null;
 
   /**
    * Get the value of lastMaterial
    *
    * @return the value of lastMaterial
    */
-  public MaterialProfile getLastMaterial()
+  public String getLastMaterial()
   {
     return lastMaterial;
   }
@@ -76,7 +76,7 @@ public class Preferences
    *
    * @param lastMaterial new value of lastMaterial
    */
-  public void setLastMaterial(MaterialProfile lastMaterial)
+  public void setLastMaterial(String lastMaterial)
   {
     this.lastMaterial = lastMaterial;
   }
@@ -103,14 +103,14 @@ public class Preferences
     this.lastResolution = lastResolution;
   }
 
-  protected LaserDevice lastLaserDevice = null;
+  protected String lastLaserDevice = null;
 
   /**
    * Get the value of lastLaserDevice
    *
    * @return the value of lastLaserDevice
    */
-  public LaserDevice getLastLaserDevice()
+  public String getLastLaserDevice()
   {
     return lastLaserDevice;
   }
@@ -120,7 +120,7 @@ public class Preferences
    *
    * @param lastLaserDevice new value of lastLaserDevice
    */
-  public void setLastLaserDevice(LaserDevice lastLaserDevice)
+  public void setLastLaserDevice(String lastLaserDevice)
   {
     this.lastLaserDevice = lastLaserDevice;
   }

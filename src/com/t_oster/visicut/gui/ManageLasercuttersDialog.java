@@ -44,31 +44,6 @@ import javax.swing.table.DefaultTableModel;
 public class ManageLasercuttersDialog extends javax.swing.JDialog implements EditableTableProvider
 {
 
-  public static final String PROP_DEFAULTLASERCUTTER = "defaultLaserCutter";
-
-  /**
-   * Get the value of defaultLaserCutter
-   *
-   * @return the value of defaultLaserCutter
-   */
-  public LaserDevice getDefaultLaserCutter()
-  {
-    return defaultDev;
-  }
-
-  /**
-   * Set the value of defaultLaserCutter
-   *
-   * @param defaultLaserCutter new value of defaultLaserCutter
-   */
-  public void setDefaultLaserCutter(LaserDevice dev)
-  {
-    LaserDevice oldDev = this.defaultDev;
-    this.defaultDev = dev;
-    firePropertyChange(PROP_DEFAULTLASERCUTTER, oldDev, dev);
-  }
-  private LaserDevice defaultDev;
-  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   protected List<LaserDevice> laserCutters = null;
   public static final String PROP_LASERCUTTERS = "laserCutters";
 

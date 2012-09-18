@@ -97,7 +97,7 @@ public final class PreferencesManager
         LaserDeviceManager.getInstance().add(dev);
         if (preferences.getLastLaserDevice() == null)
         {
-          preferences.setLastLaserDevice(dev);
+          preferences.setLastLaserDevice(dev.getName());
           preferences.setLastResolution(lc.getResolutions().get(lc.getResolutions().size()-1));
         }
       }
@@ -125,7 +125,7 @@ public final class PreferencesManager
     mp.setEngraveColor(Color.WHITE);
     mp.setDepth(2f);
     MaterialManager.getInstance().add(mp);
-    preferences.setLastMaterial(mp);
+    preferences.setLastMaterial(mp.getName());
     
     //generate default Profiles
     VectorProfile cut = new VectorProfile();
