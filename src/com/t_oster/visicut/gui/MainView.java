@@ -2085,6 +2085,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
             {
               File file = openFileChooser.getSelectedFile();
               PreferencesManager.getInstance().importSettings(file);
+              this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
               this.fillComboBoxes();
               this.refreshExampleMenu();
               dialog.showSuccessMessage("Settings successfully imported");
