@@ -119,7 +119,7 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
     this.cutColor = color;
   }
   
-  protected Color color = null;
+  protected Color color = Color.WHITE;
 
   /**
    * Get the value of color

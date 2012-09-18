@@ -50,7 +50,7 @@ public class RasterProfile extends LaserProfile
 
   public RasterProfile()
   {
-    this.setName("Engrave Drawing");
+    this.setName("engrave");
   }
   protected boolean invertColors = false;
 
@@ -94,7 +94,7 @@ public class RasterProfile extends LaserProfile
   {
     this.colorShift = colorShift;
   }
-  protected DitherAlgorithm ditherAlgorithm = DitherAlgorithm.AVERAGE;
+  protected DitherAlgorithm ditherAlgorithm = DitherAlgorithm.FLOYD_STEINBERG;
 
   /**
    * Get the value of ditherAlgorithm

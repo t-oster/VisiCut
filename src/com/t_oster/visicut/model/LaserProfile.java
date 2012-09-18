@@ -133,19 +133,6 @@ public abstract class LaserProfile implements ImageListable, Cloneable
 
   public abstract void addToLaserJob(LaserJob job, GraphicSet objects, List<LaserProperty> laserProperties);
 
-  public void addToLaserJob(LaserJob job, GraphicSet set, List<LaserProperty> laserProperties, float focusOffset)
-  {
-    for (LaserProperty p:laserProperties)
-    {
-      p.setFocus(p.getFocus()+focusOffset);
-    }
-    this.addToLaserJob(job, set, laserProperties);
-    for (LaserProperty p:laserProperties)
-    {
-      p.setFocus(p.getFocus()-focusOffset);
-    }
-  }
-
   @Override
   public String toString()
   {

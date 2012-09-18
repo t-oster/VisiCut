@@ -46,7 +46,7 @@ public class Raster3dProfile extends LaserProfile
 
   public Raster3dProfile()
   {
-    this.setName("Engrave 3D");
+    this.setName("engrave 3d");
   }
   protected boolean invertColors = false;
 

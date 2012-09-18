@@ -20,8 +20,8 @@ package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
-import com.t_oster.visicut.misc.Helper;
 import com.t_oster.liblasercut.utils.ShapeConverter;
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
@@ -44,9 +44,9 @@ public class VectorProfile extends LaserProfile
 
   public VectorProfile()
   {
-    this.setName("Cut Line");
+    this.setName("cut");
   }
-  protected boolean isCut = false;
+  protected boolean isCut = true;
 
   /**
    * Get the value of isCut
@@ -119,7 +119,7 @@ public class VectorProfile extends LaserProfile
   {
     for (LaserProperty prop : laserProperties)
     {
-      job.getVectorPart().setCurrentCuttingProperty(prop);
+      job.getVectorPart().setProperty(prop);
       ShapeConverter conv = new ShapeConverter();
       for (GraphicObject e : objects)
       {
