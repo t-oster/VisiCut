@@ -281,9 +281,9 @@ public class VisicutModel
 
   public void updatePreferences()
   {
-    this.preferences.setLastLaserDevice(this.getSelectedLaserDevice().getName());
-    this.preferences.setLastMaterial(this.getMaterial().getName());
-    this.preferences.setLastResolution(this.getResolution());
+    this.preferences.setLastLaserDevice(this.selectedLaserDevice == null ? null : selectedLaserDevice.getName());
+    this.preferences.setLastMaterial(this.material == null ? null : material.getName());
+    this.preferences.setLastResolution(this.resolution);
     try
     {
       PreferencesManager.getInstance().savePreferences();
