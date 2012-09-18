@@ -36,12 +36,12 @@ import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.VisicutModel;
-import com.t_oster.visicut.gui.beans.ImageComboBox;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.MaterialManager;
 import com.t_oster.visicut.managers.ProfileManager;
+import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
@@ -62,10 +62,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -73,7 +71,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -98,6 +95,7 @@ public class MainView extends javax.swing.JFrame
 {
 
   private boolean initComplete = false;
+  final protected DialogHelper dialog = new DialogHelper(this, this.getTitle());
   
   public MainView(File loadedFile)
   {
@@ -144,7 +142,7 @@ public class MainView extends javax.swing.JFrame
           }
           catch (FileNotFoundException ex)
           {
-            MainView.this.showErrorMessage(ex);
+            dialog.showErrorMessage(ex);
           }
           if (!MainView.this.previewPanel.getMappings().equals(set))
           {
@@ -250,11 +248,11 @@ public class MainView extends javax.swing.JFrame
           try
           {
             Helper.installInkscapeExtension();
-            JOptionPane.showMessageDialog(MainView.this, "Installed extension successfully");
+            dialog.showSuccessMessage("Installed extension successfully");
           }
           catch (Exception e)
           {
-            JOptionPane.showMessageDialog(MainView.this, "There was an Error during the Installation: "+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            dialog.showErrorMessage(e, "There was an Error during the Installation");
           }
         }
       });
@@ -1220,8 +1218,7 @@ public class MainView extends javax.swing.JFrame
     catch (Exception e)
     {
       this.progressBar.setIndeterminate(false);
-      e.printStackTrace();
-      JOptionPane.showMessageDialog(this, "Error while opening '" + file.getName() + "':\n" + e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      dialog.showErrorMessage(e, "Error while opening '" + file.getName() + "'");
     }
   }
 
@@ -1312,7 +1309,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   {
     if (this.visicutModel1.getGraphicObjects() == null || this.visicutModel1.getGraphicObjects().size()==0)
     {
-      JOptionPane.showMessageDialog(this, "Please load a file before editing mappings", "Info", JOptionPane.ERROR_MESSAGE);
+      dialog.showInfoMessage("Please load a file before editing mappings");
       return;
     }
     List<MappingSet> mappingsets = new LinkedList<MappingSet>();
@@ -1356,7 +1353,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
           res = r;
         }
       }
-      if (JOptionPane.showConfirmDialog(this, "The Lasercutter you selected, does not support "+soll+"dpi\nDo you want to use "+res+"dpi instead?", "Question", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+      if (!dialog.showYesNoQuestion("The Lasercutter you selected, does not support "+soll+"dpi\nDo you want to use "+res+"dpi instead?"))
       {
         return;
       }
@@ -1389,7 +1386,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       {
         if (unknownProfilesUsed)
         {
-          JOptionPane.showMessageDialog(this, "For some profile you selected, there are no lasercutter settings yet\nYou will have to enter them in the following dialog.");
+          dialog.showInfoMessage("For some profile you selected, there are no lasercutter settings yet\nYou will have to enter them in the following dialog.");
         }
         String heading = "Settings for "+device.getName()+" with material "+material.toString();
         //Adapt Settings before execute
@@ -1441,18 +1438,17 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             MainView.this.progressBar.setStringPainted(false);
             String txt = MainView.this.visicutModel1.getSelectedLaserDevice().getJobSentText();
             txt = txt.replace("$jobname", prefix + jobnumber).replace("$name", MainView.this.visicutModel1.getSelectedLaserDevice().getName());
-            JOptionPane.showMessageDialog(MainView.this, txt, "Job sent", JOptionPane.INFORMATION_MESSAGE);
+            dialog.showSuccessMessage(txt);
           }
           catch (Exception ex)
           {
-            ex.printStackTrace();
             if (ex instanceof IllegalJobException && ex.getMessage().startsWith("Illegal Focus value"))
             {
-              JOptionPane.showMessageDialog(MainView.this, "You Material is too high for automatic Focussing.\nPlease focus manually and set the total height to 0.", "Error", JOptionPane.ERROR_MESSAGE);
+              dialog.showWarningMessage("You Material is too high for automatic Focussing.\nPlease focus manually and set the total height to 0.");
             }
             else
             {
-              JOptionPane.showMessageDialog(MainView.this, "Error ("+ex.getClass().toString()+"):" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+              dialog.showErrorMessage(ex);
             }
           }
           MainView.this.progressBar.setString("");
@@ -1464,8 +1460,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
-      JOptionPane.showMessageDialog(MainView.this, "Error ("+ex.getClass().toString()+"):" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      dialog.showErrorMessage(ex);
     }
   }
 
@@ -1490,16 +1485,16 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
     //On Mac os, awt.FileDialog looks more native
     if (Helper.isMacOS())
     {
-      FileDialog dialog = new java.awt.FileDialog(this);
-      dialog.setMode(FileDialog.SAVE);
+      FileDialog fdialog = new java.awt.FileDialog(this);
+      fdialog.setMode(FileDialog.SAVE);
       if (lastDirectory != null)
       {
-        dialog.setDirectory(lastDirectory.getAbsolutePath());
+        fdialog.setDirectory(lastDirectory.getAbsolutePath());
       }
-      dialog.setVisible(true);
-      if (dialog.getFile() != null)
+      fdialog.setVisible(true);
+      if (fdialog.getFile() != null)
       {
-        file = new File(new File(dialog.getDirectory()), dialog.getFile());
+        file = new File(new File(fdialog.getDirectory()), fdialog.getFile());
       }
     }
     else
@@ -1523,16 +1518,14 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
       }
       catch (Exception ex)
       {
-        logger.log(Level.SEVERE, null, ex);
-        JOptionPane.showMessageDialog(this, "Error saving File: " + ex.getLocalizedMessage());
+        dialog.showErrorMessage(ex, "Error saving file");
       }
     }
     else
     {
-      System.out.println("File access cancelled by user.");
+      //File access cancelled by user.
     }
   }
-  private Logger logger = Logger.getLogger(MainView.class.getName());
 
 private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
   this.save();
@@ -1582,8 +1575,7 @@ private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   }
   catch (Exception ex)
   {
-    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-    JOptionPane.showMessageDialog(this, "Error saving File:\n" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    dialog.showErrorMessage(ex, "Error saving File");
   }
 }//GEN-LAST:event_saveMenuItemActionPerformed
 
@@ -1596,7 +1588,7 @@ private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calibrateCameraMenuItemActionPerformed
   if (this.visicutModel1.getBackgroundImage() == null)
   {
-    JOptionPane.showMessageDialog(this, "The Camera doesn't seem to be working. Please check the URL in the Lasercutter Settings");
+    dialog.showErrorMessage("The Camera doesn't seem to be working. Please check the URL in the Lasercutter Settings");
     return;
   }
   CamCalibrationDialog ccd = new CamCalibrationDialog();
@@ -1612,8 +1604,7 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
   }
   catch (FileNotFoundException ex)
   {
-    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-    JOptionPane.showMessageDialog(this, "Error while saving Settings: " + ex.getLocalizedMessage());
+    dialog.showErrorMessage(ex, "Error while saving Settings");
   }
 }//GEN-LAST:event_calibrateCameraMenuItemActionPerformed
 
@@ -1691,7 +1682,7 @@ private void editMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
     }
     catch (FileNotFoundException ex)
     {
-      this.showErrorMessage(ex);
+      dialog.showErrorMessage(ex);
     }
 }//GEN-LAST:event_editMappingMenuItemActionPerformed
 
@@ -1726,15 +1717,10 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       }
       catch (FileNotFoundException ex)
       {
-        this.showErrorMessage(ex);
+        dialog.showErrorMessage(ex);
       }
     }
   }//GEN-LAST:event_materialMenuItemActionPerformed
-
-  public void showErrorMessage(Exception cause)
-  {
-    JOptionPane.showMessageDialog(this, "Error ("+cause.getClass().getSimpleName()+"): "+cause.getLocalizedMessage(), "An Error occured", JOptionPane.ERROR_MESSAGE);
-  }
 
   private void laserCutterComboBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_laserCutterComboBoxActionPerformed
   {//GEN-HEADEREND:event_laserCutterComboBoxActionPerformed
@@ -1775,7 +1761,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       }
       catch (FileNotFoundException ex)
       {
-        JOptionPane.showMessageDialog(this, "Error saving preferences: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        dialog.showErrorMessage(ex, "Error saving preferences");
       }
       this.fillComboBoxes();
     }
@@ -1799,7 +1785,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         }
         catch (Exception ex)
         {
-          MainView.this.showErrorMessage(ex);
+          dialog.showErrorMessage(ex);
         }
       }
     }.start();
@@ -1834,7 +1820,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     }
     catch (FileNotFoundException ex)
     {
-      this.showErrorMessage(ex);
+      dialog.showErrorMessage(ex);
     }
   }//GEN-LAST:event_predefinedMappingListValueChanged
 
@@ -1865,7 +1851,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
           choose.addItem("Raster Profile");
           choose.addItem("Raster3d Profile");
           box.add(choose);
-          JOptionPane.showMessageDialog(this, box, "Which kind of Profile?", JOptionPane.OK_OPTION);
+          JOptionPane.showMessageDialog(this, box, "Please select a profile Type", JOptionPane.QUESTION_MESSAGE);
           if (choose.getSelectedItem().equals("Line Profile")) {
             EditVectorProfileDialog d = new EditVectorProfileDialog(null, true);
             VectorProfile p = new VectorProfile();
@@ -1896,7 +1882,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
           }
           if (lp == null)
           {
-            JOptionPane.showMessageDialog(this, "You have to create a new profile");
+            dialog.showInfoMessage("You have to create a new profile");
             this.setMappings(mappings);
             return;
           }
@@ -1935,7 +1921,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     }
     catch (FileNotFoundException ex)
     {
-      this.showErrorMessage(ex);
+      dialog.showErrorMessage(ex);
     }
     this.refreshButtonStates();
   }//GEN-LAST:event_mappingTabbedPaneStateChanged
@@ -1959,8 +1945,7 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
     }
     catch (Exception ex)
     {
-      JOptionPane.showMessageDialog(this, "Error reloading File:\n" + ex.getMessage(), "Error", JOptionPane.ERROR);
-      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+      dialog.showErrorMessage(ex, "Error reloading File");
     }
   }
   else if (this.visicutModel1.getSourceFile() != null && this.visicutModel1.getSourceFile().isFile())
@@ -1972,8 +1957,7 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
     catch (Exception e)
     {
       this.progressBar.setIndeterminate(false);
-      e.printStackTrace();
-      JOptionPane.showMessageDialog(this, "Error while opening '" + this.visicutModel1.getSourceFile().getName() + "':\n" + e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      dialog.showErrorMessage(e, "Error while opening '" + this.visicutModel1.getSourceFile().getName() + "'");
     }
   }
 }//GEN-LAST:event_reloadMenuItemActionPerformed
@@ -2031,11 +2015,11 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
       try
       {
         PreferencesManager.getInstance().exportSettings(file);
+        dialog.showSuccessMessage("Settings successfully exported");
       }
       catch (Exception ex)
       {
-        JOptionPane.showMessageDialog(this, "Error: "+ex.getLocalizedMessage());
-        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+        dialog.showErrorMessage(ex);
       }
     }
   }//GEN-LAST:event_jmExportSettingsActionPerformed
@@ -2092,12 +2076,13 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
               PreferencesManager.getInstance().importSettings(file);
               this.fillComboBoxes();
               this.refreshExampleMenu();
+              dialog.showSuccessMessage("Settings successfully imported");
             }
           }
         }
         catch (Exception e)
         {
-          JOptionPane.showMessageDialog(this, "Error: "+e.getLocalizedMessage());
+          dialog.showErrorMessage(e);
         }
       }
     }
@@ -2119,7 +2104,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
       }
       catch (FileNotFoundException ex)
       {
-        this.showErrorMessage(ex);
+        dialog.showErrorMessage(ex);
       }
       this.fillComboBoxes();
     }
@@ -2142,7 +2127,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
       }
       catch (FileNotFoundException ex)
       {
-        this.showErrorMessage(ex);
+        dialog.showErrorMessage(ex);
       }
     }
   }//GEN-LAST:event_btAddMaterialActionPerformed
