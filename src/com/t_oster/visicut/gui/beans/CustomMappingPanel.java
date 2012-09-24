@@ -131,6 +131,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
   {
     this.generateDefaultEntries();
     this.setTableModel(model);
+    this.setProvider(this);
     this.setObjects((List) entries);
     this.setEditButtonVisible(false);
     this.getTable().setDefaultEditor(FilterSet.class, new FilterSetCellEditor());
