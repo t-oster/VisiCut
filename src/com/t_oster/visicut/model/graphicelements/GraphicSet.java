@@ -27,7 +27,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -173,12 +177,20 @@ public class GraphicSet extends LinkedList<GraphicObject>
   public boolean add(GraphicObject o)
   {
     this.boundingBoxCache = null;
+    if (this.attributesCache != null)
+    {
+      this.attributesCache.addAll(o.getAttributes());
+    }
     return super.add(o);
   }
   
   public boolean remove(GraphicObject o)
   {
     this.boundingBoxCache = null;
+    if (this.attributesCache != null)
+    {
+      this.attributesCache.removeAll(o.getAttributes());
+    }
     return super.remove(o);
   }
   
@@ -192,5 +204,39 @@ public class GraphicSet extends LinkedList<GraphicObject>
     result.originalBoundingBoxCache = originalBoundingBoxCache;
     result.basicTransform = basicTransform;
     return result;
+  }
+
+  private Map<String, Set<Object>> attributeValueCache = null;
+  public Iterable<Object> getAttributeValues(String attribute)
+  {
+    if (attributeValueCache == null)
+    {
+      attributeValueCache = new LinkedHashMap<String, Set<Object>>();
+    }
+    if (!attributeValueCache.containsKey(attribute))
+    {
+      Set<Object> values = new LinkedHashSet<Object>();
+      for(GraphicObject o : this)
+      {
+        values.addAll(o.getAttributeValues(attribute));
+      }
+      attributeValueCache.put(attribute, values);
+    }
+    return attributeValueCache.get(attribute);
+  }
+  
+  private Set<String> attributesCache = null;
+  
+  public Iterable<String> getAttributes()
+  {
+    if (attributesCache == null)
+    {
+      attributesCache = new LinkedHashSet();
+      for(GraphicObject o:this)
+      {
+        attributesCache.addAll(o.getAttributes());
+      }
+    }
+    return attributesCache;
   }
 }

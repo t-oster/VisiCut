@@ -572,7 +572,7 @@
         </Component>
         <Container class="javax.swing.JTabbedPane" name="mappingTabbedPane">
           <Properties>
-            <Property name="name" type="java.lang.String" value="mappingTabbedPane" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="Custom" noResource="true"/>
           </Properties>
           <Events>
             <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="mappingTabbedPaneStateChanged"/>
@@ -627,17 +627,14 @@
                 </Container>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="customMappingPanel">
+            <Container class="javax.swing.JPanel" name="customMappingPanel1">
               <Properties>
-                <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[277, 382]"/>
-                </Property>
-                <Property name="name" type="java.lang.String" value="customMappingPanel" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="customMappingPanelContainer" noResource="true"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                   <JTabbedPaneConstraints tabName="Custom">
-                    <Property name="tabTitle" type="java.lang.String" resourceKey="customMappingPanel.TabConstraints.tabTitle"/>
+                    <Property name="tabTitle" type="java.lang.String" resourceKey="customMappingPanelContainer.TabConstraints.tabTitle"/>
                   </JTabbedPaneConstraints>
                 </Constraint>
               </Constraints>
@@ -645,66 +642,21 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="customMappingComboBox" pref="326" max="32767" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                      </Group>
-                      <Component id="jScrollPane2" alignment="0" pref="413" max="32767" attributes="0"/>
+                      <Component id="customMappingPanel2" alignment="0" pref="413" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="customMappingComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane2" pref="158" max="32767" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="customMappingPanel2" alignment="0" pref="219" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Component class="javax.swing.JLabel" name="jLabel11">
+                <Component class="com.t_oster.visicut.gui.beans.CustomMappingPanel" name="customMappingPanel2">
                   <Properties>
-                    <Property name="text" type="java.lang.String" resourceKey="jLabel11.text"/>
-                    <Property name="name" type="java.lang.String" value="jLabel11" noResource="true"/>
+                    <Property name="name" type="java.lang.String" value="customMappingPanel2" noResource="true"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="customMappingComboBox">
-                  <Properties>
-                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                      <StringArray count="0"/>
-                    </Property>
-                    <Property name="name" type="java.lang.String" value="customMappingComboBox" noResource="true"/>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="customMappingComboBoxActionPerformed"/>
-                  </Events>
-                </Component>
-                <Container class="javax.swing.JScrollPane" name="jScrollPane2">
-                  <Properties>
-                    <Property name="name" type="java.lang.String" value="jScrollPane2" noResource="true"/>
-                  </Properties>
-                  <AuxValues>
-                    <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
-                  </AuxValues>
-
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-                  <SubComponents>
-                    <Component class="com.t_oster.visicut.gui.beans.CustomMappingTable" name="customMappingTable">
-                      <Properties>
-                        <Property name="name" type="java.lang.String" value="customMappingTable" noResource="true"/>
-                      </Properties>
-                    </Component>
-                  </SubComponents>
-                </Container>
               </SubComponents>
             </Container>
           </SubComponents>
