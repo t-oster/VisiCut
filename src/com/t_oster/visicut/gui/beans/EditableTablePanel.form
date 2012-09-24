@@ -20,13 +20,16 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
-              <Component id="jScrollPane1" pref="238" max="32767" attributes="0"/>
+              <Component id="jScrollPane1" pref="222" max="32767" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="btUp" max="32767" attributes="1"/>
                   <Component id="editButton" alignment="0" max="32767" attributes="1"/>
                   <Component id="addButton" alignment="0" max="32767" attributes="1"/>
                   <Component id="removeButton" alignment="0" max="32767" attributes="1"/>
+                  <Component id="btDown" alignment="0" min="-2" max="-2" attributes="1"/>
               </Group>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -38,9 +41,13 @@
               <Component id="removeButton" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="editButton" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="21" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="btUp" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="btDown" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="19" max="32767" attributes="0"/>
           </Group>
-          <Component id="jScrollPane1" alignment="0" pref="108" max="32767" attributes="0"/>
+          <Component id="jScrollPane1" alignment="0" pref="208" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -95,6 +102,24 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btUp">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="btUp.text"/>
+        <Property name="name" type="java.lang.String" value="btUp" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btUpActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btDown">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="btDown.text"/>
+        <Property name="name" type="java.lang.String" value="btDown" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btDownActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

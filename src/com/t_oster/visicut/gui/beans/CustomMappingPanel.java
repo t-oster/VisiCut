@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.AbstractCellEditor;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -142,6 +141,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     }
     this.getTable().setDefaultEditor(LaserProfile.class, new DefaultCellEditor(profiles));
     this.getTable().setDefaultRenderer(FilterSet.class, filterSetRenderer);
+    this.setMoveButtonsVisible(true);
   }
   
   private DefaultTableCellRenderer filterSetRenderer = new DefaultTableCellRenderer()
