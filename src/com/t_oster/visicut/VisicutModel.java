@@ -685,8 +685,6 @@ public class VisicutModel
     boolean containsRaster = false;
     boolean containsVector = false;
     boolean containsRaster3d = false;
-    //Aggregate all Mappings per LaserProfile
-    HashMap<LaserProfile, GraphicSet> parts = new LinkedHashMap<LaserProfile, GraphicSet>();
     for (Mapping m : this.getMappings())
     {
       GraphicSet set = m.getA().getMatchingObjects(this.getGraphicObjects());
@@ -703,20 +701,6 @@ public class VisicutModel
       {
         containsRaster3d = true;
       }
-      if (parts.containsKey(p))
-      {
-        for (GraphicObject e : set)
-        {
-          if (!parts.get(p).contains(e))
-          {
-            parts.get(p).add(e);
-          }
-        }
-      }
-      else
-      {
-        parts.put(p, set);
-      }
     }
     
     LaserCutter lc = this.getSelectedLaserDevice().getLaserCutter();
@@ -726,24 +710,15 @@ public class VisicutModel
     LaserJob job = new LaserJob(name, name, "visicut", this.getValidResolution(), r3dp, vp, rp);
     
     float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() ? 0 : this.material.getDepth();
-    //Add all non-cutting parts to the laserjob
-    for (Entry<LaserProfile, GraphicSet> e : parts.entrySet())
+    
+    for (Mapping m : this.getMappings())
     {
-      if (!(e.getKey() instanceof VectorProfile) || !((VectorProfile)e.getKey()).isIsCut())
-      {
-        List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey());
-        e.getKey().addToLaserJob(job, e.getValue(), this.addFocusOffset(props, focusOffset));
-      }
+      GraphicSet set = m.getA().getMatchingObjects(this.getGraphicObjects());
+      LaserProfile p = ProfileManager.getInstance().getProfileByName(m.getProfileName());
+      List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, p);
+      p.addToLaserJob(job, set, this.addFocusOffset(props, focusOffset));
     }
-    //Add all cutting parts to the end of the laserjob
-    for (Entry<LaserProfile, GraphicSet> e : parts.entrySet())
-    {
-      if (e.getKey() instanceof VectorProfile && ((VectorProfile)e.getKey()).isIsCut())
-      {
-        List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, e.getKey());
-        e.getKey().addToLaserJob(job, e.getValue(), this.addFocusOffset(props, focusOffset));
-      }
-    }
+    
     return job;
   }
 
