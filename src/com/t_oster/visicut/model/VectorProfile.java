@@ -20,6 +20,7 @@ package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.liblasercut.utils.ShapeConverter;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
@@ -117,9 +118,10 @@ public class VectorProfile extends LaserProfile
   @Override
   public void addToLaserJob(LaserJob job, GraphicSet objects, List<LaserProperty> laserProperties)
   {
+    VectorPart part = new VectorPart(laserProperties.get(0));
     for (LaserProperty prop : laserProperties)
     {
-      job.getVectorPart().setProperty(prop);
+      part.setProperty(prop);
       ShapeConverter conv = new ShapeConverter();
       for (GraphicObject e : objects)
       {
@@ -128,9 +130,10 @@ public class VectorProfile extends LaserProfile
         {
           sh = objects.getTransform().createTransformedShape(sh);
         }
-        conv.addShape(sh, job.getVectorPart());
+        conv.addShape(sh, part);
       }
     }
+    job.addPart(part);
   }
 
   @Override

@@ -375,7 +375,8 @@ private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
       vp.moveto(p.x, p.y - size / 2);
       vp.lineto(p.x, p.y + size / 2);
     }
-    LaserJob job = new LaserJob("Calibration", "VisiCut Calibration Page", "visicut", VisicutModel.getInstance().getValidResolution(), null, vp, null);
+    LaserJob job = new LaserJob("Calibration", "VisiCut Calibration Page", "visicut", VisicutModel.getInstance().getValidResolution());
+    job.addPart(vp);
     this.laserCutter.sendJob(job);
     JOptionPane.showMessageDialog(this, "Please press 'START' on the Lasercutter");
   }

@@ -682,32 +682,7 @@ public class VisicutModel
     
   private LaserJob prepareJob(String name) throws FileNotFoundException, IOException
   {
-    boolean containsRaster = false;
-    boolean containsVector = false;
-    boolean containsRaster3d = false;
-    for (Mapping m : this.getMappings())
-    {
-      GraphicSet set = m.getA().getMatchingObjects(this.getGraphicObjects());
-      LaserProfile p = ProfileManager.getInstance().getProfileByName(m.getProfileName());
-      if (p instanceof VectorProfile)
-      {
-        containsVector = true;
-      }
-      else if (p instanceof RasterProfile)
-      {
-        containsRaster = true;
-      }
-      else if (p instanceof Raster3dProfile)
-      {
-        containsRaster3d = true;
-      }
-    }
-    
-    LaserCutter lc = this.getSelectedLaserDevice().getLaserCutter();
-    RasterPart rp = containsRaster ? new RasterPart(lc.getLaserPropertyForRasterPart()) : null;
-    Raster3dPart r3dp = containsRaster3d ? new Raster3dPart(lc.getLaserPropertyForRaster3dPart()) : null;
-    VectorPart vp = containsVector ? new VectorPart(lc.getLaserPropertyForVectorPart()) : null;
-    LaserJob job = new LaserJob(name, name, "visicut", this.getValidResolution(), r3dp, vp, rp);
+    LaserJob job = new LaserJob(name, name, "visicut", this.getValidResolution());
     
     float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() ? 0 : this.material.getDepth();
     

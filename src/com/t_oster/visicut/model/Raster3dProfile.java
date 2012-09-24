@@ -21,6 +21,7 @@ package com.t_oster.visicut.model;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
+import com.t_oster.liblasercut.Raster3dPart;
 import com.t_oster.liblasercut.platform.Point;
 import com.t_oster.liblasercut.utils.BufferedImageAdapter;
 import com.t_oster.visicut.misc.Helper;
@@ -190,10 +191,12 @@ public class Raster3dProfile extends LaserProfile
         }
         BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors);
         ad.setColorShift(this.getColorShift());
+        Raster3dPart part = new Raster3dPart(laserProperties.get(0));
         for (LaserProperty prop : laserProperties)
         {
-          job.getRaster3dPart().addImage(ad, prop, new Point((int) bb.getX(), (int) bb.getY()));
+          part.addImage(ad, prop, new Point((int) bb.getX(), (int) bb.getY()));
         }
+        job.addPart(part);
       }
     }
   }

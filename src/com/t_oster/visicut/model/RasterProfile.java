@@ -23,6 +23,7 @@ import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
+import com.t_oster.liblasercut.RasterPart;
 import com.t_oster.liblasercut.dithering.DitheringAlgorithm;
 import com.t_oster.liblasercut.platform.Point;
 import com.t_oster.liblasercut.utils.BufferedImageAdapter;
@@ -217,10 +218,12 @@ public class RasterProfile extends LaserProfile
         BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors);
         ad.setColorShift(this.getColorShift());
         BlackWhiteRaster bw = new BlackWhiteRaster(ad, this.getDitherAlgorithm());
+        RasterPart part = new RasterPart(laserProperties.get(0));
         for (LaserProperty prop : laserProperties)
         {//and add it to the raster part as often as defined in the profile
-          job.getRasterPart().addImage(bw, prop, new Point((int) bb.getX(), (int) bb.getY()));
+          part.addImage(bw, prop, new Point((int) bb.getX(), (int) bb.getY()));
         }
+        job.addPart(part);
       }
     }
   }
