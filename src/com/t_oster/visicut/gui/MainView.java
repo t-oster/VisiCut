@@ -1468,6 +1468,10 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
     {
       this.captureImage();
     }
+    boolean estimate = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getLaserCutter().canEstimateJobDuration();
+    this.calculateTimeButton.setVisible(estimate);
+    this.timeLabel.setVisible(estimate);
+    this.jLabel10.setVisible(estimate);
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_SOURCEFILE))
   {
@@ -1690,6 +1694,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     new Thread()
     {
 
+      @Override
       public void run()
       {
         try
