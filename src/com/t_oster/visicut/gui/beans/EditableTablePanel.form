@@ -1,12 +1,9 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
-  <Properties>
-    <Property name="name" type="java.lang.String" value="Form" noResource="true"/>
-  </Properties>
+<Form version="1.3" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <AuxValues>
-    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="2"/>
-    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
     <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
@@ -19,15 +16,15 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
-              <Component id="jScrollPane1" pref="222" max="32767" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="btUp" max="32767" attributes="1"/>
-                  <Component id="editButton" alignment="0" max="32767" attributes="1"/>
-                  <Component id="addButton" alignment="0" max="32767" attributes="1"/>
-                  <Component id="removeButton" alignment="0" max="32767" attributes="1"/>
-                  <Component id="btDown" alignment="0" min="-2" max="-2" attributes="1"/>
+          <Group type="102" alignment="0" attributes="0">
+              <Component id="jScrollPane1" pref="394" max="32767" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                  <Component id="btRemove" max="32767" attributes="0"/>
+                  <Component id="btUp" alignment="0" max="32767" attributes="0"/>
+                  <Component id="btDown" alignment="0" max="32767" attributes="0"/>
+                  <Component id="btEdit" max="32767" attributes="0"/>
+                  <Component id="btAdd" alignment="0" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
@@ -36,26 +33,23 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
-              <Component id="addButton" min="-2" max="-2" attributes="0"/>
+              <Component id="btAdd" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="removeButton" min="-2" max="-2" attributes="0"/>
+              <Component id="btRemove" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="editButton" min="-2" max="-2" attributes="0"/>
+              <Component id="btEdit" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btUp" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btDown" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="19" max="32767" attributes="0"/>
+              <EmptySpace pref="111" max="32767" attributes="0"/>
           </Group>
-          <Component id="jScrollPane1" alignment="0" pref="208" max="32767" attributes="0"/>
+          <Component id="jScrollPane1" pref="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
     <Container class="javax.swing.JScrollPane" name="jScrollPane1">
-      <Properties>
-        <Property name="name" type="java.lang.String" value="jScrollPane1" noResource="true"/>
-      </Properties>
       <AuxValues>
         <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
       </AuxValues>
@@ -72,42 +66,37 @@
                 <Column editable="true" title="Title 4" type="java.lang.Object"/>
               </Table>
             </Property>
-            <Property name="name" type="java.lang.String" value="table" noResource="true"/>
           </Properties>
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="addButton">
+    <Component class="javax.swing.JButton" name="btAdd">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="addButton.text"/>
-        <Property name="name" type="java.lang.String" value="addButton" noResource="true"/>
+        <Property name="text" type="java.lang.String" value="+"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addButtonActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btAddActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="removeButton">
+    <Component class="javax.swing.JButton" name="btRemove">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="removeButton.text"/>
-        <Property name="name" type="java.lang.String" value="removeButton" noResource="true"/>
+        <Property name="text" type="java.lang.String" value="-"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="removeButtonActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btRemoveActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="editButton">
+    <Component class="javax.swing.JButton" name="btEdit">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="editButton.text"/>
-        <Property name="name" type="java.lang.String" value="editButton" noResource="true"/>
+        <Property name="text" type="java.lang.String" value="Edit"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editButtonActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btEditActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btUp">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="btUp.text"/>
-        <Property name="name" type="java.lang.String" value="btUp" noResource="true"/>
+        <Property name="text" type="java.lang.String" value="up"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btUpActionPerformed"/>
@@ -115,8 +104,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btDown">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="btDown.text"/>
-        <Property name="name" type="java.lang.String" value="btDown" noResource="true"/>
+        <Property name="text" type="java.lang.String" value="down"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btDownActionPerformed"/>
