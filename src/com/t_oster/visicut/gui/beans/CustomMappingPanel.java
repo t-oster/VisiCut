@@ -8,6 +8,8 @@ import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Component;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -23,7 +25,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class CustomMappingPanel extends EditableTablePanel implements EditableTableProvider
+public class CustomMappingPanel extends EditableTablePanel implements EditableTableProvider, PropertyChangeListener
 {
   private DefaultTableModel model = new DefaultTableModel()
   {
@@ -117,6 +119,14 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
   {
     return o;
   }
+
+  public void propertyChange(PropertyChangeEvent pce)
+  {
+    if (pce.getSource() == ProfileManager.getInstance())
+    {
+      this.refreshProfilesEditor();
+    }
+  }
   
   class Entry
   {
@@ -135,14 +145,20 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     this.setObjects((List) entries);
     this.setEditButtonVisible(false);
     this.getTable().setDefaultEditor(FilterSet.class, new FilterSetCellEditor());
+    this.refreshProfilesEditor();
+    this.getTable().setDefaultRenderer(FilterSet.class, filterSetRenderer);
+    this.setMoveButtonsVisible(true);
+    ProfileManager.getInstance().addPropertyChangeListener(this);
+  }
+  
+  private void refreshProfilesEditor()
+  {
     JComboBox profiles = new JComboBox();
     for (LaserProfile lp : ProfileManager.getInstance().getAll())
     {
       profiles.addItem(lp);
     }
     this.getTable().setDefaultEditor(LaserProfile.class, new DefaultCellEditor(profiles));
-    this.getTable().setDefaultRenderer(FilterSet.class, filterSetRenderer);
-    this.setMoveButtonsVisible(true);
   }
   
   private DefaultTableCellRenderer filterSetRenderer = new DefaultTableCellRenderer()

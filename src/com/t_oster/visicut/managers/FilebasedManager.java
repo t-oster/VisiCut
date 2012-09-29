@@ -20,6 +20,8 @@ package com.t_oster.visicut.managers;
 
 import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
@@ -36,7 +38,15 @@ public abstract class FilebasedManager<T>
 {
 
   protected List<T> objects = null;
-  
+  protected PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+  public void addPropertyChangeListener(PropertyChangeListener l)
+  {
+    pcs.addPropertyChangeListener(l);
+  }
+  public void removePropertyChangeListener(PropertyChangeListener l)
+  {
+    pcs.removePropertyChangeListener(l);
+  }
 
   private List<T> loadFromDirectory(File dir)
   {
@@ -97,6 +107,7 @@ public abstract class FilebasedManager<T>
   {
     this.objects.remove(mp);
     this.deleteObject(mp);
+    pcs.firePropertyChange("removed", mp, objects);
   }
   
   private void deleteObject(T mp)
@@ -120,9 +131,8 @@ public abstract class FilebasedManager<T>
     this.getAll().add(mp);
     this.save(mp, this.getObjectPath(mp));
     Collections.sort(this.objects, getComparator());
+    pcs.firePropertyChange("add", null, mp);
   }
-  
-  
   
   public void save(T mp, File f) throws FileNotFoundException
   {
@@ -194,12 +204,16 @@ public abstract class FilebasedManager<T>
   {
     for(Object m:this.getAll().toArray())
     {
-      this.remove((T) m);
+      this.deleteObject((T) m);
     }
+    this.getAll().clear();
     for (T m:mats)
     {
-      this.add(m);
+      this.getAll().add(m);
+      this.save(m, this.getObjectPath(m));
     }
+    Collections.sort(this.getAll(), getComparator());
+    pcs.firePropertyChange("all", null, this.objects);
   }
 
 }
