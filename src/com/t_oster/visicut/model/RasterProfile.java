@@ -218,12 +218,11 @@ public class RasterProfile extends LaserProfile
         BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors);
         ad.setColorShift(this.getColorShift());
         BlackWhiteRaster bw = new BlackWhiteRaster(ad, this.getDitherAlgorithm());
-        RasterPart part = new RasterPart(laserProperties.get(0));
         for (LaserProperty prop : laserProperties)
-        {//and add it to the raster part as often as defined in the profile
-          part.addImage(bw, prop, new Point((int) bb.getX(), (int) bb.getY()));
+        {
+          RasterPart part = new RasterPart(bw, prop, new Point((int) bb.getX(), (int) bb.getY()));
+          job.addPart(part);
         }
-        job.addPart(part);
       }
     }
   }

@@ -191,12 +191,11 @@ public class Raster3dProfile extends LaserProfile
         }
         BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors);
         ad.setColorShift(this.getColorShift());
-        Raster3dPart part = new Raster3dPart(laserProperties.get(0));
         for (LaserProperty prop : laserProperties)
         {
-          part.addImage(ad, prop, new Point((int) bb.getX(), (int) bb.getY()));
+          Raster3dPart part = new Raster3dPart(ad, prop, new Point((int) bb.getX(), (int) bb.getY()));
+          job.addPart(part);
         }
-        job.addPart(part);
       }
     }
   }
