@@ -38,6 +38,7 @@ import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.managers.MaterialManager;
 import com.t_oster.visicut.managers.ProfileManager;
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
@@ -455,7 +456,7 @@ public class VisicutModel
     File tmp = null;
     do
     {
-      tmp = new File("tmp" + (i++) + ".xml");
+      tmp = new File(Helper.getBasePath(), "tmp" + (i++) + ".xml");
     }
     while (tmp.exists());
     AffineTransform at = this.getGraphicObjects().getTransform();
