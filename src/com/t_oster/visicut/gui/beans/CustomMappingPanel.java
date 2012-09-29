@@ -74,11 +74,13 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     public void setValueAt(Object aValue, int row, int column)
     {
       Entry e = entries.get(row);
+      boolean enabledOrChange = e.enabled;
       switch (column)
       {
         case 0: 
         {
           e.enabled = (Boolean) aValue;
+          enabledOrChange = true;
           break;
         }
         case 1:
@@ -92,7 +94,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
           break;
         }
       }
-      if (e.enabled)
+      if (enabledOrChange)
       {
         VisicutModel.getInstance().setMappings(CustomMappingPanel.this.getResultingMappingSet());
       }
