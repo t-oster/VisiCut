@@ -18,17 +18,11 @@
  **/
 package com.t_oster.visicut.managers;
 
-import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
-import java.io.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class manages the available Material Profiles
