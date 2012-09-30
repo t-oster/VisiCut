@@ -23,6 +23,9 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.Raster3dProfile;
+import com.t_oster.visicut.model.RasterProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
@@ -73,7 +76,30 @@ public class LaserPropertyManager
     File f = getLaserPropertiesFile(ld, mp, lp);
     if (f.exists())
     {
-      return this.loadProperties(f);
+      List<LaserProperty> result = this.loadProperties(f);
+      //check if it is still the correct type for the laser-cutter
+      Class expectedClass = null;
+      if (lp instanceof RasterProfile)
+      {
+        expectedClass = ld.getLaserCutter().getLaserPropertyForRasterPart().getClass();
+      }
+      else if (lp instanceof VectorProfile)
+      {
+        expectedClass = ld.getLaserCutter().getLaserPropertyForVectorPart().getClass();
+      }
+      else if (lp instanceof Raster3dProfile)
+      {
+        expectedClass = ld.getLaserCutter().getLaserPropertyForRaster3dPart().getClass();
+      }
+      for(LaserProperty p : result)
+      {
+        if (!expectedClass.isAssignableFrom(p.getClass()))
+        {
+          System.err.println("Tried to load a laser-property of class "+p.getClass().toString()+", but lasercutter expects "+expectedClass.toString());
+          return null;
+        }
+      }
+      return result;
     }
     return null;
   }
