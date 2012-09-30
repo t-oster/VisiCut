@@ -106,6 +106,11 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       return classes[columnIndex];
     }
     
+    @Override
+    public void removeRow(int row)
+    {
+      
+    }
   };
 
   public Object getNewInstance()
@@ -126,7 +131,25 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
   {
     if (pce.getSource() == ProfileManager.getInstance())
     {
+      this.checkProfiles();
       this.refreshProfilesEditor();
+    }
+  }
+
+  /**
+   * checks for every row if the contained laser-profile
+   * is still existing
+   */
+  private void checkProfiles()
+  {
+    for (int row = this.entries.size()-1; row >= 0 ; row--)
+    {
+      LaserProfile lp = this.entries.get(row).profile;
+      if (ProfileManager.getInstance().getProfileByName(lp.getName()) == null)
+      {
+        this.entries.remove(row);
+        this.model.fireTableRowsDeleted(row, row);
+      }
     }
   }
   
