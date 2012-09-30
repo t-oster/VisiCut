@@ -1098,6 +1098,7 @@ public class MainView extends javax.swing.JFrame
         this.visicutModel1.loadFromFile(this.mappingManager1, file);
         if (this.visicutModel1.getMappings() != null)
         {
+          this.checkForMissingProfiles(this.visicutModel1.getMappings());
           if (this.custom == null)
           {
             custom = this.visicutModel1.getMappings();
