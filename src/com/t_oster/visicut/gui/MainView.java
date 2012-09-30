@@ -1110,6 +1110,7 @@ public class MainView extends javax.swing.JFrame
             custom.addAll(this.visicutModel1.getMappings());
           }
           this.predefinedMappingList.setSelectedValue(custom, true);
+          this.customMappingPanel2.representMapping(this.visicutModel1.getMappings());
         }
       }
       else

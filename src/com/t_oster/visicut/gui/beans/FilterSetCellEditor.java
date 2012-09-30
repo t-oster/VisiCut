@@ -65,6 +65,18 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
   {
     this.fireEditingCanceled();
   }
+
+  boolean canRepresent(FilterSet filterSet)
+  {
+    for (MappingFilter f : filterSet)
+    {
+      if (f.isInverted())
+      {
+        return false;
+      }
+    }
+    return true;
+  }
   
   class FilterMenuItem extends JCheckBoxMenuItem implements ActionListener
   {

@@ -127,6 +127,32 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     return o;
   }
 
+  /*
+   * Tries to represent a MappingSet and returns true, 
+   * if it is completely representable.
+   * Otherwise the content of the Panel is not modified
+   */
+  public boolean representMapping(MappingSet ms)
+  {
+    List<Entry> result = new LinkedList<Entry>();
+    for (Mapping m : ms)
+    {
+      Entry e = new Entry();
+      e.enabled = true;
+      e.filterSet = m.getFilterSet();
+      if (!this.filterSetEditor.canRepresent(e.filterSet))
+      {
+        return false;
+      }
+      e.profile = ProfileManager.getInstance().getProfileByName(m.getProfileName());
+      result.add(e);
+    }
+    this.entries.clear();
+    this.entries.addAll(result);
+    this.model.fireTableDataChanged();
+    return true;
+  }
+  
   public void propertyChange(PropertyChangeEvent pce)
   {
     if (pce.getSource() == ProfileManager.getInstance())
@@ -169,7 +195,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     this.setProvider(this);
     this.setObjects((List) entries);
     this.setEditButtonVisible(false);
-    this.getTable().setDefaultEditor(FilterSet.class, new FilterSetCellEditor());
+    this.getTable().setDefaultEditor(FilterSet.class, filterSetEditor);
     this.refreshProfilesEditor();
     this.getTable().setDefaultRenderer(FilterSet.class, filterSetRenderer);
     this.setMoveButtonsVisible(true);
@@ -185,6 +211,8 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     }
     this.getTable().setDefaultEditor(LaserProfile.class, new DefaultCellEditor(profiles));
   }
+  
+  private FilterSetCellEditor filterSetEditor = new FilterSetCellEditor();
   
   private DefaultTableCellRenderer filterSetRenderer = new DefaultTableCellRenderer()
   {
