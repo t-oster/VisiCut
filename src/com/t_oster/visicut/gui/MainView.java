@@ -1269,6 +1269,8 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     {
       LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
       MaterialProfile material = this.visicutModel1.getMaterial();
+      //first check if all profiles exist
+      this.checkForMissingProfiles(this.visicutModel1.getMappings());
       //get all profiles used in the job
       //and check if they're supported yet
       boolean unknownProfilesUsed = false;
@@ -1746,7 +1748,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     }
   }//GEN-LAST:event_predefinedMappingListValueChanged
 
-  private void setMappings(MappingSet mappings) throws FileNotFoundException
+  private void checkForMissingProfiles(MappingSet mappings) throws FileNotFoundException
   {
     if (mappings != null)
     {
@@ -1806,6 +1808,11 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         }
       }
     }
+  }
+  
+  private void setMappings(MappingSet mappings) throws FileNotFoundException
+  {
+    checkForMissingProfiles(mappings);
     this.visicutModel1.setMappings(mappings);
   }
 
