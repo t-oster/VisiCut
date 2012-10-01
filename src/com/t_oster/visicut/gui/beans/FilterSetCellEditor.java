@@ -17,6 +17,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.MissingResourceException;
 import javax.swing.AbstractCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -84,11 +85,21 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     JMenu parent = null;
     public FilterMenuItem(String attribute, Object value, JMenu parent)
     {
-      super(value == null ? "null" : value.toString());
       if (value instanceof Color)
       {
         this.setText(Helper.toHtmlRGB((Color) value));
         this.setForeground((Color) value);
+      }
+      else if (value != null)
+      {
+        try
+        {
+          this.setText(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString(value.toString().toUpperCase()));
+        }
+        catch (MissingResourceException e)
+        {
+          this.setText(value.toString());
+        }
       }
       filter = new MappingFilter(attribute, value);
       this.parent = parent;
@@ -127,15 +138,15 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     }
   }
   
-  JButton bt = new JButton("Select");
-  JPopupMenu menu = new JPopupMenu("Menu");
+  JButton bt = new JButton(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("SELECT"));
+  JPopupMenu menu = new JPopupMenu(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("MENU"));
   FilterSet resultingFilterSet = new FilterSet();
   
   private void fillMenu(GraphicSet gs)
   {
     menu.removeAll();
     this.menuItems.clear();
-    JMenuItem e = new JMenuItem("Everything");
+    JMenuItem e = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("EVERYTHING"));
     e.addActionListener(new ActionListener(){
 
       public void actionPerformed(ActionEvent ae)
@@ -148,7 +159,13 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
       menu.add(e);
       for(final String s: gs.getAttributes())
       {
-        JMenu m = new JMenu(s);
+        String txt = s;
+        try
+        {
+          txt = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString(s.toUpperCase());
+        }
+        catch (MissingResourceException ex){}
+        JMenu m = new JMenu(txt);
         for(final Object o: gs.getAttributeValues(s))
         {
           FilterMenuItem mi = new FilterMenuItem(s, o, m);
@@ -206,7 +223,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
   public Component getTableCellEditorComponent(JTable jtable, Object o, boolean bln, int i, int i1)
   {
     this.resultingFilterSet = (FilterSet) o;
-    bt.setText(((FilterSet) o).isEmpty() ? "Everything" : "Custom");
+    bt.setText(((FilterSet) o).isEmpty() ? java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("EVERYTHING") : java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("CUSTOM"));
     this.prepareMenu();
     return bt;
   }

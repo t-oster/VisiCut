@@ -99,7 +99,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
     firePropertyChange(PROP_THUMBNAILPATH, oldThumbnailPath, thumbnailPath);
     if (thumbnailPath == null)
     {
-      this.setText("No Image");
+      this.setText(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/SelectThumbnailButton").getString("NO IMAGE"));
     }
     else
     {
@@ -110,7 +110,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
       }
       else
       {
-        this.setText("File not found");
+        this.setText(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/SelectThumbnailButton").getString("FILE NOT FOUND"));
       }
     }
   }
@@ -119,7 +119,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
   {
     if (Helper.isMacOS())
     {
-      FileDialog fd = new FileDialog((Frame) null, "Please select a thumbnail");
+      FileDialog fd = new FileDialog((Frame) null, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/SelectThumbnailButton").getString("PLEASE SELECT A THUMBNAIL"));
       fd.setMode(FileDialog.LOAD);
       fd.setFilenameFilter(new FilenameFilter()
       {
@@ -151,7 +151,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
     {
       JFileChooser fc = new JFileChooser();
       fc.setAcceptAllFileFilterUsed(false);
-      fc.addChoosableFileFilter(new ExtensionFilter(".png", "PNG Files (*.png)"));
+      fc.addChoosableFileFilter(new ExtensionFilter(".png", java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/SelectThumbnailButton").getString("PNG FILES (*.PNG)")));
       if (getDefaultDirectory() != null)
       {
         fc.setCurrentDirectory(getDefaultDirectory());
