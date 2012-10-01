@@ -89,7 +89,7 @@ public class ImageComboBox extends JComboBox
         {
           if (o == null)
           {
-            l.setText("Please select");
+            l.setText(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/ImageComboBox").getString("PLEASE SELECT"));
           }
           else if (ImageComboBox.this.isDisabled(o))
           {
@@ -124,7 +124,7 @@ public class ImageComboBox extends JComboBox
 
   public void setDisabled(Object o, boolean disabled)
   {
-    this.setDisabled(o, disabled, "disabled");
+    this.setDisabled(o, disabled, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/ImageComboBox").getString("DISABLED"));
   }
 
   public boolean isDisabled(Object o)
