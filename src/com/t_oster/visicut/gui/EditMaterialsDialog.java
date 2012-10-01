@@ -198,7 +198,7 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   public Object getNewInstance()
   {
     MaterialProfile np = new MaterialProfile();
-    np.setName("Unnamed Material");
+    np.setName(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditMaterialsDialog").getString("UNNAMED MATERIAL"));
     np.setColor(Color.LIGHT_GRAY);
     np.setCutColor(Color.BLACK);
     np.setEngraveColor(Color.DARK_GRAY);

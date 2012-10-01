@@ -52,7 +52,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
 
       private String[] cols = new String[]
       {
-        "Attribute", "Value"
+        java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditLaserDeviceDialog").getString("ATTRIBUTE"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditLaserDeviceDialog").getString("VALUE")
       };
 
       @Override
@@ -394,7 +394,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
       }
       catch (Exception e)
       {
-        throw new Exception("The driver could not be loaded:\n" + e.getMessage());
+        throw new Exception(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditLaserDeviceDialog").getString("THE DRIVER COULD NOT BE LOADED: ") + e.getMessage());
       }
       currentLaserDevice.setLaserCutter(cutter);
       if ("".equals(currentLaserDevice.getCameraURL()))
@@ -403,7 +403,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
       }
       if (currentLaserDevice.getName() == null || currentLaserDevice.getName().equals(""))
       {
-        throw new Exception("The name must not be empty");
+        throw new Exception(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditLaserDeviceDialog").getString("THE NAME MUST NOT BE EMPTY"));
       }
       //If class not existing yet in preferences, add them
       boolean found = false;
@@ -427,7 +427,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     }
     catch (Exception ex)
     {
-      JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditLaserDeviceDialog").getString("ERROR: ") + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       return;
     }
   }//GEN-LAST:event_jButton1ActionPerformed

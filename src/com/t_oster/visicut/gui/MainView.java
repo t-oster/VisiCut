@@ -191,8 +191,8 @@ public class MainView extends javax.swing.JFrame
     this.refreshRecentFilesMenu();
     if (Helper.isInkscapeExtensionInstallable())
     {
-      javax.swing.JMenu extras = new javax.swing.JMenu("Extras");
-      javax.swing.JMenuItem install = new javax.swing.JMenuItem("Install Inkscape-Extension...");
+      javax.swing.JMenu extras = new javax.swing.JMenu(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("EXTRAS"));
+      javax.swing.JMenuItem install = new javax.swing.JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("INSTALL INKSCAPE-EXTENSION..."));
       extras.add(install);
       install.addActionListener(new ActionListener(){
 
@@ -201,11 +201,11 @@ public class MainView extends javax.swing.JFrame
           try
           {
             Helper.installInkscapeExtension();
-            dialog.showSuccessMessage("Installed extension successfully");
+            dialog.showSuccessMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("INSTALLED EXTENSION SUCCESSFULLY"));
           }
           catch (Exception e)
           {
-            dialog.showErrorMessage(e, "There was an Error during the Installation");
+            dialog.showErrorMessage(e, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THERE WAS AN ERROR DURING THE INSTALLATION"));
           }
         }
       });
@@ -314,7 +314,7 @@ public class MainView extends javax.swing.JFrame
     this.refreshMaterialComboBox();
     MappingSet ss = this.visicutModel1.getMappings();
     this.predefinedMappingList.clearList();
-    this.predefinedMappingList.addItem("no mapping");
+    this.predefinedMappingList.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("NO MAPPING"));
     this.predefinedMappingList.setSelectedIndex(0);
     for (MappingSet m : this.visicutModel1.generateDefaultMappings())
     {
@@ -425,7 +425,7 @@ public class MainView extends javax.swing.JFrame
 
         saveFileChooser.setAcceptAllFileFilterUsed(false);
         saveFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
-        saveFileChooser.setFileFilter(new ExtensionFilter(".plf", "VisiCut Portable Laser File"));
+        saveFileChooser.setFileFilter(new ExtensionFilter(".plf", java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("VISICUT PORTABLE LASER FILE")));
         saveFileChooser.setName("saveFileChooser"); // NOI18N
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -669,7 +669,7 @@ public class MainView extends javax.swing.JFrame
         );
         previewPanelLayout.setVerticalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 510, Short.MAX_VALUE)
+            .addGap(0, 504, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -1102,7 +1102,7 @@ public class MainView extends javax.swing.JFrame
           if (this.custom == null)
           {
             custom = this.visicutModel1.getMappings();
-            custom.setName("Loaded Mapping");
+            custom.setName(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("LOADED MAPPING"));
             this.predefinedMappingList.addItem(custom);
           }
           else
@@ -1126,7 +1126,7 @@ public class MainView extends javax.swing.JFrame
     catch (Exception e)
     {
       this.progressBar.setIndeterminate(false);
-      dialog.showErrorMessage(e, "Error while opening '" + file.getName() + "'");
+      dialog.showErrorMessage(e, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ERROR WHILE OPENING '") + file.getName() + "'");
     }
   }
 
@@ -1166,12 +1166,12 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     {
       this.visicutModel1.getGraphicFileImporter().getFileFilter(),
       VisicutModel.PLFFilter
-    }, "All supported files");
+    }, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ALL SUPPORTED FILES"));
 
   //On Mac os, awt.FileDialog looks more native
   if (Helper.isMacOS())
   {
-    FileDialog openFileChooser = new FileDialog(this, "Please select a file");
+    FileDialog openFileChooser = new FileDialog(this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("PLEASE SELECT A FILE"));
     openFileChooser.setMode(FileDialog.LOAD);
     if (lastDirectory != null)
     {
@@ -1217,7 +1217,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   {
     if (this.visicutModel1.getGraphicObjects() == null || this.visicutModel1.getGraphicObjects().size()==0)
     {
-      dialog.showInfoMessage("Please load a file before editing mappings");
+      dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("PLEASE LOAD A FILE BEFORE EDITING MAPPINGS"));
       return;
     }
     List<MappingSet> mappingsets = new LinkedList<MappingSet>();
@@ -1261,7 +1261,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
           res = r;
         }
       }
-      if (!dialog.showYesNoQuestion("The Lasercutter you selected, does not support "+soll+"dpi\nDo you want to use "+res+"dpi instead?"))
+      if (!dialog.showYesNoQuestion(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THE LASERCUTTER YOU SELECTED, DOES NOT SUPPORT ")+soll+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("DPI DO YOU WANT TO USE ")+res+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("DPI INSTEAD?")))
       {
         return;
       }
@@ -1308,9 +1308,9 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       {
         if (unknownProfilesUsed)
         {
-          dialog.showInfoMessage("For some profile you selected, there are no lasercutter settings yet\nYou will have to enter them in the following dialog.");
+          dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("FOR SOME PROFILE YOU SELECTED, THERE ARE NO LASERCUTTER SETTINGS YET YOU WILL HAVE TO ENTER THEM IN THE FOLLOWING DIALOG."));
         }
-        String heading = "Settings for "+device.getName()+" with material "+material.toString();
+        String heading = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("SETTINGS FOR ")+device.getName()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString(" WITH MATERIAL ")+material.toString();
         //Adapt Settings before execute
         AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true, heading);
         asd.setLaserProperties(usedSettings, this.visicutModel1.getSelectedLaserDevice().getLaserCutter());
@@ -1366,7 +1366,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
           {
             if (ex instanceof IllegalJobException && ex.getMessage().startsWith("Illegal Focus value"))
             {
-              dialog.showWarningMessage("You Material is too high for automatic Focussing.\nPlease focus manually and set the total height to 0.");
+              dialog.showWarningMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("YOU MATERIAL IS TOO HIGH FOR AUTOMATIC FOCUSSING.PLEASE FOCUS MANUALLY AND SET THE TOTAL HEIGHT TO 0."));
             }
             else
             {
@@ -1440,7 +1440,7 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
       }
       catch (Exception ex)
       {
-        dialog.showErrorMessage(ex, "Error saving file");
+        dialog.showErrorMessage(ex, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ERROR SAVING FILE"));
       }
     }
     else
@@ -1501,7 +1501,7 @@ private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   }
   catch (Exception ex)
   {
-    dialog.showErrorMessage(ex, "Error saving File");
+    dialog.showErrorMessage(ex, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ERROR SAVING FILE"));
   }
 }//GEN-LAST:event_saveMenuItemActionPerformed
 
@@ -1514,7 +1514,7 @@ private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calibrateCameraMenuItemActionPerformed
   if (this.visicutModel1.getBackgroundImage() == null)
   {
-    dialog.showErrorMessage("The Camera doesn't seem to be working. Please check the URL in the Lasercutter Settings");
+    dialog.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THE CAMERA DOESN'T SEEM TO BE WORKING. PLEASE CHECK THE URL IN THE LASERCUTTER SETTINGS"));
     return;
   }
   CamCalibrationDialog ccd = new CamCalibrationDialog();
@@ -1530,7 +1530,7 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
   }
   catch (FileNotFoundException ex)
   {
-    dialog.showErrorMessage(ex, "Error while saving Settings");
+    dialog.showErrorMessage(ex, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ERROR WHILE SAVING SETTINGS"));
   }
 }//GEN-LAST:event_calibrateCameraMenuItemActionPerformed
 
@@ -1552,7 +1552,7 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         {
           MainView.this.captureImageButton.setEnabled(false);
           MainView.this.progressBar.setStringPainted(true);
-          MainView.this.progressBar.setString("Capturing Photo...");
+          MainView.this.progressBar.setString(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("CAPTURING PHOTO..."));
           MainView.this.progressBar.setIndeterminate(true);
           MainView.this.progressBar.repaint();
           try
@@ -1574,7 +1574,7 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
           }
           catch (Exception ex)
           {
-            MainView.this.progressBar.setString("Error capturing photo");
+            MainView.this.progressBar.setString(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ERROR CAPTURING PHOTO"));
             MainView.this.progressBar.setIndeterminate(false);
             MainView.this.progressBar.repaint();
           }
@@ -1686,7 +1686,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       }
       catch (FileNotFoundException ex)
       {
-        dialog.showErrorMessage(ex, "Error saving preferences");
+        dialog.showErrorMessage(ex, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ERROR SAVING PREFERENCES"));
       }
       this.fillComboBoxes();
     }
@@ -1761,15 +1761,15 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         {
           LaserProfile lp = null;
           Box box = Box.createVerticalBox();
-          box.add(new JLabel("The Profile '"+m.getProfileName()+"' is unknown."));
-          box.add(new JLabel("What kind of profile should it be?"));
+          box.add(new JLabel(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THE PROFILE '")+m.getProfileName()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("' IS UNKNOWN.")));
+          box.add(new JLabel(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("WHAT KIND OF PROFILE SHOULD IT BE?")));
           JComboBox choose = new JComboBox();
-          choose.addItem("Line Profile");
-          choose.addItem("Raster Profile");
-          choose.addItem("Raster3d Profile");
+          choose.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("LINE PROFILE"));
+          choose.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("RASTER PROFILE"));
+          choose.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("RASTER3D PROFILE"));
           box.add(choose);
-          JOptionPane.showMessageDialog(this, box, "Please select a profile Type", JOptionPane.QUESTION_MESSAGE);
-          if (choose.getSelectedItem().equals("Line Profile")) {
+          JOptionPane.showMessageDialog(this, box, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("PLEASE SELECT A PROFILE TYPE"), JOptionPane.QUESTION_MESSAGE);
+          if (choose.getSelectedItem().equals(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("LINE PROFILE"))) {
             EditVectorProfileDialog d = new EditVectorProfileDialog(null, true);
             VectorProfile p = new VectorProfile();
             p.setName(m.getProfileName());
@@ -1778,7 +1778,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
             d.setCancelable(false);
             d.setVisible(true);
             lp = d.getVectorProfile();
-          } else if (choose.getSelectedItem().equals("Raster Profile")) {
+          } else if (choose.getSelectedItem().equals(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("RASTER PROFILE"))) {
             EditRasterProfileDialog d = new EditRasterProfileDialog(null, true);
             RasterProfile p = new RasterProfile();
             p.setName(m.getProfileName());
@@ -1787,7 +1787,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
             d.setCancelable(false);
             d.setVisible(true);
             lp = d.getRasterProfile();
-          } else if (choose.getSelectedItem().equals("Raster3d Profile")) {
+          } else if (choose.getSelectedItem().equals(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("RASTER3D PROFILE"))) {
             EditRaster3dProfileDialog d = new EditRaster3dProfileDialog(null, true);
             Raster3dProfile p = new Raster3dProfile();
             p.setName(m.getProfileName());
@@ -1799,7 +1799,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
           }
           if (lp == null)
           {
-            dialog.showInfoMessage("You have to create a new profile");
+            dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("YOU HAVE TO CREATE A NEW PROFILE"));
             this.setMappings(mappings);
             return;
           }
@@ -1867,7 +1867,7 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
     }
     catch (Exception ex)
     {
-      dialog.showErrorMessage(ex, "Error reloading File");
+      dialog.showErrorMessage(ex, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ERROR RELOADING FILE"));
     }
   }
   else if (this.visicutModel1.getSourceFile() != null && this.visicutModel1.getSourceFile().isFile())
@@ -1879,7 +1879,7 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
     catch (Exception e)
     {
       this.progressBar.setIndeterminate(false);
-      dialog.showErrorMessage(e, "Error while opening '" + this.visicutModel1.getSourceFile().getName() + "'");
+      dialog.showErrorMessage(e, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ERROR WHILE OPENING '") + this.visicutModel1.getSourceFile().getName() + "'");
     }
   }
 }//GEN-LAST:event_reloadMenuItemActionPerformed
@@ -1937,7 +1937,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
       try
       {
         PreferencesManager.getInstance().exportSettings(file);
-        dialog.showSuccessMessage("Settings successfully exported");
+        dialog.showSuccessMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("SETTINGS SUCCESSFULLY EXPORTED"));
       }
       catch (Exception ex)
       {
@@ -1948,7 +1948,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
 
   private void jmImportSettingsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmImportSettingsActionPerformed
   {//GEN-HEADEREND:event_jmImportSettingsActionPerformed
-    switch (JOptionPane.showConfirmDialog(this, "This will overwrite all your settings including Lasercutters and materials\nDo you want to backup your settings before?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE))
+    switch (JOptionPane.showConfirmDialog(this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THIS WILL OVERWRITE ALL YOUR SETTINGS INCLUDING LASERCUTTERS AND MATERIALS DO YOU WANT TO BACKUP YOUR SETTINGS BEFORE?"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("WARNING"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE))
     {
       case JOptionPane.YES_OPTION:
       {
@@ -1959,11 +1959,11 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
       {
         try
         {
-          final FileFilter zipFilter = new ExtensionFilter("zip", "Zipped Settings (*.zip)");
+          final FileFilter zipFilter = new ExtensionFilter("zip", java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ZIPPED SETTINGS (*.ZIP)"));
           //On Mac os, awt.FileDialog looks more native
           if (Helper.isMacOS())
           {
-            FileDialog openFileChooser = new FileDialog(this, "Please select a file");
+            FileDialog openFileChooser = new FileDialog(this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("PLEASE SELECT A FILE"));
             openFileChooser.setMode(FileDialog.LOAD);
             if (lastDirectory != null)
             {
@@ -1999,7 +1999,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
               this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
               this.fillComboBoxes();
               this.refreshExampleMenu();
-              dialog.showSuccessMessage("Settings successfully imported");
+              dialog.showSuccessMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("SETTINGS SUCCESSFULLY IMPORTED"));
             }
           }
         }

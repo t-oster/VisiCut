@@ -198,15 +198,15 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
     public Object getNewInstance() {
       JComboBox choose = new JComboBox();
-      choose.addItem("Line Profile");
-      choose.addItem("Raster Profile");
-      choose.addItem("Raster3d Profile");
-      if (JOptionPane.showConfirmDialog(this, choose, "Which kind of Profile?", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
-          if (choose.getSelectedItem().equals("Line Profile")) {
+      choose.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditProfilesDialog").getString("LINE PROFILE"));
+      choose.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditProfilesDialog").getString("RASTER PROFILE"));
+      choose.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditProfilesDialog").getString("RASTER3D PROFILE"));
+      if (JOptionPane.showConfirmDialog(this, choose, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditProfilesDialog").getString("WHICH KIND OF PROFILE?"), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+          if (choose.getSelectedItem().equals(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditProfilesDialog").getString("LINE PROFILE"))) {
               return new VectorProfile();
-          } else if (choose.getSelectedItem().equals("Raster Profile")) {
+          } else if (choose.getSelectedItem().equals(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditProfilesDialog").getString("RASTER PROFILE"))) {
               return new RasterProfile();
-          } else if (choose.getSelectedItem().equals("Raster3d Profile")) {
+          } else if (choose.getSelectedItem().equals(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditProfilesDialog").getString("RASTER3D PROFILE"))) {
               return new Raster3dProfile();
           }
 

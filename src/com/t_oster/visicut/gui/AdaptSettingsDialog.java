@@ -70,7 +70,7 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
       {
         if (map.get(lp).isEmpty())
         {
-          throw new IllegalArgumentException("Every profile must at least contain one LaserProperty");
+          throw new IllegalArgumentException(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/AdaptSettingsDialog").getString("EVERY PROFILE MUST AT LEAST CONTAIN ONE LASERPROPERTY"));
         }
         EditableTablePanel panel = new EditableTablePanel();
         LaserPropertiesTableModel model = new LaserPropertiesTableModel();
@@ -95,7 +95,7 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
             {
               return lc.getLaserPropertyForVectorPart();
             }
-            throw new IllegalArgumentException("LaserProfile is not from Raster,Vector,Raster3d");
+            throw new IllegalArgumentException(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/AdaptSettingsDialog").getString("LASERPROFILE IS NOT FROM RASTER,VECTOR,RASTER3D"));
           }
 
           public Object editObject(Object o)
@@ -200,7 +200,7 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
     {
       if (e.getValue() == null || e.getValue().isEmpty())
       {
-        dialog.showInfoMessage("The profile '"+e.getKey().getName()+"' has to contain at least one LaserProperty");
+        dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/AdaptSettingsDialog").getString("THE PROFILE '")+e.getKey().getName()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/AdaptSettingsDialog").getString("' HAS TO CONTAIN AT LEAST ONE LASERPROPERTY"));
         return;
       }
     }

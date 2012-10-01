@@ -106,7 +106,7 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
 
     private String[] columns = new String[]
     {
-      "Name", "Driver"
+      java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/ManageLasercuttersDialog").getString("NAME"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/ManageLasercuttersDialog").getString("DRIVER")
     };
 
     @Override
@@ -295,7 +295,7 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
       driverClassnames.put(modelName, s);
       driver.addItem(modelName);
     }
-    if (JOptionPane.showConfirmDialog(this, driver, "Please select a driver", JOptionPane.OK_CANCEL_OPTION)==JOptionPane.CANCEL_OPTION)
+    if (JOptionPane.showConfirmDialog(this, driver, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/ManageLasercuttersDialog").getString("PLEASE SELECT A DRIVER"), JOptionPane.OK_CANCEL_OPTION)==JOptionPane.CANCEL_OPTION)
     {
       return null;
     }

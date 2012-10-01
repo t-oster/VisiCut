@@ -30,7 +30,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
   private DefaultTableModel model = new DefaultTableModel()
   {
     
-    private String[] columns = new String[]{"Enabled", "Selection", "Profile"};
+    private String[] columns = new String[]{java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("ENABLED"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("SELECTION"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("PROFILE")};
     private Class[] classes = new Class[]{Boolean.class, FilterSet.class, LaserProfile.class};
 
     @Override
@@ -223,7 +223,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
       if (c instanceof JLabel && value instanceof FilterSet)
       {
-        ((JLabel) c).setText(((FilterSet) value).isEmpty() ? "Everything" : "Custom");
+        ((JLabel) c).setText(((FilterSet) value).isEmpty() ? java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("EVERYTHING") : java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("CUSTOM"));
       }
       return c;
     }

@@ -205,7 +205,7 @@ public class PreviewPanel extends ZoomablePanel
         }
         catch (OutOfMemoryError ee)
         {
-          JOptionPane.showMessageDialog(PreviewPanel.this, "Error: Not enough Memory\nPlease start the Program from the provided shell scripts instead of running the .jar file", "Error: Out of Memory", JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(PreviewPanel.this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("ERROR: NOT ENOUGH MEMORY PLEASE START THE PROGRAM FROM THE PROVIDED SHELL SCRIPTS INSTEAD OF RUNNING THE .JAR FILE"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("ERROR: OUT OF MEMORY"), JOptionPane.ERROR_MESSAGE);
         }
       }
       this.setFinished(true);
@@ -629,7 +629,7 @@ public class PreviewPanel extends ZoomablePanel
                     gg.setTransform(new AffineTransform());
                     Point po = new Point(r.x + r.width / 2, r.y + r.height / 2);
                     tmp.transform(po, po);
-                    String txt = "please wait ("+procThread.getProgress()+"%)";
+                    String txt = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("PLEASE WAIT (")+procThread.getProgress()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("%)");
                     int w = gg.getFontMetrics().stringWidth(txt);
                     gg.drawString(txt, po.x - w / 2, po.y);
                     gg.setTransform(tmp);
@@ -661,7 +661,7 @@ public class PreviewPanel extends ZoomablePanel
         {//Nothing drawn because of no Matching mapping
           AffineTransform trans = gg.getTransform();
           gg.setTransform(new AffineTransform());
-          gg.drawString("No matching parts for the current Mapping found.", 10, this.getHeight() / 2);
+          gg.drawString(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("NO MATCHING PARTS FOR THE CURRENT MAPPING FOUND."), 10, this.getHeight() / 2);
           gg.setTransform(trans);
         }
       }

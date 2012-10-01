@@ -360,7 +360,7 @@ private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
   {
     if (laserCutter == null)
     {
-      throw new Exception("No Lasercutter selected");
+      throw new Exception(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("NO LASERCUTTER SELECTED"));
     }
     //TODO: Use current material settings here
     VectorPart vp = new VectorPart(laserCutter.getLaserPropertyForVectorPart());
@@ -375,14 +375,14 @@ private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
       vp.moveto(p.x, p.y - size / 2);
       vp.lineto(p.x, p.y + size / 2);
     }
-    LaserJob job = new LaserJob("Calibration", "VisiCut Calibration Page", "visicut", VisicutModel.getInstance().getValidResolution());
+    LaserJob job = new LaserJob(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("CALIBRATION"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("VISICUT CALIBRATION PAGE"), "visicut", VisicutModel.getInstance().getValidResolution());
     job.addPart(vp);
     this.laserCutter.sendJob(job);
-    JOptionPane.showMessageDialog(this, "Please press 'START' on the Lasercutter");
+    JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("PLEASE PRESS 'START' ON THE LASERCUTTER"));
   }
   catch (Exception e)
   {
-    JOptionPane.showMessageDialog(this, "Error sending Page:\n" + e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("ERROR SENDING PAGE: ") + e.getLocalizedMessage(), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("ERROR"), JOptionPane.ERROR_MESSAGE);
   }
 }//GEN-LAST:event_sendButtonActionPerformed
 
@@ -412,7 +412,7 @@ new Thread()
         }
         catch (Exception ex)
         {
-          JOptionPane.showMessageDialog(CamCalibrationDialog.this, "Error loading Image:" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(CamCalibrationDialog.this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("ERROR LOADING IMAGE:") + ex.getLocalizedMessage(), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("ERROR"), JOptionPane.ERROR_MESSAGE);
         }
         CamCalibrationDialog.this.captureButton.setEnabled(true);
       }
