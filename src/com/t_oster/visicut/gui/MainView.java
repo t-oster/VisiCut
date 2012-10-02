@@ -50,7 +50,6 @@ import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
-import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.FileDialog;
@@ -62,6 +61,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
@@ -80,10 +80,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.filechooser.FileFilter;
 import org.jdesktop.application.Action;
 
@@ -1213,7 +1209,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   }
 }//GEN-LAST:event_openMenuItemActionPerformed
 
-  private void editMappings() throws FileNotFoundException
+  private void editMappings() throws FileNotFoundException, IOException
   {
     if (this.visicutModel1.getGraphicObjects() == null || this.visicutModel1.getGraphicObjects().size()==0)
     {
@@ -1606,7 +1602,7 @@ private void editMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
     {
       this.editMappings();
     }
-    catch (FileNotFoundException ex)
+    catch (Exception ex)
     {
       dialog.showErrorMessage(ex);
     }
@@ -1641,7 +1637,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         MaterialManager.getInstance().setAll(result);
         this.refreshMaterialComboBox();
       }
-      catch (FileNotFoundException ex)
+      catch (Exception ex)
       {
         dialog.showErrorMessage(ex);
       }
@@ -1684,7 +1680,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       {
         LaserDeviceManager.getInstance().setAll(result);
       }
-      catch (FileNotFoundException ex)
+      catch (Exception ex)
       {
         dialog.showErrorMessage(ex, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ERROR SAVING PREFERENCES"));
       }
@@ -1744,13 +1740,13 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       this.setMappings(ms);
       this.refreshButtonStates();
     }
-    catch (FileNotFoundException ex)
+    catch (Exception ex)
     {
       dialog.showErrorMessage(ex);
     }
   }//GEN-LAST:event_predefinedMappingListValueChanged
 
-  private void checkForMissingProfiles(MappingSet mappings) throws FileNotFoundException
+  private void checkForMissingProfiles(MappingSet mappings) throws FileNotFoundException, IOException
   {
     if (mappings != null)
     {
@@ -1812,7 +1808,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     }
   }
   
-  private void setMappings(MappingSet mappings) throws FileNotFoundException
+  private void setMappings(MappingSet mappings) throws FileNotFoundException, IOException
   {
     checkForMissingProfiles(mappings);
     this.visicutModel1.setMappings(mappings);
@@ -1841,7 +1837,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     {
       this.setMappings(mapping);
     }
-    catch (FileNotFoundException ex)
+    catch (Exception ex)
     {
       dialog.showErrorMessage(ex);
     }
@@ -2025,7 +2021,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
       {
         ProfileManager.getInstance().setAll(result);
       }
-      catch (FileNotFoundException ex)
+      catch (Exception ex)
       {
         dialog.showErrorMessage(ex);
       }
@@ -2048,7 +2044,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
         this.refreshMaterialComboBox();
         this.materialComboBox.setSelectedItem(m);
       }
-      catch (FileNotFoundException ex)
+      catch (Exception ex)
       {
         dialog.showErrorMessage(ex);
       }

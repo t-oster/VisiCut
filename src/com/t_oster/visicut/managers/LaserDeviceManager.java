@@ -18,7 +18,10 @@
  **/
 package com.t_oster.visicut.managers;
 
+import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.visicut.model.LaserDevice;
+import com.t_oster.visicut.model.MaterialProfile;
+import com.thoughtworks.xstream.XStream;
 import java.util.*;
 
 /**
@@ -29,6 +32,15 @@ import java.util.*;
 public class LaserDeviceManager extends FilebasedManager<LaserDevice>
 {
 
+  @Override
+  public XStream getXStream()
+  {
+    XStream xs = super.getXStream();
+    xs.alias("laserDevice", LaserDevice.class);
+    xs.omitField(LaserDevice.class, "pcs");
+    return xs;
+  }
+  
   private static LaserDeviceManager instance;
   
   public static LaserDeviceManager getInstance()

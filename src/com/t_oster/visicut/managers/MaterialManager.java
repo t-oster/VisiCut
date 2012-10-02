@@ -19,6 +19,13 @@
 package com.t_oster.visicut.managers;
 
 import com.t_oster.visicut.model.MaterialProfile;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import java.awt.Color;
 import java.util.*;
 
 /**
@@ -52,6 +59,16 @@ public class MaterialManager extends FilebasedManager<MaterialProfile>
     }
   }
 
+  @Override
+  public XStream getXStream()
+  {
+    XStream xs = super.getXStream();
+    xs.alias("material", MaterialProfile.class);
+    xs.omitField(MaterialProfile.class, "pcs");
+    xs.registerConverter(new ColorConverter(), XStream.PRIORITY_VERY_HIGH);
+    return xs;
+  }
+  
   @Override
   protected String getSubfolderName()
   {

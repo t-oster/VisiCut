@@ -74,7 +74,7 @@ public final class PreferencesManager
   {
   }
 
-  private void generateDefault() throws FileNotFoundException
+  private void generateDefault() throws FileNotFoundException, IOException
   {
     preferences = new Preferences();
     preferences.setAvailableImporters(new String[]
@@ -94,7 +94,14 @@ public final class PreferencesManager
         dev.setLaserCutter(lc);
         dev.setName(lc.getModelName());
         dev.setThumbnailPath(new File(Helper.getBasePath(), "devices/"+lc.getModelName()+".png").getAbsolutePath());
-        LaserDeviceManager.getInstance().add(dev);
+        try
+        {
+          LaserDeviceManager.getInstance().add(dev);
+        }
+        catch (IOException ex)
+        {
+          Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
         if (preferences.getLastLaserDevice() == null)
         {
           preferences.setLastLaserDevice(dev.getName());
@@ -202,7 +209,7 @@ public final class PreferencesManager
       System.out.println("Saving generated settings...");
       this.savePreferences();
     }
-    catch (FileNotFoundException ex)
+    catch (Exception ex)
     {
       Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
       System.err.println("Couldn't save preferences");
@@ -256,7 +263,7 @@ public final class PreferencesManager
         {
           this.generateDefault();
         }
-        catch (FileNotFoundException ex1)
+        catch (Exception ex1)
         {
           Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex1);
         }

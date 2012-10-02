@@ -400,6 +400,14 @@ public class Helper
     String b = Integer.toHexString(col.getBlue());
     return "#" + (r.length() == 1 ? "0" + r : r) + (g.length() == 1 ? "0" + g : g) + (b.length() == 1 ? "0" + b : b);
   }
+  
+  public static Color fromHtmlRGB(String rgb)
+  {
+    int r = Integer.parseInt(rgb.substring(1, 3), 16);
+    int g = Integer.parseInt(rgb.substring(3, 5), 16);
+    int b = Integer.parseInt(rgb.substring(5, 7), 16);
+    return new Color(r,g,b);
+  }
 
   /**
    * Returns the given time in s as HH:MM:SS

@@ -24,11 +24,8 @@ import com.t_oster.visicut.gui.ImageListable;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -61,28 +58,6 @@ public abstract class LaserProfile implements ImageListable, Cloneable
   public void setDescription(String description)
   {
     this.description = description;
-  }
-
-  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
-  /**
-   * Add PropertyChangeListener.
-   *
-   * @param listener
-   */
-  public void addPropertyChangeListener(PropertyChangeListener listener)
-  {
-    propertyChangeSupport.addPropertyChangeListener(listener);
-  }
-
-  /**
-   * Remove PropertyChangeListener.
-   *
-   * @param listener
-   */
-  public void removePropertyChangeListener(PropertyChangeListener listener)
-  {
-    propertyChangeSupport.removePropertyChangeListener(listener);
   }
   
   protected String thumbnailPath = null;

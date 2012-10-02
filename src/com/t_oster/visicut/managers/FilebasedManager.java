@@ -20,10 +20,11 @@ package com.t_oster.visicut.managers;
 
 import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -37,6 +38,21 @@ import java.util.logging.Logger;
 public abstract class FilebasedManager<T>
 {
 
+  private XStream xstream = null;
+  protected XStream getXStream()
+  {
+    if (xstream == null)
+    {
+      xstream = createXStream();
+    }
+    return xstream;
+  }
+  protected XStream createXStream()
+  {
+    XStream xs = new XStream();
+    return xs;
+  }
+  
   protected List<T> objects = null;
   protected PropertyChangeSupport pcs = new PropertyChangeSupport(this);
   public void addPropertyChangeListener(PropertyChangeListener l)
@@ -60,12 +76,15 @@ public abstract class FilebasedManager<T>
           try
           {
             T prof = this.loadFromFile(f);
-            //if file was wrongly named, correct the name
-            if (!(f.getName().equals(this.getObjectPath(prof).getName())))
+            if (prof != null)
             {
-              f.renameTo(new File(f.getParent(), this.getObjectPath(prof).getName()));
+              //if file was wrongly named, correct the name
+              if (!(f.getName().equals(this.getObjectPath(prof).getName())))
+              {
+                f.renameTo(new File(f.getParent(), this.getObjectPath(prof).getName()));
+              }
+              result.add(prof);
             }
-            result.add(prof);
           }
           catch (Exception ex)
           {
@@ -126,7 +145,7 @@ public abstract class FilebasedManager<T>
   
   protected abstract Comparator<T> getComparator();
   
-  public void add(T mp) throws FileNotFoundException
+  public void add(T mp) throws FileNotFoundException, IOException
   {
     this.getAll().add(mp);
     this.save(mp, this.getObjectPath(mp));
@@ -134,7 +153,7 @@ public abstract class FilebasedManager<T>
     pcs.firePropertyChange("add", null, mp);
   }
   
-  public void save(T mp, File f) throws FileNotFoundException
+  public void save(T mp, File f) throws FileNotFoundException, IOException
   {
     if (!f.getParentFile().exists())
     {
@@ -160,30 +179,60 @@ public abstract class FilebasedManager<T>
       this.setThumbnail(mp, Helper.removeParentPath(f.getParentFile(), this.getThumbnail(mp)));
     }
     FileOutputStream out = new FileOutputStream(f);
-    XMLEncoder enc = new XMLEncoder(out);
-    enc.writeObject(mp);
-    enc.close();
+    this.getXStream().toXML(mp, out);
+    out.close();
     this.setThumbnail(mp, Helper.addParentPath(f.getParentFile(), this.getThumbnail(mp)));
+  }
+  
+  private T loadFromOldFile(File f)
+  {
+    try
+    {
+      XMLDecoder dec = new XMLDecoder(new FileInputStream(f));
+      T result = (T) dec.readObject();
+      dec.close();
+      return result;
+    }
+    catch (Exception e)
+    {
+      return null;
+    }
   }
   
   public T loadFromFile(File f) throws FileNotFoundException, IOException
   {
     FileInputStream fin = new FileInputStream(f);
     T result = this.loadFromFile(fin);
-    this.setThumbnail(result, Helper.addParentPath(f.getParentFile(), this.getThumbnail(result)));
-    if (this.getThumbnail(result) == null && this.generateThumbnailPath(result).exists())
-    {
-      this.setThumbnail(result, this.generateThumbnailPath(result).getAbsolutePath());
-    }
     fin.close();
+    if (result == null)
+    {
+      result = this.loadFromOldFile(f);
+    }
+    if (result == null)
+    {
+      System.err.println("Error reading: "+f.getAbsolutePath()+". Invalid File Format (created with old VisiCut version?)");    
+    }
+    else
+    {
+      this.setThumbnail(result, Helper.addParentPath(f.getParentFile(), this.getThumbnail(result)));
+      if (this.getThumbnail(result) == null && this.generateThumbnailPath(result).exists())
+      {
+        this.setThumbnail(result, this.generateThumbnailPath(result).getAbsolutePath());
+      }
+    }
     return result;
   }
 
   public T loadFromFile(InputStream in)
   {
-    XMLDecoder dec = new XMLDecoder(in);
-    T result = (T) dec.readObject();
-    return result;
+    try
+    {
+      return (T) this.getXStream().fromXML(in);
+    }
+    catch (Exception e)
+    {
+      return null;
+    }
   }
 
   /**
@@ -200,7 +249,7 @@ public abstract class FilebasedManager<T>
     return objects;
   }
 
-  public void setAll(List<T> mats) throws FileNotFoundException
+  public void setAll(List<T> mats) throws FileNotFoundException, IOException
   {
     for(Object m:this.getAll().toArray())
     {

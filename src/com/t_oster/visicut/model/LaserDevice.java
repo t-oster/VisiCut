@@ -55,7 +55,7 @@ public class LaserDevice implements ImageListable
   {
     String oldJobSentText = this.jobSentText;
     this.jobSentText = jobSentText;
-    propertyChangeSupport.firePropertyChange(PROP_JOBSENTTEXT, oldJobSentText, jobSentText);
+    getPropertyChangeSupport().firePropertyChange(PROP_JOBSENTTEXT, oldJobSentText, jobSentText);
   }
 
   
@@ -81,7 +81,7 @@ public class LaserDevice implements ImageListable
   {
     String oldJobPrefix = this.jobPrefix;
     this.jobPrefix = jobPrefix;
-    propertyChangeSupport.firePropertyChange(PROP_JOBPREFIX, oldJobPrefix, jobPrefix);
+    getPropertyChangeSupport().firePropertyChange(PROP_JOBPREFIX, oldJobPrefix, jobPrefix);
   }
   
   protected LaserCutter laserCutter = new EpilogZing();
@@ -106,7 +106,7 @@ public class LaserDevice implements ImageListable
   {
     LaserCutter oldLaserCutter = this.laserCutter;
     this.laserCutter = laserCutter;
-    propertyChangeSupport.firePropertyChange(PROP_LASERCUTTER, oldLaserCutter, laserCutter);
+    getPropertyChangeSupport().firePropertyChange(PROP_LASERCUTTER, oldLaserCutter, laserCutter);
   }
 
   protected AffineTransform cameraCalibration = null;
@@ -131,7 +131,7 @@ public class LaserDevice implements ImageListable
   {
     AffineTransform oldCameraCalibration = this.cameraCalibration;
     this.cameraCalibration = cameraCalibration;
-    propertyChangeSupport.firePropertyChange(PROP_CAMERACALIBRATION, oldCameraCalibration, cameraCalibration);
+    getPropertyChangeSupport().firePropertyChange(PROP_CAMERACALIBRATION, oldCameraCalibration, cameraCalibration);
   }
 
   protected String cameraURL = null;
@@ -156,7 +156,7 @@ public class LaserDevice implements ImageListable
   {
     String oldCameraURL = this.cameraURL;
     this.cameraURL = cameraURL;
-    propertyChangeSupport.firePropertyChange(PROP_CAMERAURL, oldCameraURL, cameraURL);
+    getPropertyChangeSupport().firePropertyChange(PROP_CAMERAURL, oldCameraURL, cameraURL);
   }
 
   protected String thumbnailPath = null;
@@ -181,7 +181,7 @@ public class LaserDevice implements ImageListable
   {
     String oldThumbnailPath = this.thumbnailPath;
     this.thumbnailPath = thumbnailPath;
-    propertyChangeSupport.firePropertyChange(PROP_THUMBNAILPATH, oldThumbnailPath, thumbnailPath);
+    getPropertyChangeSupport().firePropertyChange(PROP_THUMBNAILPATH, oldThumbnailPath, thumbnailPath);
   }
 
   protected String description = null;
@@ -206,7 +206,7 @@ public class LaserDevice implements ImageListable
   {
     String oldDescription = this.description;
     this.description = description;
-    propertyChangeSupport.firePropertyChange(PROP_DESCRIPTION, oldDescription, description);
+    getPropertyChangeSupport().firePropertyChange(PROP_DESCRIPTION, oldDescription, description);
   }
 
   protected String name = null;
@@ -231,9 +231,17 @@ public class LaserDevice implements ImageListable
   {
     String oldName = this.name;
     this.name = name;
-    propertyChangeSupport.firePropertyChange(PROP_NAME, oldName, name);
+    getPropertyChangeSupport().firePropertyChange(PROP_NAME, oldName, name);
   }
-  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+  private PropertyChangeSupport pcs = null;
+  private PropertyChangeSupport getPropertyChangeSupport()
+  {
+    if (pcs == null)
+    {
+      pcs = new PropertyChangeSupport(this);
+    }
+    return pcs;
+  }
 
   /**
    * Add PropertyChangeListener.
@@ -242,7 +250,7 @@ public class LaserDevice implements ImageListable
    */
   public void addPropertyChangeListener(PropertyChangeListener listener)
   {
-    propertyChangeSupport.addPropertyChangeListener(listener);
+    getPropertyChangeSupport().addPropertyChangeListener(listener);
   }
 
   /**
@@ -252,7 +260,7 @@ public class LaserDevice implements ImageListable
    */
   public void removePropertyChangeListener(PropertyChangeListener listener)
   {
-    propertyChangeSupport.removePropertyChangeListener(listener);
+    getPropertyChangeSupport().removePropertyChangeListener(listener);
   }
 
   @Override

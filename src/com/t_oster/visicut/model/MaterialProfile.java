@@ -162,8 +162,16 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
   {
     this.name = name;
   }
-  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
+  private PropertyChangeSupport pcs = null;
+  private PropertyChangeSupport getPropertyChangeSupport()
+  {
+    if (pcs == null)
+    {
+      pcs = new PropertyChangeSupport(this);
+    }
+    return pcs;
+  }
+  
   /**
    * Add PropertyChangeListener.
    *
@@ -171,7 +179,7 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
    */
   public void addPropertyChangeListener(PropertyChangeListener listener)
   {
-    propertyChangeSupport.addPropertyChangeListener(listener);
+    getPropertyChangeSupport().addPropertyChangeListener(listener);
   }
 
   /**
@@ -181,7 +189,7 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
    */
   public void removePropertyChangeListener(PropertyChangeListener listener)
   {
-    propertyChangeSupport.removePropertyChangeListener(listener);
+    getPropertyChangeSupport().removePropertyChangeListener(listener);
   }
 
   protected float depth = 4;
@@ -206,7 +214,7 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
   {
     float oldDepth = this.depth;
     this.depth = depth;
-    propertyChangeSupport.firePropertyChange(PROP_DEPTH, oldDepth, depth);
+    getPropertyChangeSupport().firePropertyChange(PROP_DEPTH, oldDepth, depth);
   }
 
   @Override
@@ -214,7 +222,7 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
   {
     return this.getName()+" ("+this.getDepth()+" mm)";
   }
-
+  
   @Override
   public MaterialProfile clone()
   {
