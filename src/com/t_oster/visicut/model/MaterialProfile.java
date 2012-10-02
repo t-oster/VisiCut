@@ -221,6 +221,8 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
     MaterialProfile cp = new MaterialProfile();
     cp.setName(this.getName());
     cp.color = this.color;
+    cp.cutColor = this.cutColor;
+    cp.engraveColor = this.engraveColor;
     cp.depth = this.depth;
     cp.description = this.description;
     cp.thumbnailPath = this.thumbnailPath;
