@@ -1066,7 +1066,7 @@ public class MainView extends javax.swing.JFrame
     {
       PreferencesManager.getInstance().savePreferences();
     }
-    catch (FileNotFoundException ex)
+    catch (Exception ex)
     {
       Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -1524,7 +1524,7 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
   {
     PreferencesManager.getInstance().savePreferences();
   }
-  catch (FileNotFoundException ex)
+  catch (Exception ex)
   {
     dialog.showErrorMessage(ex, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ERROR WHILE SAVING SETTINGS"));
   }

@@ -19,10 +19,6 @@
 package com.t_oster.visicut;
 
 import com.t_oster.liblasercut.LibInfo;
-import com.t_oster.visicut.model.LaserDevice;
-import com.t_oster.visicut.model.MaterialProfile;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -186,28 +182,6 @@ public class Preferences
     {
       this.availableImporters = availableImporters;
     }
-  }
-
-  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
-  /**
-   * Add PropertyChangeListener.
-   *
-   * @param listener
-   */
-  public void addPropertyChangeListener(PropertyChangeListener listener)
-  {
-    propertyChangeSupport.addPropertyChangeListener(listener);
-  }
-
-  /**
-   * Remove PropertyChangeListener.
-   *
-   * @param listener
-   */
-  public void removePropertyChangeListener(PropertyChangeListener listener)
-  {
-    propertyChangeSupport.removePropertyChangeListener(listener);
   }
 
 }

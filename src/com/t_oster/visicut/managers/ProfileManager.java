@@ -18,7 +18,6 @@
  **/
 package com.t_oster.visicut.managers;
 
-import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
@@ -35,10 +34,12 @@ public class ProfileManager extends FilebasedManager<LaserProfile>
 {
 
   @Override
-  public XStream getXStream()
+  public XStream createXStream()
   {
-    XStream xs = super.getXStream();
-    xs.alias("laserProfile", LaserProfile.class);
+    XStream xs = super.createXStream();
+    xs.alias("vectorProfile", VectorProfile.class);
+    xs.alias("rasterProfile", RasterProfile.class);
+    xs.alias("raster3dProfile", Raster3dProfile.class);
     return xs;
   }
   

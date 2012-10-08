@@ -28,13 +28,9 @@ import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
+import com.thoughtworks.xstream.XStream;
 import java.awt.Color;
-import java.awt.geom.AffineTransform;
-import java.beans.Encoder;
-import java.beans.Expression;
-import java.beans.PersistenceDelegate;
 import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -257,7 +253,6 @@ public final class PreferencesManager
       }
       catch (FileNotFoundException ex)
       {
-        Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
         System.err.println("Can't load settings. Using default ones...");
         try
         {
@@ -276,7 +271,7 @@ public final class PreferencesManager
     return preferences;
   }
 
-  public void savePreferences() throws FileNotFoundException
+  public void savePreferences() throws FileNotFoundException, IOException
   {
     File target = this.getPreferencesPath();
     File settingsDir = target.getParentFile();
@@ -290,37 +285,39 @@ public final class PreferencesManager
     }
   }
   
-  public void savePreferences(Preferences pref, File f) throws FileNotFoundException
+  public void savePreferences(Preferences pref, File f) throws FileNotFoundException, IOException
   {
     FileOutputStream os = new FileOutputStream(f);
-    XMLEncoder encoder = new XMLEncoder(os);
-    encoder.setPersistenceDelegate(AffineTransform.class, new PersistenceDelegate()
-    {//Fix for older java versions
-      protected Expression instantiate(Object oldInstance, Encoder out)
-      {
-        AffineTransform tx = (AffineTransform) oldInstance;
-        double[] coeffs = new double[6];
-        tx.getMatrix(coeffs);
-        return new Expression(oldInstance,
-          oldInstance.getClass(),
-          "new",
-          new Object[]
-          {
-            coeffs
-          });
-      }
-    });
-    encoder.writeObject(pref);
-    encoder.close();
+    getXStream().toXML(pref, os);
+    os.close();
   }
 
+  private XStream xstream = null;
+  
+  protected XStream getXStream()
+  {
+    if (xstream == null)
+    {
+      xstream = new XStream();
+      xstream.alias("visicutPreferences", Preferences.class);
+    }
+    return xstream;
+  }
+  
   public Preferences loadPreferences(File f) throws FileNotFoundException
   {
-    FileInputStream os = new FileInputStream(f);
-    XMLDecoder decoder = new XMLDecoder(os);
-    Preferences p = (Preferences) decoder.readObject();
-    decoder.close();
-    return p;
+    try
+    {
+      return (Preferences) getXStream().fromXML(f);
+    }
+    catch (Exception e)
+    {
+      FileInputStream os = new FileInputStream(f);
+      XMLDecoder decoder = new XMLDecoder(os);
+      Preferences p = (Preferences) decoder.readObject();
+      decoder.close();
+      return p;
+    }
   }
 
   public void exportSettings(File file) throws FileNotFoundException, IOException

@@ -24,25 +24,18 @@ import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
-import com.t_oster.liblasercut.RasterPart;
-import com.t_oster.liblasercut.Raster3dPart;
-import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.PreferencesManager;
-import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.managers.MaterialManager;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
-import com.t_oster.visicut.model.Raster3dProfile;
-import com.t_oster.visicut.model.RasterProfile;
-import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
@@ -65,14 +58,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -289,7 +278,7 @@ public class VisicutModel
     {
       PreferencesManager.getInstance().savePreferences();
     }
-    catch (FileNotFoundException ex)
+    catch (Exception ex)
     {
       Logger.getLogger(VisicutModel.class.getName()).log(Level.SEVERE, null, ex);
     }

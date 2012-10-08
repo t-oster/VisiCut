@@ -18,7 +18,6 @@
  **/
 package com.t_oster.visicut.managers;
 
-import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingFilter;
@@ -34,14 +33,13 @@ public class MappingManager extends FilebasedManager<MappingSet>
 {
 
   @Override
-  public XStream getXStream()
+  protected XStream createXStream()
   {
-    XStream xs = super.getXStream();
-    xs.alias("mappings", MappingSet.class);
-    xs.alias("filter", MappingFilter.class);
-    xs.alias("filters", FilterSet.class);
-    xs.alias("mapping", Mapping.class);
-    return xs;
+    XStream xstream = super.createXStream();
+    xstream.alias("filter", MappingFilter.class);
+    xstream.alias("filters", FilterSet.class);
+    xstream.alias("mapping", Mapping.class);
+    return xstream;
   }
   
   private static MappingManager instance;

@@ -1,40 +1,37 @@
 /**
- * This file is part of VisiCut.
- * Copyright (C) 2011 Thomas Oster <thomas.oster@rwth-aachen.de>
- * RWTH Aachen University - 52062 Aachen, Germany
- * 
- *     VisiCut is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU Lesser General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- * 
- *    VisiCut is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU Lesser General Public License for more details.
- * 
- *     You should have received a copy of the GNU Lesser General Public License
- *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ * This file is part of VisiCut. Copyright (C) 2012 Thomas Oster
+ * <thomas.oster@rwth-aachen.de> RWTH Aachen University - 52062 Aachen, Germany
+ *
+ * VisiCut is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * VisiCut is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with VisiCut. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.drivers.EpilogZing;
 import com.t_oster.visicut.gui.ImageListable;
 import java.awt.geom.AffineTransform;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 
 /**
  * A wrapper for the LaserCutter class which adds some Attributes
- * 
+ *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class LaserDevice implements ImageListable
 {
 
   protected String jobSentText = "Job was sent as '$jobname'\nPlease:\n-Close the lid\n-Turn on the Ventilation\n-And press 'start' on the Lasercutter $name";
-  public static final String PROP_JOBSENTTEXT = "jobSentText";
 
   /**
    * Get the value of jobSentText
@@ -53,14 +50,9 @@ public class LaserDevice implements ImageListable
    */
   public void setJobSentText(String jobSentText)
   {
-    String oldJobSentText = this.jobSentText;
     this.jobSentText = jobSentText;
-    getPropertyChangeSupport().firePropertyChange(PROP_JOBSENTTEXT, oldJobSentText, jobSentText);
   }
-
-  
   protected String jobPrefix = "visicut ";
-  public static final String PROP_JOBPREFIX = "jobPrefix";
 
   /**
    * Get the value of jobPrefix
@@ -79,13 +71,9 @@ public class LaserDevice implements ImageListable
    */
   public void setJobPrefix(String jobPrefix)
   {
-    String oldJobPrefix = this.jobPrefix;
     this.jobPrefix = jobPrefix;
-    getPropertyChangeSupport().firePropertyChange(PROP_JOBPREFIX, oldJobPrefix, jobPrefix);
   }
-  
   protected LaserCutter laserCutter = new EpilogZing();
-  public static final String PROP_LASERCUTTER = "laserCutter";
 
   /**
    * Get the value of laserCutter
@@ -104,13 +92,9 @@ public class LaserDevice implements ImageListable
    */
   public void setLaserCutter(LaserCutter laserCutter)
   {
-    LaserCutter oldLaserCutter = this.laserCutter;
     this.laserCutter = laserCutter;
-    getPropertyChangeSupport().firePropertyChange(PROP_LASERCUTTER, oldLaserCutter, laserCutter);
   }
-
   protected AffineTransform cameraCalibration = null;
-  public static final String PROP_CAMERACALIBRATION = "cameraCalibration";
 
   /**
    * Get the value of cameraCalibration
@@ -129,13 +113,9 @@ public class LaserDevice implements ImageListable
    */
   public void setCameraCalibration(AffineTransform cameraCalibration)
   {
-    AffineTransform oldCameraCalibration = this.cameraCalibration;
     this.cameraCalibration = cameraCalibration;
-    getPropertyChangeSupport().firePropertyChange(PROP_CAMERACALIBRATION, oldCameraCalibration, cameraCalibration);
   }
-
   protected String cameraURL = null;
-  public static final String PROP_CAMERAURL = "cameraURL";
 
   /**
    * Get the value of cameraURL
@@ -154,13 +134,9 @@ public class LaserDevice implements ImageListable
    */
   public void setCameraURL(String cameraURL)
   {
-    String oldCameraURL = this.cameraURL;
     this.cameraURL = cameraURL;
-    getPropertyChangeSupport().firePropertyChange(PROP_CAMERAURL, oldCameraURL, cameraURL);
   }
-
   protected String thumbnailPath = null;
-  public static final String PROP_THUMBNAILPATH = "thumbnailPath";
 
   /**
    * Get the value of thumbnailPath
@@ -179,13 +155,9 @@ public class LaserDevice implements ImageListable
    */
   public void setThumbnailPath(String thumbnailPath)
   {
-    String oldThumbnailPath = this.thumbnailPath;
     this.thumbnailPath = thumbnailPath;
-    getPropertyChangeSupport().firePropertyChange(PROP_THUMBNAILPATH, oldThumbnailPath, thumbnailPath);
   }
-
   protected String description = null;
-  public static final String PROP_DESCRIPTION = "description";
 
   /**
    * Get the value of description
@@ -204,13 +176,9 @@ public class LaserDevice implements ImageListable
    */
   public void setDescription(String description)
   {
-    String oldDescription = this.description;
     this.description = description;
-    getPropertyChangeSupport().firePropertyChange(PROP_DESCRIPTION, oldDescription, description);
   }
-
   protected String name = null;
-  public static final String PROP_NAME = "name";
 
   /**
    * Get the value of name
@@ -229,38 +197,7 @@ public class LaserDevice implements ImageListable
    */
   public void setName(String name)
   {
-    String oldName = this.name;
     this.name = name;
-    getPropertyChangeSupport().firePropertyChange(PROP_NAME, oldName, name);
-  }
-  private PropertyChangeSupport pcs = null;
-  private PropertyChangeSupport getPropertyChangeSupport()
-  {
-    if (pcs == null)
-    {
-      pcs = new PropertyChangeSupport(this);
-    }
-    return pcs;
-  }
-
-  /**
-   * Add PropertyChangeListener.
-   *
-   * @param listener
-   */
-  public void addPropertyChangeListener(PropertyChangeListener listener)
-  {
-    getPropertyChangeSupport().addPropertyChangeListener(listener);
-  }
-
-  /**
-   * Remove PropertyChangeListener.
-   *
-   * @param listener
-   */
-  public void removePropertyChangeListener(PropertyChangeListener listener)
-  {
-    getPropertyChangeSupport().removePropertyChangeListener(listener);
   }
 
   @Override
@@ -282,5 +219,4 @@ public class LaserDevice implements ImageListable
   {
     return getName();
   }
-  
 }

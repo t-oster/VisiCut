@@ -21,7 +21,6 @@ package com.t_oster.visicut.managers;
 import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
@@ -39,11 +38,11 @@ public abstract class FilebasedManager<T>
 {
 
   private XStream xstream = null;
-  protected XStream getXStream()
+  protected final XStream getXStream()
   {
     if (xstream == null)
     {
-      xstream = createXStream();
+      xstream = createXStream(); 
     }
     return xstream;
   }

@@ -20,8 +20,6 @@ package com.t_oster.visicut.model;
 
 import com.t_oster.visicut.gui.ImageListable;
 import java.awt.Color;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.text.Collator;
 
 /**
@@ -162,39 +160,9 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
   {
     this.name = name;
   }
-  private PropertyChangeSupport pcs = null;
-  private PropertyChangeSupport getPropertyChangeSupport()
-  {
-    if (pcs == null)
-    {
-      pcs = new PropertyChangeSupport(this);
-    }
-    return pcs;
-  }
   
-  /**
-   * Add PropertyChangeListener.
-   *
-   * @param listener
-   */
-  public void addPropertyChangeListener(PropertyChangeListener listener)
-  {
-    getPropertyChangeSupport().addPropertyChangeListener(listener);
-  }
-
-  /**
-   * Remove PropertyChangeListener.
-   *
-   * @param listener
-   */
-  public void removePropertyChangeListener(PropertyChangeListener listener)
-  {
-    getPropertyChangeSupport().removePropertyChangeListener(listener);
-  }
-
   protected float depth = 4;
-  public static final String PROP_DEPTH = "depth";
-
+  
   /**
    * Get the value of depth
    *
@@ -212,9 +180,7 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
    */
   public void setDepth(float depth)
   {
-    float oldDepth = this.depth;
     this.depth = depth;
-    getPropertyChangeSupport().firePropertyChange(PROP_DEPTH, oldDepth, depth);
   }
 
   @Override

@@ -77,26 +77,29 @@ public class LaserPropertyManager
     if (f.exists())
     {
       List<LaserProperty> result = this.loadProperties(f);
-      //check if it is still the correct type for the laser-cutter
-      Class expectedClass = null;
-      if (lp instanceof RasterProfile)
+      if (result != null)
       {
-        expectedClass = ld.getLaserCutter().getLaserPropertyForRasterPart().getClass();
-      }
-      else if (lp instanceof VectorProfile)
-      {
-        expectedClass = ld.getLaserCutter().getLaserPropertyForVectorPart().getClass();
-      }
-      else if (lp instanceof Raster3dProfile)
-      {
-        expectedClass = ld.getLaserCutter().getLaserPropertyForRaster3dPart().getClass();
-      }
-      for (LaserProperty p : result)
-      {
-        if (!expectedClass.isAssignableFrom(p.getClass()))
+        //check if it is still the correct type for the laser-cutter
+        Class expectedClass = null;
+        if (lp instanceof RasterProfile)
         {
-          System.err.println("Tried to load a laser-property of class " + p.getClass().toString() + ", but lasercutter expects " + expectedClass.toString());
-          return null;
+          expectedClass = ld.getLaserCutter().getLaserPropertyForRasterPart().getClass();
+        }
+        else if (lp instanceof VectorProfile)
+        {
+          expectedClass = ld.getLaserCutter().getLaserPropertyForVectorPart().getClass();
+        }
+        else if (lp instanceof Raster3dProfile)
+        {
+          expectedClass = ld.getLaserCutter().getLaserPropertyForRaster3dPart().getClass();
+        }
+        for (LaserProperty p : result)
+        {
+          if (!expectedClass.isAssignableFrom(p.getClass()))
+          {
+            System.err.println("Tried to load a laser-property of class " + p.getClass().toString() + ", but lasercutter expects " + expectedClass.toString());
+            return null;
+          }
         }
       }
       return result;
@@ -119,7 +122,10 @@ public class LaserPropertyManager
     if (xstream == null)
     {
       xstream = new XStream();
-      xstream.alias("laserProperty", LaserProperty.class);
+      xstream.alias("LaosCutterProperty", com.t_oster.liblasercut.drivers.LaosCutterProperty.class);
+      xstream.alias("FloatPowerSpeedFocusFrequencyProperty", com.t_oster.liblasercut.FloatPowerSpeedFocusFrequencyProperty.class);
+      xstream.alias("PowerSpeedFocusFrequencyProperty", com.t_oster.liblasercut.PowerSpeedFocusFrequencyProperty.class);
+      xstream.alias("PowerSpeedFocusProperty", com.t_oster.liblasercut.PowerSpeedFocusProperty.class);
     }
     return xstream;
   }
@@ -151,7 +157,7 @@ public class LaserPropertyManager
       return null;
     }
   }
-  
+
   public List<LaserProperty> loadProperties(File f) throws FileNotFoundException, IOException
   {
     FileInputStream fin = new FileInputStream(f);
