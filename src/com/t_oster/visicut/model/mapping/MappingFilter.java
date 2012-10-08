@@ -1,6 +1,6 @@
 /**
  * This file is part of VisiCut.
- * Copyright (C) 2011 Thomas Oster <thomas.oster@rwth-aachen.de>
+ * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
  * 
  *     VisiCut is free software: you can redistribute it and/or modify
@@ -16,10 +16,6 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.visicut.model.mapping;
 
 import com.t_oster.liblasercut.platform.Util;
@@ -27,8 +23,6 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 
 /**
  *
@@ -38,7 +32,6 @@ public class MappingFilter
 {
 
   protected boolean inverted = false;
-  public static final String PROP_INVERTED = "inverted";
 
   /**
    * Get the value of inverted
@@ -57,31 +50,9 @@ public class MappingFilter
    */
   public void setInverted(boolean inverted)
   {
-    boolean oldInverted = this.inverted;
     this.inverted = inverted;
-    propertyChangeSupport.firePropertyChange(PROP_INVERTED, oldInverted, inverted);
-  }
-  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
-  /**
-   * Add PropertyChangeListener.
-   *
-   * @param listener
-   */
-  public void addPropertyChangeListener(PropertyChangeListener listener)
-  {
-    propertyChangeSupport.addPropertyChangeListener(listener);
   }
 
-  /**
-   * Remove PropertyChangeListener.
-   *
-   * @param listener
-   */
-  public void removePropertyChangeListener(PropertyChangeListener listener)
-  {
-    propertyChangeSupport.removePropertyChangeListener(listener);
-  }
   private String attribute;
   private Object value;
 
