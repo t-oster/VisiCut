@@ -258,14 +258,14 @@ public class MainView extends javax.swing.JFrame
   
   private void refreshMaterialComboBox()
   {
-    MaterialProfile sp = this.visicutModel1.getMaterial();
+    String sp = this.visicutModel1.getMaterial() != null ? this.visicutModel1.getMaterial().getName() : null;
     this.materialComboBox.removeAllItems();
     this.materialComboBox.addItem(null);
     this.materialComboBox.setSelectedIndex(0);
     for (MaterialProfile mp : MaterialManager.getInstance().getAll())
     {
       this.materialComboBox.addItem(mp);
-      if (sp != null && sp.getName().equals(mp.getName()))
+      if (mp.getName().equals(sp))
       {
         this.materialComboBox.setSelectedItem(mp);
       }
@@ -279,7 +279,7 @@ public class MainView extends javax.swing.JFrame
   {
     HashSet<Integer> resolutions = new LinkedHashSet<Integer>();
 
-    LaserDevice sld = this.visicutModel1.getSelectedLaserDevice();
+    String sld = this.visicutModel1.getSelectedLaserDevice() != null ? this.visicutModel1.getSelectedLaserDevice().getName() : null;
     this.laserCutterComboBox.removeAllItems();
     this.laserCutterComboBox.addItem(null);
     this.laserCutterComboBox.setSelectedIndex(0);
@@ -287,10 +287,22 @@ public class MainView extends javax.swing.JFrame
     {
       this.laserCutterComboBox.addItem(ld);
       resolutions.addAll(ld.getLaserCutter().getResolutions());
-      if (ld.equals(sld))
+      if (ld.getName().equals(sld))
       {
         this.laserCutterComboBox.setSelectedItem(ld);
       }
+    }
+    //hide lasercutter combo box if only one lasercutter available
+    if (this.laserCutterComboBox.getItemCount() == 2)
+    {
+      this.laserCutterComboBox.setSelectedIndex(1);
+      this.laserCutterComboBox.setVisible(false);
+      this.jLabel9.setVisible(false);
+    }
+    else
+    {
+      this.laserCutterComboBox.setVisible(true);
+      this.jLabel9.setVisible(true);
     }
     Integer res = this.visicutModel1.getResolution();
     this.resolutionComboBox.removeAllItems();
@@ -308,14 +320,14 @@ public class MainView extends javax.swing.JFrame
       }
     }
     this.refreshMaterialComboBox();
-    MappingSet ss = this.visicutModel1.getMappings();
+    String ss = this.visicutModel1.getMappings() != null ? this.visicutModel1.getMappings().getName() : null;
     this.predefinedMappingList.clearList();
     this.predefinedMappingList.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("NO MAPPING"));
     this.predefinedMappingList.setSelectedIndex(0);
     for (MappingSet m : this.visicutModel1.generateDefaultMappings())
     {
       this.predefinedMappingList.addItem(m);
-      if (m.equals(ss))
+      if (m.getName().equals(ss))
       {
         this.predefinedMappingList.setSelectedValue(m, true);
       }
@@ -323,7 +335,7 @@ public class MainView extends javax.swing.JFrame
     for (MappingSet m : this.mappingManager1.getAll())
     {
       this.predefinedMappingList.addItem(m);
-      if (m.equals(ss))
+      if (m.getName().equals(ss))
       {
         this.predefinedMappingList.setSelectedValue(m, true);
       }
