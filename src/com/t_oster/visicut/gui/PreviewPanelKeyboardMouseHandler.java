@@ -1,5 +1,5 @@
 /**
- * This file is part of VisiCut. Copyright (C) 2011 Thomas Oster
+ * This file is part of VisiCut. Copyright (C) 2012 Thomas Oster
  * <thomas.oster@rwth-aachen.de> RWTH Aachen University - 52062 Aachen, Germany
  *
  * VisiCut is free software: you can redistribute it and/or modify it under the
