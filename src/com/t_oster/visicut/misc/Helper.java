@@ -164,16 +164,35 @@ public class Helper
       }
       else if (f.getName().toLowerCase().endsWith("inx") || f.getName().toLowerCase().endsWith("py"))
       {
+        FileUtils.copyFileToDirectory(f, trg);
+      }
+    }
+  }
+  
+  public static void installIllustratorScript() throws IOException
+  {
+    String errors = "";
+    for (File dir : new File[]{
+      new File("/Applications/Adobe Illustrator CS3/Presets/Scripts"),
+      new File("/Applications/Adobe Illustrator CS4/Presets/en_US/Scripts"),
+      new File("/Applications/Adobe Illustrator CS5/Presets/en_US/Scripts")
+    })
+    {
+      if (dir.exists() && dir.isDirectory())
+      {
         try
         {
-          FileUtils.copyFileToDirectory(f, trg);
+          FileUtils.copyFileToDirectory(getIllustratorScript(), dir);
         }
-        catch (java.lang.NoSuchMethodError er)
+        catch (IOException ex)
         {
-          er.printStackTrace();
-          throw new FileNotFoundException("Bug in apache Commons-IO");
+          errors += "Can't copy to "+dir.getAbsolutePath()+"\n";
         }
       }
+    }
+    if (!"".equals(errors))
+    {
+      throw new IOException(errors);
     }
   }
   
@@ -458,6 +477,16 @@ public class Helper
   {
     File is = new File(getVisiCutFolder(), "inkscape_extension");
     return is.exists() && is.isDirectory();
+  }
+  
+  private static File getIllustratorScript()
+  {
+    return new File(getVisiCutFolder(), "visicut_export.as");
+  }
+  
+  public static boolean isIllustratorScriptInstallable()
+  {
+    return isMacOS() && getIllustratorScript().exists();
   }
 
   /**

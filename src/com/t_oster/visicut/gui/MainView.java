@@ -183,8 +183,8 @@ public class MainView extends javax.swing.JFrame
     });
     this.refreshRecentFilesMenu();
     this.jmInstallInkscape.setEnabled(Helper.isInkscapeExtensionInstallable());
-    this.jmInstallIllustrator.setEnabled(false);
-    if (!Helper.isInkscapeExtensionInstallable() && !false)
+    this.jmInstallIllustrator.setEnabled(Helper.isIllustratorScriptInstallable());
+    if (!Helper.isInkscapeExtensionInstallable() && !Helper.isIllustratorScriptInstallable())
     {
       this.jmExtras.setVisible(false);
     }
@@ -2093,7 +2093,15 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
 
   private void jmInstallIllustratorActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmInstallIllustratorActionPerformed
   {//GEN-HEADEREND:event_jmInstallIllustratorActionPerformed
-    dialog.showErrorMessage("Not implemented yet");
+    try
+    {
+      Helper.installIllustratorScript();
+      dialog.showSuccessMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("INSTALLED EXTENSION SUCCESSFULLY"));
+    }
+    catch (Exception e)
+    {
+      dialog.showErrorMessage(e, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THERE WAS AN ERROR DURING THE INSTALLATION"));
+    }
   }//GEN-LAST:event_jmInstallIllustratorActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
