@@ -400,13 +400,13 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" alignment="0" attributes="0">
-                                          <Component id="materialHeightTextField" min="-2" pref="134" max="-2" attributes="1"/>
+                                          <Component id="cbMaterialThickness" min="-2" pref="134" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
+                                          <Component id="btAddMaterialThickness" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
                                       <Group type="102" alignment="0" attributes="0">
@@ -469,15 +469,15 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="materialHeightTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="resolutionComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel12" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbMaterialThickness" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btAddMaterialThickness" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="mappingTabbedPane" pref="266" max="32767" attributes="0"/>
+                  <Component id="mappingTabbedPane" pref="264" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="54" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="calculateTimeButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -508,18 +508,6 @@
             <Property name="name" type="java.lang.String" value="jLabel5" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="materialHeightTextField">
-          <Properties>
-            <Property name="toolTipText" type="java.lang.String" resourceKey="materialHeightTextField.toolTipText"/>
-            <Property name="name" type="java.lang.String" value="materialHeightTextField" noResource="true"/>
-          </Properties>
-          <BindingProperties>
-            <BindingProperty name="text" source="visicutModel1" sourcePath="${material.depth}" target="materialHeightTextField" targetPath="text" updateStrategy="0" immediately="false">
-              <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_ACTION_OR_FOCUS_LOST"/>
-              <Property name="name" type="java.lang.String" value="tfd"/>
-            </BindingProperty>
-          </BindingProperties>
-        </Component>
         <Component class="com.t_oster.visicut.gui.beans.ImageComboBox" name="materialComboBox">
           <Properties>
             <Property name="name" type="java.lang.String" value="materialComboBox" noResource="true"/>
@@ -527,12 +515,6 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="materialComboBoxActionPerformed"/>
           </Events>
-        </Component>
-        <Component class="javax.swing.JLabel" name="jLabel7">
-          <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="jLabel7.text"/>
-            <Property name="name" type="java.lang.String" value="jLabel7" noResource="true"/>
-          </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel9">
           <Properties>
@@ -600,7 +582,7 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="0" pref="219" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" alignment="0" pref="217" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -647,7 +629,7 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="customMappingPanel2" alignment="0" pref="219" max="32767" attributes="0"/>
+                      <Component id="customMappingPanel2" alignment="0" pref="217" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -688,6 +670,26 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btAddMaterialActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="cbMaterialThickness">
+          <Properties>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="0"/>
+            </Property>
+            <Property name="name" type="java.lang.String" value="cbMaterialThickness" noResource="true"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbMaterialThicknessActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btAddMaterialThickness">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="btAddMaterialThickness.text"/>
+            <Property name="name" type="java.lang.String" value="btAddMaterialThickness" noResource="true"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btAddMaterialThicknessActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>
@@ -759,7 +761,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="504" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="510" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>

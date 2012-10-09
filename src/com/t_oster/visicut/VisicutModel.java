@@ -80,6 +80,32 @@ import javax.swing.filechooser.FileFilter;
 public class VisicutModel
 {
 
+  protected float materialThickness = 0;
+  public static final String PROP_MATERIALTHICKNESS = "materialThickness";
+
+  /**
+   * Get the value of materialThickness
+   *
+   * @return the value of materialThickness
+   */
+  public float getMaterialThickness()
+  {
+    return materialThickness;
+  }
+
+  /**
+   * Set the value of materialThickness
+   *
+   * @param materialThickness new value of materialThickness
+   */
+  public void setMaterialThickness(float materialThickness)
+  {
+    float oldMaterialThickness = this.materialThickness;
+    this.materialThickness = materialThickness;
+    propertyChangeSupport.firePropertyChange(PROP_MATERIALTHICKNESS, oldMaterialThickness, materialThickness);
+  }
+
+  
   public static final FileFilter PLFFilter = new ExtensionFilter(".plf", "VisiCut Portable Laser Format (*.plf)");
   
   private static VisicutModel instance;
@@ -674,13 +700,13 @@ public class VisicutModel
   {
     LaserJob job = new LaserJob(name, name, "visicut", this.getValidResolution());
     
-    float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() ? 0 : this.material.getDepth();
+    float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() ? 0 : this.materialThickness;
     
     for (Mapping m : this.getMappings())
     {
       GraphicSet set = m.getA().getMatchingObjects(this.getGraphicObjects());
       LaserProfile p = ProfileManager.getInstance().getProfileByName(m.getProfileName());
-      List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, p);
+      List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, p, this.materialThickness);
       p.addToLaserJob(job, set, this.addFocusOffset(props, focusOffset));
     }
     

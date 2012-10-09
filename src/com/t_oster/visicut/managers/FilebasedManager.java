@@ -152,6 +152,11 @@ public abstract class FilebasedManager<T>
     pcs.firePropertyChange("add", null, mp);
   }
   
+  public void save(T mp) throws FileNotFoundException, IOException
+  {
+    this.save(mp, this.getObjectPath(mp));
+  }
+  
   public void save(T mp, File f) throws FileNotFoundException, IOException
   {
     if (!f.getParentFile().exists())
