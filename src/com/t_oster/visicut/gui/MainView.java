@@ -185,27 +185,11 @@ public class MainView extends javax.swing.JFrame
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDLASERDEVICE, null, null));
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SOURCEFILE, null, null));
     this.refreshRecentFilesMenu();
-    if (Helper.isInkscapeExtensionInstallable())
+    this.jmInstallInkscape.setEnabled(Helper.isInkscapeExtensionInstallable());
+    this.jmInstallIllustrator.setEnabled(false);
+    if (!Helper.isInkscapeExtensionInstallable() && !false)
     {
-      javax.swing.JMenu extras = new javax.swing.JMenu(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("EXTRAS"));
-      javax.swing.JMenuItem install = new javax.swing.JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("INSTALL INKSCAPE-EXTENSION..."));
-      extras.add(install);
-      install.addActionListener(new ActionListener(){
-
-        public void actionPerformed(ActionEvent ae)
-        {
-          try
-          {
-            Helper.installInkscapeExtension();
-            dialog.showSuccessMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("INSTALLED EXTENSION SUCCESSFULLY"));
-          }
-          catch (Exception e)
-          {
-            dialog.showErrorMessage(e, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THERE WAS AN ERROR DURING THE INSTALLATION"));
-          }
-        }
-      });
-      this.menuBar.add(extras);
+      this.jmExtras.setVisible(false);
     }
     this.refreshExampleMenu();
   }
@@ -415,6 +399,9 @@ public class MainView extends javax.swing.JFrame
         showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
         zoomInMenuItem = new javax.swing.JMenuItem();
         zoomOutMenuItem = new javax.swing.JMenuItem();
+        jmExtras = new javax.swing.JMenu();
+        jmInstallInkscape = new javax.swing.JMenuItem();
+        jmInstallIllustrator = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
 
@@ -519,11 +506,11 @@ public class MainView extends javax.swing.JFrame
         predefinedMappingPanel.setLayout(predefinedMappingPanelLayout);
         predefinedMappingPanelLayout.setHorizontalGroup(
             predefinedMappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE)
         );
         predefinedMappingPanelLayout.setVerticalGroup(
             predefinedMappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
         );
 
         mappingTabbedPane.addTab(resourceMap.getString("predefinedMappingPanel.TabConstraints.tabTitle"), predefinedMappingPanel); // NOI18N
@@ -536,11 +523,11 @@ public class MainView extends javax.swing.JFrame
         customMappingPanel1.setLayout(customMappingPanel1Layout);
         customMappingPanel1Layout.setHorizontalGroup(
             customMappingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE)
+            .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE)
         );
         customMappingPanel1Layout.setVerticalGroup(
             customMappingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+            .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
         );
 
         mappingTabbedPane.addTab(resourceMap.getString("customMappingPanelContainer.TabConstraints.tabTitle"), customMappingPanel1); // NOI18N
@@ -599,16 +586,16 @@ public class MainView extends javax.swing.JFrame
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(calculateTimeButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(laserCutterComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE)
+                        .addComponent(laserCutterComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
                         .addContainerGap())
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel2)
-                        .addContainerGap(378, Short.MAX_VALUE))
+                        .addContainerGap(406, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE)
+                        .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(materialComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                        .addComponent(materialComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btAddMaterial)
                         .addContainerGap())))
@@ -639,7 +626,7 @@ public class MainView extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
                 .addGap(54, 54, 54)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(calculateTimeButton)
@@ -677,7 +664,7 @@ public class MainView extends javax.swing.JFrame
         );
         previewPanelLayout.setVerticalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 504, Short.MAX_VALUE)
+            .addGap(0, 506, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -980,6 +967,29 @@ public class MainView extends javax.swing.JFrame
 
         menuBar.add(viewMenu);
 
+        jmExtras.setText(resourceMap.getString("jmExtras.text")); // NOI18N
+        jmExtras.setName("jmExtras"); // NOI18N
+
+        jmInstallInkscape.setText(resourceMap.getString("jmInstallInkscape.text")); // NOI18N
+        jmInstallInkscape.setName("jmInstallInkscape"); // NOI18N
+        jmInstallInkscape.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmInstallInkscapeActionPerformed(evt);
+            }
+        });
+        jmExtras.add(jmInstallInkscape);
+
+        jmInstallIllustrator.setText(resourceMap.getString("jmInstallIllustrator.text")); // NOI18N
+        jmInstallIllustrator.setName("jmInstallIllustrator"); // NOI18N
+        jmInstallIllustrator.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmInstallIllustratorActionPerformed(evt);
+            }
+        });
+        jmExtras.add(jmInstallIllustrator);
+
+        menuBar.add(jmExtras);
+
         helpMenu.setAction(actionMap.get("showAboutDialog")); // NOI18N
         helpMenu.setText(resourceMap.getString("helpMenu.text")); // NOI18N
         helpMenu.setName("helpMenu"); // NOI18N
@@ -1040,7 +1050,7 @@ public class MainView extends javax.swing.JFrame
                             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(captureImageButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2063,6 +2073,24 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     }
   }//GEN-LAST:event_btAddMaterialActionPerformed
 
+  private void jmInstallInkscapeActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmInstallInkscapeActionPerformed
+  {//GEN-HEADEREND:event_jmInstallInkscapeActionPerformed
+    try
+    {
+      Helper.installInkscapeExtension();
+      dialog.showSuccessMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("INSTALLED EXTENSION SUCCESSFULLY"));
+    }
+    catch (Exception e)
+    {
+      dialog.showErrorMessage(e, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THERE WAS AN ERROR DURING THE INSTALLATION"));
+    }
+  }//GEN-LAST:event_jmInstallInkscapeActionPerformed
+
+  private void jmInstallIllustratorActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmInstallIllustratorActionPerformed
+  {//GEN-HEADEREND:event_jmInstallIllustratorActionPerformed
+    dialog.showErrorMessage("Not implemented yet");
+  }//GEN-LAST:event_jmInstallIllustratorActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton btAddMaterial;
@@ -2099,7 +2127,10 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenu jmExamples;
     private javax.swing.JMenuItem jmExportSettings;
+    private javax.swing.JMenu jmExtras;
     private javax.swing.JMenuItem jmImportSettings;
+    private javax.swing.JMenuItem jmInstallIllustrator;
+    private javax.swing.JMenuItem jmInstallInkscape;
     private javax.swing.JMenuItem jmManageLaserprofiles;
     private com.t_oster.visicut.gui.beans.ImageComboBox laserCutterComboBox;
     private com.t_oster.visicut.managers.MappingManager mappingManager1;
