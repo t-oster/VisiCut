@@ -32,25 +32,25 @@ import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.platform.Util;
-import com.t_oster.visicut.misc.ExtensionFilter;
-import com.t_oster.visicut.misc.Helper;
-import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.MaterialManager;
+import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.DialogHelper;
+import com.t_oster.visicut.misc.ExtensionFilter;
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
-import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
@@ -127,6 +127,7 @@ public class MainView extends javax.swing.JFrame
 
         public void handleQuitRequestWith(QuitEvent qe, QuitResponse qr)
         {
+          PreferencesManager.getInstance().getPreferences().setEditSettingsBeforeExecuting(MainView.this.cbEditBeforeExecute.isSelected());
           MainView.this.visicutModel1.updatePreferences();
           System.exit(0);
         }
@@ -156,6 +157,7 @@ public class MainView extends javax.swing.JFrame
 
       public void windowClosing(WindowEvent e)
       {
+        PreferencesManager.getInstance().getPreferences().setEditSettingsBeforeExecuting(MainView.this.cbEditBeforeExecute.isSelected());
         MainView.this.visicutModel1.updatePreferences();
       }
 
@@ -179,11 +181,6 @@ public class MainView extends javax.swing.JFrame
       {
       }
     });
-    initComplete = true;
-    //initialize states coorectly
-    this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_LOADEDFILE, null, null));
-    this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDLASERDEVICE, null, null));
-    this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SOURCEFILE, null, null));
     this.refreshRecentFilesMenu();
     this.jmInstallInkscape.setEnabled(Helper.isInkscapeExtensionInstallable());
     this.jmInstallIllustrator.setEnabled(false);
@@ -192,7 +189,13 @@ public class MainView extends javax.swing.JFrame
       this.jmExtras.setVisible(false);
     }
     this.refreshExampleMenu();
-  }
+    this.cbEditBeforeExecute.setSelected(PreferencesManager.getInstance().getPreferences().isEditSettingsBeforeExecuting());
+    initComplete = true;
+    //initialize states coorectly
+    this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_LOADEDFILE, null, null));
+    this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDLASERDEVICE, null, null));
+    this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SOURCEFILE, null, null));
+      }
 
   private ActionListener exampleItemClicked = new ActionListener(){
       public void actionPerformed(ActionEvent ae)
@@ -1064,6 +1067,7 @@ public class MainView extends javax.swing.JFrame
     }// </editor-fold>//GEN-END:initComponents
 
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
+      PreferencesManager.getInstance().getPreferences().setEditSettingsBeforeExecuting(MainView.this.cbEditBeforeExecute.isSelected());
       this.visicutModel1.updatePreferences();
       System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
@@ -2015,6 +2019,7 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
               File file = openFileChooser.getSelectedFile();
               PreferencesManager.getInstance().importSettings(file);
               this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
+              this.cbEditBeforeExecute.setSelected(PreferencesManager.getInstance().getPreferences().isEditSettingsBeforeExecuting());
               this.fillComboBoxes();
               this.refreshExampleMenu();
               dialog.showSuccessMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("SETTINGS SUCCESSFULLY IMPORTED"));

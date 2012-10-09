@@ -184,4 +184,26 @@ public class Preferences
     }
   }
 
+    private boolean editSettingsBeforeExecuting = false;
+
+  /**
+   * Get the value of editSettingsBeforeExecuting
+   *
+   * @return the value of editSettingsBeforeExecuting
+   */
+  public boolean isEditSettingsBeforeExecuting()
+  {
+    return editSettingsBeforeExecuting;
+  }
+
+  /**
+   * Set the value of editSettingsBeforeExecuting
+   *
+   * @param editSettingsBeforeExecuting new value of editSettingsBeforeExecuting
+   */
+  public void setEditSettingsBeforeExecuting(boolean editSettingsBeforeExecuting)
+  {
+    this.editSettingsBeforeExecuting = editSettingsBeforeExecuting;
+  }
+
 }
