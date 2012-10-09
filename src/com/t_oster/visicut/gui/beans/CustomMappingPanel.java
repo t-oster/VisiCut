@@ -74,30 +74,35 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     public void setValueAt(Object aValue, int row, int column)
     {
       Entry e = entries.get(row);
-      boolean enabledOrChange = e.enabled;
       switch (column)
       {
         case 0: 
         {
+          if (e.enabled == (Boolean) aValue)
+          {
+            return;
+          }
           e.enabled = (Boolean) aValue;
-          enabledOrChange = true;
           break;
         }
         case 1:
         {
           e.filterSet = (FilterSet) aValue;
+          e.enabled = true;
           break;
         }
         case 2:
         {
+          if (e.profile.equals(aValue))
+          {
+            return;
+          }
           e.profile = (LaserProfile) aValue;
+          e.enabled = true;
           break;
         }
       }
-      if (enabledOrChange)
-      {
-        VisicutModel.getInstance().setMappings(CustomMappingPanel.this.getResultingMappingSet());
-      }
+      VisicutModel.getInstance().setMappings(CustomMappingPanel.this.getResultingMappingSet());
     }
 
     @Override

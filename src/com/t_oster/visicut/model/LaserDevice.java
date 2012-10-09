@@ -213,7 +213,7 @@ public class LaserDevice implements ImageListable
     result.jobPrefix = jobPrefix;
     return result;
   }
-
+  
   @Override
   public String toString()
   {

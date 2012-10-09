@@ -27,8 +27,6 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ShapeDecorator;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import java.awt.geom.Area;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
 
 /**
@@ -88,8 +86,7 @@ public class FilterSet extends LinkedList<MappingFilter>
     return result;
   }
   protected boolean useOuterShape = false;
-  public static final String PROP_USEOUTERSHAPE = "useOuterShape";
-
+  
   /**
    * Get the value of useOuterShape
    *
@@ -109,32 +106,9 @@ public class FilterSet extends LinkedList<MappingFilter>
    */
   public void setUseOuterShape(boolean useOuterShape)
   {
-    boolean oldUseOuterShape = this.useOuterShape;
     this.useOuterShape = useOuterShape;
-    propertyChangeSupport.firePropertyChange(PROP_USEOUTERSHAPE, oldUseOuterShape, useOuterShape);
   }
-  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
-  /**
-   * Add PropertyChangeListener.
-   *
-   * @param listener
-   */
-  public void addPropertyChangeListener(PropertyChangeListener listener)
-  {
-    propertyChangeSupport.addPropertyChangeListener(listener);
-  }
-
-  /**
-   * Remove PropertyChangeListener.
-   *
-   * @param listener
-   */
-  public void removePropertyChangeListener(PropertyChangeListener listener)
-  {
-    propertyChangeSupport.removePropertyChangeListener(listener);
-  }
-
+  
   @Override
   public String toString()
   {
@@ -146,6 +120,28 @@ public class FilterSet extends LinkedList<MappingFilter>
     {
       return this.get(this.size() - 1).toString();
     }
+  }
+  
+  @Override
+  public boolean equals(Object o)
+  {
+    if (o instanceof FilterSet)
+    {
+      FilterSet f = (FilterSet) o;
+      if (f.size() != this.size())
+      {
+        return false;
+      }
+      for (int i=0; i< f.size();i++)
+      {
+        if (!f.get(i).equals(this.get(i)))
+        {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
   }
   
   @Override
