@@ -173,20 +173,35 @@ public class Helper
   {
     String errors = "";
     for (File dir : new File[]{
-      new File("/Applications/Adobe Illustrator CS3/Presets/Scripts"),
-      new File("/Applications/Adobe Illustrator CS4/Presets/en_US/Scripts"),
-      new File("/Applications/Adobe Illustrator CS5/Presets/en_US/Scripts")
+      new File("/Applications/Adobe Illustrator CS3/Presets"),
+      new File("/Applications/Adobe Illustrator CS4/Presets"),
+      new File("/Applications/Adobe Illustrator CS5/Presets")
     })
     {
       if (dir.exists() && dir.isDirectory())
       {
-        try
+        for (File d : dir.listFiles())
         {
-          FileUtils.copyFileToDirectory(getIllustratorScript(), dir);
-        }
-        catch (IOException ex)
-        {
-          errors += "Can't copy to "+dir.getAbsolutePath()+"\n";
+          if (!d.isDirectory())
+          {
+            continue;
+          }
+          if (!"Scripts".equals(d.getName()))
+          {
+            d = new File(d, "Scripts");
+            if (!d.exists() || !d.isDirectory())
+            {
+              continue;
+            }
+          }
+          try
+          {
+            FileUtils.copyFileToDirectory(getIllustratorScript(), dir);
+          }
+          catch (IOException ex)
+          {
+            errors += "Can't copy to "+dir.getAbsolutePath()+"\n";
+          } 
         }
       }
     }
@@ -481,7 +496,7 @@ public class Helper
   
   private static File getIllustratorScript()
   {
-    return new File(getVisiCutFolder(), "visicut_export.as");
+    return new File(getVisiCutFolder(), "OpenWithVisiCut.scpt");
   }
   
   public static boolean isIllustratorScriptInstallable()
