@@ -163,14 +163,14 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
     this.name = name;
   }
   
-  protected List<Float> materialThicknesses = new LinkedList<Float>();
+  protected LinkedList<Float> materialThicknesses = new LinkedList<Float>();
 
   /**
    * Get the value of materialThicknesses
    *
    * @return the value of materialThicknesses
    */
-  public List<Float> getMaterialThicknesses()
+  public LinkedList<Float> getMaterialThicknesses()
   {
     if (materialThicknesses == null)
     {
@@ -185,7 +185,7 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
    *
    * @param materialThicknesses new value of materialThicknesses
    */
-  public void setMaterialThicknesses(List<Float> materialThicknesses)
+  public void setMaterialThicknesses(LinkedList<Float> materialThicknesses)
   {
     this.materialThicknesses = materialThicknesses;
   }
