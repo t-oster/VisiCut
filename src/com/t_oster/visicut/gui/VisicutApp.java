@@ -347,10 +347,7 @@ public class VisicutApp extends SingleFrameApplication
       {
         System.err.append("Total-height parameter takes only effect with --execute");
       }
-      if (model.getMaterial() != null)
-      {
-        model.getMaterial().setDepth(height);
-      }
+      model.setMaterialThickness(height);
     }
     if (resolution != null)
     {
@@ -439,7 +436,7 @@ public class VisicutApp extends SingleFrameApplication
       //check if all settings are available
       for (Mapping ms : model.getMappings())
       {
-        if (LaserPropertyManager.getInstance().getLaserProperties(model.getSelectedLaserDevice(), model.getMaterial(), ProfileManager.getInstance().getProfileByName(ms.getProfileName())) == null)
+        if (LaserPropertyManager.getInstance().getLaserProperties(model.getSelectedLaserDevice(), model.getMaterial(), ProfileManager.getInstance().getProfileByName(ms.getProfileName()), model.getMaterialThickness()) == null)
         {
           System.err.println("Combination of Laserdevice, Material and Mapping is not supported");
           System.exit(1);

@@ -348,9 +348,7 @@ public class MainView extends javax.swing.JFrame
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        materialHeightTextField = new javax.swing.JTextField();
         materialComboBox = new com.t_oster.visicut.gui.beans.ImageComboBox();
-        jLabel7 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         laserCutterComboBox = new com.t_oster.visicut.gui.beans.ImageComboBox();
         jLabel10 = new javax.swing.JLabel();
@@ -366,6 +364,8 @@ public class MainView extends javax.swing.JFrame
         resolutionComboBox = new com.t_oster.visicut.gui.beans.ImageComboBox();
         jLabel12 = new javax.swing.JLabel();
         btAddMaterial = new javax.swing.JButton();
+        cbMaterialThickness = new javax.swing.JComboBox();
+        btAddMaterialThickness = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
         executeJobButton = new javax.swing.JButton();
@@ -445,21 +445,12 @@ public class MainView extends javax.swing.JFrame
         jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
         jLabel5.setName("jLabel5"); // NOI18N
 
-        materialHeightTextField.setToolTipText(resourceMap.getString("materialHeightTextField.toolTipText")); // NOI18N
-        materialHeightTextField.setName("materialHeightTextField"); // NOI18N
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material.depth}"), materialHeightTextField, org.jdesktop.beansbinding.BeanProperty.create("text_ON_ACTION_OR_FOCUS_LOST"), "tfd");
-        bindingGroup.addBinding(binding);
-
         materialComboBox.setName("materialComboBox"); // NOI18N
         materialComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 materialComboBoxActionPerformed(evt);
             }
         });
-
-        jLabel7.setText(resourceMap.getString("jLabel7.text")); // NOI18N
-        jLabel7.setName("jLabel7"); // NOI18N
 
         jLabel9.setText(resourceMap.getString("jLabel9.text")); // NOI18N
         jLabel9.setName("jLabel9"); // NOI18N
@@ -556,6 +547,21 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
+        cbMaterialThickness.setName("cbMaterialThickness"); // NOI18N
+        cbMaterialThickness.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbMaterialThicknessActionPerformed(evt);
+            }
+        });
+
+        btAddMaterialThickness.setText(resourceMap.getString("btAddMaterialThickness.text")); // NOI18N
+        btAddMaterialThickness.setName("btAddMaterialThickness"); // NOI18N
+        btAddMaterialThickness.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btAddMaterialThicknessActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -570,9 +576,9 @@ public class MainView extends javax.swing.JFrame
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addComponent(materialHeightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel7))
+                                        .addComponent(btAddMaterialThickness))
                                     .addComponent(jLabel5))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -622,10 +628,10 @@ public class MainView extends javax.swing.JFrame
                     .addComponent(jLabel8))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(materialHeightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7)
                     .addComponent(resolutionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel12))
+                    .addComponent(jLabel12)
+                    .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btAddMaterialThickness))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1169,7 +1175,7 @@ public class MainView extends javax.swing.JFrame
     this.showCuttingCb.setEnabled(previewModes);
     this.showEngravingCb.setEnabled(previewModes);
     if (this.visicutModel1.getSelectedLaserDevice() == null || this.visicutModel1.getMaterial() == null
-      || this.visicutModel1.getMappings() == null || this.visicutModel1.getResolution() == null)
+      || this.visicutModel1.getMappings() == null || this.visicutModel1.getResolution() == null || this.cbMaterialThickness.getSelectedItem() == null)
     {
       this.executeJobButton.setEnabled(false);
       this.executeJobMenuItem.setEnabled(false);
@@ -1302,7 +1308,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       for (Mapping m:this.visicutModel1.getMappings())
       {
         LaserProfile profile = ProfileManager.getInstance().getProfileByName(m.getProfileName());
-        List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(device, material, profile);
+        List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(device, material, profile, this.visicutModel1.getMaterialThickness());
         if (props == null)
         {
           unknownProfilesUsed = true;
@@ -1345,7 +1351,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         //save changes
         for (Entry<LaserProfile, List<LaserProperty>> e:result.entrySet())
         {
-          LaserPropertyManager.getInstance().saveLaserProperties(device, material, e.getKey(), e.getValue());
+          LaserPropertyManager.getInstance().saveLaserProperties(device, material, e.getKey(), this.visicutModel1.getMaterialThickness(), e.getValue());
         }
       }
       new Thread()
@@ -1508,6 +1514,10 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
         ? "VisiCut"
         : "VisiCut - " + this.visicutModel1.getSourceFile().getName());
     }
+  }
+  else if (evt.getPropertyName().equals(VisicutModel.PROP_MATERIAL))
+  {
+    this.refreshMaterialThicknessesComboBox();
   }
 }//GEN-LAST:event_visicutModel1PropertyChange
 
@@ -2103,14 +2113,46 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
       dialog.showErrorMessage(e, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THERE WAS AN ERROR DURING THE INSTALLATION"));
     }
   }//GEN-LAST:event_jmInstallIllustratorActionPerformed
+private void btAddMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAddMaterialThicknessActionPerformed
+  if (VisicutModel.getInstance().getMaterial() != null)
+  {
+    Float f = (float) dialog.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ADDTHICKNESS"), 2);
+    List<Float> th = VisicutModel.getInstance().getMaterial().getMaterialThicknesses();
+    if (th.contains(f))
+    {
+      return;
+    }
+    th.add(f);
+    Collections.sort(th);
+    try
+    {
+      MaterialManager.getInstance().save(VisicutModel.getInstance().getMaterial());
+    }
+    catch (Exception ex)
+    {
+      dialog.showErrorMessage(ex, "Could not save material thickness");
+    }
+    this.refreshMaterialThicknessesComboBox();
+  }
+}//GEN-LAST:event_btAddMaterialThicknessActionPerformed
+
+private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbMaterialThicknessActionPerformed
+  Float f = (Float) this.cbMaterialThickness.getSelectedItem();
+  if (f != null)
+  {
+    this.visicutModel1.setMaterialThickness(f);
+  }
+}//GEN-LAST:event_cbMaterialThicknessActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton btAddMaterial;
+    private javax.swing.JButton btAddMaterialThickness;
     private javax.swing.JButton calculateTimeButton;
     private javax.swing.JMenuItem calibrateCameraMenuItem;
     private javax.swing.JButton captureImageButton;
     private javax.swing.JCheckBox cbEditBeforeExecute;
+    private javax.swing.JComboBox cbMaterialThickness;
     private javax.swing.JCheckBox cbPhoto;
     private javax.swing.JPanel customMappingPanel1;
     private com.t_oster.visicut.gui.beans.CustomMappingPanel customMappingPanel2;
@@ -2129,7 +2171,6 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
@@ -2149,7 +2190,6 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     private com.t_oster.visicut.managers.MappingManager mappingManager1;
     private javax.swing.JTabbedPane mappingTabbedPane;
     private com.t_oster.visicut.gui.beans.ImageComboBox materialComboBox;
-    private javax.swing.JTextField materialHeightTextField;
     private javax.swing.JMenuItem materialMenuItem;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newMenuItem;
@@ -2175,4 +2215,21 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JMenuItem zoomOutMenuItem;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
+
+  private void refreshMaterialThicknessesComboBox()
+  {
+    if (VisicutModel.getInstance().getMaterial() != null)
+    {
+      Float current = (Float) this.cbMaterialThickness.getSelectedItem();
+      this.cbMaterialThickness.removeAllItems();
+      for (float f : this.visicutModel1.getMaterial().getMaterialThicknesses())
+      {
+        this.cbMaterialThickness.addItem((Float) f);
+        if (((Float) f).equals(current))
+        {
+          this.cbMaterialThickness.setSelectedItem((Float) f);
+        }
+      }
+    }
+  }
 }

@@ -119,14 +119,12 @@ public final class PreferencesManager
     mp.setColor(Color.WHITE);
     mp.setCutColor(Color.RED);
     mp.setEngraveColor(Color.DARK_GRAY);
-    mp.setDepth(0.1f);
     MaterialManager.getInstance().add(mp);
     mp = new MaterialProfile();
     mp.setName("Acrylic");
     mp.setColor(Color.BLUE);
     mp.setCutColor(Color.RED);
     mp.setEngraveColor(Color.WHITE);
-    mp.setDepth(2f);
     MaterialManager.getInstance().add(mp);
     preferences.setLastMaterial(mp.getName());
     

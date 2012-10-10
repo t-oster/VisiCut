@@ -62,18 +62,18 @@ public class LaserPropertyManager
     }
   }
 
-  private File getLaserPropertiesFile(LaserDevice ld, MaterialProfile mp, LaserProfile lp)
+  private File getLaserPropertiesFile(LaserDevice ld, MaterialProfile mp, LaserProfile lp, float materialThickness)
   {
     File laserprofiles = new File(Helper.getBasePath(), "laserprofiles");
     File deviceprofiles = new File(laserprofiles, Helper.toPathName(ld.getName()));
-    File material = new File(new File(deviceprofiles, Helper.toPathName(mp.getName())), mp.getDepth() + "mm");
+    File material = new File(new File(deviceprofiles, Helper.toPathName(mp.getName())), materialThickness + "mm");
     File profile = new File(material, Helper.toPathName(lp.getName()) + ".xml");
     return profile;
   }
 
-  public List<LaserProperty> getLaserProperties(LaserDevice ld, MaterialProfile mp, LaserProfile lp) throws FileNotFoundException, IOException
+  public List<LaserProperty> getLaserProperties(LaserDevice ld, MaterialProfile mp, LaserProfile lp, float materialThickness) throws FileNotFoundException, IOException
   {
-    File f = getLaserPropertiesFile(ld, mp, lp);
+    File f = getLaserPropertiesFile(ld, mp, lp, materialThickness);
     if (f.exists())
     {
       List<LaserProperty> result = this.loadProperties(f);
@@ -107,9 +107,9 @@ public class LaserPropertyManager
     return null;
   }
 
-  public void deleteLaserProperties(LaserDevice ld, MaterialProfile mp, LaserProfile lp)
+  public void deleteLaserProperties(LaserDevice ld, MaterialProfile mp, LaserProfile lp, float materialThickness)
   {
-    File f = getLaserPropertiesFile(ld, mp, lp);
+    File f = getLaserPropertiesFile(ld, mp, lp, materialThickness);
     if (f.exists())
     {
       f.delete();
@@ -130,9 +130,9 @@ public class LaserPropertyManager
     return xstream;
   }
 
-  public void saveLaserProperties(LaserDevice ld, MaterialProfile mp, LaserProfile lp, List<LaserProperty> lps) throws FileNotFoundException, IOException
+  public void saveLaserProperties(LaserDevice ld, MaterialProfile mp, LaserProfile lp, float materialThickness, List<LaserProperty> lps) throws FileNotFoundException, IOException
   {
-    File f = getLaserPropertiesFile(ld, mp, lp);
+    File f = getLaserPropertiesFile(ld, mp, lp, materialThickness);
     if (!f.getParentFile().exists())
     {
       f.getParentFile().mkdirs();

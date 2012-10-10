@@ -21,6 +21,8 @@ package com.t_oster.visicut.model;
 import com.t_oster.visicut.gui.ImageListable;
 import java.awt.Color;
 import java.text.Collator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -139,7 +141,7 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
     this.color = color;
   }
     
-  protected String name = "Unnamed Material";
+  protected String name = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditMaterialsDialog").getString("UNNAMED MATERIAL");
 
   /**
    * Get the value of name
@@ -161,32 +163,37 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
     this.name = name;
   }
   
-  protected float depth = 4;
-  
+  protected List<Float> materialThicknesses = new LinkedList<Float>();
+
   /**
-   * Get the value of depth
+   * Get the value of materialThicknesses
    *
-   * @return the value of depth
+   * @return the value of materialThicknesses
    */
-  public float getDepth()
+  public List<Float> getMaterialThicknesses()
   {
-    return depth;
+    if (materialThicknesses == null)
+    {
+      materialThicknesses = new LinkedList<Float>();
+      materialThicknesses.add(2f);
+    }
+    return materialThicknesses;
   }
 
   /**
-   * Set the value of depth
+   * Set the value of materialThicknesses
    *
-   * @param depth new value of depth
+   * @param materialThicknesses new value of materialThicknesses
    */
-  public void setDepth(float depth)
+  public void setMaterialThicknesses(List<Float> materialThicknesses)
   {
-    this.depth = depth;
+    this.materialThicknesses = materialThicknesses;
   }
 
   @Override
   public String toString()
   {
-    return this.getName()+" ("+this.getDepth()+" mm)";
+    return this.getName();
   }
   
   @Override
@@ -197,7 +204,6 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
     cp.color = this.color;
     cp.cutColor = this.cutColor;
     cp.engraveColor = this.engraveColor;
-    cp.depth = this.depth;
     cp.description = this.description;
     cp.thumbnailPath = this.thumbnailPath;
     return cp;

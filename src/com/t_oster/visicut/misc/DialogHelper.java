@@ -19,6 +19,8 @@
 package com.t_oster.visicut.misc;
 
 import java.awt.Component;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.swing.JOptionPane;
 
 /**
@@ -86,5 +88,23 @@ public class DialogHelper
   public void showErrorMessage(String text)
   {
     JOptionPane.showMessageDialog(parent, text, title + " Error", JOptionPane.ERROR_MESSAGE);
+  }
+  
+  public double askDouble(String text, double initial)
+  {
+    int mm = (int) Math.round(initial * 10);
+    String result = JOptionPane.showInputDialog(parent, text, "" + (mm / 10) + "." + (mm % 10));
+    result = result.replace(",", ".");
+    try
+    {
+      ScriptEngineManager mgr = new ScriptEngineManager();
+      ScriptEngine engine = mgr.getEngineByName("JavaScript");
+      result = engine.eval(result).toString();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    return Double.parseDouble(result);
   }
 }
