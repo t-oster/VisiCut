@@ -496,7 +496,7 @@ public class Helper
   
   private static File getIllustratorScript()
   {
-    return new File(getVisiCutFolder(), "OpenWithVisiCut.scpt");
+    return new File(new File(getVisiCutFolder(), "illustrator_script"), "OpenWithVisiCut.scpt");
   }
   
   public static boolean isIllustratorScriptInstallable()
