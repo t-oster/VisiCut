@@ -1,8 +1,13 @@
 package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.gui.EditRaster3dProfileDialog;
+import com.t_oster.visicut.gui.EditRasterProfileDialog;
+import com.t_oster.visicut.gui.EditVectorProfileDialog;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.model.LaserProfile;
+import com.t_oster.visicut.model.Raster3dProfile;
+import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
@@ -18,6 +23,8 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -25,11 +32,10 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class CustomMappingPanel extends EditableTablePanel implements EditableTableProvider, PropertyChangeListener
+public class CustomMappingPanel extends EditableTablePanel implements EditableTableProvider, TableModelListener, PropertyChangeListener
 {
   private DefaultTableModel model = new DefaultTableModel()
   {
-    
     private String[] columns = new String[]{java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("ENABLED"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("SELECTION"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("PROFILE")};
     private Class[] classes = new Class[]{Boolean.class, FilterSet.class, LaserProfile.class};
 
@@ -89,22 +95,20 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
         {
           e.filterSet = (FilterSet) aValue;
           e.enabled = true;
-          this.fireTableCellUpdated(row, 0);
           break;
         }
         case 2:
         {
-          if (e.profile.equals(aValue))
+          if (e.profile.getName().equals(((LaserProfile) aValue).getName()))
           {
             return;
           }
-          e.profile = (LaserProfile) aValue;
+          e.profile = ((LaserProfile) aValue).clone();
           e.enabled = true;
-          this.fireTableCellUpdated(row, 0);
           break;
         }
       }
-      VisicutModel.getInstance().setMappings(CustomMappingPanel.this.getResultingMappingSet());
+      this.fireTableRowsUpdated(row, row);
     }
 
     @Override
@@ -131,6 +135,44 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
 
   public Object editObject(Object o)
   {
+    if (o instanceof Entry)
+    {
+      Entry e = (Entry) o;
+      //edit laserprofile
+      if (e.profile instanceof VectorProfile)
+      {
+        EditVectorProfileDialog d = new EditVectorProfileDialog(null, true);
+        d.setVectorProfile((VectorProfile) e.profile);
+        d.setOnlyEditParameters(true);
+        d.setVisible(true);
+        if (d.getVectorProfile() != null)
+        {
+          e.profile = d.getVectorProfile();
+        }
+      }
+      else if (e.profile instanceof RasterProfile)
+      {
+        EditRasterProfileDialog d = new EditRasterProfileDialog(null, true);
+        d.setRasterProfile((RasterProfile) e.profile);
+        d.setOnlyEditParameters(true);
+        d.setVisible(true);
+        if (d.getRasterProfile() != null)
+        {
+          e.profile = d.getRasterProfile();
+        }
+      }
+      else if (e.profile instanceof Raster3dProfile)
+      {
+        EditRaster3dProfileDialog d = new EditRaster3dProfileDialog(null, true);
+        d.setRasterProfile((Raster3dProfile) e.profile);
+        d.setOnlyEditParameters(true);
+        d.setVisible(true);
+        if (d.getRasterProfile() != null)
+        {
+          e.profile = d.getRasterProfile();
+        }
+      }
+    }
     return o;
   }
 
@@ -151,7 +193,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       {
         return false;
       }
-      e.profile = ProfileManager.getInstance().getProfileByName(m.getProfileName());
+      e.profile = m.getProfile();
       result.add(e);
     }
     this.entries.clear();
@@ -164,26 +206,13 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
   {
     if (pce.getSource() == ProfileManager.getInstance())
     {
-      this.checkProfiles();
       this.refreshProfilesEditor();
     }
   }
 
-  /**
-   * checks for every row if the contained laser-profile
-   * is still existing
-   */
-  private void checkProfiles()
+  public void tableChanged(TableModelEvent tme)
   {
-    for (int row = this.entries.size()-1; row >= 0 ; row--)
-    {
-      LaserProfile lp = this.entries.get(row).profile;
-      if (ProfileManager.getInstance().getProfileByName(lp.getName()) == null)
-      {
-        this.entries.remove(row);
-        this.model.fireTableRowsDeleted(row, row);
-      }
-    }
+    VisicutModel.getInstance().setMappings(this.getResultingMappingSet());
   }
   
   class Entry
@@ -201,12 +230,14 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     this.setTableModel(model);
     this.setProvider(this);
     this.setObjects((List) entries);
-    this.setEditButtonVisible(false);
+    this.setEditButtonVisible(true);
     this.getTable().setDefaultEditor(FilterSet.class, filterSetEditor);
     this.refreshProfilesEditor();
     this.getTable().setDefaultRenderer(FilterSet.class, filterSetRenderer);
     this.setMoveButtonsVisible(true);
+    this.setSaveButtonVisible(true);
     ProfileManager.getInstance().addPropertyChangeListener(this);
+    model.addTableModelListener(this);
   }
   
   private void refreshProfilesEditor()
@@ -282,7 +313,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       {
         Mapping m = new Mapping();
         m.setFilterSet(e.filterSet);
-        m.setProfileName(e.profile.getName());
+        m.setProfile(e.profile);
         result.add(m);
       }
     }

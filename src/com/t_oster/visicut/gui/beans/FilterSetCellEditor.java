@@ -222,7 +222,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
 
   public Component getTableCellEditorComponent(JTable jtable, Object o, boolean bln, int i, int i1)
   {
-    this.resultingFilterSet = (FilterSet) o;
+    this.resultingFilterSet = ((FilterSet) o).clone();
     bt.setText(((FilterSet) o).isEmpty() ? java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("EVERYTHING") : java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("CUSTOM"));
     this.prepareMenu();
     return bt;

@@ -24,14 +24,12 @@ import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
 import com.t_oster.visicut.gui.beans.EditRectangle.ParameterField;
 import com.t_oster.visicut.gui.beans.PreviewPanel;
-import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Cursor;
 import java.awt.Point;
-import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -45,11 +43,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 /**
@@ -95,8 +90,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
 
         public void actionPerformed(ActionEvent ae)
         {
-          ((RasterProfile) ProfileManager.getInstance().getProfileByName(
-            VisicutModel.getInstance().getMappings().getLast().getProfileName())).setDitherAlgorithm(da);
+          ((RasterProfile) VisicutModel.getInstance().getMappings().getLast().getProfile()).setDitherAlgorithm(da);
           PreviewPanelKeyboardMouseHandler.this.previewPanel.ClearCache();
           PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
         }
@@ -285,8 +279,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       if (e.contains(me.getPoint()))
       {
         try{
-        this.dithermenu.setEnabled(ProfileManager.getInstance().getProfileByName(
-            VisicutModel.getInstance().getMappings().getLast().getProfileName()) instanceof RasterProfile);
+        this.dithermenu.setEnabled(VisicutModel.getInstance().getMappings().getLast().getProfile() instanceof RasterProfile);
         }
         catch (NullPointerException ex)
         {

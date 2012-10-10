@@ -20,6 +20,7 @@ package com.t_oster.visicut.gui.beans;
 
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -73,6 +74,37 @@ public class EditableTablePanel extends javax.swing.JPanel
   {
     return this.table.getSelectedRow();
   }
+  protected boolean saveButtonVisible = false;
+  public static final String PROP_SAVEBUTTONVISIBLE = "saveButtonVisible";
+
+  /**
+   * Get the value of saveButtonVisible
+   *
+   * @return the value of saveButtonVisible
+   */
+  public boolean isSaveButtonVisible()
+  {
+    return saveButtonVisible;
+  }
+
+  /**
+   * Set the value of saveButtonVisible
+   *
+   * @param saveButtonVisible new value of saveButtonVisible
+   */
+  public void setSaveButtonVisible(boolean saveButtonVisible)
+  {
+    boolean oldSaveButtonVisible = this.saveButtonVisible;
+    this.saveButtonVisible = saveButtonVisible;
+    firePropertyChange(PROP_SAVEBUTTONVISIBLE, oldSaveButtonVisible, saveButtonVisible);
+    this.btSave.setVisible(saveButtonVisible);
+  }
+  
+  public JButton getSaveButton()
+  {
+    return this.btSave;
+  }
+  
   protected boolean editButtonVisible = true;
   public static final String PROP_EDITBUTTONVISIBLE = "editButtonVisible";
 
@@ -243,6 +275,7 @@ public class EditableTablePanel extends javax.swing.JPanel
         btEdit = new javax.swing.JButton();
         btUp = new javax.swing.JButton();
         btDown = new javax.swing.JButton();
+        btSave = new javax.swing.JButton();
 
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -293,19 +326,22 @@ public class EditableTablePanel extends javax.swing.JPanel
             }
         });
 
+        btSave.setText(bundle.getString("SAVE")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(btRemove, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btUp, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btDown, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btAdd, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btSave, 0, 0, Short.MAX_VALUE)
+                    .addComponent(btRemove, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btUp, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btDown, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btEdit, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -320,7 +356,8 @@ public class EditableTablePanel extends javax.swing.JPanel
                 .addComponent(btUp)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btDown)
-                .addContainerGap(111, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+                .addComponent(btSave))
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -357,13 +394,9 @@ public class EditableTablePanel extends javax.swing.JPanel
       Object n = this.provider.getNewInstance();
       if (n != null)
       {
-        Object o = editButtonVisible ? this.provider.editObject(n) : n;
-        if (o != null)
-        {
-          this.objects.add(o);
-          int idx = this.objects.indexOf(o);
-          this.tableModel.fireTableRowsInserted(idx, idx);
-        }
+        this.objects.add(n);
+        int idx = this.objects.indexOf(n);
+        this.tableModel.fireTableRowsInserted(idx, idx);
       }
     }
   }//GEN-LAST:event_btAddActionPerformed
@@ -399,6 +432,7 @@ public class EditableTablePanel extends javax.swing.JPanel
     private javax.swing.JButton btDown;
     private javax.swing.JButton btEdit;
     private javax.swing.JButton btRemove;
+    private javax.swing.JButton btSave;
     private javax.swing.JButton btUp;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable table;

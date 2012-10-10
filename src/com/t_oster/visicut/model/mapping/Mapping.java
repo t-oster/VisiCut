@@ -19,6 +19,7 @@
 package com.t_oster.visicut.model.mapping;
 
 import com.t_oster.liblasercut.platform.Tuple;
+import com.t_oster.visicut.model.LaserProfile;
 
 /**
  * A Mapping represents a Set of Filters to Match
@@ -27,15 +28,15 @@ import com.t_oster.liblasercut.platform.Tuple;
  * Elements should be rendered and cut on the LaserCutter
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class Mapping extends Tuple<FilterSet,String> implements Cloneable
+public class Mapping extends Tuple<FilterSet,LaserProfile> implements Cloneable
 {
   public Mapping()
   {
   }
   
-  public Mapping(FilterSet filterSet, String profileName)
+  public Mapping(FilterSet filterSet, LaserProfile profile)
   {
-    super(filterSet,profileName);
+    super(filterSet,profile);
   }
   
   public FilterSet getFilterSet()
@@ -48,14 +49,14 @@ public class Mapping extends Tuple<FilterSet,String> implements Cloneable
     this.setA(f);
   }
   
-  public String getProfileName()
+  public LaserProfile getProfile()
   {
     return this.getB();
   }
   
-  public void setProfileName(String name)
+  public void setProfile(LaserProfile profile)
   {
-    this.setB(name);
+    this.setB(profile);
   }
   
   @Override
@@ -72,6 +73,6 @@ public class Mapping extends Tuple<FilterSet,String> implements Cloneable
   @Override
   public Mapping clone()
   {
-    return new Mapping((FilterSet) this.getFilterSet().clone(), this.getProfileName());
+    return new Mapping((FilterSet) this.getFilterSet().clone(), this.getProfile().clone());
   }
 }

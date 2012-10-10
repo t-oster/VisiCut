@@ -203,11 +203,11 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
       choose.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditProfilesDialog").getString("RASTER3D PROFILE"));
       if (JOptionPane.showConfirmDialog(this, choose, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditProfilesDialog").getString("WHICH KIND OF PROFILE?"), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
           if (choose.getSelectedItem().equals(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditProfilesDialog").getString("LINE PROFILE"))) {
-              return new VectorProfile();
+              return editObject(new VectorProfile());
           } else if (choose.getSelectedItem().equals(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditProfilesDialog").getString("RASTER PROFILE"))) {
-              return new RasterProfile();
+              return editObject(new RasterProfile());
           } else if (choose.getSelectedItem().equals(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditProfilesDialog").getString("RASTER3D PROFILE"))) {
-              return new Raster3dProfile();
+              return editObject(new Raster3dProfile());
           }
 
       }

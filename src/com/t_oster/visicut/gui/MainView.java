@@ -74,10 +74,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
@@ -116,6 +113,27 @@ public class MainView extends javax.swing.JFrame
     }
     fillComboBoxes();
 
+    this.customMappingPanel2.getSaveButton().addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae)
+      {
+        String name = JOptionPane.showInputDialog(MainView.this, "Please give a name for the mapping");
+        if (name != null)
+        {
+          MappingSet ms = MainView.this.customMappingPanel2.getResultingMappingSet().clone();
+          ms.setName(name);
+          try
+          {
+            MappingManager.getInstance().add(ms);
+            MainView.this.refreshPredefinedMappingList();
+          }
+          catch (Exception ex)
+          {
+            MainView.this.dialog.showErrorMessage(ex);
+          }
+        }
+      }
+    });
+    
     if (this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null)
     {
       this.captureImage();
@@ -307,26 +325,7 @@ public class MainView extends javax.swing.JFrame
       }
     }
     this.refreshMaterialComboBox();
-    String ss = this.visicutModel1.getMappings() != null ? this.visicutModel1.getMappings().getName() : null;
-    this.predefinedMappingList.clearList();
-    this.predefinedMappingList.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("NO MAPPING"));
-    this.predefinedMappingList.setSelectedIndex(0);
-    for (MappingSet m : this.visicutModel1.generateDefaultMappings())
-    {
-      this.predefinedMappingList.addItem(m);
-      if (m.getName().equals(ss))
-      {
-        this.predefinedMappingList.setSelectedValue(m, true);
-      }
-    }
-    for (MappingSet m : this.mappingManager1.getAll())
-    {
-      this.predefinedMappingList.addItem(m);
-      if (m.getName().equals(ss))
-      {
-        this.predefinedMappingList.setSelectedValue(m, true);
-      }
-    }
+    this.refreshPredefinedMappingList();
   }
 
   /** This method is called from within the constructor to
@@ -1085,7 +1084,6 @@ public class MainView extends javax.swing.JFrame
         this.visicutModel1.loadFromFile(this.mappingManager1, file);
         if (this.visicutModel1.getMappings() != null)
         {
-          this.checkForMissingProfiles(this.visicutModel1.getMappings());
           if (this.custom == null)
           {
             custom = this.visicutModel1.getMappings();
@@ -1199,11 +1197,6 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 
   private void editMappings() throws FileNotFoundException, IOException
   {
-    if (this.visicutModel1.getGraphicObjects() == null || this.visicutModel1.getGraphicObjects().size()==0)
-    {
-      dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("PLEASE LOAD A FILE BEFORE EDITING MAPPINGS"));
-      return;
-    }
     List<MappingSet> mappingsets = new LinkedList<MappingSet>();
     for (MappingSet m : this.mappingManager1.getAll())
     {
@@ -1255,15 +1248,13 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     {
       LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
       MaterialProfile material = this.visicutModel1.getMaterial();
-      //first check if all profiles exist
-      this.checkForMissingProfiles(this.visicutModel1.getMappings());
       //get all profiles used in the job
       //and check if they're supported yet
       boolean unknownProfilesUsed = false;
       Map<LaserProfile, List<LaserProperty>> usedSettings = new LinkedHashMap<LaserProfile, List<LaserProperty>>();
       for (Mapping m:this.visicutModel1.getMappings())
       {
-        LaserProfile profile = ProfileManager.getInstance().getProfileByName(m.getProfileName());
+        LaserProfile profile = m.getProfile();
         List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(device, material, profile, this.visicutModel1.getMaterialThickness());
         if (props == null)
         {
@@ -1720,71 +1711,8 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     }
   }//GEN-LAST:event_predefinedMappingListValueChanged
 
-  private void checkForMissingProfiles(MappingSet mappings) throws FileNotFoundException, IOException
-  {
-    if (mappings != null)
-    {
-      //Check if each mapped profile already exists
-      for(Mapping m:mappings)
-      {
-        if (ProfileManager.getInstance().getProfileByName(m.getProfileName()) == null)
-        {
-          LaserProfile lp = null;
-          Box box = Box.createVerticalBox();
-          box.add(new JLabel(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THE PROFILE '")+m.getProfileName()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("' IS UNKNOWN.")));
-          box.add(new JLabel(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("WHAT KIND OF PROFILE SHOULD IT BE?")));
-          JComboBox choose = new JComboBox();
-          choose.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("LINE PROFILE"));
-          choose.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("RASTER PROFILE"));
-          choose.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("RASTER3D PROFILE"));
-          box.add(choose);
-          JOptionPane.showMessageDialog(this, box, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("PLEASE SELECT A PROFILE TYPE"), JOptionPane.QUESTION_MESSAGE);
-          if (choose.getSelectedItem().equals(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("LINE PROFILE"))) {
-            EditVectorProfileDialog d = new EditVectorProfileDialog(null, true);
-            VectorProfile p = new VectorProfile();
-            p.setName(m.getProfileName());
-            d.setVectorProfile(p);
-            d.setNameEditable(false);
-            d.setCancelable(false);
-            d.setVisible(true);
-            lp = d.getVectorProfile();
-          } else if (choose.getSelectedItem().equals(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("RASTER PROFILE"))) {
-            EditRasterProfileDialog d = new EditRasterProfileDialog(null, true);
-            RasterProfile p = new RasterProfile();
-            p.setName(m.getProfileName());
-            d.setRasterProfile(p);
-            d.setNameEditable(false);
-            d.setCancelable(false);
-            d.setVisible(true);
-            lp = d.getRasterProfile();
-          } else if (choose.getSelectedItem().equals(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("RASTER3D PROFILE"))) {
-            EditRaster3dProfileDialog d = new EditRaster3dProfileDialog(null, true);
-            Raster3dProfile p = new Raster3dProfile();
-            p.setName(m.getProfileName());
-            d.setRasterProfile(p);
-            d.setNameEditable(false);
-            d.setCancelable(false);
-            d.setVisible(true);
-            lp = d.getRasterProfile();
-          }
-          if (lp == null)
-          {
-            dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("YOU HAVE TO CREATE A NEW PROFILE"));
-            this.setMappings(mappings);
-            return;
-          }
-          else
-          {
-            ProfileManager.getInstance().add(lp);
-          }
-        }
-      }
-    }
-  }
-  
   private void setMappings(MappingSet mappings) throws FileNotFoundException, IOException
   {
-    checkForMissingProfiles(mappings);
     this.visicutModel1.setMappings(mappings);
   }
 
@@ -1876,16 +1804,16 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     //On Mac os, awt.FileDialog looks more native
     if (Helper.isMacOS())
     {
-      FileDialog dialog = new java.awt.FileDialog(this);
-      dialog.setMode(FileDialog.SAVE);
+      FileDialog fileDialog = new java.awt.FileDialog(this);
+      fileDialog.setMode(FileDialog.SAVE);
       if (lastDirectory != null)
       {
-        dialog.setDirectory(lastDirectory.getAbsolutePath());
+        fileDialog.setDirectory(lastDirectory.getAbsolutePath());
       }
-      dialog.setVisible(true);
-      if (dialog.getFile() != null)
+      fileDialog.setVisible(true);
+      if (fileDialog.getFile() != null)
       {
-        file = new File(new File(dialog.getDirectory()), dialog.getFile());
+        file = new File(new File(fileDialog.getDirectory()), fileDialog.getFile());
       }
     }
     else
@@ -2171,6 +2099,30 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
         {
           this.cbMaterialThickness.setSelectedItem((Float) f);
         }
+      }
+    }
+  }
+
+  private void refreshPredefinedMappingList()
+  {
+    MappingSet ms = this.visicutModel1.getMappings();
+    this.predefinedMappingList.clearList();
+    this.predefinedMappingList.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("NO MAPPING"));
+    this.predefinedMappingList.setSelectedIndex(0);
+    for (MappingSet m : this.visicutModel1.generateDefaultMappings())
+    {
+      this.predefinedMappingList.addItem(m);
+      if (m.equals(ms))
+      {
+        this.predefinedMappingList.setSelectedValue(m, true);
+      }
+    }
+    for (MappingSet m : this.mappingManager1.getAll())
+    {
+      this.predefinedMappingList.addItem(m);
+      if (m.equals(ms))
+      {
+        this.predefinedMappingList.setSelectedValue(m, true);
       }
     }
   }

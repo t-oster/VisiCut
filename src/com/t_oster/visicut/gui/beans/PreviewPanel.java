@@ -21,7 +21,6 @@ package com.t_oster.visicut.gui.beans;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.visicut.VisicutModel;
-import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
@@ -521,7 +520,7 @@ public class PreviewPanel extends ZoomablePanel
         boolean somethingMatched = false;
         for (Mapping m : mappingsToDraw)
         {//Render Original Image
-          if (m.getProfileName() == null)
+          if (m.getProfile() == null)
           {
             AffineTransform bak = gg.getTransform();
             if (this.graphicObjects.getTransform() != null)
@@ -537,9 +536,9 @@ public class PreviewPanel extends ZoomablePanel
             }
             gg.setTransform(bak);
           }
-          else if (ProfileManager.getInstance().getProfileByName(m.getProfileName()) != null)
+          else if (m.getProfile() != null)
           {//Render only parts the material supports, or where Profile = null
-            LaserProfile p = ProfileManager.getInstance().getProfileByName(m.getProfileName());
+            LaserProfile p = m.getProfile();
             GraphicSet current = m.getFilterSet().getMatchingObjects(this.graphicObjects);
             Rectangle2D bb = current.getBoundingBox();
             if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)

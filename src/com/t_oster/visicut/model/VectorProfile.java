@@ -25,11 +25,13 @@ import com.t_oster.liblasercut.utils.ShapeConverter;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import com.t_oster.visicut.model.graphicelements.ShapeDecorator;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.Area;
 import java.util.List;
 
 /**
@@ -47,6 +49,28 @@ public class VectorProfile extends LaserProfile
   {
     this.setName("cut");
   }
+  protected boolean useOutline = false;
+
+  /**
+   * Get the value of useOutline
+   *
+   * @return the value of useOutline
+   */
+  public boolean isUseOutline()
+  {
+    return useOutline;
+  }
+
+  /**
+   * Set the value of useOutline
+   *
+   * @param useOutline new value of useOutline
+   */
+  public void setUseOutline(boolean useOutline)
+  {
+    this.useOutline = useOutline;
+  }
+  
   protected boolean isCut = true;
 
   /**
@@ -90,14 +114,40 @@ public class VectorProfile extends LaserProfile
     this.width = width;
   }
 
+  private GraphicSet calculateOuterShape(GraphicSet objects)
+  {
+    final Area outerShape = new Area();
+    for (GraphicObject o : objects)
+    {
+      if (o instanceof ShapeObject)
+      {
+        outerShape.add(new Area(((ShapeObject) o).getShape()));
+      }
+      else
+      {
+        outerShape.add(new Area(o.getBoundingBox()));
+      }
+    }
+    GraphicSet result = new GraphicSet();
+    result.setBasicTransform(objects.getBasicTransform());
+    result.setTransform(objects.getTransform());
+    result.add(new ShapeDecorator(outerShape));
+    return result;
+  }
+  
   @Override
   public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material)
   {
+    //TODO calculate outline
+    gg.setColor(this.isCut ? material.getCutColor() : material.getEngraveColor());
+    Stroke s = new BasicStroke((int) Helper.mm2px(this.getWidth()));
+    gg.setStroke(s);
+    if (this.isUseOutline())
+    {
+      objects = this.calculateOuterShape(objects);
+    }
     for (GraphicObject e : objects)
     {
-      gg.setColor(this.isCut ? material.getCutColor() : material.getEngraveColor());
-      Stroke s = new BasicStroke((int) Helper.mm2px(this.getWidth()));
-      gg.setStroke(s);
       Shape sh = (e instanceof ShapeObject) ? ((ShapeObject) e).getShape() : e.getBoundingBox();
       if (objects.getTransform() != null)
       {
@@ -118,6 +168,10 @@ public class VectorProfile extends LaserProfile
   @Override
   public void addToLaserJob(LaserJob job, GraphicSet objects, List<LaserProperty> laserProperties)
   {
+    if (this.isUseOutline())
+    {
+      objects = this.calculateOuterShape(objects);
+    }
     VectorPart part = new VectorPart(laserProperties.get(0));
     for (LaserProperty prop : laserProperties)
     {
@@ -145,6 +199,7 @@ public class VectorProfile extends LaserProfile
     cp.name = name;
     cp.thumbnailPath = thumbnailPath;
     cp.width = width;
+    cp.useOutline = useOutline;
     return cp;
   }
 }

@@ -26,7 +26,6 @@ import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.managers.MaterialManager;
-import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.ApplicationInstanceListener;
 import com.t_oster.visicut.misc.ApplicationInstanceManager;
 import com.t_oster.visicut.misc.Helper;
@@ -37,8 +36,6 @@ import com.t_oster.visicut.model.mapping.MappingSet;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -436,7 +433,7 @@ public class VisicutApp extends SingleFrameApplication
       //check if all settings are available
       for (Mapping ms : model.getMappings())
       {
-        if (LaserPropertyManager.getInstance().getLaserProperties(model.getSelectedLaserDevice(), model.getMaterial(), ProfileManager.getInstance().getProfileByName(ms.getProfileName()), model.getMaterialThickness()) == null)
+        if (LaserPropertyManager.getInstance().getLaserProperties(model.getSelectedLaserDevice(), model.getMaterial(), ms.getProfile(), model.getMaterialThickness()) == null)
         {
           System.err.println("Combination of Laserdevice, Material and Mapping is not supported");
           System.exit(1);

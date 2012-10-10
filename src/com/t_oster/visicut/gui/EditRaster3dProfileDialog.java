@@ -109,9 +109,9 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog
 
         jButton4 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jTextField2 = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        tfDescription = new javax.swing.JTextField();
+        lbDescription = new javax.swing.JLabel();
+        lbName = new javax.swing.JLabel();
         tfName = new javax.swing.JTextField();
         selectThumbnailButton1 = new com.t_oster.visicut.gui.beans.SelectThumbnailButton();
         jCheckBox1 = new javax.swing.JCheckBox();
@@ -138,16 +138,16 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog
             }
         });
 
-        jTextField2.setName("jTextField2"); // NOI18N
+        tfDescription.setName("tfDescription"); // NOI18N
 
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentRasterProfile.description}"), jTextField2, org.jdesktop.beansbinding.BeanProperty.create("text"), "desc");
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentRasterProfile.description}"), tfDescription, org.jdesktop.beansbinding.BeanProperty.create("text"), "desc");
         bindingGroup.addBinding(binding);
 
-        jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
-        jLabel2.setName("jLabel2"); // NOI18N
+        lbDescription.setText(resourceMap.getString("lbDescription.text")); // NOI18N
+        lbDescription.setName("lbDescription"); // NOI18N
 
-        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
-        jLabel1.setName("jLabel1"); // NOI18N
+        lbName.setText(resourceMap.getString("lbName.text")); // NOI18N
+        lbName.setName("lbName"); // NOI18N
 
         tfName.setName("tfName"); // NOI18N
 
@@ -185,13 +185,13 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
+                            .addComponent(lbDescription)
                             .addComponent(selectThumbnailButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jCheckBox1))
                         .addGap(28, 28, 28)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
-                            .addComponent(jLabel1)
+                            .addComponent(tfDescription, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                            .addComponent(lbName)
                             .addComponent(tfName))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -210,14 +210,14 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                        .addComponent(lbName)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tfName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(selectThumbnailButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lbDescription)
+                    .addComponent(tfDescription, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(8, 8, 8)
                 .addComponent(jCheckBox1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -252,12 +252,12 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JSlider jSlider1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JLabel lbDescription;
+    private javax.swing.JLabel lbName;
     private com.t_oster.visicut.gui.beans.SelectThumbnailButton selectThumbnailButton1;
+    private javax.swing.JTextField tfDescription;
     private javax.swing.JTextField tfName;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
@@ -270,5 +270,14 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog
   void setCancelable(boolean b)
   {
     this.jButton4.setVisible(false);
+  }
+
+  public void setOnlyEditParameters(boolean b)
+  {
+    this.tfName.setVisible(!b);
+    this.lbName.setVisible(!b);
+    this.lbDescription.setVisible(!b);
+    this.tfDescription.setVisible(!b);
+    this.selectThumbnailButton1.setVisible(!b);
   }
 }

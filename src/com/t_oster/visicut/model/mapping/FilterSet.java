@@ -45,7 +45,6 @@ public class FilterSet extends LinkedList<MappingFilter>
       return result;
     }
     result.setTransform(elements.getTransform());
-    final Area outerShape = new Area();
     for (GraphicObject o : elements)
     {
       boolean passed = true;
@@ -59,54 +58,10 @@ public class FilterSet extends LinkedList<MappingFilter>
       }
       if (passed)
       {
-        if (!useOuterShape)
-        {
-          result.add(o);
-        }
-        else
-        {
-          if (useOuterShape)
-          {
-            if (o instanceof ShapeObject)
-            {
-              outerShape.add(new Area(((ShapeObject) o).getShape()));
-            }
-            else
-            {
-              outerShape.add(new Area(o.getBoundingBox()));
-            }
-          }
-        }
+        result.add(o);
       }
     }
-    if (useOuterShape)
-    {
-      result.add(new ShapeDecorator(outerShape));
-    }
     return result;
-  }
-  protected boolean useOuterShape = false;
-  
-  /**
-   * Get the value of useOuterShape
-   *
-   * @return the value of useOuterShape
-   */
-  public boolean isUseOuterShape()
-  {
-    return useOuterShape;
-  }
-
-  /**
-   * Set the value of useOuterShape
-   * If set to True and this mapping contains Shape
-   * Elements, the outer shape of all those will be rendered
-   *
-   * @param useOuterShape new value of useOuterShape
-   */
-  public void setUseOuterShape(boolean useOuterShape)
-  {
-    this.useOuterShape = useOuterShape;
   }
   
   @Override
@@ -152,7 +107,6 @@ public class FilterSet extends LinkedList<MappingFilter>
     {
       result.add(f.clone());
     }
-    result.useOuterShape=useOuterShape;
     return result;
   }
 }

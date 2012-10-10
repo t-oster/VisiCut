@@ -170,7 +170,7 @@ public class VisicutModel
       {
         profiles.add(lp.getName());
         MappingSet set = new MappingSet();
-        set.add(new Mapping(new FilterSet(), lp.getName()));
+        set.add(new Mapping(new FilterSet(), lp));
         set.setName(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("EVERYTHING")+"=>"+lp.getName());
         set.setDescription("An auto-generated mapping");
         result.add(set);
@@ -731,8 +731,8 @@ public class VisicutModel
     
     for (Mapping m : this.getMappings())
     {
-      GraphicSet set = m.getA().getMatchingObjects(this.getGraphicObjects());
-      LaserProfile p = ProfileManager.getInstance().getProfileByName(m.getProfileName());
+      GraphicSet set = m.getFilterSet().getMatchingObjects(this.getGraphicObjects());
+      LaserProfile p = m.getProfile();
       List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, p, this.materialThickness);
       p.addToLaserJob(job, set, this.addFocusOffset(props, focusOffset));
     }

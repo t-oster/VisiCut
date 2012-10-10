@@ -17,13 +17,14 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="jScrollPane1" pref="394" max="32767" attributes="0"/>
+              <Component id="jScrollPane1" pref="373" max="32767" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                  <Component id="btRemove" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="btSave" min="0" pref="0" max="32767" attributes="1"/>
+                  <Component id="btRemove" alignment="1" max="32767" attributes="0"/>
                   <Component id="btUp" alignment="0" max="32767" attributes="0"/>
                   <Component id="btDown" alignment="0" max="32767" attributes="0"/>
-                  <Component id="btEdit" max="32767" attributes="0"/>
+                  <Component id="btEdit" alignment="1" max="32767" attributes="0"/>
                   <Component id="btAdd" alignment="0" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -42,7 +43,8 @@
               <Component id="btUp" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btDown" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="111" max="32767" attributes="0"/>
+              <EmptySpace pref="78" max="32767" attributes="0"/>
+              <Component id="btSave" min="-2" max="-2" attributes="0"/>
           </Group>
           <Component id="jScrollPane1" pref="0" max="32767" attributes="0"/>
       </Group>
@@ -119,6 +121,13 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btDownActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btSave">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="com/t_oster/visicut/gui/beans/resources/EditableTablePanel.properties" key="SAVE" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>
