@@ -90,10 +90,14 @@ public class DialogHelper
     JOptionPane.showMessageDialog(parent, text, title + " Error", JOptionPane.ERROR_MESSAGE);
   }
   
-  public double askDouble(String text, double initial)
+  public Double askDouble(String text, double initial)
   {
     int mm = (int) Math.round(initial * 10);
     String result = JOptionPane.showInputDialog(parent, text, "" + (mm / 10) + "." + (mm % 10));
+    if (result == null)
+    {
+      return null;
+    }
     result = result.replace(",", ".");
     try
     {

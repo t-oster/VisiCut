@@ -1294,7 +1294,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         {
           dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("FOR SOME PROFILE YOU SELECTED, THERE ARE NO LASERCUTTER SETTINGS YET YOU WILL HAVE TO ENTER THEM IN THE FOLLOWING DIALOG."));
         }
-        String heading = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("SETTINGS FOR ")+device.getName()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString(" WITH MATERIAL ")+material.toString();
+        String heading = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("SETTINGS FOR ")+device.getName()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString(" WITH MATERIAL ")+material.toString()+" ("+this.visicutModel1.getMaterialThickness()+" mm)";
         //Adapt Settings before execute
         AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true, heading);
         asd.setLaserProperties(usedSettings, this.visicutModel1.getSelectedLaserDevice().getLaserCutter());
@@ -2054,7 +2054,12 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
 private void btAddMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAddMaterialThicknessActionPerformed
   if (VisicutModel.getInstance().getMaterial() != null)
   {
-    Float f = (float) dialog.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ADDTHICKNESS"), 2);
+    Double d = dialog.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ADDTHICKNESS"), 2);
+    if (d == null)
+    {
+      return;
+    }
+    Float f = d.floatValue();
     List<Float> th = VisicutModel.getInstance().getMaterial().getMaterialThicknesses();
     if (th.contains(f))
     {
@@ -2071,6 +2076,7 @@ private void btAddMaterialThicknessActionPerformed(java.awt.event.ActionEvent ev
       dialog.showErrorMessage(ex, "Could not save material thickness");
     }
     this.refreshMaterialThicknessesComboBox();
+    this.cbMaterialThickness.setSelectedItem(f);
   }
 }//GEN-LAST:event_btAddMaterialThicknessActionPerformed
 
