@@ -1,4 +1,5 @@
-PREFIX?=/usr
+P
+EFIX?=/usr
 all: jar
 
 src/com/t_oster/visicut/gui/resources/splash.png: splashsource.svg src/com/t_oster/visicut/gui/resources/VisicutApp.properties
