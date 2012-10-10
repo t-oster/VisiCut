@@ -51,6 +51,8 @@ chmod +x visicut/VisiCut.*
 mkdir -p visicut/inkscape_extension
 cp ../tools/inkscape_extension/*.py visicut/inkscape_extension/
 cp ../tools/inkscape_extension/*.inx visicut/inkscape_extension/
+mkdir -p visicut/illustrator_script
+cp ../tools/illustrator_script/*.scpt visicut/illustrator_script/
 echo "Compressing content..."
 rm VisiCut-*.zip
 zip -r VisiCut-$VERSION.zip visicut/
