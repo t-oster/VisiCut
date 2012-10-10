@@ -143,11 +143,11 @@ public class FileUtils
       {
         if (f.isDirectory())
         {
-          addDirectoryToZip(out, f, prefix+"/"+f.getName());
+          addDirectoryToZip(out, f, ("".equals(prefix) ? "" : prefix+"/")+f.getName());
         }
         else if (f.isFile())
         {
-          out.putNextEntry(new ZipEntry(prefix+"/"+f.getName()));
+          out.putNextEntry(new ZipEntry(("".equals(prefix) ? "" : prefix+"/")+f.getName()));
           in = new FileInputStream(f);
           // Transfer bytes from the file to the ZIP file
           while ((len = in.read(buf)) > 0)
