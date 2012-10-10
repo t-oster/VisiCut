@@ -198,11 +198,11 @@ public class Helper
           }
           try
           {
-            FileUtils.copyFileToDirectory(getIllustratorScript(), dir);
+            FileUtils.copyFileToDirectory(getIllustratorScript(), d);
           }
           catch (IOException ex)
           {
-            errors += "Can't copy to "+dir.getAbsolutePath()+"\n";
+            errors += "Can't copy to "+d.getAbsolutePath()+"\n";
           } 
         }
       }
