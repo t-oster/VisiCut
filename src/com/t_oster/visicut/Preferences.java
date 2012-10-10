@@ -32,6 +32,29 @@ public class Preferences
   {
   }
   
+  protected boolean useThicknessAsFocusOffset = true;
+
+  /**
+   * Get the value of useThicknessAsFocusOffset
+   *
+   * @return the value of useThicknessAsFocusOffset
+   */
+  public boolean isUseThicknessAsFocusOffset()
+  {
+    return useThicknessAsFocusOffset;
+  }
+
+  /**
+   * Set the value of useThicknessAsFocusOffset
+   *
+   * @param useThicknessAsFocusOffset new value of useThicknessAsFocusOffset
+   */
+  public void setUseThicknessAsFocusOffset(boolean useThicknessAsFocusOffset)
+  {
+    this.useThicknessAsFocusOffset = useThicknessAsFocusOffset;
+  }
+
+  
   protected List<String> recentFiles = new LinkedList<String>();
 
   /**

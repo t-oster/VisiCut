@@ -105,6 +105,31 @@ public class VisicutModel
     propertyChangeSupport.firePropertyChange(PROP_MATERIALTHICKNESS, oldMaterialThickness, materialThickness);
   }
 
+  protected boolean useThicknessAsFocusOffset = true;
+  public static final String PROP_USETHICKNESSASFOCUSOFFSET = "useThicknessAsFocusOffset";
+
+  /**
+   * Get the value of useThicknessAsFocusOffset
+   *
+   * @return the value of useThicknessAsFocusOffset
+   */
+  public boolean isUseThicknessAsFocusOffset()
+  {
+    return useThicknessAsFocusOffset;
+  }
+
+  /**
+   * Set the value of useThicknessAsFocusOffset
+   *
+   * @param useThicknessAsFocusOffset new value of useThicknessAsFocusOffset
+   */
+  public void setUseThicknessAsFocusOffset(boolean useThicknessAsFocusOffset)
+  {
+    boolean oldUseThicknessAsFocusOffset = this.useThicknessAsFocusOffset;
+    this.useThicknessAsFocusOffset = useThicknessAsFocusOffset;
+    propertyChangeSupport.firePropertyChange(PROP_USETHICKNESSASFOCUSOFFSET, oldUseThicknessAsFocusOffset, useThicknessAsFocusOffset);
+  }
+
   
   public static final FileFilter PLFFilter = new ExtensionFilter(".plf", "VisiCut Portable Laser Format (*.plf)");
   
@@ -290,6 +315,7 @@ public class VisicutModel
         }
       }
       this.setResolution(this.preferences.getLastResolution());
+      this.setUseThicknessAsFocusOffset(this.preferences.isUseThicknessAsFocusOffset());
     }
   }
   protected GraphicSet graphicObjects = null;
@@ -300,6 +326,7 @@ public class VisicutModel
     this.preferences.setLastLaserDevice(this.selectedLaserDevice == null ? null : selectedLaserDevice.getName());
     this.preferences.setLastMaterial(this.material == null ? null : material.getName());
     this.preferences.setLastResolution(this.resolution);
+    this.preferences.setUseThicknessAsFocusOffset(this.useThicknessAsFocusOffset);
     try
     {
       PreferencesManager.getInstance().savePreferences();
@@ -700,7 +727,7 @@ public class VisicutModel
   {
     LaserJob job = new LaserJob(name, name, "visicut", this.getValidResolution());
     
-    float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() ? 0 : this.materialThickness;
+    float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() || !this.useThicknessAsFocusOffset ? 0 : this.materialThickness;
     
     for (Mapping m : this.getMappings())
     {
