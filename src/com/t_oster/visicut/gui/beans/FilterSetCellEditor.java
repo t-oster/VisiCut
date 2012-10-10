@@ -87,8 +87,8 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     {
       if (value instanceof Color)
       {
-        this.setText(Helper.toHtmlRGB((Color) value));
-        this.setForeground((Color) value);
+        String color = Helper.toHtmlRGB((Color) value);
+        this.setText("<html><table><tr><td border=1 bgcolor=" + color + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>"+color+"</tr></table></html>");
       }
       else if (value != null)
       {
