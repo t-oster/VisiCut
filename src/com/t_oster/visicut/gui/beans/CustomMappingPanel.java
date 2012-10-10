@@ -89,6 +89,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
         {
           e.filterSet = (FilterSet) aValue;
           e.enabled = true;
+          this.fireTableCellUpdated(row, 0);
           break;
         }
         case 2:
@@ -99,6 +100,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
           }
           e.profile = (LaserProfile) aValue;
           e.enabled = true;
+          this.fireTableCellUpdated(row, 0);
           break;
         }
       }
