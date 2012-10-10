@@ -17,7 +17,8 @@ install:
 	mkdir -p $(DESTDIR)$(PREFIX)/share/visicut/inkscape_extension
 	cp tools/inkscape_extension/*.inx $(DESTDIR)$(PREFIX)/share/visicut/inkscape_extension/
 	cp tools/inkscape_extension/*.py $(DESTDIR)$(PREFIX)/share/visicut/inkscape_extension/
-	cp tools/illustrator_script/*.scpt $(DESTDIR)$(PREFIX)/share/visicut/illustrator_script_extension/
+	mkdir -p $(DESTDIR)$(PREFIX)/share/visicut/illustrator_script
+	cp tools/illustrator_script/*.scpt $(DESTDIR)$(PREFIX)/share/visicut/illustrator_script/
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	ln -s $(PREFIX)/share/visicut/visicut $(DESTDIR)$(PREFIX)/bin/visicut
 	mkdir -p $(DESTDIR)$(PREFIX)/share/applications
