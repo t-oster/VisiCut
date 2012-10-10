@@ -371,10 +371,6 @@ public class MainView extends javax.swing.JFrame
         executeJobButton = new javax.swing.JButton();
         captureImageButton = new javax.swing.JButton();
         progressBar = new javax.swing.JProgressBar();
-        jPanel3 = new javax.swing.JPanel();
-        showEngravingCb = new javax.swing.JCheckBox();
-        showCuttingCb = new javax.swing.JCheckBox();
-        cbPhoto = new javax.swing.JCheckBox();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         cbEditBeforeExecute = new javax.swing.JCheckBox();
@@ -400,6 +396,7 @@ public class MainView extends javax.swing.JFrame
         jmImportSettings = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
+        jmShowPhoto = new javax.swing.JCheckBoxMenuItem();
         zoomInMenuItem = new javax.swing.JMenuItem();
         zoomOutMenuItem = new javax.swing.JMenuItem();
         jmExtras = new javax.swing.JMenu();
@@ -500,11 +497,11 @@ public class MainView extends javax.swing.JFrame
         predefinedMappingPanel.setLayout(predefinedMappingPanelLayout);
         predefinedMappingPanelLayout.setHorizontalGroup(
             predefinedMappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
         );
         predefinedMappingPanelLayout.setVerticalGroup(
             predefinedMappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
         );
 
         mappingTabbedPane.addTab(resourceMap.getString("predefinedMappingPanel.TabConstraints.tabTitle"), predefinedMappingPanel); // NOI18N
@@ -517,11 +514,11 @@ public class MainView extends javax.swing.JFrame
         customMappingPanel1.setLayout(customMappingPanel1Layout);
         customMappingPanel1Layout.setHorizontalGroup(
             customMappingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE)
+            .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
         );
         customMappingPanel1Layout.setVerticalGroup(
             customMappingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
+            .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
         );
 
         mappingTabbedPane.addTab(resourceMap.getString("customMappingPanelContainer.TabConstraints.tabTitle"), customMappingPanel1); // NOI18N
@@ -591,7 +588,7 @@ public class MainView extends javax.swing.JFrame
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel10)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(timeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
+                        .addComponent(timeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(calculateTimeButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
@@ -599,12 +596,12 @@ public class MainView extends javax.swing.JFrame
                         .addContainerGap())
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel2)
-                        .addContainerGap(406, Short.MAX_VALUE))
+                        .addContainerGap(413, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(materialComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)
+                        .addComponent(materialComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btAddMaterial)
                         .addContainerGap())))
@@ -635,7 +632,7 @@ public class MainView extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 303, Short.MAX_VALUE)
                 .addGap(54, 54, 54)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(calculateTimeButton)
@@ -673,7 +670,7 @@ public class MainView extends javax.swing.JFrame
         );
         previewPanelLayout.setVerticalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 506, Short.MAX_VALUE)
+            .addGap(0, 565, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -710,62 +707,6 @@ public class MainView extends javax.swing.JFrame
         });
 
         progressBar.setName("progressBar"); // NOI18N
-
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanel3.border.title"))); // NOI18N
-        jPanel3.setName("jPanel3"); // NOI18N
-
-        showEngravingCb.setText(resourceMap.getString("showEngravingCb.text")); // NOI18N
-        showEngravingCb.setName("showEngravingCb"); // NOI18N
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${drawPreview}"), showEngravingCb, org.jdesktop.beansbinding.BeanProperty.create("selected"), "engr");
-        bindingGroup.addBinding(binding);
-
-        showEngravingCb.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showEngravingCbActionPerformed(evt);
-            }
-        });
-
-        showCuttingCb.setText(resourceMap.getString("showCuttingCb.text")); // NOI18N
-        showCuttingCb.setName("showCuttingCb"); // NOI18N
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${highlightCutLines}"), showCuttingCb, org.jdesktop.beansbinding.BeanProperty.create("selected"), "cutl");
-        bindingGroup.addBinding(binding);
-
-        showCuttingCb.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showCuttingCbActionPerformed(evt);
-            }
-        });
-
-        cbPhoto.setText(resourceMap.getString("cbPhoto.text")); // NOI18N
-        cbPhoto.setName("cbPhoto"); // NOI18N
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${showBackgroundImage}"), cbPhoto, org.jdesktop.beansbinding.BeanProperty.create("selected"), "showBgImage");
-        bindingGroup.addBinding(binding);
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(showEngravingCb)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(showCuttingCb)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbPhoto)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(showEngravingCb)
-                    .addComponent(showCuttingCb)
-                    .addComponent(cbPhoto))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
 
         jButton1.setIcon(resourceMap.getIcon("jButton1.icon")); // NOI18N
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
@@ -963,6 +904,14 @@ public class MainView extends javax.swing.JFrame
 
         viewMenu.add(showGridMenuItem);
 
+        jmShowPhoto.setText(resourceMap.getString("jmShowPhoto.text")); // NOI18N
+        jmShowPhoto.setName("jmShowPhoto"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${showBackgroundImage}"), jmShowPhoto, org.jdesktop.beansbinding.BeanProperty.create("selected"), "jmShowBackground");
+        bindingGroup.addBinding(binding);
+
+        viewMenu.add(jmShowPhoto);
+
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(MainView.class, this);
         zoomInMenuItem.setAction(actionMap.get("zoomIn")); // NOI18N
         zoomInMenuItem.setText(resourceMap.getString("zoomInMenuItem.text")); // NOI18N
@@ -1026,8 +975,6 @@ public class MainView extends javax.swing.JFrame
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1055,11 +1002,10 @@ public class MainView extends javax.swing.JFrame
                             .addComponent(executeJobButton)
                             .addComponent(cbEditBeforeExecute)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(captureImageButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE))
+                            .addComponent(captureImageButton))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1171,9 +1117,6 @@ public class MainView extends javax.swing.JFrame
       && this.visicutModel1.getSelectedLaserDevice() != null
       && this.visicutModel1.getMappings() != null
       && this.visicutModel1.getMappings().size() > 0);
-    boolean previewModes = this.visicutModel1.getMappings() != null && this.visicutModel1.getMaterial() != null && this.visicutModel1.getMappings().size() > 0;
-    this.showCuttingCb.setEnabled(previewModes);
-    this.showEngravingCb.setEnabled(previewModes);
     if (this.visicutModel1.getSelectedLaserDevice() == null || this.visicutModel1.getMaterial() == null
       || this.visicutModel1.getMappings() == null || this.visicutModel1.getResolution() == null || this.cbMaterialThickness.getSelectedItem() == null)
     {
@@ -1495,7 +1438,7 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
     boolean cam = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null;
     this.calibrateCameraMenuItem.setEnabled(cam);
     this.captureImageButton.setEnabled(cam);
-    this.cbPhoto.setEnabled(cam);
+    this.jmShowPhoto.setEnabled(cam);
     if (cam)
     {
       this.captureImage();
@@ -1748,24 +1691,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       }
     }.start();
   }//GEN-LAST:event_calculateTimeButtonActionPerformed
-
-  private void showCuttingCbActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_showCuttingCbActionPerformed
-  {//GEN-HEADEREND:event_showCuttingCbActionPerformed
-    if (!this.showEngravingCb.isSelected() && !this.showCuttingCb.isSelected())
-    {
-      this.showCuttingCb.setSelected(true);
-    }
-    this.previewPanel.repaint();
-  }//GEN-LAST:event_showCuttingCbActionPerformed
-
-  private void showEngravingCbActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_showEngravingCbActionPerformed
-  {//GEN-HEADEREND:event_showEngravingCbActionPerformed
-    if (!this.showEngravingCb.isSelected() && !this.showCuttingCb.isSelected())
-    {
-      this.showEngravingCb.setSelected(true);
-    }
-    this.previewPanel.repaint();
-  }//GEN-LAST:event_showEngravingCbActionPerformed
 
   private void predefinedMappingListValueChanged(javax.swing.event.ListSelectionEvent evt)//GEN-FIRST:event_predefinedMappingListValueChanged
   {//GEN-HEADEREND:event_predefinedMappingListValueChanged
@@ -2153,7 +2078,6 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
     private javax.swing.JButton captureImageButton;
     private javax.swing.JCheckBox cbEditBeforeExecute;
     private javax.swing.JComboBox cbMaterialThickness;
-    private javax.swing.JCheckBox cbPhoto;
     private javax.swing.JPanel customMappingPanel1;
     private com.t_oster.visicut.gui.beans.CustomMappingPanel customMappingPanel2;
     private javax.swing.JMenuItem editMappingMenuItem;
@@ -2177,7 +2101,6 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenu jmExamples;
     private javax.swing.JMenuItem jmExportSettings;
@@ -2186,6 +2109,7 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
     private javax.swing.JMenuItem jmInstallIllustrator;
     private javax.swing.JMenuItem jmInstallInkscape;
     private javax.swing.JMenuItem jmManageLaserprofiles;
+    private javax.swing.JCheckBoxMenuItem jmShowPhoto;
     private com.t_oster.visicut.gui.beans.ImageComboBox laserCutterComboBox;
     private com.t_oster.visicut.managers.MappingManager mappingManager1;
     private javax.swing.JTabbedPane mappingTabbedPane;
@@ -2205,8 +2129,6 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JFileChooser saveFileChooser;
     private javax.swing.JMenuItem saveMenuItem;
-    private javax.swing.JCheckBox showCuttingCb;
-    private javax.swing.JCheckBox showEngravingCb;
     private javax.swing.JCheckBoxMenuItem showGridMenuItem;
     private javax.swing.JLabel timeLabel;
     private javax.swing.JMenu viewMenu;

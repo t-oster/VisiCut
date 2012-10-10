@@ -273,56 +273,6 @@ public class PreviewPanel extends ZoomablePanel
     this.setShowBackgroundImage(this.showBackgroundImage);
   }
 
-  
-  protected boolean drawPreview = true;
-  public static final String PROP_DRAWPREVIEW = "drawPreview";
-
-  /**
-   * Get the value of drawPreview
-   *
-   * @return the value of drawPreview
-   */
-  public boolean isDrawPreview()
-  {
-    return drawPreview;
-  }
-
-  /**
-   * Set the value of drawPreview
-   *
-   * @param drawPreview new value of drawPreview
-   */
-  public void setDrawPreview(boolean drawPreview)
-  {
-    boolean oldDrawPreview = this.drawPreview;
-    this.drawPreview = drawPreview;
-    firePropertyChange(PROP_DRAWPREVIEW, oldDrawPreview, drawPreview);
-    repaint();
-  }
-  protected boolean highlightCutLines = true;
-
-  /**
-   * Get the value of highlightCutLines
-   *
-   * @return the value of highlightCutLines
-   */
-  public boolean isHighlightCutLines()
-  {
-    return highlightCutLines;
-  }
-
-  /**
-   * Set the value of highlightCutLines
-   *
-   * @param highlightCutLines new value of highlightCutLines
-   */
-  public void setHighlightCutLines(boolean highlightCutLines)
-  {
-    boolean oldHighlightCutLines = this.highlightCutLines;
-    this.highlightCutLines = highlightCutLines;
-    this.firePropertyChange("highlightCutLines", oldHighlightCutLines, highlightCutLines);
-    this.repaint();
-  }
   protected boolean showGrid = false;
 
   /**
@@ -595,7 +545,7 @@ public class PreviewPanel extends ZoomablePanel
             if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
             {
               somethingMatched = true;
-              if (drawPreview && !(p instanceof VectorProfile))
+              if (!(p instanceof VectorProfile))
               {
                 synchronized (renderBuffer)
                 {
@@ -642,10 +592,7 @@ public class PreviewPanel extends ZoomablePanel
               }
               else if (p instanceof VectorProfile)
               {
-                if ((highlightCutLines && ((VectorProfile) p).isIsCut()) || (drawPreview && !((VectorProfile) p).isIsCut()))
-                {
-                  p.renderPreview(gg, current, this.material);
-                }
+                p.renderPreview(gg, current, this.material);
               }
             }
             else
