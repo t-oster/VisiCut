@@ -55,14 +55,14 @@ public class Preferences
   }
 
   
-  protected List<String> recentFiles = new LinkedList<String>();
+  protected LinkedList<String> recentFiles = new LinkedList<String>();
 
   /**
    * Get the value of recentFiles
    *
    * @return the value of recentFiles
    */
-  public List<String> getRecentFiles()
+  public LinkedList<String> getRecentFiles()
   {
     return recentFiles;
   }
@@ -72,7 +72,7 @@ public class Preferences
    *
    * @param recentFiles new value of recentFiles
    */
-  public void setRecentFiles(List<String> recentFiles)
+  public void setRecentFiles(LinkedList<String> recentFiles)
   {
     this.recentFiles = recentFiles;
   }
