@@ -175,7 +175,9 @@ public class Helper
     for (File dir : new File[]{
       new File("/Applications/Adobe Illustrator CS3/Presets"),
       new File("/Applications/Adobe Illustrator CS4/Presets"),
-      new File("/Applications/Adobe Illustrator CS5/Presets")
+      new File("/Applications/Adobe Illustrator CS5/Presets"),
+      new File("/Applications/Adobe Illustrator CS4/Presets.localized"),
+      new File("/Applications/Adobe Illustrator CS5/Presets.localized")
     })
     {
       if (dir.exists() && dir.isDirectory())
@@ -494,10 +496,10 @@ public class Helper
     return is.exists() && is.isDirectory();
   }
   
-  private static File getIllustratorScript()
+  private static File getIllustratorScript()  
   {
     return new File(new File(getVisiCutFolder(), "illustrator_script"), "OpenWithVisiCut.scpt");
-  }
+  } 
   
   public static boolean isIllustratorScriptInstallable()
   {
