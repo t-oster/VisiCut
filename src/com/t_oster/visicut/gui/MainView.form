@@ -375,32 +375,18 @@
                   <Component id="jPanel1" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <Component id="cbEditBeforeExecute" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="102" max="32767" attributes="0"/>
-                      <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-              </Group>
+              <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
-                      <Component id="jPanel2" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="cbEditBeforeExecute" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="executeJobButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                  </Group>
-                  <Group type="102" alignment="1" attributes="0">
+                  <Component id="jPanel2" alignment="0" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                           <Group type="103" alignment="1" groupAlignment="1" max="-2" attributes="0">
@@ -413,7 +399,7 @@
                       <Component id="jPanel1" max="32767" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -463,8 +449,13 @@
                       </Group>
                       <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="1" attributes="0">
+                          <Component id="cbEditBeforeExecute" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace pref="78" max="32767" attributes="0"/>
+                          <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
                           <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="timeLabel" min="-2" pref="166" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="calculateTimeButton" min="-2" max="-2" attributes="0"/>
@@ -505,12 +496,17 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="mappingTabbedPane" pref="271" max="32767" attributes="0"/>
+                  <Component id="mappingTabbedPane" pref="299" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="calculateTimeButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="timeLabel" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                       <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="executeJobButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbEditBeforeExecute" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -610,7 +606,7 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="0" pref="224" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" alignment="0" pref="252" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -657,7 +653,7 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="customMappingPanel2" alignment="0" pref="228" max="32767" attributes="0"/>
+                      <Component id="customMappingPanel2" alignment="0" pref="252" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -732,6 +728,21 @@
             </BindingProperty>
           </BindingProperties>
         </Component>
+        <Component class="javax.swing.JCheckBox" name="cbEditBeforeExecute">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="cbEditBeforeExecute.text"/>
+            <Property name="name" type="java.lang.String" value="cbEditBeforeExecute" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="executeJobButton">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="executeJobButton.text"/>
+            <Property name="name" type="java.lang.String" value="executeJobButton" noResource="true"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="executeJobButtonActionPerformed"/>
+          </Events>
+        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JPanel" name="jPanel1">
@@ -801,22 +812,13 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="536" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="570" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
         </Container>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="executeJobButton">
-      <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="executeJobButton.text"/>
-        <Property name="name" type="java.lang.String" value="executeJobButton" noResource="true"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="executeJobButtonActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JButton" name="captureImageButton">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" resourceKey="captureImageButton.icon"/>
@@ -851,12 +853,6 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
       </Events>
-    </Component>
-    <Component class="javax.swing.JCheckBox" name="cbEditBeforeExecute">
-      <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="cbEditBeforeExecute.text"/>
-        <Property name="name" type="java.lang.String" value="cbEditBeforeExecute" noResource="true"/>
-      </Properties>
     </Component>
   </SubComponents>
 </Form>
