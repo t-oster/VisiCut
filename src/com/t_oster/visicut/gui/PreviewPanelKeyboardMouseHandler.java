@@ -18,7 +18,6 @@
  */
 package com.t_oster.visicut.gui;
 
-import com.t_oster.liblasercut.BlackWhiteRaster;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
@@ -26,7 +25,10 @@ import com.t_oster.visicut.gui.beans.EditRectangle.ParameterField;
 import com.t_oster.visicut.gui.beans.PreviewPanel;
 import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.LaserProfile;
+import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Cursor;
 import java.awt.Point;
@@ -59,7 +61,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   private PreviewPanel previewPanel;
   private DialogHelper dialogHelper;
   private JPopupMenu menu = new JPopupMenu();
-  private JMenu dithermenu = new JMenu(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("DITHERING"));
+  private JMenuItem optionsmenu = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("PROFILE_OPTIONS"));
   private JMenuItem resetMenuItem = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("RESET TRANSFORMATION"));
 
   public PreviewPanelKeyboardMouseHandler(PreviewPanel panel)
@@ -81,22 +83,52 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
         PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
       }
     });
-    menu.add(dithermenu);
-    for (final BlackWhiteRaster.DitherAlgorithm da : BlackWhiteRaster.DitherAlgorithm.values())
+    optionsmenu.addActionListener(new ActionListener()
     {
-      JMenuItem item = new JMenuItem(da.name());
-      item.addActionListener(new ActionListener()
-      {
 
-        public void actionPerformed(ActionEvent ae)
+      public void actionPerformed(ActionEvent ae)
+      {
+        LaserProfile e = VisicutModel.getInstance().getMappings().getLast().getProfile();
+        //edit laserprofile
+        if (e instanceof VectorProfile)
         {
-          ((RasterProfile) VisicutModel.getInstance().getMappings().getLast().getProfile()).setDitherAlgorithm(da);
-          PreviewPanelKeyboardMouseHandler.this.previewPanel.ClearCache();
-          PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
+          EditVectorProfileDialog d = new EditVectorProfileDialog(null, true);
+          d.setVectorProfile((VectorProfile) e);
+          d.setOnlyEditParameters(true);
+          d.setVisible(true);
+          if (d.getVectorProfile() != null)
+          {
+            VisicutModel.getInstance().getMappings().getLast().setProfile(d.getVectorProfile());
+            previewPanel.repaint();
+          }
         }
-      });
-      dithermenu.add(item);
-    }
+        else if (e instanceof RasterProfile)
+        {
+          EditRasterProfileDialog d = new EditRasterProfileDialog(null, true);
+          d.setRasterProfile((RasterProfile) e);
+          d.setOnlyEditParameters(true);
+          d.setVisible(true);
+          if (d.getRasterProfile() != null)
+          {
+            VisicutModel.getInstance().getMappings().getLast().setProfile(d.getRasterProfile());
+            previewPanel.repaint();
+          }
+        }
+        else if (e instanceof Raster3dProfile)
+        {
+          EditRaster3dProfileDialog d = new EditRaster3dProfileDialog(null, true);
+          d.setRasterProfile((Raster3dProfile) e);
+          d.setOnlyEditParameters(true);
+          d.setVisible(true);
+          if (d.getRasterProfile() != null)
+          {
+            VisicutModel.getInstance().getMappings().getLast().setProfile(d.getRasterProfile());
+            previewPanel.repaint();
+          }
+        }
+      }
+    });
+    menu.add(optionsmenu);
   }
 
   private EditRectangle getEditRect()
@@ -201,7 +233,10 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.X).contains(me.getPoint()))
         {
           Double x = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("LEFT OFFSET"), Helper.px2mm(this.getEditRect().x) / 10);
-          if (x == null) { return false; }
+          if (x == null)
+          {
+            return false;
+          }
           this.getEditRect().x = (int) Helper.mm2px(x * 10);
           this.applyEditRectoToSet();
           return true;
@@ -210,7 +245,10 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
         {
 
           Double y = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("TOP OFFSET"), Helper.px2mm(this.getEditRect().y) / 10);
-          if (y == null) { return false; }
+          if (y == null)
+          {
+            return false;
+          }
           this.getEditRect().y = (int) Helper.mm2px(y * 10);
           this.applyEditRectoToSet();
           return true;
@@ -218,7 +256,10 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.WIDTH).contains(me.getPoint()))
         {
           Double w = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("WIDTH"), Helper.px2mm(this.getEditRect().width) / 10);
-          if (w == null) { return false; }
+          if (w == null)
+          {
+            return false;
+          }
           this.getEditRect().width = (int) Helper.mm2px(w * 10);
           this.applyEditRectoToSet();
           return true;
@@ -226,7 +267,10 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.HEIGHT).contains(me.getPoint()))
         {
           Double h = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("HEIGHT"), Helper.px2mm(this.getEditRect().height) / 10);
-          if (h == null) { return false; }
+          if (h == null)
+          {
+            return false;
+          }
           this.getEditRect().height = (int) Helper.mm2px(h * 10);
           this.applyEditRectoToSet();
           return true;
@@ -278,12 +322,13 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
       if (e.contains(me.getPoint()))
       {
-        try{
-        this.dithermenu.setEnabled(VisicutModel.getInstance().getMappings().getLast().getProfile() instanceof RasterProfile);
+        try
+        {
+          this.optionsmenu.setVisible(VisicutModel.getInstance().getMappings().size() == 1);
         }
         catch (NullPointerException ex)
         {
-          this.dithermenu.setEnabled(false);
+          this.optionsmenu.setVisible(false);
         }
         this.menu.show(this.previewPanel, me.getX(), me.getY());
       }
