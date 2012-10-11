@@ -24,9 +24,6 @@ package com.t_oster.visicut.model.mapping;
 
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
-import com.t_oster.visicut.model.graphicelements.ShapeDecorator;
-import com.t_oster.visicut.model.graphicelements.ShapeObject;
-import java.awt.geom.Area;
 import java.util.LinkedList;
 
 /**
@@ -38,7 +35,10 @@ public class FilterSet extends LinkedList<MappingFilter>
 
   public GraphicSet getMatchingObjects(GraphicSet elements)
   {
-    
+    if (this.isEmpty())
+    {
+      return elements;
+    }
     GraphicSet result = new GraphicSet();
     if (elements==null)
     {
@@ -47,18 +47,13 @@ public class FilterSet extends LinkedList<MappingFilter>
     result.setTransform(elements.getTransform());
     for (GraphicObject o : elements)
     {
-      boolean passed = true;
       for (MappingFilter filter : this)
       {
-        if (!filter.matches(o))
+        if (filter.matches(o))
         {
-          passed = false;
+          result.add(o);
           break;
         }
-      }
-      if (passed)
-      {
-        result.add(o);
       }
     }
     return result;
