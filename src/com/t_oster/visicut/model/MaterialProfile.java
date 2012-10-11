@@ -206,6 +206,10 @@ public class MaterialProfile implements ImageListable, Cloneable, Comparable
     cp.engraveColor = this.engraveColor;
     cp.description = this.description;
     cp.thumbnailPath = this.thumbnailPath;
+    for (Float f : this.materialThicknesses)
+    {
+      cp.materialThicknesses.add(f);
+    }
     return cp;
   }
 
