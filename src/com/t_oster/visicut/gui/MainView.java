@@ -33,6 +33,8 @@ import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.gui.beans.CreateNewMaterialDialog;
+import com.t_oster.visicut.gui.beans.CreateNewThicknessDialog;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.managers.MappingManager;
@@ -1934,7 +1936,25 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
 
   private void btAddMaterialActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btAddMaterialActionPerformed
   {//GEN-HEADEREND:event_btAddMaterialActionPerformed
-    MaterialProfile m = new MaterialProfile();
+    CreateNewMaterialDialog cd = new CreateNewMaterialDialog(this, true);
+    cd.setVisible(true);
+    if (!cd.isOkClicked())
+    {//user pressed cancel
+      return;
+    }
+    MaterialProfile m;
+    MaterialProfile om = cd.getSelectedProfile();
+    if (om != null)
+    {//we're using an existing material profile
+      m = om.clone();
+      //create only the selected thicknesses
+      m.setMaterialThicknesses(cd.getSelectedThicknesses());
+      m.setName(m.getName()+" 2");
+    }
+    else
+    {//create from scratch
+      m = new MaterialProfile();
+    }
     EditMaterialDialog d = new EditMaterialDialog(this, true);
     d.setMaterial(m);
     d.setVisible(true);
@@ -1944,6 +1964,31 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
       try
       {
         MaterialManager.getInstance().add(m);
+        if (om != null)
+        {//we were cloning, so copy all lasercutter settings for the selected thicknesses
+          for (Float f : cd.getSelectedThicknesses())
+          {
+            if (m.getMaterialThicknesses().contains(f))
+            {
+              for (LaserDevice ld : LaserDeviceManager.getInstance().getAll())
+              {
+                for (LaserProfile lp : ProfileManager.getInstance().getAll())
+                {
+                  List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(ld, om, lp, f);
+                  if (props != null)
+                  {
+                    List<LaserProperty> clones = new LinkedList<LaserProperty>();
+                    for (LaserProperty p : props)
+                    {
+                      clones.add(p.clone());
+                    }
+                    LaserPropertyManager.getInstance().saveLaserProperties(ld, m, lp, f, clones);
+                  }
+                }
+              }
+            }
+          }
+        }
         this.refreshMaterialComboBox();
         this.materialComboBox.setSelectedItem(m);
       }
@@ -1980,15 +2025,18 @@ private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
     }
   }//GEN-LAST:event_jmInstallIllustratorActionPerformed
 private void btAddMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAddMaterialThicknessActionPerformed
-  if (VisicutModel.getInstance().getMaterial() != null)
+  MaterialProfile m = VisicutModel.getInstance().getMaterial();
+  if (m != null)
   {
-    Double d = dialog.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ADDTHICKNESS"), 2);
-    if (d == null)
+    CreateNewThicknessDialog d = new CreateNewThicknessDialog(this, true);
+    d.setAvailableThicknesses(m.getMaterialThicknesses());
+    d.setVisible(true);
+    if (!d.isOkClicked())
     {
       return;
     }
-    Float f = d.floatValue();
-    List<Float> th = VisicutModel.getInstance().getMaterial().getMaterialThicknesses();
+    Float f = d.getSelectedNewThickness();
+    List<Float> th = m.getMaterialThicknesses();
     if (th.contains(f))
     {
       return;
@@ -1997,11 +2045,38 @@ private void btAddMaterialThicknessActionPerformed(java.awt.event.ActionEvent ev
     Collections.sort(th);
     try
     {
-      MaterialManager.getInstance().save(VisicutModel.getInstance().getMaterial());
+      MaterialManager.getInstance().save(m);
     }
     catch (Exception ex)
     {
       dialog.showErrorMessage(ex, "Could not save material thickness");
+    }
+    Float copyThickness = d.getSelectedCopyThickness();
+    if (copyThickness != null)
+    {
+      for (LaserDevice ld : LaserDeviceManager.getInstance().getAll())
+      {
+        for (LaserProfile lp : ProfileManager.getInstance().getAll())
+        {
+          try
+          {
+            List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(ld, m, lp, f);
+            if (props != null)
+            {
+              List<LaserProperty> clones = new LinkedList<LaserProperty>();
+              for (LaserProperty p : props)
+              {
+                clones.add(p.clone());
+              }
+              LaserPropertyManager.getInstance().saveLaserProperties(ld, m, lp, f, clones);
+            }
+          }
+          catch (Exception ex)
+          {
+            dialog.showErrorMessage(ex, "Could not copy material thickness");
+          }
+        }
+      }
     }
     this.refreshMaterialThicknessesComboBox();
     this.cbMaterialThickness.setSelectedItem(f);
