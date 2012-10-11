@@ -134,6 +134,8 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
         heading = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/AdaptSettingsDialog"); // NOI18N
+        setTitle(bundle.getString("TITLE")); // NOI18N
         setName("Form"); // NOI18N
 
         jTabbedPane1.setName("jTabbedPane1"); // NOI18N

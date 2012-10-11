@@ -192,6 +192,8 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
         jTextArea1 = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditLaserDeviceDialog"); // NOI18N
+        setTitle(bundle.getString("TITLE")); // NOI18N
         setName("Form"); // NOI18N
 
         jTextField2.setName("jTextField2"); // NOI18N

@@ -176,6 +176,8 @@ public class EditMaterialDialog extends javax.swing.JDialog implements EditableT
         editableTablePanel1 = new com.t_oster.visicut.gui.beans.EditableTablePanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditMaterialDialog"); // NOI18N
+        setTitle(bundle.getString("TITLE")); // NOI18N
         setName("Form"); // NOI18N
 
         jTextField1.setName("jTextField1"); // NOI18N

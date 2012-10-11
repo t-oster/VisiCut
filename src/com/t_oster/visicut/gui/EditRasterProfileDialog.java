@@ -127,6 +127,8 @@ public class EditRasterProfileDialog extends javax.swing.JDialog
         lbGreyscaleShift = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditRasterProfileDialog"); // NOI18N
+        setTitle(bundle.getString("TITLE")); // NOI18N
         setName("Form"); // NOI18N
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(EditRasterProfileDialog.class);

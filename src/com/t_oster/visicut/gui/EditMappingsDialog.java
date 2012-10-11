@@ -137,6 +137,8 @@ public class EditMappingsDialog extends javax.swing.JDialog implements EditableT
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditMappingsDialog"); // NOI18N
+        setTitle(bundle.getString("TITLE")); // NOI18N
         setName("Form"); // NOI18N
 
         editableTablePanel1.setEditButtonVisible(false);
