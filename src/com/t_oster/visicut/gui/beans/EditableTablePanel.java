@@ -39,6 +39,7 @@ public class EditableTablePanel extends javax.swing.JPanel
   {
     initComponents();
     this.setMoveButtonsVisible(false);
+    this.setSaveButtonVisible(false);
     this.table.setModel(this.getTableModel());
     //make the table save data, when loosing focus
     this.table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
