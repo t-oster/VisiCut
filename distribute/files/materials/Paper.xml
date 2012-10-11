@@ -1,0 +1,11 @@
+<material>
+  <description>Just paper</description>
+  <thumbnailPath>Paper.png</thumbnailPath>
+  <engraveColor>#404040</engraveColor>
+  <cutColor>#ff0000</cutColor>
+  <color>#cbcbcb</color>
+  <name>Paper</name>
+  <materialThicknesses>
+    <float>0.1</float>
+  </materialThicknesses>
+</material>

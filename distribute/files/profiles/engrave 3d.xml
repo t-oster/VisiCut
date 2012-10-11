@@ -1,11 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<java version="1.7.0_07" class="java.beans.XMLDecoder">
- <object class="com.t_oster.visicut.model.Raster3dProfile">
-  <void property="description">
-   <string>Engrave while modulating laserpower according to image darkness</string>
-  </void>
-  <void property="name">
-   <string>engrave 3d</string>
-  </void>
- </object>
-</java>
+<raster3dProfile>
+  <description>Engaves with power proportional to grey value</description>
+  <name>engrave 3d</name>
+  <invertColors>false</invertColors>
+  <colorShift>0</colorShift>
+</raster3dProfile>

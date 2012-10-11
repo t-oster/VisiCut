@@ -5,13 +5,13 @@ Please:
 -Turn on the Ventilation
 -And press &apos;start&apos; on the Lasercutter $name</jobSentText>
   <jobPrefix>visicut </jobPrefix>
-  <laserCutter class="com.t_oster.liblasercut.drivers.EpilogHelix">
+  <laserCutter class="com.t_oster.liblasercut.drivers.EpilogZing">
     <hostname>10.0.0.1</hostname>
     <port>515</port>
     <autofocus>false</autofocus>
     <bedWidth>600.0</bedWidth>
     <bedHeight>300.0</bedHeight>
   </laserCutter>
-  <thumbnailPath>Epilog Helix.png</thumbnailPath>
-  <name>Epilog Helix</name>
+  <thumbnailPath>Epilog ZING.png</thumbnailPath>
+  <name>Epilog ZING</name>
 </laserDevice>

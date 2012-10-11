@@ -1,17 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<java version="1.7.0_07" class="java.beans.XMLDecoder">
- <object class="com.t_oster.visicut.model.RasterProfile">
-  <void property="description">
-   <string>Engrave the material in Rastermode</string>
-  </void>
-  <void property="ditherAlgorithm">
-   <object class="java.lang.Enum" method="valueOf">
-    <class>com.t_oster.liblasercut.BlackWhiteRaster$DitherAlgorithm</class>
-    <string>FLOYD_STEINBERG</string>
-   </object>
-  </void>
-  <void property="name">
-   <string>engrave</string>
-  </void>
- </object>
-</java>
+<rasterProfile>
+  <description>Converts an image to black-white and engraves it</description>
+  <name>engrave</name>
+  <invertColors>false</invertColors>
+  <colorShift>0</colorShift>
+  <ditherAlgorithm>FLOYD_STEINBERG</ditherAlgorithm>
+</rasterProfile>
