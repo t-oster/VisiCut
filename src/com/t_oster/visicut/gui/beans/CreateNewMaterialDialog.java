@@ -54,6 +54,7 @@ public class CreateNewMaterialDialog extends javax.swing.JDialog
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CreateNewMaterialDialog"); // NOI18N
         setTitle(bundle.getString("TITLE")); // NOI18N
+        setLocationByPlatform(true);
 
         buttonGroup1.add(jRadioButton1);
         jRadioButton1.setSelected(true);

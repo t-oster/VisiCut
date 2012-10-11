@@ -75,6 +75,7 @@ public class CreateNewThicknessDialog extends javax.swing.JDialog
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CreateNewThicknessDialog"); // NOI18N
         setTitle(bundle.getString("TITLE")); // NOI18N
+        setLocationByPlatform(true);
 
         jLabel1.setText(bundle.getString("NEW THICKNESS:")); // NOI18N
 
