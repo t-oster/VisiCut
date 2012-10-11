@@ -30,6 +30,7 @@ public class CreateNewMaterialDialog extends javax.swing.JDialog
     {
       this.jComboBox1.addItem(mp);
     }
+    this.jTable1.setVisible(false);
   }
 
   /**
