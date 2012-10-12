@@ -173,6 +173,7 @@ File /r "stream\"
   ; register file extensions
   ${registerExtension} "$INSTDIR\VisiCut.exe" ".plf" "VisiCut Portable Laser File"
   ${registerExtension} "$INSTDIR\VisiCut.exe" ".svg" "SVG File"
+  ${registerExtension} "$INSTDIR\VisiCut.exe" ".dxf" "DXF File"
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
