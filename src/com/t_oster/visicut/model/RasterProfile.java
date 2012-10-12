@@ -25,6 +25,7 @@ import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.RasterPart;
 import com.t_oster.liblasercut.dithering.DitheringAlgorithm;
+import com.t_oster.liblasercut.dithering.FloydSteinberg;
 import com.t_oster.liblasercut.platform.Point;
 import com.t_oster.liblasercut.utils.BufferedImageAdapter;
 import com.t_oster.visicut.misc.Helper;
@@ -95,14 +96,14 @@ public class RasterProfile extends LaserProfile
   {
     this.colorShift = colorShift;
   }
-  protected DitherAlgorithm ditherAlgorithm = DitherAlgorithm.FLOYD_STEINBERG;
+  protected DitheringAlgorithm ditherAlgorithm = new FloydSteinberg();
 
   /**
    * Get the value of ditherAlgorithm
    *
    * @return the value of ditherAlgorithm
    */
-  public DitherAlgorithm getDitherAlgorithm()
+  public DitheringAlgorithm getDitherAlgorithm()
   {
     return ditherAlgorithm;
   }
@@ -112,7 +113,7 @@ public class RasterProfile extends LaserProfile
    *
    * @param ditherAlgorithm new value of ditherAlgorithm
    */
-  public void setDitherAlgorithm(DitherAlgorithm ditherAlgorithm)
+  public void setDitheringAlgorithm(DitheringAlgorithm ditherAlgorithm)
   {
     this.ditherAlgorithm = ditherAlgorithm;
   }
@@ -165,7 +166,7 @@ public class RasterProfile extends LaserProfile
         }
       };
       ad.setColorShift(this.getColorShift());
-      DitheringAlgorithm alg = BlackWhiteRaster.getDitheringAlgorithm(this.getDitherAlgorithm());
+      DitheringAlgorithm alg = this.getDitherAlgorithm();
       if (pl != null)
       {
         alg.addProgressListener(pl);

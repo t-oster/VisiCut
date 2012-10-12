@@ -26,7 +26,7 @@ class LaserPropertiesTableModel extends DefaultTableModel
     }
     else
     {
-      columnNames = lp.get(0).getPropertyNames();
+      columnNames = lp.get(0).getPropertyKeys();
     }
     this.fireTableStructureChanged();
   }
@@ -42,7 +42,7 @@ class LaserPropertiesTableModel extends DefaultTableModel
     }
     else
     {
-      return lp.get(0).getPropertyClass(this.columnNames[x]);
+      return lp.get(0).getProperty(this.columnNames[x]).getClass();
     }
   }
   

@@ -773,14 +773,14 @@ public class VisicutModel
 
   public int estimateTime() throws FileNotFoundException, IOException
   {
-    LaserCutter instance = this.getSelectedLaserDevice().getLaserCutter();
+    LaserCutter lc = this.getSelectedLaserDevice().getLaserCutter();
     LaserJob job = this.prepareJob("calc");
-    return instance.estimateJobDuration(job);
+    return lc.estimateJobDuration(job);
   }
 
   private List<LaserProperty> addFocusOffset(List<LaserProperty> props, float focusOffset)
   {
-    if (focusOffset == 0 || props.isEmpty() || props.get(0).getPropertyClass("focus") == null)
+    if (focusOffset == 0 || props.isEmpty() || props.get(0).getProperty("focus") == null)
     {
       return props;
     }

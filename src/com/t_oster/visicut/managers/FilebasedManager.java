@@ -237,6 +237,10 @@ public abstract class FilebasedManager<T>
     {
       return null;
     }
+    catch (java.lang.InstantiationError e)
+    {
+      return null;
+    }
   }
 
   /**
