@@ -38,6 +38,28 @@ import java.util.List;
 public abstract class LaserProfile implements ImageListable, Cloneable
 {
 
+    private double DPI = 500;
+
+  /**
+   * Get the value of DPI
+   *
+   * @return the value of DPI
+   */
+  public double getDPI()
+  {
+    return DPI;
+  }
+
+  /**
+   * Set the value of DPI
+   *
+   * @param DPI new value of DPI
+   */
+  public void setDPI(double DPI)
+  {
+    this.DPI = DPI;
+  }
+  
   protected String description = "A new Laserprofile";
 
   /**

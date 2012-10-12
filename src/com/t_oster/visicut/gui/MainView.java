@@ -66,9 +66,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -284,8 +282,6 @@ public class MainView extends javax.swing.JFrame
    */
   private void fillComboBoxes()
   {
-    HashSet<Integer> resolutions = new LinkedHashSet<Integer>();
-
     String sld = this.visicutModel1.getSelectedLaserDevice() != null ? this.visicutModel1.getSelectedLaserDevice().getName() : null;
     this.laserCutterComboBox.removeAllItems();
     this.laserCutterComboBox.addItem(null);
@@ -293,7 +289,6 @@ public class MainView extends javax.swing.JFrame
     for (LaserDevice ld : LaserDeviceManager.getInstance().getAll())
     {
       this.laserCutterComboBox.addItem(ld);
-      resolutions.addAll(ld.getLaserCutter().getResolutions());
       if (ld.getName().equals(sld))
       {
         this.laserCutterComboBox.setSelectedItem(ld);
@@ -310,21 +305,6 @@ public class MainView extends javax.swing.JFrame
     {
       this.laserCutterComboBox.setVisible(true);
       this.jLabel9.setVisible(true);
-    }
-    Integer res = this.visicutModel1.getResolution();
-    this.resolutionComboBox.removeAllItems();
-    this.resolutionComboBox.addItem(null);
-    this.resolutionComboBox.setSelectedIndex(0);
-    List<Integer> resolutions_ord = new LinkedList<Integer>();
-    resolutions_ord.addAll(resolutions);
-    Collections.sort(resolutions_ord);
-    for (Integer i : resolutions_ord)
-    {
-      this.resolutionComboBox.addItem(i);
-      if (i.equals(res))
-      {
-        this.resolutionComboBox.setSelectedItem(i);
-      }
     }
     this.refreshMaterialComboBox();
     this.refreshPredefinedMappingList();
@@ -1217,24 +1197,28 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
   private void executeJob()
   {
-    if (!this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions().contains(this.visicutModel1.getResolution()))
+    for (Mapping m : this.visicutModel1.getMappings())
     {
-      int dist = -1;
-      int res = 0;
-      int soll = this.visicutModel1.getResolution();
-      for(int r : this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions())
+      LaserProfile lp = m.getProfile();
+      if (!this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions().contains((Double) lp.getDPI()))
       {
-        if (dist == -1 || dist > Math.abs(soll-r))
+        double dist = -1;
+        double res = 0;
+        double soll = lp.getDPI();
+        for(double r : this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions())
         {
-          dist = Math.abs(soll-r);
-          res = r;
+          if (dist == -1 || dist > Math.abs(soll-r))
+          {
+            dist = Math.abs(soll-r);
+            res = r;
+          }
         }
+        if (!dialog.showYesNoQuestion(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THE LASERCUTTER YOU SELECTED, DOES NOT SUPPORT ")+soll+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("DPI DO YOU WANT TO USE ")+res+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("DPI INSTEAD?")))
+        {
+          return;
+        }
+        lp.setDPI(res);
       }
-      if (!dialog.showYesNoQuestion(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THE LASERCUTTER YOU SELECTED, DOES NOT SUPPORT ")+soll+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("DPI DO YOU WANT TO USE ")+res+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("DPI INSTEAD?")))
-      {
-        return;
-      }
-      this.resolutionComboBox.setSelectedItem((Integer) res);
     }
     try
     {
@@ -1488,10 +1472,17 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
     dialog.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THE CAMERA DOESN'T SEEM TO BE WORKING. PLEASE CHECK THE URL IN THE LASERCUTTER SETTINGS"));
     return;
   }
+  if (true)
+  {
+    dialog.showErrorMessage("Currently disabled");
+    return;
+  }
+  //TODO ask user for VectorProfile and make sure the properties for current
+  //material and cutter are available
   CamCalibrationDialog ccd = new CamCalibrationDialog();
   ccd.setBackgroundImage(this.visicutModel1.getBackgroundImage());
   ccd.setImageURL(this.visicutModel1.getSelectedLaserDevice().getCameraURL());
-  ccd.setLaserCutter(this.visicutModel1.getSelectedLaserDevice().getLaserCutter());
+  //ccd.setVectorProfile(vp);
   ccd.setResultingTransformation(this.visicutModel1.getSelectedLaserDevice().getCameraCalibration());
   ccd.setVisible(true);
   this.visicutModel1.getSelectedLaserDevice().setCameraCalibration(ccd.getResultingTransformation());

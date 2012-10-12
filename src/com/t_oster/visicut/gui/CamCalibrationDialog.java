@@ -28,12 +28,14 @@
  */
 package com.t_oster.visicut.gui;
 
-import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.VectorPart;
-import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.managers.LaserPropertyManager;
+import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.LaserDevice;
+import com.t_oster.visicut.model.VectorProfile;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -111,37 +113,8 @@ public class CamCalibrationDialog extends javax.swing.JDialog
        break;
       }
     }
-    
   }
-  protected LaserCutter laserCutter = null;
-
-  /**
-   * Get the value of laserCutter
-   *
-   * @return the value of laserCutter
-   */
-  public LaserCutter getLaserCutter()
-  {
-    return laserCutter;
-  }
-
-  /**
-   * Set the value of laserCutter
-   *
-   * @param laserCutter new value of laserCutter
-   */
-  public void setLaserCutter(LaserCutter laserCutter)
-  {
-    this.laserCutter = laserCutter;
-    if (laserCutter != null)
-    {
-      double width = this.laserCutter.getBedWidth();
-      double height = this.laserCutter.getBedHeight();
-      laserUpperLeft = new Point((int) Helper.mm2px(width * 20 / 100), (int) Helper.mm2px(height * 20 / 100));
-      laserLowerRight = new Point((int) Helper.mm2px(width * 80 / 100), (int) Helper.mm2px(height * 80 / 100));
-      refreshImagePoints();
-    }
-  }
+  
   protected AffineTransform currentTransformation = currentTransformation = AffineTransform.getScaleInstance(0.01, 0.01);
   public static final String PROP_CURRENTTRANSFORMATION = "currentTransformation";
 
@@ -186,6 +159,12 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     return resultingTransformation;
   }
 
+  private VectorProfile profile = null;
+  public void setVectorProfile(VectorProfile p)
+  {
+    this.profile = p;
+  }
+  
   /**
    * Set the value of resultingTransformation
    *
@@ -360,26 +339,38 @@ private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
 
   try
   {
-    if (laserCutter == null)
+    VisicutModel vm = VisicutModel.getInstance();
+    LaserDevice laserDevice = vm.getSelectedLaserDevice();
+    if (laserDevice == null)
     {
       throw new Exception(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("NO LASERCUTTER SELECTED"));
     }
-    //TODO: Use current material settings here
-    VectorPart vp = new VectorPart(laserCutter.getLaserPropertyForVectorPart());
-    int size = 100;
-    for (Point p : new Point[]
-      {
-        laserUpperLeft, laserLowerRight
-      })
+    VectorPart vp = null;
+    for (LaserProperty lp : LaserPropertyManager.getInstance().getLaserProperties(laserDevice, vm.getMaterial(), profile, vm.getMaterialThickness()))
     {
-      vp.moveto(p.x - size / 2, p.y);
-      vp.lineto(p.x + size / 2, p.y);
-      vp.moveto(p.x, p.y - size / 2);
-      vp.lineto(p.x, p.y + size / 2);
+      if (vp == null)
+      {
+        vp = new VectorPart(lp, profile.getDPI());
+      }
+      else
+      {
+        vp.setProperty(lp);
+      }
+      int size = 100;
+      for (Point p : new Point[]
+        {
+          laserUpperLeft, laserLowerRight
+        })
+      {
+        vp.moveto(p.x - size / 2, p.y);
+        vp.lineto(p.x + size / 2, p.y);
+        vp.moveto(p.x, p.y - size / 2);
+        vp.lineto(p.x, p.y + size / 2);
+      }
     }
-    LaserJob job = new LaserJob(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("CALIBRATION"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("VISICUT CALIBRATION PAGE"), "visicut", VisicutModel.getInstance().getValidResolution());
+    LaserJob job = new LaserJob(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("CALIBRATION"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("VISICUT CALIBRATION PAGE"), "visicut");
     job.addPart(vp);
-    this.laserCutter.sendJob(job);
+    laserDevice.getLaserCutter().sendJob(job);
     JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("PLEASE PRESS 'START' ON THE LASERCUTTER"));
   }
   catch (Exception e)

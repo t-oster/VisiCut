@@ -172,7 +172,7 @@ public class VectorProfile extends LaserProfile
     {
       objects = this.calculateOuterShape(objects);
     }
-    VectorPart part = new VectorPart(laserProperties.get(0));
+    VectorPart part = new VectorPart(laserProperties.get(0), this.getDPI());
     for (LaserProperty prop : laserProperties)
     {
       part.setProperty(prop);

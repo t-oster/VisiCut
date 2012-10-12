@@ -101,7 +101,6 @@ public final class PreferencesManager
         if (preferences.getLastLaserDevice() == null)
         {
           preferences.setLastLaserDevice(dev.getName());
-          preferences.setLastResolution(lc.getResolutions().get(lc.getResolutions().size()-1));
         }
       }
       catch (InstantiationException ex)

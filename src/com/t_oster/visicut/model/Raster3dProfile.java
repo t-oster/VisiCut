@@ -193,7 +193,7 @@ public class Raster3dProfile extends LaserProfile
         ad.setColorShift(this.getColorShift());
         for (LaserProperty prop : laserProperties)
         {
-          Raster3dPart part = new Raster3dPart(ad, prop, new Point((int) bb.getX(), (int) bb.getY()));
+          Raster3dPart part = new Raster3dPart(ad, prop, new Point((int) bb.getX(), (int) bb.getY()), getDPI());
           job.addPart(part);
         }
       }

@@ -725,7 +725,7 @@ public class VisicutModel
     
   private LaserJob prepareJob(String name) throws FileNotFoundException, IOException
   {
-    LaserJob job = new LaserJob(name, name, "visicut", this.getValidResolution());
+    LaserJob job = new LaserJob(name, name, "visicut");
     
     float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() || !this.useThicknessAsFocusOffset ? 0 : this.materialThickness;
     

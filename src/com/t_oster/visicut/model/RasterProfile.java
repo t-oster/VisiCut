@@ -19,7 +19,6 @@
 package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.BlackWhiteRaster;
-import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
@@ -149,7 +148,7 @@ public class RasterProfile extends LaserProfile
       BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors)
       {
 
-        @Override
+      @Override
         public void setGreyScale(int x, int y, int greyscale)
         {
           if (greyscale == 255)
@@ -221,7 +220,7 @@ public class RasterProfile extends LaserProfile
         BlackWhiteRaster bw = new BlackWhiteRaster(ad, this.getDitherAlgorithm());
         for (LaserProperty prop : laserProperties)
         {
-          RasterPart part = new RasterPart(bw, prop, new Point((int) bb.getX(), (int) bb.getY()));
+          RasterPart part = new RasterPart(bw, prop, new Point((int) bb.getX(), (int) bb.getY()), getDPI());
           job.addPart(part);
         }
       }
