@@ -24,10 +24,14 @@ import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FilenameFilter;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 /**
  * This Button displays a Thumbnail if a thumbnailPath String is given.
@@ -42,6 +46,46 @@ public class SelectThumbnailButton extends JButton implements ActionListener
   {
     this.setThumbnailPath(path);
     this.addActionListener(this);
+    this.prepareMenu();
+  }
+  
+  private void prepareMenu()
+  {
+    final JPopupMenu menu = new JPopupMenu();
+    JMenuItem mi = new JMenuItem("remove");
+    mi.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae)
+      {
+        SelectThumbnailButton.this.setThumbnailPath(null);
+      }
+    });
+    menu.add(mi);
+    this.addMouseListener(new MouseListener(){
+
+      public void mouseClicked(MouseEvent me)
+      {
+        if (me.getButton() == MouseEvent.BUTTON3 && SelectThumbnailButton.this.getThumbnailPath() != null)
+        {
+          menu.show(SelectThumbnailButton.this, me.getX(), me.getY());
+        }
+      }
+
+      public void mousePressed(MouseEvent me)
+      {
+      }
+
+      public void mouseReleased(MouseEvent me)
+      {
+      }
+
+      public void mouseEntered(MouseEvent me)
+      {
+      }
+
+      public void mouseExited(MouseEvent me)
+      {
+      }
+    });
   }
 
   public SelectThumbnailButton()
@@ -99,7 +143,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
     firePropertyChange(PROP_THUMBNAILPATH, oldThumbnailPath, thumbnailPath);
     if (thumbnailPath == null)
     {
-      this.setText(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/SelectThumbnailButton").getString("NO IMAGE"));
+      this.setText("<html><table cellpadding=3><tr><td>"+Helper.imgTag(this.getClass().getResource("resources/no-image.png"), 64, 64)+"</td></tr></table></html>");
     }
     else
     {

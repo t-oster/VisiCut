@@ -36,6 +36,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -335,16 +336,29 @@ public class Helper
    * @param height
    * @return 
    */
-  public static String imgTag(File f, int width, int height)
+  public static String imgTag(URL u, int width, int height)
   {
     String size = width > 0 && height > 0 ? "width=" + width + " height=" + height : "";
+    return "<img " + size + " src=\"" + u + "\"/>";
+  }
+  
+  /**
+   * Generates an HTML img-Tag for the given file with given size
+   * @param f
+   * @param width
+   * @param height
+   * @return 
+   */
+  public static String imgTag(File f, int width, int height)
+  {
     try
     {
-      return "<img " + size + " src=\"" + f.toURI().toURL() + "\"/>";
+     return imgTag(f.toURI().toURL(), width, height);
     }
     catch (MalformedURLException ex)
     {
       Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, null, ex);
+      String size = width > 0 && height > 0 ? "width=" + width + " height=" + height : "";
       return "<img " + size + " src=\"file://" + f.getAbsolutePath() + "\"/>";
     }
   }
