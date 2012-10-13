@@ -45,7 +45,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
@@ -232,46 +231,46 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       {
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.X).contains(me.getPoint()))
         {
-          Double x = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("LEFT OFFSET"), Helper.px2mm(this.getEditRect().x) / 10);
+          Double x = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("LEFT OFFSET"), this.getEditRect().x / 10);
           if (x == null)
           {
             return false;
           }
-          this.getEditRect().x = (int) Helper.mm2px(x * 10);
+          this.getEditRect().x = x * 10;
           this.applyEditRectoToSet();
           return true;
         }
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.Y).contains(me.getPoint()))
         {
 
-          Double y = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("TOP OFFSET"), Helper.px2mm(this.getEditRect().y) / 10);
+          Double y = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("TOP OFFSET"), this.getEditRect().y / 10);
           if (y == null)
           {
             return false;
           }
-          this.getEditRect().y = (int) Helper.mm2px(y * 10);
+          this.getEditRect().y = y * 10;
           this.applyEditRectoToSet();
           return true;
         }
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.WIDTH).contains(me.getPoint()))
         {
-          Double w = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("WIDTH"), Helper.px2mm(this.getEditRect().width) / 10);
+          Double w = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("WIDTH"), this.getEditRect().width / 10);
           if (w == null)
           {
             return false;
           }
-          this.getEditRect().width = (int) Helper.mm2px(w * 10);
+          this.getEditRect().width = w * 10;
           this.applyEditRectoToSet();
           return true;
         }
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.HEIGHT).contains(me.getPoint()))
         {
-          Double h = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("HEIGHT"), Helper.px2mm(this.getEditRect().height) / 10);
+          Double h = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("HEIGHT"), this.getEditRect().height / 10);
           if (h == null)
           {
             return false;
           }
-          this.getEditRect().height = (int) Helper.mm2px(h * 10);
+          this.getEditRect().height = h * 10;
           this.applyEditRectoToSet();
           return true;
         }
