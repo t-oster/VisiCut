@@ -31,6 +31,7 @@ package com.t_oster.visicut.gui;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.VectorPart;
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.misc.Helper;
@@ -41,6 +42,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import javax.imageio.ImageIO;
@@ -77,8 +80,9 @@ public class CamCalibrationDialog extends javax.swing.JDialog
 
   protected BufferedImage backgroundImage = null;
   public static final String PROP_BACKGROUNDIMAGE = "backgroundImage";
-  public Point laserUpperLeft = new Point((int) Helper.mm2px(0), (int) Helper.mm2px(0));
-  public Point laserLowerRight = new Point((int) Helper.mm2px(600), (int) Helper.mm2px(300));
+  private LaserDevice ld = VisicutModel.getInstance().getSelectedLaserDevice();
+  private Point2D.Double laserUpperLeft = new Point2D.Double(0, 0);
+  private Point2D.Double laserLowerRight = new Point2D.Double(ld.getLaserCutter().getBedWidth(), ld.getLaserCutter().getBedHeight());
 
 
   /**
@@ -143,8 +147,8 @@ public class CamCalibrationDialog extends javax.swing.JDialog
   {
     Point[] img = this.calibrationPanel1.getPointList();
     return Helper.getTransform(
-      new Rectangle(laserUpperLeft.x, laserUpperLeft.y, laserLowerRight.x - laserUpperLeft.x, laserLowerRight.y - laserUpperLeft.y),
-      new Rectangle(img[0].x, img[0].y, img[1].x - img[0].x, img[1].y - img[0].y));
+      new Rectangle2D.Double(laserUpperLeft.x, laserUpperLeft.y, laserLowerRight.x - laserUpperLeft.x, laserLowerRight.y - laserUpperLeft.y),
+      new Rectangle2D.Double(img[0].x, img[0].y, img[1].x - img[0].x, img[1].y - img[0].y));
   }
   protected AffineTransform resultingTransformation = null;
   public static final String PROP_RESULTINGTRANSFORMATION = "resultingTransformation";
@@ -356,16 +360,18 @@ private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
       {
         vp.setProperty(lp);
       }
-      int size = 100;
-      for (Point p : new Point[]
+      int size = (int) Util.mm2px(100, profile.getDPI());
+      for (Point2D p : new Point2D[]
         {
           laserUpperLeft, laserLowerRight
         })
       {
-        vp.moveto(p.x - size / 2, p.y);
-        vp.lineto(p.x + size / 2, p.y);
-        vp.moveto(p.x, p.y - size / 2);
-        vp.lineto(p.x, p.y + size / 2);
+        int x = (int) Util.mm2px(p.getX(), profile.getDPI());
+        int y = (int) Util.mm2px(p.getY(), profile.getDPI());
+        vp.moveto(x - size / 2, y);
+        vp.lineto(x + size / 2, y);
+        vp.moveto(x, y - size / 2);
+        vp.lineto(x, y + size / 2);
       }
     }
     LaserJob job = new LaserJob(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("CALIBRATION"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("VISICUT CALIBRATION PAGE"), "visicut");
