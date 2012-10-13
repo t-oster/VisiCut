@@ -224,7 +224,6 @@ public class VisicutApp extends SingleFrameApplication
             System.out.println("\t visicut [options] [<filename>]");
             System.out.println("\t visicut [options] --execute filename");
             System.out.println("Options are:");
-            System.out.println(" --resolution <resolution in DPI e.g. 500>");
             System.out.println(" --material <materialname e.g. \"Acrylic Glass 2mm\">");
             System.out.println(" --laserdevice <laserdevice e.g. \"Epilog ZING @ Miltons Office\">");
             System.out.println(" --mapping <mapping e.g. \"Cut\">");
@@ -237,10 +236,6 @@ public class VisicutApp extends SingleFrameApplication
           else if ("--total-height".equals(s))
           {
             height = Float.parseFloat(args[++i]);
-          }
-          else if ("--resolution".equals(s))
-          {
-            resolution = Integer.parseInt(args[++i]);
           }
           else if ("--laserdevice".equals(s))
           {
@@ -346,18 +341,6 @@ public class VisicutApp extends SingleFrameApplication
       }
       model.setMaterialThickness(height);
     }
-    if (resolution != null)
-    {
-      try
-      {
-        model.setResolution(resolution);
-      }
-      catch (Exception e)
-      {
-        System.err.println("Invalid resolution");
-        System.exit(1);
-      }
-    }
     if (mapping != null)
     {
       search:
@@ -438,12 +421,6 @@ public class VisicutApp extends SingleFrameApplication
           System.err.println("Combination of Laserdevice, Material and Mapping is not supported");
           System.exit(1);
         }
-      }
-      
-      if (!model.getSelectedLaserDevice().getLaserCutter().getResolutions().contains(model.getValidResolution()))
-      {
-        System.err.println("Resolution " + model.getValidResolution() + " is not supported by " + model.getSelectedLaserDevice().getName());
-        System.exit(1);
       }
       try
       {
