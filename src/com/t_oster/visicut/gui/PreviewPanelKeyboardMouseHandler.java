@@ -207,8 +207,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
 
   private enum MouseAction
   {
-
-    movingBackground,
+    noAction,
     movingSet,
     resizingSet,
     rotatingSet
@@ -295,7 +294,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       if (getGraphicObjects() != null && getGraphicObjects().getBoundingBox() != null)
       {
         Rectangle2D bb = getGraphicObjects().getBoundingBox();
-        Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
+        Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
         onGraphic = e.contains(me.getPoint());
       }
       if (onGraphic)
@@ -318,7 +317,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     else if (getEditRect() != null && me.getButton() == MouseEvent.BUTTON3)
     {
       Rectangle2D bb = getGraphicObjects().getBoundingBox();
-      Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
+      Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
       if (e.contains(me.getPoint()))
       {
         try
@@ -337,11 +336,11 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   public void mousePressed(MouseEvent evt)
   {
     lastMousePosition = evt.getPoint();
-    currentAction = MouseAction.movingBackground;
+    currentAction = MouseAction.noAction;
     if (getEditRect() != null)
     {//something selected
-      Rectangle2D curRect = Helper.transform(getEditRect(), this.previewPanel.getLastDrawnTransform());
-      Button b = getEditRect().getButtonByPoint(lastMousePosition, this.previewPanel.getLastDrawnTransform());
+      Rectangle2D curRect = Helper.transform(getEditRect(), this.previewPanel.getMmToPxTransform());
+      Button b = getEditRect().getButtonByPoint(lastMousePosition, this.previewPanel.getMmToPxTransform());
       if (b != null)
       {//a button selected
         currentButton = b;
@@ -355,7 +354,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
         }
         else
         {
-          currentAction = MouseAction.movingBackground;
+          currentAction = MouseAction.noAction;
         }
       }
     }
@@ -404,7 +403,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
           }
           case resizingSet:
           {
-            this.previewPanel.getLastDrawnTransform().createInverse().deltaTransform(diff, diff);
+            this.previewPanel.getMmToPxTransform().createInverse().deltaTransform(diff, diff);
             switch (currentButton)
             {
               case BOTTOM_RIGHT:
@@ -467,26 +466,9 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
           }
           case movingSet:
           {
-            AffineTransform tr = this.previewPanel.getLastDrawnTransform();
-            if (this.previewPanel.isShowBackgroundImage() && this.previewPanel.getBackgroundImage() != null && this.previewPanel.getPreviewTransformation() != null)
-            {
-              tr.concatenate(this.previewPanel.getPreviewTransformation().createInverse());
-            }
+            AffineTransform tr = this.previewPanel.getMmToPxTransform();
             tr.createInverse().deltaTransform(diff, diff);
             this.moveSet(diff.x, diff.y);
-            break;
-          }
-          case movingBackground:
-          {
-            AffineTransform tr = this.previewPanel.getLastDrawnTransform();
-            if (this.previewPanel.isShowBackgroundImage() && this.previewPanel.getBackgroundImage() != null && this.previewPanel.getPreviewTransformation() != null)
-            {
-              tr.concatenate(this.previewPanel.getPreviewTransformation().createInverse());
-            }
-            tr.createInverse().deltaTransform(diff, diff);
-            Point center = this.previewPanel.getCenter();
-            center.translate(-diff.x, -diff.y);
-            this.previewPanel.setCenter(center);
             break;
           }
         }
@@ -543,7 +525,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
               break cursorcheck;
             }
           }
-          Button b = getEditRect().getButtonByPoint(p, this.previewPanel.getLastDrawnTransform());
+          Button b = getEditRect().getButtonByPoint(p, this.previewPanel.getMmToPxTransform());
           if (b != null)
           {
             if (getEditRect().isRotateMode())
@@ -590,7 +572,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
         Rectangle2D bb = this.previewPanel.getGraphicObjects().getBoundingBox();
         if (bb != null)
         {
-          Rectangle2D e = Helper.transform(bb, this.previewPanel.getLastDrawnTransform());
+          Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
           if (e.contains(p))
           {
             cursor = this.getEditRect() == null ? Cursor.HAND_CURSOR : Cursor.MOVE_CURSOR;
