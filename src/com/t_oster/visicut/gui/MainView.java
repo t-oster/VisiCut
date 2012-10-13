@@ -341,9 +341,6 @@ public class MainView extends javax.swing.JFrame
         predefinedMappingList = new com.t_oster.visicut.gui.beans.ImageListableList();
         customMappingPanel1 = new javax.swing.JPanel();
         customMappingPanel2 = new com.t_oster.visicut.gui.beans.CustomMappingPanel();
-        jLabel8 = new javax.swing.JLabel();
-        resolutionComboBox = new com.t_oster.visicut.gui.beans.ImageComboBox();
-        jLabel12 = new javax.swing.JLabel();
         btAddMaterial = new javax.swing.JButton();
         cbMaterialThickness = new javax.swing.JComboBox();
         btAddMaterialThickness = new javax.swing.JButton();
@@ -506,19 +503,6 @@ public class MainView extends javax.swing.JFrame
 
         mappingTabbedPane.addTab(resourceMap.getString("customMappingPanelContainer.TabConstraints.tabTitle"), customMappingPanel1); // NOI18N
 
-        jLabel8.setText(resourceMap.getString("jLabel8.text")); // NOI18N
-        jLabel8.setName("jLabel8"); // NOI18N
-
-        resolutionComboBox.setName("resolutionComboBox"); // NOI18N
-        resolutionComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resolutionComboBoxActionPerformed(evt);
-            }
-        });
-
-        jLabel12.setText(resourceMap.getString("jLabel12.text")); // NOI18N
-        jLabel12.setName("jLabel12"); // NOI18N
-
         btAddMaterial.setText(resourceMap.getString("btAddMaterial.text")); // NOI18N
         btAddMaterial.setName("btAddMaterial"); // NOI18N
         btAddMaterial.addActionListener(new java.awt.event.ActionListener() {
@@ -574,23 +558,13 @@ public class MainView extends javax.swing.JFrame
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btAddMaterial))
                     .addComponent(jCheckBox1, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel2Layout.createSequentialGroup()
-                                    .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(btAddMaterialThickness))
-                                .addComponent(jLabel5))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel8)
-                                .addGroup(jPanel2Layout.createSequentialGroup()
-                                    .addComponent(resolutionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel12)))))
+                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btAddMaterialThickness))
+                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(cbEditBeforeExecute)
@@ -618,13 +592,9 @@ public class MainView extends javax.swing.JFrame
                     .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btAddMaterial))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel8))
+                .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(resolutionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel12)
                     .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btAddMaterialThickness))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -648,7 +618,6 @@ public class MainView extends javax.swing.JFrame
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanel1.border.title"))); // NOI18N
         jPanel1.setName("jPanel1"); // NOI18N
 
-        previewPanel.setAutoCenter(true);
         previewPanel.setName("previewPanel"); // NOI18N
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${backgroundImage}"), previewPanel, org.jdesktop.beansbinding.BeanProperty.create("backgroundImage"), "BackImageFromModel");
@@ -658,10 +627,6 @@ public class MainView extends javax.swing.JFrame
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${mappings}"), previewPanel, org.jdesktop.beansbinding.BeanProperty.create("mappings"), "MappingsFromModelToPreviewPanel");
         bindingGroup.addBinding(binding);
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material}"), previewPanel, org.jdesktop.beansbinding.BeanProperty.create("material"));
-        bindingGroup.addBinding(binding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${selectedLaserDevice.cameraCalibration}"), previewPanel, org.jdesktop.beansbinding.BeanProperty.create("previewTransformation"), "TransformFromModel");
-        bindingGroup.addBinding(binding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${resolution}"), previewPanel, org.jdesktop.beansbinding.BeanProperty.create("resolution"), "ResolutionToPanel");
         bindingGroup.addBinding(binding);
 
         com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler ppMouseHandler = new com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler(this.previewPanel);
@@ -674,7 +639,7 @@ public class MainView extends javax.swing.JFrame
         );
         previewPanelLayout.setVerticalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 579, Short.MAX_VALUE)
+            .addGap(0, 585, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -1101,7 +1066,7 @@ public class MainView extends javax.swing.JFrame
       && this.visicutModel1.getMappings() != null
       && this.visicutModel1.getMappings().size() > 0);
     if (this.visicutModel1.getSelectedLaserDevice() == null || this.visicutModel1.getMaterial() == null
-      || this.visicutModel1.getMappings() == null || this.visicutModel1.getResolution() == null || this.cbMaterialThickness.getSelectedItem() == null)
+      || this.visicutModel1.getMappings() == null || this.cbMaterialThickness.getSelectedItem() == null)
     {
       this.executeJobButton.setEnabled(false);
       this.executeJobMenuItem.setEnabled(false);
@@ -1765,22 +1730,6 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
   }
 }//GEN-LAST:event_reloadMenuItemActionPerformed
 
-private void resolutionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resolutionComboBoxActionPerformed
-  //Check if Lasercutter supports Resolution
-  Integer newResolution = this.resolutionComboBox.getSelectedItem() instanceof Integer ? (Integer) this.resolutionComboBox.getSelectedItem() : null;
-  if (!Util.differ(newResolution, (Integer) visicutModel1.getResolution()))
-  {
-    return;
-  }
-  if (this.resolutionComboBox.isDisabled(newResolution))
-  {
-    this.resolutionComboBox.setSelectedItem((Integer) visicutModel1.getResolution());
-    return;
-  }
-  this.visicutModel1.setResolution(newResolution);
-  this.refreshButtonStates();
-}//GEN-LAST:event_resolutionComboBoxActionPerformed
-
   private void jmExportSettingsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmExportSettingsActionPerformed
   {//GEN-HEADEREND:event_jmExportSettingsActionPerformed
     File file = null;
@@ -2096,10 +2045,8 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItem2;
@@ -2129,7 +2076,6 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JMenu recentFilesMenu;
     private javax.swing.JMenuItem reloadMenuItem;
-    private com.t_oster.visicut.gui.beans.ImageComboBox resolutionComboBox;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JFileChooser saveFileChooser;
     private javax.swing.JMenuItem saveMenuItem;

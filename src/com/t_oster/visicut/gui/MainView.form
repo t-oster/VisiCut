@@ -424,29 +424,14 @@
                           <Component id="btAddMaterial" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="jCheckBox1" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                          <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="cbMaterialThickness" min="-2" pref="134" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="btAddMaterialThickness" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace min="-2" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="resolutionComboBox" min="-2" pref="151" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
-                          </Group>
+                      <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="cbMaterialThickness" min="-2" pref="134" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="btAddMaterialThickness" min="-2" max="-2" attributes="0"/>
                       </Group>
+                      <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="1" attributes="0">
                           <Component id="cbEditBeforeExecute" min="-2" max="-2" attributes="0"/>
@@ -480,14 +465,9 @@
                       <Component id="btAddMaterial" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
+                  <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="resolutionComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel12" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="cbMaterialThickness" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="btAddMaterialThickness" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -667,26 +647,6 @@
             </Container>
           </SubComponents>
         </Container>
-        <Component class="javax.swing.JLabel" name="jLabel8">
-          <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="jLabel8.text"/>
-            <Property name="name" type="java.lang.String" value="jLabel8" noResource="true"/>
-          </Properties>
-        </Component>
-        <Component class="com.t_oster.visicut.gui.beans.ImageComboBox" name="resolutionComboBox">
-          <Properties>
-            <Property name="name" type="java.lang.String" value="resolutionComboBox" noResource="true"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="resolutionComboBoxActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JLabel" name="jLabel12">
-          <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="jLabel12.text"/>
-            <Property name="name" type="java.lang.String" value="jLabel12" noResource="true"/>
-          </Properties>
-        </Component>
         <Component class="javax.swing.JButton" name="btAddMaterial">
           <Properties>
             <Property name="text" type="java.lang.String" resourceKey="btAddMaterial.text"/>
@@ -779,7 +739,6 @@
       <SubComponents>
         <Container class="com.t_oster.visicut.gui.beans.PreviewPanel" name="previewPanel">
           <Properties>
-            <Property name="autoCenter" type="boolean" value="true"/>
             <Property name="name" type="java.lang.String" value="previewPanel" noResource="true"/>
           </Properties>
           <BindingProperties>
@@ -793,12 +752,6 @@
               <Property name="name" type="java.lang.String" value="MappingsFromModelToPreviewPanel"/>
             </BindingProperty>
             <BindingProperty name="material" source="visicutModel1" sourcePath="${material}" target="previewPanel" targetPath="material" updateStrategy="0" immediately="false"/>
-            <BindingProperty name="previewTransformation" source="visicutModel1" sourcePath="${selectedLaserDevice.cameraCalibration}" target="previewPanel" targetPath="previewTransformation" updateStrategy="1" immediately="false">
-              <Property name="name" type="java.lang.String" value="TransformFromModel"/>
-            </BindingProperty>
-            <BindingProperty name="resolution" source="visicutModel1" sourcePath="${resolution}" target="previewPanel" targetPath="resolution" updateStrategy="1" immediately="false">
-              <Property name="name" type="java.lang.String" value="ResolutionToPanel"/>
-            </BindingProperty>
           </BindingProperties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler ppMouseHandler = new com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler(this.previewPanel);"/>
@@ -812,7 +765,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="579" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="585" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
