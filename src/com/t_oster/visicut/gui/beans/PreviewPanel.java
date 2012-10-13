@@ -41,6 +41,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -83,33 +84,6 @@ public class PreviewPanel extends ZoomablePanel
       }
     });
   }
-  
-  /**
-   * This transform is for mapping lasercutter
-   * coordinates on the image from the camera
-   */
-  private AffineTransform previewTransformation;
-  /**
-   * Get the value of previewTransformation
-   *
-   * @return the value of previewTransformation
-   */
-  public AffineTransform getPreviewTransformation()
-  {
-    return previewTransformation;
-  }
-
-  /**
-   * Set the value of previewTransformation
-   *
-   * @param previewTransformation new value of previewTransformation
-   */
-  public void setPreviewTransformation(AffineTransform previewTransformation)
-  {
-    this.previewTransformation = previewTransformation;
-    this.repaint();
-  }
-  
   private Logger logger = Logger.getLogger(PreviewPanel.class.getName());
   
   private class ImageProcessingThread extends Thread implements ProgressListener
@@ -118,12 +92,18 @@ public class PreviewPanel extends ZoomablePanel
     private Logger logger = Logger.getLogger(ImageProcessingThread.class.getName());
     private BufferedImage buffer = null;
     private GraphicSet set;
+    private AffineTransform mm2px;
     private LaserProfile p;
-    private Rectangle2D bb;
+    private Rectangle bb;
     private int progress = 0;
     private boolean isFinished = false;
 
-    public Rectangle2D getBoundingBox()
+    /**
+     * Returns the bounding box of this preview image IN pixels
+     * in previewPanel-space
+     * @return 
+     */
+    public Rectangle getBoundingBox()
     {
       return bb;
     }
@@ -137,7 +117,8 @@ public class PreviewPanel extends ZoomablePanel
     {
       this.set = objects;
       this.p = p;
-      bb = set.getBoundingBox();
+      this.mm2px = PreviewPanel.this.getMmToPxTransform();
+      bb = Helper.toRect(Helper.transform(set.getBoundingBox(), mm2px));
       if (bb == null || bb.getWidth() == 0 || bb.getHeight() == 0)
       {
         logger.log(Level.SEVERE, "invalid BoundingBox");
@@ -160,21 +141,21 @@ public class PreviewPanel extends ZoomablePanel
       if (p instanceof RasterProfile)
       {
         RasterProfile rp = (RasterProfile) p;
-        buffer = rp.getRenderedPreview(set, material, this);
+        buffer = rp.getRenderedPreview(set, material, mm2px, this);
       }
       else
       {
-        buffer = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        buffer = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D gg = buffer.createGraphics();
         //Normalize Rendering to 0,0
-        gg.setTransform(AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY()));
+        gg.setTransform(AffineTransform.getTranslateInstance(-bb.x, -bb.y));
         if (p instanceof Raster3dProfile)
         {
-          ((Raster3dProfile) p).renderPreview(gg, set, PreviewPanel.this.getMaterial(), this);
+          ((Raster3dProfile) p).renderPreview(gg, set, PreviewPanel.this.getMaterial(), mm2px, this);
         }
         else
         {
-          p.renderPreview(gg, set, PreviewPanel.this.getMaterial());
+          p.renderPreview(gg, set, PreviewPanel.this.getMaterial(), mm2px);
         }
       }
     }
@@ -237,41 +218,8 @@ public class PreviewPanel extends ZoomablePanel
       
     }
   }
-  protected Integer resolution = 500;
-
-  /**
-   * Get the value of resolution
-   *
-   * @return the value of resolution
-   */
-  public Integer getResolution()
-  {
-    return resolution;
-  }
-
-  /**
-   * Set the value of resolution
-   *
-   * @param resolution new value of resolution
-   */
-  public void setResolution(Integer resolution)
-  {
-    int oldResolution = this.resolution == null ? 500 : this.resolution;
-    this.resolution = resolution == null ? 500 : resolution;
-    Point ctr = this.getCenter();
-    if (ctr != null)
-    {
-      AffineTransform.getScaleInstance((double) this.resolution/oldResolution, (double) this.resolution/oldResolution).transform(ctr, ctr);
-      this.setCenter(ctr);
-    }
-    this.setMaterial(this.getMaterial());
-    if (this.editRectangle != null)
-    {
-      this.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
-    }
-    this.setShowBackgroundImage(this.showBackgroundImage);
-  }
-
+    
+  
   protected boolean showGrid = false;
 
   /**
@@ -295,12 +243,6 @@ public class PreviewPanel extends ZoomablePanel
     this.showGrid = showGrid;
     this.firePropertyChange("showGrid", oldShowGrid, showGrid);
     this.repaint();
-  }
-  private AffineTransform lastDrawnTransform = null;
-
-  public AffineTransform getLastDrawnTransform()
-  {
-    return lastDrawnTransform;
   }
 
   protected RenderedImage backgroundImage = null;
@@ -339,14 +281,6 @@ public class PreviewPanel extends ZoomablePanel
   public void setShowBackgroundImage(boolean showBackgroundImage)
   {
     this.showBackgroundImage = showBackgroundImage;
-    if (this.backgroundImage != null && this.showBackgroundImage)
-    {
-      this.setOuterBounds(new Dimension(backgroundImage.getWidth(), backgroundImage.getHeight()));
-    }
-    else
-    {
-      this.setOuterBounds(new Dimension((int) Helper.mm2px(this.bedWidth), (int) Helper.mm2px(this.bedHeight)));
-    }
     this.repaint();
   }
 
@@ -368,14 +302,6 @@ public class PreviewPanel extends ZoomablePanel
   public void setBackgroundImage(RenderedImage backgroundImage)
   {
     this.backgroundImage = backgroundImage;
-    if (this.backgroundImage != null && this.showBackgroundImage)
-    {
-      this.setOuterBounds(new Dimension(backgroundImage.getWidth(), backgroundImage.getHeight()));
-    }
-    else
-    {
-      this.setOuterBounds(new Dimension((int) Helper.mm2px(this.bedWidth), (int) Helper.mm2px(this.bedHeight)));
-    }
     this.repaint();
   }
   protected MaterialProfile material = new MaterialProfile();
@@ -446,22 +372,6 @@ public class PreviewPanel extends ZoomablePanel
   public void setGraphicObjects(GraphicSet graphicObjects)
   {
     this.graphicObjects = graphicObjects;
-    int bw = (int) Helper.mm2px(bedWidth);
-    int bh = (int) Helper.mm2px(bedHeight);  
-    if (this.graphicObjects != null)
-    {
-      Rectangle bb = Helper.toRect(this.graphicObjects.getBoundingBox());
-      int w = bb.x + bb.width;
-      int h = bb.y + bb.height;
-      if (w > bw || h > bh)
-      {
-        this.setOuterBounds(new Dimension((int) Math.max(bw, w), (int) Math.max(bh, h)));
-      }
-    }
-    else
-    {
-      this.setOuterBounds(new Dimension(bw, bh));
-    }
     this.renderBuffer.clear();
     this.repaint();
   }
@@ -486,23 +396,22 @@ public class PreviewPanel extends ZoomablePanel
       gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
       if (backgroundImage != null && showBackgroundImage)
       {
+        //TODO Apply camera calibrated transform
         gg.drawRenderedImage(backgroundImage, null);
-        if (this.previewTransformation != null)
-        {
-          AffineTransform current = gg.getTransform();
-          current.concatenate(this.getPreviewTransformation());
-          gg.setTransform(current);
-        }
       }
+      Rectangle box = Helper.toRect(Helper.transform(
+          new Rectangle2D.Double(0, 0, this.bedWidth, this.bedHeight),
+          this.getMmToPxTransform()
+          ));
       if (this.backgroundImage != null && showBackgroundImage)
       {
         gg.setColor(Color.BLACK);
-        gg.drawRect(0, 0, (int) Helper.mm2px(this.bedWidth), (int) Helper.mm2px(this.bedHeight));
+        gg.drawRect(box.x, box.y, box.width, box.height);
       }
       else
       {
         gg.setColor(this.material != null && this.material.getColor() != null ? this.material.getColor() : Color.WHITE);
-        gg.fillRect(0, 0, (int) Helper.mm2px(this.bedWidth), (int) Helper.mm2px(this.bedHeight));
+        gg.fillRect(box.x, box.y, box.width, box.height);
       }
       if (showGrid)
       {
@@ -591,7 +500,7 @@ public class PreviewPanel extends ZoomablePanel
               }
               else if (p instanceof VectorProfile)
               {
-                p.renderPreview(gg, current, this.material);
+                p.renderPreview(gg, current, this.material, this.getMmToPxTransform());
               }
             }
             else
@@ -613,9 +522,8 @@ public class PreviewPanel extends ZoomablePanel
       }
       if (this.editRectangle != null)
       {
-        this.editRectangle.render(gg);
+        this.editRectangle.render(gg, this.getMmToPxTransform());
       }
-      this.lastDrawnTransform = gg.getTransform();
     }
   }
   protected MappingSet mappings = null;
@@ -648,34 +556,33 @@ public class PreviewPanel extends ZoomablePanel
      * The minimal distance of 2 grid lines in Pixel
      */
     int minPixelDst = 40;
-    AffineTransform trans = gg.getTransform();
-    double minDrawDst = minPixelDst / trans.getScaleX();
+    /**
+     * The minimal distance of 2 grid lines in mm
+     */
+    double minDrawDst = minPixelDst / this.getMmToPxTransform().getScaleX();
     /**
      * The grid distance in mm
      */
     //todo calculate gridDst from Transform
     double gridDst = 0.1;
     int smalllines = 2;
-    while (Helper.mm2px(gridDst) < minDrawDst)
+    while (gridDst < minDrawDst)
     {
       gridDst *= 2;
-      if (Helper.mm2px(gridDst) < minDrawDst)
+      if (gridDst < minDrawDst)
       {
         gridDst *= 5;
       }
     }
-    gg.setTransform(new AffineTransform());//we dont want the line width to scale with zoom etc
     double mmx = 0;
     int count = 0;
-    for (int x = 0; x < Helper.mm2px(this.bedWidth); x += Helper.mm2px(gridDst))
+    for (int x = 0; x < this.bedWidth; x += gridDst)
     {
-      Point a = new Point(x, 0);
-      Point b = new Point(x, (int) Helper.mm2px(this.bedHeight));
-      trans.transform(a, a);
-      trans.transform(b, b);
-      if (a.x > 0)//only draw if in viewing range
+      Point a = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(x, 0), null));
+      Point b = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(x, this.bedHeight), null));
+      if (a.getX() > 0)//only draw if in viewing range
       {
-        if (a.x > this.getWidth())
+        if (a.getX() > this.getWidth())
         {
           break;
         }
@@ -702,12 +609,10 @@ public class PreviewPanel extends ZoomablePanel
     }
     double mmy = 0;
     count = 0;
-    for (int y = 0; y < Helper.mm2px(this.bedHeight); y += Helper.mm2px(gridDst))
+    for (int y = 0; y < this.bedHeight; y += gridDst)
     {
-      Point a = new Point(0, y);
-      Point b = new Point((int) Helper.mm2px(this.bedWidth), y);
-      trans.transform(a, a);
-      trans.transform(b, b);
+      Point a = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(0, y), null));
+      Point b = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(bedWidth, y), null));
       if (a.y > 0)
       {
         if (a.y > this.getHeight())
@@ -733,6 +638,5 @@ public class PreviewPanel extends ZoomablePanel
       }
       mmy += gridDst;
     }
-    gg.setTransform(trans);
   }
 }
