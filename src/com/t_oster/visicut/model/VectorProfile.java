@@ -205,6 +205,7 @@ public class VectorProfile extends LaserProfile
     cp.thumbnailPath = thumbnailPath;
     cp.width = width;
     cp.useOutline = useOutline;
+    cp.setDPI(getDPI());
     return cp;
   }
 }
