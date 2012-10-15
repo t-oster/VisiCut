@@ -188,14 +188,6 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
       }
       this.repaint();
     }
-    else if (lastMousePos != null)
-    {
-      Point center = this.getCenter();
-      Point diff = new Point(me.getPoint().x - lastMousePos.x, me.getPoint().y - lastMousePos.y);
-      center.translate(-diff.x * 1000 / this.getZoom(), -diff.y * 1000 / this.getZoom());
-      this.setCenter(center);
-      lastMousePos = me.getPoint();
-    }
   }
 
   public void mouseMoved(MouseEvent me)

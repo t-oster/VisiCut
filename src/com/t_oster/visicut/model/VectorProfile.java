@@ -21,6 +21,7 @@ package com.t_oster.visicut.model;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.VectorPart;
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.liblasercut.utils.ShapeConverter;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
@@ -28,9 +29,11 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ShapeDecorator;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import java.awt.BasicStroke;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.util.List;
 
@@ -136,11 +139,11 @@ public class VectorProfile extends LaserProfile
   }
   
   @Override
-  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material)
+  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material, AffineTransform mm2px)
   {
     //TODO calculate outline
     gg.setColor(this.isCut ? material.getCutColor() : material.getEngraveColor());
-    Stroke s = new BasicStroke((int) Helper.mm2px(this.getWidth()));
+    Stroke s = new BasicStroke((float) ((mm2px.getScaleX()+mm2px.getScaleY())*this.getWidth()/2));
     gg.setStroke(s);
     if (this.isUseOutline())
     {
@@ -153,6 +156,8 @@ public class VectorProfile extends LaserProfile
       {
         sh = objects.getTransform().createTransformedShape(sh);
       }
+      //all coordinates are assumed to be milimeters, so we transform to desired resolution
+      sh = mm2px.createTransformedShape(sh);
       if (sh == null)
       {
         //WTF??

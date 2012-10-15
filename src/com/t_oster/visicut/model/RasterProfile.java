@@ -117,30 +117,30 @@ public class RasterProfile extends LaserProfile
     this.ditherAlgorithm = ditherAlgorithm;
   }
 
-  public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material)
+  public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material, AffineTransform mm2px)
   {
-    return this.getRenderedPreview(objects, material, null);
+    return this.getRenderedPreview(objects, material, mm2px, null);
   }
 
-  public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material, ProgressListener pl)
+  public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material, AffineTransform mm2px, ProgressListener pl)
   {
-    Rectangle2D bb = objects.getBoundingBox();
+    Rectangle bb = Helper.toRect(Helper.transform(objects.getBoundingBox(), mm2px));
     final Color engraveColor = material.getEngraveColor();
-    if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
+    if (bb != null && bb.width > 0 && bb.height > 0)
     {//Create an Image which fits the bounding box
-      final BufferedImage scaledImg = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_ARGB);
+      final BufferedImage scaledImg = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_INT_ARGB);
       Graphics2D g = scaledImg.createGraphics();
       //fill it with white background for dithering
       g.setColor(Color.white);
       g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
       g.setClip(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
       //render all objects onto the image, moved to the images origin
-      if (objects.getTransform() != null)
-      {
-        Rectangle2D origBB = objects.getOriginalBoundingBox();
-        Rectangle2D targetBB = new Rectangle(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
-        g.setTransform(Helper.getTransform(origBB, targetBB));
-      }
+      AffineTransform pipe = AffineTransform.getTranslateInstance(-bb.x, -bb.y);
+      pipe.concatenate(mm2px);
+      pipe.concatenate(objects.getTransform());
+      g.setTransform(pipe);
+      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
       for (GraphicObject o : objects)
       {
         o.render(g);
@@ -177,13 +177,13 @@ public class RasterProfile extends LaserProfile
   }
 
   @Override
-  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material)
+  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material, AffineTransform mm2px)
   {
-    Rectangle2D bb = objects.getBoundingBox();
+    Rectangle2D bb = Helper.transform(objects.getBoundingBox(), mm2px);
     if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
     {
-      BufferedImage scaledImg = this.getRenderedPreview(objects, material);
-      gg.drawRenderedImage(scaledImg, AffineTransform.getTranslateInstance(bb.getX(), bb.getY()));
+      BufferedImage scaledImg = this.getRenderedPreview(objects, material, mm2px);
+      gg.drawImage(scaledImg, null, (int) bb.getX(), (int) bb.getY());
     }
   }
 

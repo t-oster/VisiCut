@@ -99,29 +99,7 @@ public class Preferences
   {
     this.lastMaterial = lastMaterial;
   }
-
-  protected Integer lastResolution = null;
-
-  /**
-   * Get the value of lastResolution
-   *
-   * @return the value of lastResolution
-   */
-  public Integer getLastResolution()
-  {
-    return lastResolution;
-  }
-
-  /**
-   * Set the value of lastResolution
-   *
-   * @param lastResolution new value of lastResolution
-   */
-  public void setLastResolution(Integer lastResolution)
-  {
-    this.lastResolution = lastResolution;
-  }
-
+  
   protected String lastLaserDevice = null;
 
   /**

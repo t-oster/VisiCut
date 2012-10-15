@@ -178,44 +178,6 @@ public class VisicutModel
     }
     return result;
   }
-  
-  protected Integer resolution = null;
-  public static final String PROP_RESOLUTION = "resolution";
-
-  public Integer getResolution()
-  {
-    return resolution;
-  }
-  /**
-   * Returns the selected Resolution.
-   * If no resoultion is selected, it returns 500 for convenience
-   *
-   * @return the value of resolution
-   */
-  public int getValidResolution()
-  {
-    return resolution == null ? 500 : resolution;
-  }
-
-  /**
-   * Set the value of resolution
-   *
-   * @param resolution new value of resolution
-   */
-  public void setResolution(Integer resolution)
-  {
-    Integer oldResolution = this.resolution;
-    this.resolution = resolution;
-    if (this.getGraphicObjects() != null)
-    {
-    int n = resolution != null ? resolution : 500;
-    int o = oldResolution != null ? oldResolution : 500;
-    this.getGraphicObjects().getTransform().preConcatenate(AffineTransform.getScaleInstance((double) n/o, (double) n/o));
-    //explicitly set the transform to clean BoundingBox caches
-    this.getGraphicObjects().setTransform(this.getGraphicObjects().getTransform());
-    }
-    propertyChangeSupport.firePropertyChange(PROP_RESOLUTION, oldResolution, resolution);
-  }
 
   protected LaserDevice selectedLaserDevice = null;
   public static final String PROP_SELECTEDLASERDEVICE = "selectedLaserDevice";
@@ -314,7 +276,6 @@ public class VisicutModel
           }
         }
       }
-      this.setResolution(this.preferences.getLastResolution());
       this.setUseThicknessAsFocusOffset(this.preferences.isUseThicknessAsFocusOffset());
     }
   }
@@ -325,7 +286,6 @@ public class VisicutModel
   {
     this.preferences.setLastLaserDevice(this.selectedLaserDevice == null ? null : selectedLaserDevice.getName());
     this.preferences.setLastMaterial(this.material == null ? null : material.getName());
-    this.preferences.setLastResolution(this.resolution);
     this.preferences.setUseThicknessAsFocusOffset(this.useThicknessAsFocusOffset);
     try
     {
@@ -407,10 +367,6 @@ public class VisicutModel
       {
         XMLDecoder decoder = new XMLDecoder(zip.getInputStream(entry));
         transform = (AffineTransform) decoder.readObject();
-        if (this.getValidResolution() != 500)
-        {//visicut files are 500dpi based
-          transform.preConcatenate(AffineTransform.getScaleInstance(((double) this.getValidResolution())/500d, ((double) this.getValidResolution())/500d));
-        }
       }
       else if (name.equals("mappings.xml"))
       {
@@ -502,10 +458,6 @@ public class VisicutModel
     }
     while (tmp.exists());
     AffineTransform at = this.getGraphicObjects().getTransform();
-    if (this.getValidResolution() != 500)
-    {//visicut files are 500dpi based
-      at.preConcatenate(AffineTransform.getScaleInstance(500d/this.getValidResolution(), 500d/this.getValidResolution()));
-    }
     if (at != null)
     {
       out.putNextEntry(new ZipEntry("transform.xml"));
@@ -579,12 +531,6 @@ public class VisicutModel
   {
     GraphicFileImporter im = this.getGraphicFileImporter();
     GraphicSet set = im.importFile(f);
-    if (this.getValidResolution() != 500)
-    {//Default resolution changed => scale loaded set
-      AffineTransform tr = set.getBasicTransform();
-      tr.scale(((double) this.getValidResolution())/500, ((double) this.getValidResolution())/500);
-      set.setBasicTransform(tr);
-    }
     return set;
   }
 
@@ -684,8 +630,8 @@ public class VisicutModel
         {
           double w = bb.getX() + bb.getWidth();
           double h = bb.getY() + bb.getHeight();
-          double mw = Util.mm2px(this.selectedLaserDevice.getLaserCutter().getBedWidth(), this.getValidResolution());
-          double mh = Util.mm2px(this.selectedLaserDevice.getLaserCutter().getBedHeight(), this.getValidResolution());
+          double mw = this.selectedLaserDevice.getLaserCutter().getBedWidth();
+          double mh = this.selectedLaserDevice.getLaserCutter().getBedHeight();
           if (w > mw || h > mh)
           {//scale Object to fit laser-bed
             double dw = mw / w;

@@ -28,6 +28,7 @@
  */
 package com.t_oster.visicut.gui;
 
+import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.VectorPart;
@@ -39,7 +40,6 @@ import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.VectorProfile;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -104,7 +104,6 @@ public class CamCalibrationDialog extends javax.swing.JDialog
   {
     this.backgroundImage = backgroundImage;
     this.calibrationPanel1.setBackgroundImage(backgroundImage);
-    this.calibrationPanel1.setOuterBounds(new Dimension(this.getBackgroundImage().getWidth(), this.getBackgroundImage().getHeight()));
     //Check if a point is not in the Image (thus not reachable anymore)
     for (Point p :this.calibrationPanel1.getPointList())
     {
@@ -192,10 +191,8 @@ public class CamCalibrationDialog extends javax.swing.JDialog
   {
     super(parent, modal);
     initComponents();
-    if (this.getBackgroundImage() != null)
-    {
-      this.calibrationPanel1.setOuterBounds(new Dimension(this.getBackgroundImage().getWidth(), this.getBackgroundImage().getHeight()));
-    }
+    LaserCutter lc = VisicutModel.getInstance().getSelectedLaserDevice().getLaserCutter();
+    this.calibrationPanel1.setAreaSize(new Point2D.Double(lc.getBedWidth(), lc.getBedHeight()));
   }
 
   /** This method is called from within the constructor to

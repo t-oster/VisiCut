@@ -31,6 +31,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -93,28 +94,29 @@ public class Raster3dProfile extends LaserProfile
   }
 
   @Override
-  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material)
+  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material, AffineTransform mm2px)
   {
-    this.renderPreview(gg, objects, material, null);
+    this.renderPreview(gg, objects, material, mm2px, null);
   }
 
-  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material, ProgressListener pl)
+  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material, AffineTransform mm2px, ProgressListener pl)
   {
-    Rectangle2D bb = objects.getBoundingBox();
-    if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
+    Rectangle bb = Helper.toRect(Helper.transform(objects.getBoundingBox(), mm2px));
+    if (bb != null && bb.width > 0 && bb.height > 0)
     {
-      BufferedImage scaledImg = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_RGB);
+      BufferedImage scaledImg = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_INT_RGB);
       Graphics2D g = scaledImg.createGraphics();
       g.setColor(Color.white);
       g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
       g.setClip(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
+      AffineTransform pipe = AffineTransform.getTranslateInstance(-bb.x, -bb.y);
+      pipe.concatenate(mm2px);
       if (objects.getTransform() != null)
       {
-        Rectangle2D origBB = objects.getOriginalBoundingBox();
-        Rectangle2D targetBB = new Rectangle(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
-        g.setTransform(Helper.getTransform(origBB, targetBB));
+        pipe.concatenate(objects.getTransform());
       }
-      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+      g.setTransform(pipe);
+      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
       for (GraphicObject o : objects)
       {
@@ -130,8 +132,14 @@ public class Raster3dProfile extends LaserProfile
           {
             double f = (double) ad.getGreyScale(x, y) / 255;
             Color scaled = getColorBetween(material.getEngraveColor(), material.getColor(), f);
-            gg.setColor(scaled);
-            gg.drawLine((int) bb.getX() + x, (int) bb.getY() + y, (int) bb.getX() + x, (int) bb.getY() + y);
+            scaledImg.setRGB(x, y, scaled.getRGB());
+          }
+          else
+          {
+            scaledImg.getAlphaRaster().setPixel(x, y, new int[]
+              {
+                0, 0, 0
+              });
           }
         }
         if (pl != null)
@@ -139,6 +147,7 @@ public class Raster3dProfile extends LaserProfile
           pl.progressChanged(this, 100 * y / ad.getHeight());
         }
       }
+      gg.drawImage(scaledImg, null, bb.x, bb.y);
     }
   }
 

@@ -248,7 +248,7 @@ public final class PreferencesManager
       {
         preferences = this.loadPreferences(this.getPreferencesPath());
       }
-      catch (FileNotFoundException ex)
+      catch (Exception ex)
       {
         System.err.println("Can't load settings. Using default ones...");
         try

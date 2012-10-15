@@ -25,6 +25,7 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import java.util.List;
@@ -126,7 +127,7 @@ public abstract class LaserProfile implements ImageListable, Cloneable
     this.name = name;
   }
 
-  public abstract void renderPreview(Graphics2D g, GraphicSet objects, MaterialProfile material);
+  public abstract void renderPreview(Graphics2D g, GraphicSet objects, MaterialProfile material, AffineTransform mm2px);
 
   public abstract void addToLaserJob(LaserJob job, GraphicSet objects, List<LaserProperty> laserProperties);
 

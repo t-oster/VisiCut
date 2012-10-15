@@ -34,7 +34,6 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -61,7 +60,7 @@ import javax.swing.JOptionPane;
  */
 public class PreviewPanel extends ZoomablePanel
 {
-
+  
   private double bedWidth = 600;
   private double bedHeight = 300;
   
@@ -119,7 +118,7 @@ public class PreviewPanel extends ZoomablePanel
       this.p = p;
       this.mm2px = PreviewPanel.this.getMmToPxTransform();
       bb = Helper.toRect(Helper.transform(set.getBoundingBox(), mm2px));
-      if (bb == null || bb.getWidth() == 0 || bb.getHeight() == 0)
+      if (bb == null || bb.width == 0 || bb.height == 0)
       {
         logger.log(Level.SEVERE, "invalid BoundingBox");
         throw new IllegalArgumentException("Boundingbox zero");
@@ -432,12 +431,13 @@ public class PreviewPanel extends ZoomablePanel
           if (m.getProfile() == null)
           {
             AffineTransform bak = gg.getTransform();
+            AffineTransform tr = gg.getTransform();
+            tr.concatenate(this.getMmToPxTransform());
             if (this.graphicObjects.getTransform() != null)
             {
-              AffineTransform trans = gg.getTransform();
-              trans.concatenate(this.graphicObjects.getTransform());
-              gg.setTransform(trans);
+              tr.concatenate(this.graphicObjects.getTransform());
             }
+            gg.setTransform(tr);
             for (GraphicObject o : m.getFilterSet().getMatchingObjects(this.getGraphicObjects()))
             {
               somethingMatched = true;
@@ -449,8 +449,8 @@ public class PreviewPanel extends ZoomablePanel
           {//Render only parts the material supports, or where Profile = null
             LaserProfile p = m.getProfile();
             GraphicSet current = m.getFilterSet().getMatchingObjects(this.graphicObjects);
-            Rectangle2D bb = current.getBoundingBox();
-            if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
+            Rectangle bb = Helper.toRect(Helper.transform(current.getBoundingBox(), this.getMmToPxTransform()));;
+            if (bb != null && bb.width > 0 && bb.height > 0)
             {
               somethingMatched = true;
               if (!(p instanceof VectorProfile))
@@ -458,7 +458,7 @@ public class PreviewPanel extends ZoomablePanel
                 synchronized (renderBuffer)
                 {
                   ImageProcessingThread procThread = this.renderBuffer.get(m);
-                  if (procThread == null || !procThread.isFinished() || (int) bb.getWidth() != (int) procThread.getBoundingBox().getWidth() || (int) bb.getHeight() != (int) procThread.getBoundingBox().getHeight())
+                  if (procThread == null || !procThread.isFinished() || bb.width != procThread.getBoundingBox().width || bb.height != procThread.getBoundingBox().height)
                   {//Image not rendered or Size differs
                     if (!renderBuffer.containsKey(m))
                     {//image not yet scheduled for rendering
@@ -467,7 +467,7 @@ public class PreviewPanel extends ZoomablePanel
                       this.renderBuffer.put(m, procThread);
                       procThread.start();//start processing thread
                     }
-                    else if ((int) bb.getWidth() != (int) procThread.getBoundingBox().getWidth() || (int) bb.getHeight() != (int) procThread.getBoundingBox().getHeight())
+                    else if (bb.width != procThread.getBoundingBox().width || bb.height != procThread.getBoundingBox().height)
                     {//Image is (being) rendered with wrong size
                       logger.log(Level.FINE, "Image has wrong size");
                       if (!procThread.isFinished())
@@ -480,21 +480,16 @@ public class PreviewPanel extends ZoomablePanel
                       procThread.start();//start processing thread
                     }
                     gg.setColor(Color.GRAY);
-                    Rectangle r = Helper.toRect(bb);
-                    gg.fillRect(r.x, r.y, r.width, r.height);
+                    gg.fillRect(bb.x, bb.y, bb.width, bb.height);
                     gg.setColor(Color.BLACK);
-                    AffineTransform tmp = gg.getTransform();
-                    gg.setTransform(new AffineTransform());
-                    Point po = new Point(r.x + r.width / 2, r.y + r.height / 2);
-                    tmp.transform(po, po);
+                    Point po = new Point(bb.x + bb.width / 2, bb.y + bb.height / 2);
                     String txt = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("PLEASE WAIT (")+procThread.getProgress()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("%)");
                     int w = gg.getFontMetrics().stringWidth(txt);
                     gg.drawString(txt, po.x - w / 2, po.y);
-                    gg.setTransform(tmp);
                   }
                   else
                   {
-                    gg.drawRenderedImage(procThread.getImage(), AffineTransform.getTranslateInstance(bb.getX(), bb.getY()));
+                    gg.drawRenderedImage(procThread.getImage(), AffineTransform.getTranslateInstance(bb.x, bb.y));
                   }
                 }
               }
@@ -514,10 +509,7 @@ public class PreviewPanel extends ZoomablePanel
         }
         if (!somethingMatched)
         {//Nothing drawn because of no Matching mapping
-          AffineTransform trans = gg.getTransform();
-          gg.setTransform(new AffineTransform());
           gg.drawString(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("NO MATCHING PARTS FOR THE CURRENT MAPPING FOUND."), 10, this.getHeight() / 2);
-          gg.setTransform(trans);
         }
       }
       if (this.editRectangle != null)

@@ -482,22 +482,18 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     }
   }
 
-  private void moveSet(int diffX, int diffY)
+  private void moveSet(double mmDiffX, int mmDiffY)
   {
-    if (diffX == 0 && diffY == 0)
+    if (mmDiffX == 0 && mmDiffY == 0)
     {
       return;
     }
+    AffineTransform tr = AffineTransform.getTranslateInstance(mmDiffX, mmDiffY);
     if (getSelectedSet().getTransform() != null)
     {
-      AffineTransform tr = AffineTransform.getTranslateInstance(diffX, diffY);
       tr.concatenate(getSelectedSet().getTransform());
-      getSelectedSet().setTransform(tr);
     }
-    else
-    {
-      getSelectedSet().setTransform(AffineTransform.getTranslateInstance(diffX, diffY));
-    }
+    getSelectedSet().setTransform(tr);
     Rectangle2D bb = getSelectedSet().getBoundingBox();
     this.previewPanel.setEditRectangle(new EditRectangle(bb));
   }

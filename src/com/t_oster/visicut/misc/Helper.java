@@ -308,28 +308,6 @@ public class Helper
   }
   
   /**
-   * Returns how many mm correspont to the given length in pixels
-   * with respect to the current resolution
-   * @param mm
-   * @return 
-   */
-  public static double px2mm(double px)
-  {
-    return Util.px2mm(px, VisicutModel.getInstance().getValidResolution());
-  }
-
-  /**
-   * Returns how many pixels correspont to the given length in mm
-   * with respect to the current resolution
-   * @param mm
-   * @return 
-   */
-  public static double mm2px(double mm)
-  {
-    return Util.mm2px(mm, VisicutModel.getInstance().getValidResolution());
-  }
-
-  /**
    * Generates an HTML img-Tag for the given file with given size
    * @param f
    * @param width
@@ -476,32 +454,6 @@ public class Helper
     v = estimateTime;
     result += v < 10 ? "0" + v : "" + v;
     return result;
-  }
-
-  /**
-   * Calculates the size in pixels (with repolution dpi)
-   * of a NumberWithUnits element
-   * @param n
-   * @param dpi 
-   */
-  public static double numberWithUnitsToPx(NumberWithUnits n, int dpi)
-  {
-    switch (n.getUnits())
-    {
-      case NumberWithUnits.UT_MM:
-        return Util.mm2px(n.getValue(), dpi);
-      case NumberWithUnits.UT_CM:
-        return Util.mm2px(10.0 * n.getValue(), dpi);
-      case NumberWithUnits.UT_PX:
-        return n.getValue() * dpi / 72;
-      case NumberWithUnits.UT_IN:
-        return Util.mm2px(Util.inch2mm(n.getValue()), dpi);
-      case NumberWithUnits.UT_UNITLESS:
-        return n.getValue();
-      default:
-        System.err.println("Unknown SVG unit!!!");
-        return n.getValue();
-    }
   }
 
   public static boolean isInkscapeExtensionInstallable()

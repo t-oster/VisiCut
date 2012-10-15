@@ -31,7 +31,7 @@ import java.awt.geom.Rectangle2D;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class EditRectangle extends Rectangle
+public class EditRectangle extends Rectangle2D.Double
 {
 
   protected boolean rotateMode = false;
@@ -92,33 +92,33 @@ public class EditRectangle extends Rectangle
    * @param b
    * @return 
    */
-  public Rectangle getButton(Button b, Rectangle r)
+  public Rectangle2D getButton(Button b, Rectangle2D r)
   {
     switch (b)
     {
       case TOP_LEFT:
-        return new Rectangle(r.x - buttonSize / 2, r.y - buttonSize / 2, buttonSize, buttonSize);
+        return new Rectangle2D.Double(r.getX() - buttonSize / 2, r.getY() - buttonSize / 2, buttonSize, buttonSize);
       case TOP_CENTER:
-        return new Rectangle(r.x + r.width / 2 - buttonSize / 2, r.y - buttonSize / 2, buttonSize, buttonSize);
+        return new Rectangle2D.Double(r.getX() + r.getWidth() / 2 - buttonSize / 2, r.getY() - buttonSize / 2, buttonSize, buttonSize);
       case TOP_RIGHT:
-        return new Rectangle(r.x + r.width - buttonSize / 2, r.y - buttonSize / 2, buttonSize, buttonSize);
+        return new Rectangle2D.Double(r.getX() + r.getWidth() - buttonSize / 2, r.getY() - buttonSize / 2, buttonSize, buttonSize);
       case CENTER_LEFT:
-        return new Rectangle(r.x - buttonSize / 2, r.y + r.height / 2 - buttonSize / 2, buttonSize, buttonSize);
+        return new Rectangle2D.Double(r.getX() - buttonSize / 2, r.getY() + r.getHeight() / 2 - buttonSize / 2, buttonSize, buttonSize);
       case CENTER_RIGHT:
-        return new Rectangle(r.x + r.width - buttonSize / 2, r.y + r.height / 2 - buttonSize / 2, buttonSize, buttonSize);
+        return new Rectangle2D.Double(r.getX() + r.getWidth() - buttonSize / 2, r.getY() + r.getHeight() / 2 - buttonSize / 2, buttonSize, buttonSize);
       case BOTTOM_LEFT:
-        return new Rectangle(r.x - buttonSize / 2, r.y + r.height - buttonSize / 2, buttonSize, buttonSize);
+        return new Rectangle2D.Double(r.getX() - buttonSize / 2, r.getY() + r.getHeight() - buttonSize / 2, buttonSize, buttonSize);
       case BOTTOM_CENTER:
-        return new Rectangle(r.x + r.width / 2 - buttonSize / 2, r.y + r.height - buttonSize / 2, buttonSize, buttonSize);
+        return new Rectangle2D.Double(r.getX() + r.getWidth() / 2 - buttonSize / 2, r.getY() + r.getHeight() - buttonSize / 2, buttonSize, buttonSize);
       case BOTTOM_RIGHT:
-        return new Rectangle(r.x + r.width - buttonSize / 2, r.y + r.height - buttonSize / 2, buttonSize, buttonSize);
+        return new Rectangle2D.Double(r.getX() + r.getWidth() - buttonSize / 2, r.getY() + r.getHeight() - buttonSize / 2, buttonSize, buttonSize);
     }
     return null;
   }
 
   public Button getButtonByPoint(Point p, AffineTransform atr)
   {
-    Rectangle tr = atr == null ? this :Helper.toRect(Helper.transform(this, atr));
+    Rectangle2D tr = atr == null ? this : Helper.transform(this, atr);
     for (Button b : Button.values())
     {
       if (this.getButton(b, tr).contains(p))
@@ -174,25 +174,22 @@ public class EditRectangle extends Rectangle
    * @param gg
    * @param transform 
    */
-  public void render(Graphics2D gg)
+  public void render(Graphics2D gg, AffineTransform mm2px)
   {
-    //reset transform for drawing same (text and line) size on every zoom level
-    AffineTransform cur = gg.getTransform();
-    gg.setTransform(AffineTransform.getRotateInstance(0));
     //draw the rectangle
     gg.setColor(lineColor);
     gg.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, new float[]
       {
         10, 10
       }, 0));
-    Rectangle tr = Helper.toRect(Helper.transform(this, cur));
+    Rectangle tr = Helper.toRect(Helper.transform(this, mm2px));
     gg.drawRect(tr.x, tr.y, tr.width, tr.height);
     if (this.rotateMode)
     {
       gg.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, null, 0));
       for (Button b: rotateButtons)
       {
-        Rectangle r = this.getButton(b,tr);
+        Rectangle r = Helper.toRect(this.getButton(b,tr));
         gg.drawOval(r.x, r.y, r.width, r.height);
       }
     }
@@ -202,13 +199,13 @@ public class EditRectangle extends Rectangle
       gg.setColor(buttonColor);
       for (Button b : Button.values())
       {
-        Rectangle r = this.getButton(b,tr);
+        Rectangle r = Helper.toRect(this.getButton(b,tr));
         gg.fillRect(r.x, r.y, r.width, r.height);
       }
     }
     //draw the width
     gg.setColor(textColor);
-    int w = (int) Math.round(Helper.px2mm(this.width));
+    int w = (int) Math.round(this.width);
     String txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     int ascend = gg.getFontMetrics().getAscent();
@@ -216,7 +213,7 @@ public class EditRectangle extends Rectangle
     gg.drawString(txt, tr.x+tr.width/2-w/2, tr.y+tr.height+h);
     this.parameterFieldBounds[2].setBounds(tr.x+tr.width/2-w/2, tr.y+tr.height+h-ascend, w, h);
     //draw the height
-    w = (int) Math.round(Helper.px2mm(this.height));
+    w = (int) Math.round(this.height);
     txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     gg.drawString(txt, tr.x+tr.width+5, tr.y+tr.height/2);
@@ -224,24 +221,21 @@ public class EditRectangle extends Rectangle
     //draw lines from the left and upper center
     gg.setColor(lineColor);
     Point zero = new Point(0, 0);
-    cur.transform(zero, zero);
     gg.drawLine(zero.x, tr.y+tr.height/2, tr.x, tr.y+tr.height/2);
     gg.drawLine(tr.x+tr.width/2, zero.y, tr.x+tr.width/2, tr.y);
     //draw the left
     gg.setColor(textColor);
-    w = (int) Math.round(Helper.px2mm(this.x));
+    w = (int) Math.round(this.x);
     txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     h = gg.getFontMetrics().getHeight();
     gg.drawString(txt, tr.x-w-10, tr.y+tr.height/2+h);
     this.parameterFieldBounds[0].setBounds(tr.x-w-10, tr.y+tr.height/2+h-ascend, w, h);
     //draw the top offset
-    w = (int) Math.round(Helper.px2mm(this.y));
+    w = (int) Math.round(this.y);
     txt = (w/10)+","+(w%10)+" cm";
     w = gg.getFontMetrics().stringWidth(txt);
     gg.drawString(txt, tr.x+tr.width/2+5, tr.y-h);
     this.parameterFieldBounds[1].setBounds(tr.x+tr.width/2+5, tr.y-h-ascend, w, h);
-    //reset transform
-    gg.setTransform(cur);
   }
 }
