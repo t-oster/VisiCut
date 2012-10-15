@@ -93,13 +93,7 @@ public class Raster3dProfile extends LaserProfile
     this.colorShift = colorShift;
   }
 
-  @Override
-  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material, AffineTransform mm2px)
-  {
-    this.renderPreview(gg, objects, material, mm2px, null);
-  }
-
-  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material, AffineTransform mm2px, ProgressListener pl)
+  public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material, AffineTransform mm2px, ProgressListener pl)
   {
     Rectangle bb = Helper.toRect(Helper.transform(objects.getBoundingBox(), mm2px));
     if (bb != null && bb.width > 0 && bb.height > 0)
@@ -147,8 +141,22 @@ public class Raster3dProfile extends LaserProfile
           pl.progressChanged(this, 100 * y / ad.getHeight());
         }
       }
-      gg.drawImage(scaledImg, null, bb.x, bb.y);
+      return scaledImg;
     }
+    return null;
+  }
+  
+  @Override
+  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material, AffineTransform mm2px)
+  {
+    this.renderPreview(gg, objects, material, mm2px, null);
+  }
+
+  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material, AffineTransform mm2px, ProgressListener pl)
+  {
+    Rectangle bb = Helper.toRect(Helper.transform(objects.getBoundingBox(), mm2px));
+    BufferedImage scaledImg = this.getRenderedPreview(objects, material, mm2px, pl);
+    gg.drawImage(scaledImg, null, bb.x, bb.y);
   }
 
   /**

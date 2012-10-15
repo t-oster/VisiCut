@@ -142,20 +142,10 @@ public class PreviewPanel extends ZoomablePanel
         RasterProfile rp = (RasterProfile) p;
         buffer = rp.getRenderedPreview(set, material, mm2px, this);
       }
-      else
+      else if (p instanceof Raster3dProfile)
       {
-        buffer = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D gg = buffer.createGraphics();
-        //Normalize Rendering to 0,0
-        gg.setTransform(AffineTransform.getTranslateInstance(-bb.x, -bb.y));
-        if (p instanceof Raster3dProfile)
-        {
-          ((Raster3dProfile) p).renderPreview(gg, set, PreviewPanel.this.getMaterial(), mm2px, this);
-        }
-        else
-        {
-          p.renderPreview(gg, set, PreviewPanel.this.getMaterial(), mm2px);
-        }
+        Raster3dProfile rp = (Raster3dProfile) p;
+        buffer = rp.getRenderedPreview(set, material, mm2px, this);
       }
     }
 
