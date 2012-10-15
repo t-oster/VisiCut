@@ -47,10 +47,12 @@ import java.util.logging.Logger;
 public class SVGShape extends SVGObject implements ShapeObject
 {
 
+  private double svgResolution = 90;
   private ShapeElement decoratee;
 
-  public SVGShape(ShapeElement s)
+  public SVGShape(ShapeElement s, double svgResolution)
   {
+    this.svgResolution = svgResolution;
     this.decoratee = s;
   }
 
@@ -209,7 +211,7 @@ public class SVGShape extends SVGObject implements ShapeObject
     StyleAttribute sa = getStyleAttributeRecursive("stroke-width");
     if (sa != null)
     {
-      double w = Helper.numberWithUnitsToPx(sa.getNumberWithUnits(),500);
+      double w = SVGImporter.numberWithUnitsToMm(sa.getNumberWithUnits(),svgResolution);
       //TODO: get Stroke width with unit and add it to width/height of BB
       bb.setRect(bb.getX()-w/2, bb.getY()-w/2, bb.getWidth()+w, bb.getHeight()+w);
     }

@@ -29,7 +29,9 @@ import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGRoot;
 import com.kitfox.svg.SVGUniverse;
 import com.kitfox.svg.ShapeElement;
+import com.kitfox.svg.xml.NumberWithUnits;
 import com.kitfox.svg.xml.StyleAttribute;
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
@@ -60,7 +62,7 @@ public class SVGImporter implements Importer
   private SVGUniverse u = new SVGUniverse();
   private SVGRoot root;
 
-  private void importNode(SVGElement e, List<GraphicObject> result)
+  private void importNode(SVGElement e, List<GraphicObject> result, double svgResolution)
   {
     if (e instanceof PatternSVG || e instanceof Gradient || e instanceof Defs)
     {//Ignore Patterns,Gradients and Children
@@ -80,7 +82,7 @@ public class SVGImporter implements Importer
     {
       if (((ShapeElement) e).getShape() != null)
       {
-        result.add(new SVGShape((ShapeElement) e));
+        result.add(new SVGShape((ShapeElement) e, svgResolution));
       }
       else
       {
@@ -96,11 +98,11 @@ public class SVGImporter implements Importer
     }
     for (int i = 0; i < e.getNumChildren(); i++)
     {
-      importNode(e.getChild(i), result);
+      importNode(e.getChild(i), result, svgResolution);
     }
   }
 
-  public GraphicSet importFile(InputStream in, String name) throws Exception
+  public GraphicSet importFile(InputStream in, String name, double svgResolution) throws Exception
   {
     try
     {
@@ -108,9 +110,8 @@ public class SVGImporter implements Importer
       URI svg = u.loadSVG(in, name);
       root = u.getDiagram(svg).getRoot();
       GraphicSet result = new GraphicSet();
-      //Inkscape SVG Units are 1/90 inch
-      result.setBasicTransform(AffineTransform.getScaleInstance(500d / 90, 500d / 90));
-      importNode(root, result);
+      result.setBasicTransform(determineTransformation(root, svgResolution));
+      importNode(root, result, svgResolution);
       return result;
     }
     catch (Exception e)
@@ -119,53 +120,43 @@ public class SVGImporter implements Importer
     }
   }
 
-  /*
-   * Tries to determine the Coordinate resolution in DPI.
-   * SVG default is 90, but AI generates 72??
-   * 
+  /**
+   * Calculates the size in mm (with repolution dpi)
+   * of a NumberWithUnits element (SVG-Element)
+   * @param n
+   * @param dpi 
    */
-  private AffineTransform determineTransformation(SVGRoot root, File f)
+  public static double numberWithUnitsToMm(NumberWithUnits n, double dpi)
   {
-    try
+    switch (n.getUnits())
     {
-      StyleAttribute sty = new StyleAttribute();
-
-      double x=0;
-      double y=0;
-      double width=0;
-      double height=0;
-      if (root.getPres(sty.setName("x")))
-      {
-        x = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), 500);
-      }
-
-      if (root.getPres(sty.setName("y")))
-      {
-        y = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), 500);
-      }
-
-      if (root.getPres(sty.setName("width")))
-      {
-        width = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), 500);
-      }
-      if (root.getPres(sty.setName("height")))
-      {
-        height = Helper.numberWithUnitsToPx(sty.getNumberWithUnits(), 500);
-      }
-      if (width != 0 && height != 0 && root.getPres(sty.setName("viewBox")))
-      {
-        float[] coords = sty.getFloatList();
-        Rectangle2D coordinateBox = new Rectangle2D.Double(x,y,width,height);
-        Rectangle2D viewBox = new Rectangle2D.Float(coords[0], coords[1], coords[2], coords[3]);
-        return Helper.getTransform(viewBox, coordinateBox);
-      }
+      case NumberWithUnits.UT_MM:
+        return n.getValue();
+      case NumberWithUnits.UT_CM:
+        return 10.0 * n.getValue();
+      case NumberWithUnits.UT_PX:
+        return Util.px2mm(n.getValue(), dpi);
+      case NumberWithUnits.UT_IN:
+        return Util.inch2mm(n.getValue());
+      case NumberWithUnits.UT_UNITLESS:
+        return n.getValue();
+      default:
+        System.err.println("Unknown SVG unit!!!");
+        return n.getValue();
     }
-    catch (SVGException ex)
-    {
-      Logger.getLogger(SVGImporter.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    BufferedReader in = null;
-    int result = 90;
+  }
+  
+  /**
+   * Since different programs have a different idea of the reference resolution
+   * in SVG, this method tries to determine it.
+   * @param root
+   * @param f
+   * @return 
+   */
+  private double determineResolution(SVGRoot root, File f)
+  {
+    BufferedReader in = null;;
+    double result = 90;
     try
     {
       in = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
@@ -185,7 +176,6 @@ public class SVGImporter implements Importer
       {
         Logger.getLogger(SVGImporter.class.getName()).log(Level.SEVERE, null, ex);
       }
-      return AffineTransform.getScaleInstance(500d / result, 500d / result);
     }
     catch (FileNotFoundException ex)
     {
@@ -195,14 +185,63 @@ public class SVGImporter implements Importer
     {
       try
       {
-        in.close();
+        if (in != null)
+        {
+          in.close();
+        }
       }
       catch (IOException ex)
       {
         Logger.getLogger(SVGImporter.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
-    return AffineTransform.getScaleInstance(500d / result, 500d / result);
+    return result;
+  }
+  
+  /*
+   * Tries to determine the Coordinate resolution in DPI.
+   * SVG default is 90, but AI generates 72??
+   * 
+   */
+  private AffineTransform determineTransformation(SVGRoot root, double svgResolution)
+  {
+    try
+    {
+      StyleAttribute sty = new StyleAttribute();
+      double x=0;
+      double y=0;
+      double width=0;
+      double height=0;
+      if (root.getPres(sty.setName("x")))
+      {
+        x = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolution);
+      }
+      if (root.getPres(sty.setName("y")))
+      {
+        y = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolution);
+      }
+      if (root.getPres(sty.setName("width")))
+      {
+        width = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolution);
+      }
+      if (root.getPres(sty.setName("height")))
+      {
+        height = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolution);
+      }
+      if (width != 0 && height != 0 && root.getPres(sty.setName("viewBox")))
+      {
+        float[] coords = sty.getFloatList();
+        Rectangle2D coordinateBox = new Rectangle2D.Double(x,y,width,height);
+        Rectangle2D viewBox = new Rectangle2D.Float(coords[0], coords[1], coords[2], coords[3]);
+        return Helper.getTransform(viewBox, coordinateBox);
+      }
+    }
+    catch (SVGException ex)
+    {
+      Logger.getLogger(SVGImporter.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    double px2mm = Util.inch2mm(1/svgResolution);
+    return AffineTransform.getScaleInstance(px2mm, px2mm);
   }
 
   @Override
@@ -210,8 +249,8 @@ public class SVGImporter implements Importer
   {
     try
     {
-      GraphicSet result = this.importFile(new FileInputStream(inputFile), inputFile.getName());
-      result.setBasicTransform(determineTransformation(root, inputFile));
+      double svgResolution = determineResolution(root, inputFile);
+      GraphicSet result = this.importFile(new FileInputStream(inputFile), inputFile.getName(), svgResolution);
       return result;
     }
     catch (Exception ex)
