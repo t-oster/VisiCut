@@ -98,7 +98,7 @@ public class Raster3dProfile extends LaserProfile
     Rectangle bb = Helper.toRect(Helper.transform(objects.getBoundingBox(), mm2px));
     if (bb != null && bb.width > 0 && bb.height > 0)
     {
-      BufferedImage scaledImg = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_INT_RGB);
+      BufferedImage scaledImg = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_INT_ARGB);
       Graphics2D g = scaledImg.createGraphics();
       g.setColor(Color.white);
       g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());

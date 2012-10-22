@@ -439,7 +439,7 @@ public class PreviewPanel extends ZoomablePanel
           {//Render only parts the material supports, or where Profile = null
             LaserProfile p = m.getProfile();
             GraphicSet current = m.getFilterSet().getMatchingObjects(this.graphicObjects);
-            Rectangle bb = Helper.toRect(Helper.transform(current.getBoundingBox(), this.getMmToPxTransform()));;
+            Rectangle bb = Helper.toRect(Helper.transform(current.getBoundingBox(), this.getMmToPxTransform()));
             if (bb != null && bb.width > 0 && bb.height > 0)
             {
               somethingMatched = true;

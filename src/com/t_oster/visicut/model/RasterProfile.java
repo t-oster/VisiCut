@@ -147,7 +147,8 @@ public class RasterProfile extends LaserProfile
       }
       BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors)
       {
-
+        //TODO: Gefahr, dass man das Dithering ergebnis verändert, falls
+        //der Algorithmus einen Pixel 2x ausliest
       @Override
         public void setGreyScale(int x, int y, int greyscale)
         {
