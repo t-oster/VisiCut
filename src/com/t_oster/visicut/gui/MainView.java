@@ -118,7 +118,7 @@ public class MainView extends javax.swing.JFrame
     this.customMappingPanel2.getSaveButton().addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae)
       {
-        String name = JOptionPane.showInputDialog(MainView.this, "Please give a name for the mapping");
+        String name = JOptionPane.showInputDialog(MainView.this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("NAME_FOR_MAPPING"));
         if (name != null)
         {
           MappingSet ms = MainView.this.customMappingPanel2.getResultingMappingSet().clone();
