@@ -61,6 +61,10 @@ public class VectorProfile extends LaserProfile
    */
   public OrderStrategy getOrderStrategy()
   {
+    if (orderStrategy == null)
+    {
+      orderStrategy = OrderStrategy.NEAREST;
+    }
     return orderStrategy;
   }
 
@@ -213,7 +217,7 @@ public class VectorProfile extends LaserProfile
         conv.addShape(sh, part);
       }
     }
-    VectorOptimizer vo = new VectorOptimizer(this.orderStrategy);
+    VectorOptimizer vo = new VectorOptimizer(this.getOrderStrategy());
     job.addPart(vo.optimize(part));
   }
 
