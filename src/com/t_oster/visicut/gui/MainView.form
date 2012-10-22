@@ -172,6 +172,24 @@
                 <Property name="name" type="java.lang.String" value="jMenu1" noResource="true"/>
               </Properties>
               <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="jmImportSettings">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="jmImportSettings.text"/>
+                    <Property name="name" type="java.lang.String" value="jmImportSettings" noResource="true"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmImportSettingsActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jmExportSettings">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="jmExportSettings.text"/>
+                    <Property name="name" type="java.lang.String" value="jmExportSettings" noResource="true"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmExportSettingsActionPerformed"/>
+                  </Events>
+                </MenuItem>
                 <MenuItem class="javax.swing.JMenuItem" name="editMappingMenuItem">
                   <Properties>
                     <Property name="text" type="java.lang.String" resourceKey="editMappingMenuItem.text"/>
@@ -210,24 +228,6 @@
                 </MenuItem>
               </SubComponents>
             </Menu>
-            <MenuItem class="javax.swing.JMenuItem" name="jmExportSettings">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="jmExportSettings.text"/>
-                <Property name="name" type="java.lang.String" value="jmExportSettings" noResource="true"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmExportSettingsActionPerformed"/>
-              </Events>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jmImportSettings">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="jmImportSettings.text"/>
-                <Property name="name" type="java.lang.String" value="jmImportSettings" noResource="true"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmImportSettingsActionPerformed"/>
-              </Events>
-            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="viewMenu">

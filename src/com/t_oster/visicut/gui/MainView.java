@@ -116,7 +116,7 @@ public class MainView extends javax.swing.JFrame
     this.customMappingPanel2.getSaveButton().addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae)
       {
-        String name = JOptionPane.showInputDialog(MainView.this, "Please give a name for the mapping");
+        String name = JOptionPane.showInputDialog(MainView.this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("NAME_FOR_MAPPING"));
         if (name != null)
         {
           MappingSet ms = MainView.this.customMappingPanel2.getResultingMappingSet().clone();
@@ -367,12 +367,12 @@ public class MainView extends javax.swing.JFrame
         calibrateCameraMenuItem = new javax.swing.JMenuItem();
         executeJobMenuItem = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
+        jmImportSettings = new javax.swing.JMenuItem();
+        jmExportSettings = new javax.swing.JMenuItem();
         editMappingMenuItem = new javax.swing.JMenuItem();
         jmManageLaserprofiles = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         materialMenuItem = new javax.swing.JMenuItem();
-        jmExportSettings = new javax.swing.JMenuItem();
-        jmImportSettings = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
         jmShowPhoto = new javax.swing.JCheckBoxMenuItem();
@@ -793,6 +793,24 @@ public class MainView extends javax.swing.JFrame
         jMenu1.setText(resourceMap.getString("jMenu1.text")); // NOI18N
         jMenu1.setName("jMenu1"); // NOI18N
 
+        jmImportSettings.setText(resourceMap.getString("jmImportSettings.text")); // NOI18N
+        jmImportSettings.setName("jmImportSettings"); // NOI18N
+        jmImportSettings.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmImportSettingsActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jmImportSettings);
+
+        jmExportSettings.setText(resourceMap.getString("jmExportSettings.text")); // NOI18N
+        jmExportSettings.setName("jmExportSettings"); // NOI18N
+        jmExportSettings.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmExportSettingsActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jmExportSettings);
+
         editMappingMenuItem.setText(resourceMap.getString("editMappingMenuItem.text")); // NOI18N
         editMappingMenuItem.setName("editMappingMenuItem"); // NOI18N
         editMappingMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -830,24 +848,6 @@ public class MainView extends javax.swing.JFrame
         jMenu1.add(materialMenuItem);
 
         editMenu.add(jMenu1);
-
-        jmExportSettings.setText(resourceMap.getString("jmExportSettings.text")); // NOI18N
-        jmExportSettings.setName("jmExportSettings"); // NOI18N
-        jmExportSettings.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jmExportSettingsActionPerformed(evt);
-            }
-        });
-        editMenu.add(jmExportSettings);
-
-        jmImportSettings.setText(resourceMap.getString("jmImportSettings.text")); // NOI18N
-        jmImportSettings.setName("jmImportSettings"); // NOI18N
-        jmImportSettings.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jmImportSettingsActionPerformed(evt);
-            }
-        });
-        editMenu.add(jmImportSettings);
 
         menuBar.add(editMenu);
 

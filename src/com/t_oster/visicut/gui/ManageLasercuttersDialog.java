@@ -312,7 +312,7 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
     {
       
     }   
-    return result;
+    return (LaserDevice) this.editObject(result);
   }
 
   public Object editObject(Object o)
