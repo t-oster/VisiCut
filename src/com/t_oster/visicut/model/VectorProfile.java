@@ -23,7 +23,9 @@ import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.liblasercut.utils.ShapeConverter;
+import com.t_oster.liblasercut.utils.VectorOptimizer;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.liblasercut.utils.VectorOptimizer.OrderStrategy;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ShapeDecorator;
@@ -52,6 +54,34 @@ public class VectorProfile extends LaserProfile
   {
     this.setName("cut");
   }
+  
+  protected OrderStrategy orderStrategy = OrderStrategy.NEAREST;
+
+  /**
+   * Get the value of orderStrategy
+   *
+   * @return the value of orderStrategy
+   */
+  public OrderStrategy getOrderStrategy()
+  {
+    if (orderStrategy == null)
+    {
+      orderStrategy = OrderStrategy.NEAREST;
+    }
+    return orderStrategy;
+  }
+
+  /**
+   * Set the value of orderStrategy
+   *
+   * @param orderStrategy new value of orderStrategy
+   */
+  public void setOrderStrategy(OrderStrategy orderStrategy)
+  {
+    this.orderStrategy = orderStrategy;
+  }
+
+  
   protected boolean useOutline = false;
 
   /**
@@ -192,7 +222,8 @@ public class VectorProfile extends LaserProfile
         conv.addShape(sh, part);
       }
     }
-    job.addPart(part);
+    VectorOptimizer vo = new VectorOptimizer(this.getOrderStrategy());
+    job.addPart(vo.optimize(part));
   }
 
   @Override
@@ -202,6 +233,7 @@ public class VectorProfile extends LaserProfile
     cp.description = description;
     cp.isCut = isCut;
     cp.name = name;
+    cp.orderStrategy = orderStrategy;
     cp.thumbnailPath = thumbnailPath;
     cp.width = width;
     cp.useOutline = useOutline;
