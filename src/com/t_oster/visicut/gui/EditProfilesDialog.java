@@ -219,9 +219,9 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     public Object editObject(Object selected) {
       if (selected instanceof VectorProfile) {
           EditVectorProfileDialog d = new EditVectorProfileDialog(null, true);
-          d.setVectorProfile((VectorProfile) selected);
+          d.setVectorProfile((VectorProfile) ((VectorProfile) selected).clone());
           d.setVisible(true);
-          return d.getVectorProfile();
+          return d.isOkPressed() ? d.getVectorProfile() : null;
       } else if (selected instanceof RasterProfile) {
           EditRasterProfileDialog d = new EditRasterProfileDialog(null, true);
           d.setRasterProfile((RasterProfile) selected);

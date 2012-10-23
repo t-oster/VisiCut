@@ -95,7 +95,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
           d.setVectorProfile((VectorProfile) e);
           d.setOnlyEditParameters(true);
           d.setVisible(true);
-          if (d.getVectorProfile() != null)
+          if (d.isOkPressed())
           {
             VisicutModel.getInstance().getMappings().getLast().setProfile(d.getVectorProfile());
             previewPanel.repaint();

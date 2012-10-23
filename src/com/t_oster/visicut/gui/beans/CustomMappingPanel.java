@@ -142,10 +142,10 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       if (e.profile instanceof VectorProfile)
       {
         EditVectorProfileDialog d = new EditVectorProfileDialog(null, true);
-        d.setVectorProfile((VectorProfile) e.profile);
+        d.setVectorProfile((VectorProfile) ((VectorProfile) e.profile).clone());
         d.setOnlyEditParameters(true);
         d.setVisible(true);
-        if (d.getVectorProfile() != null)
+        if (d.isOkPressed())
         {
           e.profile = d.getVectorProfile();
         }
