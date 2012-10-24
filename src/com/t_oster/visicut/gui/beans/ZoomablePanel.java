@@ -19,6 +19,7 @@
 package com.t_oster.visicut.gui.beans;
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
@@ -78,12 +79,17 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     return zoom;
   }
 
-  /**
+   /**
    * Set the value of zoom in %. 100 
    *
    * @param zoom new value of zoom
    */
   public void setZoom(int zoom)
+  {
+    this.setZoom(zoom, null);
+  }
+  
+  public void setZoom(int zoom, Point stablePoint)
   {
     if (zoom < 100)
     {
@@ -95,8 +101,14 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     {
       this.mm2pxCache = null;
       this.setPreferredSize(new Dimension((int) (this.getParent().getWidth()*(zoom/100d)), (int) (this.getParent().getHeight()*(zoom/100d))));
+      if (stablePoint != null)
+      {
+        double factor = (double) zoom/ (double) oldZoom;
+        Point loc = this.getLocation();
+        loc.setLocation((int) loc.x-(stablePoint.x*factor - stablePoint.x), (int) loc.y-(stablePoint.y*factor - stablePoint.y));
+        this.setLocation(loc);
+      }
       this.revalidate();
-      //this.repaint();
     }
     firePropertyChange(PROP_ZOOM, oldZoom, zoom);
   }
@@ -114,7 +126,6 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     {
       double factor = Math.min(this.getParent().getWidth()/this.areaSize.x, this.getParent().getHeight()/this.areaSize.y);
       factor *= this.getZoom()/100d;
-      //TODO translate to offset
       mm2pxCache = AffineTransform.getScaleInstance(factor, factor);
     }
     return mm2pxCache;
@@ -124,7 +135,7 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
   {
     if (mwe.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
     {
-      this.setZoom(this.getZoom() - (mwe.getUnitsToScroll() * this.getZoom() / 32));
+      this.setZoom(this.getZoom() - (mwe.getUnitsToScroll() * this.getZoom() / 32), mwe.getPoint());
     }
   }
 }
