@@ -480,6 +480,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
             Point loc = ((JViewport) this.previewPanel.getParent()).getViewPosition();
             loc.translate(-diff.x, -diff.y);
             ((JViewport) this.previewPanel.getParent()).setViewPosition(loc);
+            break;
           }
         }
       }

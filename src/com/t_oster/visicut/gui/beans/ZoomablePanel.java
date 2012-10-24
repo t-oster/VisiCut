@@ -100,12 +100,18 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     if (oldZoom != zoom)
     {
       this.mm2pxCache = null;
-      this.setPreferredSize(new Dimension((int) (this.getParent().getWidth()*(zoom/100d)), (int) (this.getParent().getHeight()*(zoom/100d))));
+      double w = this.areaSize.x;
+      double h = this.areaSize.y;
+      double pw = this.getParent().getWidth();
+      double ph = this.getParent().getHeight();
+      double f = (w/pw > h/ph) ? pw/w*zoom/100d : ph/h*zoom/100d;
+      //TODO: doesn't work if laserbed is higher than long
+      this.setPreferredSize(new Dimension((int) (w*f), (int) (h*f)));
       if (stablePoint != null)
       {
         double factor = (double) zoom/ (double) oldZoom;
         Point loc = this.getLocation();
-        loc.setLocation((int) loc.x-(stablePoint.x*factor - stablePoint.x), (int) loc.y-(stablePoint.y*factor - stablePoint.y));
+        loc.setLocation(loc.x-(stablePoint.x*factor - stablePoint.x), loc.y-(stablePoint.y*factor - stablePoint.y));
         this.setLocation(loc);
       }
       this.revalidate();
