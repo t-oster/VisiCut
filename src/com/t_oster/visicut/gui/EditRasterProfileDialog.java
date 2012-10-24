@@ -122,6 +122,7 @@ public class EditRasterProfileDialog extends javax.swing.JDialog
     {
       jComboBox1.addItem(BlackWhiteRaster.getDitheringAlgorithm(a));
     }
+    this.jTable1.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
   }
 
   /** This method is called from within the constructor to
@@ -344,7 +345,6 @@ private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
       this.jTable1.setModel(new CustomizableTableModel(a));
       this.jScrollPane1.setVisible(a.getPropertyKeys().length > 0);
       this.pack();
-      this.revalidate();
       if (this.currentRasterProfile != null)
       {
         this.currentRasterProfile.setDitheringAlgorithm(a);
