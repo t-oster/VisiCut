@@ -570,7 +570,7 @@ public class PreviewPanel extends ZoomablePanel
     }
     double mmx = 0;
     int count = 0;
-    for (int x = 0; x < this.bedWidth; x += gridDst)
+    for (double x = 0; x < this.bedWidth; x += gridDst)
     {
       Point a = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(x, 0), null));
       Point b = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(x, this.bedHeight), null));
@@ -603,7 +603,7 @@ public class PreviewPanel extends ZoomablePanel
     }
     double mmy = 0;
     count = 0;
-    for (int y = 0; y < this.bedHeight; y += gridDst)
+    for (double y = 0; y < this.bedHeight; y += gridDst)
     {
       Point a = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(0, y), null));
       Point b = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(bedWidth, y), null));

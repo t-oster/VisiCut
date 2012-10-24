@@ -47,6 +47,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 
 /**
  * This class handles the transformations to the background and the selected
@@ -207,7 +209,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
 
   private enum MouseAction
   {
-    noAction,
+    movingViewport,
     movingSet,
     resizingSet,
     rotatingSet
@@ -336,7 +338,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   public void mousePressed(MouseEvent evt)
   {
     lastMousePosition = evt.getPoint();
-    currentAction = MouseAction.noAction;
+    currentAction = MouseAction.movingViewport;
     if (getEditRect() != null)
     {//something selected
       Rectangle2D curRect = Helper.transform(getEditRect(), this.previewPanel.getMmToPxTransform());
@@ -354,7 +356,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
         }
         else
         {
-          currentAction = MouseAction.noAction;
+          currentAction = MouseAction.movingViewport;
         }
       }
     }
@@ -399,6 +401,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
             //apply current
             tr.concatenate(getGraphicObjects().transform);
             getGraphicObjects().setTransform(tr);
+            this.previewPanel.repaint();
             break;
           }
           case resizingSet:
@@ -469,10 +472,16 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
             AffineTransform tr = this.previewPanel.getMmToPxTransform();
             tr.createInverse().deltaTransform(diff, diff);
             this.moveSet(diff.x, diff.y);
+            this.previewPanel.repaint();
             break;
           }
+          case movingViewport:
+          {
+            Point loc = ((JViewport) this.previewPanel.getParent()).getViewPosition();
+            loc.translate(-diff.x, -diff.y);
+            ((JViewport) this.previewPanel.getParent()).setViewPosition(loc);
+          }
         }
-        this.previewPanel.repaint();
       }
       catch (NoninvertibleTransformException ex)
       {
