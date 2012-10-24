@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut.gui.beans;
 
+import java.awt.Dimension;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
@@ -93,6 +94,9 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     if (oldZoom != zoom)
     {
       this.mm2pxCache = null;
+      this.setPreferredSize(new Dimension((int) (this.getParent().getWidth()*(zoom/100d)), (int) (this.getParent().getHeight()*(zoom/100d))));
+      this.revalidate();
+      //this.repaint();
     }
     firePropertyChange(PROP_ZOOM, oldZoom, zoom);
   }
@@ -108,7 +112,7 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
   {
     if (mm2pxCache == null)
     {
-      double factor = Math.min(this.getWidth()/this.areaSize.x, this.getHeight()/this.areaSize.y);
+      double factor = Math.min(this.getParent().getWidth()/this.areaSize.x, this.getParent().getHeight()/this.areaSize.y);
       factor *= this.getZoom()/100d;
       //TODO translate to offset
       mm2pxCache = AffineTransform.getScaleInstance(factor, factor);
