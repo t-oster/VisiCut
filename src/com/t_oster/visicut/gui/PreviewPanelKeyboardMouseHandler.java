@@ -32,6 +32,7 @@ import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Cursor;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -49,6 +50,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 
 /**
  * This class handles the transformations to the background and the selected
@@ -215,6 +217,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     rotatingSet
   };
   private Point lastMousePosition = null;
+  private Point lastMousePositionInViewport = null;
   private MouseAction currentAction = null;
   private Button currentButton = null;
 
@@ -338,6 +341,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   public void mousePressed(MouseEvent evt)
   {
     lastMousePosition = evt.getPoint();
+    lastMousePositionInViewport = SwingUtilities.convertMouseEvent(evt.getComponent(), evt, previewPanel.getParent()).getPoint();
     currentAction = MouseAction.movingViewport;
     if (getEditRect() != null)
     {//something selected
@@ -477,9 +481,12 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
           }
           case movingViewport:
           {
-            Point loc = ((JViewport) this.previewPanel.getParent()).getViewPosition();
-            loc.translate(-diff.x, -diff.y);
-            ((JViewport) this.previewPanel.getParent()).setViewPosition(loc);
+            JViewport vp = (JViewport) this.previewPanel.getParent();
+            Point loc = vp.getViewPosition();
+            MouseEvent cur = SwingUtilities.convertMouseEvent(evt.getComponent(), evt, vp);
+            loc.translate(lastMousePositionInViewport.x-cur.getX(), lastMousePositionInViewport.y-cur.getY());
+            lastMousePositionInViewport = cur.getPoint();
+            this.previewPanel.scrollRectToVisible(new Rectangle(loc, vp.getSize()));
             break;
           }
         }
