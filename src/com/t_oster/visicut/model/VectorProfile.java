@@ -37,7 +37,11 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.PathIterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class represents a Line Profile,
@@ -181,21 +185,62 @@ public class VectorProfile extends LaserProfile
     }
     for (GraphicObject e : objects)
     {
-      Shape sh = (e instanceof ShapeObject) ? ((ShapeObject) e).getShape() : e.getBoundingBox();
-      if (objects.getTransform() != null)
+      try
       {
-        sh = objects.getTransform().createTransformedShape(sh);
+        Shape sh = (e instanceof ShapeObject) ? ((ShapeObject) e).getShape() : e.getBoundingBox();
+        if (objects.getTransform() != null)
+        {
+          sh = objects.getTransform().createTransformedShape(sh);
+        }
+        //all coordinates are assumed to be milimeters, so we transform to desired resolution
+        double factor = Util.dpi2dpmm(this.getDPI());
+        AffineTransform mm2laserPx = AffineTransform.getScaleInstance(factor, factor);
+        sh = mm2laserPx.createTransformedShape(sh);
+        
+        AffineTransform laserPx2PreviewPx = mm2laserPx.createInverse();
+        laserPx2PreviewPx.concatenate(mm2px);
+        if (sh == null)
+        {
+          //WTF??
+          System.out.println("Error extracting Shape from: " + ((ShapeObject) e).toString());
+        }
+        else
+        {
+          PathIterator iter = sh.getPathIterator(null, 1);
+          int startx = 0;
+          int starty = 0;
+          int lastx = 0;
+          int lasty = 0;
+          while (!iter.isDone())
+          {
+            double[] test = new double[8];
+            int result = iter.currentSegment(test);
+            //transform coordinates to preview-coordinates
+            laserPx2PreviewPx.transform(test, 0, test, 0, 1);
+            if (result == PathIterator.SEG_MOVETO)
+            {
+              startx = (int) test[0];
+              starty = (int) test[1];
+              lastx = (int) test[0];
+              lasty = (int) test[1];
+            }
+            else if (result == PathIterator.SEG_LINETO)
+            {
+              gg.drawLine(lastx, lasty, (int) test[0], (int) test[1]);
+              lastx = (int) test[0];
+              lasty = (int) test[1];
+            }
+            else if (result == PathIterator.SEG_CLOSE)
+            {
+              gg.drawLine(lastx, lasty, startx, starty);
+            }
+            iter.next();
+          }
+        }
       }
-      //all coordinates are assumed to be milimeters, so we transform to desired resolution
-      sh = mm2px.createTransformedShape(sh);
-      if (sh == null)
+      catch (NoninvertibleTransformException ex)
       {
-        //WTF??
-        System.out.println("Error extracting Shape from: " + ((ShapeObject) e).toString());
-      }
-      else
-      {
-        gg.draw(sh);
+        Logger.getLogger(VectorProfile.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
   }
@@ -219,6 +264,9 @@ public class VectorProfile extends LaserProfile
         {
           sh = objects.getTransform().createTransformedShape(sh);
         }
+        double factor = Util.dpi2dpmm(this.getDPI());
+        AffineTransform mm2laserpx = AffineTransform.getScaleInstance(factor, factor);
+        sh = mm2laserpx.createTransformedShape(sh);
         conv.addShape(sh, part);
       }
     }

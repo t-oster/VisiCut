@@ -20,6 +20,7 @@ package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.ProgressListener;
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
@@ -91,20 +92,26 @@ public class PreviewPanel extends ZoomablePanel
     private Logger logger = Logger.getLogger(ImageProcessingThread.class.getName());
     private BufferedImage buffer = null;
     private GraphicSet set;
-    private AffineTransform mm2px;
+    private AffineTransform mm2laserPx;
     private LaserProfile p;
     private Rectangle bb;
+    private Rectangle2D bbInMm;
     private int progress = 0;
     private boolean isFinished = false;
 
     /**
      * Returns the bounding box of this preview image IN pixels
-     * in previewPanel-space
+     * in LASERCUTTER-space
      * @return 
      */
     public Rectangle getBoundingBox()
     {
       return bb;
+    }
+    
+    public Rectangle2D getBoundingBoxInMm()
+    {
+      return bbInMm;
     }
 
     public BufferedImage getImage()
@@ -116,8 +123,10 @@ public class PreviewPanel extends ZoomablePanel
     {
       this.set = objects;
       this.p = p;
-      this.mm2px = PreviewPanel.this.getMmToPxTransform();
-      bb = Helper.toRect(Helper.transform(set.getBoundingBox(), mm2px));
+      double factor = Util.dpi2dpmm(p.getDPI());
+      this.mm2laserPx = AffineTransform.getScaleInstance(factor, factor);
+      bbInMm = set.getBoundingBox();
+      bb = Helper.toRect(Helper.transform(bbInMm, mm2laserPx));
       if (bb == null || bb.width == 0 || bb.height == 0)
       {
         logger.log(Level.SEVERE, "invalid BoundingBox");
@@ -140,12 +149,12 @@ public class PreviewPanel extends ZoomablePanel
       if (p instanceof RasterProfile)
       {
         RasterProfile rp = (RasterProfile) p;
-        buffer = rp.getRenderedPreview(set, material, mm2px, this);
+        buffer = rp.getRenderedPreview(set, material, mm2laserPx, this);
       }
       else if (p instanceof Raster3dProfile)
       {
         Raster3dProfile rp = (Raster3dProfile) p;
-        buffer = rp.getRenderedPreview(set, material, mm2px, this);
+        buffer = rp.getRenderedPreview(set, material, mm2laserPx, this);
       }
     }
 
@@ -439,8 +448,9 @@ public class PreviewPanel extends ZoomablePanel
           {//Render only parts the material supports, or where Profile = null
             LaserProfile p = m.getProfile();
             GraphicSet current = m.getFilterSet().getMatchingObjects(this.graphicObjects);
-            Rectangle bb = Helper.toRect(Helper.transform(current.getBoundingBox(), this.getMmToPxTransform()));
-            if (bb != null && bb.width > 0 && bb.height > 0)
+            Rectangle2D bbInMm = current.getBoundingBox();
+            Rectangle bbInPx = Helper.toRect(Helper.transform(bbInMm, this.getMmToPxTransform()));
+            if (bbInMm != null && bbInMm.getWidth() > 0 && bbInMm.getHeight() > 0)
             {
               somethingMatched = true;
               if (!(p instanceof VectorProfile))
@@ -448,7 +458,7 @@ public class PreviewPanel extends ZoomablePanel
                 synchronized (renderBuffer)
                 {
                   ImageProcessingThread procThread = this.renderBuffer.get(m);
-                  if (procThread == null || !procThread.isFinished() || bb.width != procThread.getBoundingBox().width || bb.height != procThread.getBoundingBox().height)
+                  if (procThread == null || !procThread.isFinished() || bbInMm.getWidth() != procThread.getBoundingBoxInMm().getWidth() || bbInMm.getHeight() != procThread.getBoundingBoxInMm().getHeight())
                   {//Image not rendered or Size differs
                     if (!renderBuffer.containsKey(m))
                     {//image not yet scheduled for rendering
@@ -457,7 +467,7 @@ public class PreviewPanel extends ZoomablePanel
                       this.renderBuffer.put(m, procThread);
                       procThread.start();//start processing thread
                     }
-                    else if (bb.width != procThread.getBoundingBox().width || bb.height != procThread.getBoundingBox().height)
+                    else if (bbInMm.getWidth() != procThread.getBoundingBoxInMm().getWidth() || bbInMm.getHeight() != procThread.getBoundingBoxInMm().getHeight())
                     {//Image is (being) rendered with wrong size
                       logger.log(Level.FINE, "Image has wrong size");
                       if (!procThread.isFinished())
@@ -470,16 +480,18 @@ public class PreviewPanel extends ZoomablePanel
                       procThread.start();//start processing thread
                     }
                     gg.setColor(Color.GRAY);
-                    gg.fillRect(bb.x, bb.y, bb.width, bb.height);
+                    gg.fillRect(bbInPx.x, bbInPx.y, bbInPx.width, bbInPx.height);
                     gg.setColor(Color.BLACK);
-                    Point po = new Point(bb.x + bb.width / 2, bb.y + bb.height / 2);
+                    Point po = new Point(bbInPx.x + bbInPx.width / 2, bbInPx.y + bbInPx.height / 2);
                     String txt = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("PLEASE WAIT (")+procThread.getProgress()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("%)");
                     int w = gg.getFontMetrics().stringWidth(txt);
                     gg.drawString(txt, po.x - w / 2, po.y);
                   }
                   else
                   {
-                    gg.drawRenderedImage(procThread.getImage(), AffineTransform.getTranslateInstance(bb.x, bb.y));
+                    AffineTransform laserPxToPreviewPx = Helper.getTransform(procThread.getBoundingBox(), bbInPx);
+                    laserPxToPreviewPx.translate(procThread.getBoundingBox().x, procThread.getBoundingBox().y);
+                    gg.drawRenderedImage(procThread.getImage(), laserPxToPreviewPx);
                   }
                 }
               }
