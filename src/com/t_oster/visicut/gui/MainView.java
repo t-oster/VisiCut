@@ -646,6 +646,7 @@ public class MainView extends javax.swing.JFrame
 
     jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanel1.border.title"))); // NOI18N
     jScrollPane2.setName("jScrollPane2"); // NOI18N
+    jScrollPane2.setWheelScrollingEnabled(false);
 
     previewPanel.setName("previewPanel"); // NOI18N
 
@@ -668,7 +669,7 @@ public class MainView extends javax.swing.JFrame
     );
     previewPanelLayout.setVerticalGroup(
       previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 624, Short.MAX_VALUE)
+      .addGap(0, 630, Short.MAX_VALUE)
     );
 
     jScrollPane2.setViewportView(previewPanel);
