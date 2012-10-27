@@ -78,6 +78,7 @@ public class PreviewPanel extends ZoomablePanel
             LaserCutter lc = ((LaserDevice) pce.getNewValue()).getLaserCutter();
             PreviewPanel.this.bedWidth = lc.getBedWidth();
             PreviewPanel.this.bedHeight = lc.getBedHeight();
+            PreviewPanel.this.setAreaSize(new Point2D.Double(lc.getBedWidth(), lc.getBedHeight()));
             PreviewPanel.this.repaint();
           }
         }

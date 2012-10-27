@@ -57,7 +57,7 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
   public void setAreaSize(Point2D.Double AreaSize)
   {
     this.areaSize = AreaSize;
-    this.mm2pxCache = null;
+    this.resizeToFitZoomAndArea();
   }
 
   
@@ -89,6 +89,19 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     this.setZoom(zoom, null);
   }
   
+  private void resizeToFitZoomAndArea()
+  {
+    this.mm2pxCache = null;
+    double w = this.getAreaSize().x;
+    double h = this.getAreaSize().y;
+    double pw = this.getParent().getWidth();
+    double ph = this.getParent().getHeight();
+    double fullw = pw/ph <= w/h ? pw*zoom/100d : w*ph*zoom/100d/h;
+    double fullh = pw/ph > w/h ? ph*zoom/100d : h*fullw/w;
+    this.setPreferredSize(new Dimension((int) (fullw), (int) (fullh)));
+    this.revalidate();
+  }
+  
   public void setZoom(int zoom, Point stablePoint)
   {
     if (zoom < 100)
@@ -99,14 +112,7 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     this.zoom = zoom;
     if (oldZoom != zoom)
     {
-      this.mm2pxCache = null;
-      double w = this.areaSize.x;
-      double h = this.areaSize.y;
-      double pw = this.getParent().getWidth();
-      double ph = this.getParent().getHeight();
-      double f = (w/pw > h/ph) ? pw/w*zoom/100d : ph/h*zoom/100d;
-      //TODO: doesn't work if laserbed is higher than long
-      this.setPreferredSize(new Dimension((int) (w*f), (int) (h*f)));
+      this.resizeToFitZoomAndArea();
       if (stablePoint != null)
       {
         double factor = (double) zoom/ (double) oldZoom;
@@ -114,7 +120,6 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
         loc.setLocation(loc.x-(stablePoint.x*factor - stablePoint.x), loc.y-(stablePoint.y*factor - stablePoint.y));
         this.setLocation(loc);
       }
-      this.revalidate();
     }
     firePropertyChange(PROP_ZOOM, oldZoom, zoom);
   }
@@ -130,8 +135,8 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
   {
     if (mm2pxCache == null)
     {
-      double factor = Math.min(this.getParent().getWidth()/this.areaSize.x, this.getParent().getHeight()/this.areaSize.y);
-      factor *= this.getZoom()/100d;
+      Dimension d = this.getPreferredSize();
+      double factor = Math.min(d.width/this.areaSize.x, d.height/this.areaSize.y);
       mm2pxCache = AffineTransform.getScaleInstance(factor, factor);
     }
     return mm2pxCache;
