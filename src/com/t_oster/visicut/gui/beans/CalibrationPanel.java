@@ -70,14 +70,14 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
   {
     this.backgroundImage = backgroundImage;
   }
-  protected Point[] pointList = new Point[0];
+  protected Point2D.Double[] pointList = new Point2D.Double[0];
 
   /**
    * Get the value of pointList
    *
    * @return the value of pointList
    */
-  public Point[] getPointList()
+  public Point2D.Double[] getPointList()
   {
     return pointList;
   }
@@ -87,7 +87,7 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
    *
    * @param pointList new value of pointList
    */
-  public void setPointList(Point[] pointList)
+  public void setPointList(Point2D.Double[] pointList)
   {
     this.pointList = pointList;
     this.repaint();
@@ -108,25 +108,24 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
         gg.drawRenderedImage(backgroundImage, null);
       }
       gg.setColor(Color.red);
-      AffineTransform trans = gg.getTransform();
-      gg.setTransform(new AffineTransform());//Draw in Screen Device space
-      for (Point p : this.pointList)
+      for (Point2D.Double p : this.pointList)
       {
-        Point sp = new Point();
+        Point2D.Double sp = new Point2D.Double();
+        AffineTransform trans = this.getMmToPxTransform();
         trans.transform(p, sp);
         drawCross(gg, sp, SIZE);
         if (p == selectedPoint)
         {
-          gg.drawOval((sp.x - SIZE / 2), (sp.y - SIZE / 2), SIZE, SIZE);
+          gg.drawOval((int) (sp.x - SIZE / 2), (int) (sp.y - SIZE / 2), (int) SIZE, (int) SIZE);
         }
       }
     }
   }
 
-  private void drawCross(Graphics2D g, Point p, int size)
+  private void drawCross(Graphics2D g, Point2D.Double p, int size)
   {
-    g.drawLine(p.x - size / 2, p.y, p.x + size / 2, p.y);
-    g.drawLine(p.x, p.y - size / 2, p.x, p.y + size / 2);
+    g.drawLine((int) (p.x - size / 2), (int) p.y, (int) (p.x + size / 2), (int) p.y);
+    g.drawLine((int) p.x, (int) (p.y - size / 2), (int) p.x, (int) (p.y + size / 2));
   }
   /**
    * Contains last mouse Position if dragging background,
@@ -137,13 +136,13 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
   public void mouseClicked(MouseEvent me)
   {
   }
-  public Point selectedPoint = null;
+  public Point2D.Double selectedPoint = null;
 
   public void mousePressed(MouseEvent me)
   {
     Point p = me.getPoint();
     selectedPoint = null;
-    for (Point source : this.getPointList())
+    for (Point2D.Double source : this.getPointList())
     {
       Point2D target = this.lastTransform.transform(source, null);
       if (p.distance(target) < SIZE)

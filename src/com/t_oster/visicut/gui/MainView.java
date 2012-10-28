@@ -75,6 +75,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -1431,14 +1432,27 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
     dialog.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THE CAMERA DOESN'T SEEM TO BE WORKING. PLEASE CHECK THE URL IN THE LASERCUTTER SETTINGS"));
     return;
   }
-  if (true)
+  JComboBox profiles = new JComboBox();
+  for (LaserProfile p : ProfileManager.getInstance().getAll())
   {
-    dialog.showErrorMessage("Currently disabled");
+    if (p instanceof VectorProfile)
+    {
+      profiles.addItem(p);
+    }
+  }
+  if (profiles.getItemCount() == 0)
+  {
+    dialog.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("NEED_VECTOR_PROFILE"));
+    return;
+  }
+  if (JOptionPane.showConfirmDialog(this, profiles, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("SELECT_VECTOR_PROFILE"), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION)
+  {
     return;
   }
   //TODO ask user for VectorProfile and make sure the properties for current
   //material and cutter are available
   CamCalibrationDialog ccd = new CamCalibrationDialog();
+  ccd.setVectorProfile((VectorProfile) profiles.getSelectedItem());
   ccd.setBackgroundImage(this.visicutModel1.getBackgroundImage());
   ccd.setImageURL(this.visicutModel1.getSelectedLaserDevice().getCameraURL());
   //ccd.setVectorProfile(vp);
@@ -1447,7 +1461,7 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
   this.visicutModel1.getSelectedLaserDevice().setCameraCalibration(ccd.getResultingTransformation());
   try
   {
-    PreferencesManager.getInstance().savePreferences();
+    LaserDeviceManager.getInstance().save(this.visicutModel1.getSelectedLaserDevice());
   }
   catch (Exception ex)
   {

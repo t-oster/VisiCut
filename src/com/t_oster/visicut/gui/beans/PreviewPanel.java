@@ -393,10 +393,14 @@ public class PreviewPanel extends ZoomablePanel
       Graphics2D gg = (Graphics2D) g;
       gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-      if (backgroundImage != null && showBackgroundImage)
+      if (backgroundImage != null && showBackgroundImage && VisicutModel.getInstance().getSelectedLaserDevice() != null)
       {
-        //TODO Apply camera calibrated transform
-        gg.drawRenderedImage(backgroundImage, null);
+        AffineTransform mm2px = new AffineTransform(this.getMmToPxTransform());
+        if (VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration() != null)
+        {
+          mm2px.concatenate(VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration());
+        }
+        gg.drawRenderedImage(backgroundImage, mm2px);
       }
       Rectangle box = Helper.toRect(Helper.transform(
           new Rectangle2D.Double(0, 0, this.bedWidth, this.bedHeight),

@@ -105,13 +105,13 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     this.backgroundImage = backgroundImage;
     this.calibrationPanel1.setBackgroundImage(backgroundImage);
     //Check if a point is not in the Image (thus not reachable anymore)
-    for (Point p :this.calibrationPanel1.getPointList())
+    for (Point2D.Double p :this.calibrationPanel1.getPointList())
     {
       if (p.x >= backgroundImage.getWidth() || p.y >= backgroundImage.getHeight())
       {
-       calibrationPanel1.setPointList(new Point[]{
-         new Point(20*backgroundImage.getWidth()/100,20*backgroundImage.getHeight()/100),
-         new Point(80*backgroundImage.getWidth()/100,80*backgroundImage.getHeight()/100)
+       calibrationPanel1.setPointList(new Point2D.Double[]{
+         new Point2D.Double(20*backgroundImage.getWidth()/100,20*backgroundImage.getHeight()/100),
+         new Point2D.Double(80*backgroundImage.getWidth()/100,80*backgroundImage.getHeight()/100)
        });
        break;
       }
@@ -123,15 +123,15 @@ public class CamCalibrationDialog extends javax.swing.JDialog
 
   private void refreshImagePoints()
   {
-    Point imageUpperLeft = (Point) laserUpperLeft.clone();
-    Point imageLowerRight = (Point) laserLowerRight.clone();
+    Point2D.Double imageUpperLeft = (Point2D.Double) laserUpperLeft.clone();
+    Point2D.Double imageLowerRight = (Point2D.Double) laserLowerRight.clone();
     if (this.getResultingTransformation() != null)
     {
       AffineTransform laser2img = this.getResultingTransformation();
       laser2img.transform(imageUpperLeft, imageUpperLeft);
       laser2img.transform(imageLowerRight, imageLowerRight);
     }
-    this.calibrationPanel1.setPointList(new Point[]
+    this.calibrationPanel1.setPointList(new Point2D.Double[]
       {
         imageUpperLeft, imageLowerRight
       });
@@ -144,7 +144,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
    */
   public AffineTransform getCurrentTransformation()
   {
-    Point[] img = this.calibrationPanel1.getPointList();
+    Point2D.Double[] img = this.calibrationPanel1.getPointList();
     return Helper.getTransform(
       new Rectangle2D.Double(laserUpperLeft.x, laserUpperLeft.y, laserLowerRight.x - laserUpperLeft.x, laserLowerRight.y - laserUpperLeft.y),
       new Rectangle2D.Double(img[0].x, img[0].y, img[1].x - img[0].x, img[1].y - img[0].y));
