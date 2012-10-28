@@ -76,8 +76,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileFilter;
 import org.jdesktop.application.Action;
 
@@ -103,6 +106,7 @@ public class MainView extends javax.swing.JFrame
     initComponents();
     jScrollPane2.setColumnHeaderView(new Ruler(this.previewPanel, Ruler.HORIZONTAL));
     jScrollPane2.setRowHeaderView(new Ruler(this.previewPanel, Ruler.VERTICAL));
+    jScrollPane2.setCorner(JScrollPane.UPPER_LEFT_CORNER, new JLabel("cm"));
     if (Helper.isMacOS())
     {//Mac OS has its own exit menu and different Keybindings
       fileMenu.remove(exitMenuItem);
