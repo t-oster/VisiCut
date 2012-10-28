@@ -163,21 +163,21 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   {
     if (this.getEditRect() != null)
     {
-      int diffx = 0;
-      int diffy = 0;
+      double diffx = 0;
+      double diffy = 0;
       switch (ke.getKeyCode())
       {
         case KeyEvent.VK_LEFT:
-          diffx -= 10;
+          diffx -= 1;
           break;
         case KeyEvent.VK_RIGHT:
-          diffx += 10;
+          diffx += 1;
           break;
         case KeyEvent.VK_UP:
-          diffy -= 10;
+          diffy -= 1;
           break;
         case KeyEvent.VK_DOWN:
-          diffy += 10;
+          diffy += 1;
           break;
       }
       if (ke.isShiftDown())
@@ -190,6 +190,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       {
         this.moveSet(diffx, diffy);
       }
+      ke.consume();
     }
   }
 
