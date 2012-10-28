@@ -327,7 +327,14 @@ public final class PreferencesManager
     FileUtils.cleanDirectory(Helper.getBasePath());
     FileUtils.unzipToDirectory(file, Helper.getBasePath());
     this.exampleFilenames = null;
-    this.preferences = null;
+    try
+    {
+      preferences = this.loadPreferences(this.getPreferencesPath());
+    }
+    catch (Exception e)
+    {
+      this.preferences = new Preferences();
+    }
     LaserDeviceManager.getInstance().reload();
     MappingManager.getInstance().reload();
     MaterialManager.getInstance().reload();
