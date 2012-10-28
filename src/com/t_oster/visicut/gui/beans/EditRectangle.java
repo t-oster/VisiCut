@@ -59,19 +59,14 @@ public class EditRectangle extends Rectangle2D.Double
   
   private int buttonSize = 10;
 
-  public EditRectangle(int x, int y, int width, int height)
+  public EditRectangle(double x, double y, double width, double height)
   {
     super(x,y,width,height);
   }
   
-  public EditRectangle(Rectangle r)
-  {
-    super(r.x,r.y,r.width,r.height);
-  }
-
   public EditRectangle(Rectangle2D r)
   {
-    this(Helper.toRect(r));
+    super(r.getX(),r.getY(),r.getWidth(),r.getHeight());
   }
   
   public enum Button

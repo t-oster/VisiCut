@@ -474,8 +474,9 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
           case movingSet:
           {
             AffineTransform tr = this.previewPanel.getMmToPxTransform();
-            tr.createInverse().deltaTransform(diff, diff);
-            this.moveSet(diff.x, diff.y);
+            Point2D.Double d = new Point2D.Double(diff.x, diff.y);
+            tr.createInverse().deltaTransform(d, d);
+            this.moveSet(d.x, d.y);
             this.previewPanel.repaint();
             break;
           }
@@ -499,7 +500,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     }
   }
 
-  private void moveSet(double mmDiffX, int mmDiffY)
+  private void moveSet(double mmDiffX, double mmDiffY)
   {
     if (mmDiffX == 0 && mmDiffY == 0)
     {
