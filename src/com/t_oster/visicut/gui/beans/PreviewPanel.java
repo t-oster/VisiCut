@@ -26,13 +26,13 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
-import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
+import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
-import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
+import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -85,7 +85,7 @@ public class PreviewPanel extends ZoomablePanel
       }
     });
   }
-  private Logger logger = Logger.getLogger(PreviewPanel.class.getName());
+  private static final Logger logger = Logger.getLogger(PreviewPanel.class.getName());
   
   private class ImageProcessingThread extends Thread implements ProgressListener
   {
@@ -168,7 +168,7 @@ public class PreviewPanel extends ZoomablePanel
         long start = System.currentTimeMillis();
         render();
         long stop = System.currentTimeMillis();
-        logger.log(Level.FINE, "Rendering finished. Took: "+(stop-start)+" ms");
+        logger.log(Level.FINE, "Rendering finished. Took: {0} ms", (stop-start));
       }
       catch (OutOfMemoryError e)
       {
@@ -180,7 +180,7 @@ public class PreviewPanel extends ZoomablePanel
           long start = System.currentTimeMillis();
           render();
           long stop = System.currentTimeMillis();
-          logger.log(Level.FINE, "2nd Rendering took "+(stop-start)+" ms");
+          logger.log(Level.FINE, "2nd Rendering took {0} ms", (stop-start));
         }
         catch (OutOfMemoryError ee)
         {
@@ -463,7 +463,7 @@ public class PreviewPanel extends ZoomablePanel
                   {//Image not rendered or Size differs
                     if (!renderBuffer.containsKey(m))
                     {//image not yet scheduled for rendering
-                      logger.log(Level.FINE, "Starting ImageProcessing Thread for "+m);
+                      logger.log(Level.FINE, "Starting ImageProcessing Thread for {0}", m);
                       procThread = new ImageProcessingThread(current, p);
                       this.renderBuffer.put(m, procThread);
                       procThread.start();//start processing thread
@@ -475,7 +475,7 @@ public class PreviewPanel extends ZoomablePanel
                       {//stop the old thread if still running
                         procThread.cancel();
                       }
-                      logger.log(Level.FINE, "Starting ImageProcessingThread for"+m);
+                      logger.log(Level.FINE, "Starting ImageProcessingThread for{0}", m);
                       procThread = new ImageProcessingThread(current, p);
                       this.renderBuffer.put(m, procThread);
                       procThread.start();//start processing thread
@@ -558,9 +558,7 @@ public class PreviewPanel extends ZoomablePanel
     /**
      * The grid distance in mm
      */
-    //todo calculate gridDst from Transform
     double gridDst = 0.1;
-    int smalllines = 2;
     while (gridDst < minDrawDst)
     {
       gridDst *= 2;
@@ -569,8 +567,6 @@ public class PreviewPanel extends ZoomablePanel
         gridDst *= 5;
       }
     }
-    double mmx = 0;
-    int count = 0;
     for (double x = 0; x < this.bedWidth; x += gridDst)
     {
       Point a = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(x, 0), null));
@@ -582,28 +578,8 @@ public class PreviewPanel extends ZoomablePanel
           break;
         }
         gg.drawLine(a.x, a.y, b.x, b.y);
-        if (++count >= smalllines)
-        {
-          String txt;
-          float mm = ((float) Math.round((float) (10 * mmx))) / 10;
-          if ((int) mm == mm)
-          {
-            txt = "" + (int) mm;
-          }
-          else
-          {
-            txt = "" + mm;
-          }
-          int w = gg.getFontMetrics().stringWidth(txt);
-          int h = gg.getFontMetrics().getHeight();
-          gg.drawString(txt, a.x - w / 2, 5 + h);
-          count = 0;
-        }
       }
-      mmx += gridDst;
     }
-    double mmy = 0;
-    count = 0;
     for (double y = 0; y < this.bedHeight; y += gridDst)
     {
       Point a = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(0, y), null));
@@ -615,23 +591,7 @@ public class PreviewPanel extends ZoomablePanel
           break;
         }
         gg.drawLine(a.x, a.y, b.x, b.y);
-        if (++count >= smalllines)
-        {
-          String txt;
-          float mm = ((float) Math.round((float) (10 * mmy))) / 10;
-          if ((int) mm == mm)
-          {
-            txt = "" + (int) mm;
-          }
-          else
-          {
-            txt = "" + mm;
-          }
-          gg.drawString(txt, 5, a.y);
-          count = 0;
-        }
       }
-      mmy += gridDst;
     }
   }
 }
