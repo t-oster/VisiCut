@@ -455,7 +455,7 @@ public class PreviewPanel extends ZoomablePanel
             GraphicSet current = m.getFilterSet().getMatchingObjects(this.graphicObjects);
             Rectangle2D bbInMm = current.getBoundingBox();
             Rectangle bbInPx = Helper.toRect(Helper.transform(bbInMm, this.getMmToPxTransform()));
-            if (bbInMm != null && bbInMm.getWidth() > 0 && bbInMm.getHeight() > 0)
+            if (bbInPx != null && bbInPx.getWidth() > 0 && bbInPx.getHeight() > 0)
             {
               somethingMatched = true;
               if (!(p instanceof VectorProfile))
