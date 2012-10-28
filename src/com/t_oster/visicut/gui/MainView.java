@@ -35,6 +35,7 @@ import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.CreateNewMaterialDialog;
 import com.t_oster.visicut.gui.beans.CreateNewThicknessDialog;
+import com.t_oster.visicut.gui.beans.Ruler;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.managers.MappingManager;
@@ -100,6 +101,8 @@ public class MainView extends javax.swing.JFrame
   public MainView()
   {
     initComponents();
+    jScrollPane2.setColumnHeaderView(new Ruler(this.previewPanel, Ruler.HORIZONTAL));
+    jScrollPane2.setRowHeaderView(new Ruler(this.previewPanel, Ruler.VERTICAL));
     if (Helper.isMacOS())
     {//Mac OS has its own exit menu and different Keybindings
       fileMenu.remove(exitMenuItem);
