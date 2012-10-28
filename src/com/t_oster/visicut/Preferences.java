@@ -19,10 +19,10 @@
 package com.t_oster.visicut;
 
 import com.t_oster.liblasercut.LibInfo;
+import java.awt.Rectangle;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 public class Preferences
@@ -30,6 +30,28 @@ public class Preferences
 
   public Preferences()
   {
+  }
+  
+  private Rectangle windowBounds = null;
+
+  /**
+   * Get the value of windowBounds
+   *
+   * @return the value of windowBounds
+   */
+  public Rectangle getWindowBounds()
+  {
+    return windowBounds;
+  }
+
+  /**
+   * Set the value of windowBounds
+   *
+   * @param windowBounds new value of windowBounds
+   */
+  public void setWindowBounds(Rectangle windowBounds)
+  {
+    this.windowBounds = windowBounds;
   }
   
   protected boolean useThicknessAsFocusOffset = true;

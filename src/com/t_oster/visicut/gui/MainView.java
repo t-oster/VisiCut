@@ -56,6 +56,7 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.FileDialog;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -184,6 +185,7 @@ public class MainView extends javax.swing.JFrame
       public void windowClosing(WindowEvent e)
       {
         PreferencesManager.getInstance().getPreferences().setEditSettingsBeforeExecuting(MainView.this.cbEditBeforeExecute.isSelected());
+        PreferencesManager.getInstance().getPreferences().setWindowBounds(MainView.this.getBounds());
         MainView.this.visicutModel1.updatePreferences();
       }
 
@@ -221,7 +223,16 @@ public class MainView extends javax.swing.JFrame
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_LOADEDFILE, null, null));
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDLASERDEVICE, null, null));
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SOURCEFILE, null, null));
-      }
+    
+    //apply the saved window size and position, if in current screen size
+    Rectangle lastBounds = PreferencesManager.getInstance().getPreferences().getWindowBounds();
+    if (lastBounds != null && this.getGraphicsConfiguration().getBounds().contains(lastBounds))
+    {
+      this.setSize(lastBounds.width, lastBounds.height);
+      this.validate();
+      this.setLocation(lastBounds.x, lastBounds.y);
+    }
+  }
 
   private ActionListener exampleItemClicked = new ActionListener(){
       public void actionPerformed(ActionEvent ae)
