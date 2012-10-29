@@ -24,6 +24,7 @@ import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.Raster3dPart;
 import com.t_oster.liblasercut.platform.Point;
 import com.t_oster.liblasercut.utils.BufferedImageAdapter;
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
@@ -184,9 +185,11 @@ public class Raster3dProfile extends LaserProfile
   @Override
   public void addToLaserJob(LaserJob job, GraphicSet set, List<LaserProperty> laserProperties)
   {
+    double factor = Util.dpi2dpmm(this.getDPI());
+    AffineTransform mm2laserPx = AffineTransform.getScaleInstance(factor, factor);
     for (GraphicSet objects : this.decompose(set))
     {
-      Rectangle2D bb = objects.getBoundingBox();
+      Rectangle2D bb = Helper.transform(objects.getBoundingBox(), mm2laserPx);
       if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
       {
         BufferedImage scaledImg = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -194,13 +197,14 @@ public class Raster3dProfile extends LaserProfile
         g.setColor(Color.white);
         g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
         g.setClip(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
+        g.setTransform(mm2laserPx);
         if (objects.getTransform() != null)
         {
-          Rectangle2D origBB = objects.getOriginalBoundingBox();
-          Rectangle2D targetBB = new Rectangle(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
-          g.setTransform(Helper.getTransform(origBB, targetBB));
+          AffineTransform t = g.getTransform();
+          t.concatenate(objects.getTransform());
+          g.setTransform(t);
         }
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         for (GraphicObject o : objects)
         {

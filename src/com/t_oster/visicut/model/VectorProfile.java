@@ -250,6 +250,8 @@ public class VectorProfile extends LaserProfile
     {
       objects = this.calculateOuterShape(objects);
     }
+    double factor = Util.dpi2dpmm(this.getDPI());
+    AffineTransform mm2laserpx = AffineTransform.getScaleInstance(factor, factor);
     VectorPart part = new VectorPart(laserProperties.get(0), this.getDPI());
     for (LaserProperty prop : laserProperties)
     {
@@ -262,8 +264,6 @@ public class VectorProfile extends LaserProfile
         {
           sh = objects.getTransform().createTransformedShape(sh);
         }
-        double factor = Util.dpi2dpmm(this.getDPI());
-        AffineTransform mm2laserpx = AffineTransform.getScaleInstance(factor, factor);
         sh = mm2laserpx.createTransformedShape(sh);
         conv.addShape(sh, part);
       }
