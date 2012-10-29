@@ -368,14 +368,14 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jButton2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="btFitScreen" min="-2" pref="37" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="btFillScreen" min="-2" pref="35" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="bt1to1" min="-2" pref="42" max="-2" attributes="0"/>
+                      <Component id="btFitScreen" min="-2" pref="32" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="btFillScreen" min="-2" pref="31" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="bt1to1" min="-2" pref="32" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="captureImageButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="123" max="32767" attributes="0"/>
+                      <EmptySpace pref="150" max="32767" attributes="0"/>
                       <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jScrollPane2" pref="604" max="32767" attributes="0"/>
@@ -393,19 +393,17 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jPanel2" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jButton2" pref="43" max="32767" attributes="1"/>
-                          <Component id="jButton1" min="0" pref="0" max="32767" attributes="1"/>
-                          <Component id="progressBar" min="-2" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="btFitScreen" alignment="0" pref="42" max="32767" attributes="1"/>
-                              <Component id="btFillScreen" alignment="0" pref="42" max="32767" attributes="1"/>
-                              <Component id="captureImageButton" alignment="3" pref="38" max="32767" attributes="1"/>
-                          </Group>
-                          <Component id="bt1to1" alignment="0" pref="43" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="progressBar" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="btFitScreen" alignment="0" max="32767" attributes="1"/>
+                          <Component id="jButton2" alignment="0" max="32767" attributes="1"/>
+                          <Component id="jButton1" alignment="0" pref="36" max="32767" attributes="1"/>
+                          <Component id="btFillScreen" alignment="0" max="32767" attributes="1"/>
+                          <Component id="bt1to1" alignment="0" max="32767" attributes="1"/>
+                          <Component id="captureImageButton" alignment="0" max="32767" attributes="1"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="683" max="32767" attributes="0"/>
+                      <Component id="jScrollPane2" pref="692" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -768,6 +766,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btFitScreen">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" resourceKey="btFitScreen.icon"/>
         <Property name="text" type="java.lang.String" resourceKey="btFitScreen.text"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[40, 36]"/>
@@ -786,6 +785,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btFillScreen">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" resourceKey="btFillScreen.icon"/>
         <Property name="text" type="java.lang.String" resourceKey="btFillScreen.text"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[40, 36]"/>
@@ -804,6 +804,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="bt1to1">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" resourceKey="bt1to1.icon"/>
         <Property name="text" type="java.lang.String" resourceKey="bt1to1.text"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[40, 36]"/>

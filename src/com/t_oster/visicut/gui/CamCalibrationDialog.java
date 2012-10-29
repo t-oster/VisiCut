@@ -256,6 +256,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
             }
         });
 
+        captureButton.setIcon(resourceMap.getIcon("captureButton.icon")); // NOI18N
         captureButton.setText(resourceMap.getString("captureButton.text")); // NOI18N
         captureButton.setName("captureButton"); // NOI18N
         captureButton.addActionListener(new java.awt.event.ActionListener() {
@@ -291,6 +292,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
 
         jScrollPane1.setViewportView(calibrationPanel1);
 
+        btZoomIn.setIcon(resourceMap.getIcon("btZoomIn.icon")); // NOI18N
         btZoomIn.setText(resourceMap.getString("btZoomIn.text")); // NOI18N
         btZoomIn.setName("btZoomIn"); // NOI18N
         btZoomIn.addActionListener(new java.awt.event.ActionListener() {
@@ -299,6 +301,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
             }
         });
 
+        btZoomOut.setIcon(resourceMap.getIcon("btZoomOut.icon")); // NOI18N
         btZoomOut.setText(resourceMap.getString("btZoomOut.text")); // NOI18N
         btZoomOut.setName("btZoomOut"); // NOI18N
         btZoomOut.addActionListener(new java.awt.event.ActionListener() {
@@ -311,35 +314,37 @@ public class CamCalibrationDialog extends javax.swing.JDialog
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 818, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(217, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
                 .addComponent(btZoomOut, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btZoomIn, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(captureButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(sendButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cancelButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 818, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 391, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(captureButton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btZoomIn)
+                    .addComponent(btZoomOut))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(okButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(cancelButton)
-                    .addComponent(sendButton)
-                    .addComponent(captureButton)
-                    .addComponent(btZoomIn)
-                    .addComponent(btZoomOut))
-                .addContainerGap())
+                    .addComponent(sendButton))
+                .addGap(17, 17, 17))
         );
 
         bindingGroup.bind();
