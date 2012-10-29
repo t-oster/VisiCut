@@ -59,6 +59,8 @@ import java.awt.FileDialog;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
@@ -109,6 +111,15 @@ public class MainView extends javax.swing.JFrame
     jScrollPane2.setColumnHeaderView(new Ruler(this.previewPanel, Ruler.HORIZONTAL));
     jScrollPane2.setRowHeaderView(new Ruler(this.previewPanel, Ruler.VERTICAL));
     jScrollPane2.setCorner(JScrollPane.UPPER_LEFT_CORNER, new JLabel("cm"));
+    jScrollPane2.addComponentListener(new ComponentListener(){
+      public void componentResized(ComponentEvent ce)
+      {
+        MainView.this.previewPanel.resizeToFitZoomAndArea();
+      }
+      public void componentMoved(ComponentEvent ce){}
+      public void componentShown(ComponentEvent ce){}
+      public void componentHidden(ComponentEvent ce){}
+    });
     if (Helper.isMacOS())
     {//Mac OS has its own exit menu and different Keybindings
       fileMenu.remove(exitMenuItem);
@@ -372,6 +383,9 @@ public class MainView extends javax.swing.JFrame
         jButton2 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
+        btFitScreen = new javax.swing.JButton();
+        btFillScreen = new javax.swing.JButton();
+        bt1to1 = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -692,10 +706,34 @@ public class MainView extends javax.swing.JFrame
         );
         previewPanelLayout.setVerticalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 634, Short.MAX_VALUE)
+            .addGap(0, 649, Short.MAX_VALUE)
         );
 
         jScrollPane2.setViewportView(previewPanel);
+
+        btFitScreen.setText(resourceMap.getString("btFitScreen.text")); // NOI18N
+        btFitScreen.setName("btFitScreen"); // NOI18N
+        btFitScreen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btFitScreenActionPerformed(evt);
+            }
+        });
+
+        btFillScreen.setText(resourceMap.getString("btFillScreen.text")); // NOI18N
+        btFillScreen.setName("btFillScreen"); // NOI18N
+        btFillScreen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btFillScreenActionPerformed(evt);
+            }
+        });
+
+        bt1to1.setText(resourceMap.getString("bt1to1.text")); // NOI18N
+        bt1to1.setName("bt1to1"); // NOI18N
+        bt1to1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt1to1ActionPerformed(evt);
+            }
+        });
 
         menuBar.setName("menuBar"); // NOI18N
 
@@ -942,12 +980,18 @@ public class MainView extends javax.swing.JFrame
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btFitScreen, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btFillScreen, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(bt1to1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(captureImageButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 160, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 108, Short.MAX_VALUE)
                         .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -961,14 +1005,17 @@ public class MainView extends javax.swing.JFrame
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, Short.MAX_VALUE)
                             .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(captureImageButton)))
+                            .addComponent(jButton1, 0, 0, Short.MAX_VALUE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(btFitScreen)
+                                .addComponent(btFillScreen)
+                                .addComponent(bt1to1)
+                                .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 27, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 655, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -2044,10 +2091,28 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
   }
 }//GEN-LAST:event_cbMaterialThicknessActionPerformed
 
+  private void btFitScreenActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btFitScreenActionPerformed
+  {//GEN-HEADEREND:event_btFitScreenActionPerformed
+    this.previewPanel.setZoom(100);
+  }//GEN-LAST:event_btFitScreenActionPerformed
+
+  private void btFillScreenActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btFillScreenActionPerformed
+  {//GEN-HEADEREND:event_btFillScreenActionPerformed
+    this.previewPanel.setOneToOneZoom();
+  }//GEN-LAST:event_btFillScreenActionPerformed
+
+  private void bt1to1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_bt1to1ActionPerformed
+  {//GEN-HEADEREND:event_bt1to1ActionPerformed
+    this.previewPanel.setZoomToFillParent();
+  }//GEN-LAST:event_bt1to1ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JButton bt1to1;
     private javax.swing.JButton btAddMaterial;
     private javax.swing.JButton btAddMaterialThickness;
+    private javax.swing.JButton btFillScreen;
+    private javax.swing.JButton btFitScreen;
     private javax.swing.JButton calculateTimeButton;
     private javax.swing.JMenuItem calibrateCameraMenuItem;
     private javax.swing.JButton captureImageButton;

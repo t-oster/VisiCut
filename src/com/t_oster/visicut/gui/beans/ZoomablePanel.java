@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut.gui.beans;
 
+import com.t_oster.liblasercut.platform.Util;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseWheelEvent;
@@ -47,6 +48,23 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     return areaSize;
   }
 
+  public void setOneToOneZoom()
+  {
+    double dpmm = Util.dpi2dpmm(this.getToolkit().getScreenResolution());
+    double cdpmm = this.getMmToPxTransform().getScaleX();
+    double czoom = this.getZoom();
+    this.setZoom((int) (dpmm*czoom/cdpmm));
+  }
+  
+  public void setZoomToFillParent()
+  {
+    double w = this.getAreaSize().x;
+    double h = this.getAreaSize().y;
+    double pw = this.getParent().getWidth();
+    double ph = this.getParent().getHeight();
+    this.setZoom((int) (w/h > pw/ph ? 100*ph/h : 100*pw/w));
+  }
+  
   /**
    * Set the value of AreaSize
    * This ist the area in mm, which will be visible
@@ -89,7 +107,7 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     this.setZoom(zoom, null);
   }
   
-  private void resizeToFitZoomAndArea()
+  public void resizeToFitZoomAndArea()
   {
     this.mm2pxCache = null;
     double w = this.getAreaSize().x;
