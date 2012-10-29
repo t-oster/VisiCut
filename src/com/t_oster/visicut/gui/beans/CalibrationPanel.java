@@ -69,6 +69,10 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
   public void setBackgroundImage(RenderedImage backgroundImage)
   {
     this.backgroundImage = backgroundImage;
+    if (this.backgroundImage != null)
+    {
+      this.setAreaSize(new Point2D.Double(this.backgroundImage.getWidth(), this.backgroundImage.getHeight()));
+    }
   }
   protected Point2D.Double[] pointList = new Point2D.Double[0];
 
@@ -92,9 +96,7 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
     this.pointList = pointList;
     this.repaint();
   }
-  //Contains the last Transform the component was rendered with
-  AffineTransform lastTransform;
-
+  
   @Override
   protected void paintComponent(Graphics g)
   {
@@ -102,10 +104,9 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
     if (g instanceof Graphics2D)
     {
       Graphics2D gg = (Graphics2D) g;
-      lastTransform = gg.getTransform();
       if (backgroundImage != null)
       {
-        gg.drawRenderedImage(backgroundImage, null);
+        gg.drawRenderedImage(backgroundImage, this.getMmToPxTransform());
       }
       gg.setColor(Color.red);
       for (Point2D.Double p : this.pointList)
@@ -144,7 +145,7 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
     selectedPoint = null;
     for (Point2D.Double source : this.getPointList())
     {
-      Point2D target = this.lastTransform.transform(source, null);
+      Point2D target = this.getMmToPxTransform().transform(source, null);
       if (p.distance(target) < SIZE)
       {
         selectedPoint = source;
@@ -177,7 +178,7 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
       try
       {
         Point p = me.getPoint();
-        lastTransform.createInverse().transform(p, p);
+        this.getMmToPxTransform().createInverse().transform(p, p);
         selectedPoint.x = p.x;
         selectedPoint.y = p.y;
       }

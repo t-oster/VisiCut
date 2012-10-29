@@ -42,10 +42,13 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
@@ -127,14 +130,22 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     Point2D.Double imageLowerRight = (Point2D.Double) laserLowerRight.clone();
     if (this.getResultingTransformation() != null)
     {
-      AffineTransform laser2img = this.getResultingTransformation();
-      laser2img.transform(imageUpperLeft, imageUpperLeft);
-      laser2img.transform(imageLowerRight, imageLowerRight);
-    }
-    this.calibrationPanel1.setPointList(new Point2D.Double[]
+      try
       {
-        imageUpperLeft, imageLowerRight
-      });
+        AffineTransform img2mm = this.getResultingTransformation();
+        AffineTransform mm2img = img2mm.createInverse();
+        mm2img.transform(imageUpperLeft, imageUpperLeft);
+        mm2img.transform(imageLowerRight, imageLowerRight);
+        this.calibrationPanel1.setPointList(new Point2D.Double[]
+          {
+            imageUpperLeft, imageLowerRight
+          });
+      }
+      catch (NoninvertibleTransformException ex)
+      {
+        Logger.getLogger(CamCalibrationDialog.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
   }
 
   /**
@@ -146,8 +157,9 @@ public class CamCalibrationDialog extends javax.swing.JDialog
   {
     Point2D.Double[] img = this.calibrationPanel1.getPointList();
     return Helper.getTransform(
-      new Rectangle2D.Double(laserUpperLeft.x, laserUpperLeft.y, laserLowerRight.x - laserUpperLeft.x, laserLowerRight.y - laserUpperLeft.y),
-      new Rectangle2D.Double(img[0].x, img[0].y, img[1].x - img[0].x, img[1].y - img[0].y));
+      new Rectangle2D.Double(img[0].x, img[0].y, img[1].x - img[0].x, img[1].y - img[0].y),
+      new Rectangle2D.Double(laserUpperLeft.x, laserUpperLeft.y, laserLowerRight.x - laserUpperLeft.x, laserLowerRight.y - laserUpperLeft.y)
+      );
   }
   protected AffineTransform resultingTransformation = null;
   public static final String PROP_RESULTINGTRANSFORMATION = "resultingTransformation";
@@ -205,12 +217,14 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     private void initComponents() {
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
-        jPanel1 = new javax.swing.JPanel();
-        calibrationPanel1 = new com.t_oster.visicut.gui.beans.CalibrationPanel();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         sendButton = new javax.swing.JButton();
         captureButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        calibrationPanel1 = new com.t_oster.visicut.gui.beans.CalibrationPanel();
+        btZoomIn = new javax.swing.JButton();
+        btZoomOut = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog"); // NOI18N
@@ -218,47 +232,6 @@ public class CamCalibrationDialog extends javax.swing.JDialog
         setName("Form"); // NOI18N
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(CamCalibrationDialog.class);
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanel1.border.title"))); // NOI18N
-        jPanel1.setName("jPanel1"); // NOI18N
-
-        calibrationPanel1.setName("calibrationPanel1"); // NOI18N
-
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${laserCam.capturedImage}"), calibrationPanel1, org.jdesktop.beansbinding.BeanProperty.create("backgroundImage"), "CamImageToPanel");
-        bindingGroup.addBinding(binding);
-
-        calibrationPanel1.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
-            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
-                calibrationPanel1MouseWheelMoved(evt);
-            }
-        });
-
-        javax.swing.GroupLayout calibrationPanel1Layout = new javax.swing.GroupLayout(calibrationPanel1);
-        calibrationPanel1.setLayout(calibrationPanel1Layout);
-        calibrationPanel1Layout.setHorizontalGroup(
-            calibrationPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 826, Short.MAX_VALUE)
-        );
-        calibrationPanel1Layout.setVerticalGroup(
-            calibrationPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 367, Short.MAX_VALUE)
-        );
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(calibrationPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(calibrationPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
         okButton.setText(resourceMap.getString("okButton.text")); // NOI18N
         okButton.setName("okButton"); // NOI18N
         okButton.addActionListener(new java.awt.event.ActionListener() {
@@ -291,12 +264,60 @@ public class CamCalibrationDialog extends javax.swing.JDialog
             }
         });
 
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("Preview"));
+        jScrollPane1.setName("jScrollPane1"); // NOI18N
+
+        calibrationPanel1.setName("calibrationPanel1"); // NOI18N
+
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${laserCam.capturedImage}"), calibrationPanel1, org.jdesktop.beansbinding.BeanProperty.create("backgroundImage"), "CamImageToPanel");
+        bindingGroup.addBinding(binding);
+
+        calibrationPanel1.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+                calibrationPanel1MouseWheelMoved(evt);
+            }
+        });
+
+        javax.swing.GroupLayout calibrationPanel1Layout = new javax.swing.GroupLayout(calibrationPanel1);
+        calibrationPanel1.setLayout(calibrationPanel1Layout);
+        calibrationPanel1Layout.setHorizontalGroup(
+            calibrationPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 960, Short.MAX_VALUE)
+        );
+        calibrationPanel1Layout.setVerticalGroup(
+            calibrationPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 409, Short.MAX_VALUE)
+        );
+
+        jScrollPane1.setViewportView(calibrationPanel1);
+
+        btZoomIn.setText(resourceMap.getString("btZoomIn.text")); // NOI18N
+        btZoomIn.setName("btZoomIn"); // NOI18N
+        btZoomIn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btZoomInActionPerformed(evt);
+            }
+        });
+
+        btZoomOut.setText(resourceMap.getString("btZoomOut.text")); // NOI18N
+        btZoomOut.setName("btZoomOut"); // NOI18N
+        btZoomOut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btZoomOutActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 818, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(473, Short.MAX_VALUE)
+                .addContainerGap(217, Short.MAX_VALUE)
+                .addComponent(btZoomOut, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btZoomIn, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(captureButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sendButton)
@@ -304,21 +325,21 @@ public class CamCalibrationDialog extends javax.swing.JDialog
                 .addComponent(cancelButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15))
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 391, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cancelButton)
                     .addComponent(okButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cancelButton)
                     .addComponent(sendButton)
-                    .addComponent(captureButton)))
+                    .addComponent(captureButton)
+                    .addComponent(btZoomIn)
+                    .addComponent(btZoomOut))
+                .addContainerGap())
         );
 
         bindingGroup.bind();
@@ -415,11 +436,23 @@ new Thread()
     }.start();
 }//GEN-LAST:event_captureButtonActionPerformed
 
+  private void btZoomInActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btZoomInActionPerformed
+  {//GEN-HEADEREND:event_btZoomInActionPerformed
+    calibrationPanel1.setZoom(calibrationPanel1.getZoom() - (-2 * calibrationPanel1.getZoom() / 32));
+  }//GEN-LAST:event_btZoomInActionPerformed
+
+  private void btZoomOutActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btZoomOutActionPerformed
+  {//GEN-HEADEREND:event_btZoomOutActionPerformed
+    calibrationPanel1.setZoom(calibrationPanel1.getZoom() - (2 * calibrationPanel1.getZoom() / 32));
+  }//GEN-LAST:event_btZoomOutActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btZoomIn;
+    private javax.swing.JButton btZoomOut;
     private com.t_oster.visicut.gui.beans.CalibrationPanel calibrationPanel1;
     private javax.swing.JButton cancelButton;
     private javax.swing.JButton captureButton;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton okButton;
     private javax.swing.JButton sendButton;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;

@@ -1529,6 +1529,7 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
   {
     dialog.showErrorMessage(ex, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ERROR WHILE SAVING SETTINGS"));
   }
+  this.previewPanel.repaint();
 }//GEN-LAST:event_calibrateCameraMenuItemActionPerformed
 
 private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobMenuItemActionPerformed
