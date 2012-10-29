@@ -381,11 +381,11 @@ public class MainView extends javax.swing.JFrame
         progressBar = new javax.swing.JProgressBar();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
         btFitScreen = new javax.swing.JButton();
         btFillScreen = new javax.swing.JButton();
         bt1to1 = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -510,11 +510,11 @@ public class MainView extends javax.swing.JFrame
         predefinedMappingPanel.setLayout(predefinedMappingPanelLayout);
         predefinedMappingPanelLayout.setHorizontalGroup(
             predefinedMappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 415, Short.MAX_VALUE)
         );
         predefinedMappingPanelLayout.setVerticalGroup(
             predefinedMappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE)
         );
 
         mappingTabbedPane.addTab(resourceMap.getString("predefinedMappingPanel.TabConstraints.tabTitle"), predefinedMappingPanel); // NOI18N
@@ -527,11 +527,11 @@ public class MainView extends javax.swing.JFrame
         customMappingPanel1.setLayout(customMappingPanel1Layout);
         customMappingPanel1Layout.setHorizontalGroup(
             customMappingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 415, Short.MAX_VALUE)
         );
         customMappingPanel1Layout.setVerticalGroup(
             customMappingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
+            .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE)
         );
 
         mappingTabbedPane.addTab(resourceMap.getString("customMappingPanelContainer.TabConstraints.tabTitle"), customMappingPanel1); // NOI18N
@@ -584,8 +584,8 @@ public class MainView extends javax.swing.JFrame
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(mappingTabbedPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
-                    .addComponent(laserCutterComboBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
+                    .addComponent(mappingTabbedPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
+                    .addComponent(laserCutterComboBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(materialComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -594,13 +594,13 @@ public class MainView extends javax.swing.JFrame
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(cbEditBeforeExecute)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 122, Short.MAX_VALUE)
                         .addComponent(executeJobButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel10)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
                         .addComponent(calculateTimeButton))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -610,7 +610,7 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(btAddMaterialThickness))
                             .addComponent(jLabel5))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBox1, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE))
+                        .addComponent(jCheckBox1, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE))
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING))
                 .addContainerGap())
         );
@@ -654,7 +654,10 @@ public class MainView extends javax.swing.JFrame
 
         captureImageButton.setIcon(resourceMap.getIcon("captureImageButton.icon")); // NOI18N
         captureImageButton.setText(resourceMap.getString("captureImageButton.text")); // NOI18N
+        captureImageButton.setMaximumSize(new java.awt.Dimension(129, 36));
+        captureImageButton.setMinimumSize(new java.awt.Dimension(129, 36));
         captureImageButton.setName("captureImageButton"); // NOI18N
+        captureImageButton.setPreferredSize(new java.awt.Dimension(129, 36));
         captureImageButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 captureImageButtonActionPerformed(evt);
@@ -678,6 +681,39 @@ public class MainView extends javax.swing.JFrame
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
+            }
+        });
+
+        btFitScreen.setText(resourceMap.getString("btFitScreen.text")); // NOI18N
+        btFitScreen.setMaximumSize(new java.awt.Dimension(40, 36));
+        btFitScreen.setMinimumSize(new java.awt.Dimension(40, 36));
+        btFitScreen.setName("btFitScreen"); // NOI18N
+        btFitScreen.setPreferredSize(new java.awt.Dimension(40, 36));
+        btFitScreen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btFitScreenActionPerformed(evt);
+            }
+        });
+
+        btFillScreen.setText(resourceMap.getString("btFillScreen.text")); // NOI18N
+        btFillScreen.setMaximumSize(new java.awt.Dimension(40, 36));
+        btFillScreen.setMinimumSize(new java.awt.Dimension(40, 36));
+        btFillScreen.setName("btFillScreen"); // NOI18N
+        btFillScreen.setPreferredSize(new java.awt.Dimension(40, 36));
+        btFillScreen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btFillScreenActionPerformed(evt);
+            }
+        });
+
+        bt1to1.setText(resourceMap.getString("bt1to1.text")); // NOI18N
+        bt1to1.setMaximumSize(new java.awt.Dimension(40, 36));
+        bt1to1.setMinimumSize(new java.awt.Dimension(40, 36));
+        bt1to1.setName("bt1to1"); // NOI18N
+        bt1to1.setPreferredSize(new java.awt.Dimension(40, 36));
+        bt1to1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt1to1ActionPerformed(evt);
             }
         });
 
@@ -710,30 +746,6 @@ public class MainView extends javax.swing.JFrame
         );
 
         jScrollPane2.setViewportView(previewPanel);
-
-        btFitScreen.setText(resourceMap.getString("btFitScreen.text")); // NOI18N
-        btFitScreen.setName("btFitScreen"); // NOI18N
-        btFitScreen.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btFitScreenActionPerformed(evt);
-            }
-        });
-
-        btFillScreen.setText(resourceMap.getString("btFillScreen.text")); // NOI18N
-        btFillScreen.setName("btFillScreen"); // NOI18N
-        btFillScreen.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btFillScreenActionPerformed(evt);
-            }
-        });
-
-        bt1to1.setText(resourceMap.getString("bt1to1.text")); // NOI18N
-        bt1to1.setName("bt1to1"); // NOI18N
-        bt1to1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bt1to1ActionPerformed(evt);
-            }
-        });
 
         menuBar.setName("menuBar"); // NOI18N
 
@@ -980,18 +992,18 @@ public class MainView extends javax.swing.JFrame
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btFitScreen, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btFitScreen, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btFillScreen, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(bt1to1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btFillScreen, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(bt1to1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(captureImageButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 108, Short.MAX_VALUE)
+                        .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 123, Short.MAX_VALUE)
                         .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1006,16 +1018,16 @@ public class MainView extends javax.swing.JFrame
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, Short.MAX_VALUE)
-                            .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE)
                             .addComponent(jButton1, 0, 0, Short.MAX_VALUE)
+                            .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(btFitScreen)
-                                .addComponent(btFillScreen)
-                                .addComponent(bt1to1)
-                                .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 27, Short.MAX_VALUE)))
+                                .addComponent(btFitScreen, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+                                .addComponent(btFillScreen, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+                                .addComponent(captureImageButton, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
+                            .addComponent(bt1to1, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 683, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -1861,6 +1873,7 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
         try
         {
           final FileFilter zipFilter = new ExtensionFilter("zip", java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ZIPPED SETTINGS (*.ZIP)"));
+          File file = null;
           //On Mac os, awt.FileDialog looks more native
           if (Helper.isMacOS())
           {
@@ -1881,8 +1894,7 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
             openFileChooser.setVisible(true);
             if (openFileChooser.getFile() != null)
             {
-              File file = new File(new File(openFileChooser.getDirectory()), openFileChooser.getFile());
-              PreferencesManager.getInstance().importSettings(file);
+              file = new File(new File(openFileChooser.getDirectory()), openFileChooser.getFile());
             }
           }
           else
@@ -1895,14 +1907,17 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
             int returnVal = openFileChooser.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION)
             {
-              File file = openFileChooser.getSelectedFile();
-              PreferencesManager.getInstance().importSettings(file);
-              this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
-              this.cbEditBeforeExecute.setSelected(PreferencesManager.getInstance().getPreferences().isEditSettingsBeforeExecuting());
-              this.fillComboBoxes();
-              this.refreshExampleMenu();
-              dialog.showSuccessMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("SETTINGS SUCCESSFULLY IMPORTED"));
+              file = openFileChooser.getSelectedFile();
             }
+          }
+          if (file != null)
+          {
+            PreferencesManager.getInstance().importSettings(file);
+            this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
+            this.cbEditBeforeExecute.setSelected(PreferencesManager.getInstance().getPreferences().isEditSettingsBeforeExecuting());
+            this.fillComboBoxes();
+            this.refreshExampleMenu();
+            dialog.showSuccessMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("SETTINGS SUCCESSFULLY IMPORTED"));
           }
         }
         catch (Exception e)
