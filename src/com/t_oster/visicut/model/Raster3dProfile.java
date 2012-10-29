@@ -189,21 +189,20 @@ public class Raster3dProfile extends LaserProfile
     AffineTransform mm2laserPx = AffineTransform.getScaleInstance(factor, factor);
     for (GraphicSet objects : this.decompose(set))
     {
-      Rectangle2D bb = Helper.transform(objects.getBoundingBox(), mm2laserPx);
-      if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
+      Rectangle bb = Helper.toRect(Helper.transform(objects.getBoundingBox(), mm2laserPx));
+      if (bb != null && bb.width > 0 && bb.height > 0)
       {
-        BufferedImage scaledImg = new BufferedImage((int) bb.getWidth(), (int) bb.getHeight(), BufferedImage.TYPE_INT_RGB);
+        BufferedImage scaledImg = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = scaledImg.createGraphics();
+        //fill it with white background for dithering
         g.setColor(Color.white);
         g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
         g.setClip(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
-        g.setTransform(mm2laserPx);
-        if (objects.getTransform() != null)
-        {
-          AffineTransform t = g.getTransform();
-          t.concatenate(objects.getTransform());
-          g.setTransform(t);
-        }
+        //render all objects onto the image, moved to the images origin
+        AffineTransform pipe = AffineTransform.getTranslateInstance(-bb.x, -bb.y);
+        pipe.concatenate(mm2laserPx);
+        pipe.concatenate(objects.getTransform());
+        g.setTransform(pipe);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         for (GraphicObject o : objects)
