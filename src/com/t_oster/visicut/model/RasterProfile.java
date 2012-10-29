@@ -223,7 +223,7 @@ public class RasterProfile extends LaserProfile
         BlackWhiteRaster bw = new BlackWhiteRaster(ad, this.getDitherAlgorithm());
         for (LaserProperty prop : laserProperties)
         {
-          RasterPart part = new RasterPart(bw, prop, new Point((int) bb.getX(), (int) bb.getY()), getDPI());
+          RasterPart part = new RasterPart(bw, prop, new Point(bb.x, bb.y), getDPI());
           job.addPart(part);
         }
       }
