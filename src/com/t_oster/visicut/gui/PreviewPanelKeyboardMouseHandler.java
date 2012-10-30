@@ -65,7 +65,10 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   private JPopupMenu menu = new JPopupMenu();
   private JMenuItem optionsmenu = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("PROFILE_OPTIONS"));
   private JMenuItem resetMenuItem = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("RESET TRANSFORMATION"));
-
+  //TODO: i10n
+  private JMenuItem flipHorizMenuItem = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("FLIP_HORIZONTALLY"));
+  private JMenuItem flipVertMenuItem = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("FLIP_VERTICALLY"));
+  
   public PreviewPanelKeyboardMouseHandler(PreviewPanel panel)
   {
     this.previewPanel = panel;
@@ -73,6 +76,11 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     this.previewPanel.addMouseListener(this);
     this.previewPanel.addMouseMotionListener(this);
     this.previewPanel.addKeyListener(this);
+    this.buildMenu();
+  }
+  
+  private void buildMenu()
+  {
     menu.add(resetMenuItem);
     resetMenuItem.addActionListener(new ActionListener()
     {
@@ -131,8 +139,38 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       }
     });
     menu.add(optionsmenu);
+    flipHorizMenuItem.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae)
+      {
+        flip(true);
+      }
+    });
+    menu.add(flipHorizMenuItem);
+    flipVertMenuItem.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae)
+      {
+        flip(false);
+      }
+    });
+    menu.add(flipVertMenuItem);
   }
 
+  private void flip(boolean horizontal)
+  {
+    Rectangle2D bb = previewPanel.getGraphicObjects().getBoundingBox();
+    double mx = bb.getX()+bb.getWidth()/2;
+    double my = bb.getY()+bb.getHeight()/2;
+    AffineTransform flipX = AffineTransform.getTranslateInstance(mx, my);
+    flipX.scale(horizontal ? -1 : 1, horizontal ? 1 : -1);
+    flipX.translate(-mx, -my);
+    AffineTransform cur = previewPanel.getGraphicObjects().getTransform();
+    cur.preConcatenate(flipX);
+    previewPanel.getGraphicObjects().setTransform(cur);
+    previewPanel.setEditRectangle(null);
+    previewPanel.ClearCache();
+    previewPanel.repaint();
+  }
+  
   private EditRectangle getEditRect()
   {
     return this.previewPanel.getEditRectangle();
@@ -196,8 +234,10 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   private void applyEditRectoToSet()
   {
     //Apply changes to the EditRectangle to the getSelectedSet()
-    Rectangle2D src = getSelectedSet().getOriginalBoundingBox();
-    getSelectedSet().setTransform(Helper.getTransform(src, getEditRect()));
+    Rectangle2D src = getSelectedSet().getBoundingBox();
+    AffineTransform t = getSelectedSet().getTransform();
+    t.preConcatenate(Helper.getTransform(src, getEditRect()));
+    getSelectedSet().setTransform(t);
     this.previewPanel.repaint();
   }
 
