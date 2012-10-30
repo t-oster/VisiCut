@@ -63,6 +63,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -295,8 +296,6 @@ public class MainView extends javax.swing.JFrame
   {
     String sp = this.visicutModel1.getMaterial() != null ? this.visicutModel1.getMaterial().getName() : null;
     this.materialComboBox.removeAllItems();
-    this.materialComboBox.addItem(null);
-    this.materialComboBox.setSelectedIndex(0);
     for (MaterialProfile mp : MaterialManager.getInstance().getAll())
     {
       this.materialComboBox.addItem(mp);
@@ -314,8 +313,6 @@ public class MainView extends javax.swing.JFrame
   {
     String sld = this.visicutModel1.getSelectedLaserDevice() != null ? this.visicutModel1.getSelectedLaserDevice().getName() : null;
     this.laserCutterComboBox.removeAllItems();
-    this.laserCutterComboBox.addItem(null);
-    this.laserCutterComboBox.setSelectedIndex(0);
     for (LaserDevice ld : LaserDeviceManager.getInstance().getAll())
     {
       this.laserCutterComboBox.addItem(ld);
@@ -325,9 +322,9 @@ public class MainView extends javax.swing.JFrame
       }
     }
     //hide lasercutter combo box if only one lasercutter available
-    if (this.laserCutterComboBox.getItemCount() == 2)
+    if (this.laserCutterComboBox.getItemCount() == 1)
     {
-      this.laserCutterComboBox.setSelectedIndex(1);
+      this.laserCutterComboBox.setSelectedIndex(0);
       this.laserCutterComboBox.setVisible(false);
       this.jLabel9.setVisible(false);
     }
@@ -1119,6 +1116,11 @@ public class MainView extends javax.swing.JFrame
       {
         this.visicutModel1.loadGraphicFile(file);
       }
+      //if the image is too big, fit it and notify the user
+      if (visicutModel1.fitMaterialIntoBed())
+      {
+        dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("NEEDED_REFIT"));
+      }
       this.previewPanel.setZoom(100d);
       this.previewPanel.setEditRectangle(null);
       this.progressBar.setIndeterminate(false);
@@ -1675,21 +1677,22 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     {
       return;
     }
-    if (this.laserCutterComboBox.isDisabled(newDev))
-    {
-      this.laserCutterComboBox.setSelectedItem(visicutModel1.getSelectedLaserDevice());
-      return;
-    }
     this.visicutModel1.setSelectedLaserDevice(newDev);
     if (this.visicutModel1.getSelectedLaserDevice() == null || this.visicutModel1.getSelectedLaserDevice().getCameraURL() == null || "".equals(this.visicutModel1.getSelectedLaserDevice().getCameraURL()))
     {
       this.visicutModel1.setBackgroundImage(null);
+      this.previewPanel.setEditRectangle(null);
     }
     else
     {
       this.captureImage();
     }
     this.refreshButtonStates();
+    //if the image is too big, fit it and notify the user
+    if (visicutModel1.fitMaterialIntoBed())
+    {
+      dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("NEEDED_REFIT"));
+    }
   }//GEN-LAST:event_laserCutterComboBoxActionPerformed
 
   private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem2ActionPerformed

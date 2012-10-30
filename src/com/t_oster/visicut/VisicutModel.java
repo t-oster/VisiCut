@@ -395,6 +395,7 @@ public class VisicutModel
     }
     if (loadedMappings == null)
     {
+      //TODO: i10n
       JOptionPane.showMessageDialog(null, "Could not load Mapping from PLF File");
     }
     else
@@ -403,15 +404,16 @@ public class VisicutModel
     }
     if (transform == null)
     {
+      //TODO: i10n
       JOptionPane.showMessageDialog(null, "Could not load Transform from PLF File");
     }
     if (inputFile == null || !inputFile.exists())
     {
+      //TODO: i10n
       throw new ImportException("Corrupted Input File");
     }
-    GraphicSet gs = new GraphicSet();
     inputFile.deleteOnExit();
-    gs = this.loadSetFromFile(inputFile);
+    GraphicSet gs = this.loadSetFromFile(inputFile);
     this.setSourceFile(inputFile);
     if (gs != null)
     {
@@ -750,5 +752,53 @@ public class VisicutModel
       result.add(c);
     }
     return result;
+  }
+
+  /**
+   * Adjusts the Transform of the Graphic-Objects such that the Objects
+   * fit into the current Laser-Bed.
+   * If modification was necessary, it returns true.
+   * @return 
+   */
+  public boolean fitMaterialIntoBed()
+  {
+    boolean modified = false;
+    double bw = getSelectedLaserDevice() != null ? getSelectedLaserDevice().getLaserCutter().getBedWidth() : 600d;
+    double bh = getSelectedLaserDevice() != null ? getSelectedLaserDevice().getLaserCutter().getBedHeight() : 300d;
+    if (getGraphicObjects() != null)
+    {
+      Rectangle2D bb = this.getGraphicObjects().getBoundingBox();
+      AffineTransform trans = getGraphicObjects().getTransform();
+      //first try moving to origin, if not in range
+      if (bb.getX() < 0 || bb.getX() + bb.getWidth() > bw)
+      {
+        trans.preConcatenate(AffineTransform.getTranslateInstance(-bb.getX(), 0));
+        getGraphicObjects().setTransform(trans);
+        bb = this.getGraphicObjects().getBoundingBox();
+        modified = true;
+      }
+      if (bb.getY() < 0 || bb.getY() + bb.getHeight() > bh)
+      {
+        trans.preConcatenate(AffineTransform.getTranslateInstance(0, -bb.getY()));
+        getGraphicObjects().setTransform(trans);
+        bb = this.getGraphicObjects().getBoundingBox();
+        modified = true;
+      }
+      //if still too big (we're in origin now) we have to resize
+      if (bb.getX() + bb.getWidth() > bw)
+      {
+        trans.preConcatenate(AffineTransform.getScaleInstance(bw/bb.getWidth(), bw/bb.getWidth()));
+        getGraphicObjects().setTransform(trans);
+        bb = this.getGraphicObjects().getBoundingBox();
+        modified = true;
+      }
+      if (bb.getY() + bb.getHeight() > bh)
+      {
+        trans.preConcatenate(AffineTransform.getScaleInstance(bh/bb.getWidth(), bh/bb.getHeight()));
+        getGraphicObjects().setTransform(trans);
+        modified = true;
+      }
+    }
+    return modified;
   }
 }
