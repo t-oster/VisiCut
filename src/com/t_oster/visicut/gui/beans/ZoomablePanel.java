@@ -62,7 +62,7 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     double h = this.getAreaSize().y;
     double pw = this.getParent().getWidth();
     double ph = this.getParent().getHeight();
-    this.setZoom((int) (w/h > pw/ph ? 100*ph/h : 100*pw/w));
+    this.setZoom((int) (w/h > pw/ph ? 100*ph/pw*w/h : 100*pw/ph*h/w));
   }
   
   /**
@@ -84,7 +84,7 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     this.addMouseWheelListener(this);
   }
   
-  protected int zoom = 100;
+  protected double zoom = 100;
   public static final String PROP_ZOOM = "zoom";
 
   /**
@@ -92,7 +92,7 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
    *
    * @return the value of zoom
    */
-  public int getZoom()
+  public double getZoom()
   {
     return zoom;
   }
@@ -102,7 +102,7 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
    *
    * @param zoom new value of zoom
    */
-  public void setZoom(int zoom)
+  public void setZoom(double zoom)
   {
     this.setZoom(zoom, null);
   }
@@ -120,13 +120,13 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     this.revalidate();
   }
   
-  public void setZoom(int zoom, Point stablePoint)
+  public void setZoom(double zoom, Point stablePoint)
   {
     if (zoom < 100)
     {
       zoom = 100;
     }
-    int oldZoom = this.zoom;
+    double oldZoom = this.zoom;
     this.zoom = zoom;
     if (oldZoom != zoom)
     {

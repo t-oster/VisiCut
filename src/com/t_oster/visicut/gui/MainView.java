@@ -1111,7 +1111,7 @@ public class MainView extends javax.swing.JFrame
       {
         this.visicutModel1.loadGraphicFile(file);
       }
-      this.previewPanel.setZoom(100);
+      this.previewPanel.setZoom(100d);
       this.previewPanel.setEditRectangle(null);
       this.progressBar.setIndeterminate(false);
       this.refreshButtonStates();
@@ -1498,7 +1498,7 @@ private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 
 private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newMenuItemActionPerformed
   this.previewPanel.setEditRectangle(null);
-  this.previewPanel.setZoom(100);
+  this.previewPanel.setZoom(100d);
   this.visicutModel1.setGraphicObjects(new GraphicSet());
 }//GEN-LAST:event_newMenuItemActionPerformed
 
@@ -1575,7 +1575,7 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
               BufferedImage back = ImageIO.read(src);
               if (back != null && MainView.this.visicutModel1.getBackgroundImage() == null)
               {//First Time Image is Captured => resize View
-                MainView.this.previewPanel.setZoom(100);
+                MainView.this.previewPanel.setZoom(100d);
               }
               MainView.this.visicutModel1.setBackgroundImage(back);
             }
@@ -2111,7 +2111,7 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
 
   private void btFitScreenActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btFitScreenActionPerformed
   {//GEN-HEADEREND:event_btFitScreenActionPerformed
-    this.previewPanel.setZoom(100);
+    this.previewPanel.setZoom(100d);
   }//GEN-LAST:event_btFitScreenActionPerformed
 
   private void btFillScreenActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btFillScreenActionPerformed
