@@ -487,7 +487,30 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
                 break;
               }
             }
-            //TODO: Make sure the bounds of EditRect don't exceed the workspace
+            if (getEditRect().width < 0.1)
+            {
+              getEditRect().width = 0.1;
+            }
+            if (getEditRect().height < 0.1)
+            {
+              getEditRect().height = 0.1;
+            }
+            if (getEditRect().x < 0)
+            {
+              getEditRect().x = 0;
+            }
+            if (getEditRect().y < 0)
+            {
+              getEditRect().y = 0;
+            }
+            if (getEditRect().x + getEditRect().width > previewPanel.getAreaSize().x)
+            {
+              getEditRect().width = previewPanel.getAreaSize().x - getEditRect().x;
+            }
+            if (getEditRect().y + getEditRect().height > previewPanel.getAreaSize().y)
+            {
+              getEditRect().height = previewPanel.getAreaSize().y - getEditRect().y;
+            }
             this.previewPanel.setEditRectangle(getEditRect());
             break;
           }
