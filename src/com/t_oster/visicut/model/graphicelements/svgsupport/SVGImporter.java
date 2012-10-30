@@ -2,17 +2,17 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
@@ -21,11 +21,10 @@ package com.t_oster.visicut.model.graphicelements.svgsupport;
 import com.kitfox.svg.Defs;
 import com.kitfox.svg.Gradient;
 import com.kitfox.svg.Group;
-import com.kitfox.svg.SVGException;
-import com.t_oster.visicut.model.graphicelements.Importer;
 import com.kitfox.svg.ImageSVG;
 import com.kitfox.svg.PatternSVG;
 import com.kitfox.svg.SVGElement;
+import com.kitfox.svg.SVGException;
 import com.kitfox.svg.SVGRoot;
 import com.kitfox.svg.SVGUniverse;
 import com.kitfox.svg.ShapeElement;
@@ -37,6 +36,7 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
+import com.t_oster.visicut.model.graphicelements.Importer;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
@@ -124,7 +124,7 @@ public class SVGImporter implements Importer
    * Calculates the size in mm (with repolution dpi)
    * of a NumberWithUnits element (SVG-Element)
    * @param n
-   * @param dpi 
+   * @param dpi
    */
   public static double numberWithUnitsToMm(NumberWithUnits n, double dpi)
   {
@@ -145,15 +145,15 @@ public class SVGImporter implements Importer
         return n.getValue();
     }
   }
-  
+
   /**
    * Since different programs have a different idea of the reference resolution
    * in SVG, this method tries to determine it.
    * @param root
    * @param f
-   * @return 
+   * @return
    */
-  private double determineResolution(SVGRoot root, File f)
+  private double determineResolution(File f)
   {
     BufferedReader in = null;;
     double result = 90;
@@ -197,11 +197,11 @@ public class SVGImporter implements Importer
     }
     return result;
   }
-  
+
   /*
    * Tries to determine the Coordinate resolution in DPI.
    * SVG default is 90, but AI generates 72??
-   * 
+   *
    */
   private AffineTransform determineTransformation(SVGRoot root, double svgResolution)
   {
@@ -249,7 +249,7 @@ public class SVGImporter implements Importer
   {
     try
     {
-      double svgResolution = determineResolution(root, inputFile);
+      double svgResolution = determineResolution(inputFile);
       GraphicSet result = this.importFile(new FileInputStream(inputFile), inputFile.getName(), svgResolution);
       return result;
     }

@@ -48,7 +48,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 
@@ -239,7 +238,12 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
           Double x = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("LEFT OFFSET"), this.getEditRect().x / 10);
           if (x == null)
           {
-            return false;
+            return true;
+          }
+          if (x < 0 || x*10+this.getEditRect().width > previewPanel.getAreaSize().x)
+          {
+            dialogHelper.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("OUT_OF_BOUNDS"));
+            return true;
           }
           this.getEditRect().x = x * 10;
           this.applyEditRectoToSet();
@@ -247,11 +251,15 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
         }
         if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.Y).contains(me.getPoint()))
         {
-
           Double y = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("TOP OFFSET"), this.getEditRect().y / 10);
           if (y == null)
           {
-            return false;
+            return true;
+          }
+          if (y < 0 || y*10+this.getEditRect().height > previewPanel.getAreaSize().y)
+          {
+            dialogHelper.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("OUT_OF_BOUNDS"));
+            return true;
           }
           this.getEditRect().y = y * 10;
           this.applyEditRectoToSet();
@@ -262,7 +270,12 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
           Double w = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("WIDTH"), this.getEditRect().width / 10);
           if (w == null)
           {
-            return false;
+            return true;
+          }
+          if (w <= 0 || w*10+this.getEditRect().x > previewPanel.getAreaSize().x)
+          {
+            dialogHelper.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("OUT_OF_BOUNDS"));
+            return true;
           }
           this.getEditRect().width = w * 10;
           this.applyEditRectoToSet();
@@ -273,7 +286,12 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
           Double h = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("HEIGHT"), this.getEditRect().height / 10);
           if (h == null)
           {
-            return false;
+            return true;
+          }
+          if (h <= 0 || h*10+this.getEditRect().y > previewPanel.getAreaSize().y)
+          {
+            dialogHelper.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("OUT_OF_BOUNDS"));
+            return true;
           }
           this.getEditRect().height = h * 10;
           this.applyEditRectoToSet();
@@ -469,6 +487,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
                 break;
               }
             }
+            //TODO: Make sure the bounds of EditRect don't exceed the workspace
             this.previewPanel.setEditRectangle(getEditRect());
             break;
           }
@@ -503,6 +522,24 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
 
   private void moveSet(double mmDiffX, double mmDiffY)
   {
+    Rectangle2D bb = getSelectedSet().getBoundingBox();
+    //make sure, we're not moving the bb out of the laser-area
+    if (bb.getX() + mmDiffX < 0)
+    {
+      mmDiffX = -bb.getX();
+    }
+    if (bb.getY() + mmDiffY < 0)
+    {
+      mmDiffY = -bb.getY();
+    }
+    if (bb.getX() + bb.getWidth() + mmDiffX > previewPanel.getAreaSize().x)
+    {
+      mmDiffX = previewPanel.getAreaSize().x - (bb.getX() + bb.getWidth());
+    }
+    if (bb.getY() + bb.getHeight() + mmDiffY > previewPanel.getAreaSize().y)
+    {
+      mmDiffY = previewPanel.getAreaSize().y - (bb.getY() + bb.getHeight());
+    }
     if (mmDiffX == 0 && mmDiffY == 0)
     {
       return;
@@ -513,7 +550,6 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       tr.concatenate(getSelectedSet().getTransform());
     }
     getSelectedSet().setTransform(tr);
-    Rectangle2D bb = getSelectedSet().getBoundingBox();
     this.previewPanel.setEditRectangle(new EditRectangle(bb));
   }
 
