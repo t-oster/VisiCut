@@ -51,9 +51,11 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
   public void setOneToOneZoom()
   {
     double dpmm = Util.dpi2dpmm(this.getToolkit().getScreenResolution());
-    double cdpmm = this.getMmToPxTransform().getScaleX();
-    double czoom = this.getZoom();
-    this.setZoom((int) (dpmm*czoom/cdpmm));
+    double w = this.getAreaSize().x;
+    double h = this.getAreaSize().y;
+    double pw = this.getParent().getWidth();
+    double ph = this.getParent().getHeight();
+    this.setZoom(pw/ph <= w/h ? 100 * w/pw * dpmm : 100*h/ph*dpmm);
   }
   
   public void setZoomToFillParent()
@@ -62,7 +64,7 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     double h = this.getAreaSize().y;
     double pw = this.getParent().getWidth();
     double ph = this.getParent().getHeight();
-    this.setZoom((int) (w/h > pw/ph ? 100*ph/pw*w/h : 100*pw/ph*h/w));
+    this.setZoom(w/h > pw/ph ? 100*ph/pw*w/h : 100*pw/ph*h/w);
   }
   
   /**

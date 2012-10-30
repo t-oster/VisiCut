@@ -363,7 +363,7 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Group type="102" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
                       <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jButton2" min="-2" max="-2" attributes="0"/>
@@ -374,36 +374,38 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="bt1to1" min="-2" pref="32" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="captureImageButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="150" max="32767" attributes="0"/>
+                      <Component id="captureImageButton" min="-2" pref="181" max="-2" attributes="0"/>
+                      <EmptySpace pref="118" max="32767" attributes="0"/>
                       <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="jScrollPane2" pref="604" max="32767" attributes="0"/>
+                  <Component id="jScrollPane2" pref="652" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
+          <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="jPanel2" alignment="0" max="32767" attributes="0"/>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="progressBar" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="btFitScreen" alignment="0" max="32767" attributes="1"/>
-                          <Component id="jButton2" alignment="0" max="32767" attributes="1"/>
-                          <Component id="jButton1" alignment="0" pref="36" max="32767" attributes="1"/>
-                          <Component id="btFillScreen" alignment="0" max="32767" attributes="1"/>
-                          <Component id="bt1to1" alignment="0" max="32767" attributes="1"/>
-                          <Component id="captureImageButton" alignment="0" max="32767" attributes="1"/>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="progressBar" min="-2" max="-2" attributes="0"/>
+                          <Component id="captureImageButton" alignment="0" pref="53" max="32767" attributes="1"/>
+                          <Group type="103" alignment="0" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="btFitScreen" alignment="0" max="32767" attributes="1"/>
+                              <Component id="jButton2" alignment="0" max="32767" attributes="1"/>
+                              <Component id="jButton1" alignment="0" pref="36" max="32767" attributes="1"/>
+                              <Component id="btFillScreen" alignment="0" max="32767" attributes="1"/>
+                              <Component id="bt1to1" alignment="0" max="32767" attributes="1"/>
+                          </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="692" max="32767" attributes="0"/>
+                      <Component id="jScrollPane2" pref="583" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -423,40 +425,42 @@
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="mappingTabbedPane" alignment="0" pref="436" max="32767" attributes="1"/>
-                      <Component id="laserCutterComboBox" alignment="0" pref="436" max="32767" attributes="1"/>
-                      <Group type="102" alignment="1" attributes="0">
-                          <Component id="materialComboBox" pref="355" max="32767" attributes="1"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="btAddMaterial" min="-2" max="-2" attributes="0"/>
-                      </Group>
                       <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="1" attributes="0">
                           <Component id="cbEditBeforeExecute" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="122" max="32767" attributes="0"/>
+                          <EmptySpace pref="70" max="32767" attributes="0"/>
                           <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="timeLabel" min="-2" pref="166" max="-2" attributes="0"/>
-                          <EmptySpace pref="59" max="32767" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                           <Component id="calculateTimeButton" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <Group type="102" alignment="1" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="cbMaterialThickness" min="-2" pref="134" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="btAddMaterialThickness" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                          <Component id="jCheckBox1" pref="214" max="32767" attributes="0"/>
-                      </Group>
                       <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                          <Component id="mappingTabbedPane" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
+                          <Component id="laserCutterComboBox" alignment="0" max="32767" attributes="1"/>
+                          <Group type="102" alignment="1" attributes="1">
+                              <Component id="materialComboBox" max="32767" attributes="1"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btAddMaterial" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="cbMaterialThickness" min="-2" pref="122" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="btAddMaterialThickness" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                              <Component id="jCheckBox1" min="-2" pref="197" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
                   </Group>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
               </Group>
@@ -477,21 +481,21 @@
                       <Component id="btAddMaterial" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="btAddMaterialThickness" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="cbMaterialThickness" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="btAddMaterialThickness" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <Component id="jCheckBox1" max="32767" attributes="1"/>
+                      <Component id="jCheckBox1" pref="65" max="32767" attributes="1"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="mappingTabbedPane" pref="435" max="32767" attributes="0"/>
+                  <Component id="mappingTabbedPane" pref="359" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="timeLabel" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
@@ -596,12 +600,12 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="0" pref="415" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" alignment="0" pref="384" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="0" pref="389" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" alignment="0" pref="332" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -643,12 +647,12 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="customMappingPanel2" alignment="0" pref="415" max="32767" attributes="0"/>
+                      <Component id="customMappingPanel2" alignment="0" pref="384" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="customMappingPanel2" alignment="0" pref="389" max="32767" attributes="0"/>
+                      <Component id="customMappingPanel2" alignment="0" pref="332" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -748,7 +752,16 @@
       <Properties>
         <Property name="icon" type="javax.swing.Icon" resourceKey="jButton1.icon"/>
         <Property name="text" type="java.lang.String" resourceKey="jButton1.text"/>
+        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[40, 36]"/>
+        </Property>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[40, 36]"/>
+        </Property>
         <Property name="name" type="java.lang.String" value="jButton1" noResource="true"/>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[40, 36]"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
@@ -758,7 +771,16 @@
       <Properties>
         <Property name="icon" type="javax.swing.Icon" resourceKey="jButton2.icon"/>
         <Property name="text" type="java.lang.String" resourceKey="jButton2.text"/>
+        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[40, 36]"/>
+        </Property>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[40, 36]"/>
+        </Property>
         <Property name="name" type="java.lang.String" value="jButton2" noResource="true"/>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[40, 36]"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
@@ -859,12 +881,12 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="594" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="642" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="649" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="671" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
