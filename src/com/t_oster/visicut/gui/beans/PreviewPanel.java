@@ -217,8 +217,31 @@ public class PreviewPanel extends ZoomablePanel
       
     }
   }
-    
   
+  private boolean fastPreview = false;
+
+  /**
+   * Get the value of fastPreview
+   *
+   * @return the value of fastPreview
+   */
+  public boolean isFastPreview()
+  {
+    return fastPreview;
+  }
+
+  /**
+   * Set the value of fastPreview
+   * if true, profiles won't be rendered as they look on
+   * the laser-cutter, but just as they look in the image
+   *
+   * @param fastPreview new value of fastPreview
+   */
+  public void setFastPreview(boolean fastPreview)
+  {
+    this.fastPreview = fastPreview;
+  }
+
   protected boolean showGrid = false;
 
   /**
@@ -436,7 +459,7 @@ public class PreviewPanel extends ZoomablePanel
         boolean somethingMatched = false;
         for (Mapping m : mappingsToDraw)
         {//Render Original Image
-          if (m.getProfile() == null)
+          if (m.getProfile() == null || this.fastPreview)
           {
             AffineTransform bak = gg.getTransform();
             AffineTransform tr = gg.getTransform();

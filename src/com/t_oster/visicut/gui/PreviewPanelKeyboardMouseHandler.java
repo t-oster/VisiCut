@@ -219,6 +219,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       }
       if (ke.isShiftDown())
       {
+        this.previewPanel.setFastPreview(true);
         this.getEditRect().width += diffx;
         this.getEditRect().height += diffy;
         this.previewPanel.repaint();
@@ -245,7 +246,8 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   {
     if (ke.getKeyCode() == KeyEvent.VK_SHIFT)
     {
-      this.applyEditRectoToSet();
+      this.previewPanel.setFastPreview(false);
+      this.applyEditRectoToSet(); 
     }
   }
 
@@ -365,8 +367,16 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       {//clicked on the graphic
         if (getEditRect() != null)
         {//Already selected => toggle rotate/scale mode
-          getEditRect().setRotateMode(!getEditRect().isRotateMode());
-          this.previewPanel.repaint();
+          if (getEditRect().isRotateMode())
+          {//we need to resize the rectangle after rotation
+            this.previewPanel.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
+          }
+          else
+          {
+            getEditRect().setRotateMode(true);
+            getEditRect().setRotationAngle(Helper.getRotationAngle(this.previewPanel.getGraphicObjects().getTransform()));
+            this.previewPanel.repaint();
+          }     
         }
         else
         {//not yet select => select in scale mode
@@ -410,6 +420,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       {//a button selected
         currentButton = b;
         currentAction = getEditRect().isRotateMode() ? MouseAction.rotatingSet : MouseAction.resizingSet;
+        previewPanel.setFastPreview(true);
       }
       else
       {//no button selected
@@ -427,6 +438,11 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
 
   public void mouseReleased(MouseEvent evt)
   {
+    if (currentAction == MouseAction.resizingSet || currentAction == MouseAction.rotatingSet)
+    {
+      this.previewPanel.setFastPreview(false);
+      this.previewPanel.repaint();
+    }
     if (currentAction == MouseAction.resizingSet)
     {
       this.applyEditRectoToSet();
@@ -454,16 +470,18 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
           case rotatingSet:
           {
             Rectangle2D bb = getGraphicObjects().getBoundingBox();
-            Point2D middle = new Point.Double(bb.getCenterX(), bb.getCenterY());
+            Point2D middle = previewPanel.getMmToPxTransform().transform(new Point.Double(bb.getCenterX(), bb.getCenterY()), null);
+            double angle = Math.atan2(evt.getPoint().y-middle.getY(), evt.getPoint().x-middle.getX());
             //move back
-            AffineTransform tr = AffineTransform.getTranslateInstance(middle.getX(), middle.getY());
+            AffineTransform tr = AffineTransform.getTranslateInstance(bb.getCenterX(), bb.getCenterY());
             //rotate
-            tr.concatenate(AffineTransform.getRotateInstance(1.0 / 100 * Math.max(diff.x, diff.y)));
+            tr.concatenate(AffineTransform.getRotateInstance(angle-getEditRect().getRotationAngle()));
             //center
-            tr.concatenate(AffineTransform.getTranslateInstance(-middle.getX(), -middle.getY()));
+            tr.concatenate(AffineTransform.getTranslateInstance(-bb.getCenterX(), -bb.getCenterY()));
             //apply current
             tr.concatenate(getGraphicObjects().transform);
             getGraphicObjects().setTransform(tr);
+            getEditRect().setRotationAngle(Helper.getRotationAngle(tr));
             this.previewPanel.repaint();
             break;
           }
@@ -551,7 +569,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
             {
               getEditRect().height = previewPanel.getAreaSize().y - getEditRect().y;
             }
-            this.previewPanel.setEditRectangle(getEditRect());
+            this.applyEditRectoToSet();
             break;
           }
           case movingSet:
@@ -642,16 +660,10 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
           Button b = getEditRect().getButtonByPoint(p, this.previewPanel.getMmToPxTransform());
           if (b != null)
           {
-            if (getEditRect().isRotateMode())
+            if (getEditRect().isRotateMode() && b == Button.ROTATE_BUTTON)
             {
-              for (Button bb : getEditRect().rotateButtons)
-              {
-                if (bb.equals(b))
-                {//TODO: Create rotate cursor
-                  cursor = Cursor.CROSSHAIR_CURSOR;
-                  break;
-                }
-              }
+              //TODO: Create rotate cursor
+              cursor = Cursor.CROSSHAIR_CURSOR;
               break cursorcheck;
             }
             switch (b)
