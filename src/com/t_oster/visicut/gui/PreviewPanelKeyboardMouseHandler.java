@@ -365,8 +365,8 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       {//clicked on the graphic
         if (getEditRect() != null)
         {//Already selected => toggle rotate/scale mode
-          //getEditRect().setRotateMode(!getEditRect().isRotateMode());
-          //this.previewPanel.repaint();
+          getEditRect().setRotateMode(!getEditRect().isRotateMode());
+          this.previewPanel.repaint();
         }
         else
         {//not yet select => select in scale mode

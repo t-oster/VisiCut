@@ -178,9 +178,10 @@ public class EditRectangle extends Rectangle2D.Double
         10, 10
       }, 0));
     Rectangle tr = Helper.toRect(Helper.transform(this, mm2px));
-    gg.drawRect(tr.x, tr.y, tr.width, tr.height);
     if (this.rotateMode)
     {
+      double diagonal = Math.sqrt(tr.width*tr.width+tr.height*tr.height);
+      gg.drawOval((int) (tr.x+tr.width/2-diagonal/2), (int) (tr.y+tr.height/2-diagonal/2), (int) diagonal, (int) diagonal);
       gg.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, null, 0));
       for (Button b: rotateButtons)
       {
@@ -190,6 +191,7 @@ public class EditRectangle extends Rectangle2D.Double
     }
     else
     {
+      gg.drawRect(tr.x, tr.y, tr.width, tr.height);
       //draw the corner buttons
       gg.setColor(buttonColor);
       for (Button b : Button.values())

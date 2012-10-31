@@ -18,9 +18,6 @@
  **/
 package com.t_oster.visicut.misc;
 
-import com.kitfox.svg.xml.NumberWithUnits;
-import com.t_oster.liblasercut.platform.Util;
-import com.t_oster.visicut.VisicutModel;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -49,6 +46,25 @@ import java.util.logging.Logger;
 public class Helper
 {
 
+  /**
+  * Compute the rotation angle of an affine transformation.
+  * Counter-clockwise rotation is considered positive.
+  * 
+  * method taken from http://javagraphics.blogspot.com/
+  *
+  * @return rotation angle in radians (beween -pi and pi),
+  *  or NaN if the transformation is bogus.
+  */
+  public static double getRotationAngle(AffineTransform transform) {
+    transform = (AffineTransform) transform.clone();
+    // Eliminate any post-translation
+    transform.preConcatenate(AffineTransform.getTranslateInstance(
+    -transform.getTranslateX(), -transform.getTranslateY()));
+    Point2D p1 = new Point2D.Double(1,0);
+    p1 = transform.transform(p1,p1);
+    return Math.atan2(p1.getY(),p1.getX());
+  }
+  
   /**
    * Returns the distance between two Rectangles
    * @param r first rectangle
