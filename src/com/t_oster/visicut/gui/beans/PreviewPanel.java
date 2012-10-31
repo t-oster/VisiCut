@@ -499,7 +499,7 @@ public class PreviewPanel extends ZoomablePanel
                 synchronized (renderBuffer)
                 {
                   ImageProcessingThread procThread = this.renderBuffer.get(m);
-                  if (procThread == null || !procThread.isFinished() || bbInMm.getWidth() != procThread.getBoundingBoxInMm().getWidth() || bbInMm.getHeight() != procThread.getBoundingBoxInMm().getHeight())
+                  if (procThread == null || !procThread.isFinished() || Math.abs(bbInMm.getWidth()-procThread.getBoundingBoxInMm().getWidth()) > 0.01 || Math.abs(bbInMm.getHeight()-procThread.getBoundingBoxInMm().getHeight()) > 0.01)
                   {//Image not rendered or Size differs
                     if (!renderBuffer.containsKey(m))
                     {//image not yet scheduled for rendering

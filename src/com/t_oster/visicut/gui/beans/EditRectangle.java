@@ -167,10 +167,12 @@ public class EditRectangle extends Rectangle2D.Double
     X,
     Y,
     WIDTH,
-    HEIGHT
+    HEIGHT,
+    ANGLE
   }
   
   private Rectangle[] parameterFieldBounds = new Rectangle[]{
+    new Rectangle(),
     new Rectangle(),
     new Rectangle(),
     new Rectangle(),
@@ -191,8 +193,19 @@ public class EditRectangle extends Rectangle2D.Double
       case Y: return parameterFieldBounds[1];
       case WIDTH: return parameterFieldBounds[2];
       case HEIGHT: return parameterFieldBounds[3];
+      case ANGLE: return parameterFieldBounds[4];
     }
     return null;
+  }
+  
+  public double getRotationAngleInDegree()
+  {
+    double w = -(this.rotationAngle * 180 / Math.PI);
+    if (w < 0)
+    {
+      w+=360;
+    }
+    return w;
   }
   
   /**
@@ -221,6 +234,15 @@ public class EditRectangle extends Rectangle2D.Double
       gg.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, null, 0));
       //draw the rotate button on the circle
       gg.drawOval((int) (center.x + Math.cos(rotationAngle) * diagonal/2 - buttonSize/2), (int) (center.y + Math.sin(rotationAngle) * diagonal/2 -buttonSize/2), buttonSize, buttonSize);
+      //draw the angle
+      gg.setColor(textColor);
+      int w = (int) Math.round(10*this.getRotationAngleInDegree());
+      String txt = (w/10)+","+(w%10)+"°";
+      w = gg.getFontMetrics().stringWidth(txt);
+      int ascend = gg.getFontMetrics().getAscent();
+      int h = gg.getFontMetrics().getHeight();
+      gg.drawString(txt, 10+(int) (center.x+diagonal/2), center.y+h/2);
+      this.parameterFieldBounds[4].setBounds(10+(int) (center.x+diagonal/2), center.y+h/2-ascend, w, h);
     }
     else
     {

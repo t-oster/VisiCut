@@ -275,69 +275,85 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     {//Check if clicked on one of the parameters Button
       try
       {
-        if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.X).contains(me.getPoint()))
+        if (this.getEditRect().isRotateMode())
         {
-          Double x = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("LEFT OFFSET"), this.getEditRect().x / 10);
-          if (x == null)
+          if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.ANGLE).contains(me.getPoint()))
           {
+            Double a = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("ANGLE"), this.getEditRect().getRotationAngleInDegree());
+            if (a == null)
+            {
+              return true;
+            }
+            this.rotateTo(-Math.PI*a/180d);
             return true;
           }
-          if (x < 0 || x*10+this.getEditRect().width > previewPanel.getAreaSize().x)
-          {
-            dialogHelper.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("OUT_OF_BOUNDS"));
-            return true;
-          }
-          this.getEditRect().x = x * 10;
-          this.applyEditRectoToSet();
-          return true;
         }
-        if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.Y).contains(me.getPoint()))
+        else
         {
-          Double y = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("TOP OFFSET"), this.getEditRect().y / 10);
-          if (y == null)
+          if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.X).contains(me.getPoint()))
           {
+            Double x = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("LEFT OFFSET"), this.getEditRect().x / 10);
+            if (x == null)
+            {
+              return true;
+            }
+            if (x < 0 || x*10+this.getEditRect().width > previewPanel.getAreaSize().x)
+            {
+              dialogHelper.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("OUT_OF_BOUNDS"));
+              return true;
+            }
+            this.getEditRect().x = x * 10;
+            this.applyEditRectoToSet();
             return true;
           }
-          if (y < 0 || y*10+this.getEditRect().height > previewPanel.getAreaSize().y)
+          if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.Y).contains(me.getPoint()))
           {
-            dialogHelper.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("OUT_OF_BOUNDS"));
+            Double y = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("TOP OFFSET"), this.getEditRect().y / 10);
+            if (y == null)
+            {
+              return true;
+            }
+            if (y < 0 || y*10+this.getEditRect().height > previewPanel.getAreaSize().y)
+            {
+              dialogHelper.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("OUT_OF_BOUNDS"));
+              return true;
+            }
+            this.getEditRect().y = y * 10;
+            this.applyEditRectoToSet();
             return true;
           }
-          this.getEditRect().y = y * 10;
-          this.applyEditRectoToSet();
-          return true;
-        }
-        if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.WIDTH).contains(me.getPoint()))
-        {
-          Double w = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("WIDTH"), this.getEditRect().width / 10);
-          if (w == null)
+          if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.WIDTH).contains(me.getPoint()))
           {
+            Double w = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("WIDTH"), this.getEditRect().width / 10);
+            if (w == null)
+            {
+              return true;
+            }
+            if (w <= 0 || w*10+this.getEditRect().x > previewPanel.getAreaSize().x)
+            {
+              dialogHelper.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("OUT_OF_BOUNDS"));
+              return true;
+            }
+            this.getEditRect().width = w * 10;
+            this.applyEditRectoToSet();
             return true;
           }
-          if (w <= 0 || w*10+this.getEditRect().x > previewPanel.getAreaSize().x)
+          if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.HEIGHT).contains(me.getPoint()))
           {
-            dialogHelper.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("OUT_OF_BOUNDS"));
+            Double h = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("HEIGHT"), this.getEditRect().height / 10);
+            if (h == null)
+            {
+              return true;
+            }
+            if (h <= 0 || h*10+this.getEditRect().y > previewPanel.getAreaSize().y)
+            {
+              dialogHelper.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("OUT_OF_BOUNDS"));
+              return true;
+            }
+            this.getEditRect().height = h * 10;
+            this.applyEditRectoToSet();
             return true;
           }
-          this.getEditRect().width = w * 10;
-          this.applyEditRectoToSet();
-          return true;
-        }
-        if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.HEIGHT).contains(me.getPoint()))
-        {
-          Double h = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("HEIGHT"), this.getEditRect().height / 10);
-          if (h == null)
-          {
-            return true;
-          }
-          if (h <= 0 || h*10+this.getEditRect().y > previewPanel.getAreaSize().y)
-          {
-            dialogHelper.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("OUT_OF_BOUNDS"));
-            return true;
-          }
-          this.getEditRect().height = h * 10;
-          this.applyEditRectoToSet();
-          return true;
         }
       }
       catch (Exception e)
@@ -458,6 +474,22 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   {
   }
 
+  private void rotateTo(double angle)
+  {
+    Rectangle2D bb = getGraphicObjects().getBoundingBox();
+    //move back
+    AffineTransform tr = AffineTransform.getTranslateInstance(bb.getCenterX(), bb.getCenterY());
+    //rotate
+    tr.concatenate(AffineTransform.getRotateInstance(angle-getEditRect().getRotationAngle()));
+    //center
+    tr.concatenate(AffineTransform.getTranslateInstance(-bb.getCenterX(), -bb.getCenterY()));
+    //apply current
+    tr.concatenate(getGraphicObjects().transform);
+    getGraphicObjects().setTransform(tr);
+    getEditRect().setRotationAngle(Helper.getRotationAngle(tr));
+    this.previewPanel.repaint();
+  }
+  
   public void mouseDragged(MouseEvent evt)
   {
     if (lastMousePosition != null)
@@ -472,17 +504,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
             Rectangle2D bb = getGraphicObjects().getBoundingBox();
             Point2D middle = previewPanel.getMmToPxTransform().transform(new Point.Double(bb.getCenterX(), bb.getCenterY()), null);
             double angle = Math.atan2(evt.getPoint().y-middle.getY(), evt.getPoint().x-middle.getX());
-            //move back
-            AffineTransform tr = AffineTransform.getTranslateInstance(bb.getCenterX(), bb.getCenterY());
-            //rotate
-            tr.concatenate(AffineTransform.getRotateInstance(angle-getEditRect().getRotationAngle()));
-            //center
-            tr.concatenate(AffineTransform.getTranslateInstance(-bb.getCenterX(), -bb.getCenterY()));
-            //apply current
-            tr.concatenate(getGraphicObjects().transform);
-            getGraphicObjects().setTransform(tr);
-            getEditRect().setRotationAngle(Helper.getRotationAngle(tr));
-            this.previewPanel.repaint();
+            this.rotateTo(angle);
             break;
           }
           case resizingSet:
@@ -649,12 +671,23 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
         if (getEditRect() != null)
         {
           //Check for text cursor
-          for (ParameterField param : EditRectangle.ParameterField.values())
+          if (getEditRect().isRotateMode())
           {
-            if (getEditRect().getParameterFieldBounds(param).contains(p))
+            if (getEditRect().getParameterFieldBounds(ParameterField.ANGLE).contains(p))
             {
               cursor = Cursor.TEXT_CURSOR;
               break cursorcheck;
+            }
+          }
+          else
+          {
+            for (ParameterField param : EditRectangle.ParameterField.values())
+            {
+              if (param != ParameterField.ANGLE && getEditRect().getParameterFieldBounds(param).contains(p))
+              {
+                cursor = Cursor.TEXT_CURSOR;
+                break cursorcheck;
+              }
             }
           }
           Button b = getEditRect().getButtonByPoint(p, this.previewPanel.getMmToPxTransform());
