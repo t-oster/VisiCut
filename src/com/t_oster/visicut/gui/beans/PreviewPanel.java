@@ -34,7 +34,9 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -407,6 +409,26 @@ public class PreviewPanel extends ZoomablePanel
    */
   private final HashMap<Mapping, ImageProcessingThread> renderBuffer = new LinkedHashMap<Mapping, ImageProcessingThread>();
 
+  private boolean renderOriginalImage(Graphics2D gg, Mapping m)
+  {
+    boolean somethingMatched = false;
+    AffineTransform bak = gg.getTransform();
+    AffineTransform tr = gg.getTransform();
+    tr.concatenate(this.getMmToPxTransform());
+    if (this.graphicObjects.getTransform() != null)
+    {
+      tr.concatenate(this.graphicObjects.getTransform());
+    }
+    gg.setTransform(tr);
+    for (GraphicObject o : m.getFilterSet().getMatchingObjects(this.getGraphicObjects()))
+    {
+      somethingMatched = true;
+      o.render(gg);
+    }
+    gg.setTransform(bak);
+    return somethingMatched;
+  }
+  
   @Override
   protected void paintComponent(Graphics g)
   {
@@ -461,20 +483,7 @@ public class PreviewPanel extends ZoomablePanel
         {//Render Original Image
           if (m.getProfile() == null || this.fastPreview)
           {
-            AffineTransform bak = gg.getTransform();
-            AffineTransform tr = gg.getTransform();
-            tr.concatenate(this.getMmToPxTransform());
-            if (this.graphicObjects.getTransform() != null)
-            {
-              tr.concatenate(this.graphicObjects.getTransform());
-            }
-            gg.setTransform(tr);
-            for (GraphicObject o : m.getFilterSet().getMatchingObjects(this.getGraphicObjects()))
-            {
-              somethingMatched = true;
-              o.render(gg);
-            }
-            gg.setTransform(bak);
+            somethingMatched = this.renderOriginalImage(gg, m);
           }
           else if (m.getProfile() != null)
           {//Render only parts the material supports, or where Profile = null
@@ -511,6 +520,9 @@ public class PreviewPanel extends ZoomablePanel
                       this.renderBuffer.put(m, procThread);
                       procThread.start();//start processing thread
                     }
+                    this.renderOriginalImage(gg, m);
+                    Composite o = gg.getComposite();
+                    gg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
                     gg.setColor(Color.GRAY);
                     gg.fillRect(bbInPx.x, bbInPx.y, bbInPx.width, bbInPx.height);
                     gg.setColor(Color.BLACK);
@@ -518,6 +530,7 @@ public class PreviewPanel extends ZoomablePanel
                     String txt = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("PLEASE WAIT (")+procThread.getProgress()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("%)");
                     int w = gg.getFontMetrics().stringWidth(txt);
                     gg.drawString(txt, po.x - w / 2, po.y);
+                    gg.setComposite(o);
                   }
                   else
                   {
