@@ -2,23 +2,22 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.t_oster.visicut;
 
-import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
@@ -26,31 +25,31 @@ import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.managers.LaserDeviceManager;
-import com.t_oster.visicut.managers.LaserPropertyManager;
-import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.managers.MappingManager;
-import com.t_oster.visicut.managers.PreferencesManager;
-import com.t_oster.visicut.model.mapping.Mapping;
-import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.managers.MaterialManager;
+import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.managers.ProfileManager;
+import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
+import com.t_oster.visicut.model.LaserProfile;
+import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.mapping.FilterSet;
+import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.beans.Encoder;
+import java.beans.Expression;
+import java.beans.PersistenceDelegate;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
-import java.beans.Encoder;
-import java.beans.Expression;
-import java.beans.PersistenceDelegate;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -62,6 +61,7 @@ import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -72,9 +72,9 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 /**
- * This class contains the state and business logic of the 
+ * This class contains the state and business logic of the
  * Application
- * 
+ *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class VisicutModel
@@ -130,11 +130,11 @@ public class VisicutModel
     propertyChangeSupport.firePropertyChange(PROP_USETHICKNESSASFOCUSOFFSET, oldUseThicknessAsFocusOffset, useThicknessAsFocusOffset);
   }
 
-  
+
   public static final FileFilter PLFFilter = new ExtensionFilter(".plf", "VisiCut Portable Laser Format (*.plf)");
-  
+
   private static VisicutModel instance;
-  
+
   public static VisicutModel getInstance()
   {
     if (instance == null){
@@ -142,7 +142,7 @@ public class VisicutModel
     }
     return instance;
   }
-  
+
   /**
    * This Constructor is only for the UI Editor to run properly
    * Do not use. use getInstance() instead.
@@ -154,11 +154,11 @@ public class VisicutModel
       System.err.println("Should not use public Constructor of VisicutModel");
     }
   }
-  
+
   /**
      * Generates an Everything=> Profile mapping for every
      * Occuring MaterialProfile
-     * @return 
+     * @return
      */
   public List<MappingSet> generateDefaultMappings()
   {
@@ -296,7 +296,7 @@ public class VisicutModel
       Logger.getLogger(VisicutModel.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
-  
+
   /**
    * Get the value of graphicObjects
    *
@@ -345,7 +345,7 @@ public class VisicutModel
   /**
    * Returns the loaded plf file, if this was the last file
    * loaded. Otherwise it returns null
-   * @return 
+   * @return
    */
   public File getLoadedFile()
   {
@@ -540,19 +540,19 @@ public class VisicutModel
   {
     this.loadGraphicFile(f, false);
   }
-  
+
   public static final String PROP_SOURCEFILE = "sourceFile";
-  
+
   /**
    * Returns the source file of the current Image.
    * In case of PLF this is a temporary file extracted from the plf
-   * @return 
+   * @return
    */
   public File getSourceFile()
   {
     return this.sourceFile;
   }
-  
+
   private void setSourceFile(File f)
   {
     if (Util.differ(this.sourceFile, f))
@@ -562,7 +562,7 @@ public class VisicutModel
       this.propertyChangeSupport.firePropertyChange(PROP_SOURCEFILE, oldValue, f);
     }
   }
-  
+
   public void loadGraphicFile(File f, boolean keepTransform) throws ImportException
   {
     AffineTransform at = null;
@@ -670,37 +670,32 @@ public class VisicutModel
     this.mappings = mappings;
     propertyChangeSupport.firePropertyChange(PROP_MAPPINGS, oldMappings, mappings);
   }
-    
-  private LaserJob prepareJob(String name) throws FileNotFoundException, IOException
+
+  private LaserJob prepareJob(String name, Map<LaserProfile, List<LaserProperty>> propmap) throws FileNotFoundException, IOException
   {
     LaserJob job = new LaserJob(name, name, "visicut");
-    
+
     float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() || !this.useThicknessAsFocusOffset ? 0 : this.materialThickness;
-    
+
     for (Mapping m : this.getMappings())
     {
       GraphicSet set = m.getFilterSet().getMatchingObjects(this.getGraphicObjects());
       LaserProfile p = m.getProfile();
-      List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(this.selectedLaserDevice, this.material, p, this.materialThickness);
+      List<LaserProperty> props = propmap.get(p);
       p.addToLaserJob(job, set, this.addFocusOffset(props, focusOffset));
     }
-    
+
     return job;
   }
 
-  public void sendJob(String name) throws IllegalJobException, Exception
-  {
-    this.sendJob(name, null);
-  }
-  
-  public void sendJob(String name, ProgressListener pl) throws IllegalJobException, SocketTimeoutException, Exception
+  public void sendJob(String name, ProgressListener pl, Map<LaserProfile, List<LaserProperty>> props) throws IllegalJobException, SocketTimeoutException, Exception
   {
     LaserCutter lasercutter = this.getSelectedLaserDevice().getLaserCutter();
-    if (pl != null) 
+    if (pl != null)
     {
       pl.taskChanged(this, "preparing job");
     }
-    LaserJob job = this.prepareJob(name);
+    LaserJob job = this.prepareJob(name, props);
     if (pl != null)
     {
       pl.taskChanged(this, "sending job");
@@ -719,10 +714,10 @@ public class VisicutModel
     this.propertyChangeSupport.firePropertyChange(PROP_LOADEDFILE, oldLoadedFile, f);
   }
 
-  public int estimateTime() throws FileNotFoundException, IOException
+  public int estimateTime(Map<LaserProfile, List<LaserProperty>> propmap) throws FileNotFoundException, IOException
   {
     LaserCutter lc = this.getSelectedLaserDevice().getLaserCutter();
-    LaserJob job = this.prepareJob("calc");
+    LaserJob job = this.prepareJob("calc", propmap);
     return lc.estimateJobDuration(job);
   }
 
@@ -758,7 +753,7 @@ public class VisicutModel
    * Adjusts the Transform of the Graphic-Objects such that the Objects
    * fit into the current Laser-Bed.
    * If modification was necessary, it returns true.
-   * @return 
+   * @return
    */
   public boolean fitMaterialIntoBed()
   {

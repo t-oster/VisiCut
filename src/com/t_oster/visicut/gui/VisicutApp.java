@@ -2,24 +2,26 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.t_oster.visicut.gui;
 
 import com.t_oster.liblasercut.LaserCutter;
+import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.LibInfo;
+import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
@@ -30,12 +32,16 @@ import com.t_oster.visicut.misc.ApplicationInstanceListener;
 import com.t_oster.visicut.misc.ApplicationInstanceManager;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
+import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -51,7 +57,7 @@ public class VisicutApp extends SingleFrameApplication
 {
 
   public static Level GLOBAL_LOG_LEVEL = Level.SEVERE;
-  
+
   private MainView mainView;
   private File loadedFile;
 
@@ -391,18 +397,33 @@ public class VisicutApp extends SingleFrameApplication
         System.err.println("No Mapping selected");
         System.exit(1);
       }
+      Map<LaserProfile, List<LaserProperty>> propmap = new LinkedHashMap<LaserProfile, List<LaserProperty>>();
       //check if all settings are available
       for (Mapping ms : model.getMappings())
       {
-        if (LaserPropertyManager.getInstance().getLaserProperties(model.getSelectedLaserDevice(), model.getMaterial(), ms.getProfile(), model.getMaterialThickness()) == null)
+        LaserProfile p = ms.getProfile();
+        List<LaserProperty> list = LaserPropertyManager.getInstance().getLaserProperties(model.getSelectedLaserDevice(), model.getMaterial(), ms.getProfile(), model.getMaterialThickness());
+        if (list == null)
         {
           System.err.println("Combination of Laserdevice, Material and Mapping is not supported");
           System.exit(1);
         }
+        propmap.put(p, list);
       }
       try
       {
-        VisicutModel.getInstance().sendJob("VisiCut 1");
+        VisicutModel.getInstance().sendJob("VisiCut 1", new ProgressListener(){
+
+          public void progressChanged(Object source, int percent)
+          {
+            System.out.println(percent+"%");
+          }
+
+          public void taskChanged(Object source, String taskName)
+          {
+            System.out.println(taskName);
+          }
+        }, propmap);
       }
       catch (Exception ex)
       {

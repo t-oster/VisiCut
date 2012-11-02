@@ -2,17 +2,17 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
@@ -98,13 +98,13 @@ public class MainView extends javax.swing.JFrame
 
   private boolean initComplete = false;
   final protected DialogHelper dialog = new DialogHelper(this, this.getTitle());
-  
+
   public MainView(File loadedFile)
   {
     this();
     this.loadFileReal(loadedFile);
   }
-  
+
   /** Creates new form MainView */
   public MainView()
   {
@@ -154,7 +154,7 @@ public class MainView extends javax.swing.JFrame
         }
       }
     });
-    
+
     if (this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null)
     {
       this.captureImage();
@@ -235,7 +235,7 @@ public class MainView extends javax.swing.JFrame
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_LOADEDFILE, null, null));
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDLASERDEVICE, null, null));
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SOURCEFILE, null, null));
-    
+
     //apply the saved window size and position, if in current screen size
     Rectangle lastBounds = PreferencesManager.getInstance().getPreferences().getWindowBounds();
     if (lastBounds != null && this.getGraphicsConfiguration().getBounds().contains(lastBounds))
@@ -255,7 +255,7 @@ public class MainView extends javax.swing.JFrame
         }
       }
     };
-  
+
   private void refreshExampleMenu()
   {
     jmExamples.removeAll();
@@ -267,7 +267,7 @@ public class MainView extends javax.swing.JFrame
       this.jmExamples.add(item);
     }
   }
-  
+
   /**
    * Fills the recent files menu from the current
    * list in preferences
@@ -291,7 +291,7 @@ public class MainView extends javax.swing.JFrame
       }
     }
   }
-  
+
   private void refreshMaterialComboBox()
   {
     String sp = this.visicutModel1.getMaterial() != null ? this.visicutModel1.getMaterial().getName() : null;
@@ -305,7 +305,7 @@ public class MainView extends javax.swing.JFrame
       }
     }
   }
-  
+
   /*
    * Initially fills LaserCutter,Material and Mapping ComboBox with all possible Elements
    */
@@ -1098,7 +1098,7 @@ public class MainView extends javax.swing.JFrame
       this.progressBar.setIndeterminate(true);
       if (VisicutModel.PLFFilter.accept(file))
       {
-        //Set Panel to Predefined Mappings because there the loaded mapping will appear    
+        //Set Panel to Predefined Mappings because there the loaded mapping will appear
         this.mappingTabbedPane.setSelectedComponent(this.predefinedMappingPanel);
         this.custom = null;
         this.visicutModel1.loadFromFile(this.mappingManager1, file);
@@ -1250,89 +1250,14 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
   private void executeJob()
   {
-    for (Mapping m : this.visicutModel1.getMappings())
-    {
-      LaserProfile lp = m.getProfile();
-      if (!this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions().contains((Double) lp.getDPI()))
-      {
-        double dist = -1;
-        double res = 0;
-        double soll = lp.getDPI();
-        for(double r : this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions())
-        {
-          if (dist == -1 || dist > Math.abs(soll-r))
-          {
-            dist = Math.abs(soll-r);
-            res = r;
-          }
-        }
-        if (!dialog.showYesNoQuestion(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THE LASERCUTTER YOU SELECTED, DOES NOT SUPPORT ")+soll+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("DPI DO YOU WANT TO USE ")+res+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("DPI INSTEAD?")))
-        {
-          return;
-        }
-        lp.setDPI(res);
-      }
-    }
     try
     {
-      LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
-      MaterialProfile material = this.visicutModel1.getMaterial();
-      //get all profiles used in the job
-      //and check if they're supported yet
-      boolean unknownProfilesUsed = false;
-      Map<LaserProfile, List<LaserProperty>> usedSettings = new LinkedHashMap<LaserProfile, List<LaserProperty>>();
-      for (Mapping m:this.visicutModel1.getMappings())
-      {
-        LaserProfile profile = m.getProfile();
-        List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(device, material, profile, this.visicutModel1.getMaterialThickness());
-        if (props == null)
-        {
-          unknownProfilesUsed = true;
-          props = new LinkedList<LaserProperty>();
-        }
-        if (props.isEmpty())
-        {//we have to add at least one sample for the dialog to know the kind of LaserPropery
-          if (profile instanceof RasterProfile)
-          {
-            props.add(device.getLaserCutter().getLaserPropertyForRasterPart());
-          }
-          else if (profile instanceof VectorProfile)
-          {
-            props.add(device.getLaserCutter().getLaserPropertyForVectorPart());
-          }
-          else if (profile instanceof Raster3dProfile)
-          {
-            props.add(device.getLaserCutter().getLaserPropertyForRaster3dPart());
-          }
-        }
-        usedSettings.put(profile, props);
-      }
-
-      if (this.cbEditBeforeExecute.isSelected() || unknownProfilesUsed)
-      {
-        if (unknownProfilesUsed)
-        {
-          dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("FOR SOME PROFILE YOU SELECTED, THERE ARE NO LASERCUTTER SETTINGS YET YOU WILL HAVE TO ENTER THEM IN THE FOLLOWING DIALOG."));
-        }
-        String heading = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("SETTINGS FOR ")+device.getName()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString(" WITH MATERIAL ")+material.toString()+" ("+this.visicutModel1.getMaterialThickness()+" mm)";
-        //Adapt Settings before execute
-        AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true, heading);
-        asd.setLaserProperties(usedSettings, this.visicutModel1.getSelectedLaserDevice().getLaserCutter());
-        asd.setVisible(true);
-        Map<LaserProfile, List<LaserProperty>> result = asd.getLaserProperties();
-        if (result == null)
-        {//user cancelled
-          return;
-        }
-        //save changes
-        for (Entry<LaserProfile, List<LaserProperty>> e:result.entrySet())
-        {
-          LaserPropertyManager.getInstance().saveLaserProperties(device, material, e.getKey(), this.visicutModel1.getMaterialThickness(), e.getValue());
-        }
-      }
+      final LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
+      final MaterialProfile material = this.visicutModel1.getMaterial();
+      final float thickness = this.visicutModel1.getMaterialThickness();
+      final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob();
       new Thread()
       {
-
         @Override
         public void run()
         {
@@ -1346,7 +1271,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             public void taskChanged(Object o, String string)
             {
               MainView.this.progressBar.setString(string);
-            }   
+            }
           };
           MainView.this.progressBar.setMinimum(0);
           MainView.this.progressBar.setMaximum(100);
@@ -1358,13 +1283,21 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
           {
             jobnumber++;
             String prefix = MainView.this.visicutModel1.getSelectedLaserDevice().getJobPrefix();
-            MainView.this.visicutModel1.sendJob(prefix+jobnumber, pl);
+            MainView.this.visicutModel1.sendJob(prefix+jobnumber, pl, cuttingSettings);
             MainView.this.progressBar.setValue(0);
             MainView.this.progressBar.setString("");
             MainView.this.progressBar.setStringPainted(false);
             String txt = MainView.this.visicutModel1.getSelectedLaserDevice().getJobSentText();
             txt = txt.replace("$jobname", prefix + jobnumber).replace("$name", MainView.this.visicutModel1.getSelectedLaserDevice().getName());
             dialog.showSuccessMessage(txt);
+            //TODO:ask user if he wants to keep the settings
+            //TODO:make execute-job take the settings as attribute, not from the manager
+            //TODO:allow to use different laser-settings on the same profile (different instance)
+            //save changes
+            for (Entry<LaserProfile, List<LaserProperty>> e:cuttingSettings.entrySet())
+            {
+              LaserPropertyManager.getInstance().saveLaserProperties(device, material, e.getKey(), thickness, e.getValue());
+            }
           }
           catch (Exception ex)
           {
@@ -1735,7 +1668,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         {
           MainView.this.calculateTimeButton.setEnabled(false);
           MainView.this.progressBar.setIndeterminate(true);
-          MainView.this.timeLabel.setText(Helper.toHHMMSS(MainView.this.visicutModel1.estimateTime()));
+          MainView.this.timeLabel.setText(Helper.toHHMMSS(MainView.this.visicutModel1.estimateTime(MainView.this.getPropertyMapForCurrentJob())));
           MainView.this.progressBar.setIndeterminate(false);
           MainView.this.calculateTimeButton.setEnabled(true);
         }
@@ -2250,6 +2183,89 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
       {
         this.predefinedMappingList.setSelectedValue(m, true);
       }
+    }
+  }
+
+  private Map<LaserProfile, List<LaserProperty>> getPropertyMapForCurrentJob()
+  {
+    for (Mapping m : this.visicutModel1.getMappings())
+    {
+      LaserProfile lp = m.getProfile();
+      if (!this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions().contains((Double) lp.getDPI()))
+      {
+        double dist = -1;
+        double res = 0;
+        double soll = lp.getDPI();
+        for(double r : this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions())
+        {
+          if (dist == -1 || dist > Math.abs(soll-r))
+          {
+            dist = Math.abs(soll-r);
+            res = r;
+          }
+        }
+        if (!dialog.showYesNoQuestion(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("THE LASERCUTTER YOU SELECTED, DOES NOT SUPPORT ")+soll+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("DPI DO YOU WANT TO USE ")+res+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("DPI INSTEAD?")))
+        {
+          return null;
+        }
+        lp.setDPI(res);
+      }
+    }
+    try
+    {
+      LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
+      MaterialProfile material = this.visicutModel1.getMaterial();
+      float thickness = this.visicutModel1.getMaterialThickness();
+      //get all profiles used in the job
+      //and check if they're supported yet
+      boolean unknownProfilesUsed = false;
+      Map<LaserProfile, List<LaserProperty>> usedSettings = new LinkedHashMap<LaserProfile, List<LaserProperty>>();
+      for (Mapping m:this.visicutModel1.getMappings())
+      {
+        LaserProfile profile = m.getProfile();
+        List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(device, material, profile, thickness);
+        if (props == null)
+        {
+          unknownProfilesUsed = true;
+          props = new LinkedList<LaserProperty>();
+        }
+        if (props.isEmpty())
+        {//we have to add at least one sample for the dialog to know the kind of LaserPropery
+          if (profile instanceof RasterProfile)
+          {
+            props.add(device.getLaserCutter().getLaserPropertyForRasterPart());
+          }
+          else if (profile instanceof VectorProfile)
+          {
+            props.add(device.getLaserCutter().getLaserPropertyForVectorPart());
+          }
+          else if (profile instanceof Raster3dProfile)
+          {
+            props.add(device.getLaserCutter().getLaserPropertyForRaster3dPart());
+          }
+        }
+        usedSettings.put(profile, props);
+      }
+
+      if (this.cbEditBeforeExecute.isSelected() || unknownProfilesUsed)
+      {
+        if (unknownProfilesUsed)
+        {
+          dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("FOR SOME PROFILE YOU SELECTED, THERE ARE NO LASERCUTTER SETTINGS YET YOU WILL HAVE TO ENTER THEM IN THE FOLLOWING DIALOG."));
+        }
+        String heading = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("SETTINGS FOR ")+device.getName()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString(" WITH MATERIAL ")+material.toString()+" ("+this.visicutModel1.getMaterialThickness()+" mm)";
+        //Adapt Settings before execute
+        AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true, heading);
+        asd.setLaserProperties(usedSettings, this.visicutModel1.getSelectedLaserDevice().getLaserCutter());
+        asd.setVisible(true);
+        return asd.getLaserProperties();
+      }
+      return usedSettings;
+    }
+    catch (Exception e)
+    {
+      this.dialog.showErrorMessage(e);
+      return null;
     }
   }
 }
