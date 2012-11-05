@@ -84,8 +84,8 @@ public class CamCalibrationDialog extends javax.swing.JDialog
   protected BufferedImage backgroundImage = null;
   public static final String PROP_BACKGROUNDIMAGE = "backgroundImage";
   private LaserDevice ld = VisicutModel.getInstance().getSelectedLaserDevice();
-  private Point2D.Double laserUpperLeft = new Point2D.Double(0, 0);
-  private Point2D.Double laserLowerRight = new Point2D.Double(ld.getLaserCutter().getBedWidth(), ld.getLaserCutter().getBedHeight());
+  private Point2D.Double laserUpperLeft = new Point2D.Double(0.2d*ld.getLaserCutter().getBedWidth(), 0.2d*ld.getLaserCutter().getBedHeight());
+  private Point2D.Double laserLowerRight = new Point2D.Double(0.8d*ld.getLaserCutter().getBedWidth(), 0.8d*ld.getLaserCutter().getBedHeight());
 
 
   /**
@@ -383,7 +383,7 @@ private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
       {
         vp.setProperty(lp);
       }
-      int size = (int) Util.mm2px(100, profile.getDPI());
+      int size = (int) Util.mm2px(10, profile.getDPI());
       for (Point2D p : new Point2D[]
         {
           laserUpperLeft, laserLowerRight
