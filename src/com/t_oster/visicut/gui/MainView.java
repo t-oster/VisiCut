@@ -1283,6 +1283,10 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       final MaterialProfile material = this.visicutModel1.getMaterial();
       final float thickness = this.visicutModel1.getMaterialThickness();
       final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob();
+      if (cuttingSettings == null)
+      {
+        return;
+      }
       new Thread()
       {
         @Override
