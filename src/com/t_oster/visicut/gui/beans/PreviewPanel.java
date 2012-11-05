@@ -2,17 +2,17 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
@@ -58,15 +58,15 @@ import javax.swing.JOptionPane;
 /**
  * This class implements the Panel which provides the Preview
  * of the current LaserJob
- * 
+ *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class PreviewPanel extends ZoomablePanel
 {
-  
+
   private double bedWidth = 600;
   private double bedHeight = 300;
-  
+
   public PreviewPanel()
   {
     VisicutModel.getInstance().addPropertyChangeListener(new PropertyChangeListener(){
@@ -88,7 +88,7 @@ public class PreviewPanel extends ZoomablePanel
     });
   }
   private static final Logger logger = Logger.getLogger(PreviewPanel.class.getName());
-  
+
   private class ImageProcessingThread extends Thread implements ProgressListener
   {
 
@@ -105,13 +105,13 @@ public class PreviewPanel extends ZoomablePanel
     /**
      * Returns the bounding box of this preview image IN pixels
      * in LASERCUTTER-space
-     * @return 
+     * @return
      */
     public Rectangle getBoundingBox()
     {
       return bb;
     }
-    
+
     public Rectangle2D getBoundingBoxInMm()
     {
       return bbInMm;
@@ -122,7 +122,7 @@ public class PreviewPanel extends ZoomablePanel
       return buffer;
     }
 
-    public ImageProcessingThread(GraphicSet objects, LaserProfile p) 
+    public ImageProcessingThread(GraphicSet objects, LaserProfile p)
     {
       this.set = objects;
       this.p = p;
@@ -207,7 +207,7 @@ public class PreviewPanel extends ZoomablePanel
     {
       return this.progress;
     }
-    
+
     public void progressChanged(Object source, int percent)
     {
       this.progress = percent;
@@ -216,10 +216,10 @@ public class PreviewPanel extends ZoomablePanel
 
     public void taskChanged(Object source, String taskName)
     {
-      
+
     }
   }
-  
+
   private boolean fastPreview = false;
 
   /**
@@ -339,7 +339,7 @@ public class PreviewPanel extends ZoomablePanel
   {
     return material;
   }
-  
+
   /**
    * Set the value of material
    *
@@ -428,7 +428,7 @@ public class PreviewPanel extends ZoomablePanel
     gg.setTransform(bak);
     return somethingMatched;
   }
-  
+
   @Override
   protected void paintComponent(Graphics g)
   {

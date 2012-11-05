@@ -61,6 +61,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.Rectangle2D;
@@ -96,6 +98,13 @@ import org.jdesktop.application.Action;
 public class MainView extends javax.swing.JFrame
 {
 
+  private static MainView instance = null;
+
+  public static MainView getInstance()
+  {
+    return instance;
+  }
+
   private boolean initComplete = false;
   final protected DialogHelper dialog = new DialogHelper(this, this.getTitle());
 
@@ -108,6 +117,7 @@ public class MainView extends javax.swing.JFrame
   /** Creates new form MainView */
   public MainView()
   {
+    instance = this;
     initComponents();
     jScrollPane2.setColumnHeaderView(new Ruler(this.previewPanel, Ruler.HORIZONTAL));
     jScrollPane2.setRowHeaderView(new Ruler(this.previewPanel, Ruler.VERTICAL));
@@ -235,6 +245,22 @@ public class MainView extends javax.swing.JFrame
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_LOADEDFILE, null, null));
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDLASERDEVICE, null, null));
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SOURCEFILE, null, null));
+
+    this.predefinedMappingList.addMouseListener(new MouseListener(){
+
+      public void mouseClicked(MouseEvent me)
+      {
+        if (me.getClickCount() == 2)
+        {
+          MainView.this.editCurrentProfile();
+        }
+      }
+
+      public void mousePressed(MouseEvent me){}
+      public void mouseReleased(MouseEvent me){}
+      public void mouseEntered(MouseEvent me){}
+      public void mouseExited(MouseEvent me){}
+    });
 
     //apply the saved window size and position, if in current screen size
     Rectangle lastBounds = PreferencesManager.getInstance().getPreferences().getWindowBounds();
@@ -2266,6 +2292,48 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
     {
       this.dialog.showErrorMessage(e);
       return null;
+    }
+  }
+
+  public void editCurrentProfile()
+  {
+    LaserProfile e = VisicutModel.getInstance().getMappings().getLast().getProfile();
+    //edit laserprofile
+    if (e instanceof VectorProfile)
+    {
+      EditVectorProfileDialog d = new EditVectorProfileDialog(null, true);
+      d.setVectorProfile((VectorProfile) e);
+      d.setOnlyEditParameters(true);
+      d.setVisible(true);
+      if (d.isOkPressed())
+      {
+        VisicutModel.getInstance().getMappings().getLast().setProfile(d.getVectorProfile());
+        previewPanel.repaint();
+      }
+    }
+    else if (e instanceof RasterProfile)
+    {
+      EditRasterProfileDialog d = new EditRasterProfileDialog(null, true);
+      d.setRasterProfile((RasterProfile) e);
+      d.setOnlyEditParameters(true);
+      d.setVisible(true);
+      if (d.getRasterProfile() != null)
+      {
+        VisicutModel.getInstance().getMappings().getLast().setProfile(d.getRasterProfile());
+        previewPanel.repaint();
+      }
+    }
+    else if (e instanceof Raster3dProfile)
+    {
+      EditRaster3dProfileDialog d = new EditRaster3dProfileDialog(null, true);
+      d.setRasterProfile((Raster3dProfile) e);
+      d.setOnlyEditParameters(true);
+      d.setVisible(true);
+      if (d.getRasterProfile() != null)
+      {
+        VisicutModel.getInstance().getMappings().getLast().setProfile(d.getRasterProfile());
+        previewPanel.repaint();
+      }
     }
   }
 }

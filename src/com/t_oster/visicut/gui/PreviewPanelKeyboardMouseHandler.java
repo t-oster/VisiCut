@@ -68,7 +68,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   //TODO: i10n
   private JMenuItem flipHorizMenuItem = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("FLIP_HORIZONTALLY"));
   private JMenuItem flipVertMenuItem = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("FLIP_VERTICALLY"));
-  
+
   public PreviewPanelKeyboardMouseHandler(PreviewPanel panel)
   {
     this.previewPanel = panel;
@@ -78,7 +78,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     this.previewPanel.addKeyListener(this);
     this.buildMenu();
   }
-  
+
   private void buildMenu()
   {
     menu.add(resetMenuItem);
@@ -95,47 +95,9 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     });
     optionsmenu.addActionListener(new ActionListener()
     {
-
       public void actionPerformed(ActionEvent ae)
       {
-        LaserProfile e = VisicutModel.getInstance().getMappings().getLast().getProfile();
-        //edit laserprofile
-        if (e instanceof VectorProfile)
-        {
-          EditVectorProfileDialog d = new EditVectorProfileDialog(null, true);
-          d.setVectorProfile((VectorProfile) e);
-          d.setOnlyEditParameters(true);
-          d.setVisible(true);
-          if (d.isOkPressed())
-          {
-            VisicutModel.getInstance().getMappings().getLast().setProfile(d.getVectorProfile());
-            previewPanel.repaint();
-          }
-        }
-        else if (e instanceof RasterProfile)
-        {
-          EditRasterProfileDialog d = new EditRasterProfileDialog(null, true);
-          d.setRasterProfile((RasterProfile) e);
-          d.setOnlyEditParameters(true);
-          d.setVisible(true);
-          if (d.getRasterProfile() != null)
-          {
-            VisicutModel.getInstance().getMappings().getLast().setProfile(d.getRasterProfile());
-            previewPanel.repaint();
-          }
-        }
-        else if (e instanceof Raster3dProfile)
-        {
-          EditRaster3dProfileDialog d = new EditRaster3dProfileDialog(null, true);
-          d.setRasterProfile((Raster3dProfile) e);
-          d.setOnlyEditParameters(true);
-          d.setVisible(true);
-          if (d.getRasterProfile() != null)
-          {
-            VisicutModel.getInstance().getMappings().getLast().setProfile(d.getRasterProfile());
-            previewPanel.repaint();
-          }
-        }
+        MainView.getInstance().editCurrentProfile();
       }
     });
     menu.add(optionsmenu);
@@ -170,7 +132,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     previewPanel.ClearCache();
     previewPanel.repaint();
   }
-  
+
   private EditRectangle getEditRect()
   {
     return this.previewPanel.getEditRectangle();
@@ -247,7 +209,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     if (ke.getKeyCode() == KeyEvent.VK_SHIFT)
     {
       this.previewPanel.setFastPreview(false);
-      this.applyEditRectoToSet(); 
+      this.applyEditRectoToSet();
     }
   }
 
@@ -392,7 +354,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
             getEditRect().setRotateMode(true);
             getEditRect().setRotationAngle(Helper.getRotationAngle(this.previewPanel.getGraphicObjects().getTransform()));
             this.previewPanel.repaint();
-          }     
+          }
         }
         else
         {//not yet select => select in scale mode
@@ -489,7 +451,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     getEditRect().setRotationAngle(Helper.getRotationAngle(tr));
     this.previewPanel.repaint();
   }
-  
+
   public void mouseDragged(MouseEvent evt)
   {
     if (lastMousePosition != null)
