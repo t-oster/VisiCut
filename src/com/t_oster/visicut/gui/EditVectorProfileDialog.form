@@ -151,13 +151,13 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jComboBox1" pref="278" max="32767" attributes="0"/>
+                      <Component id="jComboBox1" pref="302" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
                           <Component id="jCheckBox1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="tfExactness" max="32767" attributes="0"/>
+                          <Component id="cbPPI" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="lbPPI" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -181,11 +181,11 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="tfExactness" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="lbExactness" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="lbPPI" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbPPI" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="25" max="32767" attributes="0"/>
+                  <EmptySpace pref="19" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -218,14 +218,6 @@
             <Property name="text" type="java.lang.String" value="Optimization"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="tfExactness">
-          <BindingProperties>
-            <BindingProperty name="text" source="Form" sourcePath="${vectorProfile.DPI}" target="tfExactness" targetPath="text" updateStrategy="0" immediately="false">
-              <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
-              <Property name="name" type="java.lang.String" value="ppi"/>
-            </BindingProperty>
-          </BindingProperties>
-        </Component>
         <Component class="javax.swing.JLabel" name="lbExactness">
           <Properties>
             <Property name="text" type="java.lang.String" value="Exactness"/>
@@ -235,6 +227,25 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="PPI"/>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="cbPPI">
+          <Properties>
+            <Property name="editable" type="boolean" value="true"/>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="0"/>
+            </Property>
+          </Properties>
+          <BindingProperties>
+            <BindingProperty name="selectedItem" source="Form" sourcePath="${vectorProfile.DPI}" target="cbPPI" targetPath="selectedItem" updateStrategy="0" immediately="false">
+              <Property name="nullValue" type="java.lang.Object" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                <Connection code="new Double(0)" type="code"/>
+              </Property>
+              <Property name="incompletePathValue" type="java.lang.Object" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                <Connection code="new Double(0)" type="code"/>
+              </Property>
+              <Property name="name" type="java.lang.String" value="ppi"/>
+            </BindingProperty>
+          </BindingProperties>
         </Component>
       </SubComponents>
     </Container>

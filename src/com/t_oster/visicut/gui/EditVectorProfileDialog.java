@@ -19,6 +19,7 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.liblasercut.utils.VectorOptimizer;
+import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.model.VectorProfile;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -69,6 +70,14 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
   {
     super(parent, modal);
     initComponents();
+    this.cbPPI.removeAllItems();
+    if (VisicutModel.getInstance().getSelectedLaserDevice() != null)
+    {
+      for (Double d: VisicutModel.getInstance().getSelectedLaserDevice().getLaserCutter().getResolutions())
+      {
+        this.cbPPI.addItem(d);
+      }
+    }
   }
 
   /**
@@ -92,9 +101,9 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
     jCheckBox1 = new javax.swing.JCheckBox();
     jComboBox1 = new javax.swing.JComboBox();
     jLabel2 = new javax.swing.JLabel();
-    tfExactness = new javax.swing.JTextField();
     lbExactness = new javax.swing.JLabel();
     lbPPI = new javax.swing.JLabel();
+    cbPPI = new javax.swing.JComboBox();
     btSave = new javax.swing.JButton();
     btCancel = new javax.swing.JButton();
     tfLineWidth = new javax.swing.JTextField();
@@ -131,12 +140,16 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
 
     jLabel2.setText("Optimization");
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${vectorProfile.DPI}"), tfExactness, org.jdesktop.beansbinding.BeanProperty.create("text"), "ppi");
-    bindingGroup.addBinding(binding);
-
     lbExactness.setText("Exactness");
 
     lbPPI.setText("PPI");
+
+    cbPPI.setEditable(true);
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${vectorProfile.DPI}"), cbPPI, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"), "ppi");
+    binding.setSourceNullValue(new Double(0));
+    binding.setSourceUnreadableValue(new Double(0));
+    bindingGroup.addBinding(binding);
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
@@ -150,12 +163,12 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
           .addComponent(lbExactness))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jComboBox1, 0, 278, Short.MAX_VALUE)
+          .addComponent(jComboBox1, 0, 302, Short.MAX_VALUE)
           .addGroup(jPanel1Layout.createSequentialGroup()
             .addComponent(jCheckBox1)
             .addGap(0, 0, Short.MAX_VALUE))
           .addGroup(jPanel1Layout.createSequentialGroup()
-            .addComponent(tfExactness)
+            .addComponent(cbPPI, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(lbPPI)))
         .addContainerGap())
@@ -173,10 +186,10 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
           .addComponent(jLabel2))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(tfExactness, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(lbExactness)
-          .addComponent(lbPPI))
-        .addContainerGap(24, Short.MAX_VALUE))
+          .addComponent(lbPPI)
+          .addComponent(cbPPI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(19, Short.MAX_VALUE))
     );
 
     btSave.setText("Save");
@@ -293,6 +306,7 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
   private javax.swing.JButton btSave;
   private com.t_oster.visicut.gui.beans.SelectThumbnailButton btThumbnail;
   private javax.swing.JCheckBox cbIsCut;
+  private javax.swing.JComboBox cbPPI;
   private javax.swing.JCheckBox jCheckBox1;
   private javax.swing.JComboBox jComboBox1;
   private javax.swing.JLabel jLabel1;
@@ -305,7 +319,6 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
   private javax.swing.JLabel lbName;
   private javax.swing.JLabel lbPPI;
   private javax.swing.JTextField tfDescription;
-  private javax.swing.JTextField tfExactness;
   private javax.swing.JTextField tfLineWidth;
   private javax.swing.JTextField tfName;
   private org.jdesktop.beansbinding.BindingGroup bindingGroup;
