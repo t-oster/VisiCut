@@ -523,14 +523,15 @@ public class PreviewPanel extends ZoomablePanel
                     this.renderOriginalImage(gg, m);
                     Composite o = gg.getComposite();
                     gg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
-                    gg.setColor(Color.GRAY);
-                    gg.fillRect(bbInPx.x, bbInPx.y, bbInPx.width, bbInPx.height);
-                    gg.setColor(Color.BLACK);
                     Point po = new Point(bbInPx.x + bbInPx.width / 2, bbInPx.y + bbInPx.height / 2);
                     String txt = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("PLEASE WAIT (")+procThread.getProgress()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("%)");
                     int w = gg.getFontMetrics().stringWidth(txt);
-                    gg.drawString(txt, po.x - w / 2, po.y);
+                    int h = gg.getFontMetrics().getHeight();
+                    gg.setColor(Color.GRAY);
+                    gg.fillRoundRect(po.x -w /2 -5, po.y-h, w+10, (int) (1.5d*h), 5, 5);
                     gg.setComposite(o);
+                    gg.setColor(Color.BLACK);
+                    gg.drawString(txt, po.x - w / 2, po.y);
                   }
                   else
                   {
