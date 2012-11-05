@@ -1171,25 +1171,26 @@ public class MainView extends javax.swing.JFrame
    */
   private void refreshButtonStates()
   {
-    this.customMappingPanel1.setEnabled(
-      this.visicutModel1.getMaterial() != null
-      && this.visicutModel1.getGraphicObjects() != null
-      && this.visicutModel1.getGraphicObjects().size() > 0);
-    this.calculateTimeButton.setEnabled(this.visicutModel1.getMaterial() != null
+    boolean cam = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null;
+    this.calibrateCameraMenuItem.setEnabled(cam);
+    this.captureImageButton.setEnabled(cam);
+    this.jmShowPhoto.setEnabled(cam);
+    if (cam)
+    {
+      this.captureImage();
+    }
+    boolean estimateSupported = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getLaserCutter().canEstimateJobDuration();
+    this.calculateTimeButton.setVisible(estimateSupported);
+    this.timeLabel.setVisible(estimateSupported);
+    this.jLabel10.setVisible(estimateSupported);
+    boolean execute = this.visicutModel1.getMaterial() != null
       && this.visicutModel1.getSelectedLaserDevice() != null
+      && this.visicutModel1.getGraphicObjects() != null
       && this.visicutModel1.getMappings() != null
-      && this.visicutModel1.getMappings().size() > 0);
-    if (this.visicutModel1.getSelectedLaserDevice() == null || this.visicutModel1.getMaterial() == null
-      || this.visicutModel1.getMappings() == null || this.cbMaterialThickness.getSelectedItem() == null)
-    {
-      this.executeJobButton.setEnabled(false);
-      this.executeJobMenuItem.setEnabled(false);
-    }
-    else
-    {
-      this.executeJobButton.setEnabled(true);
-      this.executeJobMenuItem.setEnabled(true);
-    }
+      && this.visicutModel1.getMappings().size() > 0;
+    this.calculateTimeButton.setEnabled(execute);
+    this.executeJobButton.setEnabled(execute);
+    this.executeJobMenuItem.setEnabled(execute);
   }
   private File lastDirectory = null;
 private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
@@ -1427,18 +1428,7 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDLASERDEVICE))
   {
-    boolean cam = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null;
-    this.calibrateCameraMenuItem.setEnabled(cam);
-    this.captureImageButton.setEnabled(cam);
-    this.jmShowPhoto.setEnabled(cam);
-    if (cam)
-    {
-      this.captureImage();
-    }
-    boolean estimate = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getLaserCutter().canEstimateJobDuration();
-    this.calculateTimeButton.setVisible(estimate);
-    this.timeLabel.setVisible(estimate);
-    this.jLabel10.setVisible(estimate);
+    this.refreshButtonStates();
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_SOURCEFILE))
   {
@@ -1453,6 +1443,11 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
   else if (evt.getPropertyName().equals(VisicutModel.PROP_MATERIAL))
   {
     this.refreshMaterialThicknessesComboBox();
+    this.refreshButtonStates();
+  }
+  else if (evt.getPropertyName().equals(VisicutModel.PROP_MAPPINGS))
+  {
+    this.refreshButtonStates();
   }
 }//GEN-LAST:event_visicutModel1PropertyChange
 
@@ -1607,13 +1602,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   {
     return;
   }
-  if (this.materialComboBox.isDisabled(newMaterial))
-  {
-    this.materialComboBox.setSelectedItem(visicutModel1.getMaterial());
-    return;
-  }
   this.visicutModel1.setMaterial(newMaterial);
-  this.refreshButtonStates();
 }//GEN-LAST:event_materialComboBoxActionPerformed
 
   private void materialMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_materialMenuItemActionPerformed
@@ -1713,7 +1702,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       Object selected = this.predefinedMappingList.getSelectedValue();
       MappingSet ms = selected instanceof MappingSet ? (MappingSet) selected : null;
       this.setMappings(ms);
-      this.refreshButtonStates();
     }
     catch (Exception ex)
     {
@@ -1753,7 +1741,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     {
       dialog.showErrorMessage(ex);
     }
-    this.refreshButtonStates();
   }//GEN-LAST:event_mappingTabbedPaneStateChanged
 
   private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
