@@ -2080,12 +2080,12 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
 
   private void btFillScreenActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btFillScreenActionPerformed
   {//GEN-HEADEREND:event_btFillScreenActionPerformed
-    this.previewPanel.setOneToOneZoom();
+    this.previewPanel.setZoomToFillParent();
   }//GEN-LAST:event_btFillScreenActionPerformed
 
   private void bt1to1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_bt1to1ActionPerformed
   {//GEN-HEADEREND:event_bt1to1ActionPerformed
-    this.previewPanel.setZoomToFillParent();
+    this.previewPanel.setOneToOneZoom();
   }//GEN-LAST:event_bt1to1ActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
