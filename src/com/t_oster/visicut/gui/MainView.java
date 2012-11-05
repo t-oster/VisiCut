@@ -1175,10 +1175,6 @@ public class MainView extends javax.swing.JFrame
     this.calibrateCameraMenuItem.setEnabled(cam);
     this.captureImageButton.setEnabled(cam);
     this.jmShowPhoto.setEnabled(cam);
-    if (cam)
-    {
-      this.captureImage();
-    }
     boolean estimateSupported = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getLaserCutter().canEstimateJobDuration();
     this.calculateTimeButton.setVisible(estimateSupported);
     this.timeLabel.setVisible(estimateSupported);
