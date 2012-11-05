@@ -2,22 +2,24 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.t_oster.visicut.managers;
 
+import com.t_oster.liblasercut.TimeIntensiveOperation;
+import com.t_oster.liblasercut.dithering.DitheringAlgorithm;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
@@ -27,7 +29,7 @@ import java.util.*;
 
 /**
  * This class manages the available Material Profiles
- * 
+ *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class ProfileManager extends FilebasedManager<LaserProfile>
@@ -40,11 +42,12 @@ public class ProfileManager extends FilebasedManager<LaserProfile>
     xs.alias("vectorProfile", VectorProfile.class);
     xs.alias("rasterProfile", RasterProfile.class);
     xs.alias("raster3dProfile", Raster3dProfile.class);
+    xs.omitField(TimeIntensiveOperation.class, "listeners");
     return xs;
   }
-  
+
   private static ProfileManager instance;
-  
+
   public static ProfileManager getInstance()
   {
     if (instance == null)
@@ -118,7 +121,7 @@ public class ProfileManager extends FilebasedManager<LaserProfile>
       return t.getName().compareTo(t1.getName());
     }
   };
-  
+
   @Override
   protected Comparator<LaserProfile> getComparator()
   {

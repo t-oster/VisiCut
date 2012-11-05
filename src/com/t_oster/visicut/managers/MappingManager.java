@@ -2,22 +2,27 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.t_oster.visicut.managers;
 
+import com.t_oster.liblasercut.TimeIntensiveOperation;
+import com.t_oster.liblasercut.dithering.DitheringAlgorithm;
+import com.t_oster.visicut.model.Raster3dProfile;
+import com.t_oster.visicut.model.RasterProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingFilter;
@@ -39,11 +44,15 @@ public class MappingManager extends FilebasedManager<MappingSet>
     xstream.alias("filter", MappingFilter.class);
     xstream.alias("filters", FilterSet.class);
     xstream.alias("mapping", Mapping.class);
+    xstream.alias("vectorProfile", VectorProfile.class);
+    xstream.alias("rasterProfile", RasterProfile.class);
+    xstream.alias("raster3dProfile", Raster3dProfile.class);
+    xstream.omitField(TimeIntensiveOperation.class, "listeners");
     return xstream;
   }
-  
+
   private static MappingManager instance;
-  
+
   public static MappingManager getInstance()
   {
     if (instance == null)
@@ -52,7 +61,7 @@ public class MappingManager extends FilebasedManager<MappingSet>
     }
     return instance;
   }
-  
+
   /**
    * Need public constructor for UI Editor.
    * Do not use. Use getInstance instead
@@ -89,9 +98,9 @@ public class MappingManager extends FilebasedManager<MappingSet>
     {
       return t.getName().compareTo(t1.getName());
     }
-    
+
   };
-  
+
   @Override
   protected Comparator<MappingSet> getComparator()
   {
