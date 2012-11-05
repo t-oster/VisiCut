@@ -1498,11 +1498,10 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
   }
   //TODO ask user for VectorProfile and make sure the properties for current
   //material and cutter are available
-  CamCalibrationDialog ccd = new CamCalibrationDialog();
+  CamCalibrationDialog ccd = new CamCalibrationDialog(this, true);
   ccd.setVectorProfile((VectorProfile) profiles.getSelectedItem());
   ccd.setBackgroundImage(this.visicutModel1.getBackgroundImage());
   ccd.setImageURL(this.visicutModel1.getSelectedLaserDevice().getCameraURL());
-  //ccd.setVectorProfile(vp);
   ccd.setResultingTransformation(this.visicutModel1.getSelectedLaserDevice().getCameraCalibration());
   ccd.setVisible(true);
   this.visicutModel1.getSelectedLaserDevice().setCameraCalibration(ccd.getResultingTransformation());

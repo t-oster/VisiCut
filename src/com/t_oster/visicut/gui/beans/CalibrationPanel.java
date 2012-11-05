@@ -2,17 +2,17 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 /**
  * This Panel displays a Set of points which are draggable
  * with the mouse
- * 
+ *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class CalibrationPanel extends ZoomablePanel implements MouseListener, MouseMotionListener
@@ -96,7 +96,7 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
     this.pointList = pointList;
     this.repaint();
   }
-  
+
   @Override
   protected void paintComponent(Graphics g)
   {
@@ -128,11 +128,6 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
     g.drawLine((int) (p.x - size / 2), (int) p.y, (int) (p.x + size / 2), (int) p.y);
     g.drawLine((int) p.x, (int) (p.y - size / 2), (int) p.x, (int) (p.y + size / 2));
   }
-  /**
-   * Contains last mouse Position if dragging background,
-   * null else.
-   */
-  private Point lastMousePos = null;
 
   public void mouseClicked(MouseEvent me)
   {
@@ -150,17 +145,14 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
       {
         selectedPoint = source;
         repaint();
-        lastMousePos = null;
         return;
       }
     }
-    lastMousePos = p;
   }
 
   public void mouseReleased(MouseEvent me)
   {
     selectedPoint = null;
-    lastMousePos = null;
   }
 
   public void mouseEntered(MouseEvent me)

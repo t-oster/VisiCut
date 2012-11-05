@@ -2,17 +2,17 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
@@ -120,7 +120,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
       }
     }
   }
-  
+
   protected AffineTransform currentTransformation = currentTransformation = AffineTransform.getScaleInstance(0.01, 0.01);
   public static final String PROP_CURRENTTRANSFORMATION = "currentTransformation";
 
@@ -179,7 +179,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
   {
     this.profile = p;
   }
-  
+
   /**
    * Set the value of resultingTransformation
    *
@@ -188,7 +188,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
   public void setResultingTransformation(AffineTransform resultingTransformation)
   {
     AffineTransform oldResultingTransformation = this.resultingTransformation;
-    this.resultingTransformation = resultingTransformation;
+    this.resultingTransformation = resultingTransformation != null ? resultingTransformation : new AffineTransform();
     firePropertyChange(PROP_RESULTINGTRANSFORMATION, oldResultingTransformation, resultingTransformation);
     this.refreshImagePoints();
   }
