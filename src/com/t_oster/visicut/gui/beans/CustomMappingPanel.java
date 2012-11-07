@@ -5,13 +5,16 @@ import com.t_oster.visicut.gui.EditRaster3dProfileDialog;
 import com.t_oster.visicut.gui.EditRasterProfileDialog;
 import com.t_oster.visicut.gui.EditVectorProfileDialog;
 import com.t_oster.visicut.managers.ProfileManager;
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
+import com.t_oster.visicut.model.mapping.MappingFilter;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import java.awt.Color;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -19,6 +22,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.MissingResourceException;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -82,7 +86,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       Entry e = entries.get(row);
       switch (column)
       {
-        case 0: 
+        case 0:
         {
           if (e.enabled == (Boolean) aValue)
           {
@@ -116,11 +120,11 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     {
       return classes[columnIndex];
     }
-    
+
     @Override
     public void removeRow(int row)
     {
-      
+
     }
   };
 
@@ -177,7 +181,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
   }
 
   /*
-   * Tries to represent a MappingSet and returns true, 
+   * Tries to represent a MappingSet and returns true,
    * if it is completely representable.
    * Otherwise the content of the Panel is not modified
    */
@@ -201,7 +205,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     this.model.fireTableDataChanged();
     return true;
   }
-  
+
   public void propertyChange(PropertyChangeEvent pce)
   {
     if (pce.getSource() == ProfileManager.getInstance())
@@ -214,16 +218,16 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
   {
     VisicutModel.getInstance().setMappings(this.getResultingMappingSet());
   }
-  
+
   class Entry
   {
     boolean enabled = true;
     FilterSet filterSet = new FilterSet();
     LaserProfile profile = null;
   }
-  
+
   private final List<Entry> entries = new LinkedList<Entry>();
-  
+
   public CustomMappingPanel()
   {
     this.generateDefaultEntries();
@@ -239,7 +243,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     ProfileManager.getInstance().addPropertyChangeListener(this);
     model.addTableModelListener(this);
   }
-  
+
   private void refreshProfilesEditor()
   {
     JComboBox profiles = new JComboBox();
@@ -249,9 +253,9 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     }
     this.getTable().setDefaultEditor(LaserProfile.class, new DefaultCellEditor(profiles));
   }
-  
+
   private FilterSetCellEditor filterSetEditor = new FilterSetCellEditor();
-  
+
   private DefaultTableCellRenderer filterSetRenderer = new DefaultTableCellRenderer()
   {
 
@@ -261,13 +265,29 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
       if (c instanceof JLabel && value instanceof FilterSet)
       {
-        ((JLabel) c).setText(((FilterSet) value).isEmpty() ? java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("EVERYTHING") : java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("CUSTOM"));
+        String text = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("EVERYTHING");
+        if (!((FilterSet) value).isEmpty())
+        {
+          MappingFilter f = ((FilterSet) value).getFirst();
+          text = FilterSetCellEditor.translateAttVal(f.getAttribute());
+          String dots = ((FilterSet) value).size() > 1 ? "..." : "";
+          if (f.getValue() instanceof Color)
+          {
+            String color = Helper.toHtmlRGB((Color) f.getValue());
+            text = "<html><table><tr><td>"+text+" "+color+"<td border=1 bgcolor=" + color + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>"+dots+"</td></tr></table></html>";
+          }
+          else if (f.getValue() != null)
+          {
+            text = text + " "+FilterSetCellEditor.translateAttVal(f.getValue().toString())+dots;
+          }
+        }
+        ((JLabel) c).setText(text);
       }
       return c;
     }
-    
+
   };
-  
+
   private void generateDefaultEntries()
   {
     entries.clear();
@@ -285,7 +305,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       {
         return e.profile instanceof VectorProfile && ((VectorProfile) e.profile).isIsCut();
       }
-      
+
       public int compare(Entry t, Entry t1)
       {
         if (isCut(t) || !isCut(t1))
@@ -303,7 +323,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       }
     });
   }
-  
+
   public MappingSet getResultingMappingSet()
   {
     MappingSet result = new MappingSet();

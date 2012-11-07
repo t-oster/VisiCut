@@ -35,7 +35,7 @@ import javax.swing.table.TableCellEditor;
  */
 public class FilterSetCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener, PropertyChangeListener, PopupMenuListener
 {
-  
+
   private List<FilterMenuItem> menuItems = new LinkedList<FilterMenuItem>();
   private List<JMenu> menus = new LinkedList<JMenu>();
 
@@ -78,7 +78,19 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     }
     return true;
   }
-  
+
+  public static String translateAttVal(String attribute)
+  {
+    try
+    {
+      return java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString(attribute.toUpperCase());
+    }
+    catch (MissingResourceException ex)
+    {
+      return attribute;
+    }
+  }
+
   class FilterMenuItem extends JCheckBoxMenuItem implements ActionListener
   {
     MappingFilter filter = null;
@@ -92,20 +104,13 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
       }
       else if (value != null)
       {
-        try
-        {
-          this.setText(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString(value.toString().toUpperCase()));
-        }
-        catch (MissingResourceException e)
-        {
-          this.setText(value.toString());
-        }
+        this.setText(translateAttVal(value.toString()));
       }
       filter = new MappingFilter(attribute, value);
       this.parent = parent;
       this.addActionListener(this);
     }
-    
+
     public void refreshState()
     {
       if (FilterSetCellEditor.this.containsFilter(filter))
@@ -121,8 +126,8 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
       {
         this.setSelected(false);
       }
-      
-      
+
+
     }
 
     public void actionPerformed(ActionEvent ae)
@@ -137,11 +142,11 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
       }
     }
   }
-  
+
   JButton bt = new JButton(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("SELECT"));
   JPopupMenu menu = new JPopupMenu(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("MENU"));
   FilterSet resultingFilterSet = new FilterSet();
-  
+
   private void fillMenu(GraphicSet gs)
   {
     menu.removeAll();
@@ -159,13 +164,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
       menu.add(e);
       for(final String s: gs.getAttributes())
       {
-        String txt = s;
-        try
-        {
-          txt = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString(s.toUpperCase());
-        }
-        catch (MissingResourceException ex){}
-        JMenu m = new JMenu(txt);
+        JMenu m = new JMenu(translateAttVal(s));
         for(final Object o: gs.getAttributeValues(s))
         {
           FilterMenuItem mi = new FilterMenuItem(s, o, m);
@@ -183,13 +182,13 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     this.resultingFilterSet.add(f);
     this.fireEditingStopped();
   }
-  
+
   private void removeFilter(MappingFilter f)
   {
     this.resultingFilterSet.remove(f);
     this.fireEditingStopped();
   }
-  
+
   private void prepareMenu()
   {
     for (JMenu m : this.menus)
@@ -205,7 +204,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
       i.refreshState();
     }
   }
-  
+
   public FilterSetCellEditor()
   {
     this.fillMenu(VisicutModel.getInstance().getGraphicObjects());
@@ -213,8 +212,8 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     VisicutModel.getInstance().addPropertyChangeListener(this);
     menu.addPopupMenuListener(this);
   }
-  
-  
+
+
   public Object getCellEditorValue()
   {
     return resultingFilterSet;
@@ -238,5 +237,5 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     this.resultingFilterSet.clear();
     this.fireEditingStopped();
   }
-  
+
 }
