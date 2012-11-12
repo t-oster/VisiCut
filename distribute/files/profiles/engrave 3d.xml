@@ -1,5 +1,6 @@
 <raster3dProfile>
-  <description>Engaves with power proportional to grey value</description>
+  <DPI>500.0</DPI>
+  <description>Engrave while modulating laserpower according to image darkness</description>
   <name>engrave 3d</name>
   <invertColors>false</invertColors>
   <colorShift>0</colorShift>

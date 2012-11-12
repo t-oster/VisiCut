@@ -1,0 +1,27 @@
+<laserDevice>
+  <jobSentText>Job was sent as &apos;$jobname&apos;
+Please:
+-Close the lid
+-Turn on the Ventilation
+-And press &apos;start&apos; on the Lasercutter $name</jobSentText>
+  <jobPrefix>visicut </jobPrefix>
+  <laserCutter class="com.t_oster.liblasercut.drivers.LaosCutter">
+    <unidir>false</unidir>
+    <addSpacePerRasterLine>5.0</addSpacePerRasterLine>
+    <useTftp>true</useTftp>
+    <flipXaxis>false</flipXaxis>
+    <flipYaxis>true</flipYaxis>
+    <hostname>192.168.123.111</hostname>
+    <port>69</port>
+    <mmPerStep>0.001</mmPerStep>
+    <currentPower>-1.0</currentPower>
+    <currentSpeed>-1.0</currentSpeed>
+    <currentFrequency>-1</currentFrequency>
+    <currentFocus>0.0</currentFocus>
+    <bedWidth>300.0</bedWidth>
+    <bedHeight>210.0</bedHeight>
+  </laserCutter>
+  <thumbnailPath>LAOS-HPC.png</thumbnailPath>
+  <description>www.laoslaser.org</description>
+  <name>LAOS-HPC</name>
+</laserDevice>

@@ -143,7 +143,7 @@ public class MainView extends javax.swing.JFrame
       zoomOutMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SUBTRACT, java.awt.event.InputEvent.META_MASK));
     }
     fillComboBoxes();
-
+    refreshMaterialThicknessesComboBox();
     this.customMappingPanel2.getSaveButton().addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae)
       {

@@ -1,7 +1,9 @@
 <vectorProfile>
-  <description>Mark the material along vector lines</description>
+  <DPI>500.0</DPI>
+  <description>Engrave along lines</description>
   <name>mark</name>
+  <orderStrategy>NEAREST</orderStrategy>
   <useOutline>false</useOutline>
-  <isCut>false</isCut>
+  <isCut>true</isCut>
   <width>1.0</width>
 </vectorProfile>

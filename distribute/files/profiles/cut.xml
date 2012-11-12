@@ -1,7 +1,9 @@
 <vectorProfile>
+  <DPI>500.0</DPI>
   <description>Cut through the material</description>
   <name>cut</name>
+  <orderStrategy>NEAREST</orderStrategy>
   <useOutline>false</useOutline>
   <isCut>true</isCut>
-  <width>0.8</width>
+  <width>0.7</width>
 </vectorProfile>
