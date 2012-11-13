@@ -72,7 +72,7 @@ public class GraphicFileImporter implements Importer
     }
   }
 
-  public GraphicSet importFile(File inputFile) throws ImportException
+  public GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException
   {
     if (inputFile == null)
     {
@@ -88,7 +88,7 @@ public class GraphicFileImporter implements Importer
       {
         if (i.getFileFilter().accept(inputFile))
         {
-          GraphicSet gs = i.importFile(inputFile);
+          GraphicSet gs = i.importFile(inputFile, warnings);
           return gs;
         }
       }

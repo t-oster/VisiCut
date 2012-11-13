@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.filechooser.FileFilter;
@@ -53,7 +54,7 @@ import org.xml.sax.SAXException;
 public class DXFImporter implements Importer
 {
 
-  public GraphicSet importFile(File inputFile) throws ImportException
+  public GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException
   {
     GraphicSet result = new GraphicSet();
     try
@@ -94,7 +95,7 @@ public class DXFImporter implements Importer
         }).start();
       SVGImporter svgimp = new SVGImporter();
       //TODO Check which resolution it exports and adapt it to mm
-      result = svgimp.importFile(in, inputFile.getName(), 90d);
+      result = svgimp.importFile(in, inputFile.getName(), 90d, warnings);
     }
     catch (Exception ex)
     {

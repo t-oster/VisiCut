@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.Writer;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.filechooser.FileFilter;
@@ -97,7 +98,7 @@ public class EPSImporter implements Importer
     return result;
   }
 
-  public GraphicSet importFile(File inputFile) throws ImportException
+  public GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException
   {
     Writer out = null;
     try
@@ -124,7 +125,7 @@ public class EPSImporter implements Importer
       File tmp = File.createTempFile("temp", "svg");
       tmp.deleteOnExit();
       svgGenerator.stream(new FileWriter(tmp));
-      GraphicSet result = new SVGImporter().importFile(tmp);
+      GraphicSet result = new SVGImporter().importFile(tmp, warnings);
       //Assume the EPS has been created with 72DPI (from Inkscape)
       double px2mm = Util.inch2mm(1d/72d);
       result.setBasicTransform(AffineTransform.getScaleInstance(px2mm, px2mm));

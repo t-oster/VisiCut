@@ -29,6 +29,7 @@ import com.t_oster.visicut.model.graphicelements.Importer;
 import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileFilter;
 
@@ -39,7 +40,7 @@ import javax.swing.filechooser.FileFilter;
 public class JPGPNGImporter implements Importer
 {
 
-  public GraphicSet importFile(File inputFile) throws ImportException
+  public GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException
   {
     try
     {

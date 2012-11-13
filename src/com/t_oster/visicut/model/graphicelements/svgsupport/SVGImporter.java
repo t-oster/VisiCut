@@ -245,7 +245,7 @@ public class SVGImporter implements Importer
   }
 
   @Override
-  public GraphicSet importFile(File inputFile) throws ImportException
+  public GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException
   {
     try
     {
