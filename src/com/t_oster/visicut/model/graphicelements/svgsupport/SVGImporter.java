@@ -86,7 +86,7 @@ public class SVGImporter implements Importer
       }
       else
       {
-        warnings.add("Ignoring SVGShape: " + e + " because can't get Shape");
+        //warnings.add("Ignoring SVGShape: " + e + " because can't get Shape");
       }
     }
     else
