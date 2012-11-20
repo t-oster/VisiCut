@@ -22,6 +22,7 @@
  */
 package com.t_oster.visicut.model.graphicelements.dxfsupport;
 
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
@@ -94,7 +95,7 @@ public class DXFImporter implements Importer
         }).start();
       SVGImporter svgimp = new SVGImporter();
       //TODO Check which resolution it exports and adapt it to mm
-      result = svgimp.importFile(in, inputFile.getName(), 90d);
+      result = svgimp.importFile(in, inputFile.getName(), 1/Util.mm2inch(1));
     }
     catch (Exception ex)
     {

@@ -89,6 +89,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       {
         PreviewPanelKeyboardMouseHandler.this.getGraphicObjects().setTransform(
           PreviewPanelKeyboardMouseHandler.this.getGraphicObjects().getBasicTransform());
+        VisicutModel.getInstance().fitMaterialIntoBed();
         PreviewPanelKeyboardMouseHandler.this.previewPanel.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
         PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
       }
