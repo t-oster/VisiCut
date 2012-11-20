@@ -62,7 +62,7 @@ public class SVGImporter implements Importer
   private SVGUniverse u = new SVGUniverse();
   private SVGRoot root;
 
-  private void importNode(SVGElement e, List<GraphicObject> result, double svgResolution)
+  private void importNode(SVGElement e, List<GraphicObject> result, double svgResolution, List<String> warnings)
   {
     if (e instanceof PatternSVG || e instanceof Gradient || e instanceof Defs)
     {//Ignore Patterns,Gradients and Children
@@ -86,7 +86,7 @@ public class SVGImporter implements Importer
       }
       else
       {
-        System.err.println("Ignoring SVGShape: " + e + " because can't get Shape");
+        //warnings.add("Ignoring SVGShape: " + e + " because can't get Shape");
       }
     }
     else
@@ -98,11 +98,11 @@ public class SVGImporter implements Importer
     }
     for (int i = 0; i < e.getNumChildren(); i++)
     {
-      importNode(e.getChild(i), result, svgResolution);
+      importNode(e.getChild(i), result, svgResolution, warnings);
     }
   }
 
-  public GraphicSet importFile(InputStream in, String name, double svgResolution) throws Exception
+  public GraphicSet importFile(InputStream in, String name, double svgResolution, List<String> warnings) throws Exception
   {
     try
     {
@@ -111,7 +111,7 @@ public class SVGImporter implements Importer
       root = u.getDiagram(svg).getRoot();
       GraphicSet result = new GraphicSet();
       result.setBasicTransform(determineTransformation(root, svgResolution));
-      importNode(root, result, svgResolution);
+      importNode(root, result, svgResolution, warnings);
       return result;
     }
     catch (Exception e)
@@ -153,22 +153,28 @@ public class SVGImporter implements Importer
    * @param f
    * @return
    */
-  private double determineResolution(File f)
+  private double determineResolution(File f, List<String> warnings)
   {
     BufferedReader in = null;;
     double result = 90;
+    boolean usesFlowRoot = false;
     try
     {
       in = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
       try
       {
-        for (int i = 0; i < 2; i++)
+        String line = in.readLine();
+        while (line != null)
         {
-          if (in.readLine().startsWith("<!-- Generator: Adobe Illustrator"))
+          if (line.startsWith("<!-- Generator: Adobe Illustrator"))
           {
             result = 72;
-            break;
           }
+          if (line.contains("</flowRoot>"))
+          {
+            usesFlowRoot = true;
+          }
+          line = in.readLine();
         }
         in.close();
       }
@@ -194,6 +200,10 @@ public class SVGImporter implements Importer
       {
         Logger.getLogger(SVGImporter.class.getName()).log(Level.SEVERE, null, ex);
       }
+    }
+    if (usesFlowRoot)
+    {
+      warnings.add(java.util.ResourceBundle.getBundle("com/t_oster/visicut/model/graphicelements/svgsupport/resources/SVGImporter").getString("FLOWROOT_WARNING"));
     }
     return result;
   }
@@ -245,12 +255,12 @@ public class SVGImporter implements Importer
   }
 
   @Override
-  public GraphicSet importFile(File inputFile) throws ImportException
+  public GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException
   {
     try
     {
-      double svgResolution = determineResolution(inputFile);
-      GraphicSet result = this.importFile(new FileInputStream(inputFile), inputFile.getName(), svgResolution);
+      double svgResolution = determineResolution(inputFile, warnings);
+      GraphicSet result = this.importFile(new FileInputStream(inputFile), inputFile.getName(), svgResolution, warnings);
       return result;
     }
     catch (Exception ex)

@@ -175,7 +175,7 @@ public class VectorProfile extends LaserProfile
   {
     //TODO calculate outline
     gg.setColor(this.isCut ? material.getCutColor() : material.getEngraveColor());
-    Stroke s = new BasicStroke((float) ((mm2px.getScaleX()+mm2px.getScaleY())*this.getWidth()/2));
+    Stroke s = new BasicStroke((float) ((mm2px.getScaleX()+mm2px.getScaleY())*this.getWidth()/2), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     gg.setStroke(s);
     if (this.isUseOutline())
     {

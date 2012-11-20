@@ -29,9 +29,11 @@ import com.kitfox.svg.Tspan;
 import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedHashMap;
@@ -235,13 +237,35 @@ public class SVGShape extends SVGObject implements ShapeObject
     }
     g.setTransform(bak);
   }
-
+  
   public Shape getShape()
   {
     try
     {
       AffineTransform at = this.getAbsoluteTransformation();
-      return at.createTransformedShape(this.getDecoratee().getShape());
+      StyleAttribute styleAttrib = new StyleAttribute();
+      float[] strokeDashArray = null;
+      if (getDecoratee().getStyle(styleAttrib.setName("stroke-dasharray")))
+      {
+          strokeDashArray = styleAttrib.getFloatList();
+          if (strokeDashArray.length == 0)
+        {
+          strokeDashArray = null;
+        }
+      }
+      float strokeDashOffset = 0f;
+      if (getDecoratee().getStyle(styleAttrib.setName("stroke-dashoffset")))
+      {
+          strokeDashOffset = styleAttrib.getFloatValueWithUnits();
+      }
+      if (strokeDashArray == null)
+      {
+        return at.createTransformedShape(this.getDecoratee().getShape());
+      }
+      else
+      {
+        return at.createTransformedShape(new DashedShape(getDecoratee().getShape(), strokeDashArray, strokeDashOffset));
+      }
     }
     catch (SVGException ex)
     {

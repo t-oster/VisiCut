@@ -352,7 +352,7 @@ public class VisicutModel
     return loadedFile;
   }
 
-  public void loadFromFile(MappingManager mm, File f) throws FileNotFoundException, IOException, ImportException
+  public void loadFromFile(MappingManager mm, File f, List<String> warnings) throws FileNotFoundException, IOException, ImportException
   {
     ZipFile zip = new ZipFile(f);
     Enumeration entries = zip.entries();
@@ -413,7 +413,7 @@ public class VisicutModel
       throw new ImportException("Corrupted Input File");
     }
     inputFile.deleteOnExit();
-    GraphicSet gs = this.loadSetFromFile(inputFile);
+    GraphicSet gs = this.loadSetFromFile(inputFile, warnings);
     this.setSourceFile(inputFile);
     if (gs != null)
     {
@@ -529,16 +529,16 @@ public class VisicutModel
     return graphicFileImporter;
   }
 
-  private GraphicSet loadSetFromFile(File f) throws ImportException
+  private GraphicSet loadSetFromFile(File f, List<String> warnings) throws ImportException
   {
     GraphicFileImporter im = this.getGraphicFileImporter();
-    GraphicSet set = im.importFile(f);
+    GraphicSet set = im.importFile(f, warnings);
     return set;
   }
 
-  public void loadGraphicFile(File f) throws ImportException
+  public void loadGraphicFile(File f, List<String> warnings) throws ImportException
   {
-    this.loadGraphicFile(f, false);
+    this.loadGraphicFile(f, warnings, false);
   }
 
   public static final String PROP_SOURCEFILE = "sourceFile";
@@ -563,14 +563,14 @@ public class VisicutModel
     }
   }
 
-  public void loadGraphicFile(File f, boolean keepTransform) throws ImportException
+  public void loadGraphicFile(File f, List<String> warnings, boolean keepTransform) throws ImportException
   {
     AffineTransform at = null;
     if (keepTransform && this.getGraphicObjects() != null)
     {
       at = this.getGraphicObjects().getTransform();
     }
-    GraphicSet gs = this.loadSetFromFile(f);
+    GraphicSet gs = this.loadSetFromFile(f, warnings);
     if (gs != null)
     {
       if (at != null)

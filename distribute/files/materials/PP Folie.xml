@@ -1,0 +1,10 @@
+<material>
+  <description>generated from Lasercutter-Wiki page</description>
+  <engraveColor>#000000</engraveColor>
+  <cutColor>#000000</cutColor>
+  <color>#c38228</color>
+  <name>PP Folie</name>
+  <materialThicknesses>
+    <float>0.5</float>
+  </materialThicknesses>
+</material>

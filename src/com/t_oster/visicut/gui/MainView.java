@@ -143,7 +143,7 @@ public class MainView extends javax.swing.JFrame
       zoomOutMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SUBTRACT, java.awt.event.InputEvent.META_MASK));
     }
     fillComboBoxes();
-
+    refreshMaterialThicknessesComboBox();
     this.customMappingPanel2.getSaveButton().addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae)
       {
@@ -1127,7 +1127,12 @@ public class MainView extends javax.swing.JFrame
         //Set Panel to Predefined Mappings because there the loaded mapping will appear
         this.mappingTabbedPane.setSelectedComponent(this.predefinedMappingPanel);
         this.custom = null;
-        this.visicutModel1.loadFromFile(this.mappingManager1, file);
+        LinkedList<String> warnings = new LinkedList<String>();
+        this.visicutModel1.loadFromFile(this.mappingManager1, file, warnings);
+        for(String s : warnings)
+        {
+          dialog.showWarningMessage(s);
+        }
         if (this.visicutModel1.getMappings() != null)
         {
           if (this.custom == null)
@@ -1147,7 +1152,12 @@ public class MainView extends javax.swing.JFrame
       }
       else
       {
-        this.visicutModel1.loadGraphicFile(file);
+        LinkedList<String> warnings = new LinkedList<String>();
+        this.visicutModel1.loadGraphicFile(file, warnings);
+        for(String s : warnings)
+        {
+          dialog.showWarningMessage(s);
+        }
       }
       //if the image is too big, fit it and notify the user
       if (visicutModel1.fitMaterialIntoBed())
@@ -1757,7 +1767,12 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
   {
     try
     {
-      this.visicutModel1.loadFromFile(this.mappingManager1, this.visicutModel1.getLoadedFile());
+      LinkedList<String> warnings = new LinkedList<String>();
+      this.visicutModel1.loadFromFile(this.mappingManager1, this.visicutModel1.getLoadedFile(), warnings);
+      for(String s : warnings)
+      {
+        dialog.showWarningMessage(s);
+      }
     }
     catch (Exception ex)
     {
@@ -1768,7 +1783,12 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
   {
     try
     {
-      this.visicutModel1.loadGraphicFile(this.visicutModel1.getSourceFile(), true);
+      LinkedList<String> warnings = new LinkedList<String>();
+      this.visicutModel1.loadGraphicFile(this.visicutModel1.getSourceFile(), warnings, true);
+      for(String s : warnings)
+      {
+        dialog.showWarningMessage(s);
+      }
     }
     catch (Exception e)
     {

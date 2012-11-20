@@ -1,0 +1,10 @@
+<material>
+  <description>generated from Lasercutter-Wiki page</description>
+  <engraveColor>#000000</engraveColor>
+  <cutColor>#000000</cutColor>
+  <color>#c38228</color>
+  <name>Braunpappe</name>
+  <materialThicknesses>
+    <float>1.0</float>
+  </materialThicknesses>
+</material>

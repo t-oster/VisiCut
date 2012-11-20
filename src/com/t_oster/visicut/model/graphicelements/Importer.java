@@ -23,6 +23,7 @@
 package com.t_oster.visicut.model.graphicelements;
 
 import java.io.File;
+import java.util.List;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -33,6 +34,17 @@ public interface Importer
 {
   
   FileFilter getFileFilter();
-  GraphicSet importFile(File inputFile) throws ImportException;
+  /**
+   * Imports a file returning a graphic set
+   * If the import triggers any warnings, they can
+   * be added to the warnings list (if not null).
+   * They will be displayed to the user, but no
+   * further action is taken
+   * @param inputFile
+   * @param warnings
+   * @return
+   * @throws ImportException 
+   */
+  GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException;
   
 }

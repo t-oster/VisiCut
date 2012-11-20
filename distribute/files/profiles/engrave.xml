@@ -1,7 +1,11 @@
 <rasterProfile>
-  <description>Converts an image to black-white and engraves it</description>
+  <DPI>500.0</DPI>
+  <description>Engrave</description>
   <name>engrave</name>
   <invertColors>false</invertColors>
   <colorShift>0</colorShift>
-  <ditherAlgorithm>FLOYD_STEINBERG</ditherAlgorithm>
+  <ditherAlgorithm class="com.t_oster.liblasercut.dithering.FloydSteinberg">
+    <listeners class="linked-list"/>
+    <progress>0</progress>
+  </ditherAlgorithm>
 </rasterProfile>

@@ -25,6 +25,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import sys
 import os
 SINGLEINSTANCEPORT=6543
+# if on linux, add display variable to singleinstanceport
+if (sys.platform == "linux"):
+	d=os.environ.get("DISPLAY")
+	if (d != None):
+		d=d.split(':')[1].split('.')[0]
+		SINGLEINSTANCEPORT+=int(d)
 VISICUTBIN="visicut"
 INKSCAPEBIN="inkscape"
 #If on Windows, add .exe extension

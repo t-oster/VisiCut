@@ -1,14 +1,21 @@
 <visicutPreferences>
+  <windowBounds>
+    <x>0</x>
+    <y>0</y>
+    <width>1192</width>
+    <height>792</height>
+  </windowBounds>
   <useThicknessAsFocusOffset>true</useThicknessAsFocusOffset>
-  <recentFiles/>
-  <lastMaterial>Acrylic</lastMaterial>
-  <lastResolution>500</lastResolution>
-  <lastLaserDevice>LAOS HPC</lastLaserDevice>
+  <recentFiles>
+    <string>/home/thommy/.visicut/examples/visicut-icon.png</string>
+  </recentFiles>
+  <lastMaterial>MDF</lastMaterial>
+  <lastLaserDevice>Epilog Zing</lastLaserDevice>
   <availableImporters>
     <string>com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter</string>
     <string>com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter</string>
     <string>com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter</string>
     <string>com.t_oster.visicut.model.graphicelements.epssupport.EPSImporter</string>
   </availableImporters>
-  <editSettingsBeforeExecuting>false</editSettingsBeforeExecuting>
+  <editSettingsBeforeExecuting>true</editSettingsBeforeExecuting>
 </visicutPreferences>

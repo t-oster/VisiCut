@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -358,13 +359,18 @@ public class VisicutApp extends SingleFrameApplication
       }
       try
       {
+        LinkedList<String> warnings = new LinkedList<String>();
         if (file.toLowerCase().endsWith("plf"))
         {
-          model.loadFromFile(MappingManager.getInstance(), f);
+          model.loadFromFile(MappingManager.getInstance(), f, warnings);
         }
         else
         {
-          model.loadGraphicFile(f);
+          model.loadGraphicFile(f, warnings);
+        }
+        for(String s : warnings)
+        {
+          System.err.println("WARNING: "+s);
         }
         this.loadedFile = f;
       }
