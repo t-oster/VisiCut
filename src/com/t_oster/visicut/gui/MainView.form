@@ -332,15 +332,10 @@
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property name="title" type="java.lang.String" resourceKey="Form.title"/>
     <Property name="locationByPlatform" type="boolean" value="true"/>
     <Property name="name" type="java.lang.String" value="Form" noResource="true"/>
   </Properties>
-  <BindingProperties>
-    <BindingProperty name="title" source="visicutModel1" sourcePath="${loadedFile} - VisiCut" target="Form" targetPath="title" updateStrategy="1" immediately="false">
-      <Property name="nullValue" type="java.lang.String" value="VisiCut"/>
-      <Property name="name" type="java.lang.String" value="Filename to Title"/>
-    </BindingProperty>
-  </BindingProperties>
   <SyntheticProperties>
     <SyntheticProperty name="menuBar" type="java.lang.String" value="menuBar"/>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
