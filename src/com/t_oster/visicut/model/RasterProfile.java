@@ -263,7 +263,7 @@ public class RasterProfile extends LaserProfile
     {
       return false;
     }
-    final Raster3dProfile other = (Raster3dProfile) obj;
+    final RasterProfile other = (RasterProfile) obj;
     if (this.invertColors != other.invertColors)
     {
       return false;
