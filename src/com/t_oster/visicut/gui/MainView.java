@@ -1344,13 +1344,9 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             String txt = MainView.this.visicutModel1.getSelectedLaserDevice().getJobSentText();
             txt = txt.replace("$jobname", prefix + jobnumber).replace("$name", MainView.this.visicutModel1.getSelectedLaserDevice().getName());
             dialog.showSuccessMessage(txt);
-            //TODO:ask user if he wants to keep the settings
             //TODO:make execute-job take the settings as attribute, not from the manager
-            //TODO:allow to use different laser-settings on the same profile (different instance)
-            //save changes
-            for (Entry<LaserProfile, List<LaserProperty>> e:cuttingSettings.entrySet())
-            {
-              LaserPropertyManager.getInstance().saveLaserProperties(device, material, e.getKey(), thickness, e.getValue());
+            if (dialog.showYesNoQuestion(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("keepNewLaserSettings"))) {
+              saveLaserProperties(cuttingSettings);
             }
           }
           catch (Exception ex)
@@ -2141,6 +2137,7 @@ private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent e
  * @return the new laser settings 
  */
   private Map<LaserProfile, List<LaserProperty>> editLaserPropertiesDialog() {
+    //TODO:allow to use different laser-settings on the same profile (different instance)
     LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
     MaterialProfile material = this.visicutModel1.getMaterial();
 	  String heading = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("SETTINGS FOR ")+device.getName()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString(" WITH MATERIAL ")+material.toString()+" ("+this.visicutModel1.getMaterialThickness()+" mm)";
