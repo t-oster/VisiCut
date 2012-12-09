@@ -72,6 +72,7 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -1712,6 +1713,8 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         catch (Exception ex)
         {
           dialog.showErrorMessage(ex);
+          MainView.this.progressBar.setIndeterminate(false);
+          MainView.this.calculateTimeButton.setEnabled(true);
         }
       }
     }.start();
@@ -2134,7 +2137,7 @@ private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent e
 
 /**
  * Open a laser properties dialog (speed, power, frequency, focus for each profile)
- * @return the new laser settings 
+ * @return the new laser settings (or null if "cancel" was pressed)
  */
   private Map<LaserProfile, List<LaserProperty>> editLaserPropertiesDialog() {
     //TODO:allow to use different laser-settings on the same profile (different instance)
@@ -2343,7 +2346,7 @@ private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent e
         usedSettings.put(profile, props);
       }
 
-      if (this.cbEditBeforeExecute.isSelected() || unknownProfilesUsed)
+      if ((reallyExecuting && this.cbEditBeforeExecute.isSelected()) || unknownProfilesUsed)
       {
         if (unknownProfilesUsed)
         {
