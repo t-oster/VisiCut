@@ -400,6 +400,7 @@ public class MainView extends javax.swing.JFrame
         jCheckBox1 = new javax.swing.JCheckBox();
         cbEditBeforeExecute = new javax.swing.JCheckBox();
         executeJobButton = new javax.swing.JButton();
+        editLaserSettingsButton = new javax.swing.JButton();
         captureImageButton = new javax.swing.JButton();
         progressBar = new javax.swing.JProgressBar();
         jButton1 = new javax.swing.JButton();
@@ -534,7 +535,7 @@ public class MainView extends javax.swing.JFrame
         );
         predefinedMappingPanelLayout.setVerticalGroup(
             predefinedMappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
         );
 
         mappingTabbedPane.addTab(resourceMap.getString("predefinedMappingPanel.TabConstraints.tabTitle"), predefinedMappingPanel); // NOI18N
@@ -551,7 +552,7 @@ public class MainView extends javax.swing.JFrame
         );
         customMappingPanel1Layout.setVerticalGroup(
             customMappingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
+            .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
         );
 
         mappingTabbedPane.addTab(resourceMap.getString("customMappingPanelContainer.TabConstraints.tabTitle"), customMappingPanel1); // NOI18N
@@ -597,6 +598,14 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
+        editLaserSettingsButton.setText(resourceMap.getString("editLaserSettingsButton.text")); // NOI18N
+        editLaserSettingsButton.setName("editLaserSettingsButton"); // NOI18N
+        editLaserSettingsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editLaserSettingsButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -609,16 +618,6 @@ public class MainView extends javax.swing.JFrame
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel9)
                             .addComponent(jLabel1)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                .addComponent(cbEditBeforeExecute)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
-                                .addComponent(executeJobButton))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel10)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(calculateTimeButton))
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addComponent(laserCutterComboBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel2Layout.createSequentialGroup()
@@ -635,6 +634,22 @@ public class MainView extends javax.swing.JFrame
                                     .addGap(20, 20, 20)
                                     .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(jLabel2))
+                        .addGap(20, 20, 20))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(editLaserSettingsButton)
+                        .addContainerGap())
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addComponent(cbEditBeforeExecute)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
+                                .addComponent(executeJobButton))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel10)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(calculateTimeButton)))
                         .addContainerGap())))
         );
         jPanel2Layout.setVerticalGroup(
@@ -662,8 +677,10 @@ public class MainView extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(editLaserSettingsButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10)
@@ -672,7 +689,7 @@ public class MainView extends javax.swing.JFrame
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(executeJobButton)
                     .addComponent(cbEditBeforeExecute))
-                .addContainerGap())
+                .addGap(12, 12, 12))
         );
 
         captureImageButton.setIcon(resourceMap.getIcon("captureImageButton.icon")); // NOI18N
@@ -1064,7 +1081,7 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(bt1to1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -1194,6 +1211,7 @@ public class MainView extends javax.swing.JFrame
     this.calculateTimeButton.setEnabled(execute);
     this.executeJobButton.setEnabled(execute);
     this.executeJobMenuItem.setEnabled(execute);
+    this.editLaserSettingsButton.setEnabled(execute);
   }
   private File lastDirectory = null;
 private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
@@ -1270,6 +1288,8 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
       this.previewPanel.repaint();
     }
   }
+  
+  
 
 private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
   VisicutAboutBox box = new VisicutAboutBox(this);
@@ -1285,7 +1305,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       final LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
       final MaterialProfile material = this.visicutModel1.getMaterial();
       final float thickness = this.visicutModel1.getMaterialThickness();
-      final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob(true);
+      final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob(true,true);
       if (cuttingSettings == null)
       {
         return;
@@ -1689,7 +1709,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         {
           MainView.this.calculateTimeButton.setEnabled(false);
           MainView.this.progressBar.setIndeterminate(true);
-          MainView.this.timeLabel.setText(Helper.toHHMMSS(MainView.this.visicutModel1.estimateTime(MainView.this.getPropertyMapForCurrentJob(false))));
+          MainView.this.timeLabel.setText(Helper.toHHMMSS(MainView.this.visicutModel1.estimateTime(MainView.this.getPropertyMapForCurrentJob(false,true))));
           MainView.this.progressBar.setIndeterminate(false);
           MainView.this.calculateTimeButton.setEnabled(true);
         }
@@ -2104,6 +2124,48 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
     this.previewPanel.setOneToOneZoom();
   }//GEN-LAST:event_bt1to1ActionPerformed
 
+private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editLaserSettingsButtonActionPerformed
+   Map<LaserProfile, List<LaserProperty>> laserProperties = this.editLaserPropertiesDialog();
+	  if (laserProperties != null) {
+		  try { 
+        saveLaserProperties(laserProperties);
+      }
+      catch(Exception e) {
+        dialog.showErrorMessage(e,"could not save laser settings");
+      }
+	  }
+}//GEN-LAST:event_editLaserSettingsButtonActionPerformed
+
+/**
+ * Open a
+ * @return the new laser settings 
+ */
+  private Map<LaserProfile, List<LaserProperty>> editLaserPropertiesDialog() {
+    LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
+    MaterialProfile material = this.visicutModel1.getMaterial();
+	  String heading = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("SETTINGS FOR ")+device.getName()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString(" WITH MATERIAL ")+material.toString()+" ("+this.visicutModel1.getMaterialThickness()+" mm)";
+	  //Adapt Settings before execute
+    final Map<LaserProfile, List<LaserProperty>> usedSettings = this.getPropertyMapForCurrentJob(false,false);
+	  AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true, heading);
+	  asd.setLaserProperties(usedSettings, this.visicutModel1.getSelectedLaserDevice().getLaserCutter());
+	  asd.setVisible(true);
+	  return asd.getLaserProperties();
+  }
+  
+  private void saveLaserProperties(Map<LaserProfile, List<LaserProperty>> laserProperties) throws FileNotFoundException, IOException {
+    LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
+      MaterialProfile material = this.visicutModel1.getMaterial();
+      float thickness = this.visicutModel1.getMaterialThickness();
+	  for (Entry<LaserProfile, List<LaserProperty>> e:laserProperties.entrySet())
+	  {
+		  LaserPropertyManager.getInstance().saveLaserProperties(device, material, e.getKey(), thickness, e.getValue());
+	  }
+  }
+  
+  
+
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton bt1to1;
@@ -2118,6 +2180,7 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
     private javax.swing.JComboBox cbMaterialThickness;
     private javax.swing.JPanel customMappingPanel1;
     private com.t_oster.visicut.gui.beans.CustomMappingPanel customMappingPanel2;
+    private javax.swing.JButton editLaserSettingsButton;
     private javax.swing.JMenuItem editMappingMenuItem;
     private javax.swing.JMenu editMenu;
     private javax.swing.JButton executeJobButton;
@@ -2219,9 +2282,10 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
    * get a list of used LaserProfiles and their corresponding LaserProperty
    * 
    * @param reallyExecuting true if the laserjob is about to be sent, false if we are only calculating the time
+   * @param mayShowEditDialog true if this function may open a LaserProperty edit dialog for unknown profiles, false if not.
    * @return 
    */
-  private Map<LaserProfile, List<LaserProperty>> getPropertyMapForCurrentJob(boolean reallyExecuting)
+  private Map<LaserProfile, List<LaserProperty>> getPropertyMapForCurrentJob(boolean reallyExecuting, boolean mayShowEditDialog)
   {
     for (Mapping m : this.visicutModel1.getMappings())
     {
@@ -2288,12 +2352,13 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
         {
           dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("FOR SOME PROFILE YOU SELECTED, THERE ARE NO LASERCUTTER SETTINGS YET YOU WILL HAVE TO ENTER THEM IN THE FOLLOWING DIALOG."));
         }
-        String heading = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("SETTINGS FOR ")+device.getName()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString(" WITH MATERIAL ")+material.toString()+" ("+this.visicutModel1.getMaterialThickness()+" mm)";
+        
+        if (!mayShowEditDialog) {
+          // mayShowEditDialog is against infinite recursion because editLaserPropertiesDialog calls this function, which calls back editLaserPropertiesDialog if mayShowEditDialog==true
+          return usedSettings;
+        }
         //Adapt Settings before execute
-        AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true, heading);
-        asd.setLaserProperties(usedSettings, this.visicutModel1.getSelectedLaserDevice().getLaserCutter());
-        asd.setVisible(true);
-        Map<LaserProfile, List<LaserProperty>> laserProperties = asd.getLaserProperties();
+        Map<LaserProfile, List<LaserProperty>> newSettings = editLaserPropertiesDialog();
         if (unknownProfilesUsed && !reallyExecuting) {
           // If the job is executed, VisiCut will ask when it's done whether the
           // profile changes should be saved.
@@ -2301,12 +2366,9 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
           
           // save changes
           // TODO this code is copy-pasted from executeJob - put it into a method?
-            for (Entry<LaserProfile, List<LaserProperty>> e:laserProperties.entrySet())
-            {
-              LaserPropertyManager.getInstance().saveLaserProperties(device, material, e.getKey(), thickness, e.getValue());
-            }
+            saveLaserProperties(newSettings);
         }
-        return laserProperties;
+        return newSettings;
       }
       return usedSettings;
     }
