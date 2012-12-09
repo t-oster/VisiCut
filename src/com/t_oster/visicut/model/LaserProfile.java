@@ -188,4 +188,62 @@ public abstract class LaserProfile implements ImageListable, Cloneable
     return result;
   }
   
+  @Override
+  abstract public int hashCode();
+   
+  /**
+   * create a hashCode() of all properties of the base class LaserProfile
+   * use this in hashCode() methods for subclasses
+   * @return integer
+   */
+   public int hashCodeBase() {
+     int hash = (int)DPI*31;
+     if (description != null) {
+      hash += description.hashCode() * 3;
+     }
+     if (thumbnailPath != null) {
+       hash += thumbnailPath.hashCode() * 7;
+     }
+     return hash;
+   }
+  
+  @Override
+  abstract public boolean equals(Object obj);
+  
+  /**
+   * checks for equality of all properties of the base class LaserProfile
+   * use this in equals() methods for subclasses
+   * @param obj
+   * @return true when all general LaserProfile properties are equal
+   */
+  protected boolean equalsBase(Object obj)
+  {
+    if (obj == null)
+    {
+      return false;
+    }
+    if (getClass() != obj.getClass())
+    {
+      return false;
+    }
+    final LaserProfile other = (LaserProfile) obj;
+    if (Double.doubleToLongBits(this.DPI) != Double.doubleToLongBits(other.DPI))
+    {
+      return false;
+    }
+    if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description))
+    {
+      return false;
+    }
+    if ((this.thumbnailPath == null) ? (other.thumbnailPath != null) : !this.thumbnailPath.equals(other.thumbnailPath))
+    {
+      return false;
+    }
+    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name))
+    {
+      return false;
+    }
+    return true;
+  }
+  
 }

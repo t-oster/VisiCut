@@ -286,4 +286,41 @@ public class VectorProfile extends LaserProfile
     cp.setDPI(getDPI());
     return cp;
   }
+  
+  @Override
+  public int hashCode()
+  {
+    return super.hashCodeBase() * 31 + orderStrategy.hashCode()*7 + (useOutline?1:0) + (isCut?3:0) + (int)width;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (obj == null)
+    {
+      return false;
+    }
+    if (getClass() != obj.getClass())
+    {
+      return false;
+    }
+    final VectorProfile other = (VectorProfile) obj;
+    if (this.orderStrategy != other.orderStrategy)
+    {
+      return false;
+    }
+    if (this.useOutline != other.useOutline)
+    {
+      return false;
+    }
+    if (this.isCut != other.isCut)
+    {
+      return false;
+    }
+    if (Float.floatToIntBits(this.width) != Float.floatToIntBits(other.width))
+    {
+      return false;
+    }
+    return super.equalsBase(obj);
+  }
 }
