@@ -1285,7 +1285,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       final LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
       final MaterialProfile material = this.visicutModel1.getMaterial();
       final float thickness = this.visicutModel1.getMaterialThickness();
-      final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob();
+      final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob(true);
       if (cuttingSettings == null)
       {
         return;
@@ -1689,7 +1689,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         {
           MainView.this.calculateTimeButton.setEnabled(false);
           MainView.this.progressBar.setIndeterminate(true);
-          MainView.this.timeLabel.setText(Helper.toHHMMSS(MainView.this.visicutModel1.estimateTime(MainView.this.getPropertyMapForCurrentJob())));
+          MainView.this.timeLabel.setText(Helper.toHHMMSS(MainView.this.visicutModel1.estimateTime(MainView.this.getPropertyMapForCurrentJob(false))));
           MainView.this.progressBar.setIndeterminate(false);
           MainView.this.calculateTimeButton.setEnabled(true);
         }
@@ -2215,7 +2215,13 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
     }
   }
 
-  private Map<LaserProfile, List<LaserProperty>> getPropertyMapForCurrentJob()
+  /**
+   * get a list of used LaserProfiles and their corresponding LaserProperty
+   * 
+   * @param reallyExecuting true if the laserjob is about to be sent, false if we are only calculating the time
+   * @return 
+   */
+  private Map<LaserProfile, List<LaserProperty>> getPropertyMapForCurrentJob(boolean reallyExecuting)
   {
     for (Mapping m : this.visicutModel1.getMappings())
     {
@@ -2287,7 +2293,20 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
         AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true, heading);
         asd.setLaserProperties(usedSettings, this.visicutModel1.getSelectedLaserDevice().getLaserCutter());
         asd.setVisible(true);
-        return asd.getLaserProperties();
+        Map<LaserProfile, List<LaserProperty>> laserProperties = asd.getLaserProperties();
+        if (unknownProfilesUsed && !reallyExecuting) {
+          // If the job is executed, VisiCut will ask when it's done whether the
+          // profile changes should be saved.
+          // But if the user only clicks on "calculate time" and there are unset profiles, we have to store the changes now, so that he is not asked the same question every time he presses "calculate".
+          
+          // save changes
+          // TODO this code is copy-pasted from executeJob - put it into a method?
+            for (Entry<LaserProfile, List<LaserProperty>> e:laserProperties.entrySet())
+            {
+              LaserPropertyManager.getInstance().saveLaserProperties(device, material, e.getKey(), thickness, e.getValue());
+            }
+        }
+        return laserProperties;
       }
       return usedSettings;
     }
