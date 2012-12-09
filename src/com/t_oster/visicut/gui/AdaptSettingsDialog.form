@@ -34,8 +34,9 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="btOK" min="-2" max="-2" attributes="0"/>
                   </Group>
+                  <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTabbedPane1" alignment="1" pref="938" max="32767" attributes="0"/>
                   <Component id="heading" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTabbedPane1" alignment="1" pref="541" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -45,9 +46,11 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
+              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="heading" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jTabbedPane1" pref="210" max="32767" attributes="0"/>
+              <Component id="jTabbedPane1" pref="128" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="btOK" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -102,6 +105,13 @@
       <Properties>
         <Property name="text" type="java.lang.String" resourceKey="heading.text"/>
         <Property name="name" type="java.lang.String" value="heading" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="font" type="java.awt.Font" resourceKey="jLabel1.font"/>
+        <Property name="text" type="java.lang.String" resourceKey="adaptLaserSettingsHelptext"/>
+        <Property name="name" type="java.lang.String" value="jLabel1" noResource="true"/>
       </Properties>
     </Component>
   </SubComponents>

@@ -114,7 +114,7 @@
   <SubComponents>
     <Component class="javax.swing.JButton" name="jButton4">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="jButton4.text"/>
+        <Property name="text" type="java.lang.String" resourceKey="Cancel"/>
         <Property name="name" type="java.lang.String" value="jButton4" noResource="true"/>
       </Properties>
       <Events>
@@ -123,7 +123,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="jButton3">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="jButton3.text"/>
+        <Property name="text" type="java.lang.String" resourceKey="Save"/>
         <Property name="name" type="java.lang.String" value="jButton3" noResource="true"/>
       </Properties>
       <Events>
@@ -149,7 +149,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbDescription">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="lbDescription.text"/>
+        <Property name="text" type="java.lang.String" resourceKey="Description"/>
         <Property name="name" type="java.lang.String" value="lbDescription" noResource="true"/>
       </Properties>
     </Component>
@@ -201,7 +201,7 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="cbInvertColors">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="cbInvertColors.text"/>
+        <Property name="text" type="java.lang.String" resourceKey="profile.invertColors"/>
         <Property name="name" type="java.lang.String" value="cbInvertColors" noResource="true"/>
       </Properties>
       <BindingProperties>
@@ -226,7 +226,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbGreyscaleShift">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="lbGreyscaleShift.text"/>
+        <Property name="text" type="java.lang.String" resourceKey="profile.greyscaleShift"/>
         <Property name="name" type="java.lang.String" value="lbGreyscaleShift" noResource="true"/>
       </Properties>
     </Component>
@@ -271,7 +271,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="jLabel1.text"/>
+        <Property name="text" type="java.lang.String" resourceKey="Resolution"/>
         <Property name="name" type="java.lang.String" value="jLabel1" noResource="true"/>
       </Properties>
     </Component>

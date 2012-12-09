@@ -120,10 +120,11 @@ public class EditMaterialsDialog extends javax.swing.JDialog implements Editable
         setName("Form"); // NOI18N
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(EditMaterialsDialog.class);
-        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
+        jLabel1.setFont(resourceMap.getFont("jLabel1.font")); // NOI18N
+        jLabel1.setText(resourceMap.getString("MaterialsHelpText")); // NOI18N
         jLabel1.setName("jLabel1"); // NOI18N
 
-        jButton4.setText(resourceMap.getString("jButton4.text")); // NOI18N
+        jButton4.setText(resourceMap.getString("OK")); // NOI18N
         jButton4.setName("jButton4"); // NOI18N
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -131,7 +132,7 @@ public class EditMaterialsDialog extends javax.swing.JDialog implements Editable
             }
         });
 
-        jButton5.setText(resourceMap.getString("jButton5.text")); // NOI18N
+        jButton5.setText(resourceMap.getString("Cancel")); // NOI18N
         jButton5.setName("jButton5"); // NOI18N
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -152,8 +153,8 @@ public class EditMaterialsDialog extends javax.swing.JDialog implements Editable
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(editableTablePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
-                    .addComponent(jLabel1)
+                    .addComponent(editableTablePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 598, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jButton5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -164,9 +165,9 @@ public class EditMaterialsDialog extends javax.swing.JDialog implements Editable
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(editableTablePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
+                .addComponent(editableTablePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton4)

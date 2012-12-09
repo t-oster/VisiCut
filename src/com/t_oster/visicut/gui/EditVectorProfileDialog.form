@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.1" encoding="UTF-8" ?>
 
-<Form version="1.5" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+<Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
   </Properties>
@@ -34,22 +34,22 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="tfDescription" max="32767" attributes="0"/>
-                          <Component id="tfName" max="32767" attributes="0"/>
+                          <Component id="tfDescription" pref="327" max="32767" attributes="0"/>
+                          <Component id="tfName" pref="327" max="32767" attributes="0"/>
                           <Group type="102" attributes="0">
                               <Component id="tfLineWidth" min="-2" pref="64" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="lbMM" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="cbIsCut" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="0" pref="61" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btThumbnail" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="363" max="32767" attributes="0"/>
                       <Component id="btCancel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="btSave" min="-2" max="-2" attributes="0"/>
@@ -106,7 +106,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbName">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Name"/>
+        <Property name="text" type="java.lang.String" resourceKey="Name"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfName">
@@ -127,7 +127,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbDesc">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Description"/>
+        <Property name="text" type="java.lang.String" resourceKey="profile.description"/>
       </Properties>
     </Component>
     <Container class="javax.swing.JPanel" name="jPanel1">
@@ -151,13 +151,13 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jComboBox1" pref="302" max="32767" attributes="0"/>
+                      <Component id="jComboBox1" pref="393" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
                           <Component id="jCheckBox1" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="372" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="cbPPI" max="32767" attributes="0"/>
+                          <Component id="cbPPI" pref="358" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="lbPPI" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -185,7 +185,7 @@
                       <Component id="lbPPI" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="cbPPI" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="19" max="32767" attributes="0"/>
+                  <EmptySpace pref="16" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -193,7 +193,7 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>
-            <Property name="text" type="java.lang.String" value="use outline"/>
+            <Property name="text" type="java.lang.String" resourceKey="jCheckBox2.text"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="jCheckBox1">
@@ -215,17 +215,17 @@
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Optimization"/>
+            <Property name="text" type="java.lang.String" resourceKey="Optimization"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="lbExactness">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Exactness"/>
+            <Property name="text" type="java.lang.String" resourceKey="Exactness"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="lbPPI">
           <Properties>
-            <Property name="text" type="java.lang.String" value="PPI"/>
+            <Property name="text" type="java.lang.String" resourceKey="DPI"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JComboBox" name="cbPPI">
@@ -251,7 +251,7 @@
     </Container>
     <Component class="javax.swing.JButton" name="btSave">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Save"/>
+        <Property name="text" type="java.lang.String" resourceKey="Save"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btSaveActionPerformed"/>
@@ -259,7 +259,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btCancel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Cancel"/>
+        <Property name="text" type="java.lang.String" resourceKey="Cancel"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btCancelActionPerformed"/>
@@ -275,17 +275,19 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbLineWidth">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Line width"/>
+        <Property name="text" type="java.lang.String" resourceKey="profile.linewidth"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="lbMM">
       <Properties>
-        <Property name="text" type="java.lang.String" value="mm"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="" key="" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JCheckBox" name="cbIsCut">
       <Properties>
-        <Property name="text" type="java.lang.String" value="is cut"/>
+        <Property name="text" type="java.lang.String" resourceKey="jCheckBox1.text"/>
       </Properties>
       <BindingProperties>
         <BindingProperty name="selected" source="Form" sourcePath="${vectorProfile.isCut}" target="cbIsCut" targetPath="selected" updateStrategy="0" immediately="false">
