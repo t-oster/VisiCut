@@ -228,6 +228,7 @@ public class Raster3dProfile extends LaserProfile
     rp.description = this.description;
     rp.invertColors = this.invertColors;
     rp.name = this.name;
+    rp.setTemporaryCopy(this.isTemporaryCopy());
     rp.thumbnailPath = this.thumbnailPath;
     rp.setDPI(getDPI());
     return rp;

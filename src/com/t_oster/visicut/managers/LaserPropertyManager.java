@@ -132,6 +132,12 @@ public class LaserPropertyManager
 
   public void saveLaserProperties(LaserDevice ld, MaterialProfile mp, LaserProfile lp, float materialThickness, List<LaserProperty> lps) throws FileNotFoundException, IOException
   {
+    // TODO currently, even temporary copies have to be stored to disk
+    // rework the code so that we can add the following if-expression:
+//    if (lp.isTemporaryCopy()) {
+//      // do not save temporary copies to disk
+//      return;
+//    }
     File f = getLaserPropertiesFile(ld, mp, lp, materialThickness);
     if (!f.getParentFile().exists())
     {
