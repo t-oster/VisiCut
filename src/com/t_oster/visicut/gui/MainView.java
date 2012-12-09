@@ -1346,8 +1346,10 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             txt = txt.replace("$jobname", prefix + jobnumber).replace("$name", MainView.this.visicutModel1.getSelectedLaserDevice().getName());
             dialog.showSuccessMessage(txt);
             //TODO:make execute-job take the settings as attribute, not from the manager
-            if (dialog.showYesNoQuestion(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("keepNewLaserSettings"))) {
-              saveLaserProperties(cuttingSettings);
+            if (!cuttingSettings.equals(getLaserProperties())) {
+              if (dialog.showYesNoQuestion(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("keepNewLaserSettings"))) {
+                saveLaserProperties(cuttingSettings);
+              }
             }
           }
           catch (Exception ex)
@@ -2152,6 +2154,14 @@ private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent e
 	  asd.setLaserProperties(usedSettings, this.visicutModel1.getSelectedLaserDevice().getLaserCutter());
 	  asd.setVisible(true);
 	  return asd.getLaserProperties();
+  }
+  
+  /**
+   * get the current laser properties
+   * @return laser-properties or null if not set
+   */
+  private Map<LaserProfile, List<LaserProperty>> getLaserProperties() {
+    return this.getPropertyMapForCurrentJob(false,false);
   }
   
   private void saveLaserProperties(Map<LaserProfile, List<LaserProperty>> laserProperties) throws FileNotFoundException, IOException {
