@@ -216,6 +216,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
 
   public void tableChanged(TableModelEvent tme)
   {
+    this.refreshProfilesEditor(); // generate necessary new temporary copies
     VisicutModel.getInstance().setMappings(this.getResultingMappingSet());
   }
 
@@ -247,10 +248,61 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
   private void refreshProfilesEditor()
   {
     JComboBox profiles = new JComboBox();
+    List<LaserProfile> addedProfilesList=new LinkedList<LaserProfile>();
+    List<String> profileNamesList=new LinkedList<String>();
+    // add laser profiles saved on disk
     for (LaserProfile lp : ProfileManager.getInstance().getAll())
     {
       profiles.addItem(lp);
+      addedProfilesList.add(lp);
+      profileNamesList.add(lp.getName());
     }
+    // add all temporary copies currently in use
+    for (Entry e: entries) {
+      LaserProfile lp = e.profile;
+      if (!addedProfilesList.contains(lp)) {
+        addedProfilesList.add(lp);
+        profiles.addItem(lp);
+        profileNamesList.add(lp.getName());
+      }
+    }
+    
+    // add one unused temporary copy of each stored profile to the list of available profiles
+    for (LaserProfile lp: ProfileManager.getInstance().getAll()) {
+      if (lp.isTemporaryCopy()) {
+        // we don't want copies of copies
+        throw new RuntimeException("a temporary profile was stored on disk! WTF?");
+      }
+      // okay, we have a original
+      LaserProfile temporaryCopy=lp.clone();
+      // TODO make sure that isTemporaryCopy is considered in .equals() (and hashCode())
+      temporaryCopy.setTemporaryCopy(true);
+      
+      // find the next free temp123_profilename name
+      String newName="";
+      int numberOfTempCopies=0;
+      do {
+        numberOfTempCopies++;
+        newName="temp"+numberOfTempCopies+"_"+lp.getName();
+      } while (profileNamesList.contains(newName));
+      
+      temporaryCopy.setName(newName);
+      profiles.addItem(temporaryCopy);
+      
+      // TODO reset temporary copy's propertyMap (speed,power,etc) to the property map of the original one
+      // seems impossible because I can't get back to MainView from here and there is no getInstance() or something similar
+      
+//    LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
+//    MaterialProfile material = this.visicutModel1.getMaterial();
+//    float thickness = this.visicutModel1.getMaterialThickness();
+//    final Map<LaserProfile, List<LaserProperty>> usedSettings = this.getPropertyMapForCurrentJob(false,false);
+//	  for (Entry<LaserProfile, List<LaserProperty>> e:laserProperties.entrySet())
+//	  {
+//		  LaserPropertyManager.getInstance().saveLaserProperties(device, material, e.getKey(), thickness, e.getValue());
+//    }
+    }
+       
+   
     this.getTable().setDefaultEditor(LaserProfile.class, new DefaultCellEditor(profiles));
   }
 
@@ -291,7 +343,8 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
   private void generateDefaultEntries()
   {
     entries.clear();
-    for (LaserProfile lp : ProfileManager.getInstance().getAll())
+    List<LaserProfile> profiles = ProfileManager.getInstance().getAll();
+    for (LaserProfile lp : profiles)
     {
       Entry e = new Entry();
       e.enabled = false;
