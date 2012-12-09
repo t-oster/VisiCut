@@ -149,7 +149,8 @@ public class EditMappingsDialog extends javax.swing.JDialog implements EditableT
         bindingGroup.addBinding(binding);
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(EditMappingsDialog.class);
-        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
+        jLabel1.setFont(resourceMap.getFont("jLabel1.font")); // NOI18N
+        jLabel1.setText(resourceMap.getString("MappingsHelpText")); // NOI18N
         jLabel1.setName("jLabel1"); // NOI18N
 
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N

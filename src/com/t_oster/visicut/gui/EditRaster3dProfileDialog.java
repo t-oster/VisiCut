@@ -177,7 +177,7 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentRasterProfile.colorShift}"), jSlider1, org.jdesktop.beansbinding.BeanProperty.create("value"), "colorshift");
         bindingGroup.addBinding(binding);
 
-        jLabel6.setText(resourceMap.getString("jLabel6.text")); // NOI18N
+        jLabel6.setText(resourceMap.getString("profile.greyscaleShift")); // NOI18N
         jLabel6.setName("jLabel6"); // NOI18N
 
         tfResolution.setName("tfResolution"); // NOI18N

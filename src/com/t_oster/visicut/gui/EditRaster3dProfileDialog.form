@@ -198,7 +198,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel6">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="jLabel6.text"/>
+        <Property name="text" type="java.lang.String" resourceKey="profile.greyscaleShift"/>
         <Property name="name" type="java.lang.String" value="jLabel6" noResource="true"/>
       </Properties>
     </Component>

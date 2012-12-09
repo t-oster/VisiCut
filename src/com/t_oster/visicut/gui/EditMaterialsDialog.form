@@ -29,7 +29,7 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="editableTablePanel1" alignment="0" pref="322" max="32767" attributes="0"/>
+                  <Component id="editableTablePanel1" alignment="0" pref="598" max="32767" attributes="0"/>
                   <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jButton5" min="-2" max="-2" attributes="0"/>
@@ -47,7 +47,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="editableTablePanel1" pref="261" max="32767" attributes="0"/>
+              <Component id="editableTablePanel1" pref="247" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jButton4" min="-2" max="-2" attributes="0"/>
@@ -61,13 +61,14 @@
   <SubComponents>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="jLabel1.text"/>
+        <Property name="font" type="java.awt.Font" resourceKey="jLabel1.font"/>
+        <Property name="text" type="java.lang.String" resourceKey="MaterialsHelpText"/>
         <Property name="name" type="java.lang.String" value="jLabel1" noResource="true"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="jButton4">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="jButton4.text"/>
+        <Property name="text" type="java.lang.String" resourceKey="OK"/>
         <Property name="name" type="java.lang.String" value="jButton4" noResource="true"/>
       </Properties>
       <Events>
@@ -76,7 +77,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="jButton5">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="jButton5.text"/>
+        <Property name="text" type="java.lang.String" resourceKey="Cancel"/>
         <Property name="name" type="java.lang.String" value="jButton5" noResource="true"/>
       </Properties>
       <Events>
