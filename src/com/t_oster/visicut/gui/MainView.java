@@ -2140,7 +2140,9 @@ private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent e
  * @return the new laser settings (or null if "cancel" was pressed)
  */
   private Map<LaserProfile, List<LaserProperty>> editLaserPropertiesDialog() {
-    //TODO:allow to use different laser-settings on the same profile (different instance)
+    //TODO: allow to use different laser-settings on the same profile (different instance).
+    // This needs some rework and thoughts because the two instances have to be merged into one for saving.
+    // Maybe create a copy flagged as temporary that is not saved?
     LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
     MaterialProfile material = this.visicutModel1.getMaterial();
 	  String heading = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("SETTINGS FOR ")+device.getName()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString(" WITH MATERIAL ")+material.toString()+" ("+this.visicutModel1.getMaterialThickness()+" mm)";

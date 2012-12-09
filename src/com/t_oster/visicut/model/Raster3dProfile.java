@@ -232,4 +232,33 @@ public class Raster3dProfile extends LaserProfile
     rp.setDPI(getDPI());
     return rp;
   }
+
+  @Override
+  public int hashCode()
+  {
+    return super.hashCodeBase() * 31 + (invertColors?1:0) *17 + colorShift;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (obj == null)
+    {
+      return false;
+    }
+    if (getClass() != obj.getClass())
+    {
+      return false;
+    }
+    final Raster3dProfile other = (Raster3dProfile) obj;
+    if (this.invertColors != other.invertColors)
+    {
+      return false;
+    }
+    if (this.colorShift != other.colorShift)
+    {
+      return false;
+    }
+    return super.equalsBase(other);
+  }
 }
