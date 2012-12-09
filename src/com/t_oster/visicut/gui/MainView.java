@@ -2133,7 +2133,7 @@ private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent e
 }//GEN-LAST:event_editLaserSettingsButtonActionPerformed
 
 /**
- * Open a
+ * Open a laser properties dialog (speed, power, frequency, focus for each profile)
  * @return the new laser settings 
  */
   private Map<LaserProfile, List<LaserProperty>> editLaserPropertiesDialog() {
@@ -2362,7 +2362,6 @@ private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent e
           // But if the user only clicks on "calculate time" and there are unset profiles, we have to store the changes now, so that he is not asked the same question every time he presses "calculate".
           
           // save changes
-          // TODO this code is copy-pasted from executeJob - put it into a method?
             saveLaserProperties(newSettings);
         }
         return newSettings;
