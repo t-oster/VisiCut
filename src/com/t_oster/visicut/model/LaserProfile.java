@@ -126,6 +126,25 @@ public abstract class LaserProfile implements ImageListable, Cloneable
   {
     this.name = name;
   }
+  
+  protected boolean temporaryCopy = false;
+  
+  /**
+   * @return true if this is a temporary copy that should not be stored to disk
+   */
+  public boolean isTemporaryCopy()
+  {
+    return temporaryCopy;
+  }
+
+  /**
+   * @param temporaryCopy true if this is a temporary copy that should not be stored to disk
+   */
+  public void setTemporaryCopy(boolean temporaryCopy)
+  {
+    this.temporaryCopy = temporaryCopy;
+  }
+  
 
   public abstract void renderPreview(Graphics2D g, GraphicSet objects, MaterialProfile material, AffineTransform mm2px);
 
@@ -243,7 +262,12 @@ public abstract class LaserProfile implements ImageListable, Cloneable
     {
       return false;
     }
+    if (this.isTemporaryCopy() != other.isTemporaryCopy()) {
+      return false;
+    }
     return true;
   }
+
+  
   
 }
