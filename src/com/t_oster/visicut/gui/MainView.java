@@ -89,6 +89,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.JViewport;
 import javax.swing.filechooser.FileFilter;
 import org.jdesktop.application.Action;
 
@@ -123,6 +124,11 @@ public class MainView extends javax.swing.JFrame
     jScrollPane2.setColumnHeaderView(new Ruler(this.previewPanel, Ruler.HORIZONTAL));
     jScrollPane2.setRowHeaderView(new Ruler(this.previewPanel, Ruler.VERTICAL));
     jScrollPane2.setCorner(JScrollPane.UPPER_LEFT_CORNER, new JLabel("cm"));
+    //fixes slow scrolling issue on Mac OS X
+    JViewport viewPort = jScrollPane2.getViewport();
+    viewPort.setScrollMode(JViewport.BLIT_SCROLL_MODE);
+    viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
+    viewPort.setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
     jScrollPane2.addComponentListener(new ComponentListener(){
       public void componentResized(ComponentEvent ce)
       {
