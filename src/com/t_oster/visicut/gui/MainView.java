@@ -401,6 +401,7 @@ public class MainView extends javax.swing.JFrame
     fileMenu = new javax.swing.JMenu();
     newMenuItem = new javax.swing.JMenuItem();
     openMenuItem = new javax.swing.JMenuItem();
+    importMenuItem = new javax.swing.JMenuItem();
     recentFilesMenu = new javax.swing.JMenu();
     jmExamples = new javax.swing.JMenu();
     saveMenuItem = new javax.swing.JMenuItem();
@@ -496,11 +497,6 @@ public class MainView extends javax.swing.JFrame
     timeLabel.setName("timeLabel"); // NOI18N
 
     mappingTabbedPane.setName("Custom"); // NOI18N
-    mappingTabbedPane.addChangeListener(new javax.swing.event.ChangeListener() {
-      public void stateChanged(javax.swing.event.ChangeEvent evt) {
-        mappingTabbedPaneStateChanged(evt);
-      }
-    });
 
     customMappingPanel1.setName("customMappingPanelContainer"); // NOI18N
 
@@ -514,7 +510,7 @@ public class MainView extends javax.swing.JFrame
     );
     customMappingPanel1Layout.setVerticalGroup(
       customMappingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
+      .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
     );
 
     mappingTabbedPane.addTab(resourceMap.getString("customMappingPanelContainer.TabConstraints.tabTitle"), customMappingPanel1); // NOI18N
@@ -529,7 +525,7 @@ public class MainView extends javax.swing.JFrame
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 326, Short.MAX_VALUE)
+      .addGap(0, 329, Short.MAX_VALUE)
     );
 
     mappingTabbedPane.addTab(resourceMap.getString("jPanel1.TabConstraints.tabTitle"), jPanel1); // NOI18N
@@ -654,7 +650,7 @@ public class MainView extends javax.swing.JFrame
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel2)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 353, Short.MAX_VALUE)
+        .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 356, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addComponent(editLaserSettingsButton)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -792,6 +788,15 @@ public class MainView extends javax.swing.JFrame
       }
     });
     fileMenu.add(openMenuItem);
+
+    importMenuItem.setText(resourceMap.getString("importMenuItem.text")); // NOI18N
+    importMenuItem.setName("importMenuItem"); // NOI18N
+    importMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        importMenuItemActionPerformed(evt);
+      }
+    });
+    fileMenu.add(importMenuItem);
 
     recentFilesMenu.setText(resourceMap.getString("recentFilesMenu.text")); // NOI18N
     recentFilesMenu.setName("recentFilesMenu"); // NOI18N
@@ -1047,7 +1052,7 @@ public class MainView extends javax.swing.JFrame
                 .addComponent(bt1to1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
               .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 625, Short.MAX_VALUE)))
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 628, Short.MAX_VALUE)))
         .addContainerGap())
     );
 
@@ -1171,58 +1176,58 @@ public class MainView extends javax.swing.JFrame
     this.editLaserSettingsButton.setEnabled(execute);
   }
   private File lastDirectory = null;
-private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
-  final FileFilter allFilter =
-    new MultiFilter(
-    new FileFilter[]
-    {
-      this.visicutModel1.getGraphicFileImporter().getFileFilter(),
-      VisicutModel.PLFFilter
-    }, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("ALL SUPPORTED FILES"));
 
-  //On Mac os, awt.FileDialog looks more native
-  if (Helper.isMacOS())
+  private void openFileDialog(boolean onlyPlf)
   {
-    FileDialog openFileChooser = new FileDialog(this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("PLEASE SELECT A FILE"));
-    openFileChooser.setMode(FileDialog.LOAD);
-    if (lastDirectory != null)
+    final FileFilter allFilter = onlyPlf ? VisicutModel.PLFFilter : VisicutModel.getInstance().getGraphicFileImporter().getFileFilter();
+    //On Mac os, awt.FileDialog looks more native
+    if (Helper.isMacOS())
     {
-      openFileChooser.setDirectory(lastDirectory.getAbsolutePath());
-    }
-    openFileChooser.setFilenameFilter(new FilenameFilter()
-    {
-
-      public boolean accept(File dir, String file)
+      FileDialog openFileChooser = new FileDialog(this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("PLEASE SELECT A FILE"));
+      openFileChooser.setMode(FileDialog.LOAD);
+      if (lastDirectory != null)
       {
-        return allFilter.accept(new File(dir, file));
+        openFileChooser.setDirectory(lastDirectory.getAbsolutePath());
       }
-    });
-    openFileChooser.setVisible(true);
-    if (openFileChooser.getFile() != null)
+      openFileChooser.setFilenameFilter(new FilenameFilter()
+      {
+        public boolean accept(File dir, String file)
+        {
+          return allFilter.accept(new File(dir, file));
+        }
+      });
+      openFileChooser.setVisible(true);
+      if (openFileChooser.getFile() != null)
+      {
+        File file = new File(new File(openFileChooser.getDirectory()), openFileChooser.getFile());
+        loadFile(file);
+      }
+    }
+    else
     {
-      File file = new File(new File(openFileChooser.getDirectory()), openFileChooser.getFile());
-      loadFile(file);
+      JFileChooser openFileChooser = new JFileChooser();
+      openFileChooser.setAcceptAllFileFilterUsed(false);
+      if (!onlyPlf)
+      {
+        for (FileFilter f : this.visicutModel1.getGraphicFileImporter().getFileFilters())
+        {
+          openFileChooser.addChoosableFileFilter(f);
+        }
+      }
+      openFileChooser.addChoosableFileFilter(allFilter);
+      openFileChooser.setFileFilter(allFilter);
+      openFileChooser.setCurrentDirectory(lastDirectory);
+      int returnVal = openFileChooser.showOpenDialog(this);
+      if (returnVal == JFileChooser.APPROVE_OPTION)
+      {
+        File file = openFileChooser.getSelectedFile();
+        loadFile(file);
+      }
     }
   }
-  else
-  {
-    JFileChooser openFileChooser = new JFileChooser();
-    openFileChooser.setAcceptAllFileFilterUsed(false);
-    openFileChooser.addChoosableFileFilter(VisicutModel.PLFFilter);
-    for (FileFilter f : this.visicutModel1.getGraphicFileImporter().getFileFilters())
-    {
-      openFileChooser.addChoosableFileFilter(f);
-    }
-    openFileChooser.addChoosableFileFilter(allFilter);
-    openFileChooser.setFileFilter(allFilter);
-    openFileChooser.setCurrentDirectory(lastDirectory);
-    int returnVal = openFileChooser.showOpenDialog(this);
-    if (returnVal == JFileChooser.APPROVE_OPTION)
-    {
-      File file = openFileChooser.getSelectedFile();
-      loadFile(file);
-    }
-  }
+  
+private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
+  this.openFileDialog(true);
 }//GEN-LAST:event_openMenuItemActionPerformed
 
   private void editMappings() throws FileNotFoundException, IOException
@@ -1409,8 +1414,10 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
     {
       this.setTitle("VisiCut - Unnamed PLF");
     }
+    this.refreshButtonStates();
   }
-  else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDLASERDEVICE))
+  else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDLASERDEVICE)
+    ||evt.getPropertyName().equals(VisicutModel.PROP_SELECTED_PART_CHANGED))
   {
     MainView.this.timeLabel.setText("");
     this.refreshButtonStates();
@@ -2020,9 +2027,9 @@ private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent e
 	  }
 }//GEN-LAST:event_editLaserSettingsButtonActionPerformed
 
-private void mappingTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_mappingTabbedPaneStateChanged
-    //TODO remove link for this method in NetBeans 7.0.1 UI Editor
-}//GEN-LAST:event_mappingTabbedPaneStateChanged
+private void importMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importMenuItemActionPerformed
+  this.openFileDialog(false);
+}//GEN-LAST:event_importMenuItemActionPerformed
 
 /**
  * Open a laser properties dialog (speed, power, frequency, focus for each profile)
@@ -2088,6 +2095,7 @@ private void mappingTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {/
   private javax.swing.JMenu fileMenu;
   private com.t_oster.visicut.gui.beans.FilesDropSupport filesDropSupport1;
   private javax.swing.JMenu helpMenu;
+  private javax.swing.JMenuItem importMenuItem;
   private javax.swing.JButton jButton1;
   private javax.swing.JButton jButton2;
   private javax.swing.JCheckBox jCheckBox1;
