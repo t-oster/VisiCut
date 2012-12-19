@@ -249,9 +249,8 @@ public class MainView extends javax.swing.JFrame
     this.cbEditBeforeExecute.setSelected(PreferencesManager.getInstance().getPreferences().isEditSettingsBeforeExecuting());
     initComplete = true;
     //initialize states coorectly
-    this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_LOADEDFILE, null, null));
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDLASERDEVICE, null, null));
-    this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SOURCEFILE, null, null));
+    this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDPART, null, null));
 
     this.predefinedMappingList.addMouseListener(new MouseListener(){
 
@@ -1181,7 +1180,7 @@ public class MainView extends javax.swing.JFrame
         }
       }
       //if the image is too big, fit it and notify the user
-      if (visicutModel1.fitMaterialIntoBed())
+      if (visicutModel1.fitObjectsIntoBed())
       {
         dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("NEEDED_REFIT"));
       }
@@ -1295,8 +1294,8 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
       this.previewPanel.repaint();
     }
   }
-  
-  
+
+
 
 private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
   VisicutAboutBox box = new VisicutAboutBox(this);
@@ -2134,7 +2133,7 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
 private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editLaserSettingsButtonActionPerformed
    Map<LaserProfile, List<LaserProperty>> laserProperties = this.editLaserPropertiesDialog();
 	  if (laserProperties != null) {
-		  try { 
+		  try {
         saveLaserProperties(laserProperties);
       }
       catch(Exception e) {
@@ -2161,7 +2160,7 @@ private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent e
 	  asd.setVisible(true);
 	  return asd.getLaserProperties();
   }
-  
+
   /**
    * get the current laser properties
    * @return laser-properties or null if not set
@@ -2169,7 +2168,7 @@ private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent e
   private Map<LaserProfile, List<LaserProperty>> getLaserProperties() {
     return this.getPropertyMapForCurrentJob(false,false);
   }
-  
+
   private void saveLaserProperties(Map<LaserProfile, List<LaserProperty>> laserProperties) throws FileNotFoundException, IOException {
     LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
       MaterialProfile material = this.visicutModel1.getMaterial();
@@ -2179,8 +2178,8 @@ private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent e
 		  LaserPropertyManager.getInstance().saveLaserProperties(device, material, e.getKey(), thickness, e.getValue());
 	  }
   }
-  
-  
+
+
 
 
 
@@ -2298,10 +2297,10 @@ private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent e
 
   /**
    * get a list of used LaserProfiles and their corresponding LaserProperty
-   * 
+   *
    * @param reallyExecuting true if the laserjob is about to be sent, false if we are only calculating the time
    * @param mayShowEditDialog true if this function may open a LaserProperty edit dialog for unknown profiles, false if not.
-   * @return 
+   * @return
    */
   private Map<LaserProfile, List<LaserProperty>> getPropertyMapForCurrentJob(boolean reallyExecuting, boolean mayShowEditDialog)
   {
@@ -2370,7 +2369,7 @@ private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent e
         {
           dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("FOR SOME PROFILE YOU SELECTED, THERE ARE NO LASERCUTTER SETTINGS YET YOU WILL HAVE TO ENTER THEM IN THE FOLLOWING DIALOG."));
         }
-        
+
         if (!mayShowEditDialog) {
           // mayShowEditDialog is against infinite recursion because editLaserPropertiesDialog calls this function, which calls back editLaserPropertiesDialog if mayShowEditDialog==true
           return usedSettings;
@@ -2381,7 +2380,7 @@ private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent e
           // If the job is executed, VisiCut will ask when it's done whether the
           // profile changes should be saved.
           // But if the user only clicks on "calculate time" and there are unset profiles, we have to store the changes now, so that he is not asked the same question every time he presses "calculate".
-          
+
           // save changes
             saveLaserProperties(newSettings);
         }

@@ -6,6 +6,8 @@ package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.PlfFile;
+import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingFilter;
@@ -46,9 +48,9 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
 
   public void propertyChange(PropertyChangeEvent pce)
   {
-    if (pce.getSource() == VisicutModel.getInstance() && pce.getPropertyName().equals(VisicutModel.PROP_GRAPHICOBJECTS))
+    if (pce.getSource() == VisicutModel.getInstance() && pce.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART))
     {
-      this.fillMenu(VisicutModel.getInstance().getGraphicObjects());
+      this.fillMenu(VisicutModel.getInstance().getSelectedPart());
     }
   }
 
@@ -147,7 +149,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
   JPopupMenu menu = new JPopupMenu(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("MENU"));
   FilterSet resultingFilterSet = new FilterSet();
 
-  private void fillMenu(GraphicSet gs)
+  private void fillMenu(PlfPart p)
   {
     menu.removeAll();
     this.menuItems.clear();
@@ -159,8 +161,9 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
         FilterSetCellEditor.this.clearFilters();
       }
     });
-    if (gs != null)
+    if (p != null)
     {
+      GraphicSet gs = p.getGraphicObjects();
       menu.add(e);
       for(final String s: gs.getAttributes())
       {
@@ -207,7 +210,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
 
   public FilterSetCellEditor()
   {
-    this.fillMenu(VisicutModel.getInstance().getGraphicObjects());
+    this.fillMenu(VisicutModel.getInstance().getSelectedPart());
     bt.addActionListener(this);
     VisicutModel.getInstance().addPropertyChangeListener(this);
     menu.addPopupMenuListener(this);

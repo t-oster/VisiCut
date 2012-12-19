@@ -81,6 +81,31 @@ import javax.swing.filechooser.FileFilter;
 public class VisicutModel
 {
 
+  private PlfPart selectedPart = null;
+  public static final String PROP_SELECTEDPART = "selectedPart";
+
+  /**
+   * Get the value of selectedPart
+   *
+   * @return the value of selectedPart
+   */
+  public PlfPart getSelectedPart()
+  {
+    return selectedPart;
+  }
+
+  /**
+   * Set the value of selectedPart
+   *
+   * @param selectedPart new value of selectedPart
+   */
+  public void setSelectedPart(PlfPart selectedPart)
+  {
+    PlfPart oldSelectedPart = this.selectedPart;
+    this.selectedPart = selectedPart;
+    propertyChangeSupport.firePropertyChange(PROP_SELECTEDPART, oldSelectedPart, selectedPart);
+  }
+
   private PlfFile plfFile = new PlfFile();
 
   /**
@@ -242,7 +267,7 @@ public class VisicutModel
   }
   protected Preferences preferences = new Preferences();
   public static final String PROP_PREFERENCES = "preferences";
-  
+
   /**
    * Get the value of preferences
    *
@@ -511,6 +536,7 @@ public class VisicutModel
       p.setGraphicObjects(gs);
       p.setSourceFile(f);
       this.plfFile.add(p);
+      this.propertyChangeSupport.firePropertyChange(PROP_PLF_FILE_CHANGED, null, plfFile);
     }
   }
   protected MaterialProfile material = null;
@@ -659,8 +685,11 @@ public class VisicutModel
     return modified;
   }
 
+  public static final String PROP_PLF_FILE_CHANGED = "plf file changed";
+
   private void setPlfFile(PlfFile resultingFile)
   {
     this.plfFile = resultingFile;
+    this.propertyChangeSupport.firePropertyChange(PROP_PLF_FILE_CHANGED, null, plfFile);
   }
 }

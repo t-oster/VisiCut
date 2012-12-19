@@ -25,10 +25,6 @@ import com.t_oster.visicut.gui.beans.EditRectangle.ParameterField;
 import com.t_oster.visicut.gui.beans.PreviewPanel;
 import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.Helper;
-import com.t_oster.visicut.model.LaserProfile;
-import com.t_oster.visicut.model.Raster3dProfile;
-import com.t_oster.visicut.model.RasterProfile;
-import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Cursor;
 import java.awt.Point;
@@ -89,7 +85,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       {
         PreviewPanelKeyboardMouseHandler.this.getGraphicObjects().setTransform(
           PreviewPanelKeyboardMouseHandler.this.getGraphicObjects().getBasicTransform());
-        VisicutModel.getInstance().fitMaterialIntoBed();
+        VisicutModel.getInstance().fitObjectsIntoBed();
         PreviewPanelKeyboardMouseHandler.this.previewPanel.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
         PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
       }
@@ -375,7 +371,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       {
         try
         {
-          this.optionsmenu.setVisible(VisicutModel.getInstance().getMappings().size() == 1);
+          this.optionsmenu.setVisible(VisicutModel.getInstance().getSelectedPart().getMapping().size() == 1);
         }
         catch (NullPointerException ex)
         {
