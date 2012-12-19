@@ -26,6 +26,7 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
@@ -83,6 +84,18 @@ public class PreviewPanel extends ZoomablePanel
             PreviewPanel.this.setAreaSize(new Point2D.Double(lc.getBedWidth(), lc.getBedHeight()));
             PreviewPanel.this.repaint();
           }
+        }
+        else if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName()))
+        {
+          PlfPart p = VisicutModel.getInstance().getSelectedPart();
+          PreviewPanel.this.setEditRectangle(p != null ? new EditRectangle(p.getGraphicObjects().getBoundingBox()) : null);
+          PreviewPanel.this.repaint();
+        }
+        else if (VisicutModel.PROP_BACKGROUNDIMAGE.equals(pce.getPropertyName())
+          || VisicutModel.PROP_MATERIAL.equals(pce.getPropertyName())
+          || VisicutModel.PROP_PLF_FILE_CHANGED.equals(pce.getPropertyName()))
+        {
+          PreviewPanel.this.repaint();
         }
       }
     });
@@ -376,29 +389,7 @@ public class PreviewPanel extends ZoomablePanel
     this.editRectangle = editRectangle;
     this.repaint();
   }
-  protected GraphicSet graphicObjects = null;
-
-  /**
-   * Get the value of graphicObjects
-   *
-   * @return the value of graphicObjects
-   */
-  public GraphicSet getGraphicObjects()
-  {
-    return graphicObjects;
-  }
-
-  /**
-   * Set the value of graphicObjects
-   *
-   * @param graphicObjects new value of graphicObjects
-   */
-  public void setGraphicObjects(GraphicSet graphicObjects)
-  {
-    this.graphicObjects = graphicObjects;
-    this.renderBuffer.clear();
-    this.repaint();
-  }
+  
   /**
    * The renderBuffer contains a BufferedImage for each Mapping.
    * On refreshRenderBuffer, the Images are created by rendering
@@ -409,18 +400,18 @@ public class PreviewPanel extends ZoomablePanel
    */
   private final HashMap<Mapping, ImageProcessingThread> renderBuffer = new LinkedHashMap<Mapping, ImageProcessingThread>();
 
-  private boolean renderOriginalImage(Graphics2D gg, Mapping m)
+  private boolean renderOriginalImage(Graphics2D gg, Mapping m, PlfPart p)
   {
     boolean somethingMatched = false;
     AffineTransform bak = gg.getTransform();
     AffineTransform tr = gg.getTransform();
     tr.concatenate(this.getMmToPxTransform());
-    if (this.graphicObjects.getTransform() != null)
+    if (p.getGraphicObjects().getTransform() != null)
     {
-      tr.concatenate(this.graphicObjects.getTransform());
+      tr.concatenate(p.getGraphicObjects().getTransform());
     }
     gg.setTransform(tr);
-    for (GraphicObject o : m.getFilterSet().getMatchingObjects(this.getGraphicObjects()))
+    for (GraphicObject o : m.getFilterSet().getMatchingObjects(p.getGraphicObjects()))
     {
       somethingMatched = true;
       o.render(gg);
@@ -470,94 +461,97 @@ public class PreviewPanel extends ZoomablePanel
         gg.setColor(Color.DARK_GRAY);
         drawGrid(gg);
       }
-      if (this.getGraphicObjects() != null)
+      for (PlfPart part : VisicutModel.getInstance().getPlfFile())
       {
-        MappingSet mappingsToDraw = this.getMappings();
-        if (this.getMaterial() == null || mappingsToDraw == null || mappingsToDraw.isEmpty())
-        {//Just draw the original Image
-          mappingsToDraw = new MappingSet();
-          mappingsToDraw.add(new Mapping(new FilterSet(), null));
-        }
-        boolean somethingMatched = false;
-        for (Mapping m : mappingsToDraw)
-        {//Render Original Image
-          if (m.getProfile() == null || this.fastPreview)
-          {
-            somethingMatched = this.renderOriginalImage(gg, m);
+        if (part.getGraphicObjects() != null)
+        {
+          MappingSet mappingsToDraw = part.getMapping();
+          if (this.getMaterial() == null || mappingsToDraw == null || mappingsToDraw.isEmpty())
+          {//Just draw the original Image
+            mappingsToDraw = new MappingSet();
+            mappingsToDraw.add(new Mapping(new FilterSet(), null));
           }
-          else if (m.getProfile() != null)
-          {//Render only parts the material supports, or where Profile = null
-            LaserProfile p = m.getProfile();
-            GraphicSet current = m.getFilterSet().getMatchingObjects(this.graphicObjects);
-            Rectangle2D bbInMm = current.getBoundingBox();
-            Rectangle bbInPx = Helper.toRect(Helper.transform(bbInMm, this.getMmToPxTransform()));
-            if (bbInPx != null && bbInPx.getWidth() > 0 && bbInPx.getHeight() > 0)
+          boolean somethingMatched = false;
+          for (Mapping m : mappingsToDraw)
+          {//Render Original Image
+            if (m.getProfile() == null || this.fastPreview)
             {
-              somethingMatched = true;
-              if (!(p instanceof VectorProfile))
+              somethingMatched = this.renderOriginalImage(gg, m, part);
+            }
+            else if (m.getProfile() != null)
+            {//Render only parts the material supports, or where Profile = null
+              LaserProfile p = m.getProfile();
+              GraphicSet current = m.getFilterSet().getMatchingObjects(part.getGraphicObjects());
+              Rectangle2D bbInMm = current.getBoundingBox();
+              Rectangle bbInPx = Helper.toRect(Helper.transform(bbInMm, this.getMmToPxTransform()));
+              if (bbInPx != null && bbInPx.getWidth() > 0 && bbInPx.getHeight() > 0)
               {
-                synchronized (renderBuffer)
+                somethingMatched = true;
+                if (!(p instanceof VectorProfile))
                 {
-                  ImageProcessingThread procThread = this.renderBuffer.get(m);
-                  if (procThread == null || !procThread.isFinished() || Math.abs(bbInMm.getWidth()-procThread.getBoundingBoxInMm().getWidth()) > 0.01 || Math.abs(bbInMm.getHeight()-procThread.getBoundingBoxInMm().getHeight()) > 0.01)
-                  {//Image not rendered or Size differs
-                    if (!renderBuffer.containsKey(m))
-                    {//image not yet scheduled for rendering
-                      logger.log(Level.FINE, "Starting ImageProcessing Thread for {0}", m);
-                      procThread = new ImageProcessingThread(current, p);
-                      this.renderBuffer.put(m, procThread);
-                      procThread.start();//start processing thread
-                    }
-                    else if (bbInMm.getWidth() != procThread.getBoundingBoxInMm().getWidth() || bbInMm.getHeight() != procThread.getBoundingBoxInMm().getHeight())
-                    {//Image is (being) rendered with wrong size
-                      logger.log(Level.FINE, "Image has wrong size");
-                      if (!procThread.isFinished())
-                      {//stop the old thread if still running
-                        procThread.cancel();
-                      }
-                      logger.log(Level.FINE, "Starting ImageProcessingThread for{0}", m);
-                      procThread = new ImageProcessingThread(current, p);
-                      this.renderBuffer.put(m, procThread);
-                      procThread.start();//start processing thread
-                    }
-                    this.renderOriginalImage(gg, m);
-                    Composite o = gg.getComposite();
-                    gg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
-                    Point po = new Point(bbInPx.x + bbInPx.width / 2, bbInPx.y + bbInPx.height / 2);
-                    String txt = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("PLEASE WAIT (")+procThread.getProgress()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("%)");
-                    int w = gg.getFontMetrics().stringWidth(txt);
-                    int h = gg.getFontMetrics().getHeight();
-                    gg.setColor(Color.GRAY);
-                    gg.fillRoundRect(po.x -w /2 -5, po.y-h, w+10, (int) (1.5d*h), 5, 5);
-                    gg.setComposite(o);
-                    gg.setColor(Color.BLACK);
-                    gg.drawString(txt, po.x - w / 2, po.y);
-                  }
-                  else
+                  synchronized (renderBuffer)
                   {
-                    AffineTransform laserPxToPreviewPx = Helper.getTransform(procThread.getBoundingBox(), bbInPx);
-                    laserPxToPreviewPx.translate(procThread.getBoundingBox().x, procThread.getBoundingBox().y);
-                    gg.drawRenderedImage(procThread.getImage(), laserPxToPreviewPx);
+                    ImageProcessingThread procThread = this.renderBuffer.get(m);
+                    if (procThread == null || !procThread.isFinished() || Math.abs(bbInMm.getWidth()-procThread.getBoundingBoxInMm().getWidth()) > 0.01 || Math.abs(bbInMm.getHeight()-procThread.getBoundingBoxInMm().getHeight()) > 0.01)
+                    {//Image not rendered or Size differs
+                      if (!renderBuffer.containsKey(m))
+                      {//image not yet scheduled for rendering
+                        logger.log(Level.FINE, "Starting ImageProcessing Thread for {0}", m);
+                        procThread = new ImageProcessingThread(current, p);
+                        this.renderBuffer.put(m, procThread);
+                        procThread.start();//start processing thread
+                      }
+                      else if (bbInMm.getWidth() != procThread.getBoundingBoxInMm().getWidth() || bbInMm.getHeight() != procThread.getBoundingBoxInMm().getHeight())
+                      {//Image is (being) rendered with wrong size
+                        logger.log(Level.FINE, "Image has wrong size");
+                        if (!procThread.isFinished())
+                        {//stop the old thread if still running
+                          procThread.cancel();
+                        }
+                        logger.log(Level.FINE, "Starting ImageProcessingThread for{0}", m);
+                        procThread = new ImageProcessingThread(current, p);
+                        this.renderBuffer.put(m, procThread);
+                        procThread.start();//start processing thread
+                      }
+                      this.renderOriginalImage(gg, m, part);
+                      Composite o = gg.getComposite();
+                      gg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+                      Point po = new Point(bbInPx.x + bbInPx.width / 2, bbInPx.y + bbInPx.height / 2);
+                      String txt = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("PLEASE WAIT (")+procThread.getProgress()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("%)");
+                      int w = gg.getFontMetrics().stringWidth(txt);
+                      int h = gg.getFontMetrics().getHeight();
+                      gg.setColor(Color.GRAY);
+                      gg.fillRoundRect(po.x -w /2 -5, po.y-h, w+10, (int) (1.5d*h), 5, 5);
+                      gg.setComposite(o);
+                      gg.setColor(Color.BLACK);
+                      gg.drawString(txt, po.x - w / 2, po.y);
+                    }
+                    else
+                    {
+                      AffineTransform laserPxToPreviewPx = Helper.getTransform(procThread.getBoundingBox(), bbInPx);
+                      laserPxToPreviewPx.translate(procThread.getBoundingBox().x, procThread.getBoundingBox().y);
+                      gg.drawRenderedImage(procThread.getImage(), laserPxToPreviewPx);
+                    }
                   }
                 }
+                else if (p instanceof VectorProfile)
+                {
+                  p.renderPreview(gg, current, this.material, this.getMmToPxTransform());
+                }
               }
-              else if (p instanceof VectorProfile)
-              {
-                p.renderPreview(gg, current, this.material, this.getMmToPxTransform());
-              }
-            }
-            else
-            {//Mapping is Empty or BoundingBox zero
-              synchronized (renderBuffer)
-              {
-                renderBuffer.remove(m);
+              else
+              {//Mapping is Empty or BoundingBox zero
+                synchronized (renderBuffer)
+                {
+                  renderBuffer.remove(m);
+                }
               }
             }
           }
-        }
-        if (!somethingMatched)
-        {//Nothing drawn because of no Matching mapping
-          gg.drawString(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("NO MATCHING PARTS FOR THE CURRENT MAPPING FOUND."), 10, this.getHeight() / 2);
+          if (!somethingMatched)
+          {//Nothing drawn because of no Matching mapping
+            gg.drawString(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("NO MATCHING PARTS FOR THE CURRENT MAPPING FOUND."), 10, this.getHeight() / 2);
+          }
         }
       }
       if (this.editRectangle != null)
@@ -566,30 +560,7 @@ public class PreviewPanel extends ZoomablePanel
       }
     }
   }
-  protected MappingSet mappings = null;
-
-  /**
-   * Get the value of mappings
-   *
-   * @return the value of mappings
-   */
-  public MappingSet getMappings()
-  {
-    return mappings;
-  }
-
-  /**
-   * Set the value of mappings
-   *
-   * @param mappings new value of mappings
-   */
-  public void setMappings(MappingSet mappings)
-  {
-    this.mappings = mappings;
-    this.ClearCache();
-    this.repaint();
-  }
-
+  
   private void drawGrid(Graphics2D gg)
   {
     /**

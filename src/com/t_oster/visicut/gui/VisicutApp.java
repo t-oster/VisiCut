@@ -34,6 +34,7 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.io.File;
@@ -230,10 +231,6 @@ public class VisicutApp extends SingleFrameApplication
           {
             material = args[++i];
           }
-          else if ("--mapping".equals(s))
-          {
-            mapping = args[++i];
-          }
           else if ("--execute".equals(s))
           {
             execute = true;
@@ -326,29 +323,6 @@ public class VisicutApp extends SingleFrameApplication
       }
       model.setMaterialThickness(height);
     }
-    if (mapping != null)
-    {
-      search:
-      {
-        for (MappingSet ms : model.generateDefaultMappings())
-        {
-          if (mapping.equals(ms.getName()))
-          {
-            model.setMappings(ms);
-            break search;
-          }
-        }
-        for (MappingSet ms : MappingManager.getInstance().getAll())
-        {
-          if (mapping.equals(ms.getName()))
-          {
-            model.setMappings(ms);
-            break search;
-          }
-        }
-        System.err.println("No such Mapping: " + mapping);
-      }
-    }
     if (file != null)
     {
       File f = new File(file);
@@ -367,6 +341,10 @@ public class VisicutApp extends SingleFrameApplication
         else
         {
           model.loadGraphicFile(f, warnings);
+          if (execute)
+          {
+            System.err.println("WARNING: execut parameter is only valid for PLF files. Will be ignored");
+          }
         }
         for(String s : warnings)
         {
@@ -381,13 +359,8 @@ public class VisicutApp extends SingleFrameApplication
         System.exit(1);
       }
     }
-    if (execute)
+    if (execute && file.toLowerCase().endsWith("plf"))
     {
-      if (model.getGraphicObjects() == null || model.getGraphicObjects().size() == 0)
-      {
-        System.err.println("Nothing to cut/engrave");
-        System.exit(1);
-      }
       if (model.getSelectedLaserDevice() == null)
       {
         System.err.println("No Laserdevice selected");
@@ -398,23 +371,21 @@ public class VisicutApp extends SingleFrameApplication
         System.err.println("No Material selected");
         System.exit(1);
       }
-      if (model.getMappings() == null)
-      {
-        System.err.println("No Mapping selected");
-        System.exit(1);
-      }
       Map<LaserProfile, List<LaserProperty>> propmap = new LinkedHashMap<LaserProfile, List<LaserProperty>>();
       //check if all settings are available
-      for (Mapping ms : model.getMappings())
+      for (PlfPart part : model.getPlfFile())
       {
-        LaserProfile p = ms.getProfile();
-        List<LaserProperty> list = LaserPropertyManager.getInstance().getLaserProperties(model.getSelectedLaserDevice(), model.getMaterial(), ms.getProfile(), model.getMaterialThickness());
-        if (list == null)
+        for (Mapping ms : part.getMapping())
         {
-          System.err.println("Combination of Laserdevice, Material and Mapping is not supported");
-          System.exit(1);
+          LaserProfile p = ms.getProfile();
+          List<LaserProperty> list = LaserPropertyManager.getInstance().getLaserProperties(model.getSelectedLaserDevice(), model.getMaterial(), ms.getProfile(), model.getMaterialThickness());
+          if (list == null)
+          {
+            System.err.println("Combination of Laserdevice, Material and Mapping is not supported");
+            System.exit(1);
+          }
+          propmap.put(p, list);
         }
-        propmap.put(p, list);
       }
       try
       {

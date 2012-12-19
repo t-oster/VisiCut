@@ -217,7 +217,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
   public void tableChanged(TableModelEvent tme)
   {
     this.refreshProfilesEditor(); // generate necessary new temporary copies
-    VisicutModel.getInstance().setMappings(this.getResultingMappingSet());
+    VisicutModel.getInstance().getSelectedPart().setMapping(this.getResultingMappingSet());
   }
 
   class Entry

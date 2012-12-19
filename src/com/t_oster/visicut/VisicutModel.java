@@ -437,6 +437,14 @@ public class VisicutModel
     int len;
     // Create the ZIP file
     ZipOutputStream out = new ZipOutputStream(new FileOutputStream(f));
+    //find temporary file for xml
+    int k = 0;
+    File tmp = null;
+    do
+    {
+      tmp = new File(Helper.getBasePath(), "tmp" + (k++) + ".xml");
+    }
+    while (tmp.exists());
     for(int i = 0; i < plf.size(); i++)
     {
       // Add source GraphicsFile to the Zip File
@@ -450,14 +458,6 @@ public class VisicutModel
       in.close();
       // Complete the entry
       out.closeEntry();
-      //find temporary file for xml
-      int k = 0;
-      File tmp = null;
-      do
-      {
-        tmp = new File(Helper.getBasePath(), "tmp" + (k++) + ".xml");
-      }
-      while (tmp.exists());
       AffineTransform at = plf.get(i).getGraphicObjects().getTransform();
       if (at != null)
       {
@@ -492,21 +492,24 @@ public class VisicutModel
         in.close();
         out.closeEntry();
       }
-      out.putNextEntry(new ZipEntry((i > 0 ? i+"/" : "")+"mappings.xml"));
-      mm.save(plf.get(i).getMapping(), tmp);
-      in = new FileInputStream(tmp);
-      // Transfer bytes from the file to the ZIP file
-      while ((len = in.read(buf)) > 0)
+      if (plf.get(i).getMapping() != null)
       {
-        out.write(buf, 0, len);
+        out.putNextEntry(new ZipEntry((i > 0 ? i+"/" : "")+"mappings.xml"));
+        mm.save(plf.get(i).getMapping(), tmp);
+        in = new FileInputStream(tmp);
+        // Transfer bytes from the file to the ZIP file
+        while ((len = in.read(buf)) > 0)
+        {
+          out.write(buf, 0, len);
+        }
+        in.close();
+        out.closeEntry();
       }
-      in.close();
-      out.closeEntry();
-      // Complete the ZIP file
-      out.close();
-      // Delete the tmp file
-      tmp.delete();
     }
+    // Complete the ZIP file
+    out.close();
+    // Delete the tmp file
+    tmp.delete();
   }
   private GraphicFileImporter graphicFileImporter = null;
 
@@ -691,5 +694,29 @@ public class VisicutModel
   {
     this.plfFile = resultingFile;
     this.propertyChangeSupport.firePropertyChange(PROP_PLF_FILE_CHANGED, null, plfFile);
+  }
+
+  public void newPlfFile()
+  {
+    this.setPlfFile(new PlfFile());
+  }
+
+  public void reloadSelectedPart(LinkedList<String> warnings) throws ImportException
+  {
+    if (this.selectedPart != null)
+    {
+      this.selectedPart.setGraphicObjects(this.loadSetFromFile(this.selectedPart.getSourceFile(), warnings));
+      this.propertyChangeSupport.firePropertyChange(PROP_PLF_FILE_CHANGED, null, plfFile);
+    }
+  }
+  
+  public void removeSelectedPart()
+  {
+    if (this.selectedPart != null)
+    {
+      this.plfFile.remove(selectedPart);
+      this.setSelectedPart(null);
+      this.propertyChangeSupport.firePropertyChange(PROP_PLF_FILE_CHANGED, null, plfFile);
+    }
   }
 }

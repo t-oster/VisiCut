@@ -47,54 +47,6 @@ public class EditMappingsDialog extends javax.swing.JDialog implements EditableT
     super(parent, modal);
     initComponents();
   }
-  protected GraphicSet graphicElements = null;
-  public static final String PROP_GRAPHICELEMENTS = "graphicElements";
-
-  /**
-   * Get the value of graphicElements
-   *
-   * @return the value of graphicElements
-   */
-  public GraphicSet getGraphicElements()
-  {
-    return graphicElements;
-  }
-
-  /**
-   * Set the value of graphicElements
-   *
-   * @param graphicElements new value of graphicElements
-   */
-  public void setGraphicElements(GraphicSet graphicElements)
-  {
-    GraphicSet oldGraphicElements = this.graphicElements;
-    this.graphicElements = graphicElements;
-    firePropertyChange(PROP_GRAPHICELEMENTS, oldGraphicElements, graphicElements);
-  }
-  protected MaterialProfile material = null;
-  public static final String PROP_MATERIAL = "material";
-
-  /**
-   * Get the value of material
-   *
-   * @return the value of material
-   */
-  public MaterialProfile getMaterial()
-  {
-    return material;
-  }
-
-  /**
-   * Set the value of material
-   *
-   * @param material new value of material
-   */
-  public void setMaterial(MaterialProfile material)
-  {
-    MaterialProfile oldMaterial = this.material;
-    this.material = material;
-    firePropertyChange(PROP_MATERIAL, oldMaterial, material);
-  }
 
   protected List<MappingSet> mappingSets = null;
   public static final String PROP_MAPPINGSETS = "mappingSets";
