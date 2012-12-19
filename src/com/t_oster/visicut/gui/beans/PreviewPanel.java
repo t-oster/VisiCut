@@ -62,7 +62,7 @@ import javax.swing.JOptionPane;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class PreviewPanel extends ZoomablePanel
+public class PreviewPanel extends ZoomablePanel implements PropertyChangeListener
 {
 
   private double bedWidth = 600;
@@ -70,36 +70,46 @@ public class PreviewPanel extends ZoomablePanel
 
   public PreviewPanel()
   {
-    VisicutModel.getInstance().addPropertyChangeListener(new PropertyChangeListener(){
-
-      public void propertyChange(PropertyChangeEvent pce)
-      {
-        if (VisicutModel.PROP_SELECTEDLASERDEVICE.equals(pce.getPropertyName()))
-        {
-          if (pce.getNewValue() != null && pce.getNewValue() instanceof LaserDevice)
-          {
-            LaserCutter lc = ((LaserDevice) pce.getNewValue()).getLaserCutter();
-            PreviewPanel.this.bedWidth = lc.getBedWidth();
-            PreviewPanel.this.bedHeight = lc.getBedHeight();
-            PreviewPanel.this.setAreaSize(new Point2D.Double(lc.getBedWidth(), lc.getBedHeight()));
-            PreviewPanel.this.repaint();
-          }
-        }
-        else if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName()))
-        {
-          PlfPart p = VisicutModel.getInstance().getSelectedPart();
-          PreviewPanel.this.setEditRectangle(p != null ? new EditRectangle(p.getGraphicObjects().getBoundingBox()) : null);
-          PreviewPanel.this.repaint();
-        }
-        else if (VisicutModel.PROP_BACKGROUNDIMAGE.equals(pce.getPropertyName())
-          || VisicutModel.PROP_MATERIAL.equals(pce.getPropertyName())
-          || VisicutModel.PROP_PLF_FILE_CHANGED.equals(pce.getPropertyName()))
-        {
-          PreviewPanel.this.repaint();
-        }
-      }
-    });
+    VisicutModel.getInstance().addPropertyChangeListener(this);
   }
+  
+  public void propertyChange(PropertyChangeEvent pce)
+  {
+    if (VisicutModel.PROP_SELECTEDLASERDEVICE.equals(pce.getPropertyName()))
+    {
+      if (pce.getNewValue() != null && pce.getNewValue() instanceof LaserDevice)
+      {
+        LaserCutter lc = ((LaserDevice) pce.getNewValue()).getLaserCutter();
+        bedWidth = lc.getBedWidth();
+        bedHeight = lc.getBedHeight();
+        setAreaSize(new Point2D.Double(lc.getBedWidth(), lc.getBedHeight()));
+        repaint();
+      }
+    }
+    else if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName()))
+    {
+      PlfPart p = VisicutModel.getInstance().getSelectedPart();
+      this.setEditRectangle(p != null ? new EditRectangle(p.getGraphicObjects().getBoundingBox()) : null);
+      //this.repaint();//setEditRectangle does already repaint
+    }
+    else if (VisicutModel.PROP_SELECTED_PART_CHANGED.equals(pce.getPropertyName()))
+    {
+      PlfPart p = VisicutModel.getInstance().getSelectedPart();
+      this.clearCache(p);
+      this.setEditRectangle(new EditRectangle(p.getGraphicObjects().getBoundingBox()));
+    }
+    else if (VisicutModel.PROP_MATERIAL.equals(pce.getPropertyName())
+      || VisicutModel.PROP_PLF_FILE_CHANGED.equals(pce.getPropertyName()))
+    {
+      this.clearCache();
+      repaint();
+    }
+    else if (VisicutModel.PROP_BACKGROUNDIMAGE.equals(pce.getPropertyName()))
+    {
+      repaint();
+    }
+  }
+  
   private static final Logger logger = Logger.getLogger(PreviewPanel.class.getName());
 
   private class ImageProcessingThread extends Thread implements ProgressListener
@@ -165,12 +175,12 @@ public class PreviewPanel extends ZoomablePanel
       if (p instanceof RasterProfile)
       {
         RasterProfile rp = (RasterProfile) p;
-        buffer = rp.getRenderedPreview(set, material, mm2laserPx, this);
+        buffer = rp.getRenderedPreview(set, VisicutModel.getInstance().getMaterial(), mm2laserPx, this);
       }
       else if (p instanceof Raster3dProfile)
       {
         Raster3dProfile rp = (Raster3dProfile) p;
-        buffer = rp.getRenderedPreview(set, material, mm2laserPx, this);
+        buffer = rp.getRenderedPreview(set, VisicutModel.getInstance().getMaterial(), mm2laserPx, this);
       }
     }
 
@@ -284,19 +294,31 @@ public class PreviewPanel extends ZoomablePanel
 
   protected RenderedImage backgroundImage = null;
 
-  public void ClearCache()
+  public void clearCache(PlfPart p)
   {
-    synchronized(this.renderBuffer)
+    synchronized(this.renderBuffers)
     {
-      for (ImageProcessingThread thr : this.renderBuffer.values())
+      for (ImageProcessingThread thr : this.renderBuffers.get(p).values())
       {
         if (!thr.isFinished())
         {
           thr.cancel();
         }
       }
+      this.renderBuffers.get(p).clear();
     }
-    this.renderBuffer.clear();
+  }
+  
+  public void clearCache()
+  {
+    synchronized(this.renderBuffers)
+    {
+      for(PlfPart p : this.renderBuffers.keySet())
+      {
+        clearCache(p);
+      }
+      this.renderBuffers.clear();
+    }
   }
   protected boolean showBackgroundImage = true;
 
@@ -321,49 +343,6 @@ public class PreviewPanel extends ZoomablePanel
     this.repaint();
   }
 
-  /**
-   * Get the value of backgroundImage
-   *
-   * @return the value of backgroundImage
-   */
-  public RenderedImage getBackgroundImage()
-  {
-    return backgroundImage;
-  }
-
-  /**
-   * Set the value of backgroundImage
-   *
-   * @param backgroundImage new value of backgroundImage
-   */
-  public void setBackgroundImage(RenderedImage backgroundImage)
-  {
-    this.backgroundImage = backgroundImage;
-    this.repaint();
-  }
-  protected MaterialProfile material = new MaterialProfile();
-
-  /**
-   * Get the value of material
-   *
-   * @return the value of material
-   */
-  public MaterialProfile getMaterial()
-  {
-    return material;
-  }
-
-  /**
-   * Set the value of material
-   *
-   * @param material new value of material
-   */
-  public void setMaterial(MaterialProfile material)
-  {
-    this.material = material;
-    this.renderBuffer.clear();
-    this.repaint();
-  }
   protected EditRectangle editRectangle = null;
 
   /**
@@ -391,14 +370,14 @@ public class PreviewPanel extends ZoomablePanel
   }
   
   /**
-   * The renderBuffer contains a BufferedImage for each Mapping.
+   * The renderBuffer contains a BufferedImage for each Mapping of each PlfPart.
    * On refreshRenderBuffer, the Images are created by rendering
    * the GraphicElements matching the mapping onto an Image,
    * with the size of the BoundingBox.
    * When drawn the offset of the BoundingBox has to be used as Upper Left
    * Corner
    */
-  private final HashMap<Mapping, ImageProcessingThread> renderBuffer = new LinkedHashMap<Mapping, ImageProcessingThread>();
+  private final HashMap<PlfPart,HashMap<Mapping, ImageProcessingThread>> renderBuffers = new LinkedHashMap<PlfPart,HashMap<Mapping, ImageProcessingThread>>();
 
   private boolean renderOriginalImage(Graphics2D gg, Mapping m, PlfPart p)
   {
@@ -453,7 +432,8 @@ public class PreviewPanel extends ZoomablePanel
       }
       else
       {
-        gg.setColor(this.material != null && this.material.getColor() != null ? this.material.getColor() : Color.WHITE);
+        MaterialProfile m = VisicutModel.getInstance().getMaterial();
+        gg.setColor(m != null && m.getColor() != null ? m.getColor() : Color.WHITE);
         gg.fillRect(box.x, box.y, box.width, box.height);
       }
       if (showGrid)
@@ -463,10 +443,16 @@ public class PreviewPanel extends ZoomablePanel
       }
       for (PlfPart part : VisicutModel.getInstance().getPlfFile())
       {
+        HashMap<Mapping,ImageProcessingThread> renderBuffer = renderBuffers.get(part);
+        if (renderBuffer == null)
+        {
+          renderBuffer = new LinkedHashMap<Mapping,ImageProcessingThread>();
+          renderBuffers.put(part,renderBuffer);
+        }
         if (part.getGraphicObjects() != null)
         {
           MappingSet mappingsToDraw = part.getMapping();
-          if (this.getMaterial() == null || mappingsToDraw == null || mappingsToDraw.isEmpty())
+          if (VisicutModel.getInstance().getMaterial() == null || mappingsToDraw == null || mappingsToDraw.isEmpty())
           {//Just draw the original Image
             mappingsToDraw = new MappingSet();
             mappingsToDraw.add(new Mapping(new FilterSet(), null));
@@ -474,7 +460,7 @@ public class PreviewPanel extends ZoomablePanel
           boolean somethingMatched = false;
           for (Mapping m : mappingsToDraw)
           {//Render Original Image
-            if (m.getProfile() == null || this.fastPreview)
+            if (m.getProfile() == null || (this.fastPreview && part.equals(VisicutModel.getInstance().getSelectedPart())))
             {
               somethingMatched = this.renderOriginalImage(gg, m, part);
             }
@@ -491,14 +477,14 @@ public class PreviewPanel extends ZoomablePanel
                 {
                   synchronized (renderBuffer)
                   {
-                    ImageProcessingThread procThread = this.renderBuffer.get(m);
+                    ImageProcessingThread procThread = renderBuffer.get(m);
                     if (procThread == null || !procThread.isFinished() || Math.abs(bbInMm.getWidth()-procThread.getBoundingBoxInMm().getWidth()) > 0.01 || Math.abs(bbInMm.getHeight()-procThread.getBoundingBoxInMm().getHeight()) > 0.01)
                     {//Image not rendered or Size differs
                       if (!renderBuffer.containsKey(m))
                       {//image not yet scheduled for rendering
                         logger.log(Level.FINE, "Starting ImageProcessing Thread for {0}", m);
                         procThread = new ImageProcessingThread(current, p);
-                        this.renderBuffer.put(m, procThread);
+                        renderBuffer.put(m, procThread);
                         procThread.start();//start processing thread
                       }
                       else if (bbInMm.getWidth() != procThread.getBoundingBoxInMm().getWidth() || bbInMm.getHeight() != procThread.getBoundingBoxInMm().getHeight())
@@ -510,7 +496,7 @@ public class PreviewPanel extends ZoomablePanel
                         }
                         logger.log(Level.FINE, "Starting ImageProcessingThread for{0}", m);
                         procThread = new ImageProcessingThread(current, p);
-                        this.renderBuffer.put(m, procThread);
+                        renderBuffer.put(m, procThread);
                         procThread.start();//start processing thread
                       }
                       this.renderOriginalImage(gg, m, part);
@@ -536,7 +522,7 @@ public class PreviewPanel extends ZoomablePanel
                 }
                 else if (p instanceof VectorProfile)
                 {
-                  p.renderPreview(gg, current, this.material, this.getMmToPxTransform());
+                  p.renderPreview(gg, current, VisicutModel.getInstance().getMaterial(), this.getMmToPxTransform());
                 }
               }
               else

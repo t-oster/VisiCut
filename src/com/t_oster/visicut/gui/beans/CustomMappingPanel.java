@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.MissingResourceException;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -185,39 +184,69 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
    * if it is completely representable.
    * Otherwise the content of the Panel is not modified
    */
+  private boolean suppressMappingUpdate = false;
   public boolean representMapping(MappingSet ms)
   {
-    List<Entry> result = new LinkedList<Entry>();
-    for (Mapping m : ms)
+    if (ms == null)
     {
-      Entry e = new Entry();
-      e.enabled = true;
-      e.filterSet = m.getFilterSet();
-      if (!this.filterSetEditor.canRepresent(e.filterSet))
-      {
-        return false;
-      }
-      e.profile = m.getProfile();
-      result.add(e);
+      this.generateDefaultEntries();
     }
-    this.entries.clear();
-    this.entries.addAll(result);
-    this.model.fireTableDataChanged();
+    else
+    {
+      List<Entry> result = new LinkedList<Entry>();
+      for (Mapping m : ms)
+      {
+        Entry e = new Entry();
+        e.enabled = true;
+        e.filterSet = m.getFilterSet();
+        if (!this.filterSetEditor.canRepresent(e.filterSet))
+        {
+          return false;
+        }
+        e.profile = m.getProfile();
+        result.add(e);
+      }
+      this.entries.clear();
+      this.entries.addAll(result);
+      //TODO: Check if endless loop
+      suppressMappingUpdate = true;
+      this.model.fireTableDataChanged();
+      suppressMappingUpdate = false;
+    }
     return true;
   }
 
   public void propertyChange(PropertyChangeEvent pce)
   {
-    if (pce.getSource() == ProfileManager.getInstance())
+    if (pce.getSource().equals(ProfileManager.getInstance()))
     {
       this.refreshProfilesEditor();
+    }
+    if (pce.getSource().equals(VisicutModel.getInstance()))
+    {
+      if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName()))
+      {
+        if (VisicutModel.getInstance().getSelectedPart() == null)
+        {
+          this.setVisible(false);
+        }
+        else
+        {
+          this.representMapping(VisicutModel.getInstance().getSelectedPart().getMapping());
+          this.setVisible(true);
+        }
+      }
     }
   }
 
   public void tableChanged(TableModelEvent tme)
   {
-    this.refreshProfilesEditor(); // generate necessary new temporary copies
-    VisicutModel.getInstance().getSelectedPart().setMapping(this.getResultingMappingSet());
+    if (!suppressMappingUpdate)
+    {
+      this.refreshProfilesEditor(); // generate necessary new temporary copies
+      VisicutModel.getInstance().getSelectedPart().setMapping(this.getResultingMappingSet());
+      VisicutModel.getInstance().firePartUpdated();
+    }
   }
 
   class Entry
@@ -242,6 +271,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     this.setMoveButtonsVisible(true);
     this.setSaveButtonVisible(true);
     ProfileManager.getInstance().addPropertyChangeListener(this);
+    VisicutModel.getInstance().addPropertyChangeListener(this);
     model.addTableModelListener(this);
   }
 

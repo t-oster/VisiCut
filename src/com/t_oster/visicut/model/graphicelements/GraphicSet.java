@@ -132,17 +132,20 @@ public class GraphicSet extends LinkedList<GraphicObject>
       for (GraphicObject o : this)
       {
         Rectangle2D current = o.getBoundingBox();
-        if (this.transform != null)
+        if (current != null)
         {
-          current = Helper.transform(current, this.transform);
-        }
-        if (boundingBoxCache == null)
-        {
-          boundingBoxCache = current;
-        }
-        else
-        {
-          Rectangle2D.union(boundingBoxCache, current, boundingBoxCache);
+          if (this.transform != null)
+          {
+            current = Helper.transform(current, this.transform);
+          }
+          if (boundingBoxCache == null)
+          {
+            boundingBoxCache = current;
+          }
+          else
+          {
+            Rectangle2D.union(boundingBoxCache, current, boundingBoxCache);
+          }
         }
       }
       if (boundingBoxCache == null)

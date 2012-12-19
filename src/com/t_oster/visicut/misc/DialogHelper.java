@@ -19,6 +19,7 @@
 package com.t_oster.visicut.misc;
 
 import java.awt.Component;
+import java.util.List;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.swing.JOptionPane;
@@ -59,6 +60,16 @@ public class DialogHelper
     return JOptionPane.showConfirmDialog(parent, text, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION;
   }
 
+  public void showWaringnMessage(List<String> text)
+  {
+    String txt = "";
+    for(String s : text)
+    {
+      txt += s + "\n";
+    }
+    this.showWarningMessage(txt);
+  }
+  
   public void showWarningMessage(String text)
   {
     JOptionPane.showMessageDialog(parent, text, title, JOptionPane.WARNING_MESSAGE);

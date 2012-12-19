@@ -127,7 +127,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     cur.preConcatenate(flipX);
     getSelectedSet().setTransform(cur);
     previewPanel.setEditRectangle(null);
-    previewPanel.ClearCache();
+    previewPanel.clearCache(VisicutModel.getInstance().getSelectedPart());
     previewPanel.repaint();
   }
 

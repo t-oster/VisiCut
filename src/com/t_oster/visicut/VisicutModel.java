@@ -575,6 +575,10 @@ public class VisicutModel
 
     for (PlfPart p : this.getPlfFile())
     {
+      if (p.getMapping() == null)
+      {
+        continue;
+      }
       for (Mapping m : p.getMapping())
       {
         GraphicSet set = m.getFilterSet().getMatchingObjects(p.getGraphicObjects());
@@ -705,7 +709,9 @@ public class VisicutModel
   {
     if (this.selectedPart != null)
     {
+      AffineTransform tr = this.selectedPart.getGraphicObjects().getTransform();
       this.selectedPart.setGraphicObjects(this.loadSetFromFile(this.selectedPart.getSourceFile(), warnings));
+      this.selectedPart.getGraphicObjects().setTransform(tr);
       this.propertyChangeSupport.firePropertyChange(PROP_PLF_FILE_CHANGED, null, plfFile);
     }
   }
@@ -718,5 +724,12 @@ public class VisicutModel
       this.setSelectedPart(null);
       this.propertyChangeSupport.firePropertyChange(PROP_PLF_FILE_CHANGED, null, plfFile);
     }
+  }
+  
+  public static final String PROP_SELECTED_PART_CHANGED = "Selected part modified";
+
+  public void firePartUpdated()
+  {
+    this.propertyChangeSupport.firePropertyChange(PROP_SELECTED_PART_CHANGED, null, plfFile);
   }
 }

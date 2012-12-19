@@ -85,20 +85,6 @@
                 <Property name="name" type="java.lang.String" value="jmExamples" noResource="true"/>
               </Properties>
             </Menu>
-            <MenuItem class="javax.swing.JMenuItem" name="reloadMenuItem">
-              <Properties>
-                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                  <KeyStroke key="Ctrl+R"/>
-                </Property>
-                <Property name="text" type="java.lang.String" resourceKey="reloadMenuItem.text"/>
-                <Property name="toolTipText" type="java.lang.String" resourceKey="reloadMenuItem.toolTipText"/>
-                <Property name="enabled" type="boolean" value="false"/>
-                <Property name="name" type="java.lang.String" value="reloadMenuItem" noResource="true"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="reloadMenuItemActionPerformed"/>
-              </Events>
-            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="saveMenuItem">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
@@ -106,7 +92,6 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="115"/>
                 <Property name="text" type="java.lang.String" resourceKey="saveMenuItem.text"/>
-                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="name" type="java.lang.String" value="saveMenuItem" noResource="true"/>
               </Properties>
               <Events>
@@ -152,6 +137,20 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="calibrateCameraMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="reloadMenuItem">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Ctrl+R"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="reloadMenuItem.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="reloadMenuItem.toolTipText"/>
+                <Property name="enabled" type="boolean" value="false"/>
+                <Property name="name" type="java.lang.String" value="reloadMenuItem" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="reloadMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="executeJobMenuItem">
@@ -400,7 +399,7 @@
                           <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="619" max="32767" attributes="0"/>
+                      <Component id="jScrollPane2" pref="625" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -503,7 +502,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="mappingTabbedPane" pref="347" max="32767" attributes="0"/>
+                  <Component id="mappingTabbedPane" pref="353" max="32767" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="editLaserSettingsButton" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -615,7 +614,7 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="customMappingPanel2" alignment="0" pref="320" max="32767" attributes="0"/>
+                      <Component id="customMappingPanel2" alignment="0" pref="326" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -647,7 +646,7 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="320" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="326" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -864,18 +863,6 @@
           <Properties>
             <Property name="name" type="java.lang.String" value="previewPanel" noResource="true"/>
           </Properties>
-          <BindingProperties>
-            <BindingProperty name="backgroundImage" source="visicutModel1" sourcePath="${backgroundImage}" target="previewPanel" targetPath="backgroundImage" updateStrategy="1" immediately="false">
-              <Property name="name" type="java.lang.String" value="BackImageFromModel"/>
-            </BindingProperty>
-            <BindingProperty name="graphicObjects" source="visicutModel1" sourcePath="${graphicObjects}" target="previewPanel" targetPath="graphicObjects" updateStrategy="1" immediately="false">
-              <Property name="name" type="java.lang.String" value="ModelToPreviewObjects"/>
-            </BindingProperty>
-            <BindingProperty name="mappings" source="visicutModel1" sourcePath="${mappings}" target="previewPanel" targetPath="mappings" updateStrategy="1" immediately="false">
-              <Property name="name" type="java.lang.String" value="MappingsFromModelToPreviewPanel"/>
-            </BindingProperty>
-            <BindingProperty name="material" source="visicutModel1" sourcePath="${material}" target="previewPanel" targetPath="material" updateStrategy="0" immediately="false"/>
-          </BindingProperties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler ppMouseHandler = new com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler(this.previewPanel);"/>
           </AuxValues>

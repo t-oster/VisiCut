@@ -403,12 +403,12 @@ public class MainView extends javax.swing.JFrame
     openMenuItem = new javax.swing.JMenuItem();
     recentFilesMenu = new javax.swing.JMenu();
     jmExamples = new javax.swing.JMenu();
-    reloadMenuItem = new javax.swing.JMenuItem();
     saveMenuItem = new javax.swing.JMenuItem();
     saveAsMenuItem = new javax.swing.JMenuItem();
     exitMenuItem = new javax.swing.JMenuItem();
     editMenu = new javax.swing.JMenu();
     calibrateCameraMenuItem = new javax.swing.JMenuItem();
+    reloadMenuItem = new javax.swing.JMenuItem();
     executeJobMenuItem = new javax.swing.JMenuItem();
     jMenu1 = new javax.swing.JMenu();
     jmImportSettings = new javax.swing.JMenuItem();
@@ -514,7 +514,7 @@ public class MainView extends javax.swing.JFrame
     );
     customMappingPanel1Layout.setVerticalGroup(
       customMappingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
+      .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
     );
 
     mappingTabbedPane.addTab(resourceMap.getString("customMappingPanelContainer.TabConstraints.tabTitle"), customMappingPanel1); // NOI18N
@@ -529,7 +529,7 @@ public class MainView extends javax.swing.JFrame
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 320, Short.MAX_VALUE)
+      .addGap(0, 326, Short.MAX_VALUE)
     );
 
     mappingTabbedPane.addTab(resourceMap.getString("jPanel1.TabConstraints.tabTitle"), jPanel1); // NOI18N
@@ -654,7 +654,7 @@ public class MainView extends javax.swing.JFrame
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel2)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
+        .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 353, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addComponent(editLaserSettingsButton)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -753,16 +753,6 @@ public class MainView extends javax.swing.JFrame
     jScrollPane2.setWheelScrollingEnabled(false);
 
     previewPanel.setName("previewPanel"); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${backgroundImage}"), previewPanel, org.jdesktop.beansbinding.BeanProperty.create("backgroundImage"), "BackImageFromModel");
-    bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${graphicObjects}"), previewPanel, org.jdesktop.beansbinding.BeanProperty.create("graphicObjects"), "ModelToPreviewObjects");
-    bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${mappings}"), previewPanel, org.jdesktop.beansbinding.BeanProperty.create("mappings"), "MappingsFromModelToPreviewPanel");
-    bindingGroup.addBinding(binding);
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${material}"), previewPanel, org.jdesktop.beansbinding.BeanProperty.create("material"));
-    bindingGroup.addBinding(binding);
-
     com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler ppMouseHandler = new com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler(this.previewPanel);
 
     javax.swing.GroupLayout previewPanelLayout = new javax.swing.GroupLayout(previewPanel);
@@ -811,22 +801,9 @@ public class MainView extends javax.swing.JFrame
     jmExamples.setName("jmExamples"); // NOI18N
     fileMenu.add(jmExamples);
 
-    reloadMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
-    reloadMenuItem.setText(resourceMap.getString("reloadMenuItem.text")); // NOI18N
-    reloadMenuItem.setToolTipText(resourceMap.getString("reloadMenuItem.toolTipText")); // NOI18N
-    reloadMenuItem.setEnabled(false);
-    reloadMenuItem.setName("reloadMenuItem"); // NOI18N
-    reloadMenuItem.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        reloadMenuItemActionPerformed(evt);
-      }
-    });
-    fileMenu.add(reloadMenuItem);
-
     saveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
     saveMenuItem.setMnemonic('s');
     saveMenuItem.setText(resourceMap.getString("saveMenuItem.text")); // NOI18N
-    saveMenuItem.setEnabled(false);
     saveMenuItem.setName("saveMenuItem"); // NOI18N
     saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -870,6 +847,18 @@ public class MainView extends javax.swing.JFrame
       }
     });
     editMenu.add(calibrateCameraMenuItem);
+
+    reloadMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
+    reloadMenuItem.setText(resourceMap.getString("reloadMenuItem.text")); // NOI18N
+    reloadMenuItem.setToolTipText(resourceMap.getString("reloadMenuItem.toolTipText")); // NOI18N
+    reloadMenuItem.setEnabled(false);
+    reloadMenuItem.setName("reloadMenuItem"); // NOI18N
+    reloadMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        reloadMenuItemActionPerformed(evt);
+      }
+    });
+    editMenu.add(reloadMenuItem);
 
     executeJobMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
     executeJobMenuItem.setText(resourceMap.getString("executeJobMenuItem.text")); // NOI18N
@@ -1058,7 +1047,7 @@ public class MainView extends javax.swing.JFrame
                 .addComponent(bt1to1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
               .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 619, Short.MAX_VALUE)))
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 625, Short.MAX_VALUE)))
         .addContainerGap())
     );
 
@@ -1108,29 +1097,25 @@ public class MainView extends javax.swing.JFrame
     }.start();
   }
 
+  //TODO: Split to Import (SVG etc) and Load PLF
   public void loadFileReal(File file)
   {
     try
     {
       this.progressBar.setIndeterminate(true);
+      LinkedList<String> warnings = new LinkedList<String>();
       if (VisicutModel.PLFFilter.accept(file))
       {
-        LinkedList<String> warnings = new LinkedList<String>();
         this.visicutModel1.loadFromFile(this.mappingManager1, file, warnings);
-        for(String s : warnings)
-        {
-          dialog.showWarningMessage(s);
-        }
       }
       else
       {
-        LinkedList<String> warnings = new LinkedList<String>();
-        this.visicutModel1.loadGraphicFile(file, warnings);
-        for(String s : warnings)
-        {
-          dialog.showWarningMessage(s);
-        }
+        this.visicutModel1.loadGraphicFile(file, warnings);   
       }
+      if (!warnings.isEmpty())
+        {
+          dialog.showWaringnMessage(warnings);
+        }
       //if the image is too big, fit it and notify the user
       if (visicutModel1.fitObjectsIntoBed())
       {
@@ -1415,6 +1400,7 @@ private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
 private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_visicutModel1PropertyChange
   if (evt.getPropertyName().equals(VisicutModel.PROP_PLF_FILE_CHANGED))
   {
+    MainView.this.timeLabel.setText("");
     if (this.visicutModel1.getPlfFile().getFile() != null)
     {
       this.setTitle("VisiCut - " + this.visicutModel1.getPlfFile().getFile().getName());
@@ -1426,6 +1412,7 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDLASERDEVICE))
   {
+    MainView.this.timeLabel.setText("");
     this.refreshButtonStates();
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART))
@@ -1434,6 +1421,7 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_MATERIAL))
   {
+    MainView.this.timeLabel.setText("");
     this.refreshMaterialThicknessesComboBox();
     this.refreshButtonStates();
   }
@@ -1668,15 +1656,14 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         try
         {
           MainView.this.calculateTimeButton.setEnabled(false);
-          MainView.this.progressBar.setIndeterminate(true);
+          MainView.this.timeLabel.setText("...");
           MainView.this.timeLabel.setText(Helper.toHHMMSS(MainView.this.visicutModel1.estimateTime(MainView.this.getPropertyMapForCurrentJob(false,true))));
-          MainView.this.progressBar.setIndeterminate(false);
           MainView.this.calculateTimeButton.setEnabled(true);
         }
         catch (Exception ex)
         {
           dialog.showErrorMessage(ex);
-          MainView.this.progressBar.setIndeterminate(false);
+          MainView.this.timeLabel.setText("error");
           MainView.this.calculateTimeButton.setEnabled(true);
         }
       }
@@ -2175,6 +2162,10 @@ private void mappingTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {/
   {
     for (PlfPart p : this.visicutModel1.getPlfFile())
     {
+      if (p.getMapping() == null)
+      {
+        continue;
+      }
       for (Mapping m : p.getMapping())
       {
         LaserProfile lp = m.getProfile();
@@ -2210,6 +2201,10 @@ private void mappingTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {/
       Map<LaserProfile, List<LaserProperty>> usedSettings = new LinkedHashMap<LaserProfile, List<LaserProperty>>();
       for (PlfPart p : this.visicutModel1.getPlfFile())
       {
+        if (p.getMapping() == null)
+        {
+          continue;
+        }
         for (Mapping m:p.getMapping())
         {
           LaserProfile profile = m.getProfile();
