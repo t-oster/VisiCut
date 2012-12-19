@@ -143,10 +143,6 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
 
   public void keyTyped(KeyEvent key)
   {
-    if (key.getKeyCode() == KeyEvent.VK_DELETE)
-    {
-      VisicutModel.getInstance().removeSelectedPart();
-    }
   }
 
   public void keyPressed(KeyEvent ke)
@@ -170,6 +166,10 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
           diffy += 1;
           break;
       }
+      if (diffx != 0 || diffy != 0)
+      {
+        ke.consume();
+      }
       if (ke.isShiftDown())
       {
         this.previewPanel.setFastPreview(true);
@@ -181,7 +181,6 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       {
         this.moveSet(diffx, diffy);
       }
-      ke.consume();
     }
   }
 
@@ -201,6 +200,10 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     {
       this.previewPanel.setFastPreview(false);
       this.applyEditRectoToSet();
+    }
+    else if (ke.getKeyCode() == KeyEvent.VK_DELETE)
+    {
+      VisicutModel.getInstance().removeSelectedPart();
     }
   }
 
@@ -446,7 +449,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   {
     if (lastMousePosition != null)
     {
-      Point diff = new Point(evt.getPoint().x - lastMousePosition.x, evt.getPoint().y - lastMousePosition.y);
+      Point2D.Double diff = new Point2D.Double(evt.getPoint().x - lastMousePosition.x, evt.getPoint().y - lastMousePosition.y);
       try
       {
         switch (currentAction)
@@ -454,7 +457,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
           case rotatingSet:
           {
             Rectangle2D bb = getSelectedSet().getBoundingBox();
-            Point2D middle = previewPanel.getMmToPxTransform().transform(new Point.Double(bb.getCenterX(), bb.getCenterY()), null);
+            Point2D middle = previewPanel.getMmToPxTransform().transform(new Point2D.Double(bb.getCenterX(), bb.getCenterY()), null);
             double angle = Math.atan2(evt.getPoint().y-middle.getY(), evt.getPoint().x-middle.getX());
             this.rotateTo(angle);
             break;
@@ -466,14 +469,14 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
             {
               case BOTTOM_RIGHT:
               {
-                int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
+                double offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
                 getEditRect().height += (offset * getEditRect().height / getEditRect().width);
                 getEditRect().width += offset;
                 break;
               }
               case BOTTOM_LEFT:
               {
-                int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : -diff.y;
+                double offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : -diff.y;
                 getEditRect().height -= (offset * getEditRect().height / getEditRect().width);
                 getEditRect().x += offset;
                 getEditRect().width -= offset;
@@ -481,7 +484,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
               }
               case TOP_RIGHT:
               {
-                int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : -diff.y;
+                double offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : -diff.y;
                 getEditRect().y -= (offset * getEditRect().height / getEditRect().width);
                 getEditRect().height += (offset * getEditRect().height / getEditRect().width);
                 getEditRect().width += offset;
@@ -489,7 +492,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
               }
               case TOP_LEFT:
               {
-                int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
+                double offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
                 getEditRect().y += (offset * getEditRect().height / getEditRect().width);
                 getEditRect().height -= (offset * getEditRect().height / getEditRect().width);
                 getEditRect().x += offset;
@@ -605,7 +608,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       tr.concatenate(getSelectedSet().getTransform());
     }
     getSelectedSet().setTransform(tr);
-    this.previewPanel.setEditRectangle(new EditRectangle(bb));
+    this.previewPanel.setEditRectangle(new EditRectangle(getSelectedSet().getBoundingBox()));
   }
 
   public void mouseMoved(MouseEvent evt)
