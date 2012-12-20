@@ -616,7 +616,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       tr.concatenate(getSelectedSet().getTransform());
     }
     getSelectedSet().setTransform(tr);
-    this.previewPanel.setEditRectangle(new EditRectangle(bb));
+    this.previewPanel.setEditRectangle(new EditRectangle(getSelectedSet().getBoundingBox()));
   }
 
   public void mouseMoved(MouseEvent evt)
