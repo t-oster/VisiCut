@@ -457,7 +457,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   {
     if (lastMousePosition != null)
     {
-      Point diff = new Point(evt.getPoint().x - lastMousePosition.x, evt.getPoint().y - lastMousePosition.y);
+      Point2D.Double diff = new Point2D.Double(evt.getPoint().x - lastMousePosition.x, evt.getPoint().y - lastMousePosition.y);
       try
       {
         switch (currentAction)
@@ -477,14 +477,14 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
             {
               case BOTTOM_RIGHT:
               {
-                int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
+                double offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
                 getEditRect().height += (offset * getEditRect().height / getEditRect().width);
                 getEditRect().width += offset;
                 break;
               }
               case BOTTOM_LEFT:
               {
-                int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
+                double offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : -diff.y;
                 getEditRect().height -= (offset * getEditRect().height / getEditRect().width);
                 getEditRect().x += offset;
                 getEditRect().width -= offset;
@@ -492,7 +492,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
               }
               case TOP_RIGHT:
               {
-                int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : -diff.y;
+                double offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : -diff.y;
                 getEditRect().y -= (offset * getEditRect().height / getEditRect().width);
                 getEditRect().height += (offset * getEditRect().height / getEditRect().width);
                 getEditRect().width += offset;
@@ -500,7 +500,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
               }
               case TOP_LEFT:
               {
-                int offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
+                double offset = Math.abs(diff.x) > Math.abs(diff.y) ? diff.x : diff.y;
                 getEditRect().y += (offset * getEditRect().height / getEditRect().width);
                 getEditRect().height -= (offset * getEditRect().height / getEditRect().width);
                 getEditRect().x += offset;
