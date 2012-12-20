@@ -20,6 +20,7 @@ package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.gui.ImageListable;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
@@ -241,24 +242,24 @@ public abstract class LaserProfile implements ImageListable, Cloneable
     {
       return false;
     }
-    if (getClass() != obj.getClass())
+    if (!getClass().equals(obj.getClass()))
     {
       return false;
     }
     final LaserProfile other = (LaserProfile) obj;
+    if (Util.differ(this.name, other.name))
+    {
+      return false;
+    }
     if (Double.doubleToLongBits(this.DPI) != Double.doubleToLongBits(other.DPI))
     {
       return false;
     }
-    if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description))
+    if (Util.differ(this.description, other.description))
     {
       return false;
     }
-    if ((this.thumbnailPath == null) ? (other.thumbnailPath != null) : !this.thumbnailPath.equals(other.thumbnailPath))
-    {
-      return false;
-    }
-    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name))
+    if (Util.differ(this.thumbnailPath,other.thumbnailPath))
     {
       return false;
     }

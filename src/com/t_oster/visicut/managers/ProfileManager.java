@@ -19,7 +19,6 @@
 package com.t_oster.visicut.managers;
 
 import com.t_oster.liblasercut.TimeIntensiveOperation;
-import com.t_oster.liblasercut.dithering.DitheringAlgorithm;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;

@@ -198,16 +198,6 @@ public class EditRectangle extends Rectangle2D.Double
     return null;
   }
   
-  public double getRotationAngleInDegree()
-  {
-    double w = -(this.rotationAngle * 180 / Math.PI);
-    if (w < 0)
-    {
-      w+=360;
-    }
-    return w;
-  }
-  
   /**
    * Renders the Edit Rectangle on the given Graphics2D.
    * The Rectangle coordinates are transformed according
@@ -236,7 +226,7 @@ public class EditRectangle extends Rectangle2D.Double
       gg.drawOval((int) (center.x + Math.cos(rotationAngle) * diagonal/2 - buttonSize/2), (int) (center.y + Math.sin(rotationAngle) * diagonal/2 -buttonSize/2), buttonSize, buttonSize);
       //draw the angle
       gg.setColor(textColor);
-      int w = (int) Math.round(10*this.getRotationAngleInDegree());
+      int w = (int) Math.round(10*Helper.angle2degree(this.rotationAngle));
       String txt = (w/10)+","+(w%10)+"°";
       w = gg.getFontMetrics().stringWidth(txt);
       int ascend = gg.getFontMetrics().getAscent();

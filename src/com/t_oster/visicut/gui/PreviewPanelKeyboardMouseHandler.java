@@ -54,7 +54,7 @@ import javax.swing.SwingUtilities;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMotionListener, KeyListener
+public class PreviewPanelKeyboardMouseHandler extends EditRectangleController implements MouseListener, MouseMotionListener, KeyListener
 {
 
   private PreviewPanel previewPanel;
@@ -134,11 +134,6 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   private EditRectangle getEditRect()
   {
     return this.previewPanel.getEditRectangle();
-  }
-
-  private GraphicSet getSelectedSet()
-  {
-    return VisicutModel.getInstance().getSelectedPart() == null ? null : VisicutModel.getInstance().getSelectedPart().getGraphicObjects();
   }
 
   public void keyTyped(KeyEvent key)
@@ -235,12 +230,12 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
         {
           if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.ANGLE).contains(me.getPoint()))
           {
-            Double a = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("ANGLE"), this.getEditRect().getRotationAngleInDegree());
+            Double a = dialogHelper.askDouble(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("ANGLE"), Helper.angle2degree(this.getEditRect().getRotationAngle()));
             if (a == null)
             {
               return true;
             }
-            this.rotateTo(-Math.PI*a/180d);
+            this.rotateTo(Helper.degree2angle(a));
             return true;
           }
         }
@@ -409,14 +404,20 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
 
   public void mouseReleased(MouseEvent evt)
   {
-    if (currentAction == MouseAction.resizingSet || currentAction == MouseAction.rotatingSet)
+    if (currentAction == MouseAction.rotatingSet)
     {
       this.previewPanel.setFastPreview(false);
-      this.previewPanel.repaint();
+      VisicutModel.getInstance().firePartUpdated();
     }
-    if (currentAction == MouseAction.resizingSet)
+    else if (currentAction == MouseAction.resizingSet)
     {
+      this.previewPanel.setFastPreview(false);
       this.applyEditRectoToSet();
+      VisicutModel.getInstance().firePartUpdated();
+    }
+    else if (currentAction == MouseAction.movingSet)
+    {
+      VisicutModel.getInstance().firePartUpdated();
     }
     lastMousePosition = evt.getPoint();
   }
@@ -431,17 +432,8 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
 
   private void rotateTo(double angle)
   {
-    Rectangle2D bb = getSelectedSet().getBoundingBox();
-    //move back
-    AffineTransform tr = AffineTransform.getTranslateInstance(bb.getCenterX(), bb.getCenterY());
-    //rotate
-    tr.concatenate(AffineTransform.getRotateInstance(angle-getEditRect().getRotationAngle()));
-    //center
-    tr.concatenate(AffineTransform.getTranslateInstance(-bb.getCenterX(), -bb.getCenterY()));
-    //apply current
-    tr.concatenate(getSelectedSet().transform);
-    getSelectedSet().setTransform(tr);
-    getEditRect().setRotationAngle(Helper.getRotationAngle(tr));
+    getSelectedSet().rotateAbsolute(angle);
+    getEditRect().setRotationAngle(angle);
     this.previewPanel.repaint();
   }
 

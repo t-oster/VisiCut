@@ -22,7 +22,6 @@ import com.t_oster.visicut.gui.ImageListable;
 import java.awt.Color;
 import java.text.Collator;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  *

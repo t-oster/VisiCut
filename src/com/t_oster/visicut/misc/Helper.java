@@ -46,6 +46,21 @@ import java.util.logging.Logger;
 public class Helper
 {
 
+  public static double angle2degree(double angle)
+  {
+    double w = -(angle * 180d / Math.PI);
+    if (w < 0)
+    {
+      w+=360;
+    }
+    return w;
+  }
+  
+  public static double degree2angle(double degree)
+  {
+    return -Math.PI*degree/180d;
+  }
+  
   /**
   * Compute the rotation angle of an affine transformation.
   * Counter-clockwise rotation is considered positive.

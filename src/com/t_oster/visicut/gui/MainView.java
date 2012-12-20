@@ -35,6 +35,7 @@ import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.CreateNewMaterialDialog;
 import com.t_oster.visicut.gui.beans.CreateNewThicknessDialog;
+import com.t_oster.visicut.gui.beans.PositionPanel;
 import com.t_oster.visicut.gui.beans.Ruler;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
@@ -45,7 +46,6 @@ import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
-import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
@@ -53,7 +53,6 @@ import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
-import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.FileDialog;
@@ -62,18 +61,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -88,8 +83,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.JViewport;
 import javax.swing.filechooser.FileFilter;
 import org.jdesktop.application.Action;
@@ -108,7 +103,6 @@ public class MainView extends javax.swing.JFrame
     return instance;
   }
 
-  private boolean initComplete = false;
   final protected DialogHelper dialog = new DialogHelper(this, this.getTitle());
 
   public MainView(File loadedFile)
@@ -247,7 +241,6 @@ public class MainView extends javax.swing.JFrame
     }
     this.refreshExampleMenu();
     this.cbEditBeforeExecute.setSelected(PreferencesManager.getInstance().getPreferences().isEditSettingsBeforeExecuting());
-    initComplete = true;
     //initialize states coorectly
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDLASERDEVICE, null, null));
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDPART, null, null));
@@ -260,6 +253,7 @@ public class MainView extends javax.swing.JFrame
       this.validate();
       this.setLocation(lastBounds.x, lastBounds.y);
     }
+    new PositionPanelController(positionPanel, visicutModel1);
   }
 
   private ActionListener exampleItemClicked = new ActionListener(){
@@ -380,7 +374,7 @@ public class MainView extends javax.swing.JFrame
     mappingTabbedPane = new javax.swing.JTabbedPane();
     customMappingPanel1 = new javax.swing.JPanel();
     customMappingPanel2 = new com.t_oster.visicut.gui.beans.CustomMappingPanel();
-    jPanel1 = new javax.swing.JPanel();
+    positionPanel = new com.t_oster.visicut.gui.beans.PositionPanel();
     btAddMaterial = new javax.swing.JButton();
     cbMaterialThickness = new javax.swing.JComboBox();
     btAddMaterialThickness = new javax.swing.JButton();
@@ -510,25 +504,13 @@ public class MainView extends javax.swing.JFrame
     );
     customMappingPanel1Layout.setVerticalGroup(
       customMappingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
+      .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
     );
 
     mappingTabbedPane.addTab(resourceMap.getString("customMappingPanelContainer.TabConstraints.tabTitle"), customMappingPanel1); // NOI18N
 
-    jPanel1.setName("jPanel1"); // NOI18N
-
-    javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-    jPanel1.setLayout(jPanel1Layout);
-    jPanel1Layout.setHorizontalGroup(
-      jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 404, Short.MAX_VALUE)
-    );
-    jPanel1Layout.setVerticalGroup(
-      jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 329, Short.MAX_VALUE)
-    );
-
-    mappingTabbedPane.addTab(resourceMap.getString("jPanel1.TabConstraints.tabTitle"), jPanel1); // NOI18N
+    positionPanel.setName("positionPanel"); // NOI18N
+    mappingTabbedPane.addTab(resourceMap.getString("positionPanel.TabConstraints.tabTitle"), positionPanel); // NOI18N
 
     btAddMaterial.setText(resourceMap.getString("btAddMaterial.text")); // NOI18N
     btAddMaterial.setName("btAddMaterial"); // NOI18N
@@ -650,7 +632,7 @@ public class MainView extends javax.swing.JFrame
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel2)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 356, Short.MAX_VALUE)
+        .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addComponent(editLaserSettingsButton)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -662,7 +644,7 @@ public class MainView extends javax.swing.JFrame
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(executeJobButton)
           .addComponent(cbEditBeforeExecute))
-        .addGap(12, 12, 12))
+        .addGap(15, 15, 15))
     );
 
     captureImageButton.setIcon(resourceMap.getIcon("captureImageButton.icon")); // NOI18N
@@ -1052,7 +1034,7 @@ public class MainView extends javax.swing.JFrame
                 .addComponent(bt1to1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
               .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 628, Short.MAX_VALUE)))
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 631, Short.MAX_VALUE)))
         .addContainerGap())
     );
 
@@ -1425,6 +1407,8 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
   else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART))
   {
     this.reloadMenuItem.setEnabled(this.visicutModel1.getSelectedPart() != null);
+    
+    this.mappingTabbedPane.setVisible(this.visicutModel1.getSelectedPart() != null);
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_MATERIAL))
   {
@@ -2106,7 +2090,6 @@ private void importMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
   private javax.swing.JLabel jLabel9;
   private javax.swing.JMenu jMenu1;
   private javax.swing.JMenuItem jMenuItem2;
-  private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JMenu jmExamples;
@@ -2125,6 +2108,7 @@ private void importMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
   private javax.swing.JMenuBar menuBar;
   private javax.swing.JMenuItem newMenuItem;
   private javax.swing.JMenuItem openMenuItem;
+  private com.t_oster.visicut.gui.beans.PositionPanel positionPanel;
   private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
   private com.t_oster.visicut.managers.MaterialManager profileManager1;
   private javax.swing.JProgressBar progressBar;

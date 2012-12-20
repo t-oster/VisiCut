@@ -226,14 +226,9 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     {
       if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName()))
       {
-        if (VisicutModel.getInstance().getSelectedPart() == null)
-        {
-          this.setVisible(false);
-        }
-        else
+        if (VisicutModel.getInstance().getSelectedPart() != null)
         {
           this.representMapping(VisicutModel.getInstance().getSelectedPart().getMapping());
-          this.setVisible(true);
         }
       }
     }
@@ -321,6 +316,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       
       // TODO reset temporary copy's propertyMap (speed,power,etc) to the property map of the original one
       // seems impossible because I can't get back to MainView from here and there is no getInstance() or something similar
+      // EDIT Don't know, what you mean. The profile's laser-properties are looseley coupeled throguh the manager.
       
 //    LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
 //    MaterialProfile material = this.visicutModel1.getMaterial();
