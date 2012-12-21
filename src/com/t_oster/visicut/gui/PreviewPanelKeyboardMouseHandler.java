@@ -25,10 +25,7 @@ import com.t_oster.visicut.gui.beans.EditRectangle.ParameterField;
 import com.t_oster.visicut.gui.beans.PreviewPanel;
 import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.Helper;
-import com.t_oster.visicut.model.LaserProfile;
-import com.t_oster.visicut.model.Raster3dProfile;
-import com.t_oster.visicut.model.RasterProfile;
-import com.t_oster.visicut.model.VectorProfile;
+import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Cursor;
 import java.awt.Point;
@@ -63,8 +60,8 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
   private PreviewPanel previewPanel;
   private DialogHelper dialogHelper;
   private JPopupMenu menu = new JPopupMenu();
-  private JMenuItem optionsmenu = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("PROFILE_OPTIONS"));
   private JMenuItem resetMenuItem = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("RESET TRANSFORMATION"));
+  private JMenuItem deleteMenuItem = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("REMOVE"));
   //TODO: i10n
   private JMenuItem flipHorizMenuItem = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("FLIP_HORIZONTALLY"));
   private JMenuItem flipVertMenuItem = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("FLIP_VERTICALLY"));
@@ -87,21 +84,13 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
 
       public void actionPerformed(ActionEvent ae)
       {
-        PreviewPanelKeyboardMouseHandler.this.getGraphicObjects().setTransform(
-          PreviewPanelKeyboardMouseHandler.this.getGraphicObjects().getBasicTransform());
-        VisicutModel.getInstance().fitMaterialIntoBed();
-        PreviewPanelKeyboardMouseHandler.this.previewPanel.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
+        PreviewPanelKeyboardMouseHandler.this.getSelectedSet().setTransform(
+          PreviewPanelKeyboardMouseHandler.this.getSelectedSet().getBasicTransform());
+        VisicutModel.getInstance().fitObjectsIntoBed();
+        PreviewPanelKeyboardMouseHandler.this.previewPanel.setEditRectangle(new EditRectangle(getSelectedSet().getBoundingBox()));
         PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
       }
     });
-    optionsmenu.addActionListener(new ActionListener()
-    {
-      public void actionPerformed(ActionEvent ae)
-      {
-        MainView.getInstance().editCurrentProfile();
-      }
-    });
-    menu.add(optionsmenu);
     flipHorizMenuItem.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae)
       {
@@ -116,21 +105,29 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       }
     });
     menu.add(flipVertMenuItem);
+    deleteMenuItem.addActionListener(new ActionListener(){
+
+      public void actionPerformed(ActionEvent ae)
+      {
+        VisicutModel.getInstance().removeSelectedPart();
+      }
+    });
+    menu.add(deleteMenuItem);
   }
 
   private void flip(boolean horizontal)
   {
-    Rectangle2D bb = previewPanel.getGraphicObjects().getBoundingBox();
+    Rectangle2D bb = getSelectedSet().getBoundingBox();
     double mx = bb.getX()+bb.getWidth()/2;
     double my = bb.getY()+bb.getHeight()/2;
     AffineTransform flipX = AffineTransform.getTranslateInstance(mx, my);
     flipX.scale(horizontal ? -1 : 1, horizontal ? 1 : -1);
     flipX.translate(-mx, -my);
-    AffineTransform cur = previewPanel.getGraphicObjects().getTransform();
+    AffineTransform cur = getSelectedSet().getTransform();
     cur.preConcatenate(flipX);
-    previewPanel.getGraphicObjects().setTransform(cur);
+    getSelectedSet().setTransform(cur);
     previewPanel.setEditRectangle(null);
-    previewPanel.ClearCache();
+    previewPanel.clearCache(VisicutModel.getInstance().getSelectedPart());
     previewPanel.repaint();
   }
 
@@ -139,20 +136,9 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     return this.previewPanel.getEditRectangle();
   }
 
-  private GraphicSet getGraphicObjects()
-  {
-    return this.previewPanel.getGraphicObjects();
-  }
-
-  /**
-   * For now this just returns all objects, but later maybe multiple input files
-   * are supported and this should only return the currently selected one
-   *
-   * @return
-   */
   private GraphicSet getSelectedSet()
   {
-    return this.previewPanel.getGraphicObjects();
+    return VisicutModel.getInstance().getSelectedPart() == null ? null : VisicutModel.getInstance().getSelectedPart().getGraphicObjects();
   }
 
   public void keyTyped(KeyEvent key)
@@ -180,6 +166,10 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
           diffy += 1;
           break;
       }
+      if (diffx != 0 || diffy != 0)
+      {
+        ke.consume();
+      }
       if (ke.isShiftDown())
       {
         this.previewPanel.setFastPreview(true);
@@ -191,7 +181,6 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
       {
         this.moveSet(diffx, diffy);
       }
-      ke.consume();
     }
   }
 
@@ -211,6 +200,10 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     {
       this.previewPanel.setFastPreview(false);
       this.applyEditRectoToSet();
+    }
+    else if (ke.getKeyCode() == KeyEvent.VK_DELETE)
+    {
+      VisicutModel.getInstance().removeSelectedPart();
     }
   }
 
@@ -335,52 +328,51 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     }
     if (me.getButton() == MouseEvent.BUTTON1)
     {
-      boolean onGraphic = false;
-      if (getGraphicObjects() != null && getGraphicObjects().getBoundingBox() != null)
+      PlfPart onGraphic = null;
+      for(PlfPart p : VisicutModel.getInstance().getPlfFile())
       {
-        Rectangle2D bb = getGraphicObjects().getBoundingBox();
-        Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
-        onGraphic = e.contains(me.getPoint());
+        if (p.getGraphicObjects() != null && p.getGraphicObjects().getBoundingBox() != null)
+        {
+          Rectangle2D bb = p.getGraphicObjects().getBoundingBox();
+          Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
+          if (e.contains(me.getPoint()))
+          {
+            onGraphic = p;
+            break;
+          }
+        }
       }
-      if (onGraphic)
+      if (onGraphic != null)
       {//clicked on the graphic
-        if (getEditRect() != null)
+        if (getEditRect() != null && onGraphic.equals(VisicutModel.getInstance().getSelectedPart()))
         {//Already selected => toggle rotate/scale mode
           if (getEditRect().isRotateMode())
           {//we need to resize the rectangle after rotation
-            this.previewPanel.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
+            this.previewPanel.setEditRectangle(new EditRectangle(getSelectedSet().getBoundingBox()));
           }
           else
           {
             getEditRect().setRotateMode(true);
-            getEditRect().setRotationAngle(Helper.getRotationAngle(this.previewPanel.getGraphicObjects().getTransform()));
+            getEditRect().setRotationAngle(Helper.getRotationAngle(VisicutModel.getInstance().getSelectedPart().getGraphicObjects().getTransform()));
             this.previewPanel.repaint();
           }
         }
         else
         {//not yet select => select in scale mode
-          this.previewPanel.setEditRectangle(new EditRectangle(getGraphicObjects().getBoundingBox()));
+          VisicutModel.getInstance().setSelectedPart(onGraphic);
         }
       }
       else
       {//clicked next to graphic => clear selection
-        this.previewPanel.setEditRectangle(null);
+        VisicutModel.getInstance().setSelectedPart(null);
       }
     }
     else if (getEditRect() != null && me.getButton() == MouseEvent.BUTTON3)
     {
-      Rectangle2D bb = getGraphicObjects().getBoundingBox();
+      Rectangle2D bb = getSelectedSet().getBoundingBox();
       Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
       if (e.contains(me.getPoint()))
       {
-        try
-        {
-          this.optionsmenu.setVisible(VisicutModel.getInstance().getMappings().size() == 1);
-        }
-        catch (NullPointerException ex)
-        {
-          this.optionsmenu.setVisible(false);
-        }
         this.menu.show(this.previewPanel, me.getX(), me.getY());
       }
     }
@@ -439,7 +431,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
 
   private void rotateTo(double angle)
   {
-    Rectangle2D bb = getGraphicObjects().getBoundingBox();
+    Rectangle2D bb = getSelectedSet().getBoundingBox();
     //move back
     AffineTransform tr = AffineTransform.getTranslateInstance(bb.getCenterX(), bb.getCenterY());
     //rotate
@@ -447,8 +439,8 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     //center
     tr.concatenate(AffineTransform.getTranslateInstance(-bb.getCenterX(), -bb.getCenterY()));
     //apply current
-    tr.concatenate(getGraphicObjects().transform);
-    getGraphicObjects().setTransform(tr);
+    tr.concatenate(getSelectedSet().transform);
+    getSelectedSet().setTransform(tr);
     getEditRect().setRotationAngle(Helper.getRotationAngle(tr));
     this.previewPanel.repaint();
   }
@@ -464,8 +456,8 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
         {
           case rotatingSet:
           {
-            Rectangle2D bb = getGraphicObjects().getBoundingBox();
-            Point2D middle = previewPanel.getMmToPxTransform().transform(new Point.Double(bb.getCenterX(), bb.getCenterY()), null);
+            Rectangle2D bb = getSelectedSet().getBoundingBox();
+            Point2D middle = previewPanel.getMmToPxTransform().transform(new Point2D.Double(bb.getCenterX(), bb.getCenterY()), null);
             double angle = Math.atan2(evt.getPoint().y-middle.getY(), evt.getPoint().x-middle.getX());
             this.rotateTo(angle);
             break;
@@ -629,7 +621,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
     int cursor = Cursor.DEFAULT_CURSOR;
     cursorcheck:
     {
-      if (this.previewPanel.getGraphicObjects() != null)
+      if (this.getSelectedSet() != null)
       {
         if (getEditRect() != null)
         {
@@ -691,7 +683,7 @@ public class PreviewPanelKeyboardMouseHandler implements MouseListener, MouseMot
             }
           }
         }
-        Rectangle2D bb = this.previewPanel.getGraphicObjects().getBoundingBox();
+        Rectangle2D bb = this.getSelectedSet().getBoundingBox();
         if (bb != null)
         {
           Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
