@@ -49,7 +49,8 @@ public class PositionPanelController extends EditRectangleController implements 
     else if (pce.getSource().equals(vm))
     {
       if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName())
-        ||VisicutModel.PROP_PLF_FILE_CHANGED.equals(pce.getPropertyName()))
+        ||VisicutModel.PROP_PLF_FILE_CHANGED.equals(pce.getPropertyName())
+        ||VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()))
       {
         if (getSelectedSet() != null)
         {

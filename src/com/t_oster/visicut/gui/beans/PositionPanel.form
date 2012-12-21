@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+<Form version="1.5" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <NonVisualComponents>
     <Component class="javax.swing.ButtonGroup" name="edgeRadioGroup">
     </Component>
@@ -21,19 +21,19 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
-              <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
                   <Group type="102" attributes="0">
-                      <EmptySpace min="-2" pref="44" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="lbY1" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="lbX1" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="lbY2" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="tfWidth" alignment="1" max="32767" attributes="0"/>
-                          <Component id="tfHeight" alignment="1" max="32767" attributes="0"/>
-                          <Component id="tfAngle" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfWidth" pref="153" max="32767" attributes="0"/>
+                          <Component id="tfHeight" alignment="0" max="32767" attributes="0"/>
+                          <Component id="tfAngle" alignment="0" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -44,12 +44,22 @@
                           <Component id="label5" alignment="1" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="cbLengthUnit" max="32767" attributes="0"/>
+                              <Component id="cbAngleUnit" pref="152" max="32767" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <Component id="jPanel1" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace pref="35" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -57,8 +67,18 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="cbLengthUnit" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="cbAngleUnit" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace pref="11" max="32767" attributes="0"/>
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="lbX1" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="tfWidth" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -76,7 +96,7 @@
                   <Component id="tfAngle" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="label5" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -103,14 +123,14 @@
       </Properties>
     </Component>
     <Component class="java.awt.Label" name="label2">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="mm"/>
-      </Properties>
+      <BindingProperties>
+        <BindingProperty name="text" source="cbLengthUnit" sourcePath="${selectedItem}" target="label2" targetPath="text" updateStrategy="0" immediately="false"/>
+      </BindingProperties>
     </Component>
     <Component class="java.awt.Label" name="label3">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="mm"/>
-      </Properties>
+      <BindingProperties>
+        <BindingProperty name="text" source="cbLengthUnit" sourcePath="${selectedItem}" target="label3" targetPath="text" updateStrategy="0" immediately="false"/>
+      </BindingProperties>
     </Component>
     <Component class="java.awt.TextField" name="tfAngle">
       <Properties>
@@ -123,9 +143,9 @@
       </Properties>
     </Component>
     <Component class="java.awt.Label" name="label5">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="deg"/>
-      </Properties>
+      <BindingProperties>
+        <BindingProperty name="text" source="cbAngleUnit" sourcePath="${selectedItem}" target="label5" targetPath="text" updateStrategy="0" immediately="false"/>
+      </BindingProperties>
     </Component>
     <Container class="javax.swing.JPanel" name="jPanel1">
       <Properties>
@@ -168,7 +188,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <Component id="ancorPointPanel1" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="0" pref="17" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="19" max="32767" attributes="0"/>
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
@@ -215,16 +235,53 @@
           </Events>
         </Component>
         <Component class="java.awt.Label" name="label1">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="mm"/>
-          </Properties>
+          <BindingProperties>
+            <BindingProperty name="text" source="cbLengthUnit" sourcePath="${selectedItem}" target="label1" targetPath="text" updateStrategy="0" immediately="false"/>
+          </BindingProperties>
         </Component>
         <Component class="java.awt.Label" name="label4">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="mm"/>
-          </Properties>
+          <BindingProperties>
+            <BindingProperty name="text" source="cbLengthUnit" sourcePath="${selectedItem}" target="label4" targetPath="text" updateStrategy="0" immediately="false"/>
+          </BindingProperties>
         </Component>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JComboBox" name="cbLengthUnit">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="3">
+            <StringItem index="0" value="mm"/>
+            <StringItem index="1" value="cm"/>
+            <StringItem index="2" value="in"/>
+          </StringArray>
+        </Property>
+      </Properties>
+      <BindingProperties>
+        <BindingProperty name="selectedItem" source="Form" sourcePath="${lengthUnit}" target="cbLengthUnit" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
+      </BindingProperties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbAngleUnit">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="2">
+            <StringItem index="0" value="deg"/>
+            <StringItem index="1" value="rad"/>
+          </StringArray>
+        </Property>
+      </Properties>
+      <BindingProperties>
+        <BindingProperty name="selectedItem" source="Form" sourcePath="${angleUnit}" target="cbAngleUnit" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
+      </BindingProperties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Length Unit"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel2">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Angle Unit"/>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>
