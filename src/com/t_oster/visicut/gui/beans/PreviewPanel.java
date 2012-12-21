@@ -292,8 +292,6 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     this.repaint();
   }
 
-  protected RenderedImage backgroundImage = null;
-
   public void clearCache(PlfPart p)
   {
     synchronized(this.renderBuffers)
@@ -412,6 +410,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       gg.setClip(r.x, r.y, r.width, r.height);
       gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+      RenderedImage backgroundImage = VisicutModel.getInstance().getBackgroundImage();
       if (backgroundImage != null && showBackgroundImage && VisicutModel.getInstance().getSelectedLaserDevice() != null)
       {
         AffineTransform img2px = new AffineTransform(this.getMmToPxTransform());
@@ -425,7 +424,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
           new Rectangle2D.Double(0, 0, this.bedWidth, this.bedHeight),
           this.getMmToPxTransform()
           ));
-      if (this.backgroundImage != null && showBackgroundImage)
+      if (backgroundImage != null && showBackgroundImage)
       {
         gg.setColor(Color.BLACK);
         gg.drawRect(box.x, box.y, box.width, box.height);
