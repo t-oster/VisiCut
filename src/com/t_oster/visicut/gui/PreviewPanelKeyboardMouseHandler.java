@@ -407,17 +407,18 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     if (currentAction == MouseAction.rotatingSet)
     {
       this.previewPanel.setFastPreview(false);
-      VisicutModel.getInstance().firePartUpdated();
+      VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
     }
     else if (currentAction == MouseAction.resizingSet)
     {
       this.previewPanel.setFastPreview(false);
       this.applyEditRectoToSet();
-      VisicutModel.getInstance().firePartUpdated();
+      VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
     }
     else if (currentAction == MouseAction.movingSet)
     {
-      VisicutModel.getInstance().firePartUpdated();
+      previewPanel.ignoreNextUpdate();
+      VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
     }
     lastMousePosition = evt.getPoint();
   }

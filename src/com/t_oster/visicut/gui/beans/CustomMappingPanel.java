@@ -240,7 +240,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     {
       this.refreshProfilesEditor(); // generate necessary new temporary copies
       VisicutModel.getInstance().getSelectedPart().setMapping(this.getResultingMappingSet());
-      VisicutModel.getInstance().firePartUpdated();
+      VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
     }
   }
 
@@ -291,7 +291,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
         profileNamesList.add(lp.getName());
       }
     }
-    
+
     // add one unused temporary copy of each stored profile to the list of available profiles
     for (LaserProfile lp: ProfileManager.getInstance().getAll()) {
       if (lp.isTemporaryCopy()) {
@@ -302,7 +302,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       LaserProfile temporaryCopy=lp.clone();
       // TODO make sure that isTemporaryCopy is considered in .equals() (and hashCode())
       temporaryCopy.setTemporaryCopy(true);
-      
+
       // find the next free temp123_profilename name
       String newName="";
       int numberOfTempCopies=0;
@@ -310,14 +310,14 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
         numberOfTempCopies++;
         newName="temp"+numberOfTempCopies+"_"+lp.getName();
       } while (profileNamesList.contains(newName));
-      
+
       temporaryCopy.setName(newName);
       profiles.addItem(temporaryCopy);
-      
+
       // TODO reset temporary copy's propertyMap (speed,power,etc) to the property map of the original one
       // seems impossible because I can't get back to MainView from here and there is no getInstance() or something similar
       // EDIT Don't know, what you mean. The profile's laser-properties are looseley coupeled throguh the manager.
-      
+
 //    LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
 //    MaterialProfile material = this.visicutModel1.getMaterial();
 //    float thickness = this.visicutModel1.getMaterialThickness();
@@ -327,8 +327,8 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
 //		  LaserPropertyManager.getInstance().saveLaserProperties(device, material, e.getKey(), thickness, e.getValue());
 //    }
     }
-       
-   
+
+
     this.getTable().setDefaultEditor(LaserProfile.class, new DefaultCellEditor(profiles));
   }
 

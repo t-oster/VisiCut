@@ -539,7 +539,8 @@ public class VisicutModel
       p.setGraphicObjects(gs);
       p.setSourceFile(f);
       this.plfFile.add(p);
-      this.propertyChangeSupport.firePropertyChange(PROP_PLF_FILE_CHANGED, null, plfFile);
+      this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_ADDED, null, p);
+      this.setSelectedPart(p);
     }
   }
   protected MaterialProfile material = null;
@@ -652,11 +653,12 @@ public class VisicutModel
    */
   public boolean fitObjectsIntoBed()
   {
-    boolean modified = false;
+    boolean modifiedAny = false;
     double bw = getSelectedLaserDevice() != null ? getSelectedLaserDevice().getLaserCutter().getBedWidth() : 600d;
     double bh = getSelectedLaserDevice() != null ? getSelectedLaserDevice().getLaserCutter().getBedHeight() : 300d;
     for(PlfPart p : this.plfFile)
     {
+      boolean modified = false;
       Rectangle2D bb = p.getGraphicObjects().getBoundingBox();
       AffineTransform trans = p.getGraphicObjects().getTransform();
       //first try moving to origin, if not in range
@@ -688,15 +690,24 @@ public class VisicutModel
         p.getGraphicObjects().setTransform(trans);
         modified = true;
       }
+      if (modified)
+      {
+        modifiedAny = true;
+        this.firePartUpdated(p);
+      }
     }
-    return modified;
+    return modifiedAny;
   }
 
   public static final String PROP_PLF_FILE_CHANGED = "plf file changed";
+  public static final String PROP_PLF_PART_ADDED = "plf part added";
+  public static final String PROP_PLF_PART_REMOVED = "plf part removed";
+  public static final String PROP_PLF_PART_UPDATED = "plf part updated";
 
   private void setPlfFile(PlfFile resultingFile)
   {
     this.plfFile = resultingFile;
+    this.setSelectedPart(null);
     this.propertyChangeSupport.firePropertyChange(PROP_PLF_FILE_CHANGED, null, plfFile);
   }
 
@@ -712,24 +723,22 @@ public class VisicutModel
       AffineTransform tr = this.selectedPart.getGraphicObjects().getTransform();
       this.selectedPart.setGraphicObjects(this.loadSetFromFile(this.selectedPart.getSourceFile(), warnings));
       this.selectedPart.getGraphicObjects().setTransform(tr);
-      this.propertyChangeSupport.firePropertyChange(PROP_PLF_FILE_CHANGED, null, plfFile);
+      this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_UPDATED, null, this.selectedPart);
     }
   }
-  
+
   public void removeSelectedPart()
   {
     if (this.selectedPart != null)
     {
       this.plfFile.remove(selectedPart);
       this.setSelectedPart(null);
-      this.propertyChangeSupport.firePropertyChange(PROP_PLF_FILE_CHANGED, null, plfFile);
+      this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_REMOVED, this.selectedPart, null);
     }
   }
-  
-  public static final String PROP_SELECTED_PART_CHANGED = "Selected part modified";
 
-  public void firePartUpdated()
+  public void firePartUpdated(PlfPart p)
   {
-    this.propertyChangeSupport.firePropertyChange(PROP_SELECTED_PART_CHANGED, null, plfFile);
+    this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_UPDATED, null, p);
   }
 }

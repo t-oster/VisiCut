@@ -38,18 +38,18 @@ public class PositionPanelController extends EditRectangleController implements 
         AffineTransform t = getSelectedSet().getTransform();
         t.preConcatenate(Helper.getTransform(src, this.pp.getRectangle()));
         getSelectedSet().setTransform(t);
-        this.vm.firePartUpdated();
+        this.vm.firePartUpdated(VisicutModel.getInstance().getSelectedPart());
       }
       else if (PositionPanel.PROP_ANGLE.equals(pce.getPropertyName()))
       {
         getSelectedSet().rotateAbsolute(pp.getAngle());
-        this.vm.firePartUpdated();
+        this.vm.firePartUpdated(VisicutModel.getInstance().getSelectedPart());
       }
     }
     else if (pce.getSource().equals(vm))
     {
-      if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName()) 
-        ||VisicutModel.PROP_SELECTED_PART_CHANGED.equals(pce.getPropertyName()))
+      if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName())
+        ||VisicutModel.PROP_PLF_FILE_CHANGED.equals(pce.getPropertyName()))
       {
         if (getSelectedSet() != null)
         {

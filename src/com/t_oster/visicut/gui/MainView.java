@@ -35,7 +35,6 @@ import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.CreateNewMaterialDialog;
 import com.t_oster.visicut.gui.beans.CreateNewThicknessDialog;
-import com.t_oster.visicut.gui.beans.PositionPanel;
 import com.t_oster.visicut.gui.beans.Ruler;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
@@ -83,7 +82,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.filechooser.FileFilter;
@@ -1097,7 +1095,7 @@ public class MainView extends javax.swing.JFrame
       }
       else
       {
-        this.visicutModel1.loadGraphicFile(file, warnings);   
+        this.visicutModel1.loadGraphicFile(file, warnings);
       }
       if (!warnings.isEmpty())
         {
@@ -1108,10 +1106,7 @@ public class MainView extends javax.swing.JFrame
       {
         dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("NEEDED_REFIT"));
       }
-      this.previewPanel.setZoom(100d);
-      this.previewPanel.setEditRectangle(null);
       this.progressBar.setIndeterminate(false);
-      this.refreshButtonStates();
     }
     catch (Exception e)
     {
@@ -1207,7 +1202,7 @@ public class MainView extends javax.swing.JFrame
       }
     }
   }
-  
+
 private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
   this.openFileDialog(true);
 }//GEN-LAST:event_openMenuItemActionPerformed
@@ -1399,7 +1394,8 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
     this.refreshButtonStates();
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDLASERDEVICE)
-    ||evt.getPropertyName().equals(VisicutModel.PROP_SELECTED_PART_CHANGED))
+    ||evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_UPDATED)
+    ||evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_REMOVED))
   {
     MainView.this.timeLabel.setText("");
     this.refreshButtonStates();
@@ -1407,7 +1403,7 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
   else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART))
   {
     this.reloadMenuItem.setEnabled(this.visicutModel1.getSelectedPart() != null);
-    
+
     this.mappingTabbedPane.setVisible(this.visicutModel1.getSelectedPart() != null);
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_MATERIAL))

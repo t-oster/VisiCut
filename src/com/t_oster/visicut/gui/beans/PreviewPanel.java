@@ -72,7 +72,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   {
     VisicutModel.getInstance().addPropertyChangeListener(this);
   }
-  
+
   public void propertyChange(PropertyChangeEvent pce)
   {
     if (VisicutModel.PROP_SELECTEDLASERDEVICE.equals(pce.getPropertyName()))
@@ -92,15 +92,31 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       this.setEditRectangle(p != null ? new EditRectangle(p.getGraphicObjects().getBoundingBox()) : null);
       //this.repaint();//setEditRectangle does already repaint
     }
-    else if (VisicutModel.PROP_SELECTED_PART_CHANGED.equals(pce.getPropertyName()))
+    else if (VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()))
     {
-      PlfPart p = VisicutModel.getInstance().getSelectedPart();
+      if (updatesToIgnore > 0)
+      {
+        updatesToIgnore--;
+      }
+      else
+      {
+        PlfPart p = (PlfPart) pce.getNewValue();
+        this.clearCache(p);
+        if (p.equals(VisicutModel.getInstance().getSelectedPart()))
+        {
+          this.setEditRectangle(new EditRectangle(p.getGraphicObjects().getBoundingBox()));
+        }
+      }
+    }
+    else if (VisicutModel.PROP_PLF_PART_REMOVED.equals(pce.getPropertyName()))
+    {
+      PlfPart p = (PlfPart) pce.getOldValue();
       this.clearCache(p);
-      this.setEditRectangle(new EditRectangle(p.getGraphicObjects().getBoundingBox()));
     }
     else if (VisicutModel.PROP_MATERIAL.equals(pce.getPropertyName())
       || VisicutModel.PROP_PLF_FILE_CHANGED.equals(pce.getPropertyName()))
     {
+      this.setEditRectangle(null);
       this.clearCache();
       repaint();
     }
@@ -109,8 +125,14 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       repaint();
     }
   }
-  
+
   private static final Logger logger = Logger.getLogger(PreviewPanel.class.getName());
+
+  private int updatesToIgnore = 0;
+  public void ignoreNextUpdate()
+  {
+    updatesToIgnore++;
+  }
 
   private class ImageProcessingThread extends Thread implements ProgressListener
   {
@@ -296,17 +318,20 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   {
     synchronized(this.renderBuffers)
     {
-      for (ImageProcessingThread thr : this.renderBuffers.get(p).values())
+      if (this.renderBuffers.get(p) != null)
       {
-        if (!thr.isFinished())
+        for (ImageProcessingThread thr : this.renderBuffers.get(p).values())
         {
-          thr.cancel();
+          if (!thr.isFinished())
+          {
+            thr.cancel();
+          }
         }
+        this.renderBuffers.get(p).clear();
       }
-      this.renderBuffers.get(p).clear();
     }
   }
-  
+
   public void clearCache()
   {
     synchronized(this.renderBuffers)
@@ -366,7 +391,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     this.editRectangle = editRectangle;
     this.repaint();
   }
-  
+
   /**
    * The renderBuffer contains a BufferedImage for each Mapping of each PlfPart.
    * On refreshRenderBuffer, the Images are created by rendering
@@ -545,7 +570,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       }
     }
   }
-  
+
   private void drawGrid(Graphics2D gg)
   {
     /**
