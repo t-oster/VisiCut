@@ -218,6 +218,8 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     return true;
   }
 
+  private boolean ignorePartUpdate = false;
+
   public void propertyChange(PropertyChangeEvent pce)
   {
     if (pce.getSource().equals(ProfileManager.getInstance()))
@@ -235,7 +237,10 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       }
       else if (VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()) && pce.getNewValue().equals(VisicutModel.getInstance().getSelectedPart()))
       {
-        this.representMapping(VisicutModel.getInstance().getSelectedPart().getMapping());
+        if (!ignorePartUpdate)
+        {
+          this.representMapping(VisicutModel.getInstance().getSelectedPart().getMapping());
+        }
       }
     }
   }
@@ -245,8 +250,10 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     if (!suppressMappingUpdate)
     {
       this.refreshProfilesEditor(); // generate necessary new temporary copies
+      ignorePartUpdate = true;
       VisicutModel.getInstance().getSelectedPart().setMapping(this.getResultingMappingSet());
       VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
+      ignorePartUpdate = false;
     }
   }
 
