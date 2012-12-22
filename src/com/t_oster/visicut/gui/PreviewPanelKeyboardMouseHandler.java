@@ -28,6 +28,7 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -41,6 +42,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
@@ -62,9 +64,9 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   private JPopupMenu menu = new JPopupMenu();
   private JMenuItem resetMenuItem = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("RESET TRANSFORMATION"));
   private JMenuItem deleteMenuItem = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("REMOVE"));
-  //TODO: i10n
   private JMenuItem flipHorizMenuItem = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("FLIP_HORIZONTALLY"));
   private JMenuItem flipVertMenuItem = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("FLIP_VERTICALLY"));
+  private JMenuItem openMenuItem = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("OPEN"));
 
   public PreviewPanelKeyboardMouseHandler(PreviewPanel panel)
   {
@@ -113,6 +115,18 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       }
     });
     menu.add(deleteMenuItem);
+    openMenuItem.addActionListener(new ActionListener(){
+
+      public void actionPerformed(ActionEvent ae)
+      {
+        PlfPart p = VisicutModel.getInstance().getSelectedPart();
+        if (p != null && p.getSourceFile() != null)
+        {
+          dialogHelper.openInEditor(p.getSourceFile());
+        }
+      }
+    });
+    menu.add(openMenuItem);
   }
 
   private void flip(boolean horizontal)

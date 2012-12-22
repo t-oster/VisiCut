@@ -23,6 +23,8 @@ import com.t_oster.visicut.gui.beans.ImageComboBox;
 import com.t_oster.visicut.gui.beans.LengthTextfield;
 import com.t_oster.visicut.gui.beans.UnitTextfield;
 import java.awt.Component;
+import java.awt.Desktop;
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import javax.script.ScriptEngine;
@@ -46,6 +48,50 @@ public class DialogHelper
   {
     this.parent = parent;
     this.title = title;
+  }
+
+  public void openInFilebrowser(File f)
+  {
+    try
+    {
+      Desktop d = Desktop.getDesktop();
+      if (d.isSupported(Desktop.Action.OPEN))
+      {
+        d.open(f.isDirectory() ? f : f.getParentFile());
+      }
+      else
+      {
+        showErrorMessage("Sorry, can not open files on your plaftorm");
+      }
+    }
+    catch (Exception e)
+    {
+      showErrorMessage("Sorry, can not open files on your plaftorm");
+    }
+  }
+
+  public void openInEditor(File f)
+  {
+    try
+    {
+      Desktop d = Desktop.getDesktop();
+      if (d.isSupported(Desktop.Action.EDIT))
+      {
+        d.edit(f);
+      }
+      else if (d.isSupported(Desktop.Action.OPEN))
+      {
+        d.open(f);
+      }
+      else
+      {
+        showErrorMessage("Sorry, can not open files on your plaftorm");
+      }
+    }
+    catch (Exception e)
+    {
+      showErrorMessage("Sorry, can not open files on your plaftorm");
+    }
   }
 
   public <T> T askElement(Collection<T> source, String text)

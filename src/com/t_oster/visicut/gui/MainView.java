@@ -301,21 +301,7 @@ public class MainView extends javax.swing.JFrame
 
         public void actionPerformed(ActionEvent ae)
         {
-          if (Desktop.isDesktopSupported())
-          {
-            try
-            {
-              Desktop.getDesktop().open(new File(Helper.getBasePath(), "examples"));
-            }
-            catch (IOException ex)
-            {
-              dialog.showErrorMessage(ex);
-            }
-          }
-          else
-          {
-            dialog.showErrorMessage("Can't open filebrowser on your paltform");
-          }
+          dialog.openInFilebrowser(new File(Helper.getBasePath(), "examples"));
         }
       });
     }
