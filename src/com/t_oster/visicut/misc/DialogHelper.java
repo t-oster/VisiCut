@@ -30,6 +30,7 @@ import javax.script.ScriptEngineManager;
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /**
  *
@@ -60,6 +61,20 @@ public class DialogHelper
     if (JOptionPane.showConfirmDialog(parent, b, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.DEFAULT_OPTION) == JOptionPane.OK_OPTION)
     {
       return (T) cb.getSelectedItem();
+    }
+    return null;
+  }
+
+  public String askString(String initial, String text)
+  {
+    Box b = Box.createVerticalBox();
+    JTextField tf = new JTextField();
+    tf.setText(initial);
+    b.add(new JLabel(text));
+    b.add(tf);
+    if (JOptionPane.showConfirmDialog(parent, b, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.DEFAULT_OPTION) == JOptionPane.OK_OPTION)
+    {
+      return tf.getText();
     }
     return null;
   }

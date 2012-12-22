@@ -185,9 +185,11 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
    * Otherwise the content of the Panel is not modified
    */
   private boolean suppressMappingUpdate = false;
+  private String lastMappingName = null;
   public boolean representMapping(MappingSet ms)
   {
-    if (ms == null)
+    lastMappingName = ms != null ? ms.getName() : null;
+    if (ms == null || ms.isEmpty())
     {
       this.generateDefaultEntries();
     }
@@ -411,6 +413,10 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
   public MappingSet getResultingMappingSet()
   {
     MappingSet result = new MappingSet();
+    if (lastMappingName != null)
+    {
+      result.setName(lastMappingName);
+    }
     for(Entry e:entries)
     {
       if (e.enabled)

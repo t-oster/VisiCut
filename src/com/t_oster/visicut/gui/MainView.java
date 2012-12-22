@@ -150,7 +150,7 @@ public class MainView extends javax.swing.JFrame
     this.customMappingPanel2.getSaveButton().addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae)
       {
-        String name = JOptionPane.showInputDialog(MainView.this, bundle.getString("NAME_FOR_MAPPING"));
+        String name = dialog.askString(MainView.this.customMappingPanel2.getResultingMappingSet().getName(), bundle.getString("NAME_FOR_MAPPING"));
         if (name != null)
         {
           MappingSet ms = MainView.this.customMappingPanel2.getResultingMappingSet().clone();
@@ -1490,27 +1490,21 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
     dialog.showErrorMessage(bundle.getString("THE CAMERA DOESN'T SEEM TO BE WORKING. PLEASE CHECK THE URL IN THE LASERCUTTER SETTINGS"));
     return;
   }
-  JComboBox profiles = new JComboBox();
-  for (LaserProfile p : ProfileManager.getInstance().getAll())
-  {
-    if (p instanceof VectorProfile)
-    {
-      profiles.addItem(p);
-    }
-  }
-  if (profiles.getItemCount() == 0)
+  List<LaserProfile> profiles = ProfileManager.getInstance().getAll();
+  if (profiles.isEmpty())
   {
     dialog.showErrorMessage(bundle.getString("NEED_VECTOR_PROFILE"));
     return;
   }
-  if (JOptionPane.showConfirmDialog(this, profiles, bundle.getString("SELECT_VECTOR_PROFILE"), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION)
+  LaserProfile p = dialog.askElement(ProfileManager.getInstance().getAll(), bundle.getString("SELECT_VECTOR_PROFILE"));
+  if (p == null)
   {
     return;
   }
   //TODO ask user for VectorProfile and make sure the properties for current
   //material and cutter are available
   CamCalibrationDialog ccd = new CamCalibrationDialog(this, true);
-  ccd.setVectorProfile((VectorProfile) profiles.getSelectedItem());
+  ccd.setVectorProfile((VectorProfile) p);
   ccd.setBackgroundImage(this.visicutModel1.getBackgroundImage());
   ccd.setImageURL(this.visicutModel1.getSelectedLaserDevice().getCameraURL());
   ccd.setResultingTransformation(this.visicutModel1.getSelectedLaserDevice().getCameraCalibration());
