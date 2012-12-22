@@ -16,10 +16,11 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-                  <Group type="102" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="lbY1" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="lbX1" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -30,8 +31,8 @@
                           <Component id="tfAngle" alignment="0" min="-2" pref="191" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                  <Component id="tfHeight" alignment="0" pref="85" max="32767" attributes="0"/>
-                                  <Component id="tfWidth" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="tfHeight" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="tfWidth" alignment="0" min="-2" pref="85" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="cbProportional" min="-2" max="-2" attributes="0"/>
@@ -39,16 +40,17 @@
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace min="0" pref="37" max="32767" attributes="0"/>
+              <EmptySpace pref="25" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="lbX1" min="-2" max="-2" attributes="0"/>
@@ -70,7 +72,7 @@
                   <Component id="lbY2" min="-2" max="-2" attributes="0"/>
                   <Component id="tfAngle" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="85" max="32767" attributes="0"/>
+              <EmptySpace pref="74" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
