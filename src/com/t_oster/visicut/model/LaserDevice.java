@@ -20,7 +20,7 @@ package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.drivers.EpilogZing;
-import com.t_oster.visicut.gui.ImageListable;
+import com.t_oster.uicomponents.ImageListable;
 import java.awt.geom.AffineTransform;
 
 /**
@@ -213,7 +213,7 @@ public class LaserDevice implements ImageListable
     result.jobPrefix = jobPrefix;
     return result;
   }
-  
+
   @Override
   public String toString()
   {

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.uicomponents;
 
 import com.t_oster.liblasercut.platform.Util;
 import java.awt.event.ActionEvent;
@@ -42,7 +42,7 @@ public class AncorPointPanel extends javax.swing.JPanel implements ActionListene
     BOTTOM_CENTER,
     BOTTOM_RIGHT,
   }
-  
+
   public static final String PROP_POSITION = "position";
   private Position position = Position.TOP_LEFT;
   private Map<Position,JRadioButton> buttons;
@@ -72,7 +72,7 @@ public class AncorPointPanel extends javax.swing.JPanel implements ActionListene
       firePropertyChange(PROP_POSITION, oldPosition, position);
     }
   }
-  
+
   /**
    * Creates new form AncorPointPanel
    */

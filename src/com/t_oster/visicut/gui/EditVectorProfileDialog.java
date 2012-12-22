@@ -90,7 +90,7 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
     private void initComponents() {
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
-        btThumbnail = new com.t_oster.visicut.gui.beans.SelectThumbnailButton();
+        btThumbnail = new com.t_oster.uicomponents.SelectThumbnailButton();
         lbName = new javax.swing.JLabel();
         tfName = new javax.swing.JTextField();
         tfDescription = new javax.swing.JTextField();
@@ -300,7 +300,7 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btCancel;
     private javax.swing.JButton btSave;
-    private com.t_oster.visicut.gui.beans.SelectThumbnailButton btThumbnail;
+    private com.t_oster.uicomponents.SelectThumbnailButton btThumbnail;
     private javax.swing.JCheckBox cbIsCut;
     private javax.swing.JComboBox cbPPI;
     private javax.swing.JCheckBox jCheckBox1;

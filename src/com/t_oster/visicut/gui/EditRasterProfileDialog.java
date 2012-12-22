@@ -139,7 +139,7 @@ public class EditRasterProfileDialog extends javax.swing.JDialog
         lbName = new javax.swing.JLabel();
         tfName = new javax.swing.JTextField();
         jComboBox1 = new javax.swing.JComboBox();
-        selectThumbnailButton1 = new com.t_oster.visicut.gui.beans.SelectThumbnailButton();
+        selectThumbnailButton1 = new com.t_oster.uicomponents.SelectThumbnailButton();
         cbInvertColors = new javax.swing.JCheckBox();
         jSlider1 = new javax.swing.JSlider();
         lbGreyscaleShift = new javax.swing.JLabel();
@@ -363,7 +363,7 @@ private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     private javax.swing.JLabel lbDescription;
     private javax.swing.JLabel lbGreyscaleShift;
     private javax.swing.JLabel lbName;
-    private com.t_oster.visicut.gui.beans.SelectThumbnailButton selectThumbnailButton1;
+    private com.t_oster.uicomponents.SelectThumbnailButton selectThumbnailButton1;
     private javax.swing.JTextField tfDescription;
     private javax.swing.JTextField tfName;
     private javax.swing.JTextField tfResolution;

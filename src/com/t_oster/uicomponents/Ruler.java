@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.uicomponents;
 
+import com.t_oster.visicut.gui.beans.ZoomablePanel;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -33,7 +34,7 @@ public class Ruler extends JPanel implements PropertyChangeListener, ComponentLi
     target.addPropertyChangeListener(this);
     this.setPreferredSize(new Dimension(align == HORIZONTAL ? target.getWidth() : size, align == VERTICAL ? target.getHeight() : size));
   }
-  
+
   @Override
   public void paintComponent(Graphics g)
   {

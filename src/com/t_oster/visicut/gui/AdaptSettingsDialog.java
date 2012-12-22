@@ -2,17 +2,17 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
@@ -21,8 +21,8 @@ package com.t_oster.visicut.gui;
 
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserProperty;
-import com.t_oster.visicut.gui.beans.EditableTablePanel;
-import com.t_oster.visicut.gui.beans.EditableTableProvider;
+import com.t_oster.uicomponents.EditableTablePanel;
+import com.t_oster.uicomponents.EditableTableProvider;
 import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
@@ -57,7 +57,7 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
    * Loads the given MaterialProfile into the Window.
    * All changes to the window occur instantly to this
    * MaterialProfile
-   * @param mp 
+   * @param mp
    */
   public void setLaserProperties(Map<LaserProfile, List<LaserProperty>> map, final LaserCutter lc)
   {
@@ -111,7 +111,7 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
   /**
    * Returns the MaterialProfile provided by setMaterialProfile.
    * IF Cancel was pressed, it is set to null
-   * @return 
+   * @return
    */
   public Map<LaserProfile, List<LaserProperty>> getLaserProperties()
   {
@@ -128,7 +128,7 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
     private void initComponents() {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        editableTablePanel1 = new com.t_oster.visicut.gui.beans.EditableTablePanel();
+        editableTablePanel1 = new com.t_oster.uicomponents.EditableTablePanel();
         btOK = new javax.swing.JButton();
         btCancel = new javax.swing.JButton();
         heading = new javax.swing.JLabel();
@@ -227,7 +227,7 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btCancel;
     private javax.swing.JButton btOK;
-    private com.t_oster.visicut.gui.beans.EditableTablePanel editableTablePanel1;
+    private com.t_oster.uicomponents.EditableTablePanel editableTablePanel1;
     private javax.swing.JLabel heading;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JTabbedPane jTabbedPane1;

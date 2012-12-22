@@ -16,18 +16,18 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.uicomponents;
 
-import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.misc.Helper;
 
 /**
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class ResolutionTextfield extends UnitTextfield
+public class AngleTextfield extends UnitTextfield
 {
 
-  private static final String[] units = new String[]{"dpi","dpmm"};
+  private static final String[] units = new String[]{"deg","rad"};
 
   @Override
   protected String[] getUnits()
@@ -37,26 +37,26 @@ public class ResolutionTextfield extends UnitTextfield
 
   protected double removeUnit(double value, String unit)
   {
-    if ("dpi".equals(unit))
+    if ("rad".equals(unit))
     {
       return value;
     }
-    else if ("dpmm".equals(unit))
+    else if ("deg".equals(unit))
     {
-      return Util.dpmm2dpi(value);
+      return Helper.degree2angle(value);
     }
     return value;
   }
 
   protected double addUnit(double value, String unit)
   {
-    if ("dpi".equals(unit))
+    if ("rad".equals(unit))
     {
       return value;
     }
-    else if ("dpmm".equals(unit))
+    else if ("deg".equals(unit))
     {
-      return Util.dpi2dpmm(value);
+      return Helper.angle2degree(value);
     }
     return value;
   }

@@ -2,17 +2,17 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
@@ -21,7 +21,7 @@ package com.t_oster.visicut.model;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.platform.Util;
-import com.t_oster.visicut.gui.ImageListable;
+import com.t_oster.uicomponents.ImageListable;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
@@ -61,7 +61,7 @@ public abstract class LaserProfile implements ImageListable, Cloneable
   {
     this.DPI = DPI;
   }
-  
+
   protected String description = "A new Laserprofile";
 
   /**
@@ -83,7 +83,7 @@ public abstract class LaserProfile implements ImageListable, Cloneable
   {
     this.description = description;
   }
-  
+
   protected String thumbnailPath = null;
 
   /**
@@ -127,9 +127,9 @@ public abstract class LaserProfile implements ImageListable, Cloneable
   {
     this.name = name;
   }
-  
+
   protected boolean temporaryCopy = false;
-  
+
   /**
    * @return true if this is a temporary copy that should not be stored to disk
    */
@@ -145,7 +145,7 @@ public abstract class LaserProfile implements ImageListable, Cloneable
   {
     this.temporaryCopy = temporaryCopy;
   }
-  
+
 
   public abstract void renderPreview(Graphics2D g, GraphicSet objects, MaterialProfile material, AffineTransform mm2px);
 
@@ -159,12 +159,12 @@ public abstract class LaserProfile implements ImageListable, Cloneable
 
   @Override
   public abstract LaserProfile clone();
-  
+
   /**
    * Decomposes a GraphicSet into disjoint paths which
    * have a distance bigger than the sum of their lengths
    * @param set
-   * @return 
+   * @return
    */
   public LinkedList<GraphicSet> decompose(GraphicSet set)
   {
@@ -207,10 +207,10 @@ public abstract class LaserProfile implements ImageListable, Cloneable
     //TODO: Efficient merging?
     return result;
   }
-  
+
   @Override
   abstract public int hashCode();
-   
+
   /**
    * create a hashCode() of all properties of the base class LaserProfile
    * use this in hashCode() methods for subclasses
@@ -226,10 +226,10 @@ public abstract class LaserProfile implements ImageListable, Cloneable
      }
      return hash;
    }
-  
+
   @Override
   abstract public boolean equals(Object obj);
-  
+
   /**
    * checks for equality of all properties of the base class LaserProfile
    * use this in equals() methods for subclasses
@@ -269,6 +269,6 @@ public abstract class LaserProfile implements ImageListable, Cloneable
     return true;
   }
 
-  
-  
+
+
 }

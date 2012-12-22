@@ -175,22 +175,22 @@
             </Property>
           </Properties>
         </Component>
-        <Component class="com.t_oster.visicut.gui.beans.AncorPointPanel" name="ancorPointPanel1">
+        <Component class="com.t_oster.uicomponents.AncorPointPanel" name="ancorPointPanel1">
           <Events>
             <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="ancorPointPanel1PropertyChange"/>
           </Events>
         </Component>
-        <Component class="com.t_oster.visicut.gui.beans.LengthTextfield" name="tfX">
+        <Component class="com.t_oster.uicomponents.LengthTextfield" name="tfX">
         </Component>
-        <Component class="com.t_oster.visicut.gui.beans.LengthTextfield" name="tfY">
+        <Component class="com.t_oster.uicomponents.LengthTextfield" name="tfY">
         </Component>
       </SubComponents>
     </Container>
-    <Component class="com.t_oster.visicut.gui.beans.LengthTextfield" name="tfHeight">
+    <Component class="com.t_oster.uicomponents.LengthTextfield" name="tfHeight">
     </Component>
-    <Component class="com.t_oster.visicut.gui.beans.AngleTextfield" name="tfAngle">
+    <Component class="com.t_oster.uicomponents.AngleTextfield" name="tfAngle">
     </Component>
-    <Component class="com.t_oster.visicut.gui.beans.LengthTextfield" name="tfWidth">
+    <Component class="com.t_oster.uicomponents.LengthTextfield" name="tfWidth">
     </Component>
     <Component class="javax.swing.JCheckBox" name="cbProportional">
       <Properties>

@@ -18,10 +18,10 @@
  */
 package com.t_oster.visicut.misc;
 
-import com.t_oster.visicut.gui.beans.AngleTextfield;
-import com.t_oster.visicut.gui.beans.ImageComboBox;
-import com.t_oster.visicut.gui.beans.LengthTextfield;
-import com.t_oster.visicut.gui.beans.UnitTextfield;
+import com.t_oster.uicomponents.AngleTextfield;
+import com.t_oster.uicomponents.ImageComboBox;
+import com.t_oster.uicomponents.LengthTextfield;
+import com.t_oster.uicomponents.UnitTextfield;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.io.File;

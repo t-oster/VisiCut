@@ -113,7 +113,7 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog
         lbDescription = new javax.swing.JLabel();
         lbName = new javax.swing.JLabel();
         tfName = new javax.swing.JTextField();
-        selectThumbnailButton1 = new com.t_oster.visicut.gui.beans.SelectThumbnailButton();
+        selectThumbnailButton1 = new com.t_oster.uicomponents.SelectThumbnailButton();
         jCheckBox1 = new javax.swing.JCheckBox();
         jSlider1 = new javax.swing.JSlider();
         jLabel6 = new javax.swing.JLabel();
@@ -280,7 +280,7 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog
     private javax.swing.JSlider jSlider1;
     private javax.swing.JLabel lbDescription;
     private javax.swing.JLabel lbName;
-    private com.t_oster.visicut.gui.beans.SelectThumbnailButton selectThumbnailButton1;
+    private com.t_oster.uicomponents.SelectThumbnailButton selectThumbnailButton1;
     private javax.swing.JTextField tfDescription;
     private javax.swing.JTextField tfName;
     private javax.swing.JTextField tfResolution;

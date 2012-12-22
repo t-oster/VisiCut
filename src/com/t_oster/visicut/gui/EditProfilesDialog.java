@@ -2,17 +2,17 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
@@ -24,7 +24,7 @@
  */
 package com.t_oster.visicut.gui;
 
-import com.t_oster.visicut.gui.beans.EditableTableProvider;
+import com.t_oster.uicomponents.EditableTableProvider;
 import com.t_oster.visicut.model.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -92,7 +92,7 @@ public class EditProfilesDialog extends javax.swing.JDialog implements EditableT
     }
     this.setCurrentProfiles(cur);
   }
-  
+
   /** Creates new form EditMaterialsDialog */
   public EditProfilesDialog(java.awt.Frame parent, boolean modal)
   {
@@ -113,7 +113,7 @@ public class EditProfilesDialog extends javax.swing.JDialog implements EditableT
         Profiles = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
-        editableTablePanel1 = new com.t_oster.visicut.gui.beans.EditableTablePanel();
+        editableTablePanel1 = new com.t_oster.uicomponents.EditableTablePanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditProfilesDialog"); // NOI18N
@@ -192,7 +192,7 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel Profiles;
-    private com.t_oster.visicut.gui.beans.EditableTablePanel editableTablePanel1;
+    private com.t_oster.uicomponents.EditableTablePanel editableTablePanel1;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
