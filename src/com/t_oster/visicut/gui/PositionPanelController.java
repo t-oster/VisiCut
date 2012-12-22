@@ -18,8 +18,10 @@ import java.beans.PropertyChangeListener;
  */
 public class PositionPanelController extends EditRectangleController implements PropertyChangeListener
 {
+
   private PositionPanel pp;
   private VisicutModel vm;
+
   public PositionPanelController(PositionPanel p, VisicutModel v)
   {
     this.pp = p;
@@ -30,29 +32,29 @@ public class PositionPanelController extends EditRectangleController implements 
 
   public void propertyChange(PropertyChangeEvent pce)
   {
-    if (pce.getSource().equals(pp))
+    if (getSelectedSet() != null)
     {
-      if (PositionPanel.PROP_RECTANGLE.equals(pce.getPropertyName()))
+      if (pce.getSource().equals(pp))
       {
-        Rectangle2D src = getSelectedSet().getBoundingBox();
-        AffineTransform t = getSelectedSet().getTransform();
-        t.preConcatenate(Helper.getTransform(src, this.pp.getRectangle()));
-        getSelectedSet().setTransform(t);
-        this.vm.firePartUpdated(VisicutModel.getInstance().getSelectedPart());
+        if (PositionPanel.PROP_RECTANGLE.equals(pce.getPropertyName()))
+        {
+          Rectangle2D src = getSelectedSet().getBoundingBox();
+          AffineTransform t = getSelectedSet().getTransform();
+          t.preConcatenate(Helper.getTransform(src, this.pp.getRectangle()));
+          getSelectedSet().setTransform(t);
+          this.vm.firePartUpdated(VisicutModel.getInstance().getSelectedPart());
+        }
+        else if (PositionPanel.PROP_ANGLE.equals(pce.getPropertyName()))
+        {
+          getSelectedSet().rotateAbsolute(pp.getAngle());
+          this.vm.firePartUpdated(VisicutModel.getInstance().getSelectedPart());
+        }
       }
-      else if (PositionPanel.PROP_ANGLE.equals(pce.getPropertyName()))
+      else if (pce.getSource().equals(vm))
       {
-        getSelectedSet().rotateAbsolute(pp.getAngle());
-        this.vm.firePartUpdated(VisicutModel.getInstance().getSelectedPart());
-      }
-    }
-    else if (pce.getSource().equals(vm))
-    {
-      if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName())
-        ||VisicutModel.PROP_PLF_FILE_CHANGED.equals(pce.getPropertyName())
-        ||VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()))
-      {
-        if (getSelectedSet() != null)
+        if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName())
+          || VisicutModel.PROP_PLF_FILE_CHANGED.equals(pce.getPropertyName())
+          || VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()))
         {
           this.pp.setRectangle(getSelectedSet().getBoundingBox());
           AffineTransform t = getSelectedSet().getTransform();
