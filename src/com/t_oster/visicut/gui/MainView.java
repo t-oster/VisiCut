@@ -54,6 +54,7 @@ import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import java.awt.Desktop;
 import java.awt.FileDialog;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -281,6 +282,7 @@ public class MainView extends javax.swing.JFrame
       }
     };
 
+  private JMenuItem openExamples;
   private void refreshExampleMenu()
   {
     jmExamples.removeAll();
@@ -291,6 +293,33 @@ public class MainView extends javax.swing.JFrame
       item.addActionListener(exampleItemClicked);
       this.jmExamples.add(item);
     }
+    if (openExamples == null)
+    {
+      //TODO: i10n
+      openExamples = new JMenuItem(bundle.getString("EDIT"));
+      openExamples.addActionListener(new ActionListener(){
+
+        public void actionPerformed(ActionEvent ae)
+        {
+          if (Desktop.isDesktopSupported())
+          {
+            try
+            {
+              Desktop.getDesktop().open(new File(Helper.getBasePath(), "examples"));
+            }
+            catch (IOException ex)
+            {
+              dialog.showErrorMessage(ex);
+            }
+          }
+          else
+          {
+            dialog.showErrorMessage("Can't open filebrowser on your paltform");
+          }
+        }
+      });
+    }
+    jmExamples.add(openExamples);
   }
 
   /**
