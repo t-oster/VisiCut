@@ -43,6 +43,20 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
     }
     else if (!ignoreTextfieldUpdates)
     {
+      if (cbProportional.isSelected())
+      {
+        ignoreTextfieldUpdates = true;
+        double whfactor = this.rectangle.getHeight()/this.rectangle.getWidth();
+        if (pce.getSource().equals(tfWidth))
+        {
+          tfHeight.setValue(tfWidth.getValue()*whfactor);
+        }
+        else if (pce.getSource().equals(tfHeight))
+        {
+          tfWidth.setValue(tfHeight.getValue()/whfactor);
+        }
+        ignoreTextfieldUpdates = false;
+      }
       Rectangle2D oldRectangle = this.rectangle;
       this.rectangle = this.getRectangleFromTextfields();
       firePropertyChange(PROP_RECTANGLE, oldRectangle, this.rectangle);
@@ -254,19 +268,20 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
     tfHeight = new com.t_oster.visicut.gui.beans.LengthTextfield();
     tfAngle = new com.t_oster.visicut.gui.beans.AngleTextfield();
     tfWidth = new com.t_oster.visicut.gui.beans.LengthTextfield();
-
-    lbY1.setText("height:");
-
-    lbX1.setText("width:");
-
-    lbY2.setText("angle:");
+    cbProportional = new javax.swing.JCheckBox();
 
     java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PositionPanel"); // NOI18N
+    lbY1.setText(bundle.getString("HEIGHT")); // NOI18N
+
+    lbX1.setText(bundle.getString("WIDTH")); // NOI18N
+
+    lbY2.setText(bundle.getString("ANGLE")); // NOI18N
+
     jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("REFERENCE"))); // NOI18N
 
-    lbX.setText("x:");
+    lbX.setText(bundle.getString("X")); // NOI18N
 
-    lbY.setText("y:");
+    lbY.setText(bundle.getString("Y")); // NOI18N
 
     ancorPointPanel1.addPropertyChangeListener(new java.beans.PropertyChangeListener()
     {
@@ -298,7 +313,7 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel1Layout.createSequentialGroup()
         .addComponent(ancorPointPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addGap(0, 20, Short.MAX_VALUE))
+        .addGap(0, 21, Short.MAX_VALUE))
       .addGroup(jPanel1Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -315,6 +330,8 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
+    cbProportional.setText(bundle.getString("PROPORTIONAL")); // NOI18N
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
@@ -328,31 +345,38 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
               .addComponent(lbX1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addComponent(lbY2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-              .addComponent(tfHeight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(tfAngle, javax.swing.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(tfAngle, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addGroup(layout.createSequentialGroup()
-                .addComponent(tfWidth, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(2, 2, 2)))))
-        .addGap(0, 47, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                  .addComponent(tfHeight, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
+                  .addComponent(tfWidth, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cbProportional)))))
+        .addGap(0, 37, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(lbX1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(tfWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(lbY1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(tfHeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addGroup(layout.createSequentialGroup()
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(lbX1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(tfWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(lbY1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(tfHeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+          .addGroup(layout.createSequentialGroup()
+            .addGap(23, 23, 23)
+            .addComponent(cbProportional)))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(lbY2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(tfAngle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(87, Short.MAX_VALUE))
+        .addContainerGap(85, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
 
@@ -363,6 +387,7 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private com.t_oster.visicut.gui.beans.AncorPointPanel ancorPointPanel1;
+  private javax.swing.JCheckBox cbProportional;
   private javax.swing.JPanel jPanel1;
   private java.awt.Label lbX;
   private java.awt.Label lbX1;

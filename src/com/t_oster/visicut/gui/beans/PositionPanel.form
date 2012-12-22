@@ -26,17 +26,20 @@
                           <Component id="lbY2" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="tfHeight" max="32767" attributes="0"/>
-                          <Component id="tfAngle" alignment="0" pref="191" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="tfAngle" alignment="0" min="-2" pref="191" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="tfWidth" max="32767" attributes="0"/>
-                              <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                  <Component id="tfHeight" alignment="0" pref="85" max="32767" attributes="0"/>
+                                  <Component id="tfWidth" alignment="0" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="cbProportional" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace min="0" pref="47" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="37" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -44,22 +47,30 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="lbX1" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfWidth" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="lbY1" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfHeight" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="lbX1" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfWidth" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="lbY1" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfHeight" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
+                      <Component id="cbProportional" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="lbY2" min="-2" max="-2" attributes="0"/>
                   <Component id="tfAngle" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="87" max="32767" attributes="0"/>
+              <EmptySpace pref="85" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -67,17 +78,23 @@
   <SubComponents>
     <Component class="java.awt.Label" name="lbY1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="height:"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="com/t_oster/visicut/gui/beans/resources/PositionPanel.properties" key="HEIGHT" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
       </Properties>
     </Component>
     <Component class="java.awt.Label" name="lbX1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="width:"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="com/t_oster/visicut/gui/beans/resources/PositionPanel.properties" key="WIDTH" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
       </Properties>
     </Component>
     <Component class="java.awt.Label" name="lbY2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="angle:"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="com/t_oster/visicut/gui/beans/resources/PositionPanel.properties" key="ANGLE" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
       </Properties>
     </Component>
     <Container class="javax.swing.JPanel" name="jPanel1">
@@ -117,7 +134,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <Component id="ancorPointPanel1" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="0" pref="20" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="21" max="32767" attributes="0"/>
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
@@ -144,12 +161,16 @@
       <SubComponents>
         <Component class="java.awt.Label" name="lbX">
           <Properties>
-            <Property name="text" type="java.lang.String" value="x:"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="com/t_oster/visicut/gui/beans/resources/PositionPanel.properties" key="X" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+            </Property>
           </Properties>
         </Component>
         <Component class="java.awt.Label" name="lbY">
           <Properties>
-            <Property name="text" type="java.lang.String" value="y:"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="com/t_oster/visicut/gui/beans/resources/PositionPanel.properties" key="Y" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+            </Property>
           </Properties>
         </Component>
         <Component class="com.t_oster.visicut.gui.beans.AncorPointPanel" name="ancorPointPanel1">
@@ -168,6 +189,13 @@
     <Component class="com.t_oster.visicut.gui.beans.AngleTextfield" name="tfAngle">
     </Component>
     <Component class="com.t_oster.visicut.gui.beans.LengthTextfield" name="tfWidth">
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="cbProportional">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="com/t_oster/visicut/gui/beans/resources/PositionPanel.properties" key="PROPORTIONAL" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>
