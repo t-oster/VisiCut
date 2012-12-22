@@ -19,11 +19,16 @@
 package com.t_oster.visicut.misc;
 
 import com.t_oster.visicut.gui.beans.AngleTextfield;
+import com.t_oster.visicut.gui.beans.ImageComboBox;
 import com.t_oster.visicut.gui.beans.LengthTextfield;
+import com.t_oster.visicut.gui.beans.UnitTextfield;
 import java.awt.Component;
+import java.util.Collection;
 import java.util.List;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.swing.Box;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 /**
@@ -40,6 +45,23 @@ public class DialogHelper
   {
     this.parent = parent;
     this.title = title;
+  }
+
+  public <T> T askElement(Collection<T> source, String text)
+  {
+    Box b = Box.createVerticalBox();
+    ImageComboBox cb = new ImageComboBox();
+    b.add(new JLabel(text));
+    b.add(cb);
+    for(T e:source)
+    {
+      cb.addItem(e);
+    }
+    if (JOptionPane.showConfirmDialog(parent, b, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.DEFAULT_OPTION) == JOptionPane.OK_OPTION)
+    {
+      return (T) cb.getSelectedItem();
+    }
+    return null;
   }
 
   public boolean showYesNoQuestion(String text)
@@ -103,25 +125,26 @@ public class DialogHelper
     JOptionPane.showMessageDialog(parent, text, title + " Error", JOptionPane.ERROR_MESSAGE);
   }
 
-  public Double askLength(String text, double mm)
+  private Double askUnit(UnitTextfield tf, String text, double val)
   {
-    LengthTextfield tf = new LengthTextfield();
-    tf.setValue(mm);
-    if (JOptionPane.showConfirmDialog(parent, tf, text, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
+    Box b = Box.createVerticalBox();
+    b.add(new JLabel(text));
+    b.add(tf);
+    tf.setValue(val);
+    if (JOptionPane.showConfirmDialog(parent, b, text, JOptionPane.OK_CANCEL_OPTION, JOptionPane.DEFAULT_OPTION) == JOptionPane.OK_OPTION)
     {
       return tf.getValue();
     }
     return null;
   }
 
+  public Double askLength(String text, double mm)
+  {
+    return this.askUnit(new LengthTextfield(), text, mm);
+  }
+
   public Double askAngle(String text, double rad)
   {
-    AngleTextfield tf = new AngleTextfield();
-    tf.setValue(rad);
-    if (JOptionPane.showConfirmDialog(parent, tf, text, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
-    {
-      return tf.getValue();
-    }
-    return null;
+    return this.askUnit(new AngleTextfield(), text, rad);
   }
 }

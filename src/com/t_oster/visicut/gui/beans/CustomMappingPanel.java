@@ -231,6 +231,10 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
           this.representMapping(VisicutModel.getInstance().getSelectedPart().getMapping());
         }
       }
+      else if (VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()) && pce.getNewValue().equals(VisicutModel.getInstance().getSelectedPart()))
+      {
+        this.representMapping(VisicutModel.getInstance().getSelectedPart().getMapping());
+      }
     }
   }
 
@@ -265,6 +269,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     this.getTable().setDefaultRenderer(FilterSet.class, filterSetRenderer);
     this.setMoveButtonsVisible(true);
     this.setSaveButtonVisible(true);
+    this.setLoadButtonVisible(true);
     ProfileManager.getInstance().addPropertyChangeListener(this);
     VisicutModel.getInstance().addPropertyChangeListener(this);
     model.addTableModelListener(this);

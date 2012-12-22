@@ -165,6 +165,21 @@ public class MainView extends javax.swing.JFrame
         }
       }
     });
+    this.customMappingPanel2.getLoadButton().addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae)
+      {
+        PlfPart p = VisicutModel.getInstance().getSelectedPart();
+        if (p != null)
+        {
+          MappingSet m = dialog.askElement(MappingManager.getInstance().getAll(), bundle.getString("LOAD_MAPPING"));
+          if (m != null)
+          {
+            p.setMapping(m);
+            VisicutModel.getInstance().firePartUpdated(p);
+          }
+        }
+      }
+    });
 
     if (this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null)
     {
