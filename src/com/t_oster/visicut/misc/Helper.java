@@ -2,17 +2,17 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
@@ -37,14 +37,32 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 
 /**
  * This class contains frequently used conversion methods
- * 
+ *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class Helper
 {
+
+  public static Double evaluateExpression(String expr)
+  {
+    expr = expr.replace(",", ".");
+    try
+    {
+      ScriptEngineManager mgr = new ScriptEngineManager();
+      ScriptEngine engine = mgr.getEngineByName("JavaScript");
+      expr = engine.eval(expr).toString();
+    }
+    catch (Exception e)
+    {
+      //e.printStackTrace();
+    }
+    return Double.parseDouble(expr);
+  }
 
   public static double angle2degree(double angle)
   {
@@ -55,16 +73,16 @@ public class Helper
     }
     return w;
   }
-  
+
   public static double degree2angle(double degree)
   {
     return -Math.PI*degree/180d;
   }
-  
+
   /**
   * Compute the rotation angle of an affine transformation.
   * Counter-clockwise rotation is considered positive.
-  * 
+  *
   * method taken from http://javagraphics.blogspot.com/
   *
   * @return rotation angle in radians (beween -pi and pi),
@@ -79,7 +97,7 @@ public class Helper
     p1 = transform.transform(p1,p1);
     return Math.atan2(p1.getY(),p1.getX());
   }
-  
+
   /**
    * Returns the distance between two Rectangles
    * @param r first rectangle
@@ -125,17 +143,17 @@ public class Helper
   {
     return System.getProperty("os.name").toLowerCase().contains("mac");
   }
-  
+
   public static boolean isWindows()
   {
     return System.getProperty("os.name").toLowerCase().contains("windows");
   }
-  
+
   public static boolean isWindowsXP()
   {
     return isWindows() && System.getProperty("os.name").toLowerCase().contains("xp");
   }
-  
+
   public static void installInkscapeExtension() throws FileNotFoundException, IOException
   {
     File src = new File(getVisiCutFolder(), "inkscape_extension");
@@ -200,7 +218,7 @@ public class Helper
       }
     }
   }
-  
+
   public static void installIllustratorScript() throws IOException
   {
     String errors = "";
@@ -235,7 +253,7 @@ public class Helper
           catch (IOException ex)
           {
             errors += "Can't copy to "+d.getAbsolutePath()+"\n";
-          } 
+          }
         }
       }
     }
@@ -244,7 +262,7 @@ public class Helper
       throw new IOException(errors);
     }
   }
-  
+
   public static File getVisiCutFolder()
   {
     try
@@ -264,9 +282,9 @@ public class Helper
     }
     return null;
   }
-  
+
   protected static File basePath;
-  
+
   public static File getBasePath()
   {
     if (basePath == null)
@@ -280,7 +298,7 @@ public class Helper
   {
     basePath = f;
   }
-  
+
   public static String removeParentPath(File parent, String path)
   {
     if (path == null)
@@ -301,7 +319,7 @@ public class Helper
     }
     return path;
   }
-  
+
   public static String addParentPath(File parent, String path)
   {
     if (path == null)
@@ -314,49 +332,49 @@ public class Helper
     }
     return path;
   }
-  
+
   /**
    * If the given path is a successor of the parent-path,
    * only the relative path is given back.
    * Otherwise the path is not modified
    * @param path
-   * @return 
+   * @return
    */
   public static String removeBasePath(String path)
   {
     return removeParentPath(getBasePath(), path);
   }
-  
+
   /**
    * If the given path is relative, the base-path is prepended
    * @param parent
    * @param path
-   * @return 
+   * @return
    */
   public static String addBasePath(String path)
   {
     return addParentPath(getBasePath(), path);
   }
-  
+
   /**
    * Generates an HTML img-Tag for the given file with given size
    * @param f
    * @param width
    * @param height
-   * @return 
+   * @return
    */
   public static String imgTag(URL u, int width, int height)
   {
     String size = width > 0 && height > 0 ? "width=" + width + " height=" + height : "";
     return "<img " + size + " src=\"" + u + "\"/>";
   }
-  
+
   /**
    * Generates an HTML img-Tag for the given file with given size
    * @param f
    * @param width
    * @param height
-   * @return 
+   * @return
    */
   public static String imgTag(File f, int width, int height)
   {
@@ -377,7 +395,7 @@ public class Helper
    * and constists of a scale and translate component
    * @param src
    * @param dest
-   * @return 
+   * @return
    */
   public static AffineTransform getTransform(Rectangle2D src, Rectangle2D dest)
   {
@@ -405,7 +423,7 @@ public class Helper
   /**
    * Returns the smalles BoundingBox, which contains a number of Poins
    * @param points
-   * @return 
+   * @return
    */
   public static Rectangle2D smallestBoundingBox(java.awt.Point.Double[] points)
   {
@@ -422,14 +440,14 @@ public class Helper
     }
     return new Rectangle.Double(minX, minY, maxX-minX, maxY - minY);
   }
-  
+
   /**
    * Returns a rectangle (parralel to x and y axis), which contains
    * the given rectangle after the given transform. If the transform
    * contains a rotation, the resulting rectangle is the smallest bounding-box
    * @param src
    * @param at
-   * @return 
+   * @return
    */
   public static Rectangle2D transform(Rectangle2D src, AffineTransform at)
   {
@@ -459,7 +477,7 @@ public class Helper
     String b = Integer.toHexString(col.getBlue());
     return "#" + (r.length() == 1 ? "0" + r : r) + (g.length() == 1 ? "0" + g : g) + (b.length() == 1 ? "0" + b : b);
   }
-  
+
   public static Color fromHtmlRGB(String rgb)
   {
     int r = Integer.parseInt(rgb.substring(1, 3), 16);
@@ -471,7 +489,7 @@ public class Helper
   /**
    * Returns the given time in s as HH:MM:SS
    * @param estimateTime
-   * @return 
+   * @return
    */
   public static String toHHMMSS(int estimateTime)
   {
@@ -492,21 +510,21 @@ public class Helper
     File is = new File(getVisiCutFolder(), "inkscape_extension");
     return is.exists() && is.isDirectory();
   }
-  
-  private static File getIllustratorScript()  
+
+  private static File getIllustratorScript()
   {
     return new File(new File(getVisiCutFolder(), "illustrator_script"), "OpenWithVisiCut.scpt");
-  } 
-  
+  }
+
   public static boolean isIllustratorScriptInstallable()
   {
     return isMacOS() && getIllustratorScript().exists();
   }
 
   /**
-   * Converts a string into a valid path name 
+   * Converts a string into a valid path name
    * @param name
-   * @return 
+   * @return
    */
   public static String toPathName(String name)
   {

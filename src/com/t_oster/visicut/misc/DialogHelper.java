@@ -18,6 +18,8 @@
  */
 package com.t_oster.visicut.misc;
 
+import com.t_oster.visicut.gui.beans.AngleTextfield;
+import com.t_oster.visicut.gui.beans.LengthTextfield;
 import java.awt.Component;
 import java.util.List;
 import javax.script.ScriptEngine;
@@ -69,7 +71,7 @@ public class DialogHelper
     }
     this.showWarningMessage(txt);
   }
-  
+
   public void showWarningMessage(String text)
   {
     JOptionPane.showMessageDialog(parent, text, title, JOptionPane.WARNING_MESSAGE);
@@ -100,26 +102,26 @@ public class DialogHelper
   {
     JOptionPane.showMessageDialog(parent, text, title + " Error", JOptionPane.ERROR_MESSAGE);
   }
-  
-  public Double askDouble(String text, double initial)
+
+  public Double askLength(String text, double mm)
   {
-    int mm = (int) Math.round(initial * 10);
-    String result = JOptionPane.showInputDialog(parent, text, "" + (mm / 10) + "." + (mm % 10));
-    if (result == null)
+    LengthTextfield tf = new LengthTextfield();
+    tf.setValue(mm);
+    if (JOptionPane.showConfirmDialog(parent, tf, text, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
     {
-      return null;
+      return tf.getValue();
     }
-    result = result.replace(",", ".");
-    try
+    return null;
+  }
+
+  public Double askAngle(String text, double rad)
+  {
+    AngleTextfield tf = new AngleTextfield();
+    tf.setValue(rad);
+    if (JOptionPane.showConfirmDialog(parent, tf, text, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
     {
-      ScriptEngineManager mgr = new ScriptEngineManager();
-      ScriptEngine engine = mgr.getEngineByName("JavaScript");
-      result = engine.eval(result).toString();
+      return tf.getValue();
     }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
-    return Double.parseDouble(result);
+    return null;
   }
 }
