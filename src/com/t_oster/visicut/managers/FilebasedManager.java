@@ -256,6 +256,20 @@ public abstract class FilebasedManager<T>
     }
     return objects;
   }
+  
+  /**
+   * Find an object with the given name
+   * @param string
+   * @return object where (object.toString()==string), null if not found
+   */
+  public T getItemFromString(String string) {
+    for (T obj: this.getAll()) {
+      if (obj.toString().equals(string)) {
+        return obj;
+      }
+    }
+    return null;
+  }
 
   public void setAll(List<T> mats) throws FileNotFoundException, IOException
   {
