@@ -90,6 +90,23 @@ public class MappingSet extends LinkedList<Mapping> implements ImageListable
     }
     return super.equals(obj);
   }
+  
+  /**
+   * check for equality of the mapping, ignore name differences
+   * @param obj
+   * @return true if the mapping has the same effects
+   */
+  public boolean equalsInContent(Object obj) {
+    if (obj == null)
+    {
+      return false;
+    }
+    if (getClass() != obj.getClass())
+    {
+      return false;
+    }
+    return super.equals(obj);
+  }
 
   @Override
   public int hashCode()

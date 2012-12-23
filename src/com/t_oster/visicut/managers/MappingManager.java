@@ -106,5 +106,19 @@ public class MappingManager extends FilebasedManager<MappingSet>
   {
     return comp;
   }
+  
+    /**
+   * Find a mapping with the given name
+   * @param name
+   * @return object where (getName()==string), null if not found
+   */
+  public MappingSet getItemByName(String name) {
+    for (MappingSet obj: this.getAll()) {
+      if (obj.getName().equals(name)) {
+        return obj;
+      }
+    }
+    return null;
+  }
 
 }
