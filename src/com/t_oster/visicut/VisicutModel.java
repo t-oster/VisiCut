@@ -42,6 +42,7 @@ import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.beans.Encoder;
@@ -80,6 +81,21 @@ import javax.swing.filechooser.FileFilter;
  */
 public class VisicutModel
 {
+
+  private Point2D.Double startPoint = null;
+  public static final String PROP_STARTPOINT = "startPoint";
+
+  public Point2D.Double getStartPoint()
+  {
+    return startPoint;
+  }
+
+  public void setStartPoint(Point2D.Double startPoint)
+  {
+    Point2D.Double oldStartPoint = this.startPoint;
+    this.startPoint = startPoint;
+    propertyChangeSupport.firePropertyChange(PROP_STARTPOINT, oldStartPoint, startPoint);
+  }
 
   private PlfPart selectedPart = null;
   public static final String PROP_SELECTEDPART = "selectedPart";
@@ -571,7 +587,10 @@ public class VisicutModel
   private LaserJob prepareJob(String name, Map<LaserProfile, List<LaserProperty>> propmap) throws FileNotFoundException, IOException
   {
     LaserJob job = new LaserJob(name, name, "visicut");
-
+    if (this.startPoint != null)
+    {
+      job.setStartPoint(this.startPoint.x, this.startPoint.y);
+    }
     float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() || !this.useThicknessAsFocusOffset ? 0 : this.materialThickness;
 
     for (PlfPart p : this.getPlfFile())

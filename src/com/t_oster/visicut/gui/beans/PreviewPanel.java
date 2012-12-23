@@ -120,7 +120,8 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       this.clearCache();
       repaint();
     }
-    else if (VisicutModel.PROP_BACKGROUNDIMAGE.equals(pce.getPropertyName()))
+    else if (VisicutModel.PROP_BACKGROUNDIMAGE.equals(pce.getPropertyName())
+      || VisicutModel.PROP_STARTPOINT.equals(pce.getPropertyName()))
     {
       repaint();
     }
@@ -564,11 +565,28 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
           }
         }
       }
+      Point2D.Double sp = VisicutModel.getInstance().getStartPoint();
+      if (sp != null && (sp.x != 0 || sp.y != 0))
+      {
+        drawStartPoint(sp, gg);
+      }
       if (this.editRectangle != null)
       {
         this.editRectangle.render(gg, this.getMmToPxTransform());
       }
     }
+  }
+
+  private void drawStartPoint(Point2D.Double p, Graphics2D gg)
+  {
+    gg.setColor(Color.RED);
+    Point2D sp = this.getMmToPxTransform().transform(p, null);
+    int x = (int) sp.getX();
+    int y = (int) sp.getY();
+    int s = 15;
+    gg.drawOval(x-s/2, y-s/2, s, s);
+    gg.drawLine(x-s/2, y, x+s/2, y);
+    gg.drawLine(x, y-s/2, x, y+s/2);
   }
 
   private void drawGrid(Graphics2D gg)

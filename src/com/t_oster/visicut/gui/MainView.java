@@ -1271,13 +1271,17 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
   {
     try
     {
-      final LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
-      final MaterialProfile material = this.visicutModel1.getMaterial();
-      final float thickness = this.visicutModel1.getMaterialThickness();
       final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob(true,true);
       if (cuttingSettings == null)
       {
         return;
+      }
+      if (VisicutModel.getInstance().getStartPoint() != null)
+      {
+        if (!dialog.showYesNoQuestion(bundle.getString("STARTPOINTWARNING")))
+        {
+          return;
+        }
       }
       new Thread()
       {
