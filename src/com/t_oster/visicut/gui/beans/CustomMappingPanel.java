@@ -185,9 +185,11 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
    * Otherwise the content of the Panel is not modified
    */
   private boolean suppressMappingUpdate = false;
+  private String lastMappingName = null;
   public boolean representMapping(MappingSet ms)
   {
-    if (ms == null)
+    lastMappingName = ms != null ? ms.getName() : null;
+    if (ms == null || ms.isEmpty())
     {
       this.generateDefaultEntries();
     }
@@ -216,6 +218,8 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     return true;
   }
 
+  private boolean ignorePartUpdate = false;
+
   public void propertyChange(PropertyChangeEvent pce)
   {
     if (pce.getSource().equals(ProfileManager.getInstance()))
@@ -226,14 +230,16 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     {
       if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName()))
       {
-        if (VisicutModel.getInstance().getSelectedPart() == null)
-        {
-          this.setVisible(false);
-        }
-        else
+        if (VisicutModel.getInstance().getSelectedPart() != null)
         {
           this.representMapping(VisicutModel.getInstance().getSelectedPart().getMapping());
-          this.setVisible(true);
+        }
+      }
+      else if (VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()) && pce.getNewValue().equals(VisicutModel.getInstance().getSelectedPart()))
+      {
+        if (!ignorePartUpdate)
+        {
+          this.representMapping(VisicutModel.getInstance().getSelectedPart().getMapping());
         }
       }
     }
@@ -244,8 +250,10 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     if (!suppressMappingUpdate)
     {
       this.refreshProfilesEditor(); // generate necessary new temporary copies
+      ignorePartUpdate = true;
       VisicutModel.getInstance().getSelectedPart().setMapping(this.getResultingMappingSet());
-      VisicutModel.getInstance().firePartUpdated();
+      VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
+      ignorePartUpdate = false;
     }
   }
 
@@ -270,6 +278,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     this.getTable().setDefaultRenderer(FilterSet.class, filterSetRenderer);
     this.setMoveButtonsVisible(true);
     this.setSaveButtonVisible(true);
+    this.setLoadButtonVisible(true);
     ProfileManager.getInstance().addPropertyChangeListener(this);
     VisicutModel.getInstance().addPropertyChangeListener(this);
     model.addTableModelListener(this);
@@ -296,7 +305,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
         profileNamesList.add(lp.getName());
       }
     }
-    
+
     // add one unused temporary copy of each stored profile to the list of available profiles
     for (LaserProfile lp: ProfileManager.getInstance().getAll()) {
       if (lp.isTemporaryCopy()) {
@@ -307,7 +316,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       LaserProfile temporaryCopy=lp.clone();
       // TODO make sure that isTemporaryCopy is considered in .equals() (and hashCode())
       temporaryCopy.setTemporaryCopy(true);
-      
+
       // find the next free temp123_profilename name
       String newName="";
       int numberOfTempCopies=0;
@@ -315,13 +324,14 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
         numberOfTempCopies++;
         newName="temp"+numberOfTempCopies+"_"+lp.getName();
       } while (profileNamesList.contains(newName));
-      
+
       temporaryCopy.setName(newName);
       profiles.addItem(temporaryCopy);
-      
+
       // TODO reset temporary copy's propertyMap (speed,power,etc) to the property map of the original one
       // seems impossible because I can't get back to MainView from here and there is no getInstance() or something similar
-      
+      // EDIT Don't know, what you mean. The profile's laser-properties are looseley coupeled throguh the manager.
+
 //    LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
 //    MaterialProfile material = this.visicutModel1.getMaterial();
 //    float thickness = this.visicutModel1.getMaterialThickness();
@@ -331,8 +341,8 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
 //		  LaserPropertyManager.getInstance().saveLaserProperties(device, material, e.getKey(), thickness, e.getValue());
 //    }
     }
-       
-   
+
+
     this.getTable().setDefaultEditor(LaserProfile.class, new DefaultCellEditor(profiles));
   }
 
@@ -410,6 +420,10 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
   public MappingSet getResultingMappingSet()
   {
     MappingSet result = new MappingSet();
+    if (lastMappingName != null)
+    {
+      result.setName(lastMappingName);
+    }
     for(Entry e:entries)
     {
       if (e.enabled)

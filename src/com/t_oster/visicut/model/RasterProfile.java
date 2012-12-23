@@ -260,7 +260,7 @@ public class RasterProfile extends LaserProfile
     {
       return false;
     }
-    if (getClass() != obj.getClass())
+    if (!getClass().equals(obj.getClass()))
     {
       return false;
     }
@@ -270,6 +270,10 @@ public class RasterProfile extends LaserProfile
       return false;
     }
     if (this.colorShift != other.colorShift)
+    {
+      return false;
+    }
+    if (Util.differ(this.ditherAlgorithm, other.ditherAlgorithm))
     {
       return false;
     }

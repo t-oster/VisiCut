@@ -242,4 +242,24 @@ public class GraphicSet extends LinkedList<GraphicObject>
     }
     return attributesCache;
   }
+
+  public void rotateRelative(double angle)
+  {
+    Rectangle2D bb = this.getBoundingBox();
+    //move back
+    AffineTransform tr = AffineTransform.getTranslateInstance(bb.getCenterX(), bb.getCenterY());
+    //rotate
+    tr.concatenate(AffineTransform.getRotateInstance(angle));
+    //center
+    tr.concatenate(AffineTransform.getTranslateInstance(-bb.getCenterX(), -bb.getCenterY()));
+    //apply current
+    tr.concatenate(transform);
+    this.setTransform(tr);
+  }
+  
+  public void rotateAbsolute(double angle)
+  {
+    double old = transform != null ? Helper.getRotationAngle(transform) : 0;
+    this.rotateRelative(angle-old);
+  }
 }

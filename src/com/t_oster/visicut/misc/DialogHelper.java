@@ -18,11 +18,21 @@
  */
 package com.t_oster.visicut.misc;
 
+import com.t_oster.visicut.gui.beans.AngleTextfield;
+import com.t_oster.visicut.gui.beans.ImageComboBox;
+import com.t_oster.visicut.gui.beans.LengthTextfield;
+import com.t_oster.visicut.gui.beans.UnitTextfield;
 import java.awt.Component;
+import java.awt.Desktop;
+import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.swing.Box;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /**
  *
@@ -38,6 +48,81 @@ public class DialogHelper
   {
     this.parent = parent;
     this.title = title;
+  }
+
+  public void openInFilebrowser(File f)
+  {
+    try
+    {
+      Desktop d = Desktop.getDesktop();
+      if (d.isSupported(Desktop.Action.OPEN))
+      {
+        d.open(f.isDirectory() ? f : f.getParentFile());
+      }
+      else
+      {
+        showErrorMessage("Sorry, can not open files on your plaftorm");
+      }
+    }
+    catch (Exception e)
+    {
+      showErrorMessage("Sorry, can not open files on your plaftorm");
+    }
+  }
+
+  public void openInEditor(File f)
+  {
+    try
+    {
+      Desktop d = Desktop.getDesktop();
+      if (d.isSupported(Desktop.Action.EDIT))
+      {
+        d.edit(f);
+      }
+      else if (d.isSupported(Desktop.Action.OPEN))
+      {
+        d.open(f);
+      }
+      else
+      {
+        showErrorMessage("Sorry, can not open files on your plaftorm");
+      }
+    }
+    catch (Exception e)
+    {
+      showErrorMessage("Sorry, can not open files on your plaftorm");
+    }
+  }
+
+  public <T> T askElement(Collection<T> source, String text)
+  {
+    Box b = Box.createVerticalBox();
+    ImageComboBox cb = new ImageComboBox();
+    b.add(new JLabel(text));
+    b.add(cb);
+    for(T e:source)
+    {
+      cb.addItem(e);
+    }
+    if (JOptionPane.showConfirmDialog(parent, b, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.DEFAULT_OPTION) == JOptionPane.OK_OPTION)
+    {
+      return (T) cb.getSelectedItem();
+    }
+    return null;
+  }
+
+  public String askString(String initial, String text)
+  {
+    Box b = Box.createVerticalBox();
+    JTextField tf = new JTextField();
+    tf.setText(initial);
+    b.add(new JLabel(text));
+    b.add(tf);
+    if (JOptionPane.showConfirmDialog(parent, b, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.DEFAULT_OPTION) == JOptionPane.OK_OPTION)
+    {
+      return tf.getText();
+    }
+    return null;
   }
 
   public boolean showYesNoQuestion(String text)
@@ -69,7 +154,7 @@ public class DialogHelper
     }
     this.showWarningMessage(txt);
   }
-  
+
   public void showWarningMessage(String text)
   {
     JOptionPane.showMessageDialog(parent, text, title, JOptionPane.WARNING_MESSAGE);
@@ -100,26 +185,27 @@ public class DialogHelper
   {
     JOptionPane.showMessageDialog(parent, text, title + " Error", JOptionPane.ERROR_MESSAGE);
   }
-  
-  public Double askDouble(String text, double initial)
+
+  private Double askUnit(UnitTextfield tf, String text, double val)
   {
-    int mm = (int) Math.round(initial * 10);
-    String result = JOptionPane.showInputDialog(parent, text, "" + (mm / 10) + "." + (mm % 10));
-    if (result == null)
+    Box b = Box.createVerticalBox();
+    b.add(new JLabel(text));
+    b.add(tf);
+    tf.setValue(val);
+    if (JOptionPane.showConfirmDialog(parent, b, text, JOptionPane.OK_CANCEL_OPTION, JOptionPane.DEFAULT_OPTION) == JOptionPane.OK_OPTION)
     {
-      return null;
+      return tf.getValue();
     }
-    result = result.replace(",", ".");
-    try
-    {
-      ScriptEngineManager mgr = new ScriptEngineManager();
-      ScriptEngine engine = mgr.getEngineByName("JavaScript");
-      result = engine.eval(result).toString();
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
-    return Double.parseDouble(result);
+    return null;
+  }
+
+  public Double askLength(String text, double mm)
+  {
+    return this.askUnit(new LengthTextfield(), text, mm);
+  }
+
+  public Double askAngle(String text, double rad)
+  {
+    return this.askUnit(new AngleTextfield(), text, rad);
   }
 }
