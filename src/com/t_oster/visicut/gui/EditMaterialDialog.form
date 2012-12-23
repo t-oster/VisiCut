@@ -168,7 +168,7 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton4ActionPerformed"/>
       </Events>
     </Component>
-    <Component class="com.t_oster.visicut.gui.beans.SelectThumbnailButton" name="selectThumbnailButton1">
+    <Component class="com.t_oster.uicomponents.SelectThumbnailButton" name="selectThumbnailButton1">
       <Properties>
         <Property name="name" type="java.lang.String" value="selectThumbnailButton1" noResource="true"/>
       </Properties>
@@ -178,7 +178,7 @@
         </BindingProperty>
       </BindingProperties>
     </Component>
-    <Component class="com.t_oster.visicut.gui.beans.ChooseColorButton" name="materialColorButton">
+    <Component class="com.t_oster.uicomponents.ChooseColorButton" name="materialColorButton">
       <Properties>
         <Property name="text" type="java.lang.String" resourceKey="materialColorButton.text"/>
         <Property name="name" type="java.lang.String" value="materialColorButton" noResource="true"/>
@@ -189,7 +189,7 @@
         </BindingProperty>
       </BindingProperties>
     </Component>
-    <Component class="com.t_oster.visicut.gui.beans.ChooseColorButton" name="chooseCutColorButton">
+    <Component class="com.t_oster.uicomponents.ChooseColorButton" name="chooseCutColorButton">
       <Properties>
         <Property name="text" type="java.lang.String" resourceKey="chooseCutColorButton.text"/>
         <Property name="name" type="java.lang.String" value="chooseCutColorButton" noResource="true"/>
@@ -206,7 +206,7 @@
         <Property name="name" type="java.lang.String" value="jLabel7" noResource="true"/>
       </Properties>
     </Component>
-    <Component class="com.t_oster.visicut.gui.beans.ChooseColorButton" name="chooseEngraveButton">
+    <Component class="com.t_oster.uicomponents.ChooseColorButton" name="chooseEngraveButton">
       <Properties>
         <Property name="text" type="java.lang.String" resourceKey="chooseEngraveButton.text"/>
         <Property name="name" type="java.lang.String" value="chooseEngraveButton" noResource="true"/>
@@ -223,7 +223,7 @@
         <Property name="name" type="java.lang.String" value="jLabel8" noResource="true"/>
       </Properties>
     </Component>
-    <Component class="com.t_oster.visicut.gui.beans.EditableTablePanel" name="editableTablePanel1">
+    <Component class="com.t_oster.uicomponents.EditableTablePanel" name="editableTablePanel1">
       <Properties>
         <Property name="editButtonVisible" type="boolean" value="false"/>
         <Property name="name" type="java.lang.String" value="editableTablePanel1" noResource="true"/>

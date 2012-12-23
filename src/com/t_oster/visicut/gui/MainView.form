@@ -549,7 +549,7 @@
             <Property name="name" type="java.lang.String" value="jLabel5" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="com.t_oster.visicut.gui.beans.ImageComboBox" name="materialComboBox">
+        <Component class="com.t_oster.uicomponents.ImageComboBox" name="materialComboBox">
           <Properties>
             <Property name="name" type="java.lang.String" value="materialComboBox" noResource="true"/>
           </Properties>
@@ -563,7 +563,7 @@
             <Property name="name" type="java.lang.String" value="jLabel9" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="com.t_oster.visicut.gui.beans.ImageComboBox" name="laserCutterComboBox">
+        <Component class="com.t_oster.uicomponents.ImageComboBox" name="laserCutterComboBox">
           <Properties>
             <Property name="name" type="java.lang.String" value="laserCutterComboBox" noResource="true"/>
           </Properties>
@@ -632,7 +632,7 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Component class="com.t_oster.visicut.gui.beans.PositionPanel" name="positionPanel">
+            <Component class="com.t_oster.uicomponents.PositionPanel" name="positionPanel">
               <Properties>
                 <Property name="name" type="java.lang.String" value="positionPanel" noResource="true"/>
               </Properties>

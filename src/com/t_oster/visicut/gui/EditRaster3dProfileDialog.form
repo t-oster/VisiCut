@@ -161,7 +161,7 @@
         </BindingProperty>
       </BindingProperties>
     </Component>
-    <Component class="com.t_oster.visicut.gui.beans.SelectThumbnailButton" name="selectThumbnailButton1">
+    <Component class="com.t_oster.uicomponents.SelectThumbnailButton" name="selectThumbnailButton1">
       <Properties>
         <Property name="name" type="java.lang.String" value="selectThumbnailButton1" noResource="true"/>
       </Properties>

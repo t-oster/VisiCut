@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.uicomponents;
 
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.Helper;
@@ -262,15 +262,15 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
     jPanel1 = new javax.swing.JPanel();
     lbX = new java.awt.Label();
     lbY = new java.awt.Label();
-    ancorPointPanel1 = new com.t_oster.visicut.gui.beans.AncorPointPanel();
-    tfX = new com.t_oster.visicut.gui.beans.LengthTextfield();
-    tfY = new com.t_oster.visicut.gui.beans.LengthTextfield();
-    tfHeight = new com.t_oster.visicut.gui.beans.LengthTextfield();
-    tfAngle = new com.t_oster.visicut.gui.beans.AngleTextfield();
-    tfWidth = new com.t_oster.visicut.gui.beans.LengthTextfield();
+    ancorPointPanel1 = new com.t_oster.uicomponents.AncorPointPanel();
+    tfX = new com.t_oster.uicomponents.LengthTextfield();
+    tfY = new com.t_oster.uicomponents.LengthTextfield();
+    tfHeight = new com.t_oster.uicomponents.LengthTextfield();
+    tfAngle = new com.t_oster.uicomponents.AngleTextfield();
+    tfWidth = new com.t_oster.uicomponents.LengthTextfield();
     cbProportional = new javax.swing.JCheckBox();
 
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PositionPanel"); // NOI18N
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/uicomponents/resources/PositionPanel"); // NOI18N
     lbY1.setText(bundle.getString("HEIGHT")); // NOI18N
 
     lbX1.setText(bundle.getString("WIDTH")); // NOI18N
@@ -388,7 +388,7 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
   }//GEN-LAST:event_ancorPointPanel1PropertyChange
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private com.t_oster.visicut.gui.beans.AncorPointPanel ancorPointPanel1;
+  private com.t_oster.uicomponents.AncorPointPanel ancorPointPanel1;
   private javax.swing.JCheckBox cbProportional;
   private javax.swing.JPanel jPanel1;
   private java.awt.Label lbX;
@@ -396,11 +396,11 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
   private java.awt.Label lbY;
   private java.awt.Label lbY1;
   private java.awt.Label lbY2;
-  private com.t_oster.visicut.gui.beans.AngleTextfield tfAngle;
-  private com.t_oster.visicut.gui.beans.LengthTextfield tfHeight;
-  private com.t_oster.visicut.gui.beans.LengthTextfield tfWidth;
-  private com.t_oster.visicut.gui.beans.LengthTextfield tfX;
-  private com.t_oster.visicut.gui.beans.LengthTextfield tfY;
+  private com.t_oster.uicomponents.AngleTextfield tfAngle;
+  private com.t_oster.uicomponents.LengthTextfield tfHeight;
+  private com.t_oster.uicomponents.LengthTextfield tfWidth;
+  private com.t_oster.uicomponents.LengthTextfield tfX;
+  private com.t_oster.uicomponents.LengthTextfield tfY;
   // End of variables declaration//GEN-END:variables
 
 }

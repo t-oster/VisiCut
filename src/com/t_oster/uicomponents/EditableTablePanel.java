@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.uicomponents;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -197,7 +197,7 @@ public class EditableTablePanel extends javax.swing.JPanel
 
     private String[] columns = new String[]
     {
-      java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/EditableTablePanel").getString("ELEMENTS")
+      java.util.ResourceBundle.getBundle("com/t_oster/uicomponents/resources/EditableTablePanel").getString("ELEMENTS")
     };
 
     @Override
@@ -327,7 +327,7 @@ public class EditableTablePanel extends javax.swing.JPanel
     ));
     jScrollPane1.setViewportView(table);
 
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/EditableTablePanel"); // NOI18N
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/uicomponents/resources/EditableTablePanel"); // NOI18N
     btAdd.setText(bundle.getString("+")); // NOI18N
     btAdd.addActionListener(new java.awt.event.ActionListener()
     {

@@ -2,17 +2,17 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
@@ -25,7 +25,7 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.liblasercut.LaserCutter;
-import com.t_oster.visicut.gui.beans.EditableTableProvider;
+import com.t_oster.uicomponents.EditableTableProvider;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.model.LaserDevice;
 import java.beans.PropertyChangeSupport;
@@ -196,7 +196,7 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
 
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
-        editableTablePanel1 = new com.t_oster.visicut.gui.beans.EditableTablePanel();
+        editableTablePanel1 = new com.t_oster.uicomponents.EditableTablePanel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -277,7 +277,7 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
   }//GEN-LAST:event_jButton5ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private com.t_oster.visicut.gui.beans.EditableTablePanel editableTablePanel1;
+    private com.t_oster.uicomponents.EditableTablePanel editableTablePanel1;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
@@ -318,8 +318,8 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
     }
     catch (Exception e)
     {
-      
-    }   
+
+    }
     return (LaserDevice) this.editObject(result);
   }
 

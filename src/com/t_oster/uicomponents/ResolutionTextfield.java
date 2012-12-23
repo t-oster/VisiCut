@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.uicomponents;
 
 import com.t_oster.liblasercut.platform.Util;
 
@@ -24,10 +24,10 @@ import com.t_oster.liblasercut.platform.Util;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class LengthTextfield extends UnitTextfield
+public class ResolutionTextfield extends UnitTextfield
 {
 
-  private static final String[] units = new String[]{"mm","cm","m","in"};
+  private static final String[] units = new String[]{"dpi","dpmm"};
 
   @Override
   protected String[] getUnits()
@@ -37,42 +37,26 @@ public class LengthTextfield extends UnitTextfield
 
   protected double removeUnit(double value, String unit)
   {
-    if ("mm".equals(unit))
+    if ("dpi".equals(unit))
     {
       return value;
     }
-    else if ("cm".equals(unit))
+    else if ("dpmm".equals(unit))
     {
-      return value*10;
-    }
-    else if ("m".equals(unit))
-    {
-      return value*1000;
-    }
-    else if ("in".equals(unit))
-    {
-      return Util.inch2mm(value);
+      return Util.dpmm2dpi(value);
     }
     return value;
   }
 
   protected double addUnit(double value, String unit)
   {
-    if ("mm".equals(unit))
+    if ("dpi".equals(unit))
     {
       return value;
     }
-    else if ("cm".equals(unit))
+    else if ("dpmm".equals(unit))
     {
-      return value/10;
-    }
-    else if ("m".equals(unit))
-    {
-      return value/1000;
-    }
-    else if ("in".equals(unit))
-    {
-      return Util.mm2inch(value);
+      return Util.dpi2dpmm(value);
     }
     return value;
   }

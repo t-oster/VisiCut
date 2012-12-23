@@ -1,5 +1,7 @@
 package com.t_oster.visicut.gui.beans;
 
+import com.t_oster.uicomponents.EditableTablePanel;
+import com.t_oster.uicomponents.EditableTableProvider;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.EditRaster3dProfileDialog;
 import com.t_oster.visicut.gui.EditRasterProfileDialog;

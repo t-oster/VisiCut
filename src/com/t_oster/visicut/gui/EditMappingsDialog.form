@@ -59,11 +59,11 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="com.t_oster.visicut.gui.beans.EditableTablePanel" name="editableTablePanel1">
+    <Component class="com.t_oster.uicomponents.EditableTablePanel" name="editableTablePanel1">
       <Properties>
         <Property name="editButtonVisible" type="boolean" value="false"/>
         <Property name="name" type="java.lang.String" value="editableTablePanel1" noResource="true"/>
-        <Property name="provider" type="com.t_oster.visicut.gui.beans.EditableTableProvider" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+        <Property name="provider" type="com.t_oster.uicomponents.EditableTableProvider" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection code="this" type="code"/>
         </Property>
       </Properties>

@@ -2,21 +2,21 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.uicomponents;
 
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
@@ -48,7 +48,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
     this.addActionListener(this);
     this.prepareMenu();
   }
-  
+
   private void prepareMenu()
   {
     final JPopupMenu menu = new JPopupMenu();
@@ -92,7 +92,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
   {
     this(null);
   }
-  
+
   protected File defaultDirectory = null;
 
   /**
@@ -115,7 +115,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
     this.defaultDirectory = defaultDirectory;
   }
 
-  
+
   protected String thumbnailPath = null;
   public static final String PROP_THUMBNAILPATH = "thumbnailPath";
 
@@ -131,7 +131,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
 
   /**
    * Set the value of thumbnailPath
-   * This will repaint the Button to display 
+   * This will repaint the Button to display
    * the Thubnnail found on the given path
    *
    * @param thumbnailPath new value of thumbnailPath
@@ -154,7 +154,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
       }
       else
       {
-        this.setText(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/SelectThumbnailButton").getString("FILE NOT FOUND"));
+        this.setText(java.util.ResourceBundle.getBundle("com/t_oster/uicomponents/resources/SelectThumbnailButton").getString("FILE NOT FOUND"));
       }
     }
   }
@@ -163,7 +163,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
   {
     if (Helper.isMacOS())
     {
-      FileDialog fd = new FileDialog((Frame) null, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/SelectThumbnailButton").getString("PLEASE SELECT A THUMBNAIL"));
+      FileDialog fd = new FileDialog((Frame) null, java.util.ResourceBundle.getBundle("com/t_oster/uicomponents/resources/SelectThumbnailButton").getString("PLEASE SELECT A THUMBNAIL"));
       fd.setMode(FileDialog.LOAD);
       fd.setFilenameFilter(new FilenameFilter()
       {
@@ -172,7 +172,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
         {
           return string.toLowerCase().endsWith("png");
         }
-        
+
       });
       if (getDefaultDirectory() != null)
       {
@@ -195,7 +195,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
     {
       JFileChooser fc = new JFileChooser();
       fc.setAcceptAllFileFilterUsed(false);
-      fc.addChoosableFileFilter(new ExtensionFilter(".png", java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/SelectThumbnailButton").getString("PNG FILES (*.PNG)")));
+      fc.addChoosableFileFilter(new ExtensionFilter(".png", java.util.ResourceBundle.getBundle("com/t_oster/uicomponents/resources/SelectThumbnailButton").getString("PNG FILES (*.PNG)")));
       if (getDefaultDirectory() != null)
       {
         fc.setCurrentDirectory(getDefaultDirectory());

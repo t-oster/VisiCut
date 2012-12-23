@@ -2,17 +2,17 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * which means a kind of line which can be
  * cut with the lasercutten in a specified
  * Material
- * 
+ *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class VectorProfile extends LaserProfile
@@ -56,7 +56,7 @@ public class VectorProfile extends LaserProfile
   {
     this.setName("cut");
   }
-  
+
   protected OrderStrategy orderStrategy = OrderStrategy.NEAREST;
 
   /**
@@ -83,7 +83,7 @@ public class VectorProfile extends LaserProfile
     this.orderStrategy = orderStrategy;
   }
 
-  
+
   protected boolean useOutline = false;
 
   /**
@@ -105,7 +105,7 @@ public class VectorProfile extends LaserProfile
   {
     this.useOutline = useOutline;
   }
-  
+
   protected boolean isCut = true;
 
   /**
@@ -169,12 +169,13 @@ public class VectorProfile extends LaserProfile
     result.add(new ShapeDecorator(outerShape));
     return result;
   }
-  
+
   @Override
   public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material, AffineTransform mm2px)
   {
     //TODO calculate outline
     gg.setColor(this.isCut ? material.getCutColor() : material.getEngraveColor());
+    Stroke bak = gg.getStroke();
     Stroke s = new BasicStroke((float) ((mm2px.getScaleX()+mm2px.getScaleY())*this.getWidth()/2), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     gg.setStroke(s);
     if (this.isUseOutline())
@@ -194,7 +195,7 @@ public class VectorProfile extends LaserProfile
         double factor = Util.dpi2dpmm(this.getDPI());
         AffineTransform mm2laserPx = AffineTransform.getScaleInstance(factor, factor);
         sh = mm2laserPx.createTransformedShape(sh);
-        
+
         AffineTransform laserPx2PreviewPx = mm2laserPx.createInverse();
         laserPx2PreviewPx.concatenate(mm2px);
         if (sh == null)
@@ -241,6 +242,7 @@ public class VectorProfile extends LaserProfile
         Logger.getLogger(VectorProfile.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
+    gg.setStroke(bak);
   }
 
   @Override
@@ -287,7 +289,7 @@ public class VectorProfile extends LaserProfile
     cp.setDPI(getDPI());
     return cp;
   }
-  
+
   @Override
   public int hashCode()
   {
