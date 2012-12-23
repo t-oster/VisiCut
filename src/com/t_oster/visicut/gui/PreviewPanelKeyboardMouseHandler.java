@@ -26,9 +26,7 @@ import com.t_oster.visicut.gui.beans.PreviewPanel;
 import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.PlfPart;
-import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -42,7 +40,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -269,6 +266,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     rotatingSet
   };
   private Point lastMousePosition = null;
+  private Point2D.Double lastMousePositionMm = null;
   private Point lastMousePositionInViewport = null;
   private MouseAction currentAction = null;
   private Button currentButton = null;
@@ -443,9 +441,26 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     }
   }
 
+  private Point2D.Double mouseToMm(Point p)
+  {
+    Point2D.Double mouseInMm = new Point2D.Double(p.x, p.y);
+    try
+    {
+      previewPanel.getMmToPxTransform().createInverse().transform(mouseInMm, mouseInMm);
+    }
+    catch (NullPointerException e)
+    {
+    }
+    catch (NoninvertibleTransformException ex)
+    {
+    }
+    return mouseInMm;
+  }
+
   public void mousePressed(MouseEvent evt)
   {
     lastMousePosition = evt.getPoint();
+    lastMousePositionMm = this.mouseToMm(lastMousePosition);
     lastMousePositionInViewport = SwingUtilities.convertMouseEvent(evt.getComponent(), evt, previewPanel.getParent()).getPoint();
     currentAction = MouseAction.movingViewport;
     if (VisicutModel.getInstance().getStartPoint() != null)
@@ -459,8 +474,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     }
     if (getEditRect() != null)
     {//something selected
-      Rectangle2D curRect = Helper.transform(getEditRect(), this.previewPanel.getMmToPxTransform());
-      Button b = getEditRect().getButtonByPoint(lastMousePosition, this.previewPanel.getMmToPxTransform());
+      Button b = getEditRect().getButtonByPoint(lastMousePositionMm, null);
       if (b != null)
       {//a button selected
         currentButton = b;
@@ -469,7 +483,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       }
       else
       {//no button selected
-        if (curRect.contains(lastMousePosition))
+        if (getEditRect().contains(lastMousePositionMm))
         {//selection in the rectangle
           currentAction = MouseAction.movingSet;
         }
@@ -500,6 +514,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
     }
     lastMousePosition = evt.getPoint();
+    lastMousePositionMm = this.mouseToMm(lastMousePosition);
   }
 
   public void mouseEntered(MouseEvent me)
@@ -700,6 +715,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
 
   private void setCursor(Point p)
   {
+    Point2D.Double mouseInMm = this.mouseToMm(p);
     int cursor = Cursor.DEFAULT_CURSOR;
     cursorcheck:
     {
@@ -712,77 +728,77 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
           break cursorcheck;
         }
       }
-      if (this.getSelectedSet() != null)
+      if (getEditRect() != null)
       {
-        if (getEditRect() != null)
+        //Check for text cursor
+        if (getEditRect().isRotateMode())
         {
-          //Check for text cursor
-          if (getEditRect().isRotateMode())
+          if (getEditRect().getParameterFieldBounds(ParameterField.ANGLE).contains(p))
           {
-            if (getEditRect().getParameterFieldBounds(ParameterField.ANGLE).contains(p))
+            cursor = Cursor.TEXT_CURSOR;
+            break cursorcheck;
+          }
+        }
+        else
+        {
+          for (ParameterField param : EditRectangle.ParameterField.values())
+          {
+            if (param != ParameterField.ANGLE && getEditRect().getParameterFieldBounds(param).contains(p))
             {
               cursor = Cursor.TEXT_CURSOR;
               break cursorcheck;
             }
           }
-          else
-          {
-            for (ParameterField param : EditRectangle.ParameterField.values())
-            {
-              if (param != ParameterField.ANGLE && getEditRect().getParameterFieldBounds(param).contains(p))
-              {
-                cursor = Cursor.TEXT_CURSOR;
-                break cursorcheck;
-              }
-            }
-          }
-          Button b = getEditRect().getButtonByPoint(p, this.previewPanel.getMmToPxTransform());
-          if (b != null)
-          {
-            if (getEditRect().isRotateMode() && b == Button.ROTATE_BUTTON)
-            {
-              //TODO: Create rotate cursor
-              cursor = Cursor.CROSSHAIR_CURSOR;
-              break cursorcheck;
-            }
-            switch (b)
-            {
-              case TOP_RIGHT:
-                cursor = Cursor.NE_RESIZE_CURSOR;
-                break cursorcheck;
-              case CENTER_RIGHT:
-                cursor = Cursor.E_RESIZE_CURSOR;
-                break cursorcheck;
-              case BOTTOM_RIGHT:
-                cursor = Cursor.SE_RESIZE_CURSOR;
-                break cursorcheck;
-              case BOTTOM_CENTER:
-                cursor = Cursor.S_RESIZE_CURSOR;
-                break cursorcheck;
-              case BOTTOM_LEFT:
-                cursor = Cursor.SW_RESIZE_CURSOR;
-                break cursorcheck;
-              case CENTER_LEFT:
-                cursor = Cursor.W_RESIZE_CURSOR;
-                break cursorcheck;
-              case TOP_LEFT:
-                cursor = Cursor.NW_RESIZE_CURSOR;
-                break cursorcheck;
-              case TOP_CENTER:
-                cursor = Cursor.N_RESIZE_CURSOR;
-                break cursorcheck;
-            }
-          }
         }
-        Rectangle2D bb = this.getSelectedSet().getBoundingBox();
-        if (bb != null)
+        Button b = getEditRect().getButtonByPoint(mouseInMm, null);
+        if (b != null)
         {
-          Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
-          if (e.contains(p))
+          if (getEditRect().isRotateMode() && b == Button.ROTATE_BUTTON)
           {
-            cursor = this.getEditRect() == null ? Cursor.HAND_CURSOR : Cursor.MOVE_CURSOR;
+            //TODO: Create rotate cursor
+            cursor = Cursor.CROSSHAIR_CURSOR;
             break cursorcheck;
           }
+          switch (b)
+          {
+            case TOP_RIGHT:
+              cursor = Cursor.NE_RESIZE_CURSOR;
+              break cursorcheck;
+            case CENTER_RIGHT:
+              cursor = Cursor.E_RESIZE_CURSOR;
+              break cursorcheck;
+            case BOTTOM_RIGHT:
+              cursor = Cursor.SE_RESIZE_CURSOR;
+              break cursorcheck;
+            case BOTTOM_CENTER:
+              cursor = Cursor.S_RESIZE_CURSOR;
+              break cursorcheck;
+            case BOTTOM_LEFT:
+              cursor = Cursor.SW_RESIZE_CURSOR;
+              break cursorcheck;
+            case CENTER_LEFT:
+              cursor = Cursor.W_RESIZE_CURSOR;
+              break cursorcheck;
+            case TOP_LEFT:
+              cursor = Cursor.NW_RESIZE_CURSOR;
+              break cursorcheck;
+            case TOP_CENTER:
+              cursor = Cursor.N_RESIZE_CURSOR;
+              break cursorcheck;
+          }
+        }
+        if (getEditRect().contains(mouseInMm))
+        {
+          cursor = Cursor.MOVE_CURSOR;
+          break cursorcheck;
+        }
+      }
+      for (PlfPart part : VisicutModel.getInstance().getPlfFile())
+      {
+        if (part.getGraphicObjects().getBoundingBox().contains(mouseInMm))
+        {
+          cursor = Cursor.HAND_CURSOR;
+          break cursorcheck;
         }
       }
     }

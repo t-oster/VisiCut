@@ -2,17 +2,17 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
@@ -25,6 +25,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -55,7 +56,7 @@ public class EditRectangle extends Rectangle2D.Double
   {
     this.rotationAngle = rotationAngle;
   }
-  
+
   protected boolean rotateMode = false;
 
   /**
@@ -84,12 +85,12 @@ public class EditRectangle extends Rectangle2D.Double
   {
     super(x,y,width,height);
   }
-  
+
   public EditRectangle(Rectangle2D r)
   {
     super(r.getX(),r.getY(),r.getWidth(),r.getHeight());
   }
-  
+
   public enum Button
   {
     TOP_LEFT,
@@ -107,7 +108,7 @@ public class EditRectangle extends Rectangle2D.Double
    * Returns the Rectangle of the given Button
    * of an EditRectangle with the given Dimensions
    * @param b
-   * @return 
+   * @return
    */
   private Rectangle2D getButton(Button b, Rectangle2D r)
   {
@@ -133,7 +134,7 @@ public class EditRectangle extends Rectangle2D.Double
     return null;
   }
 
-  public Button getButtonByPoint(Point p, AffineTransform atr)
+  public Button getButtonByPoint(Point2D.Double p, AffineTransform atr)
   {
     Rectangle2D tr = atr == null ? this : Helper.transform(this, atr);
     if (this.rotateMode)
@@ -157,11 +158,11 @@ public class EditRectangle extends Rectangle2D.Double
     }
     return null;
   }
-  
+
   private Color lineColor = new Color(104,146,255);
   private Color textColor = Color.BLACK;
   private Color buttonColor = lineColor;
-  
+
   public enum ParameterField
   {
     X,
@@ -170,7 +171,7 @@ public class EditRectangle extends Rectangle2D.Double
     HEIGHT,
     ANGLE
   }
-  
+
   private Rectangle[] parameterFieldBounds = new Rectangle[]{
     new Rectangle(),
     new Rectangle(),
@@ -183,7 +184,7 @@ public class EditRectangle extends Rectangle2D.Double
    * displaying the given parameter
    * in Panel Coordinates
    * @param pmf
-   * @return 
+   * @return
    */
   public Rectangle getParameterFieldBounds(ParameterField pmf)
   {
@@ -197,14 +198,14 @@ public class EditRectangle extends Rectangle2D.Double
     }
     return null;
   }
-  
+
   /**
    * Renders the Edit Rectangle on the given Graphics2D.
    * The Rectangle coordinates are transformed according
    * the current Transform in the graphics. The Stroke width
    * and Button size, however are always in pixel.
    * @param gg
-   * @param transform 
+   * @param transform
    */
   public void render(Graphics2D gg, AffineTransform mm2px)
   {
