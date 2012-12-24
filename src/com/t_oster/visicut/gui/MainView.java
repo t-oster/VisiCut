@@ -177,7 +177,7 @@ public class MainView extends javax.swing.JFrame
           MappingSet m = dialog.askElement(MappingManager.getInstance().getAll(), bundle.getString("LOAD_MAPPING"));
           if (m != null)
           {
-            p.setMapping(m);
+            p.setMapping(m.clone());
             VisicutModel.getInstance().firePartUpdated(p);
           }
         }
@@ -377,6 +377,22 @@ public class MainView extends javax.swing.JFrame
     }
     this.refreshMaterialComboBox();
     
+    this.refreshMappingComboBox();
+
+    this.refreshObjectComboBox();
+  }
+  
+  public void refreshMappingComboBox() {
+    // switch off listeners, so that no ItemChangedEvent is generated while we are working
+    ItemListener[] itemListeners = this.objectComboBox.getItemListeners();
+    for (ItemListener l: itemListeners) {
+      this.objectComboBox.removeItemListener(l);
+    }
+    ActionListener[] actionListeners = this.objectComboBox.getActionListeners();
+    for (ActionListener l: actionListeners) {
+      this.objectComboBox.removeActionListener(l);
+    }
+    
     // fill mapping combobox
     this.predefinedMappingComboBox.removeAllItems();
     // first item is for null or empty mappings
@@ -393,8 +409,16 @@ public class MainView extends javax.swing.JFrame
         this.predefinedMappingComboBox.setSelectedItem(selectedMapping);
       }
     }
-
-    this.refreshObjectComboBox();
+    
+    
+    // re-add listeners
+    // All events that this function would have caused were suppressed
+    for (ItemListener l: itemListeners) {
+      this.objectComboBox.addItemListener(l);
+    }
+    for (ActionListener l: actionListeners) {
+      this.objectComboBox.addActionListener(l);
+    }
   }
    /**
    * update entries of objectComboBox, then update selection
@@ -544,6 +568,12 @@ public class MainView extends javax.swing.JFrame
         filesDropSupport1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 filesDropSupport1PropertyChange(evt);
+            }
+        });
+
+        mappingManager1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                mappingManager1PropertyChange(evt);
             }
         });
 
@@ -756,7 +786,7 @@ public class MainView extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(customMappingRadioButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
+                .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -940,7 +970,7 @@ public class MainView extends javax.swing.JFrame
                     .addComponent(btRemoveObject)
                     .addComponent(btAddObject))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
+                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2307,6 +2337,10 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
   }
   VisicutModel.getInstance().setSelectedPart(selected);
 }//GEN-LAST:event_objectComboBoxChangeHandler
+
+private void mappingManager1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_mappingManager1PropertyChange
+  refreshMappingComboBox();
+}//GEN-LAST:event_mappingManager1PropertyChange
 
 /**
  * Open a laser properties dialog (speed, power, frequency, focus for each profile)
