@@ -407,7 +407,6 @@ public class MainView extends javax.swing.JFrame
    */
   public void refreshObjectComboBoxEntries(boolean forceUpdate) {
     // TODO this function somehow causes the first entry to be selected if the list of items has changed, even if refreshObjectComboBoxSelection is called afterwards!
-    System.out.println("refreshObjectComboBoxEntries");
     // see if list of items has changed
     // get lists of plfParts, then compare them
     List<Object> comboBoxItems,plfFileItems;
@@ -425,8 +424,6 @@ public class MainView extends javax.swing.JFrame
     }
     if (plfFileItems.equals(comboBoxItems) && !forceUpdate) {
       throw new RuntimeException("refreshObjectComboBoxEntries was called, although nothing has changed - this is bad as it may cause strange behaviour");
-//      System.err.println("refreshObjectComboBoxEntries was called, although nothing has changed - this is bad as it may cause strange behaviour");
-//      return;
     }
     
     // plfItems have been added or removed
