@@ -61,6 +61,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
@@ -393,52 +394,29 @@ public class MainView extends javax.swing.JFrame
       }
     }
 
-    this.refreshObjectComboBoxEntries();
+    this.refreshObjectComboBox();
   }
-  
-  public void refreshObjectComboBoxEntries() {
-    refreshObjectComboBoxEntries(false);
-  }
-  
-  /**
+   /**
    * update entries of objectComboBox, then update selection
    * @param forceUpdate even update if the list of PlfParts has not changed
    * @throws RuntimeException if forceUpdate==false and PlfParts have not changed
    */
-  public void refreshObjectComboBoxEntries(boolean forceUpdate) {
-    // TODO this function somehow causes the first entry to be selected if the list of items has changed, even if refreshObjectComboBoxSelection is called afterwards!
-    // see if list of items has changed
-    // get lists of plfParts, then compare them
-    List<Object> comboBoxItems,plfFileItems;
-    comboBoxItems = new LinkedList<Object>();
-    plfFileItems = new LinkedList<Object>();
-    for (int i=0; i<this.objectComboBox.getModel().getSize(); i++) {
-      comboBoxItems.add(this.objectComboBox.getModel().getElementAt(i));
+  public void refreshObjectComboBox() {    
+    // switch off listeners, so that no ItemChangedEvent is generated while we are working
+    ItemListener[] itemListeners = this.objectComboBox.getItemListeners();
+    for (ItemListener l: itemListeners) {
+      this.objectComboBox.removeItemListener(l);
     }
-    for (Object o: VisicutModel.getInstance().getPlfFile()) {
-      if (o instanceof String) {
-        // skip the "nothing selected" entry
-        continue;
-      }
-      plfFileItems.add(o);
-    }
-    if (plfFileItems.equals(comboBoxItems) && !forceUpdate) {
-      throw new RuntimeException("refreshObjectComboBoxEntries was called, although nothing has changed - this is bad as it may cause strange behaviour");
-    }
-    
-    // plfItems have been added or removed
-    
-    // switch off action listeners, so that no ItemChangedEvent is generated while we are working
-    ActionListener[] listeners = this.objectComboBox.getActionListeners().clone();
-    for (ActionListener l: listeners) {
+    ActionListener[] actionListeners = this.objectComboBox.getActionListeners();
+    for (ActionListener l: actionListeners) {
       this.objectComboBox.removeActionListener(l);
     }
     
+    // fill new list of PlfItems
     this.objectComboBox.removeAllItems();
     if (VisicutModel.getInstance().getSelectedPart() == null) {
-      // add default "nothing selected" item
+      // add default "nothing selected" item if nothing is selected
       this.objectComboBox.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("(nothing selected)"));
-      this.objectComboBox.setSelectedIndex(0);
     }
     for (PlfPart p: VisicutModel.getInstance().getPlfFile()) {
       if (p == null || p.getSourceFile() == null) { // necessary? 
@@ -448,37 +426,23 @@ public class MainView extends javax.swing.JFrame
       this.objectComboBox.addItem(p);
     }
     
-    // re-add Action listeners
-    for (ActionListener l: listeners) {
-      this.objectComboBox.addActionListener(l);
-    }
-    // now set the correct selection and cause one single event
-    this.refreshObjectComboBoxSelection();
-  }
-  
-  /**
-   * update selection of objectComboBox
-   * if necessary, also update entries of objectComboBox to (not) display the "nothing selected" item
-   * @see refreshObjectComboBoxEntries()
-   */
-  public void refreshObjectComboBoxSelection() {
+    // now set the correct selection
     if (VisicutModel.getInstance().getSelectedPart() != null) {
       // something is selected, also select this in the combobox
       this.objectComboBox.setSelectedItem(VisicutModel.getInstance().getSelectedPart());
-      if (this.objectComboBox.getItemAt(0) instanceof String) {
-        // the item "nothing selected" is present, remove it
-        this.objectComboBox.removeItemAt(0);
-      }
     } else {
-      // nothing is selected. make sure that the pseudo-item "nothing selected" is active
-      if (this.objectComboBox.getItemAt(0) instanceof String) {
-        // the item "nothing selected" is present, select it
-        this.objectComboBox.setSelectedIndex(0);
-      } else {
-        // "nothing selected" item is missing, update combobox entries.
-        // this function will be called again, but then it will take the previous branch.
-        refreshObjectComboBoxEntries(true);
-      } 
+      // no PlfPart is selected, so select the pseudo-item "nothing selected"
+      this.objectComboBox.setSelectedIndex(0);
+    }
+    
+    // re-add listeners
+    // All events that this function would have caused were suppressed,
+    // but this is okay because objectComboBoxChangeHandler() is only needed for user interaction with the objectCombobox
+    for (ItemListener l: itemListeners) {
+      this.objectComboBox.addItemListener(l);
+    }
+    for (ActionListener l: actionListeners) {
+      this.objectComboBox.addActionListener(l);
     }
   }
   
@@ -1638,13 +1602,10 @@ private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
 
 private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_visicutModel1PropertyChange
   if (evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_ADDED)
-    ||evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_REMOVED)) {
-    // regenerate list of parts
-    this.refreshObjectComboBoxEntries();
-  }
-else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART)) {
-    // update selection in ComboBox
-    this.refreshObjectComboBoxSelection();
+    ||evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_REMOVED)
+    ||evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART)) {
+    // regenerate list of parts, update selection in ComboBox
+    this.refreshObjectComboBox();
   }
     
   if (evt.getPropertyName().equals(VisicutModel.PROP_PLF_FILE_CHANGED))
