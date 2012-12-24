@@ -60,5 +60,15 @@ public class PlfPart {
   {
     this.mapping = mapping;
   }
+  
+  @Override
+  public String toString() {
+    // this is needed for the strings of the items in MainView.objectComboBox
+    // (JComboBox displays the toString() value of each object)
+    if (sourceFile == null || sourceFile.getName() == null) {
+      return super.toString();
+    }
+    return sourceFile.getName();
+  }
 
 }
