@@ -348,7 +348,7 @@ public class MainView extends javax.swing.JFrame
   }
 
   /*
-   * Initially fills LaserCutter,Material and Mapping ComboBox with all possible Elements
+   * Initially fills LaserCutter, Material, Object and Mapping ComboBox with all possible Elements
    */
   private void fillComboBoxes()
   {
@@ -392,8 +392,99 @@ public class MainView extends javax.swing.JFrame
         this.predefinedMappingComboBox.setSelectedItem(selectedMapping);
       }
     }
-  }
 
+    this.refreshObjectComboBoxEntries();
+  }
+  
+  public void refreshObjectComboBoxEntries() {
+    refreshObjectComboBoxEntries(false);
+  }
+  
+  /**
+   * update entries of objectComboBox, then update selection
+   * @param forceUpdate even update if the list of PlfParts has not changed
+   * @throws RuntimeException if forceUpdate==false and PlfParts have not changed
+   */
+  public void refreshObjectComboBoxEntries(boolean forceUpdate) {
+    // TODO this function somehow causes the first entry to be selected if the list of items has changed, even if refreshObjectComboBoxSelection is called afterwards!
+    System.out.println("refreshObjectComboBoxEntries");
+    // see if list of items has changed
+    // get lists of plfParts, then compare them
+    List<Object> comboBoxItems,plfFileItems;
+    comboBoxItems = new LinkedList<Object>();
+    plfFileItems = new LinkedList<Object>();
+    for (int i=0; i<this.objectComboBox.getModel().getSize(); i++) {
+      comboBoxItems.add(this.objectComboBox.getModel().getElementAt(i));
+    }
+    for (Object o: VisicutModel.getInstance().getPlfFile()) {
+      if (o instanceof String) {
+        // skip the "nothing selected" entry
+        continue;
+      }
+      plfFileItems.add(o);
+    }
+    if (plfFileItems.equals(comboBoxItems) && !forceUpdate) {
+      throw new RuntimeException("refreshObjectComboBoxEntries was called, although nothing has changed - this is bad as it may cause strange behaviour");
+//      System.err.println("refreshObjectComboBoxEntries was called, although nothing has changed - this is bad as it may cause strange behaviour");
+//      return;
+    }
+    
+    // plfItems have been added or removed
+    
+    // switch off action listeners, so that no ItemChangedEvent is generated while we are working
+    ActionListener[] listeners = this.objectComboBox.getActionListeners().clone();
+    for (ActionListener l: listeners) {
+      this.objectComboBox.removeActionListener(l);
+    }
+    
+    this.objectComboBox.removeAllItems();
+    if (VisicutModel.getInstance().getSelectedPart() == null) {
+      // add default "nothing selected" item
+      this.objectComboBox.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("(nothing selected)"));
+      this.objectComboBox.setSelectedIndex(0);
+    }
+    for (PlfPart p: VisicutModel.getInstance().getPlfFile()) {
+      if (p == null || p.getSourceFile() == null) { // necessary? 
+        continue;
+      }
+      // add regular item
+      this.objectComboBox.addItem(p);
+    }
+    
+    // re-add Action listeners
+    for (ActionListener l: listeners) {
+      this.objectComboBox.addActionListener(l);
+    }
+    // now set the correct selection and cause one single event
+    this.refreshObjectComboBoxSelection();
+  }
+  
+  /**
+   * update selection of objectComboBox
+   * if necessary, also update entries of objectComboBox to (not) display the "nothing selected" item
+   * @see refreshObjectComboBoxEntries()
+   */
+  public void refreshObjectComboBoxSelection() {
+    if (VisicutModel.getInstance().getSelectedPart() != null) {
+      // something is selected, also select this in the combobox
+      this.objectComboBox.setSelectedItem(VisicutModel.getInstance().getSelectedPart());
+      if (this.objectComboBox.getItemAt(0) instanceof String) {
+        // the item "nothing selected" is present, remove it
+        this.objectComboBox.removeItemAt(0);
+      }
+    } else {
+      // nothing is selected. make sure that the pseudo-item "nothing selected" is active
+      if (this.objectComboBox.getItemAt(0) instanceof String) {
+        // the item "nothing selected" is present, select it
+        this.objectComboBox.setSelectedIndex(0);
+      } else {
+        // "nothing selected" item is missing, update combobox entries.
+        // this function will be called again, but then it will take the previous branch.
+        refreshObjectComboBoxEntries(true);
+      } 
+    }
+  }
+  
   /** This method is called from within the constructor to
    * initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is
@@ -434,6 +525,12 @@ public class MainView extends javax.swing.JFrame
         cbEditBeforeExecute = new javax.swing.JCheckBox();
         executeJobButton = new javax.swing.JButton();
         editLaserSettingsButton = new javax.swing.JButton();
+        objectComboBox = new javax.swing.JComboBox();
+        jSeparator1 = new javax.swing.JSeparator();
+        jSeparator2 = new javax.swing.JSeparator();
+        laserSettingsLabel = new javax.swing.JLabel();
+        btRemoveObject = new javax.swing.JButton();
+        btAddObject = new javax.swing.JButton();
         captureImageButton = new javax.swing.JButton();
         progressBar = new javax.swing.JProgressBar();
         jButton1 = new javax.swing.JButton();
@@ -580,11 +677,11 @@ public class MainView extends javax.swing.JFrame
                     .addGroup(mappingPanelLayout.createSequentialGroup()
                         .addComponent(predefinedMappingRadioButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(predefinedMappingComboBox, 0, 217, Short.MAX_VALUE)))
+                        .addComponent(predefinedMappingComboBox, 0, 210, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(mappingPanelLayout.createSequentialGroup()
                 .addGap(21, 21, 21)
-                .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE))
+                .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE))
         );
         mappingPanelLayout.setVerticalGroup(
             mappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -595,7 +692,7 @@ public class MainView extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(customMappingRadioButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE)
+                .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -653,6 +750,38 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
+        objectComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        objectComboBox.setName("objectComboBox"); // NOI18N
+        objectComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                objectComboBoxChangeHandler(evt);
+            }
+        });
+
+        jSeparator1.setName("jSeparator1"); // NOI18N
+
+        jSeparator2.setName("jSeparator2"); // NOI18N
+
+        laserSettingsLabel.setText(resourceMap.getString("laserSettingsLabel.text")); // NOI18N
+        laserSettingsLabel.setName("laserSettingsLabel"); // NOI18N
+
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/uicomponents/resources/EditableTablePanel"); // NOI18N
+        btRemoveObject.setText(bundle.getString("-")); // NOI18N
+        btRemoveObject.setName("btRemoveObject"); // NOI18N
+        btRemoveObject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btRemoveObjectActionPerformed(evt);
+            }
+        });
+
+        btAddObject.setText(bundle.getString("+")); // NOI18N
+        btAddObject.setName("btAddObject"); // NOI18N
+        btAddObject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btAddObjectActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -660,31 +789,29 @@ public class MainView extends javax.swing.JFrame
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(mappingTabbedPane, 0, 0, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jSeparator1)
+                        .addContainerGap())
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel9)
                             .addComponent(jLabel1)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addComponent(laserCutterComboBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel2Layout.createSequentialGroup()
                                     .addComponent(materialComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(btAddMaterial))
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createSequentialGroup()
                                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                             .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                             .addComponent(btAddMaterialThickness))
                                         .addComponent(jLabel5))
-                                    .addGap(20, 20, 20)
-                                    .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(jLabel2))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                                    .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(20, 20, 20))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(editLaserSettingsButton)
-                        .addContainerGap())
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
@@ -697,6 +824,25 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(calculateTimeButton)))
+                        .addContainerGap())
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(objectComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btAddObject)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btRemoveObject)
+                        .addGap(20, 20, 20))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(mappingTabbedPane, 0, 0, Short.MAX_VALUE))
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(laserSettingsLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 130, Short.MAX_VALUE)
+                        .addComponent(editLaserSettingsButton)
                         .addContainerGap())))
         );
         jPanel2Layout.setVerticalGroup(
@@ -708,26 +854,36 @@ public class MainView extends javax.swing.JFrame
                 .addComponent(laserCutterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(6, 6, 6)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btAddMaterial))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btAddMaterialThickness)))
-                    .addComponent(jCheckBox1))
+                            .addComponent(btAddMaterialThickness))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(objectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btRemoveObject)
+                    .addComponent(btAddObject))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mappingTabbedPane)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(editLaserSettingsButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(editLaserSettingsButton)
+                    .addComponent(laserSettingsLabel))
+                .addGap(34, 34, 34)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10)
@@ -736,7 +892,7 @@ public class MainView extends javax.swing.JFrame
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(executeJobButton)
                     .addComponent(cbEditBeforeExecute))
-                .addGap(15, 15, 15))
+                .addContainerGap())
         );
 
         captureImageButton.setIcon(resourceMap.getIcon("captureImageButton.icon")); // NOI18N
@@ -1104,7 +1260,7 @@ public class MainView extends javax.swing.JFrame
                         .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 130, Short.MAX_VALUE)
                         .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 652, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -1126,7 +1282,7 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(bt1to1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 631, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -1478,6 +1634,16 @@ private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
 }//GEN-LAST:event_saveAsMenuItemActionPerformed
 
 private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_visicutModel1PropertyChange
+  if (evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_ADDED)
+    ||evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_REMOVED)) {
+    // regenerate list of parts
+    this.refreshObjectComboBoxEntries();
+  }
+else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART)) {
+    // update selection in ComboBox
+    this.refreshObjectComboBoxSelection();
+  }
+    
   if (evt.getPropertyName().equals(VisicutModel.PROP_PLF_FILE_CHANGED))
   {
     MainView.this.timeLabel.setText("");
@@ -1502,8 +1668,6 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
   {
     PlfPart p = this.visicutModel1.getSelectedPart();
     this.reloadMenuItem.setEnabled(p != null);
-    this.jLabel2.setText(bundle.getString("jLabel2.text")+" "+
-      (p != null && p.getSourceFile() != null ? p.getSourceFile().getName() : ""));
     this.mappingTabbedPane.setVisible(p != null);
     
     // find out if the mapping is a predefined one, set the combobox and radiobutton specifically
@@ -2156,6 +2320,30 @@ private void PredefinedMappingComboBoxChanged(java.awt.event.ActionEvent evt) {/
   }
 }//GEN-LAST:event_PredefinedMappingComboBoxChanged
 
+private void btRemoveObjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRemoveObjectActionPerformed
+  VisicutModel.getInstance().removeSelectedPart();
+}//GEN-LAST:event_btRemoveObjectActionPerformed
+
+private void btAddObjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAddObjectActionPerformed
+  importMenuItemActionPerformed(evt);
+}//GEN-LAST:event_btAddObjectActionPerformed
+
+private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_objectComboBoxChangeHandler
+  if (!(this.objectComboBox.getSelectedItem() instanceof PlfPart)) {
+    // the user selected the "please select something" item - ignore this
+    return;
+  }
+  PlfPart selected = (PlfPart) this.objectComboBox.getSelectedItem();
+  if (!VisicutModel.getInstance().getPlfFile().contains(selected)) {
+    // not available - can this happen? maybe if a strange timing occurs while loading a file and changing the combobox
+    return;
+  }
+  if (evt.getStateChange()!=java.awt.event.ItemEvent.SELECTED) {
+    return;
+  }
+  VisicutModel.getInstance().setSelectedPart(selected);
+}//GEN-LAST:event_objectComboBoxChangeHandler
+
 /**
  * Open a laser properties dialog (speed, power, frequency, focus for each profile)
  * @return the new laser settings (or null if "cancel" was pressed)
@@ -2202,8 +2390,10 @@ private void PredefinedMappingComboBoxChanged(java.awt.event.ActionEvent evt) {/
     private javax.swing.JButton bt1to1;
     private javax.swing.JButton btAddMaterial;
     private javax.swing.JButton btAddMaterialThickness;
+    private javax.swing.JButton btAddObject;
     private javax.swing.JButton btFillScreen;
     private javax.swing.JButton btFitScreen;
+    private javax.swing.JButton btRemoveObject;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton calculateTimeButton;
     private javax.swing.JMenuItem calibrateCameraMenuItem;
@@ -2234,6 +2424,8 @@ private void PredefinedMappingComboBoxChanged(java.awt.event.ActionEvent evt) {/
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JMenu jmExamples;
     private javax.swing.JMenuItem jmExportSettings;
     private javax.swing.JMenu jmExtras;
@@ -2243,6 +2435,7 @@ private void PredefinedMappingComboBoxChanged(java.awt.event.ActionEvent evt) {/
     private javax.swing.JMenuItem jmManageLaserprofiles;
     private javax.swing.JCheckBoxMenuItem jmShowPhoto;
     private com.t_oster.uicomponents.ImageComboBox laserCutterComboBox;
+    private javax.swing.JLabel laserSettingsLabel;
     private com.t_oster.visicut.managers.MappingManager mappingManager1;
     private javax.swing.JPanel mappingPanel;
     private javax.swing.JTabbedPane mappingTabbedPane;
@@ -2250,6 +2443,7 @@ private void PredefinedMappingComboBoxChanged(java.awt.event.ActionEvent evt) {/
     private javax.swing.JMenuItem materialMenuItem;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newMenuItem;
+    private javax.swing.JComboBox objectComboBox;
     private javax.swing.JMenuItem openMenuItem;
     private com.t_oster.uicomponents.PositionPanel positionPanel;
     private javax.swing.JComboBox predefinedMappingComboBox;
