@@ -146,6 +146,23 @@ public abstract class FilebasedManager<T>
   
   public void add(T mp) throws FileNotFoundException, IOException
   {
+    if (mp==null) {
+      return;
+    }
+    
+    // objects with the same storage path as the newly added one are overwritten - delete them
+    // otherwise getAll() would return the old and new version of an item, both with the same name
+    // with this, Manager.getAll() should always equal Manager.reload().getAll()  (except for special cases in subclasses, like temporary profiles)
+    List<T> objectsToRemove=new LinkedList<T>();
+    for (T object: this.getAll()) {
+      if (this.getObjectPath(object).equals(this.getObjectPath(mp))) {
+        objectsToRemove.add(object);
+      }
+    }
+    for (T objectToRemove: objectsToRemove) {
+      this.objects.remove(objectToRemove);
+    }
+    
     this.getAll().add(mp);
     this.save(mp, this.getObjectPath(mp));
     Collections.sort(this.objects, getComparator());

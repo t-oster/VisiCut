@@ -61,6 +61,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
@@ -176,7 +177,7 @@ public class MainView extends javax.swing.JFrame
           MappingSet m = dialog.askElement(MappingManager.getInstance().getAll(), bundle.getString("LOAD_MAPPING"));
           if (m != null)
           {
-            p.setMapping(m);
+            p.setMapping(m.clone());
             VisicutModel.getInstance().firePartUpdated(p);
           }
         }
@@ -348,7 +349,7 @@ public class MainView extends javax.swing.JFrame
   }
 
   /*
-   * Initially fills LaserCutter,Material and Mapping ComboBox with all possible Elements
+   * Initially fills LaserCutter, Material, Object and Mapping ComboBox with all possible Elements
    */
   private void fillComboBoxes()
   {
@@ -376,6 +377,22 @@ public class MainView extends javax.swing.JFrame
     }
     this.refreshMaterialComboBox();
     
+    this.refreshMappingComboBox();
+
+    this.refreshObjectComboBox();
+  }
+  
+  public void refreshMappingComboBox() {
+    // switch off listeners, so that no ItemChangedEvent is generated while we are working
+    ItemListener[] itemListeners = this.objectComboBox.getItemListeners();
+    for (ItemListener l: itemListeners) {
+      this.objectComboBox.removeItemListener(l);
+    }
+    ActionListener[] actionListeners = this.objectComboBox.getActionListeners();
+    for (ActionListener l: actionListeners) {
+      this.objectComboBox.removeActionListener(l);
+    }
+    
     // fill mapping combobox
     this.predefinedMappingComboBox.removeAllItems();
     // first item is for null or empty mappings
@@ -392,8 +409,67 @@ public class MainView extends javax.swing.JFrame
         this.predefinedMappingComboBox.setSelectedItem(selectedMapping);
       }
     }
+    
+    
+    // re-add listeners
+    // All events that this function would have caused were suppressed
+    for (ItemListener l: itemListeners) {
+      this.objectComboBox.addItemListener(l);
+    }
+    for (ActionListener l: actionListeners) {
+      this.objectComboBox.addActionListener(l);
+    }
   }
-
+   /**
+   * update entries of objectComboBox, then update selection
+   * @param forceUpdate even update if the list of PlfParts has not changed
+   * @throws RuntimeException if forceUpdate==false and PlfParts have not changed
+   */
+  public void refreshObjectComboBox() {    
+    // switch off listeners, so that no ItemChangedEvent is generated while we are working
+    ItemListener[] itemListeners = this.objectComboBox.getItemListeners();
+    for (ItemListener l: itemListeners) {
+      this.objectComboBox.removeItemListener(l);
+    }
+    ActionListener[] actionListeners = this.objectComboBox.getActionListeners();
+    for (ActionListener l: actionListeners) {
+      this.objectComboBox.removeActionListener(l);
+    }
+    
+    // fill new list of PlfItems
+    this.objectComboBox.removeAllItems();
+    if (VisicutModel.getInstance().getSelectedPart() == null) {
+      // add default "nothing selected" item if nothing is selected
+      this.objectComboBox.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("(nothing selected)"));
+    }
+    for (PlfPart p: VisicutModel.getInstance().getPlfFile()) {
+      if (p == null || p.getSourceFile() == null) { // necessary? 
+        continue;
+      }
+      // add regular item
+      this.objectComboBox.addItem(p);
+    }
+    
+    // now set the correct selection
+    if (VisicutModel.getInstance().getSelectedPart() != null) {
+      // something is selected, also select this in the combobox
+      this.objectComboBox.setSelectedItem(VisicutModel.getInstance().getSelectedPart());
+    } else {
+      // no PlfPart is selected, so select the pseudo-item "nothing selected"
+      this.objectComboBox.setSelectedIndex(0);
+    }
+    
+    // re-add listeners
+    // All events that this function would have caused were suppressed,
+    // but this is okay because objectComboBoxChangeHandler() is only needed for user interaction with the objectCombobox
+    for (ItemListener l: itemListeners) {
+      this.objectComboBox.addItemListener(l);
+    }
+    for (ActionListener l: actionListeners) {
+      this.objectComboBox.addActionListener(l);
+    }
+  }
+  
   /** This method is called from within the constructor to
    * initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is
@@ -410,6 +486,16 @@ public class MainView extends javax.swing.JFrame
         mappingManager1 = MappingManager.getInstance();
         saveFileChooser = new javax.swing.JFileChooser();
         buttonGroup1 = new javax.swing.ButtonGroup();
+        captureImageButton = new javax.swing.JButton();
+        progressBar = new javax.swing.JProgressBar();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        btFitScreen = new javax.swing.JButton();
+        btFillScreen = new javax.swing.JButton();
+        bt1to1 = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -434,15 +520,12 @@ public class MainView extends javax.swing.JFrame
         cbEditBeforeExecute = new javax.swing.JCheckBox();
         executeJobButton = new javax.swing.JButton();
         editLaserSettingsButton = new javax.swing.JButton();
-        captureImageButton = new javax.swing.JButton();
-        progressBar = new javax.swing.JProgressBar();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        btFitScreen = new javax.swing.JButton();
-        btFillScreen = new javax.swing.JButton();
-        bt1to1 = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
+        objectComboBox = new javax.swing.JComboBox();
+        jSeparator1 = new javax.swing.JSeparator();
+        jSeparator2 = new javax.swing.JSeparator();
+        laserSettingsLabel = new javax.swing.JLabel();
+        btRemoveObject = new javax.swing.JButton();
+        btAddObject = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -488,6 +571,12 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
+        mappingManager1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                mappingManager1PropertyChange(evt);
+            }
+        });
+
         saveFileChooser.setAcceptAllFileFilterUsed(false);
         saveFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
         saveFileChooser.setFileFilter(new ExtensionFilter(".plf", java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("VISICUT PORTABLE LASER FILE")));
@@ -498,246 +587,6 @@ public class MainView extends javax.swing.JFrame
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setLocationByPlatform(true);
         setName("Form"); // NOI18N
-
-        jPanel2.setName("jPanel2"); // NOI18N
-
-        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
-        jLabel1.setName("jLabel1"); // NOI18N
-
-        jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
-        jLabel2.setName("jLabel2"); // NOI18N
-
-        jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
-        jLabel5.setName("jLabel5"); // NOI18N
-
-        materialComboBox.setName("materialComboBox"); // NOI18N
-        materialComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                materialComboBoxActionPerformed(evt);
-            }
-        });
-
-        jLabel9.setText(resourceMap.getString("jLabel9.text")); // NOI18N
-        jLabel9.setName("jLabel9"); // NOI18N
-
-        laserCutterComboBox.setName("laserCutterComboBox"); // NOI18N
-        laserCutterComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                laserCutterComboBoxActionPerformed(evt);
-            }
-        });
-
-        jLabel10.setText(resourceMap.getString("jLabel10.text")); // NOI18N
-        jLabel10.setName("jLabel10"); // NOI18N
-
-        calculateTimeButton.setText(resourceMap.getString("calculateTimeButton.text")); // NOI18N
-        calculateTimeButton.setEnabled(false);
-        calculateTimeButton.setName("calculateTimeButton"); // NOI18N
-        calculateTimeButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                calculateTimeButtonActionPerformed(evt);
-            }
-        });
-
-        timeLabel.setText(resourceMap.getString("timeLabel.text")); // NOI18N
-        timeLabel.setName("timeLabel"); // NOI18N
-
-        mappingTabbedPane.setName("Custom"); // NOI18N
-
-        mappingPanel.setName("customMappingPanelContainer"); // NOI18N
-
-        customMappingPanel2.setName("customMappingPanel2"); // NOI18N
-
-        buttonGroup1.add(predefinedMappingRadioButton);
-        predefinedMappingRadioButton.setSelected(true);
-        predefinedMappingRadioButton.setText(resourceMap.getString("predefinedMappingRadioButton.text")); // NOI18N
-        predefinedMappingRadioButton.setName("predefinedMappingRadioButton"); // NOI18N
-        predefinedMappingRadioButton.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                predefinedMappingRadioButtonChangeAction(evt);
-            }
-        });
-
-        buttonGroup1.add(customMappingRadioButton);
-        customMappingRadioButton.setText(resourceMap.getString("customMappingRadioButton.text")); // NOI18N
-        customMappingRadioButton.setName("customMappingRadioButton"); // NOI18N
-
-        predefinedMappingComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        predefinedMappingComboBox.setName("predefinedMappingComboBox"); // NOI18N
-        predefinedMappingComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PredefinedMappingComboBoxChanged(evt);
-            }
-        });
-
-        javax.swing.GroupLayout mappingPanelLayout = new javax.swing.GroupLayout(mappingPanel);
-        mappingPanel.setLayout(mappingPanelLayout);
-        mappingPanelLayout.setHorizontalGroup(
-            mappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mappingPanelLayout.createSequentialGroup()
-                .addGroup(mappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(customMappingRadioButton)
-                    .addGroup(mappingPanelLayout.createSequentialGroup()
-                        .addComponent(predefinedMappingRadioButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(predefinedMappingComboBox, 0, 217, Short.MAX_VALUE)))
-                .addContainerGap())
-            .addGroup(mappingPanelLayout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE))
-        );
-        mappingPanelLayout.setVerticalGroup(
-            mappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mappingPanelLayout.createSequentialGroup()
-                .addGroup(mappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(predefinedMappingRadioButton)
-                    .addComponent(predefinedMappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(customMappingRadioButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        mappingTabbedPane.addTab(resourceMap.getString("customMappingPanelContainer.TabConstraints.tabTitle"), mappingPanel); // NOI18N
-
-        positionPanel.setName("positionPanel"); // NOI18N
-        mappingTabbedPane.addTab(resourceMap.getString("positionPanel.TabConstraints.tabTitle"), positionPanel); // NOI18N
-
-        btAddMaterial.setText(resourceMap.getString("btAddMaterial.text")); // NOI18N
-        btAddMaterial.setName("btAddMaterial"); // NOI18N
-        btAddMaterial.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btAddMaterialActionPerformed(evt);
-            }
-        });
-
-        cbMaterialThickness.setName("cbMaterialThickness"); // NOI18N
-        cbMaterialThickness.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbMaterialThicknessActionPerformed(evt);
-            }
-        });
-
-        btAddMaterialThickness.setText(resourceMap.getString("btAddMaterialThickness.text")); // NOI18N
-        btAddMaterialThickness.setName("btAddMaterialThickness"); // NOI18N
-        btAddMaterialThickness.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btAddMaterialThicknessActionPerformed(evt);
-            }
-        });
-
-        jCheckBox1.setText(resourceMap.getString("jCheckBox1.text")); // NOI18N
-        jCheckBox1.setToolTipText(resourceMap.getString("jCheckBox1.toolTipText")); // NOI18N
-        jCheckBox1.setName("jCheckBox1"); // NOI18N
-
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${useThicknessAsFocusOffset}"), jCheckBox1, org.jdesktop.beansbinding.BeanProperty.create("selected"), "cbUseThickness");
-        bindingGroup.addBinding(binding);
-
-        cbEditBeforeExecute.setText(resourceMap.getString("cbEditBeforeExecute.text")); // NOI18N
-        cbEditBeforeExecute.setName("cbEditBeforeExecute"); // NOI18N
-
-        executeJobButton.setText(resourceMap.getString("executeJobButton.text")); // NOI18N
-        executeJobButton.setName("executeJobButton"); // NOI18N
-        executeJobButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                executeJobButtonActionPerformed(evt);
-            }
-        });
-
-        editLaserSettingsButton.setText(resourceMap.getString("editLaserSettingsButton.text")); // NOI18N
-        editLaserSettingsButton.setName("editLaserSettingsButton"); // NOI18N
-        editLaserSettingsButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editLaserSettingsButtonActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(mappingTabbedPane, 0, 0, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel9)
-                            .addComponent(jLabel1)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(laserCutterComboBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(jPanel2Layout.createSequentialGroup()
-                                    .addComponent(materialComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(btAddMaterial))
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(jPanel2Layout.createSequentialGroup()
-                                            .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(btAddMaterialThickness))
-                                        .addComponent(jLabel5))
-                                    .addGap(20, 20, 20)
-                                    .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(jLabel2))
-                        .addGap(20, 20, 20))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(editLaserSettingsButton)
-                        .addContainerGap())
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                .addComponent(cbEditBeforeExecute)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
-                                .addComponent(executeJobButton))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel10)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(calculateTimeButton)))
-                        .addContainerGap())))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel9)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(laserCutterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btAddMaterial))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btAddMaterialThickness)))
-                    .addComponent(jCheckBox1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(editLaserSettingsButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10)
-                    .addComponent(calculateTimeButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(executeJobButton)
-                    .addComponent(cbEditBeforeExecute))
-                .addGap(15, 15, 15))
-        );
 
         captureImageButton.setIcon(resourceMap.getIcon("captureImageButton.icon")); // NOI18N
         captureImageButton.setText(resourceMap.getString("captureImageButton.text")); // NOI18N
@@ -837,6 +686,310 @@ public class MainView extends javax.swing.JFrame
         );
 
         jScrollPane2.setViewportView(previewPanel);
+
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane1.setName("jScrollPane1"); // NOI18N
+
+        jPanel2.setName("jPanel2"); // NOI18N
+
+        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
+        jLabel1.setName("jLabel1"); // NOI18N
+
+        jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
+        jLabel2.setName("jLabel2"); // NOI18N
+
+        jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
+        jLabel5.setName("jLabel5"); // NOI18N
+
+        materialComboBox.setName("materialComboBox"); // NOI18N
+        materialComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                materialComboBoxActionPerformed(evt);
+            }
+        });
+
+        jLabel9.setText(resourceMap.getString("jLabel9.text")); // NOI18N
+        jLabel9.setName("jLabel9"); // NOI18N
+
+        laserCutterComboBox.setName("laserCutterComboBox"); // NOI18N
+        laserCutterComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                laserCutterComboBoxActionPerformed(evt);
+            }
+        });
+
+        jLabel10.setText(resourceMap.getString("jLabel10.text")); // NOI18N
+        jLabel10.setName("jLabel10"); // NOI18N
+
+        calculateTimeButton.setText(resourceMap.getString("calculateTimeButton.text")); // NOI18N
+        calculateTimeButton.setEnabled(false);
+        calculateTimeButton.setName("calculateTimeButton"); // NOI18N
+        calculateTimeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                calculateTimeButtonActionPerformed(evt);
+            }
+        });
+
+        timeLabel.setText(resourceMap.getString("timeLabel.text")); // NOI18N
+        timeLabel.setName("timeLabel"); // NOI18N
+
+        mappingTabbedPane.setName("Custom"); // NOI18N
+
+        mappingPanel.setName("customMappingPanelContainer"); // NOI18N
+
+        customMappingPanel2.setName("customMappingPanel2"); // NOI18N
+
+        buttonGroup1.add(predefinedMappingRadioButton);
+        predefinedMappingRadioButton.setSelected(true);
+        predefinedMappingRadioButton.setText(resourceMap.getString("predefinedMappingRadioButton.text")); // NOI18N
+        predefinedMappingRadioButton.setName("predefinedMappingRadioButton"); // NOI18N
+        predefinedMappingRadioButton.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                predefinedMappingRadioButtonChangeAction(evt);
+            }
+        });
+
+        buttonGroup1.add(customMappingRadioButton);
+        customMappingRadioButton.setText(resourceMap.getString("customMappingRadioButton.text")); // NOI18N
+        customMappingRadioButton.setName("customMappingRadioButton"); // NOI18N
+
+        predefinedMappingComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        predefinedMappingComboBox.setName("predefinedMappingComboBox"); // NOI18N
+        predefinedMappingComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PredefinedMappingComboBoxChanged(evt);
+            }
+        });
+
+        javax.swing.GroupLayout mappingPanelLayout = new javax.swing.GroupLayout(mappingPanel);
+        mappingPanel.setLayout(mappingPanelLayout);
+        mappingPanelLayout.setHorizontalGroup(
+            mappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(mappingPanelLayout.createSequentialGroup()
+                .addGroup(mappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(customMappingRadioButton)
+                    .addGroup(mappingPanelLayout.createSequentialGroup()
+                        .addComponent(predefinedMappingRadioButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(predefinedMappingComboBox, 0, 210, Short.MAX_VALUE)))
+                .addContainerGap())
+            .addGroup(mappingPanelLayout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE))
+        );
+        mappingPanelLayout.setVerticalGroup(
+            mappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(mappingPanelLayout.createSequentialGroup()
+                .addGroup(mappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(predefinedMappingRadioButton)
+                    .addComponent(predefinedMappingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(customMappingRadioButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(customMappingPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        mappingTabbedPane.addTab(resourceMap.getString("customMappingPanelContainer.TabConstraints.tabTitle"), mappingPanel); // NOI18N
+
+        positionPanel.setName("positionPanel"); // NOI18N
+        mappingTabbedPane.addTab(resourceMap.getString("positionPanel.TabConstraints.tabTitle"), positionPanel); // NOI18N
+
+        btAddMaterial.setText(resourceMap.getString("btAddMaterial.text")); // NOI18N
+        btAddMaterial.setName("btAddMaterial"); // NOI18N
+        btAddMaterial.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btAddMaterialActionPerformed(evt);
+            }
+        });
+
+        cbMaterialThickness.setName("cbMaterialThickness"); // NOI18N
+        cbMaterialThickness.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbMaterialThicknessActionPerformed(evt);
+            }
+        });
+
+        btAddMaterialThickness.setText(resourceMap.getString("btAddMaterialThickness.text")); // NOI18N
+        btAddMaterialThickness.setName("btAddMaterialThickness"); // NOI18N
+        btAddMaterialThickness.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btAddMaterialThicknessActionPerformed(evt);
+            }
+        });
+
+        jCheckBox1.setText(resourceMap.getString("jCheckBox1.text")); // NOI18N
+        jCheckBox1.setToolTipText(resourceMap.getString("jCheckBox1.toolTipText")); // NOI18N
+        jCheckBox1.setName("jCheckBox1"); // NOI18N
+
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${useThicknessAsFocusOffset}"), jCheckBox1, org.jdesktop.beansbinding.BeanProperty.create("selected"), "cbUseThickness");
+        bindingGroup.addBinding(binding);
+
+        cbEditBeforeExecute.setText(resourceMap.getString("cbEditBeforeExecute.text")); // NOI18N
+        cbEditBeforeExecute.setName("cbEditBeforeExecute"); // NOI18N
+
+        executeJobButton.setText(resourceMap.getString("executeJobButton.text")); // NOI18N
+        executeJobButton.setName("executeJobButton"); // NOI18N
+        executeJobButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                executeJobButtonActionPerformed(evt);
+            }
+        });
+
+        editLaserSettingsButton.setText(resourceMap.getString("editLaserSettingsButton.text")); // NOI18N
+        editLaserSettingsButton.setName("editLaserSettingsButton"); // NOI18N
+        editLaserSettingsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editLaserSettingsButtonActionPerformed(evt);
+            }
+        });
+
+        objectComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        objectComboBox.setName("objectComboBox"); // NOI18N
+        objectComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                objectComboBoxChangeHandler(evt);
+            }
+        });
+
+        jSeparator1.setName("jSeparator1"); // NOI18N
+
+        jSeparator2.setName("jSeparator2"); // NOI18N
+
+        laserSettingsLabel.setText(resourceMap.getString("laserSettingsLabel.text")); // NOI18N
+        laserSettingsLabel.setName("laserSettingsLabel"); // NOI18N
+
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/uicomponents/resources/EditableTablePanel"); // NOI18N
+        btRemoveObject.setText(bundle.getString("-")); // NOI18N
+        btRemoveObject.setName("btRemoveObject"); // NOI18N
+        btRemoveObject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btRemoveObjectActionPerformed(evt);
+            }
+        });
+
+        btAddObject.setText(bundle.getString("+")); // NOI18N
+        btAddObject.setName("btAddObject"); // NOI18N
+        btAddObject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btAddObjectActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel9)
+                            .addComponent(jLabel1)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(laserCutterComboBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE)
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addComponent(materialComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(btAddMaterial))
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                            .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(btAddMaterialThickness))
+                                        .addComponent(jLabel5))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                                    .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(20, 20, 20))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addComponent(cbEditBeforeExecute)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
+                                .addComponent(executeJobButton))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel10)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(calculateTimeButton)))
+                        .addContainerGap())
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(objectComboBox, 0, 231, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btAddObject)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btRemoveObject)
+                        .addGap(20, 20, 20))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                            .addComponent(mappingTabbedPane, 0, 0, Short.MAX_VALUE))
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(laserSettingsLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 130, Short.MAX_VALUE)
+                        .addComponent(editLaserSettingsButton)
+                        .addContainerGap())))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(laserCutterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1)
+                .addGap(6, 6, 6)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btAddMaterial))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btAddMaterialThickness))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(objectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btRemoveObject)
+                    .addComponent(btAddObject))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(editLaserSettingsButton)
+                    .addComponent(laserSettingsLabel))
+                .addGap(34, 34, 34)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel10)
+                    .addComponent(calculateTimeButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(executeJobButton)
+                    .addComponent(cbEditBeforeExecute))
+                .addContainerGap())
+        );
+
+        jScrollPane1.setViewportView(jPanel2);
 
         menuBar.setName("menuBar"); // NOI18N
 
@@ -1102,20 +1255,20 @@ public class MainView extends javax.swing.JFrame
                         .addComponent(bt1to1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 130, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 125, Short.MAX_VALUE)
                         .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 652, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 647, Short.MAX_VALUE))
+                .addGap(8, 8, 8)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 693, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1126,7 +1279,7 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(bt1to1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 631, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 651, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -1478,6 +1631,13 @@ private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
 }//GEN-LAST:event_saveAsMenuItemActionPerformed
 
 private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_visicutModel1PropertyChange
+  if (evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_ADDED)
+    ||evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_REMOVED)
+    ||evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART)) {
+    // regenerate list of parts, update selection in ComboBox
+    this.refreshObjectComboBox();
+  }
+    
   if (evt.getPropertyName().equals(VisicutModel.PROP_PLF_FILE_CHANGED))
   {
     MainView.this.timeLabel.setText("");
@@ -1502,8 +1662,6 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
   {
     PlfPart p = this.visicutModel1.getSelectedPart();
     this.reloadMenuItem.setEnabled(p != null);
-    this.jLabel2.setText(bundle.getString("jLabel2.text")+" "+
-      (p != null && p.getSourceFile() != null ? p.getSourceFile().getName() : ""));
     this.mappingTabbedPane.setVisible(p != null);
     
     // find out if the mapping is a predefined one, set the combobox and radiobutton specifically
@@ -2156,6 +2314,34 @@ private void PredefinedMappingComboBoxChanged(java.awt.event.ActionEvent evt) {/
   }
 }//GEN-LAST:event_PredefinedMappingComboBoxChanged
 
+private void btRemoveObjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRemoveObjectActionPerformed
+  VisicutModel.getInstance().removeSelectedPart();
+}//GEN-LAST:event_btRemoveObjectActionPerformed
+
+private void btAddObjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAddObjectActionPerformed
+  importMenuItemActionPerformed(evt);
+}//GEN-LAST:event_btAddObjectActionPerformed
+
+private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_objectComboBoxChangeHandler
+  if (!(this.objectComboBox.getSelectedItem() instanceof PlfPart)) {
+    // the user selected the "please select something" item - ignore this
+    return;
+  }
+  PlfPart selected = (PlfPart) this.objectComboBox.getSelectedItem();
+  if (!VisicutModel.getInstance().getPlfFile().contains(selected)) {
+    // not available - can this happen? maybe if a strange timing occurs while loading a file and changing the combobox
+    return;
+  }
+  if (evt.getStateChange()!=java.awt.event.ItemEvent.SELECTED) {
+    return;
+  }
+  VisicutModel.getInstance().setSelectedPart(selected);
+}//GEN-LAST:event_objectComboBoxChangeHandler
+
+private void mappingManager1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_mappingManager1PropertyChange
+  refreshMappingComboBox();
+}//GEN-LAST:event_mappingManager1PropertyChange
+
 /**
  * Open a laser properties dialog (speed, power, frequency, focus for each profile)
  * @return the new laser settings (or null if "cancel" was pressed)
@@ -2202,8 +2388,10 @@ private void PredefinedMappingComboBoxChanged(java.awt.event.ActionEvent evt) {/
     private javax.swing.JButton bt1to1;
     private javax.swing.JButton btAddMaterial;
     private javax.swing.JButton btAddMaterialThickness;
+    private javax.swing.JButton btAddObject;
     private javax.swing.JButton btFillScreen;
     private javax.swing.JButton btFitScreen;
+    private javax.swing.JButton btRemoveObject;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton calculateTimeButton;
     private javax.swing.JMenuItem calibrateCameraMenuItem;
@@ -2233,7 +2421,10 @@ private void PredefinedMappingComboBoxChanged(java.awt.event.ActionEvent evt) {/
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JMenu jmExamples;
     private javax.swing.JMenuItem jmExportSettings;
     private javax.swing.JMenu jmExtras;
@@ -2243,6 +2434,7 @@ private void PredefinedMappingComboBoxChanged(java.awt.event.ActionEvent evt) {/
     private javax.swing.JMenuItem jmManageLaserprofiles;
     private javax.swing.JCheckBoxMenuItem jmShowPhoto;
     private com.t_oster.uicomponents.ImageComboBox laserCutterComboBox;
+    private javax.swing.JLabel laserSettingsLabel;
     private com.t_oster.visicut.managers.MappingManager mappingManager1;
     private javax.swing.JPanel mappingPanel;
     private javax.swing.JTabbedPane mappingTabbedPane;
@@ -2250,6 +2442,7 @@ private void PredefinedMappingComboBoxChanged(java.awt.event.ActionEvent evt) {/
     private javax.swing.JMenuItem materialMenuItem;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newMenuItem;
+    private javax.swing.JComboBox objectComboBox;
     private javax.swing.JMenuItem openMenuItem;
     private com.t_oster.uicomponents.PositionPanel positionPanel;
     private javax.swing.JComboBox predefinedMappingComboBox;
