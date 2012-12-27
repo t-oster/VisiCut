@@ -71,20 +71,27 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   public PreviewPanel()
   {
     VisicutModel.getInstance().addPropertyChangeListener(this);
+    updateBedSize(VisicutModel.getInstance().getSelectedLaserDevice());
+  }
+
+  private void updateBedSize(LaserDevice d)
+  {
+    if (d != null)
+    {
+      LaserCutter lc = d.getLaserCutter();
+      bedWidth = lc.getBedWidth();
+      bedHeight = lc.getBedHeight();
+      setAreaSize(new Point2D.Double(lc.getBedWidth(), lc.getBedHeight()));
+      repaint();
+    }
   }
 
   public void propertyChange(PropertyChangeEvent pce)
   {
     if (VisicutModel.PROP_SELECTEDLASERDEVICE.equals(pce.getPropertyName()))
     {
-      if (pce.getNewValue() != null && pce.getNewValue() instanceof LaserDevice)
-      {
-        LaserCutter lc = ((LaserDevice) pce.getNewValue()).getLaserCutter();
-        bedWidth = lc.getBedWidth();
-        bedHeight = lc.getBedHeight();
-        setAreaSize(new Point2D.Double(lc.getBedWidth(), lc.getBedHeight()));
-        repaint();
-      }
+      updateBedSize((LaserDevice) pce.getNewValue());
+      repaint();
     }
     else if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName()))
     {

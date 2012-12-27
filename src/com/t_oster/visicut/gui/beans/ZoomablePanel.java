@@ -2,17 +2,17 @@
  * This file is part of VisiCut.
  * Copyright (C) 2012 Thomas Oster <thomas.oster@rwth-aachen.de>
  * RWTH Aachen University - 52062 Aachen, Germany
- * 
+ *
  *     VisiCut is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- * 
+ *
  *    VisiCut is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- * 
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
@@ -30,7 +30,7 @@ import javax.swing.JPanel;
 /**
  * A JPanel with Support for rendering Graphic Objects.
  * This Panel supports Zoom etc.
- * 
+ *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class ZoomablePanel extends JPanel implements MouseWheelListener
@@ -57,7 +57,7 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     double ph = this.getParent().getHeight();
     this.setZoom(pw/ph <= w/h ? 100 * w/pw * dpmm : 100*h/ph*dpmm);
   }
-  
+
   public void setZoomToFillParent()
   {
     double w = this.getAreaSize().x;
@@ -66,7 +66,7 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     double ph = this.getParent().getHeight();
     this.setZoom(w/h > pw/ph ? 100*ph/pw*w/h : 100*pw/ph*h/w);
   }
-  
+
   /**
    * Set the value of AreaSize
    * This ist the area in mm, which will be visible
@@ -80,12 +80,12 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     this.resizeToFitZoomAndArea();
   }
 
-  
+
   public ZoomablePanel()
   {
     this.addMouseWheelListener(this);
   }
-  
+
   protected double zoom = 100;
   public static final String PROP_ZOOM = "zoom";
 
@@ -100,7 +100,7 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
   }
 
    /**
-   * Set the value of zoom in %. 100 
+   * Set the value of zoom in %. 100
    *
    * @param zoom new value of zoom
    */
@@ -108,20 +108,23 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
   {
     this.setZoom(zoom, null);
   }
-  
+
   public void resizeToFitZoomAndArea()
   {
     this.mm2pxCache = null;
-    double w = this.getAreaSize().x;
-    double h = this.getAreaSize().y;
-    double pw = this.getParent().getWidth();
-    double ph = this.getParent().getHeight();
-    double fullw = pw/ph <= w/h ? pw*zoom/100d : w*ph*zoom/100d/h;
-    double fullh = pw/ph > w/h ? ph*zoom/100d : h*fullw/w;
-    this.setPreferredSize(new Dimension((int) (fullw), (int) (fullh)));
-    this.revalidate();
+    if (this.getParent() != null)
+    {
+      double w = this.getAreaSize().x;
+      double h = this.getAreaSize().y;
+      double pw = this.getParent().getWidth();
+      double ph = this.getParent().getHeight();
+      double fullw = pw/ph <= w/h ? pw*zoom/100d : w*ph*zoom/100d/h;
+      double fullh = pw/ph > w/h ? ph*zoom/100d : h*fullw/w;
+      this.setPreferredSize(new Dimension((int) (fullw), (int) (fullh)));
+      this.revalidate();
+    }
   }
-  
+
   public void setZoom(double zoom, Point stablePoint)
   {
     if (zoom < 100)
@@ -149,7 +152,7 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
    * returns the transformation, which transforms coordinates in mm
    * of the AreaSize to pixels of the preview panel. Taking into account
    * zoom and position.
-   * @return 
+   * @return
    */
   public AffineTransform getMmToPxTransform()
   {
@@ -161,7 +164,7 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     }
     return mm2pxCache;
   }
-  
+
   public void mouseWheelMoved(MouseWheelEvent mwe)
   {
     if (mwe.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
