@@ -5,6 +5,8 @@
 package com.t_oster.uicomponents;
 
 import com.t_oster.liblasercut.platform.Util;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EnumMap;
@@ -19,6 +21,27 @@ import javax.swing.JRadioButton;
 public class AncorPointPanel extends javax.swing.JPanel implements ActionListener
 {
 
+  @Override
+  protected void paintComponent(Graphics g)
+  {
+    super.paintComponent(g);
+    
+    // draw a nice rectangle to symbolize the object
+    int x1,x2,y1,y2;
+    x1=rTopLeft.getX()+rTopLeft.getWidth()/2;
+    y1=rTopLeft.getY()+rTopLeft.getHeight()/2;
+    x2=rBottomRight.getX()+rBottomRight.getWidth()/2;
+    y2=rBottomRight.getY()+rBottomRight.getHeight()/2;
+    
+    g.setColor(Color.LIGHT_GRAY); // TODO get color from Look-and-feel
+    g.fill3DRect(x1,y1,x2-x1,y2-y1, true);
+    
+    g.setColor(getForeground());
+    g.draw3DRect(x1,y1,x2-x1,y2-y1, true);
+    
+
+  }
+  
   public void actionPerformed(ActionEvent ae)
   {
     for (Entry<Position, JRadioButton> e : buttons.entrySet())
@@ -102,8 +125,7 @@ public class AncorPointPanel extends javax.swing.JPanel implements ActionListene
    */
   @SuppressWarnings("unchecked")
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents()
-  {
+  private void initComponents() {
 
     radioButtonGroup = new javax.swing.ButtonGroup();
     rTopLeft = new javax.swing.JRadioButton();
@@ -141,40 +163,40 @@ public class AncorPointPanel extends javax.swing.JPanel implements ActionListene
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addComponent(rTopLeft)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGap(18, 18, 18)
         .addComponent(rTopCenter)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGap(18, 18, 18)
         .addComponent(rTopRight))
       .addGroup(layout.createSequentialGroup()
         .addComponent(rCenterLeft)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGap(18, 18, 18)
         .addComponent(rCenterCenter)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGap(18, 18, 18)
         .addComponent(rCenterRight))
       .addGroup(layout.createSequentialGroup()
         .addComponent(rBottomLeft)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGap(18, 18, 18)
         .addComponent(rBottomCenter)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGap(18, 18, 18)
         .addComponent(rBottomRight))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
           .addComponent(rTopRight)
           .addComponent(rTopCenter)
           .addComponent(rTopLeft))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGap(18, 18, 18)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
           .addComponent(rCenterLeft)
           .addComponent(rCenterCenter)
           .addComponent(rCenterRight))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(rBottomLeft)
+        .addGap(18, 18, 18)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+          .addComponent(rBottomRight)
           .addComponent(rBottomCenter)
-          .addComponent(rBottomRight)))
+          .addComponent(rBottomLeft)))
     );
   }// </editor-fold>//GEN-END:initComponents
   // Variables declaration - do not modify//GEN-BEGIN:variables
