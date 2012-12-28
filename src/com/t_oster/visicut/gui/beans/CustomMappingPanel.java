@@ -1,14 +1,20 @@
 package com.t_oster.visicut.gui.beans;
 
+import com.t_oster.liblasercut.LaserCutter;
+import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.uicomponents.EditableTablePanel;
 import com.t_oster.uicomponents.EditableTableProvider;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.EditRaster3dProfileDialog;
 import com.t_oster.visicut.gui.EditRasterProfileDialog;
 import com.t_oster.visicut.gui.EditVectorProfileDialog;
+import com.t_oster.visicut.gui.MainView;
+import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
+import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
@@ -20,10 +26,14 @@ import java.awt.Color;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -329,19 +339,31 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
 
       temporaryCopy.setName(newName);
       profiles.addItem(temporaryCopy);
-
-      // TODO reset temporary copy's propertyMap (speed,power,etc) to the property map of the original one
-      // seems impossible because I can't get back to MainView from here and there is no getInstance() or something similar
-      // EDIT Don't know, what you mean. The profile's laser-properties are looseley coupeled throguh the manager.
-
-//    LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
-//    MaterialProfile material = this.visicutModel1.getMaterial();
-//    float thickness = this.visicutModel1.getMaterialThickness();
-//    final Map<LaserProfile, List<LaserProperty>> usedSettings = this.getPropertyMapForCurrentJob(false,false);
-//	  for (Entry<LaserProfile, List<LaserProperty>> e:laserProperties.entrySet())
-//	  {
-//		  LaserPropertyManager.getInstance().saveLaserProperties(device, material, e.getKey(), thickness, e.getValue());
-//    }
+      // remove previously stored laser-settings for the temporary copy from disk,
+      // reset them to the ones of the original
+      // (the LaserProfile does not get stored,
+      // but the corresponding LaserProperty must be stored on disk, because
+      // LaserPropertyManager.getLaserProperties() loads them directly from disk
+      VisicutModel v = VisicutModel.getInstance();
+      float thickness = v.getMaterialThickness();
+      MaterialProfile material = v.getMaterial();
+      LaserDevice laser = v.getSelectedLaserDevice();
+      
+      try
+      {
+        // get original properties
+        List<LaserProperty> originalProperties = LaserPropertyManager.getInstance().getLaserProperties(laser,material,lp,thickness);
+        // set tempCopy's properties to original's
+        LaserPropertyManager.getInstance().saveLaserProperties(laser, material, temporaryCopy, thickness, originalProperties);
+      }
+      catch (FileNotFoundException ex)
+      {
+        Logger.getLogger(CustomMappingPanel.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      catch (IOException ex)
+      {
+        Logger.getLogger(CustomMappingPanel.class.getName()).log(Level.SEVERE, null, ex);
+      }
     }
 
 
