@@ -619,31 +619,23 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
                 break;
               }
             }
-            if (getEditRect().width < 0.1)
+            if (getEditRect().width < 0.1
+              ||getEditRect().height < 0.1
+              ||getEditRect().x < 0
+              ||getEditRect().y < 0
+              ||getEditRect().x + getEditRect().width > previewPanel.getAreaSize().x
+              ||getEditRect().y + getEditRect().height > previewPanel.getAreaSize().y)
             {
-              getEditRect().width = 0.1;
+              Rectangle2D bb = getSelectedSet().getBoundingBox();
+              getEditRect().x = bb.getX();
+              getEditRect().y = bb.getY();
+              getEditRect().width = bb.getWidth();
+              getEditRect().height = bb.getHeight();
             }
-            if (getEditRect().height < 0.1)
+            else
             {
-              getEditRect().height = 0.1;
+              this.applyEditRectoToSet();
             }
-            if (getEditRect().x < 0)
-            {
-              getEditRect().x = 0;
-            }
-            if (getEditRect().y < 0)
-            {
-              getEditRect().y = 0;
-            }
-            if (getEditRect().x + getEditRect().width > previewPanel.getAreaSize().x)
-            {
-              getEditRect().width = previewPanel.getAreaSize().x - getEditRect().x;
-            }
-            if (getEditRect().y + getEditRect().height > previewPanel.getAreaSize().y)
-            {
-              getEditRect().height = previewPanel.getAreaSize().y - getEditRect().y;
-            }
-            this.applyEditRectoToSet();
             break;
           }
           case movingSet:
