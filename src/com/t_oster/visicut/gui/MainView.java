@@ -336,6 +336,7 @@ public class MainView extends javax.swing.JFrame
 
   private void refreshMaterialComboBox()
   {
+    this.ignoreMaterialComboBoxChanges = true;
     String sp = this.visicutModel1.getMaterial() != null ? this.visicutModel1.getMaterial().getName() : null;
     this.materialComboBox.removeAllItems();
     for (MaterialProfile mp : MaterialManager.getInstance().getAll())
@@ -346,6 +347,7 @@ public class MainView extends javax.swing.JFrame
         this.materialComboBox.setSelectedItem(mp);
       }
     }
+    this.ignoreMaterialComboBoxChanges = false;
   }
 
   /*
@@ -383,17 +385,10 @@ public class MainView extends javax.swing.JFrame
   }
   
   public void refreshMappingComboBox() {
-    // switch off listeners, so that no ItemChangedEvent is generated while we are working
-    ItemListener[] itemListeners = this.objectComboBox.getItemListeners();
-    for (ItemListener l: itemListeners) {
-      this.objectComboBox.removeItemListener(l);
-    }
-    ActionListener[] actionListeners = this.objectComboBox.getActionListeners();
-    for (ActionListener l: actionListeners) {
-      this.objectComboBox.removeActionListener(l);
-    }
+    this.ignoreMappingComboBoxChanges = true;
     
     // fill mapping combobox
+    Object selectedMapping = this.predefinedMappingComboBox.getSelectedItem();
     this.predefinedMappingComboBox.removeAllItems();
     // first item is for null or empty mappings
     String unselectedString=java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("(please select)");
@@ -402,40 +397,28 @@ public class MainView extends javax.swing.JFrame
     // unselectedString = "<html><i>" + unselectedString + "</i></html>";
     this.predefinedMappingComboBox.addItem(unselectedString);
     
-    Object selectedMapping = this.predefinedMappingComboBox.getSelectedItem();
+    for (MappingSet m: VisicutModel.getInstance().generateDefaultMappings())
+    {
+      this.predefinedMappingComboBox.addItem(m);
+      if (m.equals(selectedMapping)) {
+        this.predefinedMappingComboBox.setSelectedItem(selectedMapping);
+      }
+    }
     for (MappingSet m: MappingManager.getInstance().getAll()) {
       this.predefinedMappingComboBox.addItem(m.getName());
       if (m.getName().equals(selectedMapping)) {
         this.predefinedMappingComboBox.setSelectedItem(selectedMapping);
       }
     }
-    
-    
-    // re-add listeners
-    // All events that this function would have caused were suppressed
-    for (ItemListener l: itemListeners) {
-      this.objectComboBox.addItemListener(l);
-    }
-    for (ActionListener l: actionListeners) {
-      this.objectComboBox.addActionListener(l);
-    }
+    this.ignoreMappingComboBoxChanges = false;
   }
    /**
    * update entries of objectComboBox, then update selection
    * @param forceUpdate even update if the list of PlfParts has not changed
    * @throws RuntimeException if forceUpdate==false and PlfParts have not changed
    */
-  public void refreshObjectComboBox() {    
-    // switch off listeners, so that no ItemChangedEvent is generated while we are working
-    ItemListener[] itemListeners = this.objectComboBox.getItemListeners();
-    for (ItemListener l: itemListeners) {
-      this.objectComboBox.removeItemListener(l);
-    }
-    ActionListener[] actionListeners = this.objectComboBox.getActionListeners();
-    for (ActionListener l: actionListeners) {
-      this.objectComboBox.removeActionListener(l);
-    }
-    
+  public void refreshObjectComboBox() {        
+    this.ignoreObjectComboBoxEvents = true;
     // fill new list of PlfItems
     this.objectComboBox.removeAllItems();
     if (VisicutModel.getInstance().getSelectedPart() == null) {
@@ -458,16 +441,7 @@ public class MainView extends javax.swing.JFrame
       // no PlfPart is selected, so select the pseudo-item "nothing selected"
       this.objectComboBox.setSelectedIndex(0);
     }
-    
-    // re-add listeners
-    // All events that this function would have caused were suppressed,
-    // but this is okay because objectComboBoxChangeHandler() is only needed for user interaction with the objectCombobox
-    for (ItemListener l: itemListeners) {
-      this.objectComboBox.addItemListener(l);
-    }
-    for (ActionListener l: actionListeners) {
-      this.objectComboBox.addActionListener(l);
-    }
+    this.ignoreObjectComboBoxEvents = false;
   }
   
   /** This method is called from within the constructor to
@@ -1829,8 +1803,12 @@ private void editMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
     }
 }//GEN-LAST:event_editMappingMenuItemActionPerformed
 
+private boolean ignoreMaterialComboBoxChanges = false;
 private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_materialComboBoxActionPerformed
-  //Check if Material supports all Mappings
+  if (ignoreMaterialComboBoxChanges)
+  {
+    return;
+  }
   MaterialProfile newMaterial = this.materialComboBox.getSelectedItem() instanceof MaterialProfile ? (MaterialProfile) this.materialComboBox.getSelectedItem() : null;
   if (!Util.differ(newMaterial, visicutModel1.getMaterial()))
   {
@@ -2300,17 +2278,27 @@ private void predefinedMappingRadioButtonChange() {
  * load the chosen predefined Mapping
  * @param evt ActionEvent from predefinedMappingComboBox
  */
+private boolean ignoreMappingComboBoxChanges = false;
 private void PredefinedMappingComboBoxChanged(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PredefinedMappingComboBoxChanged
+  if (ignoreMappingComboBoxChanges)
+  {
+    return;
+  }
   PlfPart p = VisicutModel.getInstance().getSelectedPart();
   if (p != null)
   {
-    String name = this.predefinedMappingComboBox.getSelectedItem() instanceof String ? (String) this.predefinedMappingComboBox.getSelectedItem() : null;
-    MappingSet m = MappingManager.getInstance().getItemByName(name);
-    if (m != null)
+    Object o = this.predefinedMappingComboBox.getSelectedItem();
+    MappingSet m = null;
+    if (o instanceof String)
     {
-      p.setMapping(m);
-      VisicutModel.getInstance().firePartUpdated(p);
+      m = MappingManager.getInstance().getItemByName((String) o);
     }
+    else if (o instanceof MappingSet)
+    {
+      m = (MappingSet) o;
+    }
+    p.setMapping(m);
+    VisicutModel.getInstance().firePartUpdated(p);
   }
 }//GEN-LAST:event_PredefinedMappingComboBoxChanged
 
@@ -2322,8 +2310,9 @@ private void btAddObjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
   importMenuItemActionPerformed(evt);
 }//GEN-LAST:event_btAddObjectActionPerformed
 
+private boolean ignoreObjectComboBoxEvents = false;
 private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_objectComboBoxChangeHandler
-  if (!(this.objectComboBox.getSelectedItem() instanceof PlfPart)) {
+  if (ignoreObjectComboBoxEvents || !(this.objectComboBox.getSelectedItem() instanceof PlfPart)) {
     // the user selected the "please select something" item - ignore this
     return;
   }

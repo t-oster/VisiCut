@@ -225,7 +225,7 @@ public class VisicutModel
         profiles.add(lp.getName());
         MappingSet set = new MappingSet();
         set.add(new Mapping(new FilterSet(), lp));
-        set.setName(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("EVERYTHING")+"=>"+lp.getName());
+        set.setName(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("EVERYTHING")+" "+lp.getName());
         set.setDescription("An auto-generated mapping");
         result.add(set);
       }
