@@ -57,7 +57,7 @@ public class ImageComboBox extends JComboBox
       if (c instanceof JLabel)
       {
         JLabel l = (JLabel) c;
-        if (o instanceof ImageListable)
+        if (o instanceof ImageListable && (((ImageListable) o).getThumbnailPath() != null || ImageComboBox.this.isDisabled(o)))
         {
 
           ImageListable item = (ImageListable) o;
