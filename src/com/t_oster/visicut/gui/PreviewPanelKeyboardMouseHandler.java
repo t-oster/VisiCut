@@ -61,6 +61,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   private DialogHelper dialogHelper;
   private JPopupMenu objectmenu;
   private JMenuItem resetMenuItem;
+  private JMenuItem duplicateMenuItem;
   private JMenuItem deleteMenuItem;
   private JMenuItem flipHorizMenuItem;
   private JMenuItem flipVertMenuItem;
@@ -84,6 +85,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler");
     objectmenu = new JPopupMenu();
     resetMenuItem = new JMenuItem(bundle.getString("RESET TRANSFORMATION"));
+    duplicateMenuItem = new JMenuItem(bundle.getString("DUPLICATE"));
     deleteMenuItem = new JMenuItem(bundle.getString("REMOVE"));
     flipHorizMenuItem = new JMenuItem(bundle.getString("FLIP_HORIZONTALLY"));
     flipVertMenuItem = new JMenuItem(bundle.getString("FLIP_VERTICALLY"));
@@ -119,6 +121,13 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       }
     });
     objectmenu.add(flipVertMenuItem);
+    duplicateMenuItem.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae)
+      {
+        VisicutModel.getInstance().duplicate(VisicutModel.getInstance().getSelectedPart());
+      }   
+    });
+    objectmenu.add(duplicateMenuItem);
     deleteMenuItem.addActionListener(new ActionListener(){
 
       public void actionPerformed(ActionEvent ae)

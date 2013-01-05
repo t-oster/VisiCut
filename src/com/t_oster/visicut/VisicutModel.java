@@ -82,6 +82,24 @@ import javax.swing.filechooser.FileFilter;
 public class VisicutModel
 {
 
+  /**
+   * Duplicates the given PlfPart and adds it to the
+   * current PlfFile
+   * @param p
+   */
+  public void duplicate(PlfPart p)
+  {
+    PlfPart dup = new PlfPart();
+    dup.setSourceFile(p.getSourceFile() != null ? p.getSourceFile() : null);
+    dup.setMapping(p.getMapping() != null ? p.getMapping().clone() : null);
+    if (p.getGraphicObjects() != null)
+    {
+      dup.setGraphicObjects(p.getGraphicObjects().clone());
+    }
+    this.plfFile.add(dup);
+    this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_ADDED, null, dup);
+  }
+
   private Point2D.Double startPoint = null;
   public static final String PROP_STARTPOINT = "startPoint";
 
