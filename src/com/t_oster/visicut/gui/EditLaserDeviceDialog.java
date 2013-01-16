@@ -27,11 +27,14 @@ import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.visicut.gui.beans.BetterJTable;
 import com.t_oster.visicut.gui.beans.CustomizableTableModel;
 import com.t_oster.visicut.managers.PreferencesManager;
+import com.t_oster.visicut.misc.DialogHelper;
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import java.util.Arrays;
+import java.util.List;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.JTextField;
 
 /**
  *
@@ -136,6 +139,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     jLabel7 = new javax.swing.JLabel();
     jScrollPane2 = new javax.swing.JScrollPane();
     jTextArea1 = new javax.swing.JTextArea();
+    seachCameraButton = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditLaserDeviceDialog"); // NOI18N
@@ -239,6 +243,14 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
 
     jScrollPane2.setViewportView(jTextArea1);
 
+    seachCameraButton.setText(resourceMap.getString("seachCameraButton.text")); // NOI18N
+    seachCameraButton.setName("seachCameraButton"); // NOI18N
+    seachCameraButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        seachCameraButtonActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -246,9 +258,9 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 386, Short.MAX_VALUE)
+          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 462, Short.MAX_VALUE)
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 301, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addComponent(jButton2)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(jButton1))
@@ -262,13 +274,16 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
               .addComponent(jLabel7))
             .addGap(22, 22, 22)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
-              .addComponent(jComboBox1, 0, 274, Short.MAX_VALUE)
-              .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
+              .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
+              .addComponent(jComboBox1, 0, 332, Short.MAX_VALUE)
               .addComponent(jLabel1)
-              .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
-              .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
-              .addComponent(tfJobPrefix, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)))
+              .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
+              .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
+              .addComponent(tfJobPrefix, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(seachCameraButton, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE))))
           .addComponent(jLabel5))
         .addContainerGap())
     );
@@ -289,7 +304,8 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jLabel3))
+          .addComponent(jLabel3)
+          .addComponent(seachCameraButton))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -305,7 +321,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel5)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jButton1)
@@ -380,6 +396,31 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     }
   }//GEN-LAST:event_jButton1ActionPerformed
 
+private void seachCameraButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_seachCameraButtonActionPerformed
+  this.seachCameraButton.setEnabled(false);
+  new Thread(){
+      @Override
+    public void run()
+    {
+      DialogHelper dialog = new DialogHelper(EditLaserDeviceDialog.this, "VisiCut");
+      List<String> camUrls = Helper.findVisiCamInstances();
+      if (camUrls.isEmpty())
+      {
+        dialog.showInfoMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditLaserDeviceDialog").getString("NO_CAM_FOUND"));
+      }
+      else
+      {
+        String url = camUrls.size() == 1 ? camUrls.get(0) : dialog.askElement(camUrls, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditLaserDeviceDialog").getString("SELECT_CAMERA"));
+        if (url != null)
+        {
+          EditLaserDeviceDialog.this.jTextField3.setText(url);
+        }
+      }
+      EditLaserDeviceDialog.this.seachCameraButton.setEnabled(true);
+    }
+  }.start();
+}//GEN-LAST:event_seachCameraButtonActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton jButton1;
   private javax.swing.JButton jButton2;
@@ -398,6 +439,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
   private javax.swing.JTextField jTextField1;
   private javax.swing.JTextField jTextField2;
   private javax.swing.JTextField jTextField3;
+  private javax.swing.JButton seachCameraButton;
   private com.t_oster.uicomponents.SelectThumbnailButton selectThumbnailButton1;
   private javax.swing.JTextField tfJobPrefix;
   private org.jdesktop.beansbinding.BindingGroup bindingGroup;

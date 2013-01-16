@@ -29,9 +29,9 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" alignment="0" pref="386" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" pref="462" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="274" max="-2" attributes="0"/>
+                      <EmptySpace pref="301" max="-2" attributes="0"/>
                       <Component id="jButton2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="jButton1" min="-2" max="-2" attributes="0"/>
@@ -47,13 +47,17 @@
                       </Group>
                       <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane2" pref="274" max="32767" attributes="0"/>
-                          <Component id="jComboBox1" pref="274" max="32767" attributes="0"/>
-                          <Component id="jTextField3" pref="274" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" pref="332" max="32767" attributes="0"/>
+                          <Component id="jComboBox1" pref="332" max="32767" attributes="0"/>
                           <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="jTextField1" alignment="1" pref="274" max="32767" attributes="1"/>
-                          <Component id="jTextField2" alignment="0" pref="274" max="32767" attributes="1"/>
-                          <Component id="tfJobPrefix" alignment="0" pref="274" max="32767" attributes="0"/>
+                          <Component id="jTextField1" alignment="1" pref="332" max="32767" attributes="1"/>
+                          <Component id="jTextField2" alignment="0" pref="332" max="32767" attributes="1"/>
+                          <Component id="tfJobPrefix" alignment="0" pref="332" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jTextField3" min="-2" pref="244" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="seachCameraButton" pref="82" max="32767" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
                   <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -83,6 +87,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jTextField3" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="seachCameraButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -102,7 +107,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane1" pref="113" max="32767" attributes="0"/>
+              <Component id="jScrollPane1" pref="107" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -297,5 +302,14 @@
         </Component>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JButton" name="seachCameraButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="seachCameraButton.text"/>
+        <Property name="name" type="java.lang.String" value="seachCameraButton" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="seachCameraButtonActionPerformed"/>
+      </Events>
+    </Component>
   </SubComponents>
 </Form>
