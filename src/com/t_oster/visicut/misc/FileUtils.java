@@ -185,17 +185,24 @@ public class FileUtils
       {
         parent.mkdirs();
       }
-      byte[] buf = new byte[1024];
-      InputStream in = zip.getInputStream(entry);
-      FileOutputStream out = new FileOutputStream(inputFile);
-      // Transfer bytes from the file to the ZIP file
-      int len;
-      while ((len = in.read(buf)) > 0)
+      if (entry.isDirectory())
       {
-        out.write(buf, 0, len);
+        inputFile.mkdir();
       }
-      out.close();
-      in.close();
+      else
+      {
+        byte[] buf = new byte[1024];
+        InputStream in = zip.getInputStream(entry);
+        FileOutputStream out = new FileOutputStream(inputFile);
+        // Transfer bytes from the file to the ZIP file
+        int len;
+        while ((len = in.read(buf)) > 0)
+        {
+          out.write(buf, 0, len);
+        }
+        out.close();
+        in.close();
+      }
     }
     zip.close();
   }
