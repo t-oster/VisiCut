@@ -41,6 +41,7 @@ import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -605,6 +606,8 @@ public class Helper
     return isMacOS() && getIllustratorScript().exists();
   }
 
+  public static String illegalChars = "_?<>[]()\\/ß%*~#:;§$&=°^|@ ";
+  
   /**
    * Converts a string into a valid path name
    * @param name
@@ -612,6 +615,57 @@ public class Helper
    */
   public static String toPathName(String name)
   {
-    return name.replace("?", "_").replace("/", "_").replace("\\", "_");
+    String result = "";
+    for (char c : name.toCharArray())
+    {
+      if (illegalChars.contains(""+c))
+      {
+        result += "_"+illegalChars.indexOf(""+c)+"_";
+      }
+      else
+      {
+        result += c;
+      }
+    }
+    return result;
+  }
+  
+  /**
+   * Converts a converted filename from toPathName()
+   * back to the original string
+   * @param name
+   * @return 
+   */
+  public static String fromPathName(String name)
+  {
+    String result = "";
+    String index = null;
+    for (char c : name.toCharArray())
+    {
+      if (index == null)
+      {
+        if (c == '_')
+        {
+          index = "";
+        }
+        else
+        {
+          result += c;
+        }
+      }
+      else
+      {
+        if (c == '_')
+        {
+          result += illegalChars.charAt(Integer.parseInt(index));
+          index = null;
+        }
+        else
+        {
+          index += c;
+        }
+      }
+    }
+    return result;
   }
 }
