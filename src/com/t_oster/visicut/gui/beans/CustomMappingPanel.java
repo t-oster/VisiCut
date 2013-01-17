@@ -349,20 +349,22 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       MaterialProfile material = v.getMaterial();
       LaserDevice laser = v.getSelectedLaserDevice();
       
-      try
+      if (laser != null && material != null && temporaryCopy != null && lp != null)
       {
-        // get original properties
-        List<LaserProperty> originalProperties = LaserPropertyManager.getInstance().getLaserProperties(laser,material,lp,thickness);
-        // set tempCopy's properties to original's
-        LaserPropertyManager.getInstance().saveLaserProperties(laser, material, temporaryCopy, thickness, originalProperties);
-      }
-      catch (FileNotFoundException ex)
-      {
-        Logger.getLogger(CustomMappingPanel.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      catch (IOException ex)
-      {
-        Logger.getLogger(CustomMappingPanel.class.getName()).log(Level.SEVERE, null, ex);
+        try
+        {
+          // get original properties
+          List<LaserProperty> originalProperties = LaserPropertyManager.getInstance().getLaserProperties(laser,material,lp,thickness);
+          // set tempCopy's properties to original's
+          LaserPropertyManager.getInstance().saveLaserProperties(laser, material, temporaryCopy, thickness, originalProperties);
+        }
+        catch (FileNotFoundException ex)
+        {
+        }
+        catch (IOException ex)
+        {
+          Logger.getLogger(CustomMappingPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
       }
     }
 

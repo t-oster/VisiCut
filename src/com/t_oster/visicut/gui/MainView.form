@@ -10,11 +10,6 @@
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="VisicutModel.getInstance()"/>
       </AuxValues>
     </Component>
-    <Component class="com.t_oster.visicut.managers.MaterialManager" name="profileManager1">
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="com.t_oster.visicut.managers.MaterialManager.getInstance()"/>
-      </AuxValues>
-    </Component>
     <Component class="com.t_oster.visicut.gui.beans.FilesDropSupport" name="filesDropSupport1">
       <Properties>
         <Property name="component" type="javax.swing.JComponent" editor="org.netbeans.modules.form.ComponentChooserEditor">
@@ -24,14 +19,6 @@
       <Events>
         <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="filesDropSupport1PropertyChange"/>
       </Events>
-    </Component>
-    <Component class="com.t_oster.visicut.managers.MappingManager" name="mappingManager1">
-      <Events>
-        <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="mappingManager1PropertyChange"/>
-      </Events>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="MappingManager.getInstance()"/>
-      </AuxValues>
     </Component>
     <Component class="javax.swing.JFileChooser" name="saveFileChooser">
       <Properties>
@@ -805,103 +792,26 @@
               <Properties>
                 <Property name="name" type="java.lang.String" value="Custom" noResource="true"/>
               </Properties>
+              <AccessibilityProperties>
+                <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="com/t_oster/visicut/gui/resources/MainView.properties" key="MAPPING" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+              </AccessibilityProperties>
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
               <SubComponents>
-                <Container class="javax.swing.JPanel" name="mappingPanel">
+                <Component class="com.t_oster.visicut.gui.beans.CustomMappingPanel" name="customMappingPanel">
                   <Properties>
-                    <Property name="name" type="java.lang.String" value="customMappingPanelContainer" noResource="true"/>
+                    <Property name="name" type="java.lang.String" value="customMappingPanel" noResource="true"/>
                   </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                       <JTabbedPaneConstraints tabName="Mapping">
-                        <Property name="tabTitle" type="java.lang.String" resourceKey="customMappingPanelContainer.TabConstraints.tabTitle"/>
+                        <Property name="tabTitle" type="java.lang.String" resourceKey="customMappingPanel.TabConstraints.tabTitle"/>
                       </JTabbedPaneConstraints>
                     </Constraint>
                   </Constraints>
-
-                  <Layout>
-                    <DimensionLayout dim="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="customMappingRadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="predefinedMappingRadioButton" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="predefinedMappingComboBox" pref="210" max="32767" attributes="0"/>
-                                  </Group>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
-                              <Component id="customMappingPanel2" pref="371" max="32767" attributes="0"/>
-                          </Group>
-                      </Group>
-                    </DimensionLayout>
-                    <DimensionLayout dim="1">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="predefinedMappingRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="predefinedMappingComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="customMappingRadioButton" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="customMappingPanel2" pref="240" max="32767" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                    </DimensionLayout>
-                  </Layout>
-                  <SubComponents>
-                    <Component class="com.t_oster.visicut.gui.beans.CustomMappingPanel" name="customMappingPanel2">
-                      <Properties>
-                        <Property name="name" type="java.lang.String" value="customMappingPanel2" noResource="true"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JRadioButton" name="predefinedMappingRadioButton">
-                      <Properties>
-                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                          <ComponentRef name="buttonGroup1"/>
-                        </Property>
-                        <Property name="selected" type="boolean" value="true"/>
-                        <Property name="text" type="java.lang.String" resourceKey="predefinedMappingRadioButton.text"/>
-                        <Property name="name" type="java.lang.String" value="predefinedMappingRadioButton" noResource="true"/>
-                      </Properties>
-                      <Events>
-                        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="predefinedMappingRadioButtonChangeAction"/>
-                      </Events>
-                    </Component>
-                    <Component class="javax.swing.JRadioButton" name="customMappingRadioButton">
-                      <Properties>
-                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                          <ComponentRef name="buttonGroup1"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" resourceKey="customMappingRadioButton.text"/>
-                        <Property name="name" type="java.lang.String" value="customMappingRadioButton" noResource="true"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JComboBox" name="predefinedMappingComboBox">
-                      <Properties>
-                        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                          <StringArray count="4">
-                            <StringItem index="0" value="Item 1"/>
-                            <StringItem index="1" value="Item 2"/>
-                            <StringItem index="2" value="Item 3"/>
-                            <StringItem index="3" value="Item 4"/>
-                          </StringArray>
-                        </Property>
-                        <Property name="name" type="java.lang.String" value="predefinedMappingComboBox" noResource="true"/>
-                      </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="PredefinedMappingComboBoxChanged"/>
-                      </Events>
-                    </Component>
-                  </SubComponents>
-                </Container>
+                </Component>
                 <Component class="com.t_oster.uicomponents.PositionPanel" name="positionPanel">
                   <Properties>
                     <Property name="name" type="java.lang.String" value="positionPanel" noResource="true"/>
