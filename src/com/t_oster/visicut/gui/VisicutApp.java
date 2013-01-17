@@ -28,6 +28,7 @@ import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.MaterialManager;
 import com.t_oster.visicut.managers.PreferencesManager;
+import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.ApplicationInstanceListener;
 import com.t_oster.visicut.misc.ApplicationInstanceManager;
 import com.t_oster.visicut.misc.Helper;
@@ -169,6 +170,11 @@ public class VisicutApp extends SingleFrameApplication
           if ("--debug".equals(s) || "-d".equals(s))
           {
             GLOBAL_LOG_LEVEL = Level.FINE;
+          }
+          else if ("--convertsettings".equals(s))
+          {
+            convertSettings();
+            System.exit(0);
           }
           else if ("--basepath".equals(s) || "-b".equals(s))
           {
@@ -412,5 +418,36 @@ public class VisicutApp extends SingleFrameApplication
       System.out.println("Please press START on the Lasercutter");
       System.exit(0);
     }
+  }
+
+  private void convertSettings()
+  {
+    System.out.println("Converting settings...");
+    MappingManager.getInstance().getAll();
+    for (LaserDevice l : LaserDeviceManager.getInstance().getAll())
+    {
+      for (MaterialProfile m : MaterialManager.getInstance().getAll())
+      {
+        for (float h : m.getMaterialThicknesses())
+        {
+          for (LaserProfile p : ProfileManager.getInstance().getAll())
+          {
+            try
+            {
+              LaserPropertyManager.getInstance().getLaserProperties(l, m, p, h);
+            }
+            catch (FileNotFoundException ex)
+            {
+              Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            catch (IOException ex)
+            {
+              Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
+            }
+          }
+        }
+      }
+    }
+    System.out.println("done.");
   }
 }
