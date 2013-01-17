@@ -51,9 +51,9 @@ public class HelperTest
     for (String s: examples)
     {
       String enc = Helper.toPathName(s);
-      for (char c : Helper.illegalChars.toCharArray())
+      for (char c : enc.toCharArray())
       {
-        assertFalse("s contains "+c, c != '_' && enc.contains(""+c));
+        assertTrue("s contains "+c, c == '_' || Helper.allowedChars.contains(""+c));
       }
       assertEquals(s, Helper.fromPathName(enc));
     }
