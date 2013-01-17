@@ -19,7 +19,7 @@
 package com.t_oster.visicut.managers;
 
 import com.t_oster.liblasercut.TimeIntensiveOperation;
-import com.t_oster.liblasercut.dithering.DitheringAlgorithm;
+import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
@@ -29,6 +29,10 @@ import com.t_oster.visicut.model.mapping.MappingFilter;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import com.thoughtworks.xstream.XStream;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -74,6 +78,30 @@ public class MappingManager extends FilebasedManager<MappingSet>
     }
   }
 
+  /**
+     * Generates an Everything=> Profile mapping for every
+     * Occuring MaterialProfile
+     * @return
+     */
+  public List<MappingSet> generateDefaultMappings()
+  {
+    List<MappingSet> result = new LinkedList<MappingSet>();
+    Set<String> profiles = new LinkedHashSet<String>();
+    for (LaserProfile lp:ProfileManager.getInstance().getAll())
+    {
+      if (!profiles.contains(lp.getName()))
+      {
+        profiles.add(lp.getName());
+        MappingSet set = new MappingSet();
+        set.add(new Mapping(new FilterSet(), lp));
+        set.setName(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("EVERYTHING")+" "+lp.getName());
+        set.setDescription("An auto-generated mapping");
+        result.add(set);
+      }
+    }
+    return result;
+  }
+  
   @Override
   protected String getSubfolderName()
   {

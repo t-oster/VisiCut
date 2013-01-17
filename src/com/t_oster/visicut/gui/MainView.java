@@ -430,7 +430,9 @@ public class MainView extends javax.swing.JFrame
     calculateTimeButton = new javax.swing.JButton();
     timeLabel = new javax.swing.JLabel();
     mappingTabbedPane = new javax.swing.JTabbedPane();
+    mappingPanel = new javax.swing.JPanel();
     customMappingPanel = new com.t_oster.visicut.gui.beans.CustomMappingPanel();
+    predefinedMappingBox1 = new com.t_oster.visicut.gui.beans.PredefinedMappingBox();
     positionPanel = new com.t_oster.uicomponents.PositionPanel();
     btAddMaterial = new javax.swing.JButton();
     cbMaterialThickness = new javax.swing.JComboBox();
@@ -648,8 +650,35 @@ public class MainView extends javax.swing.JFrame
 
     mappingTabbedPane.setName("Custom"); // NOI18N
 
+    mappingPanel.setName("mappingPanel"); // NOI18N
+
+    customMappingPanel.setLoadButtonVisible(false);
     customMappingPanel.setName("customMappingPanel"); // NOI18N
-    mappingTabbedPane.addTab(resourceMap.getString("customMappingPanel.TabConstraints.tabTitle"), customMappingPanel); // NOI18N
+
+    predefinedMappingBox1.setName("predefinedMappingBox1"); // NOI18N
+
+    javax.swing.GroupLayout mappingPanelLayout = new javax.swing.GroupLayout(mappingPanel);
+    mappingPanel.setLayout(mappingPanelLayout);
+    mappingPanelLayout.setHorizontalGroup(
+      mappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mappingPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(mappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addComponent(customMappingPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
+          .addComponent(predefinedMappingBox1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE))
+        .addContainerGap())
+    );
+    mappingPanelLayout.setVerticalGroup(
+      mappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(mappingPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(predefinedMappingBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
+        .addComponent(customMappingPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap())
+    );
+
+    mappingTabbedPane.addTab(resourceMap.getString("mappingPanel.TabConstraints.tabTitle"), mappingPanel); // NOI18N
 
     positionPanel.setName("positionPanel"); // NOI18N
     mappingTabbedPane.addTab(resourceMap.getString("positionPanel.TabConstraints.tabTitle"), positionPanel); // NOI18N
@@ -1117,9 +1146,9 @@ public class MainView extends javax.swing.JFrame
             .addComponent(bt1to1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 125, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 126, Short.MAX_VALUE)
             .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 647, Short.MAX_VALUE))
+          .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 648, Short.MAX_VALUE))
         .addGap(8, 8, 8)
         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addContainerGap())
@@ -2246,6 +2275,7 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
   private javax.swing.JCheckBoxMenuItem jmShowPhoto;
   private com.t_oster.uicomponents.ImageComboBox laserCutterComboBox;
   private javax.swing.JLabel laserSettingsLabel;
+  private javax.swing.JPanel mappingPanel;
   private javax.swing.JTabbedPane mappingTabbedPane;
   private com.t_oster.uicomponents.ImageComboBox materialComboBox;
   private javax.swing.JMenuItem materialMenuItem;
@@ -2254,6 +2284,7 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
   private javax.swing.JComboBox objectComboBox;
   private javax.swing.JMenuItem openMenuItem;
   private com.t_oster.uicomponents.PositionPanel positionPanel;
+  private com.t_oster.visicut.gui.beans.PredefinedMappingBox predefinedMappingBox1;
   private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
   private javax.swing.JProgressBar progressBar;
   private javax.swing.JMenu recentFilesMenu;

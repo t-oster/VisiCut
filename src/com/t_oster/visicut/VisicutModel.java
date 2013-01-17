@@ -27,7 +27,6 @@ import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.MaterialManager;
 import com.t_oster.visicut.managers.PreferencesManager;
-import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
@@ -38,9 +37,7 @@ import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
-import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
-import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -61,11 +58,9 @@ import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -225,30 +220,6 @@ public class VisicutModel
     {
       System.err.println("Should not use public Constructor of VisicutModel");
     }
-  }
-
-  /**
-     * Generates an Everything=> Profile mapping for every
-     * Occuring MaterialProfile
-     * @return
-     */
-  public List<MappingSet> generateDefaultMappings()
-  {
-    List<MappingSet> result = new LinkedList<MappingSet>();
-    Set<String> profiles = new LinkedHashSet<String>();
-    for (LaserProfile lp:ProfileManager.getInstance().getAll())
-    {
-      if (!profiles.contains(lp.getName()))
-      {
-        profiles.add(lp.getName());
-        MappingSet set = new MappingSet();
-        set.add(new Mapping(new FilterSet(), lp));
-        set.setName(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("EVERYTHING")+" "+lp.getName());
-        set.setDescription("An auto-generated mapping");
-        result.add(set);
-      }
-    }
-    return result;
   }
 
   protected LaserDevice selectedLaserDevice = null;
