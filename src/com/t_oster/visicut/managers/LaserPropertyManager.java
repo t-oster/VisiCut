@@ -61,7 +61,31 @@ public class LaserPropertyManager
       System.err.println("ProfileManager should not be instanciated directly");
     }
   }
-
+  
+  /**
+   * Used to determine the path of propery files before VisiCut 1.5-99
+   * @param name
+   * @return 
+   */
+  private String oldToPathName(String name)
+  {
+    return name.replace("?", "_").replace("/", "_").replace("\\", "_");
+  }
+  
+  /**
+   * Used to determine the path of propery files before VisiCut 1.5-99
+   * @param name
+   * @return 
+   */
+  private File getOldLaserPropertiesFile(LaserDevice ld, MaterialProfile mp, LaserProfile lp, float materialThickness)
+  {
+    File laserprofiles = new File(Helper.getBasePath(), "laserprofiles");
+    File deviceprofiles = new File(laserprofiles, oldToPathName(ld.getName()));
+    File material = new File(new File(deviceprofiles, oldToPathName(mp.getName())), materialThickness + "mm");
+    File profile = new File(material, oldToPathName(lp.getName()) + ".xml");
+    return profile;
+  }
+  
   private File getLaserPropertiesFile(LaserDevice ld, MaterialProfile mp, LaserProfile lp, float materialThickness)
   {
     File laserprofiles = new File(Helper.getBasePath(), "laserprofiles");
@@ -74,6 +98,12 @@ public class LaserPropertyManager
   public List<LaserProperty> getLaserProperties(LaserDevice ld, MaterialProfile mp, LaserProfile lp, float materialThickness) throws FileNotFoundException, IOException
   {
     File f = getLaserPropertiesFile(ld, mp, lp, materialThickness);
+    if (!f.exists() && getOldLaserPropertiesFile(ld, mp, lp, materialThickness).exists())
+    {
+      File old = getOldLaserPropertiesFile(ld, mp, lp, materialThickness);
+      f.getParentFile().mkdirs();
+      old.renameTo(f);
+    }
     if (f.exists())
     {
       List<LaserProperty> result = this.loadProperties(f);

@@ -606,7 +606,7 @@ public class Helper
     return isMacOS() && getIllustratorScript().exists();
   }
 
-  public static String illegalChars = "_?<>[]()\\/ß%*~#:;§$&=°^|@ ";
+  public static String allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-";
   
   /**
    * Converts a string into a valid path name
@@ -618,9 +618,9 @@ public class Helper
     String result = "";
     for (char c : name.toCharArray())
     {
-      if (illegalChars.contains(""+c))
+      if (!allowedChars.contains(""+c))
       {
-        result += "_"+illegalChars.indexOf(""+c)+"_";
+        result += "_"+((int) c)+"_";
       }
       else
       {
@@ -657,7 +657,7 @@ public class Helper
       {
         if (c == '_')
         {
-          result += illegalChars.charAt(Integer.parseInt(index));
+          result += (char) Integer.parseInt(index);
           index = null;
         }
         else
