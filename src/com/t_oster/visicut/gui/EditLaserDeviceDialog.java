@@ -414,6 +414,7 @@ private void seachCameraButtonActionPerformed(java.awt.event.ActionEvent evt) {/
         if (url != null)
         {
           EditLaserDeviceDialog.this.jTextField3.setText(url);
+          EditLaserDeviceDialog.this.currentLaserDevice.setCameraURL(url);
         }
       }
       EditLaserDeviceDialog.this.seachCameraButton.setEnabled(true);
