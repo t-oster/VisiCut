@@ -27,6 +27,7 @@ import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.PlfFile;
 import com.t_oster.visicut.model.PlfPart;
+import com.t_oster.visicut.model.graphicelements.ImportException;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -41,6 +42,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -72,6 +77,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   private JPopupMenu backgroundMenu;
   private JMenuItem startPointSetMenuItem;
   private JMenuItem startPointRemoveMenuItem;
+  private JMenuItem selectScreenshotMenuItem;
 
   public PreviewPanelKeyboardMouseHandler(PreviewPanel panel)
   {
@@ -96,6 +102,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     backgroundMenu = new JPopupMenu();
     startPointSetMenuItem = new JMenuItem(bundle.getString("ADD_STARTPOINT"));
     startPointRemoveMenuItem = new JMenuItem(bundle.getString("REMOVE_STARTPOINT"));
+    selectScreenshotMenuItem = new JMenuItem(bundle.getString("SELECT_SCREENSHOT"));
 
     objectmenu.add(resetMenuItem);
     resetMenuItem.addActionListener(new ActionListener()
@@ -180,6 +187,27 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       }
     });
     backgroundMenu.add(startPointRemoveMenuItem);
+    selectScreenshotMenuItem.setEnabled(VisicutModel.getInstance().getBackgroundImage() != null && previewPanel.isShowBackgroundImage());
+    PropertyChangeListener selectScreenshotUpdater = new PropertyChangeListener()
+    {
+      public void propertyChange(PropertyChangeEvent pce)
+      {
+        if (VisicutModel.PROP_BACKGROUNDIMAGE.equals(pce.getPropertyName()) || PreviewPanel.PROP_SHOW_BACKGROUNDIMAGE.equals(pce.getPropertyName()))
+        {
+          selectScreenshotMenuItem.setEnabled(VisicutModel.getInstance().getBackgroundImage() != null && previewPanel.isShowBackgroundImage());
+        }
+      }
+    };
+    VisicutModel.getInstance().addPropertyChangeListener(selectScreenshotUpdater);
+    previewPanel.addPropertyChangeListener(PreviewPanel.PROP_SHOW_BACKGROUNDIMAGE, selectScreenshotUpdater);
+    selectScreenshotMenuItem.addActionListener(new ActionListener(){
+
+      public void actionPerformed(ActionEvent ae)
+      {
+        PreviewPanelKeyboardMouseHandler.this.startSelectingScreenshot();
+      }
+    });
+    backgroundMenu.add(selectScreenshotMenuItem);
   }
 
   private void flip(boolean horizontal)
@@ -269,13 +297,20 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     }
   }
 
+  public void startSelectingScreenshot()
+  {
+    VisicutModel.getInstance().setSelectedPart(null);
+    this.currentAction = MouseAction.selectingScreenshot;
+  }
+  
   private enum MouseAction
   {
     movingViewport,
     movingSet,
     movingStartpoint,
     resizingSet,
-    rotatingSet
+    rotatingSet,
+    selectingScreenshot,
   };
   private Point lastMousePosition = null;
   private Point2D.Double lastMousePositionMm = null;
@@ -385,6 +420,11 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
 
   public void mouseClicked(MouseEvent me)
   {
+    if (currentAction == MouseAction.selectingScreenshot)
+    {
+      currentAction = null;
+      this.setCursor(me.getPoint());
+    }
     this.previewPanel.requestFocus();
     if (this.checkParameterFieldClick(me))
     {
@@ -482,6 +522,10 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     lastMousePosition = evt.getPoint();
     lastMousePositionMm = this.mouseToMm(lastMousePosition);
     lastMousePositionInViewport = SwingUtilities.convertMouseEvent(evt.getComponent(), evt, previewPanel.getParent()).getPoint();
+    if (currentAction == MouseAction.selectingScreenshot)
+    {
+      return;
+    }
     currentAction = MouseAction.movingViewport;
     if (VisicutModel.getInstance().getStartPoint() != null)
     {
@@ -517,7 +561,26 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
 
   public void mouseReleased(MouseEvent evt)
   {
-    if (currentAction == MouseAction.rotatingSet)
+    if (currentAction == MouseAction.selectingScreenshot)
+    {
+      try
+      {
+        AffineTransform mm2imgpx = new AffineTransform();
+        if (VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration() != null)
+        {
+          mm2imgpx = VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration().createInverse();
+        }
+        Rectangle crop = Helper.toRect(Helper.transform(this.previewPanel.getEditRectangle(), mm2imgpx));
+        VisicutModel.getInstance().addScreenshotOfBackgroundImage(crop, this.previewPanel.getEditRectangle());
+      }
+      catch (Exception ex)
+      {
+        this.dialogHelper.showErrorMessage(ex);
+      }
+      currentAction = null;
+      setCursor(evt.getPoint());
+    }
+    else if (currentAction == MouseAction.rotatingSet)
     {
       this.previewPanel.setFastPreview(false);
       VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
@@ -561,6 +624,12 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       {
         switch (currentAction)
         {
+          case selectingScreenshot:
+          {
+            this.previewPanel.getMmToPxTransform().createInverse().deltaTransform(diff, diff);
+            this.previewPanel.setEditRectangle(new EditRectangle(lastMousePositionMm.x, lastMousePositionMm.y, diff.x, diff.y));
+            return;
+          }
           case movingStartpoint:
           {
             AffineTransform tr = this.previewPanel.getMmToPxTransform();
@@ -731,6 +800,11 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     int cursor = Cursor.DEFAULT_CURSOR;
     cursorcheck:
     {
+      if (currentAction == MouseAction.selectingScreenshot)
+      {
+        cursor = Cursor.CROSSHAIR_CURSOR;
+        break cursorcheck;
+      }
       if (VisicutModel.getInstance().getStartPoint() != null)
       {
         Point2D sp = previewPanel.getMmToPxTransform().transform(VisicutModel.getInstance().getStartPoint(), null);

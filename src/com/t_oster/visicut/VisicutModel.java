@@ -28,6 +28,7 @@ import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.MaterialManager;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.misc.ExtensionFilter;
+import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.LaserDevice;
@@ -40,6 +41,8 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -69,6 +72,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -79,6 +83,22 @@ import javax.swing.filechooser.FileFilter;
  */
 public class VisicutModel
 {
+  
+  public void addScreenshotOfBackgroundImage(Rectangle crop, Rectangle2D target) throws IOException, FileNotFoundException, ImportException
+  {
+    File tmp = FileUtils.getNonexistingWritableFile("screenshot.png");
+    tmp.deleteOnExit();
+    BufferedImage cut = this.backgroundImage.getSubimage(crop.x, crop.y, crop.width, crop.height);
+    ImageIO.write(cut, "png", tmp);
+    PlfPart p = this.loadGraphicFile(tmp, new LinkedList<String>());
+    if (target != null)
+    {
+      p.getGraphicObjects().setTransform(Helper.getTransform(p.getGraphicObjects().getOriginalBoundingBox(), target));
+    }
+    this.plfFile.add(p);
+    this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_ADDED, null, p);
+    this.setSelectedPart(p);
+  }
 
   /**
    * Duplicates the given PlfPart and adds it to the
@@ -447,11 +467,7 @@ public class VisicutModel
       else
       {
         int k = 0;
-        result.get(i).setSourceFile(new File(name.replace("/","_")));
-        while (result.get(i).getSourceFile().exists())
-        {//Find next nonexisting file
-          result.get(i).setSourceFile(new File((k++)+name.replace("/","_")));
-        }
+        result.get(i).setSourceFile(FileUtils.getNonexistingWritableFile(name.replace("/","_")));
         byte[] buf = new byte[1024];
         InputStream in = zip.getInputStream(entry);
         FileOutputStream out = new FileOutputStream(result.get(i).getSourceFile());

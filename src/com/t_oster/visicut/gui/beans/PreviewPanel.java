@@ -352,6 +352,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       this.renderBuffers.clear();
     }
   }
+  public static final String PROP_SHOW_BACKGROUNDIMAGE = "showBackgroundImage";
   protected boolean showBackgroundImage = true;
 
   /**
@@ -371,7 +372,9 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
    */
   public void setShowBackgroundImage(boolean showBackgroundImage)
   {
+    boolean oldValue = this.showBackgroundImage;
     this.showBackgroundImage = showBackgroundImage;
+    this.firePropertyChange(PROP_SHOW_BACKGROUNDIMAGE, oldValue, this.showBackgroundImage);
     this.repaint();
   }
 

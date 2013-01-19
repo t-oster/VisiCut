@@ -40,6 +40,23 @@ public class FileUtils
 
   private static int FILE_COPY_BUFFER_SIZE = 1024 * 1024 * 30;
 
+  /**
+   * Returns a file, which does not exist yet, should be writable
+   * and ends with nameSuffix.
+   * @param nameSuffix
+   * @param deleteOnExit 
+   */
+  public static File getNonexistingWritableFile(String nameSuffix)
+  {
+    File f = new File(nameSuffix);
+    int i=1;
+    while(f.exists())
+    {
+      f = new File((i++) + nameSuffix);
+    }
+    return f;
+  }
+  
   public static void copyDirectoryToDirectory(File srcDir, File destDir) throws IOException
   {
     if (!srcDir.exists() || !srcDir.isDirectory())
