@@ -88,12 +88,20 @@ public abstract class SVGObject implements GraphicObject
       {
         if (o instanceof Group)
         {
-          StyleAttribute sty = new StyleAttribute("transform");
+          StyleAttribute sty = new StyleAttribute("transform"); 
           if (((SVGElement) o).getPres(sty))
           {
-            AffineTransform trans = SVGElement.parseSingleTransform(sty.getStringValue());
-            trans.concatenate(tr);
-            tr = trans;
+            String value = sty.getStringValue();
+            for (String v : value.split("\\)"))
+            {
+              v = v.trim();
+              if (!"".equals(v))
+              {
+                AffineTransform trans = SVGElement.parseSingleTransform(v+")");
+                trans.concatenate(tr);
+                tr = trans;
+              }
+            }
           }
         }
       }

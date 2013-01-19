@@ -134,6 +134,7 @@ public class SVGImporter implements Importer
         return n.getValue();
       case NumberWithUnits.UT_CM:
         return 10.0 * n.getValue();
+      case NumberWithUnits.UT_PT:
       case NumberWithUnits.UT_PX:
         return Util.px2mm(n.getValue(), dpi);
       case NumberWithUnits.UT_IN:
@@ -141,7 +142,6 @@ public class SVGImporter implements Importer
       case NumberWithUnits.UT_UNITLESS:
         return n.getValue();
       default:
-        System.err.println("Unknown SVG unit!!!");
         return n.getValue();
     }
   }
