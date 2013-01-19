@@ -25,6 +25,7 @@ import com.t_oster.visicut.gui.beans.EditRectangle.ParameterField;
 import com.t_oster.visicut.gui.beans.PreviewPanel;
 import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.PlfFile;
 import com.t_oster.visicut.model.PlfPart;
 import java.awt.Cursor;
 import java.awt.Point;
@@ -40,6 +41,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -389,8 +392,9 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     }
     if (me.getButton() == MouseEvent.BUTTON1)
     {
-      PlfPart onGraphic = null;
-      for(PlfPart p : VisicutModel.getInstance().getPlfFile())
+      PlfFile parts = VisicutModel.getInstance().getPlfFile();
+      List<PlfPart> elementsUnderCursor = new LinkedList<PlfPart>();
+      for(PlfPart p : parts)
       {
         if (p.getGraphicObjects() != null && p.getGraphicObjects().getBoundingBox() != null)
         {
@@ -398,18 +402,25 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
           Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
           if (e.contains(me.getPoint()))
           {
-            onGraphic = p;
-            break;
+            elementsUnderCursor.add(p);
           }
         }
       }
-      if (onGraphic != null)
-      {//clicked on the graphic
-        if (getEditRect() != null && onGraphic.equals(VisicutModel.getInstance().getSelectedPart()))
-        {//Already selected => toggle rotate/scale mode
+      if (!elementsUnderCursor.isEmpty())
+      {//mouse is over some graphic
+        int i = elementsUnderCursor.indexOf(VisicutModel.getInstance().getSelectedPart());
+        if (getEditRect() != null && i != -1)
+        {//Current selected element is under Cursor
           if (getEditRect().isRotateMode())
-          {//we need to resize the rectangle after rotation
-            this.previewPanel.setEditRectangle(new EditRectangle(getSelectedSet().getBoundingBox()));
+          {//after rotate mode, select next available element
+            if (elementsUnderCursor.size() == 1)
+            {//only 1 element => toggle back to resize mode
+              this.previewPanel.setEditRectangle(new EditRectangle(getSelectedSet().getBoundingBox()));
+            }
+            else
+            {//select next available element
+              VisicutModel.getInstance().setSelectedPart(elementsUnderCursor.get(i + 1 < elementsUnderCursor.size() ? i+1 : 0));
+            }
           }
           else
           {
@@ -420,7 +431,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
         }
         else
         {//not yet select => select in scale mode
-          VisicutModel.getInstance().setSelectedPart(onGraphic);
+          VisicutModel.getInstance().setSelectedPart(elementsUnderCursor.get(0));
         }
       }
       else
