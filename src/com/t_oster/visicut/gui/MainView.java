@@ -1648,6 +1648,7 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
                 MainView.this.previewPanel.setZoom(100d);
               }
               MainView.this.visicutModel1.setBackgroundImage(back);
+              MainView.this.jmShowPhoto.setSelected(true);
             }
             MainView.this.progressBar.setString("");
             MainView.this.progressBar.setStringPainted(false);
