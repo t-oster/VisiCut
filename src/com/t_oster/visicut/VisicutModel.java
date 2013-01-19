@@ -29,6 +29,7 @@ import com.t_oster.visicut.managers.MaterialManager;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.misc.MultiFilter;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
@@ -57,6 +58,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -124,6 +126,14 @@ public class VisicutModel
     return selectedPart;
   }
 
+  public FileFilter getAllFileFilter()
+  {
+    List<FileFilter> filters = new LinkedList<FileFilter>();
+    filters.add(PLFFilter);
+    filters.addAll(Arrays.asList(this.getGraphicFileImporter().getFileFilters()));
+    return new MultiFilter(filters);
+  }
+  
   /**
    * Set the value of selectedPart
    *
@@ -359,8 +369,48 @@ public class VisicutModel
   {
     propertyChangeSupport.removePropertyChangeListener(listener);
   }
-
-  public void loadFromFile(MappingManager mm, File f, List<String> warnings) throws FileNotFoundException, IOException, ImportException
+  
+  public void loadFile(MappingManager mm, File file, List<String> warnings, boolean discardCurrent) throws FileNotFoundException, IOException, ImportException
+  {
+    if (PLFFilter.accept(file))
+    {
+      PlfFile newFile = loadPlfFile(mm, file, warnings);
+      if (newFile != null)
+      {
+        if (discardCurrent)
+        {
+          this.setPlfFile(newFile);
+        }
+        else
+        {
+          if (!newFile.isEmpty())
+          {
+            for (PlfPart p : newFile)
+            {
+              this.plfFile.add(p);
+              this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_ADDED, null, p);
+            }
+            this.setSelectedPart(newFile.get(newFile.size() - 1));
+          }
+        }
+      }
+    }
+    else
+    {
+      if (discardCurrent)
+      {
+        PlfFile nf = new PlfFile();
+        nf.setFile(new File(file.getParentFile(), file.getName().substring(0, file.getName().lastIndexOf(".")) +".plf"));
+        this.setPlfFile(nf);
+      }
+      PlfPart p = loadGraphicFile(file, warnings);
+      this.plfFile.add(p);
+      this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_ADDED, null, p);
+      this.setSelectedPart(p);
+    }
+  }
+  
+  private PlfFile loadPlfFile(MappingManager mm, File f, List<String> warnings) throws FileNotFoundException, IOException, ImportException
   {
     ZipFile zip = new ZipFile(f);
     PlfFile resultingFile = new PlfFile();
@@ -436,7 +486,7 @@ public class VisicutModel
         warnings.add("Could not load Transform "+i+" from PLF File");
       }
     }
-    this.setPlfFile(resultingFile);
+    return resultingFile;
   }
 
   public void saveToFile(MaterialManager pm, MappingManager mm, File f) throws FileNotFoundException, IOException
@@ -539,19 +589,18 @@ public class VisicutModel
     return set;
   }
 
-  public void loadGraphicFile(File f, List<String> warnings) throws ImportException
+  private PlfPart loadGraphicFile(File f, List<String> warnings) throws ImportException
   {
     AffineTransform at = null;
     GraphicSet gs = this.loadSetFromFile(f, warnings);
+    PlfPart p = null;
     if (gs != null)
     {
-      PlfPart p = new PlfPart();
+      p = new PlfPart();
       p.setGraphicObjects(gs);
       p.setSourceFile(f);
-      this.plfFile.add(p);
-      this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_ADDED, null, p);
-      this.setSelectedPart(p);
     }
+    return p;
   }
   protected MaterialProfile material = null;
   public static final String PROP_MATERIAL = "material";
@@ -666,6 +715,7 @@ public class VisicutModel
    */
   public boolean fitObjectsIntoBed()
   {
+    //TODO rotate file 90° if it would fit then
     boolean modifiedAny = false;
     double bw = getSelectedLaserDevice() != null ? getSelectedLaserDevice().getLaserCutter().getBedWidth() : 600d;
     double bh = getSelectedLaserDevice() != null ? getSelectedLaserDevice().getLaserCutter().getBedHeight() : 300d;

@@ -284,7 +284,7 @@ public class VisicutApp extends SingleFrameApplication
         {
           if (message != null && !"".equals(message))
           {
-            VisicutApp.this.mainView.loadFile(new File(message));
+            VisicutApp.this.mainView.loadFile(new File(message), false);
           }
           VisicutApp.this.mainView.requestFocus();
         }
@@ -340,17 +340,10 @@ public class VisicutApp extends SingleFrameApplication
       try
       {
         LinkedList<String> warnings = new LinkedList<String>();
-        if (file.toLowerCase().endsWith("plf"))
+        model.loadFile(MappingManager.getInstance(), f, warnings, false);
+        if (execute && !VisicutModel.PLFFilter.accept(f))
         {
-          model.loadFromFile(MappingManager.getInstance(), f, warnings);
-        }
-        else
-        {
-          model.loadGraphicFile(f, warnings);
-          if (execute)
-          {
-            System.err.println("WARNING: execut parameter is only valid for PLF files. Will be ignored");
-          }
+          System.err.println("WARNING: execut parameter is only valid for PLF files. Will be ignored");
         }
         for(String s : warnings)
         {

@@ -106,8 +106,8 @@ public class SVGImporter implements Importer
   {
     try
     {
-      u.clear();
-      URI svg = u.loadSVG(in, name);
+      //u.clear();
+      URI svg = u.loadSVG(in, Helper.toPathName(name));
       root = u.getDiagram(svg).getRoot();
       GraphicSet result = new GraphicSet();
       result.setBasicTransform(determineTransformation(root, svgResolution));

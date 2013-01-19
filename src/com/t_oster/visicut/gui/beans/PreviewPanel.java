@@ -128,7 +128,8 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       repaint();
     }
     else if (VisicutModel.PROP_BACKGROUNDIMAGE.equals(pce.getPropertyName())
-      || VisicutModel.PROP_STARTPOINT.equals(pce.getPropertyName()))
+      || VisicutModel.PROP_STARTPOINT.equals(pce.getPropertyName())
+      || VisicutModel.PROP_PLF_PART_ADDED.equals(pce.getPropertyName()))
     {
       repaint();
     }

@@ -32,10 +32,10 @@ import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.uicomponents.Ruler;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.CreateNewMaterialDialog;
 import com.t_oster.visicut.gui.beans.CreateNewThicknessDialog;
-import com.t_oster.uicomponents.Ruler;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.managers.MappingManager;
@@ -107,7 +107,7 @@ public class MainView extends javax.swing.JFrame
   public MainView(File loadedFile)
   {
     this();
-    this.loadFileReal(loadedFile);
+    this.loadFileReal(loadedFile, true);
   }
 
   /** Creates new form MainView */
@@ -192,7 +192,10 @@ public class MainView extends javax.swing.JFrame
 
         public void openFiles(OpenFilesEvent ofe)
         {
-          MainView.this.loadFile(ofe.getFiles().get(0));
+          for (File f : ofe.getFiles())
+          {
+            MainView.this.loadFile(f, false);
+          }
         }
       });
     }
@@ -252,7 +255,7 @@ public class MainView extends javax.swing.JFrame
       this.validate();
       this.setLocation(lastBounds.x, lastBounds.y);
     }
-    new PositionPanelController(positionPanel, visicutModel1);
+    PositionPanelController c = new PositionPanelController(positionPanel, visicutModel1);
   }
 
   private ActionListener exampleItemClicked = new ActionListener(){
@@ -260,7 +263,7 @@ public class MainView extends javax.swing.JFrame
       {
         if (!"".equals(ae.getActionCommand()))
         {
-          MainView.this.loadFile(PreferencesManager.getInstance().getExampleFile(ae.getActionCommand()));
+          MainView.this.loadFile(PreferencesManager.getInstance().getExampleFile(ae.getActionCommand()), false);
         }
       }
     };
@@ -307,7 +310,7 @@ public class MainView extends javax.swing.JFrame
         i.addActionListener(new ActionListener(){
           public void actionPerformed(ActionEvent ae)
           {
-            loadFile(f);
+            loadFile(f, false);
           }
         });
         this.recentFilesMenu.add(i);
@@ -1185,7 +1188,7 @@ public class MainView extends javax.swing.JFrame
       System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
-  public void loadFile(File file)
+  public void loadFile(File file, final boolean discardCurrent)
   {
     final File fileToLoad = file;
     lastDirectory = file.getParentFile();
@@ -1215,26 +1218,18 @@ public class MainView extends javax.swing.JFrame
       @Override
       public void run()
       {
-        MainView.this.loadFileReal(fileToLoad);
+        MainView.this.loadFileReal(fileToLoad, discardCurrent);
       }
     }.start();
   }
 
-  //TODO: Split to Import (SVG etc) and Load PLF
-  public void loadFileReal(File file)
+  private void loadFileReal(File file, boolean discardCurrent)
   {
     try
     {
       this.progressBar.setIndeterminate(true);
       LinkedList<String> warnings = new LinkedList<String>();
-      if (VisicutModel.PLFFilter.accept(file))
-      {
-        this.visicutModel1.loadFromFile(MappingManager.getInstance(), file, warnings);
-      }
-      else
-      {
-        this.visicutModel1.loadGraphicFile(file, warnings);
-      }
+      this.visicutModel1.loadFile(MappingManager.getInstance(), file, warnings, discardCurrent);
       if (!warnings.isEmpty())
         {
           dialog.showWaringnMessage(warnings);
@@ -1292,9 +1287,9 @@ public class MainView extends javax.swing.JFrame
   }
   private File lastDirectory = null;
 
-  private void openFileDialog(boolean onlyPlf)
+  private void openFileDialog(boolean discardCurrent)
   {
-    final FileFilter allFilter = onlyPlf ? VisicutModel.PLFFilter : VisicutModel.getInstance().getGraphicFileImporter().getFileFilter();
+    final FileFilter allFilter = VisicutModel.getInstance().getAllFileFilter();
     //On Mac os, awt.FileDialog looks more native
     if (Helper.isMacOS())
     {
@@ -1315,19 +1310,16 @@ public class MainView extends javax.swing.JFrame
       if (openFileChooser.getFile() != null)
       {
         File file = new File(new File(openFileChooser.getDirectory()), openFileChooser.getFile());
-        loadFile(file);
+        loadFile(file, discardCurrent);
       }
     }
     else
     {
       JFileChooser openFileChooser = new JFileChooser();
       openFileChooser.setAcceptAllFileFilterUsed(false);
-      if (!onlyPlf)
+      for (FileFilter f : this.visicutModel1.getGraphicFileImporter().getFileFilters())
       {
-        for (FileFilter f : this.visicutModel1.getGraphicFileImporter().getFileFilters())
-        {
-          openFileChooser.addChoosableFileFilter(f);
-        }
+        openFileChooser.addChoosableFileFilter(f);
       }
       openFileChooser.addChoosableFileFilter(allFilter);
       openFileChooser.setFileFilter(allFilter);
@@ -1336,7 +1328,7 @@ public class MainView extends javax.swing.JFrame
       if (returnVal == JFileChooser.APPROVE_OPTION)
       {
         File file = openFileChooser.getSelectedFile();
-        loadFile(file);
+        loadFile(file, discardCurrent);
       }
     }
   }
@@ -1464,7 +1456,7 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
   {
     for (File f : this.filesDropSupport1.getDroppedFiles())
     {
-      this.loadFile(f);
+      this.loadFile(f, false);
     }
   }
 }//GEN-LAST:event_filesDropSupport1PropertyChange
@@ -1564,18 +1556,20 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
 }//GEN-LAST:event_visicutModel1PropertyChange
 
 private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuItemActionPerformed
-  if (this.visicutModel1.getPlfFile().getFile() == null)
+  if (this.visicutModel1.getPlfFile().getFile() == null || !this.visicutModel1.getPlfFile().getFile().exists())
   {//File is not PLF or no file loaded yet
     this.saveAsMenuItemActionPerformed(evt);
-    return;
   }
-  try
+  else
   {
-    this.visicutModel1.saveToFile(MaterialManager.getInstance(), MappingManager.getInstance(), this.visicutModel1.getPlfFile().getFile());
-  }
-  catch (Exception ex)
-  {
-    dialog.showErrorMessage(ex, bundle.getString("ERROR SAVING FILE"));
+    try
+    {
+      this.visicutModel1.saveToFile(MaterialManager.getInstance(), MappingManager.getInstance(), this.visicutModel1.getPlfFile().getFile());
+    }
+    catch (Exception ex)
+    {
+      dialog.showErrorMessage(ex, bundle.getString("ERROR SAVING FILE"));
+    }
   }
 }//GEN-LAST:event_saveMenuItemActionPerformed
 
