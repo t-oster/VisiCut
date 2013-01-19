@@ -38,6 +38,7 @@ import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.mapping.Mapping;
+import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -383,7 +384,15 @@ public class VisicutModel
       }
       else if (name.equals((i > 0 ? i+"/" : "")+"mappings.xml"))
       {
-        result.get(i).setMapping(mm.loadFromFile(zip.getInputStream(entry)));
+        MappingSet map = mm.loadFromFile(zip.getInputStream(entry));
+        if (map != null)
+        {
+          result.get(i).setMapping(map);
+        }
+        else
+        {
+          warnings.add("Could not load Mapping "+i+" from PLF File");
+        }
       }
       else
       {
@@ -425,10 +434,6 @@ public class VisicutModel
       else
       {
         warnings.add("Could not load Transform "+i+" from PLF File");
-      }
-      if (result.get(i).getMapping() == null)
-      {
-        warnings.add("Could not load Mapping "+i+" from PLF File");
       }
     }
     this.setPlfFile(resultingFile);
