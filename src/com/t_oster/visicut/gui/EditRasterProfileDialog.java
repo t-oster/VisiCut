@@ -103,7 +103,7 @@ public class EditRasterProfileDialog extends javax.swing.JDialog
           break;
         }
       }
-      this.currentRasterProfile.setDitheringAlgorithm(da);
+      this.currentRasterProfile.setDitherAlgorithm(da);
       this.jTable1.setModel(new CustomizableTableModel(currentRasterProfile.getDitherAlgorithm()));
     }
   }
@@ -343,7 +343,7 @@ private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
       this.pack();
       if (this.currentRasterProfile != null)
       {
-        this.currentRasterProfile.setDitheringAlgorithm(a);
+        this.currentRasterProfile.setDitherAlgorithm(a);
       }
     }
 }//GEN-LAST:event_jComboBox1ActionPerformed

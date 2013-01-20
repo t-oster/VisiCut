@@ -117,7 +117,7 @@ public class RasterProfile extends LaserProfile
    *
    * @param ditherAlgorithm new value of ditherAlgorithm
    */
-  public void setDitheringAlgorithm(DitheringAlgorithm ditherAlgorithm)
+  public void setDitherAlgorithm(DitheringAlgorithm ditherAlgorithm)
   {
     this.ditherAlgorithm = ditherAlgorithm;
   }
