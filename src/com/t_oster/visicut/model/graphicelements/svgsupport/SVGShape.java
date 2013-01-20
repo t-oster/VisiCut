@@ -97,7 +97,17 @@ public class SVGShape extends SVGObject implements ShapeObject
         StyleAttribute sa = getStyleAttributeRecursive("stroke-width");
         if (sa != null)
         {
-          result.add("" + sa.getFloatValue());
+          double width = SVGImporter.numberWithUnitsToMm(sa.getNumberWithUnits(), this.svgResolution);
+          try
+          {
+            AffineTransform t = this.getAbsoluteTransformation();
+            width *= (t.getScaleX()+t.getScaleY()) / 2;
+          }
+          catch (SVGException ex)
+          {
+            Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
+          }
+          result.add("" + ((int) (width*100))/100d);
         }
         else
         {
