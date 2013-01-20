@@ -1585,13 +1585,13 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
     dialog.showErrorMessage(bundle.getString("THE CAMERA DOESN'T SEEM TO BE WORKING. PLEASE CHECK THE URL IN THE LASERCUTTER SETTINGS"));
     return;
   }
-  List<LaserProfile> profiles = ProfileManager.getInstance().getAll();
+  List<VectorProfile> profiles = ProfileManager.getInstance().getVectorProfiles();
   if (profiles.isEmpty())
   {
     dialog.showErrorMessage(bundle.getString("NEED_VECTOR_PROFILE"));
     return;
   }
-  LaserProfile p = dialog.askElement(ProfileManager.getInstance().getAll(), bundle.getString("SELECT_VECTOR_PROFILE"));
+  VectorProfile p = dialog.askElement(profiles, bundle.getString("SELECT_VECTOR_PROFILE"));
   if (p == null)
   {
     return;
@@ -1599,7 +1599,7 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
   //TODO ask user for VectorProfile and make sure the properties for current
   //material and cutter are available
   CamCalibrationDialog ccd = new CamCalibrationDialog(this, true);
-  ccd.setVectorProfile((VectorProfile) p);
+  ccd.setVectorProfile(p);
   ccd.setBackgroundImage(this.visicutModel1.getBackgroundImage());
   ccd.setImageURL(this.visicutModel1.getSelectedLaserDevice().getCameraURL());
   ccd.setResultingTransformation(this.visicutModel1.getSelectedLaserDevice().getCameraCalibration());

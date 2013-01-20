@@ -127,4 +127,16 @@ public class ProfileManager extends FilebasedManager<LaserProfile>
     return comp;
   }
 
+  public List<VectorProfile> getVectorProfiles()
+  {
+    List<VectorProfile> result = new LinkedList<VectorProfile>();
+    for(LaserProfile p : this.getAll())
+    {
+      if (p instanceof VectorProfile)
+      {
+        result.add((VectorProfile) p);
+      }
+    }
+    return result;
+  }
 }
