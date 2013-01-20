@@ -95,24 +95,21 @@ public class SVGShape extends SVGObject implements ShapeObject
       case Stroke_Width:
       {
         StyleAttribute sa = getStyleAttributeRecursive("stroke-width");
+        double width = 1;
         if (sa != null)
         {
-          double width = SVGImporter.numberWithUnitsToMm(sa.getNumberWithUnits(), this.svgResolution);
-          try
-          {
-            AffineTransform t = this.getAbsoluteTransformation();
-            width *= (t.getScaleX()+t.getScaleY()) / 2;
-          }
-          catch (SVGException ex)
-          {
-            Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
-          }
-          result.add("" + ((int) (width*100))/100d);
+          width = SVGImporter.numberWithUnitsToMm(sa.getNumberWithUnits(), this.svgResolution);
         }
-        else
-        {
-          result.add("none");
-        }
+        try
+         {
+           AffineTransform t = this.getAbsoluteTransformation();
+           width *= (t.getScaleX()+t.getScaleY()) / 2;
+         }
+         catch (SVGException ex)
+         {
+           Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         result.add("" + ((int) (width*100))/100d);
         break;
       }
       case Type:
@@ -155,10 +152,18 @@ public class SVGShape extends SVGObject implements ShapeObject
         {
           result.add(sa.getColorValue());
         }
+        else
+        {
+          result.add("none");
+        }
         sa = getStyleAttributeRecursive("fill");
         if (sa != null && sa.getColorValue() != null)
         {
           result.add(sa.getColorValue());
+        }
+        else
+        {
+          result.add(Color.BLACK);
         }
         break;
       }
@@ -186,7 +191,7 @@ public class SVGShape extends SVGObject implements ShapeObject
         }
         else
         {
-          result.add("none");
+          result.add(Color.BLACK);
         }
         break;
       }
