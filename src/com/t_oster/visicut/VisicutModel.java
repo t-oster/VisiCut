@@ -755,17 +755,28 @@ public class VisicutModel
         bb = p.getGraphicObjects().getBoundingBox();
         modified = true;
       }
-      //if still too big (we're in origin now) we have to resize
-      if (bb.getX() + bb.getWidth() > bw)
+      //if still too big (we're in origin now) check if rotation is useful 
+      if (bb.getX() + bb.getWidth() > bw || bb.getY() + bb.getHeight() > bh)
       {
-        trans.preConcatenate(AffineTransform.getScaleInstance(bw/bb.getWidth(), bw/bb.getWidth()));
-        p.getGraphicObjects().setTransform(trans);
-        bb = p.getGraphicObjects().getBoundingBox();
-        modified = true;
+        //check if laser-bed and graphic are not in the same orientation (landscape vs portrait)
+        if ((bw / bh >= 1) != (bb.getWidth() / bb.getHeight() >= 1))
+        {//if so, rotate the graphic 90 degrees, keeping the x and y value
+          double oldX = bb.getX();
+          double oldY = bb.getY();
+          trans.preConcatenate(AffineTransform.getQuadrantRotateInstance(3));
+          p.getGraphicObjects().setTransform(trans);
+          bb = p.getGraphicObjects().getBoundingBox();
+          //move to old position
+          trans.preConcatenate(AffineTransform.getTranslateInstance(oldX-bb.getX(), oldY-bb.getY()));
+          p.getGraphicObjects().setTransform(trans);
+          bb = p.getGraphicObjects().getBoundingBox();
+        }
       }
-      if (bb.getY() + bb.getHeight() > bh)
+      //if still too big (we're in origin now) we have to resize, but keeping 
+      if (bb.getX() + bb.getWidth() > bw || bb.getY() + bb.getHeight() > bh)
       {
-        trans.preConcatenate(AffineTransform.getScaleInstance(bh/bb.getWidth(), bh/bb.getHeight()));
+        double factor = Math.min(bw/bb.getWidth(), bh/bb.getHeight());
+        trans.preConcatenate(AffineTransform.getScaleInstance(factor, factor));
         p.getGraphicObjects().setTransform(trans);
         modified = true;
       }
