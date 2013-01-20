@@ -4,8 +4,6 @@
  */
 package com.t_oster.visicut.vectorize;
 
-import com.kitfox.svg.SVGUniverse;
-import com.t_oster.uicomponents.ImagePanel;
 import com.t_oster.visicut.Preferences;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.misc.DialogHelper;
@@ -13,8 +11,9 @@ import com.t_oster.visicut.misc.FileUtils;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.imageio.ImageIO;
 
 /**
@@ -42,19 +41,6 @@ public class VectorizeDialog extends javax.swing.JDialog
     
   }
   
-  private void drawFile(File f, ImagePanel p)
-  {
-    try
-    {
-      BufferedImage img = ImageIO.read(f);
-      p.setImage(img);
-    }
-    catch (IOException ex)
-    {
-      dialog.showErrorMessage(ex);
-    }
-  }
-  
   private File inputFile = null;
   public static final String PROP_INPUTFILE = "inputFile";
 
@@ -67,7 +53,16 @@ public class VectorizeDialog extends javax.swing.JDialog
   {
     File oldInputFile = this.inputFile;
     this.inputFile = inputFile;
-    this.drawFile(inputFile, inputPanel);
+    try
+    {
+      BufferedImage img = ImageIO.read(inputFile);
+      //TODO make svg panel to have according with and height...
+      inputPanel.setImage(img);
+    }
+    catch (IOException ex)
+    {
+      dialog.showErrorMessage(ex);
+    }
     firePropertyChange(PROP_INPUTFILE, oldInputFile, inputFile);
   }
 
@@ -81,6 +76,7 @@ public class VectorizeDialog extends javax.swing.JDialog
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents()
   {
+    bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
     btOk = new javax.swing.JToggleButton();
     btCancel = new javax.swing.JButton();
@@ -88,7 +84,12 @@ public class VectorizeDialog extends javax.swing.JDialog
     jLabel1 = new javax.swing.JLabel();
     btUpdate = new javax.swing.JButton();
     inputPanel = new com.t_oster.uicomponents.ImagePanel();
-    svgPanel = new com.kitfox.svg.app.beans.SVGPanel();
+    cbInvert = new javax.swing.JCheckBox();
+    cbHighpassFilter = new javax.swing.JCheckBox();
+    tfFilterValue = new javax.swing.JTextField();
+    cbBlur = new javax.swing.JCheckBox();
+    tfBlur = new javax.swing.JTextField();
+    svgPanel = new com.t_oster.uicomponents.SVGPanel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -112,6 +113,7 @@ public class VectorizeDialog extends javax.swing.JDialog
     });
 
     jSlider1.setMaximum(255);
+    jSlider1.setValue(125);
 
     jLabel1.setText(bundle.getString("TRESHOLD")); // NOI18N
 
@@ -130,16 +132,30 @@ public class VectorizeDialog extends javax.swing.JDialog
     inputPanel.setLayout(inputPanelLayout);
     inputPanelLayout.setHorizontalGroup(
       inputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 225, Short.MAX_VALUE)
+      .addGap(0, 0, Short.MAX_VALUE)
     );
     inputPanelLayout.setVerticalGroup(
       inputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 190, Short.MAX_VALUE)
+      .addGap(0, 181, Short.MAX_VALUE)
     );
 
+    cbInvert.setText(bundle.getString("INVERT")); // NOI18N
+
+    cbHighpassFilter.setText(bundle.getString("FILTER")); // NOI18N
+
+    tfFilterValue.setText("4");
+
+    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, cbHighpassFilter, org.jdesktop.beansbinding.ELProperty.create("${selected}"), tfFilterValue, org.jdesktop.beansbinding.BeanProperty.create("enabled"), "filterenabled");
+    bindingGroup.addBinding(binding);
+
+    cbBlur.setText(bundle.getString("BLUR")); // NOI18N
+
+    tfBlur.setText("1");
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, cbBlur, org.jdesktop.beansbinding.ELProperty.create("${selected}"), tfBlur, org.jdesktop.beansbinding.BeanProperty.create("enabled"), "blurenabled");
+    bindingGroup.addBinding(binding);
+
     svgPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("PREVIEW"))); // NOI18N
-    svgPanel.setAntiAlias(true);
-    svgPanel.setScaleToFit(true);
 
     javax.swing.GroupLayout svgPanelLayout = new javax.swing.GroupLayout(svgPanel);
     svgPanel.setLayout(svgPanelLayout);
@@ -160,7 +176,7 @@ public class VectorizeDialog extends javax.swing.JDialog
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(layout.createSequentialGroup()
-            .addComponent(inputPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(inputPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(svgPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -169,9 +185,24 @@ public class VectorizeDialog extends javax.swing.JDialog
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(btOk))
           .addGroup(layout.createSequentialGroup()
-            .addComponent(jLabel1)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jSlider1, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSlider1, javax.swing.GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE))
+              .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                  .addGroup(layout.createSequentialGroup()
+                    .addComponent(cbBlur)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(tfBlur))
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cbInvert, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                      .addComponent(cbHighpassFilter)
+                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                      .addComponent(tfFilterValue, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(0, 0, Short.MAX_VALUE)))
             .addGap(18, 18, 18)
             .addComponent(btUpdate)))
         .addContainerGap())
@@ -180,20 +211,36 @@ public class VectorizeDialog extends javax.swing.JDialog
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(inputPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(svgPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addGap(18, 18, 18)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jLabel1)
-          .addComponent(btUpdate))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(btOk)
-          .addComponent(btCancel))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(btUpdate)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 144, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(btOk)
+              .addComponent(btCancel)))
+          .addGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(jLabel1))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(cbInvert)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(cbHighpassFilter)
+              .addComponent(tfFilterValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(cbBlur)
+              .addComponent(tfBlur, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGap(0, 0, Short.MAX_VALUE)))
         .addContainerGap())
     );
+
+    bindingGroup.bind();
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
@@ -247,9 +294,54 @@ public class VectorizeDialog extends javax.swing.JDialog
     }
   }
   
-  private void doVectorize() throws IOException, InterruptedException
+  private void mkbitmap(Double highpass, Double blur, double treshold, File input, File output) throws IOException, InterruptedException
   {
     Preferences p = PreferencesManager.getInstance().getPreferences();
+    List<String> mkbitmap = new ArrayList<String>(10);
+    mkbitmap.add(p.getMkbitmapPath());
+    mkbitmap.add("-s");
+    mkbitmap.add("2");
+    if (highpass != null)
+    {
+      mkbitmap.add("-f");
+      mkbitmap.add(""+highpass);
+    }
+    else
+    {
+      mkbitmap.add("-n");
+    }
+    if (blur != null)
+    {
+      mkbitmap.add("-b");
+      mkbitmap.add(""+blur);
+    }
+    mkbitmap.add("-t");
+    mkbitmap.add(""+treshold);
+    mkbitmap.add("-o");
+    mkbitmap.add(output.getAbsolutePath());
+    mkbitmap.add(input.getAbsolutePath());
+    runProgram(mkbitmap.toArray(new String[0]));
+  }
+  
+  private void potrace(boolean invert, File input, File output) throws IOException, InterruptedException
+  {
+    Preferences p = PreferencesManager.getInstance().getPreferences();
+    List<String> potrace = new ArrayList<String>(10);
+    potrace.add(p.getPotracePath());
+    potrace.add("-b");
+    potrace.add("svg");
+    if (invert)
+    {
+      potrace.add("-i");
+    }
+    potrace.add("-o");
+    potrace.add(output.getAbsolutePath());
+    potrace.add(input.getAbsolutePath());
+    runProgram(potrace.toArray(new String[0]));
+  }
+  
+  private void doVectorize() throws IOException, InterruptedException
+  {
     BufferedImage in = ImageIO.read(inputFile);
     //copy the input to an RGB image, otherwise creating BMP can fail
     BufferedImage out = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -258,12 +350,12 @@ public class VectorizeDialog extends javax.swing.JDialog
     g.dispose();
     ImageIO.write(out, "BMP", tmpBitmap);
     double treshold = this.jSlider1.getValue() / (double) this.jSlider1.getMaximum();
-    //convert bitmap to black-white
-    String[] mkbitmap = new String[]{p.getMkbitmapPath(), "-t", ""+treshold, "-o", tmpBitmap2.getAbsolutePath(), tmpBitmap.getAbsolutePath()};
-    runProgram(mkbitmap);
+    Double highpass = cbHighpassFilter.isSelected() ? Double.parseDouble(tfFilterValue.getText()) : null;
+    Double blur = cbBlur.isSelected() ? Double.parseDouble(tfBlur.getText()) : null;
+    //convert bitmap to black white using filters etc
+    mkbitmap(highpass, blur, treshold, tmpBitmap, tmpBitmap2);
     //convert black white bitmap to svg
-    String[] potrace = new String[]{p.getPotracePath(), "-b", "svg", "-o", tmpResult.getAbsolutePath(), tmpBitmap2.getAbsolutePath()} ;
-    runProgram(potrace);
+    potrace(cbInvert.isSelected(), tmpBitmap2, tmpResult);
   }
   
   private void btUpdateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btUpdateActionPerformed
@@ -271,14 +363,12 @@ public class VectorizeDialog extends javax.swing.JDialog
     try
     {
       doVectorize();
-      SVGUniverse u = new SVGUniverse();
-      svgPanel.setSvgUniverse(u);
-      svgPanel.setSvgURI(u.loadSVG(new FileInputStream(tmpResult), tmpResult.getName()));
+      svgPanel.setSvgFile(tmpResult);
       svgPanel.repaint();
     }
     catch (Exception ex)
     {
-      dialog.showErrorMessage(ex);
+      dialog.showErrorMessage(ex, java.util.ResourceBundle.getBundle("com/t_oster/visicut/vectorize/resources/VectorizeDialog").getString("ERRORMSG"));
     }
   }//GEN-LAST:event_btUpdateActionPerformed
 
@@ -294,7 +384,7 @@ public class VectorizeDialog extends javax.swing.JDialog
     catch (Exception ex)
     {
       tmpResult = null;
-      dialog.showErrorMessage(ex);
+      dialog.showErrorMessage(ex, java.util.ResourceBundle.getBundle("com/t_oster/visicut/vectorize/resources/VectorizeDialog").getString("ERRORMSG"));
     }
     
   }//GEN-LAST:event_btOkActionPerformed
@@ -303,9 +393,15 @@ public class VectorizeDialog extends javax.swing.JDialog
   private javax.swing.JButton btCancel;
   private javax.swing.JToggleButton btOk;
   private javax.swing.JButton btUpdate;
+  private javax.swing.JCheckBox cbBlur;
+  private javax.swing.JCheckBox cbHighpassFilter;
+  private javax.swing.JCheckBox cbInvert;
   private com.t_oster.uicomponents.ImagePanel inputPanel;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JSlider jSlider1;
-  private com.kitfox.svg.app.beans.SVGPanel svgPanel;
+  private com.t_oster.uicomponents.SVGPanel svgPanel;
+  private javax.swing.JTextField tfBlur;
+  private javax.swing.JTextField tfFilterValue;
+  private org.jdesktop.beansbinding.BindingGroup bindingGroup;
   // End of variables declaration//GEN-END:variables
 }
