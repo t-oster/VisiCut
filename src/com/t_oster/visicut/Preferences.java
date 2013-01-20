@@ -32,6 +32,38 @@ public class Preferences
   {
   }
   
+  private String potracePath = null;
+
+  public String getPotracePath()
+  {
+    if (potracePath == null)
+    {
+      potracePath = "potrace";
+    }
+    return potracePath;
+  }
+
+  public void setPotracePath(String potracePath)
+  {
+    this.potracePath = potracePath;
+  }
+
+    private String mkbitmapPath = null;
+
+  public String getMkbitmapPath()
+  {
+    if (mkbitmapPath == null)
+    {
+      mkbitmapPath = "mkbitmap";
+    }
+    return mkbitmapPath;
+  }
+
+  public void setMkbitmapPath(String mkbitmapPath)
+  {
+    this.mkbitmapPath = mkbitmapPath;
+  }
+  
   private Rectangle windowBounds = null;
 
   /**

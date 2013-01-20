@@ -817,13 +817,21 @@ public class VisicutModel
     }
   }
 
+  public void removePlfPart(PlfPart p)
+  {
+    if (p.equals(this.selectedPart))
+    {
+      this.setSelectedPart(null);
+    }
+    this.plfFile.remove(p);
+    this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_REMOVED, p, null);
+  }
+  
   public void removeSelectedPart()
   {
     if (this.selectedPart != null)
     {
-      this.plfFile.remove(selectedPart);
-      this.setSelectedPart(null);
-      this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_REMOVED, this.selectedPart, null);
+      this.removePlfPart(this.selectedPart);
     }
   }
 

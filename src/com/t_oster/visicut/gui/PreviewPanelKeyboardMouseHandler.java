@@ -23,11 +23,13 @@ import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
 import com.t_oster.visicut.gui.beans.EditRectangle.ParameterField;
 import com.t_oster.visicut.gui.beans.PreviewPanel;
+import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.PlfFile;
 import com.t_oster.visicut.model.PlfPart;
-import com.t_oster.visicut.model.graphicelements.ImportException;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import com.t_oster.visicut.vectorize.VectorizeDialog;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -44,8 +46,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -69,6 +70,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   private DialogHelper dialogHelper;
   private JPopupMenu objectmenu;
   private JMenuItem resetMenuItem;
+  private JMenuItem vectorizeMenuItem;
   private JMenuItem duplicateMenuItem;
   private JMenuItem deleteMenuItem;
   private JMenuItem flipHorizMenuItem;
@@ -78,7 +80,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   private JMenuItem startPointSetMenuItem;
   private JMenuItem startPointRemoveMenuItem;
   private JMenuItem selectScreenshotMenuItem;
-
+  
   public PreviewPanelKeyboardMouseHandler(PreviewPanel panel)
   {
     this.previewPanel = panel;
@@ -95,6 +97,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     objectmenu = new JPopupMenu();
     resetMenuItem = new JMenuItem(bundle.getString("RESET TRANSFORMATION"));
     duplicateMenuItem = new JMenuItem(bundle.getString("DUPLICATE"));
+    vectorizeMenuItem = new JMenuItem(bundle.getString("VECTORIZE"));
     deleteMenuItem = new JMenuItem(bundle.getString("REMOVE"));
     flipHorizMenuItem = new JMenuItem(bundle.getString("FLIP_HORIZONTALLY"));
     flipVertMenuItem = new JMenuItem(bundle.getString("FLIP_VERTICALLY"));
@@ -104,7 +107,6 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     startPointRemoveMenuItem = new JMenuItem(bundle.getString("REMOVE_STARTPOINT"));
     selectScreenshotMenuItem = new JMenuItem(bundle.getString("SELECT_SCREENSHOT"));
 
-    objectmenu.add(resetMenuItem);
     resetMenuItem.addActionListener(new ActionListener()
     {
 
@@ -117,6 +119,51 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
         PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
       }
     });
+    objectmenu.add(resetMenuItem);
+    vectorizeMenuItem.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae)
+      {
+        VectorizeDialog d = new VectorizeDialog(MainView.getInstance(), true);
+        d.setInputFile(VisicutModel.getInstance().getSelectedPart().getSourceFile());
+        d.setVisible(true);
+        File result = d.getResult();
+        if (result != null)
+        {
+          try
+          {
+            PlfPart p = VisicutModel.getInstance().getSelectedPart();
+            Rectangle2D bb = p.getGraphicObjects().getBoundingBox();
+            List<String> warnings = new LinkedList<String>();
+            VisicutModel.getInstance().loadFile(MappingManager.getInstance(), result, warnings, false);
+            if (!warnings.isEmpty())
+            {
+              dialogHelper.showWaringnMessage(warnings);
+            }
+            GraphicSet gs = VisicutModel.getInstance().getSelectedPart().getGraphicObjects();
+            gs.setTransform(Helper.getTransform(gs.getOriginalBoundingBox(), bb));
+            VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
+            VisicutModel.getInstance().removePlfPart(p);
+          }
+          catch (Exception ex)
+          {
+            dialogHelper.showErrorMessage(ex);
+          }      
+        }
+      }    
+    });
+    VisicutModel.getInstance().addPropertyChangeListener(new PropertyChangeListener(){
+
+      public void propertyChange(PropertyChangeEvent pce)
+      {
+        if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName()))
+        {
+          PlfPart part = VisicutModel.getInstance().getSelectedPart();
+          vectorizeMenuItem.setEnabled(part != null 
+            && VectorizeDialog.supportsFileType(part.getSourceFile()));
+        }
+      }
+    });
+    objectmenu.add(vectorizeMenuItem);
     flipHorizMenuItem.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae)
       {
