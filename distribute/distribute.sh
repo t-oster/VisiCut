@@ -66,8 +66,8 @@ if [ "$answer" != "n" ]
 then
   echo "Creating Windows installer"
   mkdir wintmp
-  cp windows/* wintmp/
-  mv visicut wintmp/stream
+  cp -r windows/* wintmp/
+  cp -r visicut/* wintmp/stream/
   cat windows/installer.nsi|sed s#VISICUTVERSION#"$VERSION"#g > wintmp/installer.nsi
   cp ../tools/inkscape_extension/* wintmp/
   cat ../tools/inkscape_extension/visicut_export.py|sed 's#"visicut"#"visicut.exe"#g' > wintmp/visicut_export.py
