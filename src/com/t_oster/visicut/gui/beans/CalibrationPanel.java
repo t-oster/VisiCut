@@ -73,6 +73,7 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
     {
       this.setAreaSize(new Point2D.Double(this.backgroundImage.getWidth(), this.backgroundImage.getHeight()));
     }
+    this.repaint();
   }
   protected Point2D.Double[] pointList = new Point2D.Double[0];
 
