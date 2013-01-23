@@ -89,7 +89,8 @@ if [ "$answer" != "n" ]
 then
   echo "Creating Mac OS Bundle"
   cp -r "mac/VisiCut.app" .
-  cp -r "visicut" "VisiCut.app/Contents/Resources/Java"
+  mkdir -p "VisiCut.app/Contents/Resources/Java"
+  cp -r "visicut/*" "VisiCut.app/Contents/Resources/Java/"
   echo "Updating Bundle Info"
   cp "VisiCut.app/Contents/Info.plist" .
   cat Info.plist|sed s#VISICUTVERSION#"$VERSION"#g > VisiCut.app/Contents/Info.plist
