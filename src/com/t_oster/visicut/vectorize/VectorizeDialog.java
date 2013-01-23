@@ -8,6 +8,7 @@ import com.t_oster.visicut.Preferences;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.FileUtils;
+import com.t_oster.visicut.misc.Helper;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -296,9 +297,9 @@ public class VectorizeDialog extends javax.swing.JDialog
   
   private void mkbitmap(Double highpass, Double blur, double treshold, File input, File output) throws IOException, InterruptedException
   {
-    Preferences p = PreferencesManager.getInstance().getPreferences();
     List<String> mkbitmap = new ArrayList<String>(10);
-    mkbitmap.add(p.getMkbitmapPath());
+    File mkBitmapExe = new File(Helper.getVisiCutFolder(), "mkbitmap"+(Helper.isWindows() ? ".exe" : ""));
+    mkbitmap.add(mkBitmapExe.exists() ? mkBitmapExe.getAbsolutePath() : PreferencesManager.getInstance().getPreferences().getMkbitmapPath());
     mkbitmap.add("-s");
     mkbitmap.add("2");
     if (highpass != null)
@@ -325,9 +326,9 @@ public class VectorizeDialog extends javax.swing.JDialog
   
   private void potrace(boolean invert, File input, File output) throws IOException, InterruptedException
   {
-    Preferences p = PreferencesManager.getInstance().getPreferences();
     List<String> potrace = new ArrayList<String>(10);
-    potrace.add(p.getPotracePath());
+    File potraceExe = new File(Helper.getVisiCutFolder(), "potrace"+(Helper.isWindows() ? ".exe" : ""));
+    potrace.add(potraceExe.exists() ? potraceExe.getAbsolutePath() : PreferencesManager.getInstance().getPreferences().getPotracePath());
     potrace.add("-b");
     potrace.add("svg");
     if (invert)
