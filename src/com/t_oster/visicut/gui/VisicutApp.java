@@ -49,6 +49,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
@@ -128,6 +129,17 @@ public class VisicutApp extends SingleFrameApplication
       System.setProperty("com.apple.mrj.application.growbox.intrudes", "false");
       System.setProperty("com.apple.mrj.application.live-resize", "true");
       System.setProperty("com.apple.macos.smallTabs", "true");
+    }
+    else
+    {
+      try
+      {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      }
+      catch (Exception ex)
+      {
+        Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
+      }
     }
     if ("GTK look and feel".equals(UIManager.getLookAndFeel().getName()))
     {//new GTK file chooser if we're on Gnome etc
