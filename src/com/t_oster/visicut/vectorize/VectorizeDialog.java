@@ -38,6 +38,7 @@ public class VectorizeDialog extends javax.swing.JDialog
     initComponents();
     tmpResult.deleteOnExit();
     tmpBitmap.deleteOnExit();
+    tmpBitmap2.deleteOnExit();
     dialog = new DialogHelper(this, "Vectorize");
     
   }
@@ -248,6 +249,13 @@ public class VectorizeDialog extends javax.swing.JDialog
 
   private void btCancelActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btCancelActionPerformed
   {//GEN-HEADEREND:event_btCancelActionPerformed
+    for (File f : new File[]{tmpBitmap, tmpBitmap2, tmpResult})
+    {
+      if (f != null && f.exists())
+      {
+        f.delete();
+      }
+    }
     tmpResult = null;
     this.dispose();
   }//GEN-LAST:event_btCancelActionPerformed
