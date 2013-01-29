@@ -9,6 +9,7 @@ import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -355,6 +356,8 @@ public class VectorizeDialog extends javax.swing.JDialog
     //copy the input to an RGB image, otherwise creating BMP can fail
     BufferedImage out = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_RGB);
     Graphics2D g = out.createGraphics();
+    g.setBackground(Color.WHITE);
+    g.clearRect(0, 0, out.getWidth(), out.getHeight());
     g.drawImage(in, 0, 0, null);
     g.dispose();
     ImageIO.write(out, "BMP", tmpBitmap);
