@@ -75,7 +75,7 @@ public class SVGPanel extends JPanel {
         Graphics2D gg = (Graphics2D) g;
         AffineTransform bak = gg.getTransform();
         gg.scale(factor, factor);
-        gg.translate(x-bb.getX(), y-bb.getY());   
+        gg.translate(x-bb.getX(), y-bb.getY());
         root.render(gg);
         gg.setTransform(bak);
       }
