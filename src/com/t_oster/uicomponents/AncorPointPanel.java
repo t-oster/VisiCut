@@ -138,23 +138,32 @@ public class AncorPointPanel extends javax.swing.JPanel implements ActionListene
     rBottomLeft = new javax.swing.JRadioButton();
     rBottomRight = new javax.swing.JRadioButton();
 
+    rTopLeft.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rTopLeft);
     rTopLeft.setSelected(true);
 
+    rTopCenter.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rTopCenter);
 
+    rTopRight.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rTopRight);
 
+    rCenterLeft.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rCenterLeft);
 
+    rCenterCenter.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rCenterCenter);
 
+    rCenterRight.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rCenterRight);
 
+    rBottomCenter.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rBottomCenter);
 
+    rBottomLeft.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rBottomLeft);
 
+    rBottomRight.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rBottomRight);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
