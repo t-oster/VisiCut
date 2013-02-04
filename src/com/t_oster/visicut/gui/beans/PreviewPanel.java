@@ -414,7 +414,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
    */
   private final HashMap<PlfPart,HashMap<Mapping, ImageProcessingThread>> renderBuffers = new LinkedHashMap<PlfPart,HashMap<Mapping, ImageProcessingThread>>();
 
-  private boolean renderOriginalImage(Graphics2D gg, Mapping m, PlfPart p)
+  private boolean renderOriginalImage(Graphics2D gg, Mapping m, PlfPart p, boolean transparent)
   {
     boolean somethingMatched = false;
     AffineTransform bak = gg.getTransform();
@@ -424,6 +424,11 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     {
       tr.concatenate(p.getGraphicObjects().getTransform());
     }
+    Composite bc = gg.getComposite();
+    if (transparent)
+    {
+      gg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+    }
     gg.setTransform(tr);
     for (GraphicObject o : m.getFilterSet().getMatchingObjects(p.getGraphicObjects()))
     {
@@ -431,6 +436,10 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       o.render(gg);
     }
     gg.setTransform(bak);
+    if (transparent)
+    {
+      gg.setComposite(bc);
+    }
     return somethingMatched;
   }
 
@@ -498,7 +507,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
           {//Render Original Image
             if (m.getProfile() == null || (this.fastPreview && part.equals(VisicutModel.getInstance().getSelectedPart())))
             {
-              somethingMatched = this.renderOriginalImage(gg, m, part);
+              somethingMatched = this.renderOriginalImage(gg, m, part, this.fastPreview);
             }
             else if (m.getProfile() != null)
             {//Render only parts the material supports, or where Profile = null
@@ -535,7 +544,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
                         renderBuffer.put(m, procThread);
                         procThread.start();//start processing thread
                       }
-                      this.renderOriginalImage(gg, m, part);
+                      this.renderOriginalImage(gg, m, part, false);
                       Composite o = gg.getComposite();
                       gg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
                       Point po = new Point(bbInPx.x + bbInPx.width / 2, bbInPx.y + bbInPx.height / 2);
