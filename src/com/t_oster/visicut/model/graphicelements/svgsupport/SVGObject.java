@@ -110,23 +110,24 @@ public abstract class SVGObject implements GraphicObject
     return null;
   }
 
+  @Override
   public void render(Graphics2D g)
   {
+    AffineTransform bak = g.getTransform();
     try
     {
-      //g.setTransform(this.getAbsoluteTransformation());
+      AffineTransform trans = g.getTransform();
+      trans.concatenate(this.getAbsoluteTransformation());
+      g.setTransform(trans);
       this.getDecoratee().render(g);
-    }
-    catch (NullPointerException e)
-    {
-      System.err.println("Null Pointer while rendering.");
-      //Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, e);
     }
     catch (SVGException ex)
     {
       Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
     }
+    g.setTransform(bak);
   }
+  
   private Map<String, List<Object>> attributeValues = new LinkedHashMap<String, List<Object>>();
 
   public List<Object> getAttributeValues(String name)

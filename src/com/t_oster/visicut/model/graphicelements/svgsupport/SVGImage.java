@@ -20,9 +20,14 @@ package com.t_oster.visicut.model.graphicelements.svgsupport;
 
 import com.kitfox.svg.ImageSVG;
 import com.kitfox.svg.RenderableElement;
+import com.kitfox.svg.SVGException;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *

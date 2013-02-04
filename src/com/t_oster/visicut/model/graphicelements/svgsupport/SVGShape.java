@@ -235,24 +235,6 @@ public class SVGShape extends SVGObject implements ShapeObject
     return Helper.transform(bb, at);
   }
 
-  @Override
-  public void render(Graphics2D g)
-  {
-    AffineTransform bak = g.getTransform();
-    try
-    {
-      AffineTransform trans = g.getTransform();
-      trans.concatenate(this.getAbsoluteTransformation());
-      g.setTransform(trans);
-      this.getDecoratee().render(g);
-    }
-    catch (SVGException ex)
-    {
-      Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    g.setTransform(bak);
-  }
-  
   public Shape getShape()
   {
     try
