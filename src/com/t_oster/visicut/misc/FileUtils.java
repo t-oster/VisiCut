@@ -48,11 +48,12 @@ public class FileUtils
    */
   public static File getNonexistingWritableFile(String nameSuffix)
   {
-    File f = new File(nameSuffix);
+    File b = Helper.getBasePath();
+    File f = new File(b, nameSuffix);
     int i=1;
     while(f.exists())
     {
-      f = new File((i++) + nameSuffix);
+      f = new File(b, (i++) + nameSuffix);
     }
     return f;
   }

@@ -9,6 +9,7 @@ import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -38,6 +39,7 @@ public class VectorizeDialog extends javax.swing.JDialog
     initComponents();
     tmpResult.deleteOnExit();
     tmpBitmap.deleteOnExit();
+    tmpBitmap2.deleteOnExit();
     dialog = new DialogHelper(this, "Vectorize");
     
   }
@@ -248,6 +250,13 @@ public class VectorizeDialog extends javax.swing.JDialog
 
   private void btCancelActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btCancelActionPerformed
   {//GEN-HEADEREND:event_btCancelActionPerformed
+    for (File f : new File[]{tmpBitmap, tmpBitmap2, tmpResult})
+    {
+      if (f != null && f.exists())
+      {
+        f.delete();
+      }
+    }
     tmpResult = null;
     this.dispose();
   }//GEN-LAST:event_btCancelActionPerformed
@@ -347,6 +356,8 @@ public class VectorizeDialog extends javax.swing.JDialog
     //copy the input to an RGB image, otherwise creating BMP can fail
     BufferedImage out = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_RGB);
     Graphics2D g = out.createGraphics();
+    g.setBackground(Color.WHITE);
+    g.clearRect(0, 0, out.getWidth(), out.getHeight());
     g.drawImage(in, 0, 0, null);
     g.dispose();
     ImageIO.write(out, "BMP", tmpBitmap);
