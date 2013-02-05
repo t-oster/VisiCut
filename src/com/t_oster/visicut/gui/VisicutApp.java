@@ -145,7 +145,15 @@ public class VisicutApp extends SingleFrameApplication
       }
       catch (Exception ex)
       {
-        Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
+        //if native LAF doesn't work try at least nimbus
+        try
+        {
+          UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        }
+        catch (Exception e)
+        {
+          Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
+        }
       }
     }
     if ("GTK look and feel".equals(UIManager.getLookAndFeel().getName()))
