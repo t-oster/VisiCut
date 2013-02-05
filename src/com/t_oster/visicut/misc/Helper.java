@@ -233,6 +233,11 @@ public class Helper
   {
     return System.getProperty("os.name").toLowerCase().contains("windows");
   }
+  
+  public static boolean isLinux()
+  {
+    return System.getProperty("os.name").toLowerCase().contains("linux");
+  }
 
   public static boolean isWindowsXP()
   {

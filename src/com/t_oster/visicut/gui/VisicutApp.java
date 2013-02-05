@@ -37,7 +37,6 @@ import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.mapping.Mapping;
-import com.t_oster.visicut.model.mapping.MappingSet;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -49,7 +48,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
@@ -134,7 +132,16 @@ public class VisicutApp extends SingleFrameApplication
     {
       try
       {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        if (Helper.isWindows())
+        {
+          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        }
+        else if (Helper.isLinux())
+        {
+          //KDE etc. use ugly metal instead of nice GTK as "System", so we
+          //have to set it manually
+          UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+        }
       }
       catch (Exception ex)
       {
