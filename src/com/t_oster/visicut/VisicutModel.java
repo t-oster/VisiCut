@@ -723,16 +723,24 @@ public class VisicutModel
     return result;
   }
 
+  public enum Modification
+  {
+    NONE,
+    RESIZE,
+    MOVE,
+    ROTATE
+  }
+  
   /**
    * Adjusts the Transform of the Graphic-Objects such that the Objects
    * fit into the current Laser-Bed.
    * If modification was necessary, it returns true.
    * @return
    */
-  public boolean fitObjectsIntoBed()
+  public Modification fitObjectsIntoBed()
   {
     //TODO rotate file 90° if it would fit then
-    boolean modifiedAny = false;
+    Modification result = Modification.NONE;
     double bw = getSelectedLaserDevice() != null ? getSelectedLaserDevice().getLaserCutter().getBedWidth() : 600d;
     double bh = getSelectedLaserDevice() != null ? getSelectedLaserDevice().getLaserCutter().getBedHeight() : 300d;
     for(PlfPart p : this.plfFile)
@@ -747,6 +755,7 @@ public class VisicutModel
         p.getGraphicObjects().setTransform(trans);
         bb = p.getGraphicObjects().getBoundingBox();
         modified = true;
+        result = Modification.MOVE;
       }
       if (bb.getY() < 0 || bb.getY() + bb.getHeight() > bh)
       {
@@ -754,6 +763,7 @@ public class VisicutModel
         p.getGraphicObjects().setTransform(trans);
         bb = p.getGraphicObjects().getBoundingBox();
         modified = true;
+        result = Modification.MOVE;
       }
       //if still too big (we're in origin now) check if rotation is useful 
       if (bb.getX() + bb.getWidth() > bw || bb.getY() + bb.getHeight() > bh)
@@ -770,6 +780,7 @@ public class VisicutModel
           trans.preConcatenate(AffineTransform.getTranslateInstance(oldX-bb.getX(), oldY-bb.getY()));
           p.getGraphicObjects().setTransform(trans);
           bb = p.getGraphicObjects().getBoundingBox();
+          result = Modification.ROTATE;
         }
       }
       //if still too big (we're in origin now) we have to resize, but keeping 
@@ -779,14 +790,14 @@ public class VisicutModel
         trans.preConcatenate(AffineTransform.getScaleInstance(factor, factor));
         p.getGraphicObjects().setTransform(trans);
         modified = true;
+        result = Modification.RESIZE;
       }
       if (modified)
       {
-        modifiedAny = true;
         this.firePartUpdated(p);
       }
     }
-    return modifiedAny;
+    return result;
   }
 
   public static final String PROP_PLF_FILE_CHANGED = "plf file changed";

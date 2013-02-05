@@ -1223,6 +1223,28 @@ public class MainView extends javax.swing.JFrame
     }.start();
   }
 
+  private void fitObjectsIntoBed()
+  {
+    switch (this.visicutModel1.fitObjectsIntoBed())
+    {
+      case MOVE:
+      {
+        dialog.showInfoMessage(bundle.getString("NEEDED_MOVE"));
+        break;
+      }
+      case ROTATE:
+      {
+        dialog.showInfoMessage(bundle.getString("NEEDED_ROTATE"));
+        break;
+      }
+      case RESIZE:
+      {
+        dialog.showInfoMessage(bundle.getString("NEEDED_REFIT"));
+        break;
+      }
+    }
+  }
+  
   private void loadFileReal(File file, boolean discardCurrent)
   {
     try
@@ -1234,11 +1256,8 @@ public class MainView extends javax.swing.JFrame
         {
           dialog.showWaringnMessage(warnings);
         }
-      //if the image is too big, fit it and notify the user
-      if (visicutModel1.fitObjectsIntoBed())
-      {
-        dialog.showInfoMessage(bundle.getString("NEEDED_REFIT"));
-      }
+      //if the image is too big, fit it a nd notify the user
+      this.fitObjectsIntoBed();
       this.progressBar.setIndeterminate(false);
     }
     catch (Exception e)
@@ -1748,10 +1767,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     }
     this.refreshButtonStates();
     //if the image is too big, fit it and notify the user
-    if (visicutModel1.fitObjectsIntoBed())
-    {
-      dialog.showInfoMessage(bundle.getString("NEEDED_REFIT"));
-    }
+    this.fitObjectsIntoBed();
   }//GEN-LAST:event_laserCutterComboBoxActionPerformed
 
   private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem2ActionPerformed
