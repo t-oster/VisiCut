@@ -52,6 +52,7 @@ then
   [ -d wintmp ] && rm -rf wintmp
   mkdir wintmp
   cp -r windows/* wintmp/
+  [ -d wintmp/stream] || mkdir wintmp/stream
   cp -r visicut/* wintmp/stream/
   cat windows/installer.nsi|sed s#VISICUTVERSION#"$VERSION"#g > wintmp/installer.nsi
   cp ../tools/inkscape_extension/* wintmp/
