@@ -5,26 +5,6 @@ then
 else
    COMPILE=1
 fi
-echo "Get latest MaterialDB from git (Y/n)?"
-read answer
-if [ "$answer" != "n" ]
-then
-	pushd files/settings
-	if [ -d VisiCut-MaterialDB/.git ]
-	then
-		echo "already git => we pull"
-		pushd VisiCut-MaterialDB
-		git pull
-		popd
-	else
-		echo "we have to clone the repository first"
-		rm -rf VisiCut-MaterialDB
-		git clone git://github.com/t-oster/VisiCut-MaterialDB.git
-	fi
-	popd
-	echo "sucessfully updated"
-fi
-
 echo "Determining Version:"
 VERSION=$(cat ../src/com/t_oster/visicut/gui/resources/VisicutApp.properties |grep Application.version)
 VERSION=${VERSION#*=}
@@ -32,11 +12,16 @@ VERSION=${VERSION// /}
 echo "Version is: \"$VERSION\""
 if [ "$COMPILE" == 1 ]
 then
-echo "Building jar..."
-cd ..
-ant clean
-make
-cd distribute
+	echo "Building jar..."
+	cd ..
+	ant clean
+	make || exit 1
+	cd distribute
+fi
+if [ -d visicut ]
+then
+	echo "Removing leftover files"
+	rm -rf visicut
 fi
 echo "Copying content..."
 mkdir visicut
@@ -45,7 +30,6 @@ cp -r files/* visicut/
 cp ../README visicut/
 cp ../COPYING.LESSER visicut/
 cp ../LICENSE visicut/
-rm visicut/README.TXT
 chmod +x visicut/*.jar
 chmod +x visicut/VisiCut.*
 mkdir -p visicut/inkscape_extension
@@ -54,8 +38,8 @@ cp ../tools/inkscape_extension/*.inx visicut/inkscape_extension/
 mkdir -p visicut/illustrator_script
 cp ../tools/illustrator_script/*.scpt visicut/illustrator_script/
 echo "Compressing content..."
-rm VisiCut-*.zip
-zip -r VisiCut-$VERSION.zip visicut/
+[ -f VisiCut-$VERSION.zip ] && rm VisiCut-$VERSION.zip
+zip -r VisiCut-$VERSION.zip visicut/ || exit 1
 
 echo ""
 echo "****************************************************************"
@@ -65,6 +49,7 @@ read answer
 if [ "$answer" != "n" ]
 then
   echo "Creating Windows installer"
+  [ -d wintmp ] && rm -rf wintmp
   mkdir wintmp
   cp -r windows/* wintmp/
   cp -r visicut/* wintmp/stream/
@@ -72,10 +57,9 @@ then
   cp ../tools/inkscape_extension/* wintmp/
   cat ../tools/inkscape_extension/visicut_export.py|sed 's#"visicut"#"visicut.exe"#g' > wintmp/visicut_export.py
   pushd wintmp
-  makensis installer.nsi
+  makensis installer.nsi || exit 1
   popd
-  mv wintmp/stream visicut
-  mv wintmp/setup.exe VisiCut-$VERSION-Windows-Installer.exe
+  mv wintmp/setup.exe VisiCut-$VERSION-Windows-Installer.exe || exit 1
   rm -rf wintmp
 fi
 
@@ -88,6 +72,7 @@ read answer
 if [ "$answer" != "n" ]
 then
   echo "Creating Mac OS Bundle"
+  [ -d VisiCut.app ] && rm -rf VisiCut.app
   cp -r "mac/VisiCut.app" .
   mkdir -p "VisiCut.app/Contents/Resources/Java"
   cp -r visicut/* "VisiCut.app/Contents/Resources/Java/"
@@ -96,8 +81,8 @@ then
   cat Info.plist|sed s#VISICUTVERSION#"$VERSION"#g > VisiCut.app/Contents/Info.plist
   rm Info.plist
   echo "Compressing Mac OS Bundle"
-  rm -r VisiCutMac-*.zip
-  zip -r VisiCutMac-$VERSION.zip VisiCut.app
+  rm -rf VisiCutMac-$VERSION.zip
+  zip -r VisiCutMac-$VERSION.zip VisiCut.app || exit 1
   echo "Cleaning up..."
   rm -rf VisiCut.app
 fi
@@ -114,9 +99,9 @@ then
   cd ..
   # hide doc directory from checkinstall
   mv doc doctmp
-  sudo checkinstall --fstrans --type debian --install=no -y --pkgname visicut --pkgversion $VERSION --arch all --pkglicense LGPL --pkggroup other --pkgsource "http://visicut.org" --pkgaltsource "https://github.com/t-oster/VisiCut" --pakdir distribute/ --maintainer "'Thomas Oster <thomas.oster@rwth-aachen.de>'" --requires "java-runtime,potrace" make install -e PREFIX=/usr
-  rm description-pak
-  sudo rm -rf doc-pak
+  sudo checkinstall --fstrans --type debian --install=no -y --pkgname visicut --pkgversion $VERSION --arch all --pkglicense LGPL --pkggroup other --pkgsource "http://visicut.org" --pkgaltsource "https://github.com/t-oster/VisiCut" --pakdir distribute/ --maintainer "'Thomas Oster <thomas.oster@rwth-aachen.de>'" --requires "java-runtime,potrace" make install -e PREFIX=/usr || exit 1
+  rm ../description-pak
+  sudo rm -rf ../doc-pak
   mv doctmp doc
   cd distribute
 fi
@@ -131,7 +116,7 @@ then
   cd linux
   ARCHVERSION=$(echo $VERSION|sed "s#-#_#g")
   cat PKGBUILD | sed "s#pkgver=VERSION#pkgver=$ARCHVERSION#g" > PKGBUILD-tmp
-  makepkg -p PKGBUILD-tmp
+  makepkg -p PKGBUILD-tmp || exit 1
   mv *.pkg.tar.xz ../
   echo "Cleaning up..."
   rm -rf src pkg PKGBUILD-tmp
