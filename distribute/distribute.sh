@@ -14,8 +14,8 @@ if [ "$COMPILE" == 1 ]
 then
 	echo "Building jar..."
 	cd ..
-	ant clean
-	make || exit 1
+	ant clean > /dev/null
+	make > /dev/null|| exit 1
 	cd distribute
 fi
 if [ -d visicut ]
@@ -39,7 +39,7 @@ mkdir -p visicut/illustrator_script
 cp ../tools/illustrator_script/*.scpt visicut/illustrator_script/
 echo "Compressing content..."
 [ -f VisiCut-$VERSION.zip ] && rm VisiCut-$VERSION.zip
-zip -r VisiCut-$VERSION.zip visicut/ || exit 1
+zip -r VisiCut-$VERSION.zip visicut/  > /dev/null || exit 1
 
 echo ""
 echo "****************************************************************"
@@ -57,7 +57,7 @@ then
   cp ../tools/inkscape_extension/* wintmp/
   cat ../tools/inkscape_extension/visicut_export.py|sed 's#"visicut"#"visicut.exe"#g' > wintmp/visicut_export.py
   pushd wintmp
-  makensis installer.nsi || exit 1
+  makensis installer.nsi > /dev/null || exit 1
   popd
   mv wintmp/setup.exe VisiCut-$VERSION-Windows-Installer.exe || exit 1
   rm -rf wintmp
@@ -82,7 +82,7 @@ then
   rm Info.plist
   echo "Compressing Mac OS Bundle"
   rm -rf VisiCutMac-$VERSION.zip
-  zip -r VisiCutMac-$VERSION.zip VisiCut.app || exit 1
+  zip -r VisiCutMac-$VERSION.zip VisiCut.app > /dev/null || exit 1
   echo "Cleaning up..."
   rm -rf VisiCut.app
 fi
@@ -99,7 +99,7 @@ then
   cd ..
   # hide doc directory from checkinstall
   mv doc doctmp
-  sudo checkinstall --fstrans --type debian --install=no -y --pkgname visicut --pkgversion $VERSION --arch all --pkglicense LGPL --pkggroup other --pkgsource "http://visicut.org" --pkgaltsource "https://github.com/t-oster/VisiCut" --pakdir distribute/ --maintainer "'Thomas Oster <thomas.oster@rwth-aachen.de>'" --requires "java-runtime,potrace" make install -e PREFIX=/usr || exit 1
+  sudo checkinstall --fstrans --type debian --install=no -y --pkgname visicut --pkgversion $VERSION --arch all --pkglicense LGPL --pkggroup other --pkgsource "http://visicut.org" --pkgaltsource "https://github.com/t-oster/VisiCut" --pakdir distribute/ --maintainer "'Thomas Oster <thomas.oster@rwth-aachen.de>'" --requires "java-runtime,potrace" make install -e PREFIX=/usr > /dev/null || exit 1
   rm ../description-pak
   sudo rm -rf ../doc-pak
   mv doctmp doc
@@ -116,7 +116,7 @@ then
   cd linux
   ARCHVERSION=$(echo $VERSION|sed "s#-#_#g")
   cat PKGBUILD | sed "s#pkgver=VERSION#pkgver=$ARCHVERSION#g" > PKGBUILD-tmp
-  makepkg -p PKGBUILD-tmp || exit 1
+  makepkg -p PKGBUILD-tmp > /dev/null || exit 1
   mv *.pkg.tar.xz ../
   echo "Cleaning up..."
   rm -rf src pkg PKGBUILD-tmp
