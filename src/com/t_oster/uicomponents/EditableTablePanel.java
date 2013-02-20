@@ -18,6 +18,7 @@
  **/
 package com.t_oster.uicomponents;
 
+import com.t_oster.visicut.gui.beans.BetterJTable;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JButton;
@@ -301,16 +302,7 @@ public class EditableTablePanel extends javax.swing.JPanel
   {
 
     jScrollPane1 = new javax.swing.JScrollPane();
-    table = new javax.swing.JTable()
-    {
-      //directly enable editing on focus change
-      public void changeSelection(final int row, final int column, boolean toggle, boolean extend)
-      {
-        super.changeSelection(row, column, toggle, extend);
-        this.editCellAt(row, column);
-        this.transferFocus();
-      }
-    };
+    table = new BetterJTable();
     btAdd = new javax.swing.JButton();
     btRemove = new javax.swing.JButton();
     btEdit = new javax.swing.JButton();

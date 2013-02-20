@@ -73,7 +73,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable()&#xa;{&#xa;  //directly enable editing on focus change&#xa;  public void changeSelection(final int row, final int column, boolean toggle, boolean extend)&#xa;  {&#xa;    super.changeSelection(row, column, toggle, extend);&#xa;    this.editCellAt(row, column);&#xa;    this.transferFocus();&#xa;  }&#xa;}"/>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new BetterJTable()"/>
           </AuxValues>
         </Component>
       </SubComponents>

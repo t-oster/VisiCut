@@ -1,6 +1,9 @@
 package com.t_oster.visicut.gui.beans;
 
+import java.awt.Component;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
@@ -18,11 +21,33 @@ public class BetterJTable extends JTable
   public TableCellEditor getCellEditor(int row, int column)
   {
     Object o = this.getValueAt(row, column);
+    TableCellEditor result;
     if (o instanceof Boolean)
     {
-      return this.getDefaultEditor(Boolean.class);
+      result = this.getDefaultEditor(Boolean.class);
     }
-    return super.getCellEditor(row, column);
+    else if (o instanceof String || o instanceof Integer || o instanceof Float || o instanceof Double)
+    {
+      //return textfield-editor which selects the whole text by default
+      result = new DefaultCellEditor(new JTextField()){
+          @Override
+          public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column)
+          {
+            Component c = super.getTableCellEditorComponent(table, value, isSelected, row, column);
+            if (c instanceof JTextField)
+            {
+              ((JTextField) c).setSelectionStart(0);
+              ((JTextField) c).setSelectionEnd(((JTextField) c).getText().length());
+            }
+            return c;
+          }
+      };
+    }
+    else
+    {
+      result = super.getCellEditor(row, column);
+    }
+    return result;
   }
 
   @Override
@@ -50,10 +75,17 @@ public class BetterJTable extends JTable
     }
     catch (NumberFormatException e)
     {
-      return;
     }
   }
   
+  //directly enable editing on focus change
+  @Override
+  public void changeSelection(final int row, final int column, boolean toggle, boolean extend)
+  {
+      super.changeSelection(row, column, toggle, extend);
+      this.editCellAt(row, column);
+      this.transferFocus();
+  }
   
 
   @Override

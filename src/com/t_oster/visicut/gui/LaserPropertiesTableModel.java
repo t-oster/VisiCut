@@ -5,8 +5,6 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.liblasercut.LaserProperty;
-import com.t_oster.visicut.model.LaserProfile;
-import com.t_oster.visicut.model.VectorProfile;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 

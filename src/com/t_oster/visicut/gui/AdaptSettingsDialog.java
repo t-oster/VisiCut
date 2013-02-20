@@ -103,6 +103,7 @@ public class AdaptSettingsDialog extends javax.swing.JDialog
             return o;
           }
         });
+        panel.getTable().setRowSelectionAllowed(false);
         this.jTabbedPane1.add(lp.getName(), panel);
       }
     }
