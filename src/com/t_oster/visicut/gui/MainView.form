@@ -831,7 +831,7 @@
                               <EmptySpace min="-2" max="-2" attributes="0"/>
                               <Component id="predefinedMappingBox1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" max="-2" attributes="0"/>
-                              <Component id="customMappingPanel" pref="245" max="32767" attributes="0"/>
+                              <Component id="customMappingPanel" pref="235" max="32767" attributes="0"/>
                               <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -848,6 +848,9 @@
                       <Properties>
                         <Property name="name" type="java.lang.String" value="predefinedMappingBox1" noResource="true"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="predefinedMappingBox1ActionPerformed"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>

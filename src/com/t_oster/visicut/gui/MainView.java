@@ -669,6 +669,11 @@ public class MainView extends javax.swing.JFrame
         customMappingPanel.setName("customMappingPanel"); // NOI18N
 
         predefinedMappingBox1.setName("predefinedMappingBox1"); // NOI18N
+        predefinedMappingBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                predefinedMappingBox1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout mappingPanelLayout = new javax.swing.GroupLayout(mappingPanel);
         mappingPanel.setLayout(mappingPanelLayout);
@@ -687,7 +692,7 @@ public class MainView extends javax.swing.JFrame
                 .addContainerGap()
                 .addComponent(predefinedMappingBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(customMappingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
+                .addComponent(customMappingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
                 .addGap(2, 2, 2))
         );
 
@@ -2230,6 +2235,12 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
   }
   VisicutModel.getInstance().setSelectedPart(selected);
 }//GEN-LAST:event_objectComboBoxChangeHandler
+
+private void predefinedMappingBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_predefinedMappingBox1ActionPerformed
+  //only show custom mapping panel, if "CUSTOM" is selected as mapping.
+  //fixes issue #69
+  this.customMappingPanel.setVisible(this.predefinedMappingBox1.CUSTOM.equals(this.predefinedMappingBox1.getSelectedItem()));
+}//GEN-LAST:event_predefinedMappingBox1ActionPerformed
 
 /**
  * Open a laser properties dialog (speed, power, frequency, focus for each profile)

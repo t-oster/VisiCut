@@ -38,8 +38,8 @@ import java.beans.PropertyChangeListener;
 public class PredefinedMappingBox extends javax.swing.JComboBox
 {
 
-  private String NONE = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PredefinedMappingBox").getString("NONE");
-  private String CUSTOM = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PredefinedMappingBox").getString("CUSTOM");
+  public String NONE = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PredefinedMappingBox").getString("NONE");
+  public String CUSTOM = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PredefinedMappingBox").getString("CUSTOM");
 
   /**
    * Creates new form MappingPanel
