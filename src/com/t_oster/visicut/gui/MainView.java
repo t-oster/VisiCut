@@ -2413,7 +2413,7 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
 
       if ((reallyExecuting && this.cbEditBeforeExecute.isSelected()) || unknownProfilesUsed)
       {
-        if (unknownProfilesUsed)
+        if (mayShowEditDialog && unknownProfilesUsed && !(this.cbEditBeforeExecute.isSelected() && reallyExecuting))
         {
           dialog.showInfoMessage(bundle.getString("FOR SOME PROFILE YOU SELECTED, THERE ARE NO LASERCUTTER SETTINGS YET YOU WILL HAVE TO ENTER THEM IN THE FOLLOWING DIALOG."));
         }
