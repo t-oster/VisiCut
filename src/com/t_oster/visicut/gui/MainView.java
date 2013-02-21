@@ -397,6 +397,20 @@ public class MainView extends javax.swing.JFrame
       // no PlfPart is selected, so select the pseudo-item "nothing selected"
       this.objectComboBox.setSelectedIndex(0);
     }
+    //gradually hide complexity. Issue #71
+    int files = this.visicutModel1.getPlfFile().size();
+    boolean selected = this.visicutModel1.getSelectedPart() != null;
+    if (files == 1 && selected)
+    {
+      this.jLabel2.setText(this.bundle.getString("jLabel2.text")+" "+this.visicutModel1.getSelectedPart().getSourceFile().getName());
+    }
+    else
+    {
+      this.jLabel2.setText(this.bundle.getString("jLabel2.text") + (files == 1 && !selected ? " "+this.bundle.getString("(nothing selected)") : ""));
+    }
+    
+    this.objectComboBox.setVisible(files > 1);
+    this.btRemoveObject.setVisible(files > 0 && selected);
     this.ignoreObjectComboBoxEvents = false;
   }
   
