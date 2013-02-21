@@ -29,6 +29,7 @@ import com.apple.eawt.AppEvent.OpenFilesEvent;
 import com.apple.eawt.AppEvent.QuitEvent;
 import com.apple.eawt.QuitResponse;
 import com.t_oster.liblasercut.IllegalJobException;
+import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.platform.Util;
@@ -68,6 +69,7 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -1280,6 +1282,33 @@ public class MainView extends javax.swing.JFrame
     this.calculateTimeButton.setVisible(estimateSupported);
     this.timeLabel.setVisible(estimateSupported);
     this.jLabel10.setVisible(estimateSupported);
+    //check for focus-property in at least one profile type
+    boolean focusSupported = false;
+    if (this.visicutModel1.getSelectedLaserDevice() != null)
+    {
+      LaserCutter lc = this.visicutModel1.getSelectedLaserDevice().getLaserCutter();
+      for (LaserProperty p : new LaserProperty[]{
+        lc.getLaserPropertyForVectorPart(),
+        lc.getLaserPropertyForRasterPart(),
+        lc.getLaserPropertyForRaster3dPart()})
+      {
+        if (p != null && Arrays.asList(p.getPropertyKeys()).contains("focus"))
+        {
+          focusSupported = true;
+          break;
+        }
+      }
+    }
+    if (focusSupported)
+    {
+      this.jCheckBox1.setVisible(true);
+    }
+    else
+    {
+      this.jCheckBox1.setSelected(false);
+      this.jCheckBox1.setVisible(false);
+    }
+    
     boolean execute = this.visicutModel1.getMaterial() != null
       && this.visicutModel1.getSelectedLaserDevice() != null
       && this.visicutModel1.getPlfFile().size() > 0;
