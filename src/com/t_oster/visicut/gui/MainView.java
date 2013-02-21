@@ -1795,6 +1795,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       {
         MaterialManager.getInstance().setAll(result);
         this.refreshMaterialComboBox();
+        this.visicutModel1.setMaterial(this.materialComboBox.getSelectedItem() instanceof MaterialProfile ? (MaterialProfile) this.materialComboBox.getSelectedItem() : null);
       }
       catch (Exception ex)
       {
