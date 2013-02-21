@@ -396,7 +396,7 @@ public class MainView extends javax.swing.JFrame
     boolean selected = this.visicutModel1.getSelectedPart() != null;
     if (files == 1 && selected)
     {
-      this.jLabel2.setText(this.bundle.getString("jLabel2.text")+" "+this.visicutModel1.getSelectedPart().getSourceFile().getName());
+      this.jLabel2.setText("<html>"+this.bundle.getString("jLabel2.text")+" <b>"+this.visicutModel1.getSelectedPart().getSourceFile().getName()+"</b></html>");
     }
     else
     {
