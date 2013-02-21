@@ -328,6 +328,19 @@ public class MainView extends javax.swing.JFrame
       }
     }
     this.ignoreMaterialComboBoxChanges = false;
+    //hide lasercutter combo box if only one lasercutter available
+    boolean materialUiVisible = true;
+    if (this.materialComboBox.getItemCount() == 1 && MaterialManager.getInstance().getAll().get(0).getMaterialThicknesses().size() == 1)
+    {
+      this.materialComboBox.setSelectedIndex(0);
+      materialUiVisible = false;
+    }
+    this.materialComboBox.setVisible(materialUiVisible);
+    this.btAddMaterial.setVisible(materialUiVisible);
+    this.cbMaterialThickness.setVisible(materialUiVisible);
+    this.btAddMaterialThickness.setVisible(materialUiVisible);
+    this.jLabel1.setVisible(materialUiVisible);
+    this.jLabel5.setVisible(materialUiVisible);
   }
 
   /*
@@ -1312,14 +1325,14 @@ public class MainView extends javax.swing.JFrame
         }
       }
     }
-    if (focusSupported)
-    {
-      this.jCheckBox1.setVisible(true);
-    }
-    else
+    if (!focusSupported || (MaterialManager.getInstance().getAll().size() == 1 && MaterialManager.getInstance().getAll().get(0).getMaterialThicknesses().size() == 1))
     {
       this.jCheckBox1.setSelected(false);
       this.jCheckBox1.setVisible(false);
+    }
+    else
+    {
+      this.jCheckBox1.setVisible(true);
     }
     
     boolean execute = this.visicutModel1.getMaterial() != null
