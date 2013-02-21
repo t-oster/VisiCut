@@ -373,7 +373,7 @@
                       <EmptySpace pref="126" max="32767" attributes="0"/>
                       <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="jScrollPane2" pref="648" max="32767" attributes="0"/>
+                  <Component id="jScrollPane2" pref="650" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" max="-2" attributes="0"/>
@@ -601,7 +601,7 @@
                                   <Group type="103" alignment="0" groupAlignment="1" attributes="0">
                                       <Component id="laserCutterComboBox" alignment="0" pref="389" max="32767" attributes="1"/>
                                       <Group type="102" alignment="1" attributes="1">
-                                          <Component id="materialComboBox" pref="339" max="32767" attributes="1"/>
+                                          <Component id="materialComboBox" pref="361" max="32767" attributes="1"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="btAddMaterial" min="-2" max="-2" attributes="0"/>
                                       </Group>
@@ -614,7 +614,7 @@
                                               </Group>
                                               <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace pref="20" max="32767" attributes="0"/>
+                                          <EmptySpace pref="35" max="32767" attributes="0"/>
                                           <Component id="jCheckBox1" min="-2" pref="197" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
@@ -625,14 +625,14 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="1" attributes="0">
                                       <Component id="cbEditBeforeExecute" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace pref="70" max="32767" attributes="0"/>
+                                      <EmptySpace pref="111" max="32767" attributes="0"/>
                                       <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="timeLabel" min="-2" pref="166" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
+                                      <EmptySpace pref="48" max="32767" attributes="0"/>
                                       <Component id="calculateTimeButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -641,7 +641,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="objectComboBox" pref="231" max="32767" attributes="0"/>
+                              <Component id="objectComboBox" pref="297" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="btAddObject" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -657,7 +657,7 @@
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="laserSettingsLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="130" max="32767" attributes="0"/>
+                              <EmptySpace pref="173" max="32767" attributes="0"/>
                               <Component id="editLaserSettingsButton" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -818,8 +818,8 @@
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="customMappingPanel" alignment="0" pref="368" max="32767" attributes="1"/>
-                                  <Component id="predefinedMappingBox1" alignment="0" pref="368" max="32767" attributes="1"/>
+                                  <Component id="customMappingPanel" alignment="0" pref="365" max="32767" attributes="1"/>
+                                  <Component id="predefinedMappingBox1" alignment="0" pref="365" max="32767" attributes="1"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -828,11 +828,11 @@
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
                               <Component id="predefinedMappingBox1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="17" max="32767" attributes="0"/>
-                              <Component id="customMappingPanel" min="-2" pref="235" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                              <Component id="customMappingPanel" pref="245" max="32767" attributes="0"/>
+                              <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
