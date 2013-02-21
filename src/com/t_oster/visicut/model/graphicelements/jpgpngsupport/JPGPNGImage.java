@@ -49,6 +49,10 @@ public class JPGPNGImage implements GraphicObject
     {
       result.add("Image");
     }
+    if (name.equals("Color"))
+    {
+      result.add("Bitmap");
+    }
     return result;
   }
 
@@ -56,6 +60,7 @@ public class JPGPNGImage implements GraphicObject
   {
     List<String> result = new LinkedList<String>();
     result.add("Type");
+    result.add("Color");
     return result;
   }
 
