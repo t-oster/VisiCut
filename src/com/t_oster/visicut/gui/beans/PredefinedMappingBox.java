@@ -20,6 +20,7 @@ package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.managers.MappingManager;
+import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,7 +41,7 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
 
   public String NONE = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PredefinedMappingBox").getString("NONE");
   public String CUSTOM = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PredefinedMappingBox").getString("CUSTOM");
-
+  private PlfPart lastSelectedPlfPart = null;
   /**
    * Creates new form MappingPanel
    */
@@ -90,22 +91,39 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
    */
   private void updateUi()
   {
+    
     if (VisicutModel.getInstance().getSelectedPart() != null)
     {
       ignoreUiUpdates = true;
       MappingSet ms = VisicutModel.getInstance().getSelectedPart().getMapping();
-      if (ms == null || ms.isEmpty())
-      {
-        this.setSelectedItem(NONE);
-      }
-      else
-      {
-        this.setSelectedItem(CUSTOM);
-        //only changes the selection, if the mapping exists in the comboBox
-        this.setSelectedItem(ms);
+      // guess the selected entry from the MappingSet
+      // we have no information about the name, so we need to see which entry matches
+      
+      if ((lastSelectedPlfPart == VisicutModel.getInstance().getSelectedPart()) && (this.getSelectedItem() == CUSTOM)) {
+        // special case:
+        // the selected PlfPart ("object") is still the same.
+        // CUSTOM was selected and the mapping was edited
+        // even if the mapping is now equal to a saved one, don't switch back to the entry of the saved mapping!
+        // otherwise the CustomMappingPanel would be hidden
+
+        // change nothing, selectedItem is still CUSTOM
+      } else {
+        // default case:
+        // show NONE if empty mapping
+        // show saved mapping if one is equal to the current mapping
+        // show "CUSTOM" otherwise
+
+        if (ms == null || ms.isEmpty())
+        {
+          this.setSelectedItem(NONE);
+        } else {
+          this.setSelectedItem(CUSTOM);
+          this.setSelectedItem(ms); // only changes the selection if the mapping exists in the comboBox
+        }
       }
       ignoreUiUpdates = false;
     }
+    lastSelectedPlfPart = VisicutModel.getInstance().getSelectedPart();
   }
 
   private void comboBoxActionPerformed(java.awt.event.ActionEvent evt)
