@@ -44,11 +44,13 @@ public class PositionPanelController extends EditRectangleController implements 
     this.pp.addPropertyChangeListener(this);
   }
 
+  private boolean ignorePpUpdates = false;
+  
   public void propertyChange(PropertyChangeEvent pce)
   {
     if (getSelectedSet() != null)
     {
-      if (pce.getSource().equals(pp))
+      if (pce.getSource().equals(pp) && !ignorePpUpdates)
       {
         if (PositionPanel.PROP_RECTANGLE.equals(pce.getPropertyName()))
         {
@@ -70,9 +72,11 @@ public class PositionPanelController extends EditRectangleController implements 
           || VisicutModel.PROP_PLF_FILE_CHANGED.equals(pce.getPropertyName())
           || VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()))
         {
+          this.ignorePpUpdates = true;
           this.pp.setRectangle(getSelectedSet().getBoundingBox());
           AffineTransform t = getSelectedSet().getTransform();
           this.pp.setAngle(t != null ? Helper.getRotationAngle(t) : 0);
+          this.ignorePpUpdates = false;
         }
       }
     }

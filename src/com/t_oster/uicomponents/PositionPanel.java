@@ -19,9 +19,6 @@
 package com.t_oster.uicomponents;
 
 import com.t_oster.liblasercut.platform.Util;
-import com.t_oster.visicut.misc.Helper;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
