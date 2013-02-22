@@ -18,15 +18,19 @@
  **/
 package com.t_oster.visicut.laserscript;
 
-import com.t_oster.visicut.model.graphicelements.lssupport.ScriptInterpreter;
 import com.t_oster.liblasercut.PowerSpeedFocusProperty;
 import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.visicut.model.graphicelements.lssupport.ScriptInterface;
-import org.junit.After;
-import org.junit.AfterClass;
+import com.t_oster.visicut.model.graphicelements.lssupport.ScriptInterpreter;
+import com.t_oster.visicut.model.graphicelements.lssupport.VectorPartScriptInterface;
+import java.awt.geom.AffineTransform;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.security.AccessControlException;
+import java.util.LinkedList;
+import java.util.List;
+import javax.script.ScriptException;
 import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -40,7 +44,69 @@ public class ScriptInterpreterTest
   {
   }
   
+  @Test
+  public void testSecurity() throws ScriptException
+  {
+    SecurityManager bak = System.getSecurityManager();
+    ScriptInterpreter instance = new ScriptInterpreter();
+    File f = new File("testfile");
+    if (f.exists())
+    {
+      f.delete();
+    }
+    try
+    {
+      instance.execute(new InputStreamReader(this.getClass().getResourceAsStream("SecurityTest.js")), new ScriptInterface(){
 
+        public void move(double x, double y)
+        {
+        }
+
+        public void line(double x, double y)
+        {
+        }
+
+        public void set(String property, Object value)
+        {
+        }
+
+        public Object get(String property)
+        {
+          return null;
+        }
+      });
+    }
+    catch (AccessControlException e)
+    {
+      assertEquals(System.getSecurityManager(), bak);
+      assertFalse(f.exists());
+      return;
+    }
+    fail("No Exception thrown");
+  }
+
+  @Test 
+  public void testVectorJobScriptInterface() throws ScriptException
+  {
+    String script = "function rectangle(x, y, width, height) {";
+    script += "move(x, y);";
+    script += "line(x+width, y);";
+    script += "line(x+width, y+height);";
+    script += "line(x, y+height);";
+    script += "line(x, y);";
+    script += "}";
+    script += "rectangle(0, 0, 20, 30);";
+    script += "rectangle(0, 0, 20, 30);";
+    ScriptInterpreter instance = new ScriptInterpreter();
+    VectorPart vp = new VectorPart(new PowerSpeedFocusProperty(), 500d);
+    VectorPartScriptInterface si = new VectorPartScriptInterface(vp, new AffineTransform());
+    instance.execute(script, si);
+    assertEquals(0, vp.getMinX());
+    assertEquals(0, vp.getMinY());
+    assertEquals(20, vp.getMaxX());
+    assertEquals(30, vp.getMaxY());
+  }
+  
   /**
    * Test of execute method, of class ScriptInterpreter.
    */
@@ -56,28 +122,33 @@ public class ScriptInterpreterTest
     script += "line(x, y);";
     script += "}";
     script += "rectangle(0, 0, 20, 30);";
+    script += "rectangle(0, 0, 20, 30);";
     ScriptInterpreter instance = new ScriptInterpreter();
+    final List<String> steps = new LinkedList<String>();
     instance.execute(script, new ScriptInterface(){
 
       public void move(double x, double y)
       {
-        
+        assertTrue(x == 0 && y == 0);
+        steps.add("move ("+x+","+y+")");
       }
 
       public void line(double x, double y)
       {
-        
+         steps.add("line ("+x+","+y+")");
       }
 
       public void set(String property, Object value)
       {
-        
+          steps.add("set ("+property+","+value.toString()+")");
       }
 
       public Object get(String property)
       {
+         steps.add("get ("+property+")");
         return null;
       }
     });
+    assertEquals(10, steps.size());
   }
 }
