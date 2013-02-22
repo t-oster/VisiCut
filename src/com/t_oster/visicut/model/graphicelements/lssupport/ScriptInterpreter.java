@@ -18,24 +18,14 @@
  */
 package com.t_oster.visicut.model.graphicelements.lssupport;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.security.AccessControlContext;
-import java.security.AccessControlException;
-import java.security.AccessController;
-import java.security.CodeSource;
-import java.security.Permissions;
-import java.security.PrivilegedAction;
-import java.security.ProtectionDomain;
-import java.security.cert.Certificate;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import org.mozilla.javascript.ClassShutter;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
 
 /**
  *
@@ -44,91 +34,41 @@ import javax.script.ScriptException;
 public class ScriptInterpreter
 {
 
-  public void execute(String script, ScriptInterface si) throws ScriptException
+  public void execute(String script, ScriptInterface si) throws ScriptException, IOException
   {
     this.execute(new StringReader(script), si);
   }
 
-  private AccessControlContext secureContext()
+  public void execute(final Reader script, final ScriptInterface si) throws ScriptException, IOException
   {
-    Permissions perms = new Permissions(); //permissions for scriptengine
-    perms.add(new RuntimePermission("accessDeclaredMembers"));
-    perms.add(new RuntimePermission("createClassLoader"));
-    perms.add(new RuntimePermission("accessClassInPackage.sun.org.mozilla.javascript.internal"));
-    perms.add(new RuntimePermission("accessClassInPackage.sun.org.mozilla.javascript"));
-    perms.add(new RuntimePermission("accessClassInPackage.org.mozilla.javascript"));
-
-    ProtectionDomain domain = new ProtectionDomain(
-      new CodeSource(null, (Certificate[]) null), perms);
-    AccessControlContext _accessControlContext = new AccessControlContext(
-      new ProtectionDomain[]
-      {
-        domain
-      });
-    return _accessControlContext;
-  }
-
-  public void execute(final Reader script, final ScriptInterface si) throws ScriptException, AccessControlException
-  {
-    AccessControlContext acc = secureContext();
-    final List<Exception> exceptions = new LinkedList<Exception>();
-    AccessController.doPrivileged(new PrivilegedAction()
+    Context cx = Context.enter();
+    try
     {
-      @Override
-      public Boolean run()
-      {
-        try
-        {
-          // create a script engine manager
-          ScriptEngineManager factory = new ScriptEngineManager();
-          // create JavaScript engine
-          ScriptEngine engine = factory.getEngineByName("JavaScript");
-          // evaluate JavaScript code from given file - specified by first argument
-          engine.put("_instance", si);
-          engine.eval(new InputStreamReader(this.getClass().getResourceAsStream("LaserScriptBootstrap.js")));
-          SecurityManager bak = System.getSecurityManager();
-          Double password = Math.random();
-          PasswordProtectedSecurityManager secman = new PasswordProtectedSecurityManager(password);
-          System.setSecurityManager(secman);
-          try
-          {
-            engine.eval(script);
-          }
-          catch (Exception se)
-          {
-            exceptions.add(se);
-          }
-          finally
-          {
-            secman.disable(password);
-            System.setSecurityManager(bak);
-          }
-          return true;
-        }
-        catch (ScriptException ex)
-        {
-          exceptions.add(ex);
-          return false;
-        }
-      }
-    }, acc);
-    for (Exception e: exceptions)
+      cx.setClassShutter(ScriptingSecurity.getInstance());
+    }
+    catch (SecurityException e)
+    {
+      //already registered for the current thread....
+    }
+    // Scriptable represents the script environment
+    Scriptable scope = cx.initStandardObjects(null);
+    scope.put("_instance", scope, Context.toObject(si, scope));
+    ScriptingSecurity.getInstance().setLocked(false);
+    cx.evaluateReader(scope, new InputStreamReader(this.getClass().getResourceAsStream("LaserScriptBootstrap.js")), "LaserScriptBootstrap.js", -1, null);
+    ScriptingSecurity.getInstance().setLocked(true);
+    try
+    {
+      cx.evaluateReader(scope, script, "laserscript", -1, null);
+    }
+    catch (Exception e)
     {
       if (e instanceof ScriptException)
       {
-        if (e.getCause() instanceof sun.org.mozilla.javascript.WrappedException && e.getCause().getCause() instanceof AccessControlException)
-        {
-          throw (AccessControlException) e.getCause().getCause();
-        }
         throw (ScriptException) e;
-      }
-      else if (e instanceof AccessControlException)
-      {
-        throw (AccessControlException) e;
       }
       else
       {
-        throw new RuntimeException(e);
+        throw new ScriptException(e);
       }
     }
   }

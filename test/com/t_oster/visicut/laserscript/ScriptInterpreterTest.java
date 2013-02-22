@@ -25,6 +25,7 @@ import com.t_oster.visicut.model.graphicelements.lssupport.ScriptInterpreter;
 import com.t_oster.visicut.model.graphicelements.lssupport.VectorPartScriptInterface;
 import java.awt.geom.AffineTransform;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.AccessControlException;
 import java.util.LinkedList;
@@ -45,7 +46,7 @@ public class ScriptInterpreterTest
   }
   
   @Test
-  public void testSecurity() throws ScriptException
+  public void testSecurity() throws ScriptException, IOException
   {
     SecurityManager bak = System.getSecurityManager();
     ScriptInterpreter instance = new ScriptInterpreter();
@@ -76,9 +77,8 @@ public class ScriptInterpreterTest
         }
       });
     }
-    catch (AccessControlException e)
+    catch (ScriptException e)
     {
-      assertEquals(System.getSecurityManager(), bak);
       assertFalse(f.exists());
       return;
     }
@@ -86,7 +86,7 @@ public class ScriptInterpreterTest
   }
 
   @Test 
-  public void testVectorJobScriptInterface() throws ScriptException
+  public void testVectorJobScriptInterface() throws ScriptException, IOException
   {
     String script = "function rectangle(x, y, width, height) {";
     script += "move(x, y);";
