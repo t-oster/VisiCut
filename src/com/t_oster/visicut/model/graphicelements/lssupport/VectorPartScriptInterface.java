@@ -20,9 +20,7 @@ package com.t_oster.visicut.model.graphicelements.lssupport;
 
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.VectorPart;
-import com.t_oster.liblasercut.platform.Util;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 
 /**
  *
