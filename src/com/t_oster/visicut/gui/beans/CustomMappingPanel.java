@@ -399,10 +399,20 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
       if (c instanceof JLabel && value instanceof FilterSet)
       {
-        String text = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("EVERYTHING");
-        if (!((FilterSet) value).isEmpty())
+        String text = null;
+        FilterSet fs = (FilterSet) value;
+        // TODO this code is duplicated in FilterSetCellEditor
+        if (fs.matchEverythingElse) {
+          text=java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("EVERYTHING ELSE");
+        } else if (fs.isEmpty()) {
+          text=java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("EVERYTHING");
+        } else {
+          text=java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("CUSTOM");
+        }
+        
+        if (!fs.isEmpty())
         {
-          MappingFilter f = ((FilterSet) value).getFirst();
+          MappingFilter f = fs.getFirst();
           text = FilterSetCellEditor.translateAttVal(f.getAttribute());
           String dots = ((FilterSet) value).size() > 1 ? "..." : "";
           if (f.getValue() instanceof Color)

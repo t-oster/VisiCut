@@ -20,6 +20,7 @@ package com.t_oster.visicut.gui.beans;
 
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.ProgressListener;
+import com.t_oster.liblasercut.platform.Tuple;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.misc.Helper;
@@ -52,6 +53,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -414,7 +416,14 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
    */
   private final HashMap<PlfPart,HashMap<Mapping, ImageProcessingThread>> renderBuffers = new LinkedHashMap<PlfPart,HashMap<Mapping, ImageProcessingThread>>();
 
-  private boolean renderOriginalImage(Graphics2D gg, Mapping m, PlfPart p, boolean transparent)
+  /**
+   * draw the original image (not the final preview), e.g. if no mapping is selected yet
+   * @param gg the graphics context for drawing
+   * @param matchingObjects a GraphicSet of objects to be drawn
+   * @param p the PlfPart which the objects are from
+   * @param transparent
+   */
+  private void renderOriginalImage(Graphics2D gg, GraphicSet matchingObjects, PlfPart p, boolean transparent)
   {
     boolean somethingMatched = false;
     AffineTransform bak = gg.getTransform();
@@ -430,9 +439,9 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       gg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
     }
     gg.setTransform(tr);
-    for (GraphicObject o : m.getFilterSet().getMatchingObjects(p.getGraphicObjects()))
+    
+    for (GraphicObject o : matchingObjects)
     {
-      somethingMatched = true;
       o.render(gg);
     }
     gg.setTransform(bak);
@@ -440,7 +449,6 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     {
       gg.setComposite(bc);
     }
-    return somethingMatched;
   }
 
   @Override
@@ -496,24 +504,27 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
         }
         if (part.getGraphicObjects() != null)
         {
-          MappingSet mappingsToDraw = part.getMapping();
-          if (VisicutModel.getInstance().getMaterial() == null || mappingsToDraw == null || mappingsToDraw.isEmpty())
+          LinkedList<Tuple<Mapping, GraphicSet>> mappedGraphicObjects = part.getMappedGraphicObjects();
+          if (VisicutModel.getInstance().getMaterial() == null || part.getMapping() == null || part.getMapping().isEmpty())
           {//Just draw the original Image
-            mappingsToDraw = new MappingSet();
-            mappingsToDraw.add(new Mapping(new FilterSet(), null));
+            mappedGraphicObjects = new LinkedList<Tuple<Mapping, GraphicSet>>();
+            mappedGraphicObjects.add(new Tuple<Mapping, GraphicSet>(new Mapping(new FilterSet(), null),part.getGraphicObjects()));
           }
           boolean somethingMatched = false;
-          for (Mapping m : mappingsToDraw)
-          {//Render Original Image
+          for (Tuple<Mapping, GraphicSet> t : mappedGraphicObjects)
+          {
+            Mapping m=t.getA();
+            GraphicSet currentGraphicSet=t.getB();
+            //Render Original Image
             if (m.getProfile() == null || (this.fastPreview && part.equals(VisicutModel.getInstance().getSelectedPart())))
             {
-              somethingMatched = this.renderOriginalImage(gg, m, part, this.fastPreview);
+              somethingMatched = !currentGraphicSet.isEmpty();
+              this.renderOriginalImage(gg, currentGraphicSet, part, this.fastPreview);
             }
             else if (m.getProfile() != null)
             {//Render only parts the material supports, or where Profile = null
               LaserProfile p = m.getProfile();
-              GraphicSet current = m.getFilterSet().getMatchingObjects(part.getGraphicObjects());
-              Rectangle2D bbInMm = current.getBoundingBox();
+              Rectangle2D bbInMm = currentGraphicSet.getBoundingBox();
               Rectangle bbInPx = Helper.toRect(Helper.transform(bbInMm, this.getMmToPxTransform()));
               if (bbInPx != null && bbInPx.getWidth() > 0 && bbInPx.getHeight() > 0)
               {
@@ -528,7 +539,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
                       if (!renderBuffer.containsKey(m))
                       {//image not yet scheduled for rendering
                         logger.log(Level.FINE, "Starting ImageProcessing Thread for {0}", m);
-                        procThread = new ImageProcessingThread(current, p);
+                        procThread = new ImageProcessingThread(currentGraphicSet, p);
                         renderBuffer.put(m, procThread);
                         procThread.start();//start processing thread
                       }
@@ -540,11 +551,11 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
                           procThread.cancel();
                         }
                         logger.log(Level.FINE, "Starting ImageProcessingThread for{0}", m);
-                        procThread = new ImageProcessingThread(current, p);
+                        procThread = new ImageProcessingThread(currentGraphicSet, p);
                         renderBuffer.put(m, procThread);
                         procThread.start();//start processing thread
                       }
-                      this.renderOriginalImage(gg, m, part, false);
+                      this.renderOriginalImage(gg, currentGraphicSet, part, false);
                       Composite o = gg.getComposite();
                       gg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
                       Point po = new Point(bbInPx.x + bbInPx.width / 2, bbInPx.y + bbInPx.height / 2);
@@ -567,7 +578,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
                 }
                 else if (p instanceof VectorProfile)
                 {
-                  p.renderPreview(gg, current, VisicutModel.getInstance().getMaterial(), this.getMmToPxTransform());
+                  p.renderPreview(gg, currentGraphicSet, VisicutModel.getInstance().getMaterial(), this.getMmToPxTransform());
                 }
               }
               else

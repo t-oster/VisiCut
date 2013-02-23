@@ -18,9 +18,12 @@
  **/
 package com.t_oster.visicut.model;
 
+import com.t_oster.liblasercut.platform.Tuple;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.io.File;
+import java.util.LinkedList;
 
 /**
  *
@@ -59,6 +62,43 @@ public class PlfPart {
   public void setMapping(MappingSet mapping)
   {
     this.mapping = mapping;
+  }
+  
+  /**
+   * get a list of mappings and their matching graphic objects
+   */
+  public LinkedList<Tuple<Mapping, GraphicSet>> getMappedGraphicObjects() {
+    LinkedList<Tuple<Mapping, GraphicSet>> mappedSets = new LinkedList<Tuple<Mapping, GraphicSet>>();
+    if (this.getMapping()==null) {
+      // return empty list
+      return mappedSets;
+    }
+    GraphicSet matchedElements=new GraphicSet();
+    
+    // stage 1: match all normal elements
+    for (Mapping m : this.getMapping())
+    {
+      GraphicSet set = null;
+      if (!m.getFilterSet().matchEverythingElse) {
+        set=m.getFilterSet().getMatchingObjects(this.getGraphicObjects());
+        matchedElements.addAll(set);
+      }
+      mappedSets.add(new Tuple<Mapping, GraphicSet>(m,set));
+    }
+    
+    // stage 2: get all unmatched elements, they are for the "everything else" mappings
+    GraphicSet unmatchedElements = this.getGraphicObjects().clone();
+    unmatchedElements.removeAll(matchedElements);
+    // put them into the "everything else" mappings
+    for (Tuple<Mapping, GraphicSet> t: mappedSets)
+    {
+      Mapping m = t.getA();
+      if (m.getFilterSet().matchEverythingElse) {
+        t.setB(unmatchedElements);
+      }
+    }
+    
+    return mappedSets;
   }
   
   @Override
