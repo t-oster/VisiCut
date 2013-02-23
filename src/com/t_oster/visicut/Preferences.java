@@ -209,12 +209,15 @@ public class Preferences
   }
 
   
-  protected String[] availableImporters = new String[]{
+  protected static String[] builtinImporters = new String[]{
     "com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter",
     "com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter",
     "com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter",
-    "com.t_oster.visicut.model.graphicelements.epssupport.EPSImporter"
+    "com.t_oster.visicut.model.graphicelements.epssupport.EPSImporter",
+    "com.t_oster.visicut.model.graphicelements.lssupport.LaserScriptImporter"
   };
+  
+  protected String[] availableImporters = new String[0];
 
   /**
    * Get the value of availableImporters
@@ -223,7 +226,10 @@ public class Preferences
    */
   public String[] getAvailableImporters()
   {
-    return availableImporters;
+    Set<String> allImporters = new LinkedHashSet<String>();
+    allImporters.addAll(Arrays.asList(builtinImporters));
+    allImporters.addAll(Arrays.asList(availableImporters));
+    return allImporters.toArray(new String[0]);
   }
   
   /**

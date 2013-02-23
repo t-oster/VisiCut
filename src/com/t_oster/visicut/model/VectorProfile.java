@@ -29,6 +29,9 @@ import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ShapeDecorator;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
+import com.t_oster.visicut.model.graphicelements.lssupport.LaserScriptShape;
+import com.t_oster.visicut.model.graphicelements.lssupport.ScriptInterpreter;
+import com.t_oster.visicut.model.graphicelements.lssupport.VectorPartScriptInterface;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -37,9 +40,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.PathIterator;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.script.ScriptException;
 
 /**
  * This class represents a Line Profile,
@@ -261,13 +268,35 @@ public class VectorProfile extends LaserProfile
       ShapeConverter conv = new ShapeConverter();
       for (GraphicObject e : objects)
       {
-        Shape sh = (e instanceof ShapeObject) ? ((ShapeObject) e).getShape() : e.getBoundingBox();
-        if (objects.getTransform() != null)
+        if (e instanceof LaserScriptShape)
         {
-          sh = objects.getTransform().createTransformedShape(sh);
+          ScriptInterpreter i = new ScriptInterpreter();
+          //TODO Transform script
+          AffineTransform mm2laser = new AffineTransform(objects.getTransform());
+          mm2laser.preConcatenate(mm2laserpx);
+          try
+          {
+            i.execute(new FileReader(((LaserScriptShape) e).getScriptSource()), new VectorPartScriptInterface(part, mm2laser));
+          }
+          catch (ScriptException exx)
+          {
+            throw new RuntimeException(exx);
+          }
+          catch (IOException ex)
+          {
+            Logger.getLogger(VectorProfile.class.getName()).log(Level.SEVERE, null, ex);
+          }
         }
-        sh = mm2laserpx.createTransformedShape(sh);
-        conv.addShape(sh, part);
+        else
+        {
+          Shape sh = (e instanceof ShapeObject) ? ((ShapeObject) e).getShape() : e.getBoundingBox();
+          if (objects.getTransform() != null)
+          {
+            sh = objects.getTransform().createTransformedShape(sh);
+          }
+          sh = mm2laserpx.createTransformedShape(sh);
+          conv.addShape(sh, part);
+        }
       }
     }
     VectorOptimizer vo = new VectorOptimizer(this.getOrderStrategy());
