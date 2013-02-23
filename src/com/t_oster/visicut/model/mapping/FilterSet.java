@@ -35,8 +35,24 @@ public class FilterSet extends LinkedList<MappingFilter>
    */ 
   public boolean multiselectEnabled;
   
+  /**
+   * false: normal behaviour
+   * true: pseudo-FilerSet that matches everything unmatched by any other FilterSet of the same PlfPart
+   */
+  public boolean matchEverythingElse;
+  
+  /**
+   * filter a GraphicSet, return only matching elements
+   * this may not be called if matchEverythingElse==true, use PlfPart.getMappedGraphicObjects instead in this case!
+   * @param elements elements to be matched
+   * @return matching subset of the given elements
+   */
   public GraphicSet getMatchingObjects(GraphicSet elements)
   {
+    if (this.matchEverythingElse) {
+      throw new RuntimeException("getMatchingObjects must not be called when matchEverythingElse==true. Use PlfPart.getMappedGraphicObjects instead!");
+      // we cannot work around this because we would introduce the possibility of infinite recursion loops otherwise! PlfPart.getMappedGraphicsObjects calls this function.
+    }
     if (this.isEmpty())
     {
       return elements;
@@ -91,8 +107,13 @@ public class FilterSet extends LinkedList<MappingFilter>
           return false;
         }
       }
+      
       // equals() does NOT compare multiselectEnabled, because the behaviour is still equal.
       // TODO: are there possible side effects of comparing multiselectEnabled or not doing so?
+      
+      if (f.matchEverythingElse != matchEverythingElse) {
+        return false;
+      }
       return true;
     }
     return false;
@@ -107,6 +128,7 @@ public class FilterSet extends LinkedList<MappingFilter>
       result.add(f.clone());
     }
     result.multiselectEnabled=multiselectEnabled;
+    result.matchEverythingElse=matchEverythingElse;
     return result;
   }
 }
