@@ -33,6 +33,7 @@ import com.t_oster.visicut.model.graphicelements.lssupport.LaserScriptShape;
 import com.t_oster.visicut.model.graphicelements.lssupport.ScriptInterfaceLogUi;
 import com.t_oster.liblasercut.laserscript.ScriptInterpreter;
 import com.t_oster.liblasercut.laserscript.VectorPartScriptInterface;
+import com.t_oster.visicut.managers.PreferencesManager;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -277,7 +278,9 @@ public class VectorProfile extends LaserProfile
           mm2laser.preConcatenate(mm2laserpx);
           try
           {
-            i.execute(new FileReader(((LaserScriptShape) e).getScriptSource()), new ScriptInterfaceLogUi(new VectorPartScriptInterface(part, mm2laser)));
+            i.execute(new FileReader(((LaserScriptShape) e).getScriptSource()), 
+              new ScriptInterfaceLogUi(new VectorPartScriptInterface(part, mm2laser)),
+              !PreferencesManager.getInstance().getPreferences().isDisableSandbox());
           }
           catch (ScriptException exx)
           {
