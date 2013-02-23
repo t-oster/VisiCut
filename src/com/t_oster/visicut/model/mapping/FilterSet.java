@@ -28,7 +28,13 @@ import java.util.LinkedList;
  */
 public class FilterSet extends LinkedList<MappingFilter>
 {
-
+  
+  /**
+   * is "multiple selection" enabled in the GUI for this filter?
+   * only affects the GUI, not the behaviour of the FilterSet
+   */ 
+  public boolean multiselectEnabled;
+  
   public GraphicSet getMatchingObjects(GraphicSet elements)
   {
     if (this.isEmpty())
@@ -85,6 +91,8 @@ public class FilterSet extends LinkedList<MappingFilter>
           return false;
         }
       }
+      // equals() does NOT compare multiselectEnabled, because the behaviour is still equal.
+      // TODO: are there possible side effects of comparing multiselectEnabled or not doing so?
       return true;
     }
     return false;
@@ -98,6 +106,7 @@ public class FilterSet extends LinkedList<MappingFilter>
     {
       result.add(f.clone());
     }
+    result.multiselectEnabled=multiselectEnabled;
     return result;
   }
 }

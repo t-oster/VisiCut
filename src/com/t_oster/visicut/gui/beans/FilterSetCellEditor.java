@@ -107,6 +107,16 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     }
   }
 
+  private void enforceMultiSelectState()
+  {
+    // if multiSelect is not enabled, only one selection may be chosen. This is enforced by removing everything but the last filter
+    if (!multiselect.isSelected()) {
+      while (FilterSetCellEditor.this.resultingFilterSet.size() > 1) {
+        FilterSetCellEditor.this.resultingFilterSet.removeFirst();
+      }
+    }
+  }
+
   class FilterMenuItem extends JCheckBoxMenuItem implements ActionListener
   {
     MappingFilter filter = null;
@@ -142,8 +152,6 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
       {
         this.setSelected(false);
       }
-
-
     }
 
     public void actionPerformed(ActionEvent ae)
@@ -162,23 +170,26 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
   JButton bt = new JButton(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("SELECT"));
   JPopupMenu menu = new JPopupMenu(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("MENU"));
   FilterSet resultingFilterSet = new FilterSet();
+  /// multiselect: if this is enabled, the user can select more than one item, see enforceMultiSelectState()
+  JCheckBoxMenuItem multiselect = new JCheckBoxMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("MULTISELECT"));
 
   private void fillMenu(PlfPart p)
   {
     menu.removeAll();
     this.menuItems.clear();
-    JMenuItem e = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("EVERYTHING"));
-    e.addActionListener(new ActionListener(){
+    JMenuItem everything = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("EVERYTHING"));
+    everything.addActionListener(new ActionListener(){
 
       public void actionPerformed(ActionEvent ae)
       {
         FilterSetCellEditor.this.clearFilters();
       }
     });
+
     if (p != null)
     {
       GraphicSet gs = p.getGraphicObjects();
-      menu.add(e);
+      menu.add(everything);
       for(final String s: gs.getAttributes())
       {
         JMenu m = new JMenu(translateAttVal(s));
@@ -191,12 +202,15 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
         menu.add(m);
         menus.add(m);
       }
+      menu.add(multiselect);
     }
+    
   }
 
   private void addFilter(MappingFilter f)
   {
     this.resultingFilterSet.add(f);
+    this.enforceMultiSelectState();
     this.fireEditingStopped();
   }
 
@@ -206,6 +220,11 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     this.fireEditingStopped();
   }
 
+
+  /**
+   * this should be called on all "external" changes to resultingFilterSet
+   * (e.g. when selecting a different PlfPart)
+   */
   private void prepareMenu()
   {
     for (JMenu m : this.menus)
@@ -220,6 +239,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     {
       i.refreshState();
     }
+    multiselect.setSelected(resultingFilterSet.multiselectEnabled);   
   }
 
   public FilterSetCellEditor()
@@ -228,6 +248,14 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     bt.addActionListener(this);
     VisicutModel.getInstance().addPropertyChangeListener(this);
     menu.addPopupMenuListener(this);
+    multiselect.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e)
+      {
+        resultingFilterSet.multiselectEnabled=multiselect.isSelected();
+        enforceMultiSelectState();
+        fireEditingStopped();
+      }
+    });
   }
 
 
@@ -239,6 +267,11 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
   public Component getTableCellEditorComponent(JTable jtable, Object o, boolean bln, int i, int i1)
   {
     this.resultingFilterSet = ((FilterSet) o).clone();
+    if (resultingFilterSet.size() > 1) {
+      // backwards compatibility: if the filter set uses a multiple selection, enable multiselect
+      // otherwise all items exept for the last one would be removed
+      resultingFilterSet.multiselectEnabled = true;
+    } 
     bt.setText(((FilterSet) o).isEmpty() ? java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("EVERYTHING") : java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("CUSTOM"));
     this.prepareMenu();
     return bt;
