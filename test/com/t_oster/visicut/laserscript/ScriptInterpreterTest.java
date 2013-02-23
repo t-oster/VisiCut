@@ -75,6 +75,10 @@ public class ScriptInterpreterTest
         {
           return null;
         }
+
+        public void echo(String text)
+        {
+        }
       });
     }
     catch (ScriptException e)
@@ -145,8 +149,13 @@ public class ScriptInterpreterTest
 
       public Object get(String property)
       {
-         steps.add("get ("+property+")");
+        steps.add("get ("+property+")");
         return null;
+      }
+
+      public void echo(String text)
+      {
+        steps.add("echo ("+text+")");
       }
     });
     assertEquals(10, steps.size());

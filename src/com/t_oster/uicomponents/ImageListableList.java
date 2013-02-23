@@ -18,11 +18,9 @@
  **/
 package com.t_oster.uicomponents;
 
-import com.t_oster.uicomponents.ImageListable;
 import com.t_oster.visicut.misc.Helper;
 import java.awt.Color;
 import java.awt.Component;
-import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.DefaultListCellRenderer;

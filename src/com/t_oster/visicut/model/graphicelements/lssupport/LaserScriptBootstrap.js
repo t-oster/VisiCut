@@ -29,10 +29,15 @@ function line(x, y)
 
 function get(property)
 {
-  _instance.get(property);
+  return _instance.get(property);
 }
 
 function set(property, value)
 {
   _instance.set(property, value);
+}
+
+function echo(text)
+{
+  _instance.echo(text);
 }

@@ -79,5 +79,10 @@ public class VectorPartScriptInterface implements ScriptInterface
   {
     return vp.getCurrentCuttingProperty().getProperty(property);
   }
+
+  public void echo(String text)
+  {
+    System.err.println("LaserScript: "+text);
+  }
   
 }

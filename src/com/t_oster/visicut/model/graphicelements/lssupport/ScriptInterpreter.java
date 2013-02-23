@@ -51,6 +51,7 @@ public class ScriptInterpreter
     public Object get(String name, Scriptable start) {
       //don't allow the getClass method
       if (name.equals("getClass")) {
+        System.err.println("ScriptingSecurity: LaserScript tried to access 'getClass'");
         return NOT_FOUND;
       }
       return super.get(name, start);

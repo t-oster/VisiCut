@@ -30,6 +30,7 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ShapeDecorator;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import com.t_oster.visicut.model.graphicelements.lssupport.LaserScriptShape;
+import com.t_oster.visicut.model.graphicelements.lssupport.ScriptInterfaceLogUi;
 import com.t_oster.visicut.model.graphicelements.lssupport.ScriptInterpreter;
 import com.t_oster.visicut.model.graphicelements.lssupport.VectorPartScriptInterface;
 import java.awt.BasicStroke;
@@ -276,7 +277,7 @@ public class VectorProfile extends LaserProfile
           mm2laser.preConcatenate(mm2laserpx);
           try
           {
-            i.execute(new FileReader(((LaserScriptShape) e).getScriptSource()), new VectorPartScriptInterface(part, mm2laser));
+            i.execute(new FileReader(((LaserScriptShape) e).getScriptSource()), new ScriptInterfaceLogUi(new VectorPartScriptInterface(part, mm2laser)));
           }
           catch (ScriptException exx)
           {

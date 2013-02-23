@@ -24,10 +24,10 @@ import com.t_oster.visicut.model.graphicelements.Importer;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.script.ScriptException;
@@ -66,10 +66,11 @@ public class LaserScriptImporter implements Importer
     GraphicSet result = new GraphicSet();
     result.setBasicTransform(new AffineTransform());
     final GeneralPath resultingShape = new GeneralPath();
+    final List<String> messages = new LinkedList<String>();
     ScriptInterpreter ip = new ScriptInterpreter();
     try
     {
-      ip.execute(new FileReader(inputFile), new ScriptInterface(){
+      ip.execute(new FileReader(inputFile), new ScriptInterfaceLogUi(new ScriptInterface(){
 
         private Map<String,Object> settings = new LinkedHashMap<String,Object>();
         
@@ -100,7 +101,13 @@ public class LaserScriptImporter implements Importer
         {
           return settings.get(property);
         }
-      });
+
+        public void echo(String text)
+        {
+          //intercepted by decorator anyway
+        }
+
+      }));
     }
     catch (IOException e)
     {
@@ -110,6 +117,7 @@ public class LaserScriptImporter implements Importer
     {
       warnings.add("Error in line: "+ex.getLineNumber()+": "+ex.getMessage());
     }
+    warnings.addAll(messages);
     result.add(new LaserScriptShape(resultingShape, inputFile));
     return result;
   }

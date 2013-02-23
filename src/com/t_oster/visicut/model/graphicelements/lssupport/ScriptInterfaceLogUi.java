@@ -18,58 +18,60 @@
  **/
 package com.t_oster.visicut.model.graphicelements.lssupport;
 
-import org.mozilla.javascript.ClassShutter;
+import com.t_oster.uicomponents.LogFrame;
+import javax.swing.JFrame;
 
 /**
  *
- * @author Thomas Oster <thomas.oster@rwth-aachen.de>
+ *  @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class ScriptingSecurity implements ClassShutter
+public class ScriptInterfaceLogUi implements ScriptInterface
 {
-  private static ScriptingSecurity instance;
-  private static String[] allowedClasses = new String[]{
-    "adapter",
-  };
+
+  private ScriptInterface decoratee;
+  private LogFrame win;
+  private boolean initialized = false;
   
-  public static ScriptingSecurity getInstance()
+  public ScriptInterfaceLogUi(ScriptInterface decoratee)
   {
-    if (instance == null)
+    this.decoratee = decoratee;
+  }
+  
+  public void initialize()
+  {
+    win = new LogFrame("LaserScript output");
+    win.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    win.setVisible(true);
+    initialized = true;
+  }
+  
+  public void echo(String text)
+  {
+    if (!initialized)
     {
-      instance = new ScriptingSecurity();
+      initialize();
     }
-    return instance;
+    win.addLine(text);
+  }
+
+  public void move(double x, double y)
+  {
+    decoratee.move(x, y);
+  }
+
+  public void line(double x, double y)
+  {
+    decoratee.line(x, y);
+  }
+
+  public void set(String property, Object value)
+  {
+    decoratee.set(property, value);
+  }
+
+  public Object get(String property)
+  {
+    return decoratee.get(property);
   }
   
-    private boolean locked = false;
-
-  public boolean isLocked()
-  {
-    return locked;
-  }
-
-  public void setLocked(boolean locked)
-  {
-    this.locked = locked;
-  }
-  
-  private ScriptingSecurity()
-  {
-  }
-
-  public boolean visibleToScripts(String className)
-  {
-    if (locked)
-    {
-      for (String prefix : allowedClasses)
-      {
-        if(className.startsWith(prefix))
-        {
-          return true;
-        }
-      }
-      System.err.println("ScriptingSecurity: LaserScript tried to access forbidden class: "+className);
-      return false;
-    }
-		return true;
-  }
 }

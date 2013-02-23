@@ -32,4 +32,6 @@ public interface ScriptInterface
   public void set(String property, Object value);
   
   public Object get(String property);
+  
+  public void echo(String text);
 }
