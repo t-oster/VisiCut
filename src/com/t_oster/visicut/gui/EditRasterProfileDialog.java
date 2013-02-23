@@ -26,7 +26,7 @@ package com.t_oster.visicut.gui;
 import com.t_oster.liblasercut.BlackWhiteRaster;
 import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
 import com.t_oster.liblasercut.dithering.DitheringAlgorithm;
-import com.t_oster.visicut.gui.beans.BetterJTable;
+import com.t_oster.uicomponents.BetterJTable;
 import com.t_oster.visicut.gui.beans.CustomizableTableModel;
 import com.t_oster.visicut.model.RasterProfile;
 

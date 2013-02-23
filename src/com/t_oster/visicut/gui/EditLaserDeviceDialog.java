@@ -24,7 +24,7 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.liblasercut.LaserCutter;
-import com.t_oster.visicut.gui.beans.BetterJTable;
+import com.t_oster.uicomponents.BetterJTable;
 import com.t_oster.visicut.gui.beans.CustomizableTableModel;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.misc.DialogHelper;
