@@ -18,6 +18,8 @@
  **/
 package com.t_oster.visicut.model.graphicelements.lssupport;
 
+import com.t_oster.liblasercut.laserscript.ScriptInterpreter;
+import com.t_oster.liblasercut.laserscript.ScriptInterface;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.Importer;

@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut.model.graphicelements.lssupport;
 
+import com.t_oster.liblasercut.laserscript.ScriptInterface;
 import com.t_oster.uicomponents.LogFrame;
 import javax.swing.JFrame;
 
