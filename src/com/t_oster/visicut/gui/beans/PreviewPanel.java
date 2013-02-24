@@ -430,10 +430,21 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       gg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
     }
     gg.setTransform(tr);
-    for (GraphicObject o : m.getFilterSet().getMatchingObjects(p.getGraphicObjects()))
+    if (m.getFilterSet() == null)//matches everything else
     {
-      somethingMatched = true;
-      o.render(gg);
+      for (GraphicObject o : p.getUnmatchedObjects())
+      {
+        somethingMatched = true;
+        o.render(gg);
+      }
+    }
+    else
+    {
+      for (GraphicObject o : m.getFilterSet().getMatchingObjects(p.getGraphicObjects()))
+      {
+        somethingMatched = true;
+        o.render(gg);
+      }
     }
     gg.setTransform(bak);
     if (transparent)
@@ -505,14 +516,14 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
           boolean somethingMatched = false;
           for (Mapping m : mappingsToDraw)
           {//Render Original Image
-            if (m.getProfile() == null || (this.fastPreview && part.equals(VisicutModel.getInstance().getSelectedPart())))
+            if (m.getProfile() != null && (this.fastPreview && part.equals(VisicutModel.getInstance().getSelectedPart())))
             {
               somethingMatched = this.renderOriginalImage(gg, m, part, this.fastPreview);
             }
             else if (m.getProfile() != null)
             {//Render only parts the material supports, or where Profile = null
               LaserProfile p = m.getProfile();
-              GraphicSet current = m.getFilterSet().getMatchingObjects(part.getGraphicObjects());
+              GraphicSet current = m.getFilterSet() != null ? m.getFilterSet().getMatchingObjects(part.getGraphicObjects()) : part.getUnmatchedObjects();
               Rectangle2D bbInMm = current.getBoundingBox();
               Rectangle bbInPx = Helper.toRect(Helper.transform(bbInMm, this.getMmToPxTransform()));
               if (bbInPx != null && bbInPx.getWidth() > 0 && bbInPx.getHeight() > 0)

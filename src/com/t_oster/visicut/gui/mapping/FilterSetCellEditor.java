@@ -20,7 +20,6 @@ package com.t_oster.visicut.gui.mapping;
 
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.misc.Helper;
-import com.t_oster.visicut.model.PlfFile;
 import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
@@ -85,11 +84,14 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
 
   boolean canRepresent(FilterSet filterSet)
   {
-    for (MappingFilter f : filterSet)
+    if (filterSet != null)
     {
-      if (f.isInverted())
+      for (MappingFilter f : filterSet)
       {
-        return false;
+        if (f.isInverted())
+        {
+          return false;
+        }
       }
     }
     return true;
@@ -177,7 +179,16 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
   {
     menu.removeAll();
     this.menuItems.clear();
-    JMenuItem everything = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/FilterSetCellEditor").getString("EVERYTHING"));
+    JMenuItem everything_else = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("EVERYTHING_ELSE"));
+    everything_else.addActionListener(new ActionListener(){
+
+      public void actionPerformed(ActionEvent ae)
+      {
+        FilterSetCellEditor.this.resultingFilterSet = null;
+        FilterSetCellEditor.this.fireEditingStopped();
+      }
+    });
+    JMenuItem everything = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("EVERYTHING"));
     everything.addActionListener(new ActionListener(){
 
       public void actionPerformed(ActionEvent ae)
@@ -189,6 +200,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     if (p != null)
     {
       GraphicSet gs = p.getGraphicObjects();
+      menu.add(everything_else);
       menu.add(everything);
       for(final String s: gs.getAttributes())
       {
@@ -266,7 +278,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
 
   public Component getTableCellEditorComponent(JTable jtable, Object o, boolean bln, int i, int i1)
   {
-    this.resultingFilterSet = ((FilterSet) o).clone();
+    this.resultingFilterSet = (o != null ? ((FilterSet) o).clone() : null);
     if (resultingFilterSet.size() > 1) {
       // backwards compatibility: if the filter set uses a multiple selection, enable multiselect
       // otherwise all items exept for the last one would be removed

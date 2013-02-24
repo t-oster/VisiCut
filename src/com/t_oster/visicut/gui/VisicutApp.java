@@ -404,6 +404,10 @@ public class VisicutApp extends SingleFrameApplication
         for (Mapping ms : part.getMapping())
         {
           LaserProfile p = ms.getProfile();
+          if (p == null)
+          {
+            continue;
+          }
           List<LaserProperty> list = LaserPropertyManager.getInstance().getLaserProperties(model.getSelectedLaserDevice(), model.getMaterial(), ms.getProfile(), model.getMaterialThickness());
           if (list == null)
           {

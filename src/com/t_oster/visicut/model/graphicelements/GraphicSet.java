@@ -206,7 +206,7 @@ public class GraphicSet extends LinkedList<GraphicObject>
   }
 
   private Map<String, Set<Object>> attributeValueCache = null;
-  public Iterable<Object> getAttributeValues(String attribute)
+  public Set<Object> getAttributeValues(String attribute)
   {
     if (attributeValueCache == null)
     {

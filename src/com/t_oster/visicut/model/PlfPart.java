@@ -18,7 +18,9 @@
  **/
 package com.t_oster.visicut.model;
 
+import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.io.File;
 
@@ -69,6 +71,31 @@ public class PlfPart {
       return super.toString();
     }
     return sourceFile.getName();
+  }
+
+  /**
+   * Returns all GraphicObjects, which are not matched by any existing filter
+   * @return 
+   */
+  public GraphicSet getUnmatchedObjects()
+  {
+    GraphicSet all = this.getGraphicObjects().clone();
+    for (Mapping m : this.mapping)
+    {
+      if (m.getFilterSet() == null)//ignore "everything else mapping"
+      {
+        continue;
+      }
+      else if (m.getFilterSet().isEmpty())//if everything mapping present, no rest
+      {
+        return new GraphicSet();
+      }
+      else
+      {
+        all.removeAll(m.getFilterSet().getMatchingObjects(all));
+      }
+    }
+    return all;
   }
 
 }
