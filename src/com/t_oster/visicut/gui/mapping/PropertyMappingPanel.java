@@ -22,8 +22,12 @@ import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
+import javax.swing.JList;
 
 /**
  *
@@ -70,6 +74,20 @@ public class PropertyMappingPanel extends javax.swing.JPanel implements Property
   public PropertyMappingPanel()
   {
     initComponents();
+    this.cbMapBy.setRenderer(new DefaultListCellRenderer(){
+
+      @Override
+      public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+      {
+        Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        if (c instanceof JLabel && value instanceof String)
+        {
+          ((JLabel) c).setText(FilterSetCellEditor.translateAttVal((String) value));
+        }
+        return c;
+      }
+      
+    });
     VisicutModel.getInstance().addPropertyChangeListener(this);
   }
 
