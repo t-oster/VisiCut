@@ -18,6 +18,13 @@
  **/
 package com.t_oster.visicut.gui.mapping;
 
+import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.managers.MappingManager;
+import com.t_oster.visicut.misc.DialogHelper;
+import com.t_oster.visicut.model.mapping.MappingSet;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
  * This panel just hosts the predefinedMappingBox, customMappingPanel and propertyMappingPanel
  * It hides the latter two until their option is selected in the predefinedMappingBox
@@ -27,14 +34,51 @@ package com.t_oster.visicut.gui.mapping;
 public class MappingPanel extends javax.swing.JPanel
 {
 
+  private DialogHelper dialog;
+  
   /**
    * Creates new form MappingPanel
    */
   public MappingPanel()
   {
     initComponents();
+    dialog = new DialogHelper(this, "VisiCut");
+    this.customMappingPanel.setLoadButtonVisible(false);
+    this.propertyMappingPanel.setLoadButtonVisible(false);
+    this.customMappingPanel.getSaveButton().addActionListener(saveMappingActionListener);
+    this.propertyMappingPanel.getSaveButton().addActionListener(saveMappingActionListener);
   }
 
+  private ActionListener saveMappingActionListener = new ActionListener()
+  {
+    public void actionPerformed(ActionEvent ae)
+    {
+      if (VisicutModel.getInstance().getSelectedPart() == null)
+      {
+        return;
+      }
+      MappingSet mapping = VisicutModel.getInstance().getSelectedPart().getMapping();
+      if (mapping == null)
+      {
+        return;
+      }
+      String name = dialog.askString(mapping.getName(), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/MappingPanel").getString("NAME_FOR_MAPPING"));
+        if (name != null)
+        {
+          MappingSet ms = mapping.clone();
+          ms.setName(name);
+          try
+          {
+            MappingManager.getInstance().add(ms);
+          }
+          catch (Exception ex)
+          {
+            MappingPanel.this.dialog.showErrorMessage(ex);
+          }
+        }
+    }
+  };
+  
   /**
    * This method is called from within the constructor to initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is always

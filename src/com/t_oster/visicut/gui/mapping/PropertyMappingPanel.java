@@ -26,6 +26,7 @@ import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
@@ -224,4 +225,15 @@ public class PropertyMappingPanel extends javax.swing.JPanel implements Property
       this.propertyMappingPanelTable.setAttribute((String) this.cbMapBy.getSelectedItem());
     }
   }
+
+  void setLoadButtonVisible(boolean b)
+  {
+    this.propertyMappingPanelTable.setLoadButtonVisible(b);
+  }
+
+  public JButton getSaveButton()
+  {
+    return propertyMappingPanelTable.getSaveButton();
+  }
+  
 }
