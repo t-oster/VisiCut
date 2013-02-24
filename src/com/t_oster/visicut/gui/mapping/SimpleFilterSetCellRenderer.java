@@ -34,10 +34,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 public class SimpleFilterSetCellRenderer extends DefaultTableCellRenderer
 {
 
-  @Override
-  public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+  static Component updateComponent(Component c, Object value)
   {
-    Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
     if (c instanceof JLabel)
     {
       if (value == null)
@@ -67,8 +65,13 @@ public class SimpleFilterSetCellRenderer extends DefaultTableCellRenderer
         }
         ((JLabel) c).setText(text);
       }
-
     }
     return c;
+  }
+  
+  @Override
+  public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+  {
+    return updateComponent(super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column), value);
   }
 }

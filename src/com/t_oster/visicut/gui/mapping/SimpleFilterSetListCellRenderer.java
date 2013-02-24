@@ -16,44 +16,22 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-
 package com.t_oster.visicut.gui.mapping;
 
-import com.t_oster.visicut.model.mapping.FilterSet;
-import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
+import java.awt.Component;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
 
 /**
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-class SimpleFilterSetCellEditor extends DefaultCellEditor
+public class SimpleFilterSetListCellRenderer extends DefaultListCellRenderer
 {
 
-  private JComboBox filterSets;
-  public String EVERYTHING_ELSE = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("EVERYTHING_ELSE");
-
-  public SimpleFilterSetCellEditor()
-  {
-    super(new JComboBox());
-    filterSets = (JComboBox) this.getComponent();
-    filterSets.setRenderer(new SimpleFilterSetListCellRenderer());
-  }
-
   @Override
-  public Object getCellEditorValue()
+  public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
   {
-    return EVERYTHING_ELSE.equals(super.getCellEditorValue()) ? null : super.getCellEditorValue();
-  }
-
-  public void refresh(Iterable<FilterSet> entries)
-  {
-    filterSets.removeAllItems();
-    // add EVERYTHING_ELSE
-    filterSets.addItem(EVERYTHING_ELSE);
-    for (FilterSet e : entries)
-    {
-      filterSets.addItem(e);
-    }
+    return SimpleFilterSetCellRenderer.updateComponent(super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus), value);
   }
 }
