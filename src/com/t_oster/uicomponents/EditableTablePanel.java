@@ -18,7 +18,6 @@
  **/
 package com.t_oster.uicomponents;
 
-import com.t_oster.visicut.gui.beans.BetterJTable;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JButton;

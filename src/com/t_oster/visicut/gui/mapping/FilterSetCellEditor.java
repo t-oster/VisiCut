@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.visicut.gui.mapping;
 
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.misc.Helper;
@@ -99,7 +99,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
   {
     try
     {
-      return java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString(attribute.toUpperCase());
+      return java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/FilterSetCellEditor").getString(attribute.toUpperCase());
     }
     catch (MissingResourceException ex)
     {
@@ -167,17 +167,17 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     }
   }
 
-  JButton bt = new JButton(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("SELECT"));
-  JPopupMenu menu = new JPopupMenu(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("MENU"));
+  JButton bt = new JButton(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/FilterSetCellEditor").getString("SELECT"));
+  JPopupMenu menu = new JPopupMenu(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/FilterSetCellEditor").getString("MENU"));
   FilterSet resultingFilterSet = new FilterSet();
   /// multiselect: if this is enabled, the user can select more than one item, see enforceMultiSelectState()
-  JCheckBoxMenuItem multiselect = new JCheckBoxMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("MULTISELECT"));
+  JCheckBoxMenuItem multiselect = new JCheckBoxMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/FilterSetCellEditor").getString("MULTISELECT"));
 
   private void fillMenu(PlfPart p)
   {
     menu.removeAll();
     this.menuItems.clear();
-    JMenuItem everything = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("EVERYTHING"));
+    JMenuItem everything = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/FilterSetCellEditor").getString("EVERYTHING"));
     everything.addActionListener(new ActionListener(){
 
       public void actionPerformed(ActionEvent ae)
@@ -272,7 +272,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
       // otherwise all items exept for the last one would be removed
       resultingFilterSet.multiselectEnabled = true;
     } 
-    bt.setText(((FilterSet) o).isEmpty() ? java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("EVERYTHING") : java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("CUSTOM"));
+    bt.setText(((FilterSet) o).isEmpty() ? java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/FilterSetCellEditor").getString("EVERYTHING") : java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/FilterSetCellEditor").getString("CUSTOM"));
     this.prepareMenu();
     return bt;
   }

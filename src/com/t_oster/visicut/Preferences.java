@@ -32,6 +32,18 @@ public class Preferences
   {
   }
   
+  private boolean disableSandbox = false;
+  
+  public boolean isDisableSandbox()
+  {
+    return disableSandbox;
+  }
+  
+  public void setDisableSandbox(boolean disableSandbox)
+  {
+    this.disableSandbox = disableSandbox;
+  }
+  
   private String potracePath = null;
 
   public String getPotracePath()

@@ -838,13 +838,13 @@
                     </DimensionLayout>
                   </Layout>
                   <SubComponents>
-                    <Component class="com.t_oster.visicut.gui.beans.CustomMappingPanel" name="customMappingPanel">
+                    <Component class="com.t_oster.visicut.gui.mapping.CustomMappingPanel" name="customMappingPanel">
                       <Properties>
                         <Property name="loadButtonVisible" type="boolean" value="false"/>
                         <Property name="name" type="java.lang.String" value="customMappingPanel" noResource="true"/>
                       </Properties>
                     </Component>
-                    <Component class="com.t_oster.visicut.gui.beans.PredefinedMappingBox" name="predefinedMappingBox1">
+                    <Component class="com.t_oster.visicut.gui.mapping.PredefinedMappingBox" name="predefinedMappingBox1">
                       <Properties>
                         <Property name="name" type="java.lang.String" value="predefinedMappingBox1" noResource="true"/>
                       </Properties>
