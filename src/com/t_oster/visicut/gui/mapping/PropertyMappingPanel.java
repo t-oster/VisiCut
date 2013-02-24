@@ -77,7 +77,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel implements Property
     this.cbMapBy.setRenderer(new DefaultListCellRenderer(){
 
       @Override
-      public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+      public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
       {
         Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         if (c instanceof JLabel && value instanceof String)

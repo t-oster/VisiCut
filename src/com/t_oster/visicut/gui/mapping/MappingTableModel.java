@@ -129,7 +129,7 @@ class MappingTableModel extends DefaultTableModel
   }
 
   @Override
-  public Class<?> getColumnClass(int columnIndex)
+  public Class getColumnClass(int columnIndex)
   {
     return classes[columnIndex];
   }
