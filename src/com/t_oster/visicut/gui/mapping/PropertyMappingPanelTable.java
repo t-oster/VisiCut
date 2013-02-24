@@ -57,7 +57,7 @@ public class PropertyMappingPanelTable extends EditableTablePanel implements Edi
   public Object getNewInstance()
   {
     MappingTableEntry e = new MappingTableEntry();
-    e.enabled = true;
+    e.enabled = false;
     e.filterSet = new FilterSet();
     e.profile = ProfileManager.getInstance().getAll().isEmpty() ? null : ProfileManager.getInstance().getAll().get(0);
     return e;

@@ -52,7 +52,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
   public Object getNewInstance()
   {
     MappingTableEntry e = new MappingTableEntry();
-    e.enabled = true;
+    e.enabled = false;
     e.filterSet = new FilterSet();
     e.profile = ProfileManager.getInstance().getAll().isEmpty() ? null : ProfileManager.getInstance().getAll().get(0);
     return e;
