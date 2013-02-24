@@ -165,7 +165,6 @@ public class PropertyMappingPanel extends javax.swing.JPanel implements Property
 
   private void updateComboBoxContents(String attr)
   {
-    ignoreUiUpdates = true;
     GraphicSet go = VisicutModel.getInstance().getSelectedPart().getGraphicObjects();
     //refresh contents of the comboBox to only contain properties present in the file
     Object selected = this.cbMapBy.getSelectedItem();
@@ -189,7 +188,6 @@ public class PropertyMappingPanel extends javax.swing.JPanel implements Property
       this.cbMapBy.addItem(attr);
     }
     this.cbMapBy.setSelectedItem(selected);
-    ignoreUiUpdates = false;
   }
   
   private boolean ignoreUiUpdates = false;
