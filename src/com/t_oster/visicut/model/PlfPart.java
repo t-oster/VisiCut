@@ -80,19 +80,22 @@ public class PlfPart {
   public GraphicSet getUnmatchedObjects()
   {
     GraphicSet all = this.getGraphicObjects().clone();
-    for (Mapping m : this.mapping)
+    if (this.mapping != null)
     {
-      if (m.getFilterSet() == null)//ignore "everything else mapping"
+      for (Mapping m : this.mapping)
       {
-        continue;
-      }
-      else if (m.getFilterSet().isEmpty())//if everything mapping present, no rest
-      {
-        return new GraphicSet();
-      }
-      else
-      {
-        all.removeAll(m.getFilterSet().getMatchingObjects(all));
+        if (m.getFilterSet() == null)//ignore "everything else mapping"
+        {
+          continue;
+        }
+        else if (m.getFilterSet().isEmpty())//if everything mapping present, no rest
+        {
+          return new GraphicSet();
+        }
+        else
+        {
+          all.removeAll(m.getFilterSet().getMatchingObjects(all));
+        }
       }
     }
     return all;
