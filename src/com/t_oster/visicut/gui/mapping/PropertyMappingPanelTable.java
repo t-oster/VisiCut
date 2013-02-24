@@ -119,6 +119,7 @@ public class PropertyMappingPanelTable extends EditableTablePanel implements Edi
     if (Util.differ(attribute, this.attribute))
     {
       this.attribute = attribute;
+      this.model.setColumnTitle(1, FilterSetCellEditor.translateAttVal(attribute));
       this.refreshPropertiesEditor();
       if (vm.getSelectedPart() != null)
       {
