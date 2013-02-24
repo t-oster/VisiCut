@@ -1329,10 +1329,12 @@ public class MainView extends javax.swing.JFrame
     {
       this.jCheckBox1.setSelected(false);
       this.jCheckBox1.setVisible(false);
+      this.jSeparator1.setVisible(this.laserCutterComboBox.isVisible());
     }
     else
     {
       this.jCheckBox1.setVisible(true);
+      this.jSeparator1.setVisible(true);
     }
     
     boolean execute = this.visicutModel1.getMaterial() != null
@@ -1843,6 +1845,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         dialog.showErrorMessage(ex, bundle.getString("ERROR SAVING PREFERENCES"));
       }
       this.fillComboBoxes();
+      this.refreshButtonStates();
     }
   }//GEN-LAST:event_jMenuItem2ActionPerformed
 
