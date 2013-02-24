@@ -457,8 +457,8 @@ public class MainView extends javax.swing.JFrame
         timeLabel = new javax.swing.JLabel();
         mappingTabbedPane = new javax.swing.JTabbedPane();
         mappingPanel = new javax.swing.JPanel();
-        customMappingPanel = new com.t_oster.visicut.gui.beans.CustomMappingPanel();
-        predefinedMappingBox1 = new com.t_oster.visicut.gui.beans.PredefinedMappingBox();
+        customMappingPanel = new com.t_oster.visicut.gui.mapping.CustomMappingPanel();
+        predefinedMappingBox1 = new com.t_oster.visicut.gui.mapping.PredefinedMappingBox();
         positionPanel = new com.t_oster.uicomponents.PositionPanel();
         btAddMaterial = new javax.swing.JButton();
         cbMaterialThickness = new javax.swing.JComboBox();
@@ -2315,7 +2315,7 @@ private void predefinedMappingBox1ActionPerformed(java.awt.event.ActionEvent evt
     private javax.swing.JButton captureImageButton;
     private javax.swing.JCheckBox cbEditBeforeExecute;
     private javax.swing.JComboBox cbMaterialThickness;
-    private com.t_oster.visicut.gui.beans.CustomMappingPanel customMappingPanel;
+    private com.t_oster.visicut.gui.mapping.CustomMappingPanel customMappingPanel;
     private javax.swing.JButton editLaserSettingsButton;
     private javax.swing.JMenuItem editMappingMenuItem;
     private javax.swing.JMenu editMenu;
@@ -2360,7 +2360,7 @@ private void predefinedMappingBox1ActionPerformed(java.awt.event.ActionEvent evt
     private javax.swing.JComboBox objectComboBox;
     private javax.swing.JMenuItem openMenuItem;
     private com.t_oster.uicomponents.PositionPanel positionPanel;
-    private com.t_oster.visicut.gui.beans.PredefinedMappingBox predefinedMappingBox1;
+    private com.t_oster.visicut.gui.mapping.PredefinedMappingBox predefinedMappingBox1;
     private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JMenu recentFilesMenu;

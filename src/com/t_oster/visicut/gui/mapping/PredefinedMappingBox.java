@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.visicut.gui.mapping;
 
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.managers.MappingManager;
@@ -39,8 +39,8 @@ import java.beans.PropertyChangeListener;
 public class PredefinedMappingBox extends javax.swing.JComboBox
 {
 
-  public String NONE = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PredefinedMappingBox").getString("NONE");
-  public String CUSTOM = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PredefinedMappingBox").getString("CUSTOM");
+  public String NONE = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox").getString("NONE");
+  public String CUSTOM = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox").getString("CUSTOM");
   private PlfPart lastSelectedPlfPart = null;
   /**
    * Creates new form MappingPanel

@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.visicut.gui.mapping;
 
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.uicomponents.EditableTablePanel;
@@ -67,7 +67,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
 {
   private DefaultTableModel model = new DefaultTableModel()
   {
-    private String[] columns = new String[]{java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("ENABLED"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("SELECTION"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("PROFILE")};
+    private String[] columns = new String[]{java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("ENABLED"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("SELECTION"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("PROFILE")};
     private Class[] classes = new Class[]{Boolean.class, FilterSet.class, LaserProfile.class};
 
     @Override
@@ -399,7 +399,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
       if (c instanceof JLabel && value instanceof FilterSet)
       {
-        String text = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/CustomMappingPanel").getString("EVERYTHING");
+        String text = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("EVERYTHING");
         if (!((FilterSet) value).isEmpty())
         {
           MappingFilter f = ((FilterSet) value).getFirst();
