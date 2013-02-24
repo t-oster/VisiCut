@@ -23,7 +23,6 @@ import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
-import com.t_oster.liblasercut.platform.Tuple;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.MaterialManager;
@@ -655,9 +654,13 @@ public class VisicutModel
 
     for (PlfPart p : this.getPlfFile())
     {
-      for (Tuple<Mapping, GraphicSet> t: p.getMappedGraphicObjects()) {
-        Mapping m = t.getA();
-        GraphicSet set = t.getB();
+      if (p.getMapping() == null)
+      {
+        continue;
+      }
+      for (Mapping m : p.getMapping())
+      {
+        GraphicSet set = m.getFilterSet().getMatchingObjects(p.getGraphicObjects());
         LaserProfile pr = m.getProfile();
         List<LaserProperty> props = propmap.get(pr);
         pr.addToLaserJob(job, set, this.addFocusOffset(props, focusOffset));

@@ -107,31 +107,14 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     }
   }
 
-  /**
-   * call this whenever a user changes the resultingFilterSet (or a option affecting it, like multiselect or everythingElse)
-   * 
-   * ActionHandlers of special options should first bring resultingfilterSet into a consistent state themselves and then call this function,
-   * because if two options conflict this function will default to the normal case without special options.
-   */
-  private void enforceConsistency()
+  private void enforceMultiSelectState()
   {
-    // TODO move this into FilterSet???
-    
     // if multiSelect is not enabled, only one selection may be chosen. This is enforced by removing everything but the last filter
-    if (!resultingFilterSet.multiselectEnabled) {
-      while (resultingFilterSet.size() > 1) {
-        resultingFilterSet.removeFirst();
+    if (!multiselect.isSelected()) {
+      while (FilterSetCellEditor.this.resultingFilterSet.size() > 1) {
+        FilterSetCellEditor.this.resultingFilterSet.removeFirst();
       }
     }
-    
-    // matchEverythingElse cannot be selected together with something else, e.g. "Color blue"
-    if (resultingFilterSet.size() > 0) {
-      resultingFilterSet.matchEverythingElse=false;
-    }
-    if (resultingFilterSet.matchEverythingElse) {
-      resultingFilterSet.multiselectEnabled=false;
-    }
-    //
   }
 
   class FilterMenuItem extends JCheckBoxMenuItem implements ActionListener
@@ -189,14 +172,14 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
   FilterSet resultingFilterSet = new FilterSet();
   /// multiselect: if this is enabled, the user can select more than one item, see enforceMultiSelectState()
   JCheckBoxMenuItem multiselect = new JCheckBoxMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("MULTISELECT"));
-  JCheckBoxMenuItem everythingElse = new JCheckBoxMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("EVERYTHING ELSE"));
-    
+
   private void fillMenu(PlfPart p)
   {
     menu.removeAll();
     this.menuItems.clear();
     JMenuItem everything = new JMenuItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("EVERYTHING"));
     everything.addActionListener(new ActionListener(){
+
       public void actionPerformed(ActionEvent ae)
       {
         FilterSetCellEditor.this.clearFilters();
@@ -207,7 +190,6 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     {
       GraphicSet gs = p.getGraphicObjects();
       menu.add(everything);
-      menu.add(everythingElse);
       for(final String s: gs.getAttributes())
       {
         JMenu m = new JMenu(translateAttVal(s));
@@ -228,7 +210,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
   private void addFilter(MappingFilter f)
   {
     this.resultingFilterSet.add(f);
-    this.enforceConsistency();
+    this.enforceMultiSelectState();
     this.fireEditingStopped();
   }
 
@@ -257,8 +239,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     {
       i.refreshState();
     }
-    multiselect.setSelected(resultingFilterSet.multiselectEnabled);
-    everythingElse.setSelected(resultingFilterSet.matchEverythingElse);
+    multiselect.setSelected(resultingFilterSet.multiselectEnabled);   
   }
 
   public FilterSetCellEditor()
@@ -271,28 +252,15 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
       public void actionPerformed(ActionEvent e)
       {
         resultingFilterSet.multiselectEnabled=multiselect.isSelected();
-        enforceConsistency();
+        enforceMultiSelectState();
         fireEditingStopped();
       }
     });
-    everythingElse.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent ae)
-      {
-        resultingFilterSet.matchEverythingElse=everythingElse.isSelected();
-        if (resultingFilterSet.matchEverythingElse) {
-          resultingFilterSet.clear();
-          resultingFilterSet.multiselectEnabled=false;
-        }
-        enforceConsistency();
-        fireEditingStopped();
-      }
-    });
-  };
+  }
 
 
   public Object getCellEditorValue()
   {
-    // TODO enforceConsistency() here???
     return resultingFilterSet;
   }
 
@@ -304,16 +272,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
       // otherwise all items exept for the last one would be removed
       resultingFilterSet.multiselectEnabled = true;
     } 
-    String text = null;
-    FilterSet f = (FilterSet) o;
-    if (f.matchEverythingElse) {
-      text=java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("EVERYTHING ELSE");
-    } else if (f.isEmpty()) {
-      text=java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("EVERYTHING");
-    } else {
-      text=java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("CUSTOM");
-    }
-    bt.setText(text);
+    bt.setText(((FilterSet) o).isEmpty() ? java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("EVERYTHING") : java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/FilterSetCellEditor").getString("CUSTOM"));
     this.prepareMenu();
     return bt;
   }
