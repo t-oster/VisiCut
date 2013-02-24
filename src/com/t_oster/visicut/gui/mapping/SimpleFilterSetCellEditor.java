@@ -27,10 +27,12 @@ import javax.swing.JComboBox;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-class SimpleFilterSetCellEditor extends DefaultCellEditor{
+class SimpleFilterSetCellEditor extends DefaultCellEditor
+{
+
   private JComboBox filterSets;
   public String EVERYTHING_ELSE = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("EVERYTHING_ELSE");
-  
+
   public SimpleFilterSetCellEditor()
   {
     super(new JComboBox());
@@ -42,13 +44,14 @@ class SimpleFilterSetCellEditor extends DefaultCellEditor{
   {
     return EVERYTHING_ELSE.equals(super.getCellEditorValue()) ? null : super.getCellEditorValue();
   }
-  
+
   public void refresh(Iterable<FilterSet> entries)
   {
     filterSets.removeAllItems();
     // add EVERYTHING_ELSE
     filterSets.addItem(EVERYTHING_ELSE);
-    for (FilterSet e: entries) {
+    for (FilterSet e : entries)
+    {
       filterSets.addItem(e);
     }
   }

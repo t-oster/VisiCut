@@ -208,8 +208,11 @@ public class PropertyMappingPanelTable extends EditableTablePanel implements Edi
     if (!suppressMappingUpdate)
     {
       ignorePartUpdate = true;
-      VisicutModel.getInstance().getSelectedPart().setMapping(this.getResultingMappingSet());
-      VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
+      if (VisicutModel.getInstance().getSelectedPart() != null)
+      {
+        VisicutModel.getInstance().getSelectedPart().setMapping(this.getResultingMappingSet());
+        VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
+      }
       ignorePartUpdate = false;
     }
   }
