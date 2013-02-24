@@ -19,6 +19,7 @@
 package com.t_oster.visicut.gui.mapping;
 
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.uicomponents.BetterJTable;
 import com.t_oster.uicomponents.EditableTablePanel;
 import com.t_oster.uicomponents.EditableTableProvider;
 import com.t_oster.visicut.VisicutModel;
@@ -38,8 +39,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
@@ -118,16 +117,16 @@ public class PropertyMappingPanelTable extends EditableTablePanel implements Edi
   {
     if (Util.differ(attribute, this.attribute))
     {
+      boolean suppressMappingUpdate = this.suppressMappingUpdate;
+      this.suppressMappingUpdate = true;
       this.attribute = attribute;
       this.model.setColumnTitle(1, FilterSetCellEditor.translateAttVal(attribute));
       this.refreshPropertiesEditor();
-      if (vm.getSelectedPart() != null)
+      if (vm.getSelectedPart() != null && vm.getSelectedPart().getMapping() == null)
       {
-        if (vm.getSelectedPart().getMapping() == null)
-        {
-          this.generateDefaultEntries(attribute);
-        }
+        this.generateDefaultEntries(attribute);
       }
+      this.suppressMappingUpdate = suppressMappingUpdate;
     }
   }
 
@@ -225,13 +224,14 @@ public class PropertyMappingPanelTable extends EditableTablePanel implements Edi
   public PropertyMappingPanelTable()
   {
     model = new MappingTableModel(entries);
+    model.addTableModelListener(this);
     this.generateDefaultEntries(this.attribute);
     this.setTableModel(model);
     this.setProvider(this);
     this.setObjects((List) entries);
     this.setEditButtonVisible(true);
     this.refreshProfilesEditor();
-    this.getTable().setDefaultRenderer(FilterSet.class, new FilterSetCellRenderer());
+    this.getTable().setDefaultRenderer(FilterSet.class, new SimpleFilterSetCellRenderer());
     this.getTable().setDefaultEditor(FilterSet.class, filterSetEditor);
     this.getTable().setDefaultEditor(LaserProfile.class, profileEditor);
     this.getTable().setDefaultRenderer(LaserProfile.class, new ProfileCellRenderer());
@@ -239,8 +239,7 @@ public class PropertyMappingPanelTable extends EditableTablePanel implements Edi
     this.setSaveButtonVisible(true);
     this.setLoadButtonVisible(true);
     ProfileManager.getInstance().addPropertyChangeListener(this);
-    VisicutModel.getInstance().addPropertyChangeListener(this);
-    model.addTableModelListener(this);
+    VisicutModel.getInstance().addPropertyChangeListener(this); 
   }
 
   private void refreshPropertiesEditor()
@@ -274,7 +273,7 @@ public class PropertyMappingPanelTable extends EditableTablePanel implements Edi
         e.enabled = false;
         e.filterSet = new FilterSet();
         e.filterSet.add(new MappingFilter(attribute, value));
-        e.profile = null;
+        e.profile = ProfileManager.getInstance().getAll().isEmpty() ? null : ProfileManager.getInstance().getAll().get(0);
         entries.add(e);
       }
     }

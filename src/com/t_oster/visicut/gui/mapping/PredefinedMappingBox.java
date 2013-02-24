@@ -117,7 +117,13 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
 
         if (ms == null || ms.isEmpty())
         {
-          this.setSelectedItem(NONE);
+          Object selected = this.getSelectedItem();
+          //NONE, By_Property and Custom can represent a null mapping, so leave
+          //them alone if they are selected. Otherwise select NONE by default
+          if (!NONE.equals(selected) && !BY_PROPERTY.equals(selected) && !CUSTOM.equals(selected))
+          {
+            this.setSelectedItem(NONE);
+          }
         } 
         else 
         {
