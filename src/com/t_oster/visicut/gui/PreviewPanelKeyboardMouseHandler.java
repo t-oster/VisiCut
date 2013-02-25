@@ -523,7 +523,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       }
       else
       {//clicked next to graphic => clear selection
-        VisicutModel.getInstance().setSelectedPart(null);
+        //VisicutModel.getInstance().setSelectedPart(null);
       }
     }
     else if (me.getButton() == MouseEvent.BUTTON3)
