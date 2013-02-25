@@ -78,6 +78,9 @@ public class LaserScriptImporter implements Importer
 
         private Map<String,Object> settings = new LinkedHashMap<String,Object>();
         
+        //first element in a shape has to be a move
+        private boolean firstMove = true;
+        
         public void move(double x, double y)
         {
           if (x == Double.NaN || y == Double.NaN)
@@ -85,6 +88,7 @@ public class LaserScriptImporter implements Importer
             throw new IllegalArgumentException("Move called with ("+x+","+y+")");
           }
           resultingShape.moveTo(x, y);
+          firstMove = false;
         }
 
         public void line(double x, double y)
@@ -92,6 +96,10 @@ public class LaserScriptImporter implements Importer
           if (x == Double.NaN || y == Double.NaN)
           {
             throw new IllegalArgumentException("Line called with ("+x+","+y+")");
+          }
+          if (firstMove)
+          {
+            move(0, 0);
           }
           resultingShape.lineTo(x, y);
         }
