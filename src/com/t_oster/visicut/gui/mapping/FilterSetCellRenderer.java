@@ -19,6 +19,8 @@
 package com.t_oster.visicut.gui.mapping;
 
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingFilter;
 import java.awt.Color;
@@ -51,7 +53,7 @@ public class FilterSetCellRenderer extends DefaultTableCellRenderer
         if (!((FilterSet) value).isEmpty())
         {
           MappingFilter f = ((FilterSet) value).getFirst();
-          text = FilterSetCellEditor.translateAttVal(f.getAttribute());
+          text = GraphicSet.translateAttVal(f.getAttribute());
           String dots = ((FilterSet) value).size() > 1 ? "..." : "";
           if (f.getValue() instanceof Color)
           {
@@ -60,7 +62,7 @@ public class FilterSetCellRenderer extends DefaultTableCellRenderer
           }
           else if (f.getValue() != null)
           {
-            text = text + " " + FilterSetCellEditor.translateAttVal(f.getValue().toString()) + dots;
+            text = text + " " + GraphicSet.translateAttVal(f.getValue().toString()) + dots;
           }
         }
         ((JLabel) c).setText(text);

@@ -20,6 +20,7 @@
 package com.t_oster.visicut.gui.mapping;
 
 import com.t_oster.visicut.model.mapping.FilterSet;
+import java.awt.Component;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 

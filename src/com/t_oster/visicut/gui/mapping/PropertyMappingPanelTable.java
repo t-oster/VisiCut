@@ -31,6 +31,8 @@ import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
+import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingFilter;
@@ -117,16 +119,16 @@ public class PropertyMappingPanelTable extends EditableTablePanel implements Edi
   {
     if (Util.differ(attribute, this.attribute))
     {
-      boolean suppressMappingUpdate = this.suppressMappingUpdate;
+      boolean oldSuppressMappingUpdate = this.suppressMappingUpdate;
       this.suppressMappingUpdate = true;
       this.attribute = attribute;
-      this.model.setColumnTitle(1, FilterSetCellEditor.translateAttVal(attribute));
+      this.model.setColumnTitle(1, GraphicSet.translateAttVal(attribute));
       this.refreshPropertiesEditor();
       if (vm.getSelectedPart() != null && vm.getSelectedPart().getMapping() == null)
       {
         this.generateDefaultEntries(attribute);
       }
-      this.suppressMappingUpdate = suppressMappingUpdate;
+      this.suppressMappingUpdate = oldSuppressMappingUpdate;
     }
   }
 

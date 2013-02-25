@@ -27,6 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 /**
@@ -36,6 +38,22 @@ import java.util.Set;
 public class GraphicSet extends LinkedList<GraphicObject>
 {
 
+  public static String translateAttVal(String attribute)
+  {
+    if (attribute == null)
+    {
+      return null;
+    }
+    try
+    {
+      return ResourceBundle.getBundle("com/t_oster/visicut/model/graphicelements/resources/AttributeTranslations").getString(attribute.toUpperCase());
+    }
+    catch (MissingResourceException ex)
+    {
+      return attribute;
+    }
+  }
+  
   protected AffineTransform basicTransform = new AffineTransform();
 
   /**

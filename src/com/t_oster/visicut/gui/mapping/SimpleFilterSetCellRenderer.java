@@ -19,6 +19,7 @@
 package com.t_oster.visicut.gui.mapping;
 
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingFilter;
 import java.awt.Color;
@@ -60,7 +61,7 @@ public class SimpleFilterSetCellRenderer extends DefaultTableCellRenderer
           }
           else if (f.getValue() != null)
           {
-            text = text + " " + FilterSetCellEditor.translateAttVal(f.getValue().toString());
+            text = text + " " + GraphicSet.translateAttVal(f.getValue().toString());
           }
         }
         ((JLabel) c).setText(text);

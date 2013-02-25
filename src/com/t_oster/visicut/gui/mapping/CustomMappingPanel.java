@@ -127,10 +127,6 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
         MappingTableEntry e = new MappingTableEntry();
         e.enabled = true;
         e.filterSet = m.getFilterSet();
-        if (!this.filterSetEditor.canRepresent(e.filterSet))
-        {
-          return false;
-        }
         e.profile = m.getProfile();
         result.add(e);
       }
@@ -206,6 +202,8 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     ProfileManager.getInstance().addPropertyChangeListener(this);
     VisicutModel.getInstance().addPropertyChangeListener(this);
     model.addTableModelListener(this);
+    //in this table we have dialog-like-editors, so the focus will get lost
+    this.getTable().putClientProperty("terminateEditOnFocusLost", Boolean.FALSE);
   }
 
   private void refreshProfilesEditor()

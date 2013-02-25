@@ -19,6 +19,7 @@
 package com.t_oster.visicut.gui.mapping;
 
 import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
@@ -83,7 +84,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel implements Property
         Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         if (c instanceof JLabel && value instanceof String)
         {
-          ((JLabel) c).setText(FilterSetCellEditor.translateAttVal((String) value));
+          ((JLabel) c).setText(GraphicSet.translateAttVal((String) value));
         }
         return c;
       }
