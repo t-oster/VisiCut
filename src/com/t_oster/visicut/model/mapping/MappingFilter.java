@@ -125,22 +125,27 @@ public class MappingFilter
   @Override
   public String toString()
   {
-    String result;
+    return GraphicSet.translateAttVal(attribute) + " " +getValueString();
+  }
+
+  public String getValueString()
+  {
+    String result = " ";
     if (value == null)
     {
-      result = "null";
+      result += "null";
     }
     else if (value instanceof Color)
     {
-      result = Helper.toHtmlRGB((Color) value);
+      result += Helper.toHtmlRGB((Color) value);
     }
     else
     {
-      result = value.toString();
+      result += value.toString();
     }
-    return (inverted ? "IS NOT " : "IS ")+result;
+    return (inverted ? GraphicSet.translateAttVal("IS NOT") : GraphicSet.translateAttVal("IS"))+result;
   }
-
+  
   @Override
   public int hashCode()
   {

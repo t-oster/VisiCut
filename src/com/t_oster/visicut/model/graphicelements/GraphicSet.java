@@ -38,12 +38,13 @@ import java.util.Set;
 public class GraphicSet extends LinkedList<GraphicObject>
 {
 
-  public static String translateAttVal(String attribute)
+  public static String translateAttVal(Object att)
   {
-    if (attribute == null)
+    if (att == null)
     {
       return null;
     }
+    String attribute = att.toString();
     try
     {
       return ResourceBundle.getBundle("com/t_oster/visicut/model/graphicelements/resources/AttributeTranslations").getString(attribute.toUpperCase());

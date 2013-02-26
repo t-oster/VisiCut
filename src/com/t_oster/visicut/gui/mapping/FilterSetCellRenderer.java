@@ -19,7 +19,6 @@
 package com.t_oster.visicut.gui.mapping;
 
 import com.t_oster.visicut.misc.Helper;
-import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.MappingFilter;
@@ -66,6 +65,7 @@ public class FilterSetCellRenderer extends DefaultTableCellRenderer
           }
         }
         ((JLabel) c).setText(text);
+        ((JLabel) c).setToolTipText(((FilterSet) value).toString());
       }
 
     }

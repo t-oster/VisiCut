@@ -60,11 +60,16 @@ public class FilterSet extends LinkedList<MappingFilter>
   {
     if (this.size() == 0)
     {
-      return "Everything";
+      return GraphicSet.translateAttVal("Everything");
     }
     else
     {
-      return this.get(this.size() - 1).toString();
+      String txt = "";
+      for (MappingFilter f : this)
+      {
+        txt += ("".equals(txt) ? "" : " "+GraphicSet.translateAttVal("AND")+" ")+f.toString();
+      }
+      return txt;
     }
   }
   

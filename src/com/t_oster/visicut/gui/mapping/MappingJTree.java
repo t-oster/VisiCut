@@ -185,7 +185,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     @Override
     public String toString()
     {
-      return (this.isEmpty() ? "WHERE " : "AND ") + attribute;
+      return (this.isEmpty() ? GraphicSet.translateAttVal("WHERE") : GraphicSet.translateAttVal("AND")) + " " + GraphicSet.translateAttVal(attribute);
     }
 
     @Override
@@ -249,9 +249,16 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
           if (fs instanceof FilterSetNode)
           {
             MappingFilter f = fs.peekLast();
-            if (f != null && f.getValue() instanceof Color)
+            if (f != null)
             {
-              l.setText("<html><table" + (!hasUnmappedChildren ? " bgcolor=" + bgHtml : "") + "><tr><td>" + (f.isInverted() ? "IS NOT" : "IS") + "</td><td border=1 bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
+              if (f.getValue() instanceof Color)
+              {
+                l.setText("<html><table" + (!hasUnmappedChildren ? " bgcolor=" + bgHtml : "") + "><tr><td>" + (f.isInverted() ? GraphicSet.translateAttVal("IS NOT") : GraphicSet.translateAttVal("IS")) + "</td><td border=1 bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
+              }
+              else
+              {
+                l.setText(GraphicSet.translateAttVal(f.getValue()));
+              }
             }
           }
         }
