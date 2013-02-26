@@ -73,6 +73,6 @@ public class Mapping extends Tuple<FilterSet,LaserProfile> implements Cloneable
   @Override
   public Mapping clone()
   {
-    return new Mapping((FilterSet) this.getFilterSet().clone(), this.getProfile().clone());
+    return new Mapping(this.getFilterSet() != null ? (FilterSet) this.getFilterSet().clone() : null, this.getProfile() != null ? this.getProfile().clone() : null);
   }
 }

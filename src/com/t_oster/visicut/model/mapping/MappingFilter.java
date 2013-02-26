@@ -98,39 +98,54 @@ public class MappingFilter
     this.value = value;
   }
 
-  public GraphicSet getMatchingElements(GraphicSet elements)
+  private GraphicSet getMatchingElements(GraphicSet elements, boolean invert)
   {
     GraphicSet result = new GraphicSet();
     result.setTransform(elements.getTransform());
     for (GraphicObject e : elements)
     {
-      if (this.matches(e))
+      if ((!invert && this.matches(e)) || (invert && !this.matches(e)))
       {
         result.add(e);
       }
     }
     return result;
   }
+  
+  public GraphicSet getNotMatchingElements(GraphicSet elements)
+  {
+    return this.getMatchingElements(elements, true);
+  }
+  
+  public GraphicSet getMatchingElements(GraphicSet elements)
+  {
+    return this.getMatchingElements(elements, false);
+  }
 
   @Override
   public String toString()
   {
-    String result;
+    return GraphicSet.translateAttVal(attribute) + " " +getValueString();
+  }
+
+  public String getValueString()
+  {
+    String result = " ";
     if (value == null)
     {
-      result = "null";
+      result += "null";
     }
     else if (value instanceof Color)
     {
-      result = Helper.toHtmlRGB((Color) value);
+      result += Helper.toHtmlRGB((Color) value);
     }
     else
     {
-      result = value.toString();
+      result += value.toString();
     }
-    return (inverted ? "IS NOT " : "IS ")+result;
+    return (inverted ? GraphicSet.translateAttVal("IS NOT") : GraphicSet.translateAttVal("IS"))+result;
   }
-
+  
   @Override
   public int hashCode()
   {

@@ -141,25 +141,6 @@ public class MainView extends javax.swing.JFrame
     }
     fillComboBoxes();
     refreshMaterialThicknessesComboBox();
-    this.customMappingPanel.getSaveButton().addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent ae)
-      {
-        String name = dialog.askString(MainView.this.customMappingPanel.getResultingMappingSet().getName(), bundle.getString("NAME_FOR_MAPPING"));
-        if (name != null)
-        {
-          MappingSet ms = MainView.this.customMappingPanel.getResultingMappingSet().clone();
-          ms.setName(name);
-          try
-          {
-            MappingManager.getInstance().add(ms);
-          }
-          catch (Exception ex)
-          {
-            MainView.this.dialog.showErrorMessage(ex);
-          }
-        }
-      }
-    });
 
     if (this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null)
     {
@@ -456,9 +437,7 @@ public class MainView extends javax.swing.JFrame
         calculateTimeButton = new javax.swing.JButton();
         timeLabel = new javax.swing.JLabel();
         mappingTabbedPane = new javax.swing.JTabbedPane();
-        mappingPanel = new javax.swing.JPanel();
-        customMappingPanel = new com.t_oster.visicut.gui.mapping.CustomMappingPanel();
-        predefinedMappingBox1 = new com.t_oster.visicut.gui.mapping.PredefinedMappingBox();
+        mappingPanel = new com.t_oster.visicut.gui.mapping.MappingPanel();
         positionPanel = new com.t_oster.uicomponents.PositionPanel();
         btAddMaterial = new javax.swing.JButton();
         cbMaterialThickness = new javax.swing.JComboBox();
@@ -677,38 +656,6 @@ public class MainView extends javax.swing.JFrame
         mappingTabbedPane.setName("Custom"); // NOI18N
 
         mappingPanel.setName("mappingPanel"); // NOI18N
-
-        customMappingPanel.setLoadButtonVisible(false);
-        customMappingPanel.setName("customMappingPanel"); // NOI18N
-
-        predefinedMappingBox1.setName("predefinedMappingBox1"); // NOI18N
-        predefinedMappingBox1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                predefinedMappingBox1ActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout mappingPanelLayout = new javax.swing.GroupLayout(mappingPanel);
-        mappingPanel.setLayout(mappingPanelLayout);
-        mappingPanelLayout.setHorizontalGroup(
-            mappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mappingPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(mappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(customMappingPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE)
-                    .addComponent(predefinedMappingBox1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        mappingPanelLayout.setVerticalGroup(
-            mappingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mappingPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(predefinedMappingBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(customMappingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
-                .addGap(2, 2, 2))
-        );
-
         mappingTabbedPane.addTab(resourceMap.getString("mappingPanel.TabConstraints.tabTitle"), mappingPanel); // NOI18N
 
         positionPanel.setName("positionPanel"); // NOI18N
@@ -2253,12 +2200,6 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
   VisicutModel.getInstance().setSelectedPart(selected);
 }//GEN-LAST:event_objectComboBoxChangeHandler
 
-private void predefinedMappingBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_predefinedMappingBox1ActionPerformed
-  //only show custom mapping panel, if "CUSTOM" is selected as mapping.
-  //fixes issue #69
-  this.customMappingPanel.setVisible(this.predefinedMappingBox1.CUSTOM.equals(this.predefinedMappingBox1.getSelectedItem()));
-}//GEN-LAST:event_predefinedMappingBox1ActionPerformed
-
 /**
  * Open a laser properties dialog (speed, power, frequency, focus for each profile)
  * @return the new laser settings (or null if "cancel" was pressed)
@@ -2315,7 +2256,6 @@ private void predefinedMappingBox1ActionPerformed(java.awt.event.ActionEvent evt
     private javax.swing.JButton captureImageButton;
     private javax.swing.JCheckBox cbEditBeforeExecute;
     private javax.swing.JComboBox cbMaterialThickness;
-    private com.t_oster.visicut.gui.mapping.CustomMappingPanel customMappingPanel;
     private javax.swing.JButton editLaserSettingsButton;
     private javax.swing.JMenuItem editMappingMenuItem;
     private javax.swing.JMenu editMenu;
@@ -2351,7 +2291,7 @@ private void predefinedMappingBox1ActionPerformed(java.awt.event.ActionEvent evt
     private javax.swing.JCheckBoxMenuItem jmShowPhoto;
     private com.t_oster.uicomponents.ImageComboBox laserCutterComboBox;
     private javax.swing.JLabel laserSettingsLabel;
-    private javax.swing.JPanel mappingPanel;
+    private com.t_oster.visicut.gui.mapping.MappingPanel mappingPanel;
     private javax.swing.JTabbedPane mappingTabbedPane;
     private com.t_oster.uicomponents.ImageComboBox materialComboBox;
     private javax.swing.JMenuItem materialMenuItem;
@@ -2360,7 +2300,6 @@ private void predefinedMappingBox1ActionPerformed(java.awt.event.ActionEvent evt
     private javax.swing.JComboBox objectComboBox;
     private javax.swing.JMenuItem openMenuItem;
     private com.t_oster.uicomponents.PositionPanel positionPanel;
-    private com.t_oster.visicut.gui.mapping.PredefinedMappingBox predefinedMappingBox1;
     private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JMenu recentFilesMenu;
@@ -2412,6 +2351,10 @@ private void predefinedMappingBox1ActionPerformed(java.awt.event.ActionEvent evt
       for (Mapping m : p.getMapping())
       {
         LaserProfile lp = m.getProfile();
+        if (lp == null)//ignore-profile
+        {
+          continue;
+        }
         if (!this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions().contains((Double) lp.getDPI()))
         {
           double dist = -1;
@@ -2451,6 +2394,10 @@ private void predefinedMappingBox1ActionPerformed(java.awt.event.ActionEvent evt
         for (Mapping m:p.getMapping())
         {
           LaserProfile profile = m.getProfile();
+          if (profile == null)//ignore-profile
+          {
+            continue;
+          }
           List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(device, material, profile, thickness);
           if (props == null)
           {

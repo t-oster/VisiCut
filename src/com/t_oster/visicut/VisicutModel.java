@@ -660,8 +660,12 @@ public class VisicutModel
       }
       for (Mapping m : p.getMapping())
       {
-        GraphicSet set = m.getFilterSet().getMatchingObjects(p.getGraphicObjects());
+        GraphicSet set = m.getFilterSet() != null ? m.getFilterSet().getMatchingObjects(p.getGraphicObjects()) : p.getUnmatchedObjects();
         LaserProfile pr = m.getProfile();
+        if (pr == null)//ignore-profile
+        {
+          continue;
+        }
         List<LaserProperty> props = propmap.get(pr);
         pr.addToLaserJob(job, set, this.addFocusOffset(props, focusOffset));
       }

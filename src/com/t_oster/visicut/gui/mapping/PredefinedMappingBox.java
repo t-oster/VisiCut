@@ -40,7 +40,8 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
 {
 
   public String NONE = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox").getString("NONE");
-  public String CUSTOM = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox").getString("CUSTOM");
+  public String BY_PROPERTY = "<html><b>"+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox").getString("BY_PROPERTY")+"...</b></html>";
+  public String CUSTOM = "<html><b>"+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox").getString("CUSTOM")+"...</b></html>";
   private PlfPart lastSelectedPlfPart = null;
   /**
    * Creates new form MappingPanel
@@ -80,6 +81,7 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
     {
       this.addItem(m);
     }
+    this.addItem(BY_PROPERTY);
     this.addItem(CUSTOM);
     this.setSelectedItem(selected);
     ignoreUiUpdates = false;
@@ -99,10 +101,10 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
       // guess the selected entry from the MappingSet
       // we have no information about the name, so we need to see which entry matches
       
-      if ((lastSelectedPlfPart == VisicutModel.getInstance().getSelectedPart()) && (this.getSelectedItem() == CUSTOM)) {
+      if ((lastSelectedPlfPart == VisicutModel.getInstance().getSelectedPart()) && (this.getSelectedItem() == CUSTOM || this.getSelectedItem() == BY_PROPERTY)) {
         // special case:
         // the selected PlfPart ("object") is still the same.
-        // CUSTOM was selected and the mapping was edited
+        // CUSTOM/BY_PROPERTY was selected and the mapping was edited
         // even if the mapping is now equal to a saved one, don't switch back to the entry of the saved mapping!
         // otherwise the CustomMappingPanel would be hidden
 
@@ -115,9 +117,17 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
 
         if (ms == null || ms.isEmpty())
         {
-          this.setSelectedItem(NONE);
-        } else {
-          this.setSelectedItem(CUSTOM);
+          Object selected = this.getSelectedItem();
+          //NONE, By_Property and Custom can represent a null mapping, so leave
+          //them alone if they are selected. Otherwise select NONE by default
+          if (!NONE.equals(selected) && !BY_PROPERTY.equals(selected) && !CUSTOM.equals(selected))
+          {
+            this.setSelectedItem(NONE);
+          }
+        } 
+        else 
+        {
+          this.setSelectedItem(PropertyMappingPanel.getPropertyMappingProperty(ms) != null ? BY_PROPERTY : CUSTOM);
           this.setSelectedItem(ms); // only changes the selection if the mapping exists in the comboBox
         }
       }
@@ -136,7 +146,7 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
         VisicutModel.getInstance().getSelectedPart().setMapping(null);
         VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
       }
-      else if (CUSTOM.equals(selected))
+      else if (CUSTOM.equals(selected) || BY_PROPERTY.equals(selected))
       {
         //do nothing
       }

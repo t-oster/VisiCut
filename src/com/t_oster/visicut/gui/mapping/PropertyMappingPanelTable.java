@@ -18,6 +18,8 @@
  **/
 package com.t_oster.visicut.gui.mapping;
 
+import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.uicomponents.BetterJTable;
 import com.t_oster.uicomponents.EditableTablePanel;
 import com.t_oster.uicomponents.EditableTableProvider;
 import com.t_oster.visicut.VisicutModel;
@@ -29,13 +31,14 @@ import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
+import com.t_oster.visicut.model.graphicelements.GraphicObject;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
+import com.t_oster.visicut.model.mapping.MappingFilter;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.event.TableModelEvent;
@@ -45,9 +48,13 @@ import javax.swing.event.TableModelListener;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class CustomMappingPanel extends EditableTablePanel implements EditableTableProvider, TableModelListener, PropertyChangeListener
+public class PropertyMappingPanelTable extends EditableTablePanel implements EditableTableProvider, TableModelListener, PropertyChangeListener
 {
+  private VisicutModel vm = VisicutModel.getInstance();
   
+  private MappingTableModel model;
+
+  private final ProfileCellEditor profileEditor = new ProfileCellEditor();
 
   public Object getNewInstance()
   {
@@ -63,10 +70,6 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     if (o instanceof MappingTableEntry)
     {
       MappingTableEntry e = (MappingTableEntry) o;
-      if (e.profile == null)
-      {
-        return o;
-      }
       //edit laserprofile
       if (e.profile instanceof VectorProfile)
       {
@@ -105,6 +108,31 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     return o;
   }
 
+  private String attribute = null;
+
+  public String getAttribute()
+  {
+    return attribute;
+  }
+
+  public void setAttribute(String attribute)
+  {
+    if (Util.differ(attribute, this.attribute))
+    {
+      boolean oldSuppressMappingUpdate = this.suppressMappingUpdate;
+      this.suppressMappingUpdate = true;
+      this.attribute = attribute;
+      this.model.setColumnTitle(1, GraphicSet.translateAttVal(attribute));
+      this.refreshPropertiesEditor();
+      if (vm.getSelectedPart() != null && vm.getSelectedPart().getMapping() == null)
+      {
+        this.generateDefaultEntries(attribute);
+      }
+      this.suppressMappingUpdate = oldSuppressMappingUpdate;
+    }
+  }
+
+  
   /*
    * Tries to represent a MappingSet and returns true,
    * if it is completely representable.
@@ -117,10 +145,19 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     lastMappingName = ms != null ? ms.getName() : null;
     if (ms == null || ms.isEmpty())
     {
-      this.generateDefaultEntries();
+      this.generateDefaultEntries(this.attribute);
     }
     else
     {
+      String attr = PropertyMappingPanel.getPropertyMappingProperty(ms);
+      if (attr == null)
+      {
+        return false;
+      }
+      else
+      {
+        this.setAttribute(attr);
+      }
       List<MappingTableEntry> result = new LinkedList<MappingTableEntry>();
       for (Mapping m : ms)
       {
@@ -132,7 +169,6 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       }
       this.entries.clear();
       this.entries.addAll(result);
-      //TODO: Check if endless loop
       suppressMappingUpdate = true;
       this.model.fireTableDataChanged();
       suppressMappingUpdate = false;
@@ -154,6 +190,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       {
         if (VisicutModel.getInstance().getSelectedPart() != null)
         {
+          this.refreshPropertiesEditor();
           this.representMapping(VisicutModel.getInstance().getSelectedPart().getMapping());
         }
       }
@@ -161,6 +198,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       {
         if (!ignorePartUpdate)
         {
+          this.refreshPropertiesEditor();
           this.representMapping(VisicutModel.getInstance().getSelectedPart().getMapping());
         }
       }
@@ -171,95 +209,82 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
   {
     if (!suppressMappingUpdate)
     {
-      this.refreshProfilesEditor(); // generate necessary new temporary copies
       ignorePartUpdate = true;
-      VisicutModel.getInstance().getSelectedPart().setMapping(this.getResultingMappingSet());
-      VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
+      if (VisicutModel.getInstance().getSelectedPart() != null)
+      {
+        VisicutModel.getInstance().getSelectedPart().setMapping(this.getResultingMappingSet());
+        VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
+      }
       ignorePartUpdate = false;
     }
   }
 
+  private SimpleFilterSetCellEditor filterSetEditor = new SimpleFilterSetCellEditor();
+  
   private final List<MappingTableEntry> entries = new LinkedList<MappingTableEntry>();
 
-  private MappingTableModel model;
-  
-  public CustomMappingPanel()
+  public PropertyMappingPanelTable()
   {
     model = new MappingTableModel(entries);
-    this.generateDefaultEntries();
+    model.addTableModelListener(this);
+    this.generateDefaultEntries(this.attribute);
     this.setTableModel(model);
     this.setProvider(this);
     this.setObjects((List) entries);
     this.setEditButtonVisible(true);
-    this.getTable().setDefaultEditor(FilterSet.class, filterSetEditor);
     this.refreshProfilesEditor();
-    this.getTable().setDefaultRenderer(FilterSet.class, new FilterSetCellRenderer());
-    this.getTable().setDefaultRenderer(LaserProfile.class, new ProfileCellRenderer());
+    this.getTable().setDefaultRenderer(FilterSet.class, new SimpleFilterSetCellRenderer());
+    this.getTable().setDefaultEditor(FilterSet.class, filterSetEditor);
     this.getTable().setDefaultEditor(LaserProfile.class, profileEditor);
+    this.getTable().setDefaultRenderer(LaserProfile.class, new ProfileCellRenderer());
     this.setMoveButtonsVisible(true);
     this.setSaveButtonVisible(true);
     this.setLoadButtonVisible(true);
     ProfileManager.getInstance().addPropertyChangeListener(this);
-    VisicutModel.getInstance().addPropertyChangeListener(this);
-    model.addTableModelListener(this);
-    //in this table we have dialog-like-editors, so the focus will get lost
-    this.getTable().putClientProperty("terminateEditOnFocusLost", Boolean.FALSE);
+    VisicutModel.getInstance().addPropertyChangeListener(this); 
   }
 
+  private void refreshPropertiesEditor()
+  {
+    List<FilterSet> fss = new LinkedList<FilterSet>();
+    if (attribute != null && vm.getSelectedPart() != null && vm.getSelectedPart().getGraphicObjects() != null)
+    {
+      for (Object value : vm.getSelectedPart().getGraphicObjects().getAttributeValues(attribute))
+      {
+        FilterSet fs = new FilterSet();
+        fs.add(new MappingFilter(attribute, value));
+        fss.add(fs);
+      }
+    }
+    filterSetEditor.refresh(fss);
+  }
+  
   private void refreshProfilesEditor()
   {
     profileEditor.refresh(entries);
   }
 
-  private FilterSetCellEditor filterSetEditor = new FilterSetCellEditor();
-  private ProfileCellEditor profileEditor = new ProfileCellEditor();
-
-  private void generateDefaultEntries()
+  private void generateDefaultEntries(String attribute)
   {
     entries.clear();
-    List<LaserProfile> profiles = ProfileManager.getInstance().getAll();
-    for (LaserProfile lp : profiles)
+    if (attribute != null && vm.getSelectedPart() != null && vm.getSelectedPart().getGraphicObjects() != null)
     {
-      MappingTableEntry e = new MappingTableEntry();
-      e.enabled = false;
-      e.filterSet = new FilterSet();
-      e.profile = lp;
-      entries.add(e);
+      for (Object value : VisicutModel.getInstance().getSelectedPart().getGraphicObjects().getAttributeValues(attribute))
+      {
+        MappingTableEntry e = new MappingTableEntry();
+        e.enabled = false;
+        e.filterSet = new FilterSet();
+        e.filterSet.add(new MappingFilter(attribute, value));
+        e.profile = ProfileManager.getInstance().getAll().isEmpty() ? null : ProfileManager.getInstance().getAll().get(0);
+        entries.add(e);
+      }
     }
-    Collections.sort(entries, new Comparator<MappingTableEntry>(){
-
-      private boolean isCut(MappingTableEntry e)
-      {
-        return e.profile instanceof VectorProfile && ((VectorProfile) e.profile).isIsCut();
-      }
-
-      public int compare(MappingTableEntry t, MappingTableEntry t1)
-      {
-        if (t.profile == null)
-        {
-          return -1;
-        }
-        else if (t1.profile == null)
-        {
-          return 1;
-        }
-        else if (isCut(t) || !isCut(t1))
-        {
-          return 1;
-        }
-        else if (isCut(t1) || !isCut(t))
-        {
-          return -1;
-        }
-        else
-        {
-          return t.profile.getName().compareToIgnoreCase(t1.profile.getName());
-        }
-      }
-    });
+    suppressMappingUpdate = true;
+    model.fireTableDataChanged();
+    suppressMappingUpdate = false;
   }
 
-  public MappingSet getResultingMappingSet()
+  private MappingSet getResultingMappingSet()
   {
     MappingSet result = new MappingSet();
     if (lastMappingName != null)
