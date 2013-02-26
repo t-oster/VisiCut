@@ -47,7 +47,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     panel = new FilterSetTreePanel();
   }
   
-  private boolean prepareTree()
+  private boolean prepareTree(FilterSet fs)
   {
     if (VisicutModel.getInstance().getSelectedPart() == null || VisicutModel.getInstance().getSelectedPart().getGraphicObjects() == null)
     {
@@ -56,7 +56,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
     MappingJTree tree = panel.getMappingTree();
     tree.setGraphicObjects(VisicutModel.getInstance().getSelectedPart().getGraphicObjects());
     tree.setMappings(new LinkedList<Mapping>());
-    tree.setSelectedFilterSet(null);
+    tree.representFilterSet(fs);
     return true;
   }
   
@@ -70,7 +70,7 @@ public class FilterSetCellEditor extends AbstractCellEditor implements TableCell
   public Component getTableCellEditorComponent(JTable jtable, Object o, boolean bln, int i, int i1)
   { 
     value = (FilterSet) o;
-    if (!running && prepareTree())
+    if (!running && prepareTree(value))
     {
       running = true;
       new Thread(){

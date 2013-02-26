@@ -76,12 +76,80 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     FilterSet oldSelectedFilterSet = this.selectedFilterSet;
     this.selectedFilterSet = selectedFilterSet;
     firePropertyChange(PROP_SELECTEDFILTERSET, oldSelectedFilterSet, selectedFilterSet);
-    if (selectedFilterSet == null)
-    {
-      this.clearSelection();
-    }
   }
 
+  /**
+   * Selects the path which leads to the given filter set,
+   * or clears the selection if the path is not in the tree
+   * @param fs 
+   */
+  public void representFilterSet(FilterSet fs)
+  {
+    if (fs == null)
+    {
+      this.setSelectionPath(new TreePath(new Object[]{dummyRoot, EVERYTHING_ELSE}));
+    }
+    else if (fs.size() == 0)
+    {
+      this.setSelectionPath(new TreePath(new Object[]{dummyRoot, root}));
+    }
+    else
+    {
+      List<Object> path = new LinkedList<Object>();
+      path.add(dummyRoot);
+      path.add(root);
+      Object current = root;
+      for (MappingFilter f : fs)
+      {
+        boolean attributeFound = false;
+        for (Object c : getChildren(current))
+        {
+          if (c instanceof AttributeNode && ((AttributeNode) c).getAttribute().equals(f.getAttribute()))
+          {
+            current = c;
+            path.add(c);
+            attributeFound = true;
+            break;
+          }
+        }
+        if (attributeFound)
+        {
+          boolean valueFound = false;
+          for(Object c : getChildren(current))
+          {
+            if (c instanceof FilterSetNode && ((FilterSetNode) c).getLast().getValue().equals(f.getValue()))
+            {
+              valueFound = true;
+              current = c;
+              path.add(c);
+              break;
+            }
+          }
+          if (!valueFound)
+          {
+            //tree does not contain selected value
+            path = null;
+            break;
+          }
+        }
+        else
+        {
+          //tree doesnt contain attribute
+          path = null;
+          break;
+        }
+      }
+      if (path != null)
+      {
+        this.setSelectionPath(new TreePath(path.toArray()));
+      }
+      else
+      {
+        this.clearSelection();
+      }
+    }
+  }
+  
   public void valueChanged(TreeSelectionEvent evt)
   {
     if (evt.getNewLeadSelectionPath() != null && evt.getNewLeadSelectionPath().getPathCount() >= 1)
@@ -144,6 +212,11 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     public void setAttribute(String attribute)
     {
       this.attribute = attribute;
+    }
+    
+    String getAttribute()
+    {
+      return attribute;
     }
 
     public List<FilterSet> getChildren()
