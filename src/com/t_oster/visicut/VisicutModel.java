@@ -163,6 +163,10 @@ public class VisicutModel
   {
     PlfPart oldSelectedPart = this.selectedPart;
     this.selectedPart = selectedPart;
+    if (selectedPart == null && this.plfFile != null && !this.plfFile.isEmpty())
+    {
+      this.selectedPart = this.plfFile.get(0);
+    }
     propertyChangeSupport.firePropertyChange(PROP_SELECTEDPART, oldSelectedPart, selectedPart);
   }
 
