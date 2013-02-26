@@ -17,46 +17,37 @@
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package com.t_oster.visicut.gui.mapping;
+package com.t_oster.uicomponents;
 
-import com.t_oster.uicomponents.ComboBoxCellEditor;
-import com.t_oster.visicut.model.mapping.FilterSet;
-import java.awt.Component;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 
 /**
- *
+ * This class provides a default-cell-editor with an JComboBox component.
+ * The difference to a default-cell editor is, that the combo-box
+ * will show it's pop-up on the first click.
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-class SimpleFilterSetCellEditor extends ComboBoxCellEditor
+public class ComboBoxCellEditor extends DefaultCellEditor
 {
-
-  private JComboBox filterSets;
-  public String EVERYTHING_ELSE = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("EVERYTHING_ELSE");
-
-  public SimpleFilterSetCellEditor()
+  private JComboBox box;
+  public JComboBox getComboBox()
   {
-    filterSets = this.getComboBox();
-    filterSets.setRenderer(new SimpleFilterSetListCellRenderer());
+    return box;
   }
-
-  @Override
-  public Object getCellEditorValue()
+  
+  public ComboBoxCellEditor()
   {
-    return EVERYTHING_ELSE.equals(super.getCellEditorValue()) ? null : super.getCellEditorValue();
-  }
-
-  public void refresh(Iterable<FilterSet> entries)
-  {
-    filterSets.removeAllItems();
-    // add EVERYTHING_ELSE
-    filterSets.addItem(EVERYTHING_ELSE);
-    for (FilterSet e : entries)
-    {
-      filterSets.addItem(e);
-    }
+    super(new JComboBox());
+    box = (JComboBox) this.getComponent();
+    box.addFocusListener(new FocusListener(){
+      public void focusGained(FocusEvent fe)
+      {
+        box.showPopup();
+      }
+      public void focusLost(FocusEvent fe){}
+    });
   }
 }
