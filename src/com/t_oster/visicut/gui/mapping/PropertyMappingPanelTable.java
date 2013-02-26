@@ -279,6 +279,12 @@ public class PropertyMappingPanelTable extends EditableTablePanel implements Edi
         entries.add(e);
       }
     }
+    //add everything else
+    MappingTableEntry e = new MappingTableEntry();
+    e.enabled = false;
+    e.filterSet = null;
+    e.profile = ProfileManager.getInstance().getAll().isEmpty() ? null : ProfileManager.getInstance().getAll().get(0);
+    entries.add(e);
     suppressMappingUpdate = true;
     model.fireTableDataChanged();
     suppressMappingUpdate = false;

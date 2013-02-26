@@ -52,6 +52,7 @@ class SimpleFilterSetCellEditor extends ComboBoxCellEditor
   public void refresh(Iterable<FilterSet> entries)
   {
     filterSets.removeAllItems();
+    filterSets.addItem(new FilterSet());
     // add EVERYTHING_ELSE
     filterSets.addItem(EVERYTHING_ELSE);
     for (FilterSet e : entries)

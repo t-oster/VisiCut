@@ -26,6 +26,7 @@ import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingFilter;
 import java.awt.Color;
 import java.awt.Component;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JLabel;
@@ -34,6 +35,7 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -85,7 +87,11 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     if (evt.getNewLeadSelectionPath() != null && evt.getNewLeadSelectionPath().getPathCount() >= 1)
     {
       Object selected = evt.getNewLeadSelectionPath().getLastPathComponent();
-      if (selected != null && selected instanceof FilterSet)
+      if (selected == null || selected == EVERYTHING_ELSE)
+      {
+        this.setSelectedFilterSet(null);
+      }
+      else if (selected instanceof FilterSet)
       {
         this.setSelectedFilterSet(((FilterSet) selected).clone());
       }
@@ -230,6 +236,7 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
   public MappingJTree()
   {
     this.setModel(this);
+    this.setRootVisible(false);
     this.setCellRenderer(new DefaultTreeCellRenderer()
     {
 
@@ -237,27 +244,34 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
       public Component getTreeCellRendererComponent(JTree jtree, Object o, boolean bln, boolean bln1, boolean bln2, int i, boolean bln3)
       {
         Component c = super.getTreeCellRendererComponent(jtree, o, bln, bln1, bln2, i, bln3);
-        if (c instanceof JLabel && o instanceof FilterSet)
+        if (c instanceof JLabel)
         {
           JLabel l = (JLabel) c;
-          FilterSet fs = (FilterSet) o;
-          boolean hasUnmappedChildren = MappingJTree.this.hasUnmappedChildren(fs);
-          if (!hasUnmappedChildren)
-          {//If all chilren are already mapped, change bgcolor
-            l.setText("<html><span style=\"background-color:" + bgHtml + "\">" + l.getText() + "</span></html>");
-          }
-          if (fs instanceof FilterSetNode)
+          if (o == EVERYTHING_ELSE)
           {
-            MappingFilter f = fs.peekLast();
-            if (f != null)
+            l.setText(GraphicSet.translateAttVal("EVERYTHING_ELSE"));
+          }
+          else if (o instanceof FilterSet)
+          {
+            FilterSet fs = (FilterSet) o;
+            boolean hasUnmappedChildren = MappingJTree.this.hasUnmappedChildren(fs);
+            if (!hasUnmappedChildren)
+            {//If all chilren are already mapped, change bgcolor
+              l.setText("<html><span style=\"background-color:" + bgHtml + "\">" + l.getText() + "</span></html>");
+            }
+            if (fs instanceof FilterSetNode)
             {
-              if (f.getValue() instanceof Color)
+              MappingFilter f = fs.peekLast();
+              if (f != null)
               {
-                l.setText("<html><table" + (!hasUnmappedChildren ? " bgcolor=" + bgHtml : "") + "><tr><td>" + (f.isInverted() ? GraphicSet.translateAttVal("IS NOT") : GraphicSet.translateAttVal("IS")) + "</td><td border=1 bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
-              }
-              else
-              {
-                l.setText(GraphicSet.translateAttVal(f.getValue()));
+                if (f.getValue() instanceof Color)
+                {
+                  l.setText("<html><table" + (!hasUnmappedChildren ? " bgcolor=" + bgHtml : "") + "><tr><td>" + (f.isInverted() ? GraphicSet.translateAttVal("IS NOT") : GraphicSet.translateAttVal("IS")) + "</td><td border=1 bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
+                }
+                else
+                {
+                  l.setText(GraphicSet.translateAttVal(f.getValue()));
+                }
               }
             }
           }
@@ -288,16 +302,19 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
   {
     this.graphicObjects = graphicObjects;
     this.root = new FilterSetNode();
+    this.roots[0] = root;
     this.valueForPathChanged(new TreePath(new Object[]
       {
         this.getRoot()
       }), this.getRoot());
   }
+  
+  private String dummyRoot = "DUMMY";
   private FilterSet root = new FilterSetNode();
-
+  
   public Object getRoot()
   {
-    return root;
+    return dummyRoot;
   }
 
   public Object getChild(Object o, int i)
@@ -305,9 +322,17 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     return getChildren(o).get(i);
   }
 
+  private String EVERYTHING_ELSE = "dummy";
+  
+  private Object[] roots = new Object[]{root, EVERYTHING_ELSE};
+  
   private List getChildren(Object o)
   {
-    if (o instanceof FilterSetNode)
+    if (o == dummyRoot)
+    {
+      return Arrays.asList(roots);
+    }
+    else if (o instanceof FilterSetNode)
     {
       return ((FilterSetNode) o).getChildren();
     }
