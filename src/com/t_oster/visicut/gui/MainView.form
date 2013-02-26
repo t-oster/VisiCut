@@ -358,6 +358,8 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jScrollPane2" pref="650" max="32767" attributes="0"/>
+                  <Component id="warningPanel" pref="650" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Component id="jButton2" min="-2" pref="34" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -373,7 +375,6 @@
                       <EmptySpace pref="126" max="32767" attributes="0"/>
                       <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="jScrollPane2" pref="650" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" max="-2" attributes="0"/>
@@ -400,7 +401,9 @@
                           <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="651" max="32767" attributes="0"/>
+                      <Component id="jScrollPane2" pref="548" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="warningPanel" min="-2" pref="97" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -949,5 +952,10 @@
         </Container>
       </SubComponents>
     </Container>
+    <Component class="com.t_oster.uicomponents.warnings.WarningPanel" name="warningPanel">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="warningPanel" noResource="true"/>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>

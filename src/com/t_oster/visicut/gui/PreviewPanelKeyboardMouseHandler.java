@@ -137,7 +137,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
             VisicutModel.getInstance().loadFile(MappingManager.getInstance(), result, warnings, false);
             if (!warnings.isEmpty())
             {
-              dialogHelper.showWaringnMessage(warnings);
+              dialogHelper.showWarningMessage(warnings);
             }
             GraphicSet gs = VisicutModel.getInstance().getSelectedPart().getGraphicObjects();
             gs.setTransform(Helper.getTransform(gs.getOriginalBoundingBox(), bb));

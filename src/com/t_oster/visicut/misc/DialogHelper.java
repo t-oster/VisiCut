@@ -164,7 +164,7 @@ public class DialogHelper
     return JOptionPane.showConfirmDialog(parent, text, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION;
   }
 
-  public void showWaringnMessage(List<String> text)
+  public void showWarningMessage(List<String> text)
   {
     String txt = "";
     for(String s : text)

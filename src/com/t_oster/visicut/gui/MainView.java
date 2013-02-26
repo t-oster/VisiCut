@@ -28,6 +28,7 @@ import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.uicomponents.Ruler;
+import com.t_oster.uicomponents.warnings.Message;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.CreateNewMaterialDialog;
 import com.t_oster.visicut.gui.beans.CreateNewThicknessDialog;
@@ -98,7 +99,45 @@ public class MainView extends javax.swing.JFrame
     return instance;
   }
 
-  final protected DialogHelper dialog = new DialogHelper(this, this.getTitle());
+  final protected DialogHelper dialog = new DialogHelper(this, this.getTitle())
+  {
+
+    @Override
+    public void showWarningMessage(String text)
+    {
+      MainView.this.warningPanel.addMessage(new Message("Warning", text, Message.Type.WARNING, null));
+    }
+
+    @Override
+    public void showSuccessMessage(String text)
+    {
+      MainView.this.warningPanel.addMessage(new Message("Success", text, Message.Type.SUCCESS, null));
+    }
+
+    @Override
+    public void showInfoMessage(String text)
+    {
+      MainView.this.warningPanel.addMessage(new Message("Info", text, Message.Type.INFO, null));
+    }
+
+    @Override
+    public void showErrorMessage(Exception cause)
+    {
+      MainView.this.warningPanel.addMessage(new Message("Error", "Exception: "+cause.getLocalizedMessage(), Message.Type.ERROR, null));
+    }
+
+    @Override
+    public void showErrorMessage(Exception cause, String text)
+    {
+      MainView.this.warningPanel.addMessage(new Message("Error", text+"\nException: "+cause.getLocalizedMessage(), Message.Type.ERROR, null));
+    }
+
+    @Override
+    public void showErrorMessage(String text)
+    {
+      MainView.this.warningPanel.addMessage(new Message("Error", text, Message.Type.ERROR, null));
+    }
+  };
 
   public MainView(File loadedFile)
   {
@@ -233,6 +272,7 @@ public class MainView extends javax.swing.JFrame
       this.setLocation(lastBounds.x, lastBounds.y);
     }
     PositionPanelController c = new PositionPanelController(positionPanel, visicutModel1);
+    warningPanel.showMessage(null);
   }
 
   private ActionListener exampleItemClicked = new ActionListener(){
@@ -452,6 +492,7 @@ public class MainView extends javax.swing.JFrame
         laserSettingsLabel = new javax.swing.JLabel();
         btRemoveObject = new javax.swing.JButton();
         btAddObject = new javax.swing.JButton();
+        warningPanel = new com.t_oster.uicomponents.warnings.WarningPanel();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -860,6 +901,8 @@ public class MainView extends javax.swing.JFrame
 
         jScrollPane1.setViewportView(jPanel2);
 
+        warningPanel.setName("warningPanel"); // NOI18N
+
         menuBar.setName("menuBar"); // NOI18N
 
         fileMenu.setMnemonic('f');
@@ -1112,6 +1155,8 @@ public class MainView extends javax.swing.JFrame
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
+                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1125,8 +1170,7 @@ public class MainView extends javax.swing.JFrame
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 126, Short.MAX_VALUE)
-                        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE))
+                        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(8, 8, 8)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -1148,7 +1192,9 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(bt1to1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 651, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 548, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -1229,7 +1275,7 @@ public class MainView extends javax.swing.JFrame
       this.visicutModel1.loadFile(MappingManager.getInstance(), file, warnings, discardCurrent);
       if (!warnings.isEmpty())
         {
-          dialog.showWaringnMessage(warnings);
+          dialog.showWarningMessage(warnings);
         }
       //if the image is too big, fit it a nd notify the user
       this.fitObjectsIntoBed();
@@ -2311,6 +2357,7 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
     private javax.swing.JLabel timeLabel;
     private javax.swing.JMenu viewMenu;
     private com.t_oster.visicut.VisicutModel visicutModel1;
+    private com.t_oster.uicomponents.warnings.WarningPanel warningPanel;
     private javax.swing.JMenuItem zoomInMenuItem;
     private javax.swing.JMenuItem zoomOutMenuItem;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
