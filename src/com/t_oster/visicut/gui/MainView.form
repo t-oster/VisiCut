@@ -358,6 +358,8 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jScrollPane2" pref="650" max="32767" attributes="0"/>
+                  <Component id="warningPanel" pref="650" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Component id="jButton2" min="-2" pref="34" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -373,7 +375,6 @@
                       <EmptySpace pref="126" max="32767" attributes="0"/>
                       <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="jScrollPane2" pref="650" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" max="-2" attributes="0"/>
@@ -400,7 +401,9 @@
                           <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="651" max="32767" attributes="0"/>
+                      <Component id="jScrollPane2" pref="548" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="warningPanel" min="-2" pref="97" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -800,7 +803,7 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
               <SubComponents>
-                <Container class="javax.swing.JPanel" name="mappingPanel">
+                <Component class="com.t_oster.visicut.gui.mapping.MappingPanel" name="mappingPanel">
                   <Properties>
                     <Property name="name" type="java.lang.String" value="mappingPanel" noResource="true"/>
                   </Properties>
@@ -811,49 +814,7 @@
                       </JTabbedPaneConstraints>
                     </Constraint>
                   </Constraints>
-
-                  <Layout>
-                    <DimensionLayout dim="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="customMappingPanel" alignment="0" pref="365" max="32767" attributes="1"/>
-                                  <Component id="predefinedMappingBox1" alignment="0" pref="365" max="32767" attributes="1"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                    </DimensionLayout>
-                    <DimensionLayout dim="1">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" max="-2" attributes="0"/>
-                              <Component id="predefinedMappingBox1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" max="-2" attributes="0"/>
-                              <Component id="customMappingPanel" pref="235" max="32767" attributes="0"/>
-                              <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                    </DimensionLayout>
-                  </Layout>
-                  <SubComponents>
-                    <Component class="com.t_oster.visicut.gui.mapping.CustomMappingPanel" name="customMappingPanel">
-                      <Properties>
-                        <Property name="loadButtonVisible" type="boolean" value="false"/>
-                        <Property name="name" type="java.lang.String" value="customMappingPanel" noResource="true"/>
-                      </Properties>
-                    </Component>
-                    <Component class="com.t_oster.visicut.gui.mapping.PredefinedMappingBox" name="predefinedMappingBox1">
-                      <Properties>
-                        <Property name="name" type="java.lang.String" value="predefinedMappingBox1" noResource="true"/>
-                      </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="predefinedMappingBox1ActionPerformed"/>
-                      </Events>
-                    </Component>
-                  </SubComponents>
-                </Container>
+                </Component>
                 <Component class="com.t_oster.uicomponents.PositionPanel" name="positionPanel">
                   <Properties>
                     <Property name="name" type="java.lang.String" value="positionPanel" noResource="true"/>
@@ -991,5 +952,10 @@
         </Container>
       </SubComponents>
     </Container>
+    <Component class="com.t_oster.uicomponents.warnings.WarningPanel" name="warningPanel">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="warningPanel" noResource="true"/>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>

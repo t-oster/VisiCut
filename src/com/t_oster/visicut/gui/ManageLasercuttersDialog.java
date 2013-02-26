@@ -110,7 +110,7 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
     };
 
     @Override
-    public Class<?> getColumnClass(int i)
+    public Class getColumnClass(int i)
     {
       return String.class;
     }

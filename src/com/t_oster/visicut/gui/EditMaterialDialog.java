@@ -80,7 +80,7 @@ public class EditMaterialDialog extends javax.swing.JDialog implements EditableT
     }
 
     @Override
-    public Class<?> getColumnClass(int columnIndex)
+    public Class getColumnClass(int columnIndex)
     {
       return Float.class;
     }

@@ -57,14 +57,17 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
       if (cbProportional.isSelected())
       {
         ignoreTextfieldUpdates = true;
-        double whfactor = this.rectangle.getHeight()/this.rectangle.getWidth();
-        if (pce.getSource().equals(tfWidth))
+        if (this.rectangle.getWidth() != 0 || this.getRectangle().getHeight() != 0)
         {
-          tfHeight.setValue(tfWidth.getValue()*whfactor);
-        }
-        else if (pce.getSource().equals(tfHeight))
-        {
-          tfWidth.setValue(tfHeight.getValue()/whfactor);
+          double whfactor = this.rectangle.getHeight()/this.rectangle.getWidth();
+          if (pce.getSource().equals(tfWidth))
+          {
+            tfHeight.setValue(tfWidth.getValue()*whfactor);
+          }
+          else if (pce.getSource().equals(tfHeight))
+          {
+            tfWidth.setValue(tfHeight.getValue()/whfactor);
+          }
         }
         ignoreTextfieldUpdates = false;
       }
@@ -111,7 +114,7 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
     double oldAngle = this.angle;
     if (oldAngle != angle)
     {
-      this.angle = angle;
+      this.angle = checkNaN(angle);
       this.updateAngleText();
       firePropertyChange(PROP_ANGLE, oldAngle, angle);
     }
@@ -148,7 +151,7 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
           y = this.rectangle.getMinY();
           break;
         case TOP_CENTER:
-          x = this.rectangle.getCenterX();
+          x = this.rectangle.getWidth() != 0 ? this.rectangle.getCenterX() : this.rectangle.getMinX();
           y = this.rectangle.getMinY();
           break;
         case TOP_RIGHT:
@@ -157,22 +160,22 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
           break;
         case CENTER_LEFT:
           x = this.rectangle.getMinX();
-          y = this.rectangle.getCenterY();
+          y = this.rectangle.getHeight() != 0 ? this.rectangle.getCenterY() : this.rectangle.getMinY();
           break;
         case CENTER_CENTER:
-          x = this.rectangle.getCenterX();
-          y = this.rectangle.getCenterY();
+          x = this.rectangle.getWidth() != 0 ? this.rectangle.getCenterX() : this.rectangle.getMinX();
+          y = this.rectangle.getHeight() != 0 ? this.rectangle.getCenterY() : this.rectangle.getMinY();
           break;
         case CENTER_RIGHT:
           x = this.rectangle.getMaxX();
-          y = this.rectangle.getCenterY();
+          y = this.rectangle.getHeight() != 0 ? this.rectangle.getCenterY() : this.rectangle.getMinY();
           break;
           case BOTTOM_LEFT:
           x = this.rectangle.getMinX();
           y = this.rectangle.getMaxY();
           break;
         case BOTTOM_CENTER:
-          x = this.rectangle.getCenterX();
+          x = this.rectangle.getWidth() != 0 ? this.rectangle.getCenterX() : this.rectangle.getMinX();
           y = this.rectangle.getMaxY();
           break;
         case BOTTOM_RIGHT:
@@ -185,10 +188,24 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
           break;
       }
     }
-    tfX.setValue(x);
-    tfY.setValue(y);
+    boolean oldIgnoreTextfieldUpdates = ignoreTextfieldUpdates;
+    ignoreTextfieldUpdates = true;
+    tfX.setValue(checkNaN(x));
+    tfY.setValue(checkNaN(y));
+    ignoreTextfieldUpdates = oldIgnoreTextfieldUpdates;
   }
 
+  /**
+   * Checks d if it's = NaN and
+   * returns 0 in this case, else d
+   * @param d
+   * @return d or 0 if d == NaN
+   */
+  private double checkNaN(double d)
+  {
+    return Double.isNaN(d) ? 0 : d;
+  }
+  
   private Rectangle2D getRectangleFromTextfields()
   {
     try
@@ -250,7 +267,7 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
     Rectangle2D oldRectangle = this.rectangle;
     if (Util.differ(oldRectangle, rectangle))
     {
-      this.rectangle = new Rectangle2D.Double(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+      this.rectangle = new Rectangle2D.Double(checkNaN(rectangle.getX()), checkNaN(rectangle.getY()), checkNaN(rectangle.getWidth()), checkNaN(rectangle.getHeight()));
       this.updateRectanlgeText();
       firePropertyChange(PROP_RECTANGLE, oldRectangle, this.rectangle);
     }

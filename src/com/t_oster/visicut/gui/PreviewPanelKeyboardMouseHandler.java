@@ -137,7 +137,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
             VisicutModel.getInstance().loadFile(MappingManager.getInstance(), result, warnings, false);
             if (!warnings.isEmpty())
             {
-              dialogHelper.showWaringnMessage(warnings);
+              dialogHelper.showWarningMessage(warnings);
             }
             GraphicSet gs = VisicutModel.getInstance().getSelectedPart().getGraphicObjects();
             gs.setTransform(Helper.getTransform(gs.getOriginalBoundingBox(), bb));
@@ -511,8 +511,15 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
           }
           else
           {
-            getEditRect().setRotateMode(true);
-            getEditRect().setRotationAngle(Helper.getRotationAngle(VisicutModel.getInstance().getSelectedPart().getGraphicObjects().getTransform()));
+            if (this.previewPanel.isHighlightSelection())
+            {
+              getEditRect().setRotateMode(true);
+              getEditRect().setRotationAngle(Helper.getRotationAngle(VisicutModel.getInstance().getSelectedPart().getGraphicObjects().getTransform()));
+            }
+            else
+            {
+              this.previewPanel.setHighlightSelection(true);
+            }
             this.previewPanel.repaint();
           }
         }
@@ -523,7 +530,9 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       }
       else
       {//clicked next to graphic => clear selection
-        VisicutModel.getInstance().setSelectedPart(null);
+        this.previewPanel.setHighlightSelection(false);
+        this.previewPanel.repaint();
+        //VisicutModel.getInstance().setSelectedPart(null);
       }
     }
     else if (me.getButton() == MouseEvent.BUTTON3)

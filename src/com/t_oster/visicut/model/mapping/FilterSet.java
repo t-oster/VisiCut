@@ -47,16 +47,10 @@ public class FilterSet extends LinkedList<MappingFilter>
       return result;
     }
     result.setTransform(elements.getTransform());
-    for (GraphicObject o : elements)
+    result.addAll(elements);
+    for (MappingFilter filter : this)
     {
-      for (MappingFilter filter : this)
-      {
-        if (filter.matches(o))
-        {
-          result.add(o);
-          break;
-        }
-      }
+      result.removeAll(filter.getNotMatchingElements(elements));
     }
     return result;
   }
@@ -66,11 +60,16 @@ public class FilterSet extends LinkedList<MappingFilter>
   {
     if (this.size() == 0)
     {
-      return "Everything";
+      return GraphicSet.translateAttVal("Everything");
     }
     else
     {
-      return this.get(this.size() - 1).toString();
+      String txt = "";
+      for (MappingFilter f : this)
+      {
+        txt += ("".equals(txt) ? "" : " "+GraphicSet.translateAttVal("AND")+" ")+f.toString();
+      }
+      return txt;
     }
   }
   

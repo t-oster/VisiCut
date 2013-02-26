@@ -163,6 +163,10 @@ public class VisicutModel
   {
     PlfPart oldSelectedPart = this.selectedPart;
     this.selectedPart = selectedPart;
+    if (selectedPart == null && this.plfFile != null && !this.plfFile.isEmpty())
+    {
+      this.selectedPart = this.plfFile.get(0);
+    }
     propertyChangeSupport.firePropertyChange(PROP_SELECTEDPART, oldSelectedPart, selectedPart);
   }
 
@@ -660,8 +664,12 @@ public class VisicutModel
       }
       for (Mapping m : p.getMapping())
       {
-        GraphicSet set = m.getFilterSet().getMatchingObjects(p.getGraphicObjects());
+        GraphicSet set = m.getFilterSet() != null ? m.getFilterSet().getMatchingObjects(p.getGraphicObjects()) : p.getUnmatchedObjects();
         LaserProfile pr = m.getProfile();
+        if (pr == null)//ignore-profile
+        {
+          continue;
+        }
         List<LaserProperty> props = propmap.get(pr);
         pr.addToLaserJob(job, set, this.addFocusOffset(props, focusOffset));
       }
@@ -844,6 +852,7 @@ public class VisicutModel
     {
       this.removePlfPart(this.selectedPart);
     }
+    this.setSelectedPart(this.plfFile != null && !this.plfFile.isEmpty() ? this.plfFile.get(0) : null);
   }
 
   public void firePartUpdated(PlfPart p)
