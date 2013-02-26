@@ -511,8 +511,15 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
           }
           else
           {
-            getEditRect().setRotateMode(true);
-            getEditRect().setRotationAngle(Helper.getRotationAngle(VisicutModel.getInstance().getSelectedPart().getGraphicObjects().getTransform()));
+            if (this.previewPanel.isHighlightSelection())
+            {
+              getEditRect().setRotateMode(true);
+              getEditRect().setRotationAngle(Helper.getRotationAngle(VisicutModel.getInstance().getSelectedPart().getGraphicObjects().getTransform()));
+            }
+            else
+            {
+              this.previewPanel.setHighlightSelection(true);
+            }
             this.previewPanel.repaint();
           }
         }
@@ -523,6 +530,8 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       }
       else
       {//clicked next to graphic => clear selection
+        this.previewPanel.setHighlightSelection(false);
+        this.previewPanel.repaint();
         //VisicutModel.getInstance().setSelectedPart(null);
       }
     }

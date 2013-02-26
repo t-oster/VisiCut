@@ -378,6 +378,18 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     this.repaint();
   }
 
+    private boolean highlightSelection = false;
+
+  public boolean isHighlightSelection()
+  {
+    return highlightSelection;
+  }
+
+  public void setHighlightSelection(boolean highlightSelection)
+  {
+    this.highlightSelection = highlightSelection;
+  }
+  
   protected EditRectangle editRectangle = null;
 
   /**
@@ -401,6 +413,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   public void setEditRectangle(EditRectangle editRectangle)
   {
     this.editRectangle = editRectangle;
+    this.setHighlightSelection(true);
     this.repaint();
   }
 
@@ -605,7 +618,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       }
       if (this.editRectangle != null)
       {
-        this.editRectangle.render(gg, this.getMmToPxTransform());
+        this.editRectangle.render(gg, this.getMmToPxTransform(), this.highlightSelection);
       }
     }
   }

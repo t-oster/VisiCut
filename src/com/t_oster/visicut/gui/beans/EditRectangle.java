@@ -207,11 +207,11 @@ public class EditRectangle extends Rectangle2D.Double
    * @param gg
    * @param transform
    */
-  public void render(Graphics2D gg, AffineTransform mm2px)
+  public void render(Graphics2D gg, AffineTransform mm2px, boolean full)
   {
     //draw the rectangle
     gg.setColor(lineColor);
-    gg.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 0, new float[]
+    gg.setStroke(new BasicStroke(full ? 2 : 1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]
       {
         10, 10
       }, 0));
@@ -232,18 +232,24 @@ public class EditRectangle extends Rectangle2D.Double
       w = gg.getFontMetrics().stringWidth(txt);
       int ascend = gg.getFontMetrics().getAscent();
       int h = gg.getFontMetrics().getHeight();
-      gg.drawString(txt, 10+(int) (center.x+diagonal/2), center.y+h/2);
+      if (full)
+      {
+        gg.drawString(txt, 10+(int) (center.x+diagonal/2), center.y+h/2);
+      }
       this.parameterFieldBounds[4].setBounds(10+(int) (center.x+diagonal/2), center.y+h/2-ascend, w, h);
     }
     else
     {
       gg.drawRect(tr.x, tr.y, tr.width, tr.height);
-      //draw the corner buttons
-      gg.setColor(buttonColor);
-      for (Button b : Button.values())
+      if (full)
       {
-        Rectangle r = Helper.toRect(this.getButton(b,tr));
-        gg.fillRect(r.x, r.y, r.width, r.height);
+        //draw the corner buttons
+        gg.setColor(buttonColor);
+        for (Button b : Button.values())
+        {
+          Rectangle r = Helper.toRect(this.getButton(b,tr));
+          gg.fillRect(r.x, r.y, r.width, r.height);
+        }
       }
       //draw the width
       gg.setColor(textColor);
@@ -252,32 +258,47 @@ public class EditRectangle extends Rectangle2D.Double
       w = gg.getFontMetrics().stringWidth(txt);
       int ascend = gg.getFontMetrics().getAscent();
       int h = gg.getFontMetrics().getHeight();
-      gg.drawString(txt, tr.x+tr.width/2-w/2, tr.y+tr.height+h);
+      if (full)
+      {
+        gg.drawString(txt, tr.x+tr.width/2-w/2, tr.y+tr.height+h);
+      }
       this.parameterFieldBounds[2].setBounds(tr.x+tr.width/2-w/2, tr.y+tr.height+h-ascend, w, h);
       //draw the height
       w = (int) Math.round(this.height);
       txt = (w/10)+","+(w%10)+" cm";
       w = gg.getFontMetrics().stringWidth(txt);
-      gg.drawString(txt, tr.x+tr.width+5, tr.y+tr.height/2);
+      if (full)
+      {
+        gg.drawString(txt, tr.x+tr.width+5, tr.y+tr.height/2);
+      }
       this.parameterFieldBounds[3].setBounds(tr.x+tr.width+5, tr.y+tr.height/2-ascend, w, h);
       //draw lines from the left and upper center
       gg.setColor(lineColor);
       Point zero = new Point(0, 0);
-      gg.drawLine(zero.x, tr.y+tr.height/2, tr.x, tr.y+tr.height/2);
-      gg.drawLine(tr.x+tr.width/2, zero.y, tr.x+tr.width/2, tr.y);
+      if (full)
+      {
+        gg.drawLine(zero.x, tr.y+tr.height/2, tr.x, tr.y+tr.height/2);
+        gg.drawLine(tr.x+tr.width/2, zero.y, tr.x+tr.width/2, tr.y);
+      }
       //draw the left
       gg.setColor(textColor);
       w = (int) Math.round(this.x);
       txt = (w/10)+","+(w%10)+" cm";
       w = gg.getFontMetrics().stringWidth(txt);
       h = gg.getFontMetrics().getHeight();
-      gg.drawString(txt, tr.x-w-10, tr.y+tr.height/2+h);
+      if (full)
+      {
+        gg.drawString(txt, tr.x-w-10, tr.y+tr.height/2+h);
+      }
       this.parameterFieldBounds[0].setBounds(tr.x-w-10, tr.y+tr.height/2+h-ascend, w, h);
       //draw the top offset
       w = (int) Math.round(this.y);
       txt = (w/10)+","+(w%10)+" cm";
       w = gg.getFontMetrics().stringWidth(txt);
-      gg.drawString(txt, tr.x+tr.width/2+5, tr.y-h);
+      if (full)
+      {
+        gg.drawString(txt, tr.x+tr.width/2+5, tr.y-h);
+      }
       this.parameterFieldBounds[1].setBounds(tr.x+tr.width/2+5, tr.y-h-ascend, w, h);
     }
   }
