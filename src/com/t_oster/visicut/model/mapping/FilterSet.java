@@ -47,16 +47,10 @@ public class FilterSet extends LinkedList<MappingFilter>
       return result;
     }
     result.setTransform(elements.getTransform());
-    for (GraphicObject o : elements)
+    result.addAll(elements);
+    for (MappingFilter filter : this)
     {
-      for (MappingFilter filter : this)
-      {
-        if (filter.matches(o))
-        {
-          result.add(o);
-          break;
-        }
-      }
+      result.removeAll(filter.getNotMatchingElements(elements));
     }
     return result;
   }

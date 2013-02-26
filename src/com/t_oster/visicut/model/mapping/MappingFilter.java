@@ -98,18 +98,28 @@ public class MappingFilter
     this.value = value;
   }
 
-  public GraphicSet getMatchingElements(GraphicSet elements)
+  private GraphicSet getMatchingElements(GraphicSet elements, boolean invert)
   {
     GraphicSet result = new GraphicSet();
     result.setTransform(elements.getTransform());
     for (GraphicObject e : elements)
     {
-      if (this.matches(e))
+      if ((!invert && this.matches(e)) || (invert && !this.matches(e)))
       {
         result.add(e);
       }
     }
     return result;
+  }
+  
+  public GraphicSet getNotMatchingElements(GraphicSet elements)
+  {
+    return this.getMatchingElements(elements, true);
+  }
+  
+  public GraphicSet getMatchingElements(GraphicSet elements)
+  {
+    return this.getMatchingElements(elements, false);
   }
 
   @Override
