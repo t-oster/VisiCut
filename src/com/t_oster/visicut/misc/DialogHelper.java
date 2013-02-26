@@ -25,8 +25,11 @@ import com.t_oster.uicomponents.UnitTextfield;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.swing.Box;
@@ -58,16 +61,23 @@ public class DialogHelper
       if (d.isSupported(Desktop.Action.OPEN))
       {
         d.open(f.isDirectory() ? f : f.getParentFile());
-      }
-      else
-      {
-        showErrorMessage("Sorry, can not open files on your plaftorm");
+        return;
       }
     }
     catch (Exception e)
     {
-      showErrorMessage("Sorry, can not open files on your plaftorm");
     }
+    if (Helper.isMacOS())
+    {
+      try
+      {
+        Runtime.getRuntime().exec(new String[]{"open", (f.isDirectory() ? f : f.getParentFile()).getAbsolutePath()});
+      }
+      catch (Exception e)
+      {
+      }
+    }
+    showErrorMessage("Sorry, can not open files on your plaftorm");
   }
 
   public void openInEditor(File f)
@@ -78,20 +88,29 @@ public class DialogHelper
       if (d.isSupported(Desktop.Action.EDIT))
       {
         d.edit(f);
+        return;
       }
       else if (d.isSupported(Desktop.Action.OPEN))
       {
         d.open(f);
-      }
-      else
-      {
-        showErrorMessage("Sorry, can not open files on your plaftorm");
+        return;
       }
     }
     catch (Exception e)
     {
-      showErrorMessage("Sorry, can not open files on your plaftorm");
     }
+    if (Helper.isMacOS())
+    {
+      try
+      {
+        Runtime.getRuntime().exec(new String[]{"open", f.getAbsolutePath()});
+        return;
+      }
+      catch (IOException ex)
+      {
+      }
+    }
+    showErrorMessage("Sorry, can not open files on your plaftorm");
   }
 
   public <T> T askElement(Collection<T> source, String text)
