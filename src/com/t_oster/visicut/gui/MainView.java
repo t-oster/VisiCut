@@ -129,7 +129,7 @@ public class MainView extends javax.swing.JFrame
     @Override
     public void showErrorMessage(Exception cause, String text)
     {
-      MainView.this.warningPanel.addMessage(new Message("Error", text+"\nException: "+cause.getLocalizedMessage(), Message.Type.ERROR, null));
+      MainView.this.warningPanel.addMessage(new Message("Error", text+": "+cause.getLocalizedMessage(), Message.Type.ERROR, null));
     }
 
     @Override
@@ -138,6 +138,7 @@ public class MainView extends javax.swing.JFrame
       MainView.this.warningPanel.addMessage(new Message("Error", text, Message.Type.ERROR, null));
     }
   };
+  private boolean ignoreLaserCutterComboBoxUpdates;
 
   public MainView(File loadedFile)
   {
@@ -370,6 +371,7 @@ public class MainView extends javax.swing.JFrame
   private void fillComboBoxes()
   {
     String sld = this.visicutModel1.getSelectedLaserDevice() != null ? this.visicutModel1.getSelectedLaserDevice().getName() : null;
+    ignoreLaserCutterComboBoxUpdates = true;
     this.laserCutterComboBox.removeAllItems();
     for (LaserDevice ld : LaserDeviceManager.getInstance().getAll())
     {
@@ -391,6 +393,7 @@ public class MainView extends javax.swing.JFrame
       this.laserCutterComboBox.setVisible(true);
       this.jLabel9.setVisible(true);
     }
+    ignoreLaserCutterComboBoxUpdates = false;
     this.refreshMaterialComboBox();
 
     this.refreshObjectComboBox();
@@ -1295,7 +1298,7 @@ public class MainView extends javax.swing.JFrame
   {
     boolean cam = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null;
     this.calibrateCameraMenuItem.setEnabled(cam);
-    this.captureImageButton.setEnabled(cam);
+    this.captureImageButton.setVisible(cam);
     this.jmShowPhoto.setEnabled(cam);
     boolean estimateSupported = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getLaserCutter().canEstimateJobDuration();
     this.calculateTimeButton.setVisible(estimateSupported);
@@ -1726,7 +1729,8 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
           }
           catch (Exception ex)
           {
-            MainView.this.progressBar.setString(bundle.getString("ERROR CAPTURING PHOTO"));
+            MainView.this.progressBar.setString("");
+            MainView.this.dialog.showErrorMessage(ex, bundle.getString("ERROR CAPTURING PHOTO"));
             MainView.this.progressBar.setIndeterminate(false);
             MainView.this.progressBar.repaint();
           }
@@ -1801,24 +1805,27 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
 
   private void laserCutterComboBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_laserCutterComboBoxActionPerformed
   {//GEN-HEADEREND:event_laserCutterComboBoxActionPerformed
-    LaserDevice newDev = laserCutterComboBox.getSelectedItem() instanceof LaserDevice ? (LaserDevice) laserCutterComboBox.getSelectedItem() : null;
-    if (!Util.differ(newDev, visicutModel1.getSelectedLaserDevice()))
+    if (!ignoreLaserCutterComboBoxUpdates)
     {
-      return;
+      LaserDevice newDev = laserCutterComboBox.getSelectedItem() instanceof LaserDevice ? (LaserDevice) laserCutterComboBox.getSelectedItem() : null;
+      if (!Util.differ(newDev, visicutModel1.getSelectedLaserDevice()))
+      {
+        return;
+      }
+      this.visicutModel1.setSelectedLaserDevice(newDev);
+      if (this.visicutModel1.getSelectedLaserDevice() == null || this.visicutModel1.getSelectedLaserDevice().getCameraURL() == null || "".equals(this.visicutModel1.getSelectedLaserDevice().getCameraURL()))
+      {
+        this.visicutModel1.setBackgroundImage(null);
+        this.previewPanel.setEditRectangle(null);
+      }
+      else
+      {
+        this.captureImage();
+      }
+      this.refreshButtonStates();
+      //if the image is too big, fit it and notify the user
+      this.fitObjectsIntoBed();
     }
-    this.visicutModel1.setSelectedLaserDevice(newDev);
-    if (this.visicutModel1.getSelectedLaserDevice() == null || this.visicutModel1.getSelectedLaserDevice().getCameraURL() == null || "".equals(this.visicutModel1.getSelectedLaserDevice().getCameraURL()))
-    {
-      this.visicutModel1.setBackgroundImage(null);
-      this.previewPanel.setEditRectangle(null);
-    }
-    else
-    {
-      this.captureImage();
-    }
-    this.refreshButtonStates();
-    //if the image is too big, fit it and notify the user
-    this.fitObjectsIntoBed();
   }//GEN-LAST:event_laserCutterComboBoxActionPerformed
 
   private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem2ActionPerformed

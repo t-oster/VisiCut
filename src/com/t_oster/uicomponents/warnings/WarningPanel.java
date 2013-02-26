@@ -39,6 +39,7 @@ public class WarningPanel extends javax.swing.JPanel
   
   public void showMessage(Message m)
   {
+    this.currentMessage = m;
     this.warningContainer.removeAll();
     if (m != null)
     {
@@ -57,7 +58,6 @@ public class WarningPanel extends javax.swing.JPanel
     {
       this.setVisible(false);
     }
-    this.currentMessage = m;
   }
   
   
@@ -111,26 +111,30 @@ public class WarningPanel extends javax.swing.JPanel
       }
     });
 
+    warningContainer.setLayout(new javax.swing.BoxLayout(warningContainer, javax.swing.BoxLayout.LINE_AXIS));
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addComponent(warningContainer, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+        .addComponent(warningContainer, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(btClose)
-          .addComponent(btNext)
-          .addComponent(btPrev)))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addComponent(btClose)
+            .addGap(1, 1, 1))
+          .addComponent(btNext, javax.swing.GroupLayout.Alignment.TRAILING)
+          .addComponent(btPrev, javax.swing.GroupLayout.Alignment.TRAILING)))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addComponent(btClose, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(btClose)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(btNext, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(btNext)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(btPrev, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(btPrev)
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
       .addComponent(warningContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
     );
@@ -142,7 +146,7 @@ public class WarningPanel extends javax.swing.JPanel
     {
       int i = this.messages.indexOf(currentMessage);
       this.messages.remove(i);
-      this.showMessage(i > 0 ? this.messages.get(i) : (this.messages.isEmpty() ? null : this.messages.get(0)));
+      this.showMessage(i > 0 ? this.messages.get(i-1) : (this.messages.isEmpty() ? null : this.messages.get(0)));
     }
   }//GEN-LAST:event_btCloseActionPerformed
 

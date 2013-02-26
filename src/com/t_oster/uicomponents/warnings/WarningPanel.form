@@ -17,12 +17,15 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="warningContainer" pref="398" max="32767" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <Component id="warningContainer" pref="450" max="32767" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="btClose" min="-2" max="-2" attributes="0"/>
-                  <Component id="btNext" min="-2" max="-2" attributes="0"/>
-                  <Component id="btPrev" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Component id="btClose" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="btNext" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="btPrev" alignment="1" min="-2" max="-2" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -30,14 +33,14 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
-              <Component id="btClose" min="-2" pref="22" max="-2" attributes="0"/>
+              <Component id="btClose" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="btNext" min="-2" pref="22" max="-2" attributes="0"/>
+              <Component id="btNext" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="btPrev" min="-2" pref="22" max="-2" attributes="0"/>
+              <Component id="btPrev" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
-          <Component id="warningContainer" alignment="0" max="32767" attributes="0"/>
+          <Component id="warningContainer" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -68,7 +71,7 @@
     </Component>
     <Container class="javax.swing.JPanel" name="warningContainer">
 
-      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
     </Container>
   </SubComponents>
 </Form>
