@@ -603,7 +603,19 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       }
       else
       {//no button selected
-        if (getEditRect().contains(lastMousePositionMm))
+        EditRectangle tmp = getEditRect().clone();
+        //if too small to catch with the mouse, just add one cm
+        if (tmp.getWidth() <= 3)
+        {
+          tmp.width = 10;
+          tmp.x -= 5;
+        }
+        if (tmp.getHeight() <= 3)
+        {
+          tmp.height += 10;
+          tmp.y -= 5;
+        }
+        if (tmp.contains(lastMousePositionMm))
         {//selection in the rectangle
           currentAction = MouseAction.movingSet;
         }
