@@ -422,7 +422,7 @@ public class EditableTablePanel extends javax.swing.JPanel
   private void btRemoveActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btRemoveActionPerformed
   {//GEN-HEADEREND:event_btRemoveActionPerformed
     int idx = this.table.getSelectedRow();
-    if (idx >= 0)
+    if (idx >= 0 && this.objects.size() > idx)
     {
       Object o = this.objects.get(idx);
       this.objects.remove(o);

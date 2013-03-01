@@ -19,11 +19,10 @@
 package com.t_oster.visicut.gui.propertypanel;
 
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.uicomponents.EditableTableProvider;
 import com.t_oster.visicut.VisicutModel;
-import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
-import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
@@ -35,11 +34,12 @@ import java.util.List;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class PropertyPanel extends javax.swing.JPanel
+public class PropertyPanel extends javax.swing.JPanel implements EditableTableProvider
 {
 
   private LaserPropertiesTableModel model;
   private List<LaserProperty> laserproperties;
+  private LaserProfile lp;
   
   /**
    * Creates new form PropertyPanel
@@ -48,40 +48,34 @@ public class PropertyPanel extends javax.swing.JPanel
   {
     initComponents();
     model = new LaserPropertiesTableModel();
+    this.editableTablePanel1.getTable().setModel(model);
+    this.editableTablePanel1.setEditButtonVisible(false);
+    this.editableTablePanel1.setProvider(this);
   }
 
   public void setMapping(Mapping m)
   {
     this.jLabel1.setText(m.getProfile().getName()+" settings ("+m.getFilterSet().toString()+")");
-    LaserDevice ld = VisicutModel.getInstance().getSelectedLaserDevice();
-    LaserProfile lp = m.getProfile();
-    try
+    this.lp = m.getProfile();
+  }
+  
+  public void setLaserProperties(List<LaserProperty> props)
+  {
+    if (props != null)
     {
-      MaterialProfile mp = VisicutModel.getInstance().getMaterial();
-      float thickness = VisicutModel.getInstance().getMaterialThickness();
-      this.laserproperties = LaserPropertyManager.getInstance().getLaserProperties(ld, mp, lp, thickness);   
-    }
-    catch (Exception ex)
-    {
-    }
-    if (this.laserproperties == null)
-    {
-      List<LaserProperty> props = new LinkedList<LaserProperty>();
-      if (lp instanceof VectorProfile)
-      {
-        props.add(ld.getLaserCutter().getLaserPropertyForVectorPart());
-      }
-      else if (lp instanceof RasterProfile)
-      {
-        props.add(ld.getLaserCutter().getLaserPropertyForRasterPart());
-      }
-      else if (lp instanceof Raster3dProfile)
-      {
-        props.add(ld.getLaserCutter().getLaserPropertyForRaster3dPart());
-      }
       this.laserproperties = props;
     }
+    else
+    {
+      this.laserproperties = new LinkedList<LaserProperty>();
+      LaserProperty n = (LaserProperty) this.getNewInstance();
+      if (n != null)
+      {
+        this.laserproperties.add((LaserProperty) this.getNewInstance());
+      }
+    }
     this.model.setLaserProperties(this.laserproperties);
+    this.editableTablePanel1.setObjects((List) this.laserproperties);
   }
   
   public List<LaserProperty> getLaserProperties()
@@ -128,5 +122,31 @@ public class PropertyPanel extends javax.swing.JPanel
   private com.t_oster.uicomponents.EditableTablePanel editableTablePanel1;
   private javax.swing.JLabel jLabel1;
   // End of variables declaration//GEN-END:variables
+
+  public Object getNewInstance()
+  {
+    LaserDevice ld = VisicutModel.getInstance().getSelectedLaserDevice();
+    if (lp != null && ld != null)
+    {
+      if (lp instanceof VectorProfile)
+      {
+        return ld.getLaserCutter().getLaserPropertyForVectorPart();
+      }
+      else if (lp instanceof RasterProfile)
+      {
+        return ld.getLaserCutter().getLaserPropertyForRasterPart();
+      }
+      else if (lp instanceof Raster3dProfile)
+      {
+        return ld.getLaserCutter().getLaserPropertyForRaster3dPart();
+      }
+    }
+    return null;
+  }
+
+  public Object editObject(Object o)
+  {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
 
 }

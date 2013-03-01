@@ -630,11 +630,7 @@
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Component id="cbEditBeforeExecute" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace pref="111" max="32767" attributes="0"/>
-                                      <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
-                                  </Group>
+                                  <Component id="executeJobButton" alignment="1" min="-2" max="-2" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -703,10 +699,7 @@
                           <Component id="calculateTimeButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="executeJobButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="cbEditBeforeExecute" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -878,12 +871,6 @@
                   <Property name="name" type="java.lang.String" value="cbUseThickness"/>
                 </BindingProperty>
               </BindingProperties>
-            </Component>
-            <Component class="javax.swing.JCheckBox" name="cbEditBeforeExecute">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="cbEditBeforeExecute.text"/>
-                <Property name="name" type="java.lang.String" value="cbEditBeforeExecute" noResource="true"/>
-              </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="executeJobButton">
               <Properties>

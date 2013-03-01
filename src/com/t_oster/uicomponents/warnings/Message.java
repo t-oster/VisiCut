@@ -198,12 +198,18 @@ public class Message extends javax.swing.JPanel
 
   private void btAction1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btAction1ActionPerformed
   {//GEN-HEADEREND:event_btAction1ActionPerformed
-    this.actions[0].clicked();
+    if (this.actions[0].clicked())
+    {
+      this.btAction1.setVisible(false);
+    }
   }//GEN-LAST:event_btAction1ActionPerformed
 
   private void btAction2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btAction2ActionPerformed
   {//GEN-HEADEREND:event_btAction2ActionPerformed
-    this.actions[1].clicked();
+    if (this.actions[1].clicked())
+    {
+      this.btAction2.setVisible(false);
+    }
   }//GEN-LAST:event_btAction2ActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables

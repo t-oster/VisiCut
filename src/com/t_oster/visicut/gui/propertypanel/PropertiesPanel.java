@@ -18,13 +18,26 @@
  **/
 package com.t_oster.visicut.gui.propertypanel;
 
+import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.managers.LaserPropertyManager;
+import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
+import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.PlfPart;
+import com.t_oster.visicut.model.Raster3dProfile;
+import com.t_oster.visicut.model.RasterProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -48,20 +61,48 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
   {
     this.removeAll();
     panels.clear();
+    this.updatePanels();
+  }
+  
+  /**
+   * Updates the view to show panels for the currently selected 
+   * plf part. However if a laser-profile's properties have been changed,
+   * the changed profiles are used.
+   */
+  private void updatePanels()
+  {
+    LaserDevice ld = VisicutModel.getInstance().getSelectedLaserDevice();
+    MaterialProfile mp = VisicutModel.getInstance().getMaterial();
+    float thickness = VisicutModel.getInstance().getMaterialThickness();
     if (VisicutModel.getInstance().getSelectedPart() != null && VisicutModel.getInstance().getSelectedPart().getMapping() != null)
     {
       for (Mapping m : VisicutModel.getInstance().getSelectedPart().getMapping())
       {
-        PropertyPanel p = new PropertyPanel();
-        p.setMapping(m);
-        panels.put(m.getProfile(), p);
+        PropertyPanel p;
+        if (panels.containsKey(m.getProfile()))
+        {
+          p = panels.get(m.getProfile());
+          p.setMapping(m);
+        }
+        else
+        {
+          p = new PropertyPanel();
+          p.setMapping(m);
+          try
+          {
+            p.setLaserProperties(LaserPropertyManager.getInstance().getLaserProperties(ld, mp, m.getProfile(), thickness));
+          }
+          catch (Exception ex)
+          {
+            Logger.getLogger(PropertiesPanel.class.getName()).log(Level.SEVERE, null, ex);
+          }
+          panels.put(m.getProfile(), p);
+        }
         p.setVisible(true);
         p.validate();
         this.add(p);
-        
       }
     }
-    this.validate();
   }
   
   /**
@@ -83,11 +124,67 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
   {
     if (VisicutModel.PROP_MATERIAL.equals(pce.getPropertyName())
       || VisicutModel.PROP_MATERIALTHICKNESS.equals(pce.getPropertyName())
-      || VisicutModel.PROP_SELECTEDLASERDEVICE.equals(pce.getPropertyName())
-      || VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName())
+      || VisicutModel.PROP_SELECTEDLASERDEVICE.equals(pce.getPropertyName()))
+    {
+      reloadPanels();
+    }
+    else if(VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName())
       || VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()))
     {
       reloadPanels();
     }
+  }
+  
+  public Map<LaserProfile, List<LaserProperty>> getPropertyMap()
+  {
+    Map<LaserProfile, List<LaserProperty>> result = new LinkedHashMap<LaserProfile, List<LaserProperty>>();
+    //add all the properties from our panels
+    for (Entry<LaserProfile, PropertyPanel> e : panels.entrySet())
+    {
+      result.put(e.getKey(), e.getValue().getLaserProperties());
+    }
+    //check if something is missing and try to load it from the manager
+    LaserDevice ld = VisicutModel.getInstance().getSelectedLaserDevice();
+    MaterialProfile mp = VisicutModel.getInstance().getMaterial();
+    float thickness = VisicutModel.getInstance().getMaterialThickness();
+    for(PlfPart p : VisicutModel.getInstance().getPlfFile())
+    {
+      for (Mapping m : p.getMapping())
+      {
+        if (m != null && m.getProfile() != null)
+        {
+          LaserProfile lp = m.getProfile();
+          if (!result.containsKey(lp))
+          {
+            List<LaserProperty> props = null;
+            try
+            {
+              props = LaserPropertyManager.getInstance().getLaserProperties(ld, mp, lp, thickness);   
+            }
+            catch (Exception ex)
+            {
+            }
+            if (props == null)
+            {
+              props = new LinkedList<LaserProperty>();
+              if (lp instanceof VectorProfile)
+              {
+                props.add(ld.getLaserCutter().getLaserPropertyForVectorPart());
+              }
+              else if (lp instanceof RasterProfile)
+              {
+                props.add(ld.getLaserCutter().getLaserPropertyForRasterPart());
+              }
+              else if (lp instanceof Raster3dProfile)
+              {
+                props.add(ld.getLaserCutter().getLaserPropertyForRaster3dPart());
+              }
+            }
+            result.put(lp, props);
+          }
+        }
+      }
+    }
+    return result;
   }
 }
