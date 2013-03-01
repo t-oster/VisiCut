@@ -123,12 +123,14 @@ public class MainView extends javax.swing.JFrame
     @Override
     public void showErrorMessage(Exception cause)
     {
+      cause.printStackTrace();
       MainView.this.warningPanel.addMessage(new Message("Error", "Exception: "+cause.getLocalizedMessage(), Message.Type.ERROR, null));
     }
 
     @Override
     public void showErrorMessage(Exception cause, String text)
     {
+      cause.printStackTrace();
       MainView.this.warningPanel.addMessage(new Message("Error", text+": "+cause.getLocalizedMessage(), Message.Type.ERROR, null));
     }
 
@@ -482,17 +484,16 @@ public class MainView extends javax.swing.JFrame
         mappingTabbedPane = new javax.swing.JTabbedPane();
         mappingPanel = new com.t_oster.visicut.gui.mapping.MappingPanel();
         positionPanel = new com.t_oster.uicomponents.PositionPanel();
+        propertyPanelContainer = new javax.swing.JScrollPane();
+        propertiesPanel = new com.t_oster.visicut.gui.propertypanel.PropertiesPanel();
         btAddMaterial = new javax.swing.JButton();
         cbMaterialThickness = new javax.swing.JComboBox();
         btAddMaterialThickness = new javax.swing.JButton();
         jCheckBox1 = new javax.swing.JCheckBox();
         cbEditBeforeExecute = new javax.swing.JCheckBox();
         executeJobButton = new javax.swing.JButton();
-        editLaserSettingsButton = new javax.swing.JButton();
         objectComboBox = new javax.swing.JComboBox();
         jSeparator1 = new javax.swing.JSeparator();
-        jSeparator2 = new javax.swing.JSeparator();
-        laserSettingsLabel = new javax.swing.JLabel();
         btRemoveObject = new javax.swing.JButton();
         btAddObject = new javax.swing.JButton();
         warningPanel = new com.t_oster.uicomponents.warnings.WarningPanel();
@@ -705,6 +706,14 @@ public class MainView extends javax.swing.JFrame
         positionPanel.setName("positionPanel"); // NOI18N
         mappingTabbedPane.addTab(resourceMap.getString("positionPanel.TabConstraints.tabTitle"), positionPanel); // NOI18N
 
+        propertyPanelContainer.setName("propertyPanelContainer"); // NOI18N
+
+        propertiesPanel.setName("propertiesPanel"); // NOI18N
+        propertiesPanel.setLayout(new javax.swing.BoxLayout(propertiesPanel, javax.swing.BoxLayout.Y_AXIS));
+        propertyPanelContainer.setViewportView(propertiesPanel);
+
+        mappingTabbedPane.addTab(resourceMap.getString("propertyPanelContainer.TabConstraints.tabTitle"), propertyPanelContainer); // NOI18N
+
         btAddMaterial.setText(resourceMap.getString("btAddMaterial.text")); // NOI18N
         btAddMaterial.setName("btAddMaterial"); // NOI18N
         btAddMaterial.addActionListener(new java.awt.event.ActionListener() {
@@ -746,14 +755,6 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
-        editLaserSettingsButton.setText(resourceMap.getString("editLaserSettingsButton.text")); // NOI18N
-        editLaserSettingsButton.setName("editLaserSettingsButton"); // NOI18N
-        editLaserSettingsButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editLaserSettingsButtonActionPerformed(evt);
-            }
-        });
-
         objectComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         objectComboBox.setName("objectComboBox"); // NOI18N
         objectComboBox.addItemListener(new java.awt.event.ItemListener() {
@@ -763,11 +764,6 @@ public class MainView extends javax.swing.JFrame
         });
 
         jSeparator1.setName("jSeparator1"); // NOI18N
-
-        jSeparator2.setName("jSeparator2"); // NOI18N
-
-        laserSettingsLabel.setText(resourceMap.getString("laserSettingsLabel.text")); // NOI18N
-        laserSettingsLabel.setName("laserSettingsLabel"); // NOI18N
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/uicomponents/resources/EditableTablePanel"); // NOI18N
         btRemoveObject.setText(bundle.getString("-")); // NOI18N
@@ -793,6 +789,9 @@ public class MainView extends javax.swing.JFrame
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(mappingTabbedPane, 0, 0, Short.MAX_VALUE)
+                        .addContainerGap())
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
                         .addContainerGap())
@@ -837,17 +836,7 @@ public class MainView extends javax.swing.JFrame
                         .addComponent(btAddObject)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btRemoveObject)
-                        .addGap(20, 20, 20))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
-                            .addComponent(mappingTabbedPane, 0, 0, Short.MAX_VALUE))
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(laserSettingsLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 173, Short.MAX_VALUE)
-                        .addComponent(editLaserSettingsButton)
-                        .addContainerGap())))
+                        .addGap(20, 20, 20))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -880,14 +869,8 @@ public class MainView extends javax.swing.JFrame
                     .addComponent(btRemoveObject)
                     .addComponent(btAddObject))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 327, Short.MAX_VALUE)
+                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 398, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(editLaserSettingsButton)
-                    .addComponent(laserSettingsLabel))
-                .addGap(34, 34, 34)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10)
@@ -1355,7 +1338,6 @@ public class MainView extends javax.swing.JFrame
     this.calculateTimeButton.setEnabled(execute);
     this.executeJobButton.setEnabled(execute);
     this.executeJobMenuItem.setEnabled(execute);
-    this.editLaserSettingsButton.setEnabled(execute);
   }
   private File lastDirectory = null;
 
@@ -2212,18 +2194,6 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
     this.previewPanel.setOneToOneZoom();
   }//GEN-LAST:event_bt1to1ActionPerformed
 
-private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editLaserSettingsButtonActionPerformed
-   Map<LaserProfile, List<LaserProperty>> laserProperties = this.editLaserPropertiesDialog();
-	  if (laserProperties != null) {
-		  try {
-        saveLaserProperties(laserProperties);
-      }
-      catch(Exception e) {
-        dialog.showErrorMessage(e,"could not save laser settings");
-      }
-	  }
-}//GEN-LAST:event_editLaserSettingsButtonActionPerformed
-
 private void importMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importMenuItemActionPerformed
   this.openFileDialog(false);
 }//GEN-LAST:event_importMenuItemActionPerformed
@@ -2309,7 +2279,6 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
     private javax.swing.JButton captureImageButton;
     private javax.swing.JCheckBox cbEditBeforeExecute;
     private javax.swing.JComboBox cbMaterialThickness;
-    private javax.swing.JButton editLaserSettingsButton;
     private javax.swing.JMenuItem editMappingMenuItem;
     private javax.swing.JMenu editMenu;
     private javax.swing.JButton executeJobButton;
@@ -2333,7 +2302,6 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JMenu jmExamples;
     private javax.swing.JMenuItem jmExportSettings;
     private javax.swing.JMenu jmExtras;
@@ -2343,7 +2311,6 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
     private javax.swing.JMenuItem jmManageLaserprofiles;
     private javax.swing.JCheckBoxMenuItem jmShowPhoto;
     private com.t_oster.uicomponents.ImageComboBox laserCutterComboBox;
-    private javax.swing.JLabel laserSettingsLabel;
     private com.t_oster.visicut.gui.mapping.MappingPanel mappingPanel;
     private javax.swing.JTabbedPane mappingTabbedPane;
     private com.t_oster.uicomponents.ImageComboBox materialComboBox;
@@ -2355,6 +2322,8 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
     private com.t_oster.uicomponents.PositionPanel positionPanel;
     private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
     private javax.swing.JProgressBar progressBar;
+    private com.t_oster.visicut.gui.propertypanel.PropertiesPanel propertiesPanel;
+    private javax.swing.JScrollPane propertyPanelContainer;
     private javax.swing.JMenu recentFilesMenu;
     private javax.swing.JMenuItem reloadMenuItem;
     private javax.swing.JMenuItem saveAsMenuItem;

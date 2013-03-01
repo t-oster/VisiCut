@@ -19,6 +19,7 @@
 
 package com.t_oster.visicut.gui;
 
+import com.t_oster.visicut.gui.propertypanel.LaserPropertiesTableModel;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.uicomponents.EditableTablePanel;

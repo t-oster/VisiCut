@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.t_oster.visicut.gui;
+package com.t_oster.visicut.gui.propertypanel;
 
 import com.t_oster.liblasercut.LaserProperty;
 import java.util.List;
@@ -26,7 +26,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-class LaserPropertiesTableModel extends DefaultTableModel
+public class LaserPropertiesTableModel extends DefaultTableModel
 {
 
   public void setLaserProperties(List<LaserProperty> lp)
