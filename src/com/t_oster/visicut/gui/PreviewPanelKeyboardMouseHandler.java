@@ -602,26 +602,34 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
         previewPanel.setFastPreview(true);
       }
       else
-      {//no button selected
-        EditRectangle tmp = getEditRect().clone();
-        //if too small to catch with the mouse, just add one cm
-        if (tmp.getWidth() <= 3)
+      { try
         {
-          tmp.width = 10;
-          tmp.x -= 5;
+          //no button selected
+           EditRectangle tmp = getEditRect().clone();
+           //if too small to catch with the mouse, just add 5px
+           double minGrabMm = 5*previewPanel.getMmToPxTransform().createInverse().getScaleX();
+           if (tmp.getWidth() <= minGrabMm)
+           {
+             tmp.width += 2*minGrabMm;
+             tmp.x -= minGrabMm;
+           }
+           if (tmp.getHeight() <= minGrabMm)
+           {
+             tmp.height += 2*minGrabMm;
+             tmp.y -= minGrabMm;
+           }
+           if (tmp.contains(lastMousePositionMm))
+           {//selection in the rectangle
+             currentAction = MouseAction.movingSet;
+           }
+           else
+           {
+             currentAction = MouseAction.movingViewport;
+           }
         }
-        if (tmp.getHeight() <= 3)
+        catch (NoninvertibleTransformException ex)
         {
-          tmp.height += 10;
-          tmp.y -= 5;
-        }
-        if (tmp.contains(lastMousePositionMm))
-        {//selection in the rectangle
-          currentAction = MouseAction.movingSet;
-        }
-        else
-        {
-          currentAction = MouseAction.movingViewport;
+          Logger.getLogger(PreviewPanelKeyboardMouseHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
       }
     }
