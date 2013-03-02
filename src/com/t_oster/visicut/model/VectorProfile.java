@@ -42,7 +42,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.PathIterator;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
@@ -264,6 +263,7 @@ public class VectorProfile extends LaserProfile
     double factor = Util.dpi2dpmm(this.getDPI());
     AffineTransform mm2laserpx = AffineTransform.getScaleInstance(factor, factor);
     VectorPart part = new VectorPart(laserProperties.get(0), this.getDPI());
+    boolean optimize = true;
     for (LaserProperty prop : laserProperties)
     {
       part.setProperty(prop);
@@ -272,8 +272,10 @@ public class VectorProfile extends LaserProfile
       {
         if (e instanceof LaserScriptShape)
         {
+          //since the profiles are enumerated file-wise and a laserscript is always
+          //one file and creates one shape, this whole file should not be optimized
+          optimize = false;
           ScriptInterpreter i = new ScriptInterpreter();
-          //TODO Transform script
           AffineTransform mm2laser = new AffineTransform(objects.getTransform());
           mm2laser.preConcatenate(mm2laserpx);
           try
@@ -303,8 +305,15 @@ public class VectorProfile extends LaserProfile
         }
       }
     }
-    VectorOptimizer vo = new VectorOptimizer(this.getOrderStrategy());
-    job.addPart(vo.optimize(part));
+    if (optimize)
+    {
+      VectorOptimizer vo = new VectorOptimizer(this.getOrderStrategy());
+      job.addPart(vo.optimize(part));
+    }
+    else
+    {
+      job.addPart(part);
+    }
   }
 
   @Override

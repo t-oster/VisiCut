@@ -20,6 +20,7 @@ package com.t_oster.visicut.gui.mapping;
 
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.managers.MappingManager;
+import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.event.ActionEvent;
@@ -55,6 +56,7 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
       }
     };
     MappingManager.getInstance().addPropertyChangeListener(pl);
+    ProfileManager.getInstance().addPropertyChangeListener(pl);
     VisicutModel.getInstance().addPropertyChangeListener(pl);
     this.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae)
@@ -171,7 +173,7 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
         updateUi();
       }
     }
-    else if (pce.getSource().equals(MappingManager.getInstance()))
+    else if (pce.getSource().equals(MappingManager.getInstance()) || pce.getSource().equals(ProfileManager.getInstance()))
     {
       updateComboBoxContent();
     }

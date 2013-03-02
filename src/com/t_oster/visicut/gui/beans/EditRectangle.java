@@ -302,4 +302,10 @@ public class EditRectangle extends Rectangle2D.Double
       this.parameterFieldBounds[1].setBounds(tr.x+tr.width/2+5, tr.y-h-ascend, w, h);
     }
   }
+  
+  @Override
+  public EditRectangle clone()
+  {
+    return new EditRectangle(x, y, width, height);
+  }
 }
