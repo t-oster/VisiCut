@@ -40,16 +40,19 @@ import com.t_oster.visicut.model.graphicelements.Importer;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.URI;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -107,7 +110,18 @@ public class SVGImporter implements Importer
     try
     {
       u.clear();
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      PrintStream bak = System.err;
+      System.setErr(new PrintStream(bos));
       URI svg = u.loadSVG(in, Helper.toPathName(name));
+      System.setErr(bak);
+      for (String line : bos.toString().split("\n"))
+      {
+        if (line.startsWith("Could not load image:"))
+        {
+          warnings.add(line);
+        }
+      }
       root = u.getDiagram(svg).getRoot();
       GraphicSet result = new GraphicSet();
       result.setBasicTransform(determineTransformation(root, svgResolution));
