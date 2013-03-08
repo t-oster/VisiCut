@@ -791,6 +791,7 @@ public class VisicutModel
           result = Modification.ROTATE;
         }
       }
+      //Do not scale the object, because this might be very confising for the user
       //if still too big (we're in origin now) we have to resize, but keeping 
       if (bb.getX() + bb.getWidth() > bw || bb.getY() + bb.getHeight() > bh)
       {

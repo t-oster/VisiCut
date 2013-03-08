@@ -55,6 +55,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -1219,24 +1220,51 @@ public class MainView extends javax.swing.JFrame
 
   private void fitObjectsIntoBed()
   {
+    final Map<PlfPart, AffineTransform> backup = new LinkedHashMap<PlfPart, AffineTransform>();
+    for (PlfPart p : visicutModel1.getPlfFile())
+    {
+      backup.put(p, new AffineTransform(p.getGraphicObjects().getTransform()));
+    }
+    String text = "";
     switch (this.visicutModel1.fitObjectsIntoBed())
     {
       case MOVE:
       {
-        dialog.showInfoMessage(bundle.getString("NEEDED_MOVE"));
+        text = bundle.getString("NEEDED_MOVE");
         break;
       }
       case ROTATE:
       {
-        dialog.showInfoMessage(bundle.getString("NEEDED_ROTATE"));
+        text = bundle.getString("NEEDED_ROTATE");
         break;
       }
       case RESIZE:
       {
-        dialog.showInfoMessage(bundle.getString("NEEDED_REFIT"));
+        text = bundle.getString("NEEDED_REFIT");
         break;
       }
+      case NONE:
+      {
+        return;
+      }
     }
+    warningPanel.addMessage(new Message("Info", text, Message.Type.INFO, new com.t_oster.uicomponents.warnings.Action[]
+    {
+      new com.t_oster.uicomponents.warnings.Action(bundle.getString("UNDO"))
+      {
+        @Override
+        public boolean clicked()
+        {
+          for (Entry<PlfPart, AffineTransform> e : backup.entrySet())
+          {
+            e.getKey().getGraphicObjects().setTransform(e.getValue());
+            VisicutModel.getInstance().firePartUpdated(e.getKey());
+          }
+          return true;
+        } 
+      }
+    }
+    ));
   }
   
   private void loadFileReal(File file, boolean discardCurrent)
