@@ -27,8 +27,12 @@ import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 /**
  *
@@ -50,13 +54,40 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
     model = new LaserPropertiesTableModel();
     this.editableTablePanel1.setTableModel(model);
     this.editableTablePanel1.setEditButtonVisible(false);
+    this.editableTablePanel1.setMoveButtonsVisible(true);
     this.editableTablePanel1.setProvider(this);
+    this.model.addTableModelListener(new TableModelListener(){
+      public void tableChanged(TableModelEvent tme)
+      {
+        PropertyPanel.this.setModified(true);
+      }
+    });
   }
-
+  
+  private String text = "title";
+  
   public void setMapping(Mapping m)
   {
-    this.jLabel1.setText(m.getProfile().getName()+" settings ("+m.getFilterSet().toString()+")");
+    text = m.getProfile().getName()+" settings ("+m.getFilterSet().toString()+")";
+    this.jLabel1.setText(text);
     this.lp = m.getProfile();
+  }
+  
+  boolean modified = false;
+  /**
+   * Changes THE APPEARANCE of this table so it will indicate to the user,
+   * that the settings are modified. (i.e. a * will be appended to the title
+   * and the save button will become visible)
+   * @param modified 
+   */
+  public void setModified(boolean modified)
+  {
+    if (this.modified != modified)
+    {
+      this.modified = modified;
+      this.editableTablePanel1.setSaveButtonVisible(modified);
+      this.jLabel1.setText(modified ? "<html><b>"+text+"*</b></html>" : text);
+    }
   }
   
   public void setLaserProperties(List<LaserProperty> props)
@@ -76,6 +107,7 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
     }
     this.model.setLaserProperties(this.laserproperties);
     this.editableTablePanel1.setObjects((List) this.laserproperties);
+    this.setModified(false);
   }
   
   public List<LaserProperty> getLaserProperties()
@@ -147,6 +179,17 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
   public Object editObject(Object o)
   {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  void addSaveListener(final ActionListener saveListener)
+  {
+    this.editableTablePanel1.getSaveButton().addActionListener(new ActionListener(){
+
+      public void actionPerformed(ActionEvent ae)
+      {
+        saveListener.actionPerformed(new ActionEvent(PropertyPanel.this, ae.getID(), ae.getActionCommand()));
+      }
+    });
   }
 
 }

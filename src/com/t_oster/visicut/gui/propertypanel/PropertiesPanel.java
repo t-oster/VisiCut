@@ -29,8 +29,12 @@ import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.Mapping;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,6 +68,42 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
     this.updatePanels();
   }
   
+  private ActionListener saveListener = new ActionListener()
+  {
+    public void actionPerformed(ActionEvent ae)
+    {
+      if (ae.getSource() instanceof PropertyPanel)
+      {
+        PropertyPanel p = (PropertyPanel) ae.getSource();
+        for (Entry<LaserProfile, PropertyPanel> e : panels.entrySet())
+        {
+          if (p == e.getValue())
+          {
+            LaserDevice ld = VisicutModel.getInstance().getSelectedLaserDevice();
+            MaterialProfile mp = VisicutModel.getInstance().getMaterial();
+            float thickness = VisicutModel.getInstance().getMaterialThickness();
+            LaserProfile lp = e.getKey();
+            List<LaserProperty> props = p.getLaserProperties();
+            try
+            {
+              LaserPropertyManager.getInstance().saveLaserProperties(ld, mp, lp, thickness, props);
+              p.setModified(false);
+            }
+            catch (FileNotFoundException ex)
+            {
+              Logger.getLogger(PropertiesPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            catch (IOException ex)
+            {
+              Logger.getLogger(PropertiesPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return;
+          }
+        }
+      }
+    }
+  };
+  
   /**
    * Updates the view to show panels for the currently selected 
    * plf part. However if a laser-profile's properties have been changed,
@@ -96,6 +136,7 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
           {
             Logger.getLogger(PropertiesPanel.class.getName()).log(Level.SEVERE, null, ex);
           }
+          p.addSaveListener(saveListener);
           panels.put(m.getProfile(), p);
         }
         p.setVisible(true);

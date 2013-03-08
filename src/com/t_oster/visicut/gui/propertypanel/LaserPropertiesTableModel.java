@@ -19,6 +19,7 @@
 package com.t_oster.visicut.gui.propertypanel;
 
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.platform.Util;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
@@ -85,7 +86,12 @@ public class LaserPropertiesTableModel extends DefaultTableModel
   @Override
   public void setValueAt(Object o, int y, int x)
   {
-    lp.get(y).setProperty(this.columnNames[x], o);
+    Object old = lp.get(y).getProperty(this.columnNames[x]);
+    if (Util.differ(old, o))
+    {
+      lp.get(y).setProperty(this.columnNames[x], o);
+      this.fireTableDataChanged();
+    }
   }
 
   @Override
