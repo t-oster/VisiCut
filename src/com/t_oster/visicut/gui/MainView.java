@@ -1484,7 +1484,6 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             String txt = MainView.this.visicutModel1.getSelectedLaserDevice().getJobSentText();
             txt = txt.replace("$jobname", prefix + jobnumber).replace("$name", MainView.this.visicutModel1.getSelectedLaserDevice().getName());
             dialog.showSuccessMessage(txt);
-            MainView.this.askForSavingChanges(cuttingSettings);
           }
           catch (Exception ex)
           {
@@ -2357,64 +2356,6 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
       }
     }
     return result;
-  }
-
-  /**
-   * This mehtod checks the given laser-properties for differences
-   * to the settings provided by the manager. If there is at least one
-   * difference, an info-message is shown with the option to save them
-   * @param cuttingSettings 
-   */
-  private void askForSavingChanges(Map<LaserProfile, List<LaserProperty>> cuttingSettings)
-  {
-    VisicutModel vc = VisicutModel.getInstance();
-    final LaserDevice ld = vc.getSelectedLaserDevice();
-    final MaterialProfile mp = vc.getMaterial();
-    final float thickness = vc.getMaterialThickness();
-    final Map<LaserProfile, List<LaserProperty>> changed = new LinkedHashMap<LaserProfile, List<LaserProperty>>();
-    //collect all changed profiles
-    for (Entry<LaserProfile, List<LaserProperty>> e : cuttingSettings.entrySet())
-    {
-      List<LaserProperty> old = null;
-      try
-      {
-        old = LaserPropertyManager.getInstance().getLaserProperties(ld, mp, e.getKey(), thickness);
-      }
-      catch (Exception ex)
-      {
-        dialog.showErrorMessage(ex);
-      }
-      if (Util.differ(old, e.getValue()))
-      {
-        changed.put(e.getKey(), e.getValue());
-      }
-    }
-    if (!changed.isEmpty())
-    {
-      this.warningPanel.addMessage(new Message(
-        "Save changes?", 
-        bundle.getString("keepNewLaserSettings"), 
-        Message.Type.INFO, 
-        new com.t_oster.uicomponents.warnings.Action[]{new com.t_oster.uicomponents.warnings.Action(bundle.getString("saveMenuItem.text")){
-          @Override
-          public boolean clicked()
-          {
-            for (Entry<LaserProfile, List<LaserProperty>> e : changed.entrySet())
-            {
-              try
-              {
-                LaserPropertyManager.getInstance().saveLaserProperties(ld, mp, e.getKey(), thickness, e.getValue());
-              }
-              catch (Exception ex)
-              {
-                dialog.showErrorMessage(ex);
-                return false;
-              }
-            }
-            return true;
-          }
-        }}));
-    }
   }
 
 }
