@@ -48,7 +48,7 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
   {
     initComponents();
     model = new LaserPropertiesTableModel();
-    this.editableTablePanel1.getTable().setModel(model);
+    this.editableTablePanel1.setTableModel(model);
     this.editableTablePanel1.setEditButtonVisible(false);
     this.editableTablePanel1.setProvider(this);
   }
