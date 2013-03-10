@@ -63,7 +63,6 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
   
   private void reloadPanels()
   {
-    this.removeAll();
     panels.clear();
     this.updatePanels();
   }
@@ -111,6 +110,7 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
    */
   private void updatePanels()
   {
+    this.removeAll();
     LaserDevice ld = VisicutModel.getInstance().getSelectedLaserDevice();
     MaterialProfile mp = VisicutModel.getInstance().getMaterial();
     float thickness = VisicutModel.getInstance().getMaterialThickness();
@@ -176,7 +176,7 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
     else if(VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName())
       || VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()))
     {
-      reloadPanels();
+      updatePanels();
     }
   }
   
