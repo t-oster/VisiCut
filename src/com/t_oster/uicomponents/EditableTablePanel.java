@@ -325,8 +325,9 @@ public class EditableTablePanel extends javax.swing.JPanel
     ));
     jScrollPane1.setViewportView(table);
 
+    btAdd.setIcon(PlatformIcon.get(PlatformIcon.ADD));
     java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/uicomponents/resources/EditableTablePanel"); // NOI18N
-    btAdd.setText(bundle.getString("+")); // NOI18N
+    btAdd.setToolTipText(bundle.getString("+")); // NOI18N
     btAdd.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -335,7 +336,8 @@ public class EditableTablePanel extends javax.swing.JPanel
       }
     });
 
-    btRemove.setText(bundle.getString("-")); // NOI18N
+    btRemove.setIcon(PlatformIcon.get(PlatformIcon.REMOVE));
+    btRemove.setToolTipText(bundle.getString("-")); // NOI18N
     btRemove.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -344,7 +346,8 @@ public class EditableTablePanel extends javax.swing.JPanel
       }
     });
 
-    btEdit.setText(bundle.getString("EDIT")); // NOI18N
+    btEdit.setIcon(PlatformIcon.get(PlatformIcon.EDIT));
+    btEdit.setToolTipText(bundle.getString("EDIT")); // NOI18N
     btEdit.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -353,7 +356,8 @@ public class EditableTablePanel extends javax.swing.JPanel
       }
     });
 
-    btUp.setText(bundle.getString("UP")); // NOI18N
+    btUp.setIcon(PlatformIcon.get(PlatformIcon.UP));
+    btUp.setToolTipText(bundle.getString("UP")); // NOI18N
     btUp.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -362,7 +366,8 @@ public class EditableTablePanel extends javax.swing.JPanel
       }
     });
 
-    btDown.setText(bundle.getString("DOWN")); // NOI18N
+    btDown.setIcon(PlatformIcon.get(PlatformIcon.DOWN));
+    btDown.setToolTipText(bundle.getString("DOWN")); // NOI18N
     btDown.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -371,7 +376,8 @@ public class EditableTablePanel extends javax.swing.JPanel
       }
     });
 
-    btLoad.setText(bundle.getString("LOAD")); // NOI18N
+    btLoad.setIcon(PlatformIcon.get(PlatformIcon.LOAD));
+    btLoad.setToolTipText(bundle.getString("LOAD")); // NOI18N
     btLoad.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -380,24 +386,24 @@ public class EditableTablePanel extends javax.swing.JPanel
       }
     });
 
-    btSave.setText(bundle.getString("SAVE")); // NOI18N
+    btSave.setIcon(PlatformIcon.get(PlatformIcon.SAVE));
+    btSave.setToolTipText(bundle.getString("SAVE")); // NOI18N
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 475, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addComponent(btLoad, 0, 0, Short.MAX_VALUE)
-          .addComponent(btRemove, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(btUp, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(btDown, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(btLoad, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(btDown, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(btUp, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(btEdit, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(btAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(btSave, 0, 0, Short.MAX_VALUE))
-        .addContainerGap())
+          .addComponent(btRemove, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(btAdd, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(btSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -411,7 +417,7 @@ public class EditableTablePanel extends javax.swing.JPanel
         .addComponent(btUp)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(btDown)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 194, Short.MAX_VALUE)
         .addComponent(btLoad)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(btSave))

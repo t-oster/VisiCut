@@ -17,18 +17,17 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="jScrollPane1" pref="399" max="32767" attributes="0"/>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Component id="jScrollPane1" pref="475" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="btLoad" min="0" pref="0" max="32767" attributes="1"/>
-                  <Component id="btRemove" alignment="1" max="32767" attributes="0"/>
-                  <Component id="btUp" alignment="0" max="32767" attributes="0"/>
-                  <Component id="btDown" alignment="0" max="32767" attributes="0"/>
+                  <Component id="btLoad" alignment="1" max="32767" attributes="1"/>
+                  <Component id="btDown" alignment="1" max="32767" attributes="0"/>
+                  <Component id="btUp" alignment="1" max="32767" attributes="0"/>
                   <Component id="btEdit" alignment="1" max="32767" attributes="0"/>
-                  <Component id="btAdd" alignment="0" max="32767" attributes="0"/>
-                  <Component id="btSave" min="0" pref="0" max="32767" attributes="1"/>
+                  <Component id="btRemove" alignment="1" max="32767" attributes="0"/>
+                  <Component id="btAdd" alignment="1" max="32767" attributes="0"/>
+                  <Component id="btSave" max="32767" attributes="1"/>
               </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -44,7 +43,7 @@
               <Component id="btUp" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btDown" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="47" max="32767" attributes="0"/>
+              <EmptySpace pref="194" max="32767" attributes="0"/>
               <Component id="btLoad" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btSave" min="-2" max="-2" attributes="0"/>
@@ -80,7 +79,10 @@
     </Container>
     <Component class="javax.swing.JButton" name="btAdd">
       <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.ADD)" type="code"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="com/t_oster/uicomponents/resources/EditableTablePanel.properties" key="+" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
@@ -90,7 +92,10 @@
     </Component>
     <Component class="javax.swing.JButton" name="btRemove">
       <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.REMOVE)" type="code"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="com/t_oster/uicomponents/resources/EditableTablePanel.properties" key="-" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
@@ -100,7 +105,10 @@
     </Component>
     <Component class="javax.swing.JButton" name="btEdit">
       <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.EDIT)" type="code"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="com/t_oster/uicomponents/resources/EditableTablePanel.properties" key="EDIT" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
@@ -110,7 +118,10 @@
     </Component>
     <Component class="javax.swing.JButton" name="btUp">
       <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.UP)" type="code"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="com/t_oster/uicomponents/resources/EditableTablePanel.properties" key="UP" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
@@ -120,7 +131,10 @@
     </Component>
     <Component class="javax.swing.JButton" name="btDown">
       <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.DOWN)" type="code"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="com/t_oster/uicomponents/resources/EditableTablePanel.properties" key="DOWN" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
@@ -130,7 +144,10 @@
     </Component>
     <Component class="javax.swing.JButton" name="btLoad">
       <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.LOAD)" type="code"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="com/t_oster/uicomponents/resources/EditableTablePanel.properties" key="LOAD" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
@@ -140,7 +157,10 @@
     </Component>
     <Component class="javax.swing.JButton" name="btSave">
       <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.SAVE)" type="code"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="com/t_oster/uicomponents/resources/EditableTablePanel.properties" key="SAVE" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
