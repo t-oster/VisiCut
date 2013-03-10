@@ -70,7 +70,7 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
   {
     String profile = m.getProfile() != null ? m.getProfile().getName() : java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("IGNORE");
     String filters = m.getFilterSet() != null ? m.getFilterSet().toString() : java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("EVERYTHING_ELSE");
-    text = profile +" settings ("+filters+")";
+    text = profile +" ("+filters+")";
     this.lp = m.getProfile();
     this.editableTablePanel1.setSaveButtonVisible(modified);
     this.jLabel1.setText(modified ? "<html><b>"+text+"*</b></html>" : text);
