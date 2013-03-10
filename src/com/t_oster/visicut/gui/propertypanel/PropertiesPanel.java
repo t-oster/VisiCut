@@ -103,6 +103,41 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
     }
   };
   
+  private ActionListener revertListener = new ActionListener()
+  {
+    public void actionPerformed(ActionEvent ae)
+    {
+      if (ae.getSource() instanceof PropertyPanel)
+      {
+        PropertyPanel p = (PropertyPanel) ae.getSource();
+        for (Entry<LaserProfile, PropertyPanel> e : panels.entrySet())
+        {
+          if (p == e.getValue())
+          {
+            LaserDevice ld = VisicutModel.getInstance().getSelectedLaserDevice();
+            MaterialProfile mp = VisicutModel.getInstance().getMaterial();
+            float thickness = VisicutModel.getInstance().getMaterialThickness();
+            LaserProfile lp = e.getKey();
+            try
+            {
+              p.setLaserProperties(LaserPropertyManager.getInstance().getLaserProperties(ld, mp, lp, thickness));
+              p.setModified(false);
+            }
+            catch (FileNotFoundException ex)
+            {
+              Logger.getLogger(PropertiesPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            catch (IOException ex)
+            {
+              Logger.getLogger(PropertiesPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return;
+          }
+        }
+      }
+    }
+  };
+  
   /**
    * Updates the view to show panels for the currently selected 
    * plf part. However if a laser-profile's properties have been changed,
@@ -141,6 +176,7 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
             Logger.getLogger(PropertiesPanel.class.getName()).log(Level.SEVERE, null, ex);
           }
           p.addSaveListener(saveListener);
+          p.addRevertListener(revertListener);
           panels.put(m.getProfile(), p);
         }
         p.setVisible(true);

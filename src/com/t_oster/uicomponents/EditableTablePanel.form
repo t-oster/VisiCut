@@ -27,6 +27,7 @@
                   <Component id="btRemove" alignment="1" max="32767" attributes="0"/>
                   <Component id="btAdd" alignment="1" max="32767" attributes="0"/>
                   <Component id="btSave" max="32767" attributes="1"/>
+                  <Component id="btRevert" alignment="0" max="32767" attributes="1"/>
               </Group>
           </Group>
       </Group>
@@ -43,7 +44,9 @@
               <Component id="btUp" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btDown" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="194" max="32767" attributes="0"/>
+              <EmptySpace pref="176" max="32767" attributes="0"/>
+              <Component id="btRevert" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="btLoad" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btSave" min="-2" max="-2" attributes="0"/>
@@ -164,6 +167,19 @@
           <ResourceString bundle="com/t_oster/uicomponents/resources/EditableTablePanel.properties" key="SAVE" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btRevert">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.UNDO)" type="code"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="com/t_oster/uicomponents/resources/EditableTablePanel.properties" key="REVERT" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btRevertActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

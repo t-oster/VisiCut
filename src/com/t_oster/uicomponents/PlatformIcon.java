@@ -51,6 +51,7 @@ public class PlatformIcon
   public static final int ADD = 8;
   public static final int REMOVE = 9;
   public static final int EDIT = 10;
+  public static final int UNDO = 11;
   
   private static final Map<Integer, String> gtkIconNames = new LinkedHashMap<Integer, String>();
   static
@@ -65,6 +66,7 @@ public class PlatformIcon
     gtkIconNames.put(ADD, "gtk-add");
     gtkIconNames.put(REMOVE, "gtk-delete");
     gtkIconNames.put(LOAD, "gtk-open");
+    gtkIconNames.put(UNDO, "gtk-undo");
   }
   
   public static Icon get(int type)
@@ -90,6 +92,8 @@ public class PlatformIcon
         case DOWN: return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("resources/down.png")));
         case EDIT: return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("resources/edit.png")));
         case SAVE: return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("resources/save.png")));
+        case LOAD: return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("resources/load.png")));
+        case UNDO: return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("resources/undo.png")));
       }
     }
     catch (IOException ex)

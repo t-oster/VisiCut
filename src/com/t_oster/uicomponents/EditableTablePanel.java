@@ -41,6 +41,7 @@ public class EditableTablePanel extends javax.swing.JPanel
     this.setMoveButtonsVisible(false);
     this.setSaveButtonVisible(false);
     this.setLoadButtonVisible(false);
+    this.setRevertButtonVisible(false);
     this.table.setModel(this.getTableModel());
     //make the table save data, when loosing focus
     this.table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
@@ -127,6 +128,32 @@ public class EditableTablePanel extends javax.swing.JPanel
     firePropertyChange(PROP_LOADBUTTONVISIBLE, oldLoadButtonVisible, loadButtonVisible);
     this.btLoad.setVisible(loadButtonVisible);
   }
+  
+  protected boolean revertButtonVisible = false;
+  public static final String PROP_REVERTBUTTONVISIBLE = "revertButtonVisible";
+
+  /**
+   * Get the value of revertButtonVisible
+   *
+   * @return the value of revertButtonVisible
+   */
+  public boolean isRevertButtonVisible()
+  {
+    return revertButtonVisible;
+  }
+
+  /**
+   * Set the value of revertButtonVisible
+   *
+   * @param revertButtonVisible new value of revertButtonVisible
+   */
+  public void setRevertButtonVisible(boolean revertButtonVisible)
+  {
+    boolean oldRevertButtonVisible = this.revertButtonVisible;
+    this.revertButtonVisible = revertButtonVisible;
+    firePropertyChange(PROP_REVERTBUTTONVISIBLE, oldRevertButtonVisible, revertButtonVisible);
+    this.btRevert.setVisible(revertButtonVisible);
+  }
 
   public JButton getSaveButton()
   {
@@ -136,6 +163,11 @@ public class EditableTablePanel extends javax.swing.JPanel
   public JButton getLoadButton()
   {
     return this.btLoad;
+  }
+  
+  public JButton getRevertButton()
+  {
+    return this.btRevert;
   }
 
   protected boolean editButtonVisible = true;
@@ -309,6 +341,7 @@ public class EditableTablePanel extends javax.swing.JPanel
     btDown = new javax.swing.JButton();
     btLoad = new javax.swing.JButton();
     btSave = new javax.swing.JButton();
+    btRevert = new javax.swing.JButton();
 
     table.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][]
@@ -389,6 +422,16 @@ public class EditableTablePanel extends javax.swing.JPanel
     btSave.setIcon(PlatformIcon.get(PlatformIcon.SAVE));
     btSave.setToolTipText(bundle.getString("SAVE")); // NOI18N
 
+    btRevert.setIcon(PlatformIcon.get(PlatformIcon.UNDO));
+    btRevert.setToolTipText(bundle.getString("REVERT")); // NOI18N
+    btRevert.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btRevertActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
@@ -403,7 +446,8 @@ public class EditableTablePanel extends javax.swing.JPanel
           .addComponent(btEdit, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(btRemove, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(btAdd, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(btSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+          .addComponent(btSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(btRevert, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -417,7 +461,9 @@ public class EditableTablePanel extends javax.swing.JPanel
         .addComponent(btUp)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(btDown)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 194, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 176, Short.MAX_VALUE)
+        .addComponent(btRevert)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(btLoad)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(btSave))
@@ -495,12 +541,18 @@ public class EditableTablePanel extends javax.swing.JPanel
     // TODO add your handling code here:
   }//GEN-LAST:event_btLoadActionPerformed
 
+  private void btRevertActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btRevertActionPerformed
+  {//GEN-HEADEREND:event_btRevertActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_btRevertActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton btAdd;
   private javax.swing.JButton btDown;
   private javax.swing.JButton btEdit;
   private javax.swing.JButton btLoad;
   private javax.swing.JButton btRemove;
+  private javax.swing.JButton btRevert;
   private javax.swing.JButton btSave;
   private javax.swing.JButton btUp;
   private javax.swing.JScrollPane jScrollPane1;

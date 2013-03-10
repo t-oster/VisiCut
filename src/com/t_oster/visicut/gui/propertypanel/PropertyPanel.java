@@ -89,6 +89,7 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
     {
       this.modified = modified;
       this.editableTablePanel1.setSaveButtonVisible(modified);
+      this.editableTablePanel1.setRevertButtonVisible(modified);
       this.jLabel1.setText(modified ? "<html><b>"+text+"*</b></html>" : text);
     }
   }
@@ -187,6 +188,17 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
   void addSaveListener(final ActionListener saveListener)
   {
     this.editableTablePanel1.getSaveButton().addActionListener(new ActionListener(){
+
+      public void actionPerformed(ActionEvent ae)
+      {
+        saveListener.actionPerformed(new ActionEvent(PropertyPanel.this, ae.getID(), ae.getActionCommand()));
+      }
+    });
+  }
+  
+  void addRevertListener(final ActionListener saveListener)
+  {
+    this.editableTablePanel1.getRevertButton().addActionListener(new ActionListener(){
 
       public void actionPerformed(ActionEvent ae)
       {
