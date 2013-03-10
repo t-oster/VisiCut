@@ -118,6 +118,10 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
     {
       for (Mapping m : VisicutModel.getInstance().getSelectedPart().getMapping())
       {
+        if (m.getProfile() == null)
+        {
+          continue;
+        }
         PropertyPanel p;
         if (panels.containsKey(m.getProfile()))
         {
