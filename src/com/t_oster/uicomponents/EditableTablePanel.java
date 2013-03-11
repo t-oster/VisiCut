@@ -23,6 +23,8 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -47,6 +49,7 @@ public class EditableTablePanel extends javax.swing.JPanel
     this.table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
   }
 
+  
 
   public void addListSelectionListener(ListSelectionListener l)
   {
@@ -274,6 +277,16 @@ public class EditableTablePanel extends javax.swing.JPanel
     return tableModel;
   }
 
+  private TableModelListener updateButtonVisiblityListener = new TableModelListener(){
+    public void tableChanged(TableModelEvent tme)
+    {
+      boolean moreThanOne = tableModel.getRowCount() > 1;
+      btDown.setVisible(moreThanOne);
+      btUp.setVisible(moreThanOne);
+      btRemove.setVisible(moreThanOne);
+    }
+  };
+
   /**
    * Set the value of tableModel.
    * The TableModel is used to generate the contents
@@ -285,9 +298,17 @@ public class EditableTablePanel extends javax.swing.JPanel
   public void setTableModel(DefaultTableModel tableModel)
   {
     DefaultTableModel oldTableModel = this.tableModel;
+    if (oldTableModel != null)
+    {
+      oldTableModel.removeTableModelListener(updateButtonVisiblityListener);
+    }
     this.tableModel = tableModel;
-    firePropertyChange(PROP_TABLEMODEL, oldTableModel, tableModel);
+    if (tableModel != null)
+    {
+      tableModel.addTableModelListener(updateButtonVisiblityListener);
+    }
     this.table.setModel(tableModel);
+    firePropertyChange(PROP_TABLEMODEL, oldTableModel, tableModel);
   }
   protected List<Object> objects = new LinkedList<Object>();
   public static final String PROP_OBJECTS = "objects";
