@@ -25,8 +25,6 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.uicomponents.EditableTableProvider;
-import com.t_oster.visicut.model.MaterialProfile;
-import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.util.List;
 
@@ -42,6 +40,7 @@ public class EditMappingsDialog extends javax.swing.JDialog implements EditableT
   {
     super(parent, modal);
     initComponents();
+    this.editableTablePanel1.setAddButtonVisible(false);
   }
 
   protected List<MappingSet> mappingSets = null;

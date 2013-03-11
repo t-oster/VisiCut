@@ -27,6 +27,7 @@ import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.uicomponents.PlatformIcon;
 import com.t_oster.uicomponents.Ruler;
 import com.t_oster.uicomponents.warnings.Message;
 import com.t_oster.visicut.VisicutModel;
@@ -45,10 +46,7 @@ import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.PlfPart;
-import com.t_oster.visicut.model.Raster3dProfile;
-import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
-import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.FileDialog;
 import java.awt.Rectangle;
@@ -58,6 +56,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -123,12 +122,14 @@ public class MainView extends javax.swing.JFrame
     @Override
     public void showErrorMessage(Exception cause)
     {
+      cause.printStackTrace();
       MainView.this.warningPanel.addMessage(new Message("Error", "Exception: "+cause.getLocalizedMessage(), Message.Type.ERROR, null));
     }
 
     @Override
     public void showErrorMessage(Exception cause, String text)
     {
+      cause.printStackTrace();
       MainView.this.warningPanel.addMessage(new Message("Error", text+": "+cause.getLocalizedMessage(), Message.Type.ERROR, null));
     }
 
@@ -193,7 +194,6 @@ public class MainView extends javax.swing.JFrame
 
         public void handleQuitRequestWith(QuitEvent qe, QuitResponse qr)
         {
-          PreferencesManager.getInstance().getPreferences().setEditSettingsBeforeExecuting(MainView.this.cbEditBeforeExecute.isSelected());
           MainView.this.visicutModel1.updatePreferences();
           System.exit(0);
         }
@@ -226,7 +226,6 @@ public class MainView extends javax.swing.JFrame
 
       public void windowClosing(WindowEvent e)
       {
-        PreferencesManager.getInstance().getPreferences().setEditSettingsBeforeExecuting(MainView.this.cbEditBeforeExecute.isSelected());
         PreferencesManager.getInstance().getPreferences().setWindowBounds(MainView.this.getBounds());
         MainView.this.visicutModel1.updatePreferences();
       }
@@ -259,7 +258,6 @@ public class MainView extends javax.swing.JFrame
       this.jmExtras.setVisible(false);
     }
     this.refreshExampleMenu();
-    this.cbEditBeforeExecute.setSelected(PreferencesManager.getInstance().getPreferences().isEditSettingsBeforeExecuting());
     //initialize states coorectly
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDLASERDEVICE, null, null));
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDPART, null, null));
@@ -482,17 +480,15 @@ public class MainView extends javax.swing.JFrame
         mappingTabbedPane = new javax.swing.JTabbedPane();
         mappingPanel = new com.t_oster.visicut.gui.mapping.MappingPanel();
         positionPanel = new com.t_oster.uicomponents.PositionPanel();
+        propertyPanelContainer = new javax.swing.JScrollPane();
+        propertiesPanel = new com.t_oster.visicut.gui.propertypanel.PropertiesPanel();
         btAddMaterial = new javax.swing.JButton();
         cbMaterialThickness = new javax.swing.JComboBox();
         btAddMaterialThickness = new javax.swing.JButton();
         jCheckBox1 = new javax.swing.JCheckBox();
-        cbEditBeforeExecute = new javax.swing.JCheckBox();
         executeJobButton = new javax.swing.JButton();
-        editLaserSettingsButton = new javax.swing.JButton();
         objectComboBox = new javax.swing.JComboBox();
         jSeparator1 = new javax.swing.JSeparator();
-        jSeparator2 = new javax.swing.JSeparator();
-        laserSettingsLabel = new javax.swing.JLabel();
         btRemoveObject = new javax.swing.JButton();
         btAddObject = new javax.swing.JButton();
         warningPanel = new com.t_oster.uicomponents.warnings.WarningPanel();
@@ -705,6 +701,14 @@ public class MainView extends javax.swing.JFrame
         positionPanel.setName("positionPanel"); // NOI18N
         mappingTabbedPane.addTab(resourceMap.getString("positionPanel.TabConstraints.tabTitle"), positionPanel); // NOI18N
 
+        propertyPanelContainer.setName("propertyPanelContainer"); // NOI18N
+
+        propertiesPanel.setName("propertiesPanel"); // NOI18N
+        propertiesPanel.setLayout(new javax.swing.BoxLayout(propertiesPanel, javax.swing.BoxLayout.Y_AXIS));
+        propertyPanelContainer.setViewportView(propertiesPanel);
+
+        mappingTabbedPane.addTab(resourceMap.getString("propertyPanelContainer.TabConstraints.tabTitle"), propertyPanelContainer); // NOI18N
+
         btAddMaterial.setText(resourceMap.getString("btAddMaterial.text")); // NOI18N
         btAddMaterial.setName("btAddMaterial"); // NOI18N
         btAddMaterial.addActionListener(new java.awt.event.ActionListener() {
@@ -735,22 +739,11 @@ public class MainView extends javax.swing.JFrame
         org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${useThicknessAsFocusOffset}"), jCheckBox1, org.jdesktop.beansbinding.BeanProperty.create("selected"), "cbUseThickness");
         bindingGroup.addBinding(binding);
 
-        cbEditBeforeExecute.setText(resourceMap.getString("cbEditBeforeExecute.text")); // NOI18N
-        cbEditBeforeExecute.setName("cbEditBeforeExecute"); // NOI18N
-
         executeJobButton.setText(resourceMap.getString("executeJobButton.text")); // NOI18N
         executeJobButton.setName("executeJobButton"); // NOI18N
         executeJobButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 executeJobButtonActionPerformed(evt);
-            }
-        });
-
-        editLaserSettingsButton.setText(resourceMap.getString("editLaserSettingsButton.text")); // NOI18N
-        editLaserSettingsButton.setName("editLaserSettingsButton"); // NOI18N
-        editLaserSettingsButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editLaserSettingsButtonActionPerformed(evt);
             }
         });
 
@@ -764,13 +757,9 @@ public class MainView extends javax.swing.JFrame
 
         jSeparator1.setName("jSeparator1"); // NOI18N
 
-        jSeparator2.setName("jSeparator2"); // NOI18N
-
-        laserSettingsLabel.setText(resourceMap.getString("laserSettingsLabel.text")); // NOI18N
-        laserSettingsLabel.setName("laserSettingsLabel"); // NOI18N
-
+        btRemoveObject.setIcon(PlatformIcon.get(PlatformIcon.REMOVE));
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/uicomponents/resources/EditableTablePanel"); // NOI18N
-        btRemoveObject.setText(bundle.getString("-")); // NOI18N
+        btRemoveObject.setToolTipText(bundle.getString("-")); // NOI18N
         btRemoveObject.setName("btRemoveObject"); // NOI18N
         btRemoveObject.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -778,7 +767,8 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
-        btAddObject.setText(bundle.getString("+")); // NOI18N
+        btAddObject.setIcon(PlatformIcon.get(PlatformIcon.ADD));
+        btAddObject.setToolTipText(bundle.getString("+")); // NOI18N
         btAddObject.setName("btAddObject"); // NOI18N
         btAddObject.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -794,16 +784,19 @@ public class MainView extends javax.swing.JFrame
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                        .addComponent(mappingTabbedPane, 0, 0, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 452, Short.MAX_VALUE)
                         .addContainerGap())
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel9)
                             .addComponent(jLabel1)
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(laserCutterComboBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE)
+                                .addComponent(laserCutterComboBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
                                 .addGroup(jPanel2Layout.createSequentialGroup()
-                                    .addComponent(materialComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
+                                    .addComponent(materialComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(btAddMaterial))
                                 .addGroup(jPanel2Layout.createSequentialGroup()
@@ -813,40 +806,27 @@ public class MainView extends javax.swing.JFrame
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                             .addComponent(btAddMaterialThickness))
                                         .addComponent(jLabel5))
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 90, Short.MAX_VALUE)
                                     .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(20, 20, 20))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                .addComponent(cbEditBeforeExecute)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 111, Short.MAX_VALUE)
-                                .addComponent(executeJobButton))
+                            .addComponent(executeJobButton, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 103, Short.MAX_VALUE)
                                 .addComponent(calculateTimeButton)))
                         .addContainerGap())
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(objectComboBox, 0, 297, Short.MAX_VALUE)
+                        .addComponent(objectComboBox, 0, 376, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btAddObject)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btRemoveObject)
-                        .addGap(20, 20, 20))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
-                            .addComponent(mappingTabbedPane, 0, 0, Short.MAX_VALUE))
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(laserSettingsLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 173, Short.MAX_VALUE)
-                        .addComponent(editLaserSettingsButton)
                         .addContainerGap())))
         );
         jPanel2Layout.setVerticalGroup(
@@ -874,28 +854,21 @@ public class MainView extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(objectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel2)
+                        .addComponent(objectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(btRemoveObject)
                     .addComponent(btAddObject))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 327, Short.MAX_VALUE)
+                .addComponent(mappingTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 405, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(editLaserSettingsButton)
-                    .addComponent(laserSettingsLabel))
-                .addGap(34, 34, 34)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10)
                     .addComponent(calculateTimeButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(executeJobButton)
-                    .addComponent(cbEditBeforeExecute))
+                .addComponent(executeJobButton)
                 .addContainerGap())
         );
 
@@ -905,6 +878,7 @@ public class MainView extends javax.swing.JFrame
         jScrollPane1.setViewportView(jPanel2);
 
         warningPanel.setName("warningPanel"); // NOI18N
+        warningPanel.setPreferredSize(new java.awt.Dimension(276, 123));
 
         menuBar.setName("menuBar"); // NOI18N
 
@@ -1156,27 +1130,31 @@ public class MainView extends javax.swing.JFrame
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
-                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btFitScreen, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btFillScreen, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(bt1to1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 126, Short.MAX_VALUE)
-                        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(8, 8, 8)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btFitScreen, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btFillScreen, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(bt1to1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 126, Short.MAX_VALUE)
+                                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(8, 8, 8))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 652, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 494, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1195,9 +1173,9 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(bt1to1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 548, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -1207,7 +1185,6 @@ public class MainView extends javax.swing.JFrame
     }// </editor-fold>//GEN-END:initComponents
 
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
-      PreferencesManager.getInstance().getPreferences().setEditSettingsBeforeExecuting(MainView.this.cbEditBeforeExecute.isSelected());
       this.visicutModel1.updatePreferences();
       System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
@@ -1249,24 +1226,51 @@ public class MainView extends javax.swing.JFrame
 
   private void fitObjectsIntoBed()
   {
+    final Map<PlfPart, AffineTransform> backup = new LinkedHashMap<PlfPart, AffineTransform>();
+    for (PlfPart p : visicutModel1.getPlfFile())
+    {
+      backup.put(p, new AffineTransform(p.getGraphicObjects().getTransform()));
+    }
+    String text = "";
     switch (this.visicutModel1.fitObjectsIntoBed())
     {
       case MOVE:
       {
-        dialog.showInfoMessage(bundle.getString("NEEDED_MOVE"));
+        text = bundle.getString("NEEDED_MOVE");
         break;
       }
       case ROTATE:
       {
-        dialog.showInfoMessage(bundle.getString("NEEDED_ROTATE"));
+        text = bundle.getString("NEEDED_ROTATE");
         break;
       }
       case RESIZE:
       {
-        dialog.showInfoMessage(bundle.getString("NEEDED_REFIT"));
+        text = bundle.getString("NEEDED_REFIT");
         break;
       }
+      case NONE:
+      {
+        return;
+      }
     }
+    warningPanel.addMessage(new Message("Info", text, Message.Type.INFO, new com.t_oster.uicomponents.warnings.Action[]
+    {
+      new com.t_oster.uicomponents.warnings.Action(bundle.getString("UNDO"))
+      {
+        @Override
+        public boolean clicked()
+        {
+          for (Entry<PlfPart, AffineTransform> e : backup.entrySet())
+          {
+            e.getKey().getGraphicObjects().setTransform(e.getValue());
+            VisicutModel.getInstance().firePartUpdated(e.getKey());
+          }
+          return true;
+        } 
+      }
+    }
+    ));
   }
   
   private void loadFileReal(File file, boolean discardCurrent)
@@ -1355,7 +1359,6 @@ public class MainView extends javax.swing.JFrame
     this.calculateTimeButton.setEnabled(execute);
     this.executeJobButton.setEnabled(execute);
     this.executeJobMenuItem.setEnabled(execute);
-    this.editLaserSettingsButton.setEnabled(execute);
   }
   private File lastDirectory = null;
 
@@ -1441,7 +1444,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
   {
     try
     {
-      final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob(true,true);
+      final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob();
       if (cuttingSettings == null)
       {
         return;
@@ -1487,12 +1490,6 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             String txt = MainView.this.visicutModel1.getSelectedLaserDevice().getJobSentText();
             txt = txt.replace("$jobname", prefix + jobnumber).replace("$name", MainView.this.visicutModel1.getSelectedLaserDevice().getName());
             dialog.showSuccessMessage(txt);
-            //TODO:make execute-job take the settings as attribute, not from the manager
-            if (!cuttingSettings.equals(getLaserProperties())) {
-              if (dialog.showYesNoQuestion(bundle.getString("keepNewLaserSettings"))) {
-                saveLaserProperties(cuttingSettings);
-              }
-            }
           }
           catch (Exception ex)
           {
@@ -1712,16 +1709,13 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
           try
           {
             URL src = new URL(MainView.this.visicutModel1.getSelectedLaserDevice().getCameraURL());
-            if (src != null)
-            {
-              BufferedImage back = ImageIO.read(src);
-              if (back != null && MainView.this.visicutModel1.getBackgroundImage() == null)
-              {//First Time Image is Captured => resize View
-                MainView.this.previewPanel.setZoom(100d);
-              }
-              MainView.this.visicutModel1.setBackgroundImage(back);
-              MainView.this.jmShowPhoto.setSelected(true);
+            BufferedImage back = ImageIO.read(src);
+            if (back != null && MainView.this.visicutModel1.getBackgroundImage() == null)
+            {//First Time Image is Captured => resize View
+              MainView.this.previewPanel.setZoom(100d);
             }
+            MainView.this.visicutModel1.setBackgroundImage(back);
+            MainView.this.jmShowPhoto.setSelected(true);
             MainView.this.progressBar.setString("");
             MainView.this.progressBar.setStringPainted(false);
             MainView.this.progressBar.setIndeterminate(false);
@@ -1861,7 +1855,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         {
           MainView.this.calculateTimeButton.setEnabled(false);
           MainView.this.timeLabel.setText("...");
-          MainView.this.timeLabel.setText(Helper.toHHMMSS(MainView.this.visicutModel1.estimateTime(MainView.this.getPropertyMapForCurrentJob(false,true))));
+          MainView.this.timeLabel.setText(Helper.toHHMMSS(MainView.this.visicutModel1.estimateTime(MainView.this.getPropertyMapForCurrentJob())));
           MainView.this.calculateTimeButton.setEnabled(true);
         }
         catch (Exception ex)
@@ -2004,7 +1998,6 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
           {
             PreferencesManager.getInstance().importSettings(file);
             this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
-            this.cbEditBeforeExecute.setSelected(PreferencesManager.getInstance().getPreferences().isEditSettingsBeforeExecuting());
             this.fillComboBoxes();
             this.refreshExampleMenu();
             dialog.showSuccessMessage(bundle.getString("SETTINGS SUCCESSFULLY IMPORTED"));
@@ -2212,18 +2205,6 @@ private void cbMaterialThicknessActionPerformed(java.awt.event.ActionEvent evt) 
     this.previewPanel.setOneToOneZoom();
   }//GEN-LAST:event_bt1to1ActionPerformed
 
-private void editLaserSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editLaserSettingsButtonActionPerformed
-   Map<LaserProfile, List<LaserProperty>> laserProperties = this.editLaserPropertiesDialog();
-	  if (laserProperties != null) {
-		  try {
-        saveLaserProperties(laserProperties);
-      }
-      catch(Exception e) {
-        dialog.showErrorMessage(e,"could not save laser settings");
-      }
-	  }
-}//GEN-LAST:event_editLaserSettingsButtonActionPerformed
-
 private void importMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importMenuItemActionPerformed
   this.openFileDialog(false);
 }//GEN-LAST:event_importMenuItemActionPerformed
@@ -2253,47 +2234,6 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
   VisicutModel.getInstance().setSelectedPart(selected);
 }//GEN-LAST:event_objectComboBoxChangeHandler
 
-/**
- * Open a laser properties dialog (speed, power, frequency, focus for each profile)
- * @return the new laser settings (or null if "cancel" was pressed)
- */
-  private Map<LaserProfile, List<LaserProperty>> editLaserPropertiesDialog() {
-    //TODO: allow to use different laser-settings on the same profile (different instance).
-    // This needs some rework and thoughts because the two instances have to be merged into one for saving.
-    // Maybe create a copy flagged as temporary that is not saved?
-    LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
-    MaterialProfile material = this.visicutModel1.getMaterial();
-	  String heading = bundle.getString("SETTINGS FOR ")+device.getName()+bundle.getString(" WITH MATERIAL ")+material.toString()+" ("+this.visicutModel1.getMaterialThickness()+" mm)";
-	  //Adapt Settings before execute
-    final Map<LaserProfile, List<LaserProperty>> usedSettings = this.getPropertyMapForCurrentJob(false,false);
-	  AdaptSettingsDialog asd = new AdaptSettingsDialog(this, true, heading);
-	  asd.setLaserProperties(usedSettings, this.visicutModel1.getSelectedLaserDevice().getLaserCutter());
-	  asd.setVisible(true);
-	  return asd.getLaserProperties();
-  }
-
-  /**
-   * get the current laser properties
-   * @return laser-properties or null if not set
-   */
-  private Map<LaserProfile, List<LaserProperty>> getLaserProperties() {
-    return this.getPropertyMapForCurrentJob(false,false);
-  }
-
-  private void saveLaserProperties(Map<LaserProfile, List<LaserProperty>> laserProperties) throws FileNotFoundException, IOException {
-    LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
-      MaterialProfile material = this.visicutModel1.getMaterial();
-      float thickness = this.visicutModel1.getMaterialThickness();
-	  for (Entry<LaserProfile, List<LaserProperty>> e:laserProperties.entrySet())
-	  {
-		  LaserPropertyManager.getInstance().saveLaserProperties(device, material, e.getKey(), thickness, e.getValue());
-	  }
-  }
-
-
-
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton bt1to1;
@@ -2307,9 +2247,7 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
     private javax.swing.JButton calculateTimeButton;
     private javax.swing.JMenuItem calibrateCameraMenuItem;
     private javax.swing.JButton captureImageButton;
-    private javax.swing.JCheckBox cbEditBeforeExecute;
     private javax.swing.JComboBox cbMaterialThickness;
-    private javax.swing.JButton editLaserSettingsButton;
     private javax.swing.JMenuItem editMappingMenuItem;
     private javax.swing.JMenu editMenu;
     private javax.swing.JButton executeJobButton;
@@ -2333,7 +2271,6 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JMenu jmExamples;
     private javax.swing.JMenuItem jmExportSettings;
     private javax.swing.JMenu jmExtras;
@@ -2343,7 +2280,6 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
     private javax.swing.JMenuItem jmManageLaserprofiles;
     private javax.swing.JCheckBoxMenuItem jmShowPhoto;
     private com.t_oster.uicomponents.ImageComboBox laserCutterComboBox;
-    private javax.swing.JLabel laserSettingsLabel;
     private com.t_oster.visicut.gui.mapping.MappingPanel mappingPanel;
     private javax.swing.JTabbedPane mappingTabbedPane;
     private com.t_oster.uicomponents.ImageComboBox materialComboBox;
@@ -2355,6 +2291,8 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
     private com.t_oster.uicomponents.PositionPanel positionPanel;
     private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
     private javax.swing.JProgressBar progressBar;
+    private com.t_oster.visicut.gui.propertypanel.PropertiesPanel propertiesPanel;
+    private javax.swing.JScrollPane propertyPanelContainer;
     private javax.swing.JMenu recentFilesMenu;
     private javax.swing.JMenuItem reloadMenuItem;
     private javax.swing.JMenuItem saveAsMenuItem;
@@ -2394,119 +2332,36 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
    * @param mayShowEditDialog true if this function may open a LaserProperty edit dialog for unknown profiles, false if not.
    * @return
    */
-  private Map<LaserProfile, List<LaserProperty>> getPropertyMapForCurrentJob(boolean reallyExecuting, boolean mayShowEditDialog)
+  private Map<LaserProfile, List<LaserProperty>> getPropertyMapForCurrentJob()
   {
-    for (PlfPart p : this.visicutModel1.getPlfFile())
+    Map<LaserProfile, List<LaserProperty>> result = this.propertiesPanel.getPropertyMap();
+    for (LaserProfile lp : result.keySet())
     {
-      if (p.getMapping() == null)
+      if (lp == null)//ignore-profile
       {
         continue;
       }
-      for (Mapping m : p.getMapping())
+      if (!this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions().contains((Double) lp.getDPI()))
       {
-        LaserProfile lp = m.getProfile();
-        if (lp == null)//ignore-profile
+        double dist = -1;
+        double res = 0;
+        double soll = lp.getDPI();
+        for(double r : this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions())
         {
-          continue;
+          if (dist == -1 || dist > Math.abs(soll-r))
+          {
+            dist = Math.abs(soll-r);
+            res = r;
+          }
         }
-        if (!this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions().contains((Double) lp.getDPI()))
+        if (!dialog.showYesNoQuestion(bundle.getString("THE LASERCUTTER YOU SELECTED, DOES NOT SUPPORT ")+soll+bundle.getString("DPI DO YOU WANT TO USE ")+res+bundle.getString("DPI INSTEAD?")))
         {
-          double dist = -1;
-          double res = 0;
-          double soll = lp.getDPI();
-          for(double r : this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions())
-          {
-            if (dist == -1 || dist > Math.abs(soll-r))
-            {
-              dist = Math.abs(soll-r);
-              res = r;
-            }
-          }
-          if (!dialog.showYesNoQuestion(bundle.getString("THE LASERCUTTER YOU SELECTED, DOES NOT SUPPORT ")+soll+bundle.getString("DPI DO YOU WANT TO USE ")+res+bundle.getString("DPI INSTEAD?")))
-          {
-            return null;
-          }
-          lp.setDPI(res);
+          return null;
         }
+        lp.setDPI(res);
       }
     }
-    try
-    {
-      LaserDevice device = this.visicutModel1.getSelectedLaserDevice();
-      MaterialProfile material = this.visicutModel1.getMaterial();
-      float thickness = this.visicutModel1.getMaterialThickness();
-      //get all profiles used in the job
-      //and check if they're supported yet
-      boolean unknownProfilesUsed = false;
-      Map<LaserProfile, List<LaserProperty>> usedSettings = new LinkedHashMap<LaserProfile, List<LaserProperty>>();
-      for (PlfPart p : this.visicutModel1.getPlfFile())
-      {
-        if (p.getMapping() == null)
-        {
-          continue;
-        }
-        for (Mapping m:p.getMapping())
-        {
-          LaserProfile profile = m.getProfile();
-          if (profile == null)//ignore-profile
-          {
-            continue;
-          }
-          List<LaserProperty> props = LaserPropertyManager.getInstance().getLaserProperties(device, material, profile, thickness);
-          if (props == null)
-          {
-            unknownProfilesUsed = true;
-            props = new LinkedList<LaserProperty>();
-          }
-          if (props.isEmpty())
-          {//we have to add at least one sample for the dialog to know the kind of LaserPropery
-            if (profile instanceof RasterProfile)
-            {
-              props.add(device.getLaserCutter().getLaserPropertyForRasterPart());
-            }
-            else if (profile instanceof VectorProfile)
-            {
-              props.add(device.getLaserCutter().getLaserPropertyForVectorPart());
-            }
-            else if (profile instanceof Raster3dProfile)
-            {
-              props.add(device.getLaserCutter().getLaserPropertyForRaster3dPart());
-            }
-          }
-          usedSettings.put(profile, props);
-        }
-      }
-
-      if ((reallyExecuting && this.cbEditBeforeExecute.isSelected()) || unknownProfilesUsed)
-      {
-        if (mayShowEditDialog && unknownProfilesUsed && !(this.cbEditBeforeExecute.isSelected() && reallyExecuting))
-        {
-          dialog.showInfoMessage(bundle.getString("FOR SOME PROFILE YOU SELECTED, THERE ARE NO LASERCUTTER SETTINGS YET YOU WILL HAVE TO ENTER THEM IN THE FOLLOWING DIALOG."));
-        }
-
-        if (!mayShowEditDialog) {
-          // mayShowEditDialog is against infinite recursion because editLaserPropertiesDialog calls this function, which calls back editLaserPropertiesDialog if mayShowEditDialog==true
-          return usedSettings;
-        }
-        //Adapt Settings before execute
-        Map<LaserProfile, List<LaserProperty>> newSettings = editLaserPropertiesDialog();
-        if (unknownProfilesUsed && !reallyExecuting) {
-          // If the job is executed, VisiCut will ask when it's done whether the
-          // profile changes should be saved.
-          // But if the user only clicks on "calculate time" and there are unset profiles, we have to store the changes now, so that he is not asked the same question every time he presses "calculate".
-
-          // save changes
-            saveLaserProperties(newSettings);
-        }
-        return newSettings;
-      }
-      return usedSettings;
-    }
-    catch (Exception e)
-    {
-      this.dialog.showErrorMessage(e);
-      return null;
-    }
+    return result;
   }
 
 }

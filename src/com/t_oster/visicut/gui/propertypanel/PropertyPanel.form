@@ -19,36 +19,33 @@
           <Group type="102" attributes="0">
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="predefinedMappingBox" alignment="0" max="32767" attributes="0"/>
-                  <Component id="propertyMappingPanel" max="32767" attributes="0"/>
-                  <Component id="customMappingPanel" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="52" max="32767" attributes="0"/>
+                  </Group>
+                  <Component id="editableTablePanel1" pref="0" max="32767" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="predefinedMappingBox" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="propertyMappingPanel" pref="232" max="32767" attributes="0"/>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="customMappingPanel" pref="272" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="editableTablePanel1" pref="124" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="com.t_oster.visicut.gui.mapping.PredefinedMappingBox" name="predefinedMappingBox">
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="predefinedMappingBoxActionPerformed"/>
-      </Events>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Cut settings (info of current mapping):"/>
+      </Properties>
     </Component>
-    <Component class="com.t_oster.visicut.gui.mapping.PropertyMappingPanel" name="propertyMappingPanel">
-    </Component>
-    <Component class="com.t_oster.visicut.gui.mapping.CustomMappingPanel" name="customMappingPanel">
+    <Component class="com.t_oster.uicomponents.EditableTablePanel" name="editableTablePanel1">
     </Component>
   </SubComponents>
 </Form>
