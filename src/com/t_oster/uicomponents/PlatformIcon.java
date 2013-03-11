@@ -22,7 +22,6 @@ package com.t_oster.uicomponents;
 import com.t_oster.visicut.misc.Helper;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -75,7 +74,7 @@ public class PlatformIcon
     {
       if (Helper.isLinux())
       {
-        return loadGtkIcon(gtkIconNames.get(type));
+        //return loadGtkIcon(gtkIconNames.get(type));
       }
     }
     catch (Exception e)
@@ -96,7 +95,7 @@ public class PlatformIcon
         case UNDO: return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("resources/undo.png")));
       }
     }
-    catch (IOException ex)
+    catch (Exception ex)
     {
       Logger.getLogger(PlatformIcon.class.getName()).log(Level.SEVERE, null, ex);
     }
