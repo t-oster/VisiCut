@@ -124,25 +124,19 @@ public class PropertyMappingPanel extends javax.swing.JPanel implements Property
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(lbMapBy)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(cbMapBy, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-          .addComponent(propertyMappingPanelTable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addContainerGap())
+        .addComponent(lbMapBy)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(cbMapBy, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+      .addComponent(propertyMappingPanelTable, javax.swing.GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(cbMapBy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(lbMapBy))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(propertyMappingPanelTable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addContainerGap())
+        .addComponent(propertyMappingPanelTable, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
 

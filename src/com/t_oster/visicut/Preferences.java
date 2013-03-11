@@ -257,7 +257,8 @@ public class Preferences
     }
   }
 
-    private boolean editSettingsBeforeExecuting = false;
+  //Deprecated. Just not removed in order to keep old XML files working
+  private boolean editSettingsBeforeExecuting = false;
 
   /**
    * Get the value of editSettingsBeforeExecuting

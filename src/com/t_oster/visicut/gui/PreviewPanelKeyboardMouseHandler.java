@@ -114,7 +114,6 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       {
         PreviewPanelKeyboardMouseHandler.this.getSelectedSet().setTransform(
           PreviewPanelKeyboardMouseHandler.this.getSelectedSet().getBasicTransform());
-        VisicutModel.getInstance().fitObjectsIntoBed();
         PreviewPanelKeyboardMouseHandler.this.previewPanel.setEditRectangle(new EditRectangle(getSelectedSet().getBoundingBox()));
         PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
       }

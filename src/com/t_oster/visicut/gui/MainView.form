@@ -356,36 +356,43 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane2" pref="650" max="32767" attributes="0"/>
-                  <Component id="warningPanel" pref="650" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
-                      <Component id="jButton2" min="-2" pref="34" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jButton1" min="-2" pref="34" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="btFitScreen" min="-2" pref="32" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="btFillScreen" min="-2" pref="31" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="bt1to1" min="-2" pref="32" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="captureImageButton" min="-2" pref="181" max="-2" attributes="0"/>
-                      <EmptySpace pref="126" max="32767" attributes="0"/>
-                      <Component id="progressBar" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="jScrollPane2" alignment="0" pref="650" max="32767" attributes="0"/>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="jButton2" min="-2" pref="34" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jButton1" min="-2" pref="34" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btFitScreen" min="-2" pref="32" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btFillScreen" min="-2" pref="31" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="bt1to1" min="-2" pref="32" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="captureImageButton" min="-2" pref="181" max="-2" attributes="0"/>
+                              <EmptySpace pref="126" max="32767" attributes="0"/>
+                              <Component id="progressBar" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Component id="warningPanel" pref="652" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="1"/>
                   </Group>
               </Group>
-              <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
-              <Component id="jScrollPane1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jScrollPane1" min="-2" pref="494" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jScrollPane1" alignment="0" pref="693" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
@@ -400,13 +407,13 @@
                           </Group>
                           <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="548" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="warningPanel" min="-2" pref="97" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="jScrollPane2" pref="440" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="warningPanel" pref="205" max="32767" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -591,10 +598,14 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="jSeparator1" pref="397" max="32767" attributes="0"/>
+                              <Component id="mappingTabbedPane" min="0" pref="0" max="32767" attributes="2"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jSeparator1" pref="452" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
@@ -602,10 +613,10 @@
                                   <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Group type="103" alignment="0" groupAlignment="1" attributes="0">
-                                      <Component id="laserCutterComboBox" alignment="0" pref="389" max="32767" attributes="1"/>
+                                      <Component id="laserCutterComboBox" alignment="0" pref="444" max="32767" attributes="2"/>
                                       <Group type="102" alignment="1" attributes="1">
-                                          <Component id="materialComboBox" pref="361" max="32767" attributes="1"/>
-                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="materialComboBox" pref="416" max="32767" attributes="2"/>
+                                          <EmptySpace min="-2" max="-2" attributes="0"/>
                                           <Component id="btAddMaterial" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <Group type="102" alignment="1" attributes="0">
@@ -617,7 +628,7 @@
                                               </Group>
                                               <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace pref="35" max="32767" attributes="0"/>
+                                          <EmptySpace pref="90" max="32767" attributes="0"/>
                                           <Component id="jCheckBox1" min="-2" pref="197" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
@@ -626,16 +637,12 @@
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Component id="cbEditBeforeExecute" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace pref="111" max="32767" attributes="0"/>
-                                      <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
-                                  </Group>
+                                  <Component id="executeJobButton" alignment="1" min="-2" max="-2" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="timeLabel" min="-2" pref="166" max="-2" attributes="0"/>
-                                      <EmptySpace pref="48" max="32767" attributes="0"/>
+                                      <EmptySpace pref="103" max="32767" attributes="0"/>
                                       <Component id="calculateTimeButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -644,24 +651,11 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="objectComboBox" pref="297" max="32767" attributes="0"/>
+                              <Component id="objectComboBox" pref="376" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="btAddObject" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="btRemoveObject" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="jSeparator2" alignment="0" pref="397" max="32767" attributes="0"/>
-                                  <Component id="mappingTabbedPane" alignment="1" min="0" pref="0" max="32767" attributes="1"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="laserSettingsLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="173" max="32767" attributes="0"/>
-                              <Component id="editLaserSettingsButton" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -697,32 +691,24 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jSeparator1" min="-2" pref="8" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="objectComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="objectComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
                           <Component id="btRemoveObject" min="-2" max="-2" attributes="0"/>
-                          <Component id="btAddObject" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btAddObject" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="mappingTabbedPane" pref="327" max="32767" attributes="0"/>
+                      <Component id="mappingTabbedPane" pref="405" max="32767" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jSeparator2" min="-2" pref="10" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="editLaserSettingsButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="laserSettingsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="timeLabel" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                           <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="calculateTimeButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="executeJobButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="cbEditBeforeExecute" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -827,6 +813,31 @@
                     </Constraint>
                   </Constraints>
                 </Component>
+                <Container class="javax.swing.JScrollPane" name="propertyPanelContainer">
+                  <Properties>
+                    <Property name="name" type="java.lang.String" value="propertyPanelContainer" noResource="true"/>
+                  </Properties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Laser Settings">
+                        <Property name="tabTitle" type="java.lang.String" resourceKey="propertyPanelContainer.TabConstraints.tabTitle"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                  <SubComponents>
+                    <Container class="com.t_oster.visicut.gui.propertypanel.PropertiesPanel" name="propertiesPanel">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="propertiesPanel" noResource="true"/>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout">
+                        <Property name="axis" type="int" value="1"/>
+                      </Layout>
+                    </Container>
+                  </SubComponents>
+                </Container>
               </SubComponents>
             </Container>
             <Component class="javax.swing.JButton" name="btAddMaterial">
@@ -870,12 +881,6 @@
                 </BindingProperty>
               </BindingProperties>
             </Component>
-            <Component class="javax.swing.JCheckBox" name="cbEditBeforeExecute">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="cbEditBeforeExecute.text"/>
-                <Property name="name" type="java.lang.String" value="cbEditBeforeExecute" noResource="true"/>
-              </Properties>
-            </Component>
             <Component class="javax.swing.JButton" name="executeJobButton">
               <Properties>
                 <Property name="text" type="java.lang.String" resourceKey="executeJobButton.text"/>
@@ -883,15 +888,6 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="executeJobButtonActionPerformed"/>
-              </Events>
-            </Component>
-            <Component class="javax.swing.JButton" name="editLaserSettingsButton">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="editLaserSettingsButton.text"/>
-                <Property name="name" type="java.lang.String" value="editLaserSettingsButton" noResource="true"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editLaserSettingsButtonActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JComboBox" name="objectComboBox">
@@ -915,20 +911,12 @@
                 <Property name="name" type="java.lang.String" value="jSeparator1" noResource="true"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JSeparator" name="jSeparator2">
-              <Properties>
-                <Property name="name" type="java.lang.String" value="jSeparator2" noResource="true"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="laserSettingsLabel">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="laserSettingsLabel.text"/>
-                <Property name="name" type="java.lang.String" value="laserSettingsLabel" noResource="true"/>
-              </Properties>
-            </Component>
             <Component class="javax.swing.JButton" name="btRemoveObject">
               <Properties>
-                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="PlatformIcon.get(PlatformIcon.REMOVE)" type="code"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="com/t_oster/uicomponents/resources/EditableTablePanel.properties" key="-" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="name" type="java.lang.String" value="btRemoveObject" noResource="true"/>
@@ -939,7 +927,10 @@
             </Component>
             <Component class="javax.swing.JButton" name="btAddObject">
               <Properties>
-                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="PlatformIcon.get(PlatformIcon.ADD)" type="code"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="com/t_oster/uicomponents/resources/EditableTablePanel.properties" key="+" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="name" type="java.lang.String" value="btAddObject" noResource="true"/>
@@ -955,6 +946,9 @@
     <Component class="com.t_oster.uicomponents.warnings.WarningPanel" name="warningPanel">
       <Properties>
         <Property name="name" type="java.lang.String" value="warningPanel" noResource="true"/>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[276, 123]"/>
+        </Property>
       </Properties>
     </Component>
   </SubComponents>

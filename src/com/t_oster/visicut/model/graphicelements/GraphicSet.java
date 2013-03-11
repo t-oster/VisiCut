@@ -78,7 +78,7 @@ public class GraphicSet extends LinkedList<GraphicObject>
   public void setBasicTransform(AffineTransform basicTransform)
   {
     this.basicTransform = basicTransform;
-    this.setTransform((AffineTransform) basicTransform.clone());
+    this.setTransform(new AffineTransform(basicTransform));
   }
 
   public AffineTransform transform = null;

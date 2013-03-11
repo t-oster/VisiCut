@@ -35,5 +35,5 @@ public abstract class Action
   {
     return name;
   }
-  public abstract void clicked();
+  public abstract boolean clicked();
 }
