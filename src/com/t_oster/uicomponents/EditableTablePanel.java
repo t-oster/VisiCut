@@ -173,6 +173,19 @@ public class EditableTablePanel extends javax.swing.JPanel
     return this.btRevert;
   }
 
+  private boolean addButtonVisible = true;
+
+  public boolean isAddButtonVisible()
+  {
+    return addButtonVisible;
+  }
+
+  public void setAddButtonVisible(boolean addButtonVisible)
+  {
+    this.addButtonVisible = addButtonVisible;
+    this.btAdd.setVisible(addButtonVisible);
+  }
+  
   protected boolean editButtonVisible = true;
   public static final String PROP_EDITBUTTONVISIBLE = "editButtonVisible";
 
