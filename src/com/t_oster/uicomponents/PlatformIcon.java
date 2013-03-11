@@ -74,7 +74,7 @@ public class PlatformIcon
     {
       if (Helper.isLinux())
       {
-        //return loadGtkIcon(gtkIconNames.get(type));
+        return loadGtkIcon(gtkIconNames.get(type));
       }
     }
     catch (Exception e)
