@@ -107,7 +107,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel implements Property
     cbMapBy = new javax.swing.JComboBox();
     propertyMappingPanelTable = new com.t_oster.visicut.gui.mapping.PropertyMappingPanelTable();
 
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PropertyMappingPanel"); // NOI18N
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox"); // NOI18N
     lbMapBy.setText(bundle.getString("MAP_BY")); // NOI18N
 
     cbMapBy.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -229,6 +229,11 @@ public class PropertyMappingPanel extends javax.swing.JPanel implements Property
   public JButton getSaveButton()
   {
     return propertyMappingPanelTable.getSaveButton();
+  }
+
+  void setSelectedProperty(String property)
+  {
+    this.cbMapBy.setSelectedItem(property);
   }
   
 }

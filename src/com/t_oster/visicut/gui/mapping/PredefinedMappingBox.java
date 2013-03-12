@@ -22,11 +22,19 @@ import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.model.PlfPart;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.ResourceBundle;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 
 /**
  * This implements a combo box, listing all predefined mappings.
@@ -40,15 +48,28 @@ import java.beans.PropertyChangeListener;
 public class PredefinedMappingBox extends javax.swing.JComboBox
 {
 
-  public String NONE = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox").getString("NONE");
-  public String BY_PROPERTY = "<html><b>"+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox").getString("BY_PROPERTY")+"...</b></html>";
-  public String CUSTOM = "<html><b>"+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox").getString("CUSTOM")+"...</b></html>";
+  /**
+   * This class is only for having entries like "Map by color"
+   */
+  public class MapByPropertyEntry
+  {
+    public String property;
+  }
+  
+  private ResourceBundle bundle = ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox");
+  
+  public String NONE = "<html><b>"+bundle.getString("NONE")+"</b></html>";
+  public String ONE_PROFILE_FOR_EVERYTHING = "<html><b>"+bundle.getString("ONE_PROFILE_FOR_EVERYTHING")+"</b></html>";
+  public String PREDEFINED_MAPPINGS = "<html><b>"+bundle.getString("PREDEFINED_MAPPINGS")+"</b></html>";
+  public String BY_PROPERTY = "<html><b>"+bundle.getString("BY_PROPERTY")+"...</b></html>";
+  public String CUSTOM = "<html><b>"+bundle.getString("CUSTOM")+"...</b></html>";
   private PlfPart lastSelectedPlfPart = null;
   /**
    * Creates new form MappingPanel
    */
   public PredefinedMappingBox()
   {
+    this.setRenderer(renderer);
     PropertyChangeListener pl = new PropertyChangeListener(){
       public void propertyChange(PropertyChangeEvent pce)
       {
@@ -69,21 +90,63 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
   }
   private boolean ignoreUiUpdates = false;
 
+  //this renderer adds spaces before each mapping name
+  private ListCellRenderer renderer = new DefaultListCellRenderer()
+  {
+    @Override
+    public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+    {
+      Component result = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+      if (result instanceof JLabel)
+      {
+        if (value instanceof MappingSet)
+        {
+          ((JLabel) result).setText("   "+((MappingSet) value).toString());
+        }
+        else if (value instanceof MapByPropertyEntry)
+        {
+          ((JLabel) result).setText("   "+bundle.getString("MAP_BY")+" "+GraphicSet.translateAttVal(((MapByPropertyEntry) value).property));
+        }
+      }
+      return result;
+    }
+  };
+  
   private void updateComboBoxContent()
   {
     ignoreUiUpdates = true;
     Object selected = this.getSelectedItem();
     this.removeAllItems();
     this.addItem(NONE);
+    this.addItem(ONE_PROFILE_FOR_EVERYTHING);
     for (MappingSet m : MappingManager.getInstance().generateDefaultMappings())
     {
       this.addItem(m);
     }
-    for (MappingSet m : MappingManager.getInstance().getAll())
+    List<MappingSet> all = MappingManager.getInstance().getAll();
+    if (all.size() > 0)
     {
-      this.addItem(m);
+      this.addItem(PREDEFINED_MAPPINGS);
+      for (MappingSet m : all)
+      {
+        this.addItem(m);
+      }
     }
     this.addItem(BY_PROPERTY);
+    if (VisicutModel.getInstance().getSelectedPart() != null)
+    {
+      int count = 0;
+      for(String att: VisicutModel.getInstance().getSelectedPart().getGraphicObjects().getAttributes())
+      {
+        if (++count > 4)
+        {
+          break;
+        }
+        MapByPropertyEntry e = new MapByPropertyEntry();
+        e.property = att;
+        this.addItem(e);
+      }
+    }
     this.addItem(CUSTOM);
     this.setSelectedItem(selected);
     ignoreUiUpdates = false;
@@ -148,14 +211,18 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
         VisicutModel.getInstance().getSelectedPart().setMapping(null);
         VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
       }
-      else if (CUSTOM.equals(selected) || BY_PROPERTY.equals(selected))
-      {
-        //do nothing
-      }
-      else
+      else if (selected instanceof MappingSet)
       {
         VisicutModel.getInstance().getSelectedPart().setMapping((MappingSet) selected);
         VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());
+      }
+      else if (selected instanceof MapByPropertyEntry)
+      {
+        //do nothing. MappingPanel will handle this
+      }
+      else //some string selected, which should not be selectable => revert state
+      {
+        updateUi();
       }
     }
   }
@@ -166,6 +233,7 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
     {
       if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName()))
       {
+        updateComboBoxContent();
         updateUi();
       }
       else if (VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()) && pce.getNewValue().equals(VisicutModel.getInstance().getSelectedPart()))

@@ -127,8 +127,20 @@ public class MappingPanel extends javax.swing.JPanel
 
   private void predefinedMappingBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_predefinedMappingBoxActionPerformed
   {//GEN-HEADEREND:event_predefinedMappingBoxActionPerformed
-    this.customMappingPanel.setVisible(predefinedMappingBox.CUSTOM.equals(predefinedMappingBox.getSelectedItem()));
-    this.propertyMappingPanel.setVisible(predefinedMappingBox.BY_PROPERTY.equals(predefinedMappingBox.getSelectedItem()));
+    Object selected = predefinedMappingBox.getSelectedItem();
+    if (selected instanceof PredefinedMappingBox.MapByPropertyEntry)
+    {
+      String property = ((PredefinedMappingBox.MapByPropertyEntry) selected).property;
+      this.propertyMappingPanel.setSelectedProperty(property);
+      this.predefinedMappingBox.setSelectedItem(predefinedMappingBox.BY_PROPERTY);
+      this.customMappingPanel.setVisible(false);
+      this.propertyMappingPanel.setVisible(true);
+    }
+    else
+    {
+      this.customMappingPanel.setVisible(predefinedMappingBox.CUSTOM.equals(selected));
+      this.propertyMappingPanel.setVisible(predefinedMappingBox.BY_PROPERTY.equals(selected));
+    }
   }//GEN-LAST:event_predefinedMappingBoxActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
