@@ -359,6 +359,10 @@
               <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
+                      <Component id="warningPanel" pref="0" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="jScrollPane2" alignment="0" pref="650" max="32767" attributes="0"/>
                           <Group type="102" alignment="1" attributes="0">
@@ -378,10 +382,6 @@
                           </Group>
                       </Group>
                       <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" attributes="0">
-                      <Component id="warningPanel" pref="652" max="32767" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="1"/>
                   </Group>
               </Group>
               <Component id="jScrollPane1" min="-2" pref="494" max="-2" attributes="0"/>
@@ -408,9 +408,9 @@
                           <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="440" max="32767" attributes="0"/>
+                      <Component id="jScrollPane2" pref="651" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="warningPanel" pref="205" max="32767" attributes="0"/>
+                      <Component id="warningPanel" pref="0" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -650,13 +650,13 @@
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="objectComboBox" pref="376" max="32767" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="btAddObject" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="btRemoveObject" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                              <Component id="objectComboBox" pref="329" max="32767" attributes="0"/>
+                              <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                              <Component id="btAddObject" min="-2" pref="31" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                              <Component id="btRemoveObject" min="-2" pref="34" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -691,13 +691,13 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jSeparator1" min="-2" pref="8" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="103" groupAlignment="3" attributes="0">
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="btAddObject" max="32767" attributes="1"/>
+                          <Component id="btRemoveObject" max="32767" attributes="1"/>
+                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
                               <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="objectComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="objectComboBox" alignment="0" max="32767" attributes="1"/>
                           </Group>
-                          <Component id="btRemoveObject" min="-2" max="-2" attributes="0"/>
-                          <Component id="btAddObject" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="mappingTabbedPane" pref="405" max="32767" attributes="0"/>

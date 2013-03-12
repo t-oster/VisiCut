@@ -18,8 +18,12 @@
  **/
 package com.t_oster.uicomponents.warnings;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.Box;
+import javax.swing.JButton;
 
 /**
  *
@@ -28,40 +32,28 @@ import java.util.List;
 public class WarningPanel extends javax.swing.JPanel
 {
 
-  private Message currentMessage = null;
   private List<Message> messages = new LinkedList<Message>();
   
-  public void addMessage(Message m)
+  public void addMessage(final Message m)
   {
     messages.add(m);
-    this.showMessage(m);
-  }
-  
-  public void showMessage(Message m)
-  {
-    this.currentMessage = m;
-    this.warningContainer.removeAll();
-    if (m != null)
-    {
-      if (!messages.contains(m))
+    m.setCloseListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae)
       {
-        messages.add(m);
+        messages.remove(m);
+        warningContainer.remove(m);
+        m.setCloseListener(null);
+        revalidate();
+        if (messages.isEmpty())
+        {
+          setVisible(false);
+        }
       }
-      int i = messages.indexOf(m);
-      this.btNext.setVisible(i < messages.size()-1);
-      this.btPrev.setVisible(i > 0);
-      this.warningContainer.add(m);
-      m.validate();
-      m.doLayout();
-      this.validate();
-      this.setVisible(true);
-    }
-    else
-    {
-      this.setVisible(false);
-    }
+    });
+    this.warningContainer.add(m);
+    revalidate();
+    setVisible(true);
   }
-  
   
   /**
    * Creates new form WarningPanel
@@ -80,93 +72,23 @@ public class WarningPanel extends javax.swing.JPanel
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btNext = new javax.swing.JButton();
-        btPrev = new javax.swing.JButton();
-        btClose = new javax.swing.JButton();
         warningContainer = new javax.swing.JPanel();
 
-        btNext.setText(">");
-        btNext.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btNextActionPerformed(evt);
-            }
-        });
-
-        btPrev.setText("<");
-        btPrev.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btPrevActionPerformed(evt);
-            }
-        });
-
-        btClose.setText("x");
-        btClose.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btCloseActionPerformed(evt);
-            }
-        });
-
-        warningContainer.setLayout(new javax.swing.BoxLayout(warningContainer, javax.swing.BoxLayout.X_AXIS));
+        warningContainer.setLayout(new javax.swing.BoxLayout(warningContainer, javax.swing.BoxLayout.Y_AXIS));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(warningContainer, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btClose)
-                        .addGap(1, 1, 1))
-                    .addComponent(btNext, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btPrev, javax.swing.GroupLayout.Alignment.TRAILING)))
+            .addComponent(warningContainer, javax.swing.GroupLayout.DEFAULT_SIZE, 476, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(btClose)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btNext)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btPrev)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(warningContainer, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
-  private void btCloseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btCloseActionPerformed
-  {//GEN-HEADEREND:event_btCloseActionPerformed
-    if (currentMessage != null)
-    {
-      int i = this.messages.indexOf(currentMessage);
-      this.messages.remove(i);
-      this.showMessage(i > 0 ? this.messages.get(i-1) : (this.messages.isEmpty() ? null : this.messages.get(0)));
-    }
-  }//GEN-LAST:event_btCloseActionPerformed
-
-  private void btNextActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btNextActionPerformed
-  {//GEN-HEADEREND:event_btNextActionPerformed
-    int i = messages.indexOf(currentMessage);
-    if (i < messages.size()-1)
-    {
-      this.showMessage(messages.get(i+1));
-    }
-  }//GEN-LAST:event_btNextActionPerformed
-
-  private void btPrevActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btPrevActionPerformed
-  {//GEN-HEADEREND:event_btPrevActionPerformed
-    int i = messages.indexOf(currentMessage);
-    if (i > 0)
-    {
-      this.showMessage(messages.get(i-1));
-    }
-  }//GEN-LAST:event_btPrevActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btClose;
-    private javax.swing.JButton btNext;
-    private javax.swing.JButton btPrev;
     private javax.swing.JPanel warningContainer;
     // End of variables declaration//GEN-END:variables
 }
