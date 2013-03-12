@@ -127,7 +127,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel implements Property
         .addComponent(lbMapBy)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(cbMapBy, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-      .addComponent(propertyMappingPanelTable, javax.swing.GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
+      .addComponent(propertyMappingPanelTable, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
