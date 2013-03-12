@@ -101,7 +101,7 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
       {
         if (value instanceof MappingSet)
         {
-          ((JLabel) result).setText("   "+((MappingSet) value).toString());
+          ((JLabel) result).setText((isPopupVisible() ? "   " : "" ) + ((MappingSet) value).toString());
         }
         else if (value instanceof MapByPropertyEntry)
         {
