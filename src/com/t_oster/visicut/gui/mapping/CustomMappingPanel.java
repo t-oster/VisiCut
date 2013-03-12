@@ -171,7 +171,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
   {
     if (!suppressMappingUpdate)
     {
-      this.refreshProfilesEditor(); // generate necessary new temporary copies
+      this.refreshProfilesEditor();
       ignorePartUpdate = true;
       VisicutModel.getInstance().getSelectedPart().setMapping(this.getResultingMappingSet());
       VisicutModel.getInstance().firePartUpdated(VisicutModel.getInstance().getSelectedPart());

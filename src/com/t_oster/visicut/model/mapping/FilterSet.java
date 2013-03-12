@@ -18,7 +18,6 @@
  **/
 package com.t_oster.visicut.model.mapping;
 
-import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.util.LinkedList;
 

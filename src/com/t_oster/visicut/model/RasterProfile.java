@@ -243,7 +243,6 @@ public class RasterProfile extends LaserProfile
     rp.ditherAlgorithm = this.ditherAlgorithm;
     rp.invertColors = this.invertColors;
     rp.name = this.name;
-    rp.setTemporaryCopy(this.isTemporaryCopy());
     rp.thumbnailPath = this.thumbnailPath;
     rp.setDPI(getDPI());
     return rp;

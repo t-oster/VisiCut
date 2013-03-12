@@ -18,10 +18,10 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
               <Component id="lbMapBy" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="cbMapBy" max="32767" attributes="0"/>
           </Group>
-          <Component id="propertyMappingPanelTable" pref="444" max="32767" attributes="0"/>
+          <Component id="propertyMappingPanelTable" pref="328" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -41,7 +41,7 @@
     <Component class="javax.swing.JLabel" name="lbMapBy">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="com/t_oster/visicut/gui/mapping/resources/PropertyMappingPanel.properties" key="MAP_BY" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox.properties" key="MAP_BY" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>

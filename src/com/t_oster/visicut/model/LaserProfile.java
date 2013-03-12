@@ -128,25 +128,10 @@ public abstract class LaserProfile implements ImageListable, Cloneable
     this.name = name;
   }
 
-  protected boolean temporaryCopy = false;
-
-  /**
-   * @return true if this is a temporary copy that should not be stored to disk
-   */
-  public boolean isTemporaryCopy()
-  {
-    return temporaryCopy;
-  }
-
-  /**
-   * @param temporaryCopy true if this is a temporary copy that should not be stored to disk
-   */
-  public void setTemporaryCopy(boolean temporaryCopy)
-  {
-    this.temporaryCopy = temporaryCopy;
-  }
-
-
+  //this attribute is unused and only kept for compatibility
+  //with old XML files
+  private transient boolean temporaryCopy;
+  
   public abstract void renderPreview(Graphics2D g, GraphicSet objects, MaterialProfile material, AffineTransform mm2px);
 
   public abstract void addToLaserJob(LaserJob job, GraphicSet objects, List<LaserProperty> laserProperties);
@@ -261,9 +246,6 @@ public abstract class LaserProfile implements ImageListable, Cloneable
     }
     if (Util.differ(this.thumbnailPath,other.thumbnailPath))
     {
-      return false;
-    }
-    if (this.isTemporaryCopy() != other.isTemporaryCopy()) {
       return false;
     }
     return true;
