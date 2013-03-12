@@ -69,7 +69,7 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
    */
   public PredefinedMappingBox()
   {
-    this.setRenderer(renderer);
+    this.setRenderer(cbRenderer);
     PropertyChangeListener pl = new PropertyChangeListener(){
       public void propertyChange(PropertyChangeEvent pce)
       {
@@ -91,10 +91,10 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
   private boolean ignoreUiUpdates = false;
 
   //this renderer adds spaces before each mapping name
-  private ListCellRenderer renderer = new DefaultListCellRenderer()
+  private ListCellRenderer cbRenderer = new DefaultListCellRenderer()
   {
     @Override
-    public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
     {
       Component result = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
       if (result instanceof JLabel)
