@@ -19,7 +19,6 @@
 package com.t_oster.visicut.gui.mapping;
 
 import com.t_oster.visicut.VisicutModel;
-import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
@@ -184,16 +183,12 @@ public class PropertyMappingPanel extends javax.swing.JPanel implements Property
     Object selected = this.cbMapBy.getSelectedItem();
     this.cbMapBy.removeAllItems();
     boolean attributeAdded = false;
-    for (String a : go.getAttributes())
+    for (String a : go.getInterestingAttributes())
     {
-      //only makes sense if at least two properties are present
-      if (go.getAttributeValues(a).size() > 1)
+      this.cbMapBy.addItem(a);
+      if (attr == null || attr.equals(a))
       {
-        this.cbMapBy.addItem(a);
-        if (attr == null || attr.equals(a))
-        {
-          attributeAdded = true;
-        }
+        attributeAdded = true;
       }
     }
     if (!attributeAdded)
