@@ -211,6 +211,7 @@ public class LaserDevice implements ImageListable
     result.laserCutter = laserCutter.clone();
     result.thumbnailPath = thumbnailPath;
     result.jobPrefix = jobPrefix;
+    result.jobSentText = jobSentText;
     return result;
   }
 
