@@ -34,7 +34,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="editableTablePanel1" pref="124" max="32767" attributes="0"/>
+              <Component id="editableTablePanel1" pref="62" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -46,6 +46,9 @@
       </Properties>
     </Component>
     <Component class="com.t_oster.uicomponents.EditableTablePanel" name="editableTablePanel1">
+      <Properties>
+        <Property name="editButtonVisible" type="boolean" value="false"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

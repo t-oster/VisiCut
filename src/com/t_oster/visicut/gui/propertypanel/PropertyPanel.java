@@ -53,7 +53,6 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
     initComponents();
     model = new LaserPropertiesTableModel();
     this.editableTablePanel1.setTableModel(model);
-    this.editableTablePanel1.setEditButtonVisible(false);
     this.editableTablePanel1.setMoveButtonsVisible(true);
     this.editableTablePanel1.setProvider(this);
     this.model.addTableModelListener(new TableModelListener(){
@@ -133,6 +132,8 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
 
     jLabel1.setText("Cut settings (info of current mapping):");
 
+    editableTablePanel1.setEditButtonVisible(false);
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
@@ -151,7 +152,7 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
         .addContainerGap()
         .addComponent(jLabel1)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(editableTablePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE))
+        .addComponent(editableTablePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 62, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
   // Variables declaration - do not modify//GEN-BEGIN:variables
