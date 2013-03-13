@@ -101,6 +101,7 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
     {
+      String mapBy = bundle.getString("MAP_BY");
       Component result = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
       if (result instanceof JLabel)
       {
@@ -110,7 +111,7 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
         }
         else if (value instanceof MapByPropertyEntry)
         {
-          ((JLabel) result).setText("   "+bundle.getString("MAP_BY")+" "+GraphicSet.translateAttVal(((MapByPropertyEntry) value).property));
+          ((JLabel) result).setText("   "+mapBy.replace("$property", GraphicSet.translateAttVal(((MapByPropertyEntry) value).property)));
         }
       }
       return result;

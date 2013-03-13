@@ -32,6 +32,7 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 /**
@@ -85,6 +86,8 @@ public class MappingManager extends FilebasedManager<MappingSet>
      */
   public List<MappingSet> generateDefaultMappings()
   {
+    ResourceBundle bundle = ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox");
+    String doEverything = bundle.getString("EVERYTHING_DO");
     List<MappingSet> result = new LinkedList<MappingSet>();
     Set<String> profiles = new LinkedHashSet<String>();
     for (LaserProfile lp:ProfileManager.getInstance().getAll())
@@ -94,7 +97,7 @@ public class MappingManager extends FilebasedManager<MappingSet>
         profiles.add(lp.getName());
         MappingSet set = new MappingSet();
         set.add(new Mapping(new FilterSet(), lp));
-        set.setName(lp.getName());
+        set.setName(doEverything.replace("$profile", lp.getName()));
         set.setDescription("An auto-generated mapping");
         result.add(set);
       }
