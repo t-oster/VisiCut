@@ -64,15 +64,19 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
   }
   
   private String text = "title";
+  private String title = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PropertyPanel").getString("PROPERTY_TITLE");
   
   public void setMapping(Mapping m)
   {
+    
     String profile = m.getProfile() != null ? m.getProfile().getName() : java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("IGNORE");
     String filters = m.getFilterSet() != null ? m.getFilterSet().toString() : java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("EVERYTHING_ELSE");
-    text = profile +" ("+filters+")";
+    text = title.replace("$profile", profile).replace("$mapping", filters);
+    //change colors to their html representation
+    text = text.replaceAll("#([0-9a-fA-F]+)", "<span bgcolor='$1' color='$1'>bla</span>");
     this.lp = m.getProfile();
     this.editableTablePanel1.setSaveButtonVisible(modified);
-    this.jLabel1.setText(modified ? "<html><b>"+text+"*</b></html>" : text);
+    this.jLabel1.setText(modified ? "<html><b>"+text+"*</b></html>" : "<html>"+text+"</html>");
   }
   
   boolean modified = false;
@@ -89,7 +93,7 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
       this.modified = modified;
       this.editableTablePanel1.setSaveButtonVisible(modified);
       this.editableTablePanel1.setRevertButtonVisible(modified);
-      this.jLabel1.setText(modified ? "<html><b>"+text+"*</b></html>" : text);
+      this.jLabel1.setText(modified ? "<html><b>"+text+"*</b></html>" : "<html>"+text+"</html>");
     }
   }
   
@@ -130,7 +134,8 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
     jLabel1 = new javax.swing.JLabel();
     editableTablePanel1 = new com.t_oster.uicomponents.EditableTablePanel();
 
-    jLabel1.setText("Cut settings (info of current mapping):");
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PropertyPanel"); // NOI18N
+    jLabel1.setText(bundle.getString("PROPERTY_TITLE")); // NOI18N
 
     editableTablePanel1.setEditButtonVisible(false);
 
@@ -141,10 +146,10 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(editableTablePanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
-            .addComponent(jLabel1)
-            .addContainerGap(52, Short.MAX_VALUE))
-          .addComponent(editableTablePanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 388, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
