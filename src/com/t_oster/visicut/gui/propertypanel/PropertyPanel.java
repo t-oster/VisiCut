@@ -65,8 +65,9 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
   
   private String text = "title";
   private String title = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PropertyPanel").getString("PROPERTY_TITLE");
+  private String unused = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PropertyPanel").getString("UNUSED");
   
-  public void setMapping(Mapping m)
+  public void setMapping(Mapping m, boolean isUnused)
   {
     
     String profile = m.getProfile() != null ? m.getProfile().getName() : java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("IGNORE");
@@ -74,6 +75,10 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
     text = title.replace("$profile", profile).replace("$mapping", filters);
     //change colors to their html representation
     text = text.replaceAll("#([0-9a-fA-F]+)", "<span bgcolor='$1' color='$1'>bla</span>");
+    if (isUnused)
+    {
+      text += " "+unused;
+    }
     this.lp = m.getProfile();
     this.editableTablePanel1.setSaveButtonVisible(modified);
     this.jLabel1.setText(modified ? "<html><b>"+text+"*</b></html>" : "<html>"+text+"</html>");
