@@ -419,6 +419,7 @@ public class VisicutApp extends SingleFrameApplication
       }
       try
       {
+        List<String> warnings = new LinkedList<String>();
         VisicutModel.getInstance().sendJob("VisiCut 1", new ProgressListener(){
 
           public void progressChanged(Object source, int percent)
@@ -430,7 +431,11 @@ public class VisicutApp extends SingleFrameApplication
           {
             System.out.println(taskName);
           }
-        }, propmap);
+        }, propmap, warnings);
+        for (String w : warnings)
+        {
+          System.out.println("WARNING: "+w);
+        }
       }
       catch (Exception ex)
       {

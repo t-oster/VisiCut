@@ -677,7 +677,7 @@ public class VisicutModel
     return job;
   }
 
-  public void sendJob(String name, ProgressListener pl, Map<LaserProfile, List<LaserProperty>> props) throws IllegalJobException, SocketTimeoutException, Exception
+  public void sendJob(String name, ProgressListener pl, Map<LaserProfile, List<LaserProperty>> props, List<String> warnings) throws IllegalJobException, SocketTimeoutException, Exception
   {
     LaserCutter lasercutter = this.getSelectedLaserDevice().getLaserCutter();
     if (pl != null)
@@ -688,11 +688,11 @@ public class VisicutModel
     if (pl != null)
     {
       pl.taskChanged(this, "sending job");
-      lasercutter.sendJob(job, pl);
+      lasercutter.sendJob(job, pl, warnings);
     }
     else
     {
-      lasercutter.sendJob(job);
+      lasercutter.sendJob(job, warnings);
     }
   }
 

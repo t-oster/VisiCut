@@ -19,7 +19,6 @@
 package com.t_oster.visicut.gui.mapping;
 
 import com.t_oster.visicut.VisicutModel;
-import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
@@ -108,7 +107,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel implements Property
     propertyMappingPanelTable = new com.t_oster.visicut.gui.mapping.PropertyMappingPanelTable();
 
     java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox"); // NOI18N
-    lbMapBy.setText(bundle.getString("MAP_BY")); // NOI18N
+    lbMapBy.setText(bundle.getString("MAP_BY_ONLY")); // NOI18N
 
     cbMapBy.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
     cbMapBy.addActionListener(new java.awt.event.ActionListener()
@@ -184,16 +183,12 @@ public class PropertyMappingPanel extends javax.swing.JPanel implements Property
     Object selected = this.cbMapBy.getSelectedItem();
     this.cbMapBy.removeAllItems();
     boolean attributeAdded = false;
-    for (String a : go.getAttributes())
+    for (String a : go.getInterestingAttributes())
     {
-      //only makes sense if at least two properties are present
-      if (go.getAttributeValues(a).size() > 1)
+      this.cbMapBy.addItem(a);
+      if (attr == null || attr.equals(a))
       {
-        this.cbMapBy.addItem(a);
-        if (attr == null || attr.equals(a))
-        {
-          attributeAdded = true;
-        }
+        attributeAdded = true;
       }
     }
     if (!attributeAdded)

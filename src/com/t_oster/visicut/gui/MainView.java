@@ -1483,7 +1483,12 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
           {
             jobnumber++;
             String prefix = MainView.this.visicutModel1.getSelectedLaserDevice().getJobPrefix();
-            MainView.this.visicutModel1.sendJob(prefix+jobnumber, pl, cuttingSettings);
+            List<String> warnings = new LinkedList<String>();
+            MainView.this.visicutModel1.sendJob(prefix+jobnumber, pl, cuttingSettings, warnings);
+            for (String w : warnings)
+            {
+              dialog.showWarningMessage(w);
+            }
             MainView.this.progressBar.setValue(0);
             MainView.this.progressBar.setString("");
             MainView.this.progressBar.setStringPainted(false);

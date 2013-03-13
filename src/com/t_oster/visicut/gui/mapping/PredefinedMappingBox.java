@@ -31,6 +31,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -53,6 +54,10 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
    */
   public class MapByPropertyEntry
   {
+    public MapByPropertyEntry(String property)
+    {
+      this.property = property;
+    }
     public String property;
   }
   
@@ -96,6 +101,7 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
     {
+      String mapBy = bundle.getString("MAP_BY");
       Component result = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
       if (result instanceof JLabel)
       {
@@ -105,7 +111,7 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
         }
         else if (value instanceof MapByPropertyEntry)
         {
-          ((JLabel) result).setText("   "+bundle.getString("MAP_BY")+" "+GraphicSet.translateAttVal(((MapByPropertyEntry) value).property));
+          ((JLabel) result).setText("   "+mapBy.replace("$property", GraphicSet.translateAttVal(((MapByPropertyEntry) value).property)));
         }
       }
       return result;
@@ -132,19 +138,22 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
         this.addItem(m);
       }
     }
-    this.addItem(BY_PROPERTY);
+    
     if (VisicutModel.getInstance().getSelectedPart() != null)
-    {
-      int count = 0;
-      for(String att: VisicutModel.getInstance().getSelectedPart().getGraphicObjects().getAttributes())
+    {   
+      Iterable<String> props = VisicutModel.getInstance().getSelectedPart().getGraphicObjects().getInterestingAttributes();
+      if (props.iterator().hasNext())
       {
-        if (++count > 4)
+        this.addItem(BY_PROPERTY);
+        int count = 0;
+        for(String att: props)
         {
-          break;
+          if (++count > 4)
+          {
+            break;
+          }
+          this.addItem(new MapByPropertyEntry(att));
         }
-        MapByPropertyEntry e = new MapByPropertyEntry();
-        e.property = att;
-        this.addItem(e);
       }
     }
     this.addItem(CUSTOM);

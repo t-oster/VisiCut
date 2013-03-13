@@ -157,16 +157,25 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
         {
           continue;
         }
+        boolean unused = false;
+        if (m.getFilterSet() != null)
+        {
+          unused = m.getFilterSet().getMatchingObjects(VisicutModel.getInstance().getSelectedPart().getGraphicObjects()).isEmpty();
+        }
+        else
+        {
+          unused = VisicutModel.getInstance().getSelectedPart().getUnmatchedObjects().isEmpty();
+        }
         PropertyPanel p;
         if (panels.containsKey(m.getProfile()))
         {
           p = panels.get(m.getProfile());
-          p.setMapping(m);
+          p.setMapping(m, unused);
         }
         else
         {
           p = new PropertyPanel();
-          p.setMapping(m);
+          p.setMapping(m, unused);
           try
           {
             p.setLaserProperties(LaserPropertyManager.getInstance().getLaserProperties(ld, mp, m.getProfile(), thickness));

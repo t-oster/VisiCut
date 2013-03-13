@@ -199,6 +199,7 @@ public class GraphicSet extends LinkedList<GraphicObject>
     {
       this.attributesCache.addAll(o.getAttributes());
     }
+    this.interestingAttributesCache = null;
     return super.add(o);
   }
   
@@ -209,6 +210,7 @@ public class GraphicSet extends LinkedList<GraphicObject>
     {
       this.attributesCache.removeAll(o.getAttributes());
     }
+    this.interestingAttributesCache = null;
     return super.remove(o);
   }
   
@@ -256,6 +258,29 @@ public class GraphicSet extends LinkedList<GraphicObject>
       }
     }
     return attributesCache;
+  }
+  
+  private Set<String> interestingAttributesCache = null;
+  /**
+   * Returns only those attributes, where at least two different
+   * values are present
+   * @return 
+   */
+  public Iterable<String> getInterestingAttributes()
+  {
+    if (interestingAttributesCache == null)
+    {
+      interestingAttributesCache = new LinkedHashSet();
+      for (String attribute : this.getAttributes())
+      {
+        //only makes sense if at least two properties are present
+        if (this.getAttributeValues(attribute).size() > 1)
+        {
+          interestingAttributesCache.add(attribute);
+        }
+      }
+    }
+    return interestingAttributesCache;
   }
 
   public void rotateRelative(double angle)

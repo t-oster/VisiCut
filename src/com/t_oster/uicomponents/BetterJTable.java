@@ -54,6 +54,7 @@ public class BetterJTable extends JTable
             Component c = super.getTableCellEditorComponent(table, value, isSelected, row, column);
             if (c instanceof JTextField)
             {
+              ((JTextField) c).setBorder(null);
               ((JTextField) c).setSelectionStart(0);
               ((JTextField) c).setSelectionEnd(((JTextField) c).getText().length());
             }

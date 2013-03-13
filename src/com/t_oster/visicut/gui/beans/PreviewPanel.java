@@ -512,6 +512,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       }
       for (PlfPart part : VisicutModel.getInstance().getPlfFile())
       {
+        boolean selected = (part.equals(VisicutModel.getInstance().getSelectedPart()));
         HashMap<Mapping,ImageProcessingThread> renderBuffer = renderBuffers.get(part);
         if (renderBuffer == null)
         {
@@ -523,14 +524,14 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
           MappingSet mappingsToDraw = part.getMapping();
           if (VisicutModel.getInstance().getMaterial() == null || mappingsToDraw == null || mappingsToDraw.isEmpty())
           {//Just draw the original Image
-            this.renderOriginalImage(gg, null, part, this.fastPreview);
+            this.renderOriginalImage(gg, null, part, this.fastPreview && selected);
           }
           else
           {
             boolean somethingMatched = false;
             for (Mapping m : mappingsToDraw)
             {//Render Original Image
-              if (m.getProfile() != null && (this.fastPreview && part.equals(VisicutModel.getInstance().getSelectedPart())))
+              if (m.getProfile() != null && (this.fastPreview && selected))
               {
                 somethingMatched = this.renderOriginalImage(gg, m, part, this.fastPreview);
               }
