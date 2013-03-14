@@ -18,7 +18,6 @@
  **/
 package com.t_oster.uicomponents;
 
-import com.t_oster.visicut.gui.beans.ZoomablePanel;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;

@@ -454,7 +454,7 @@ public class MainView extends javax.swing.JFrame
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         visicutModel1 = VisicutModel.getInstance();
-        filesDropSupport1 = new com.t_oster.visicut.gui.beans.FilesDropSupport();
+        filesDropSupport1 = new com.t_oster.uicomponents.FilesDropSupport();
         saveFileChooser = new javax.swing.JFileChooser();
         buttonGroup1 = new javax.swing.ButtonGroup();
         captureImageButton = new javax.swing.JButton();
@@ -2259,7 +2259,7 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
     private javax.swing.JMenuItem executeJobMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
-    private com.t_oster.visicut.gui.beans.FilesDropSupport filesDropSupport1;
+    private com.t_oster.uicomponents.FilesDropSupport filesDropSupport1;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem importMenuItem;
     private javax.swing.JButton jButton1;

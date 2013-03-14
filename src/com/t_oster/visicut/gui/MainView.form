@@ -10,7 +10,7 @@
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="VisicutModel.getInstance()"/>
       </AuxValues>
     </Component>
-    <Component class="com.t_oster.visicut.gui.beans.FilesDropSupport" name="filesDropSupport1">
+    <Component class="com.t_oster.uicomponents.FilesDropSupport" name="filesDropSupport1">
       <Properties>
         <Property name="component" type="javax.swing.JComponent" editor="org.netbeans.modules.form.ComponentChooserEditor">
           <ComponentRef name="previewPanel"/>

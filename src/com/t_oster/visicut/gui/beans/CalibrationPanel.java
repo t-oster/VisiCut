@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut.gui.beans;
 
+import com.t_oster.uicomponents.ZoomablePanel;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
