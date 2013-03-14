@@ -99,6 +99,10 @@ public class MappingFilter
     boolean result;
     if (value instanceof Number)
     {
+      if (e.getAttributeValues(attribute).isEmpty()) {
+        // object does not have the relevant attribute -> does not match (except if inverted)
+        return inverted;
+      } 
       double number = ((Number) value).doubleValue();
       double other = ((Number) e.getAttributeValues(attribute).get(0)).doubleValue();
       result = attribute == null || (compare ? other <= number : other == number);
