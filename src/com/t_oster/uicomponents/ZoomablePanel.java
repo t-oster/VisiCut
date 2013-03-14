@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.t_oster.visicut.gui.beans;
+package com.t_oster.uicomponents;
 
 import com.t_oster.liblasercut.platform.Util;
 import java.awt.Dimension;

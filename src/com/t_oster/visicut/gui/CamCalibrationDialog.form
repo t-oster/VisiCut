@@ -50,8 +50,8 @@
           <Group type="102" alignment="0" attributes="0">
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="captureButton" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
-                  <Component id="btZoomIn" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btZoomOut" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btZoomIn" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+                  <Component id="btZoomOut" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="jScrollPane1" pref="448" max="32767" attributes="0"/>
@@ -96,7 +96,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="captureButton">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" resourceKey="captureButton.icon"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.CAMERA)" type="code"/>
+        </Property>
         <Property name="text" type="java.lang.String" resourceKey="captureButton.text"/>
         <Property name="name" type="java.lang.String" value="captureButton" noResource="true"/>
       </Properties>
@@ -146,7 +148,9 @@
     </Container>
     <Component class="javax.swing.JButton" name="btZoomIn">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" resourceKey="btZoomIn.icon"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.ZOOM_IN)" type="code"/>
+        </Property>
         <Property name="text" type="java.lang.String" resourceKey="btZoomIn.text"/>
         <Property name="name" type="java.lang.String" value="btZoomIn" noResource="true"/>
       </Properties>
@@ -156,7 +160,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btZoomOut">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" resourceKey="btZoomOut.icon"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.ZOOM_OUT)" type="code"/>
+        </Property>
         <Property name="text" type="java.lang.String" resourceKey="btZoomOut.text"/>
         <Property name="name" type="java.lang.String" value="btZoomOut" noResource="true"/>
       </Properties>

@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut.gui.beans;
 
+import com.t_oster.uicomponents.ZoomablePanel;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.platform.Util;

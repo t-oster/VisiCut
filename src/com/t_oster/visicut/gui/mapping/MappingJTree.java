@@ -26,6 +26,7 @@ import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingFilter;
 import java.awt.Color;
 import java.awt.Component;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +36,6 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -117,8 +117,9 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
           boolean valueFound = false;
           for(Object c : getChildren(current))
           {
-            if (c instanceof FilterSetNode && ((FilterSetNode) c).getLast().getValue().equals(f.getValue()))
+            if (c instanceof FilterSetNode && ((FilterSetNode) c).getLast().equals(f))
             {
+              //TODO: need to check inverted and compare???
               valueFound = true;
               current = c;
               path.add(c);
@@ -226,15 +227,30 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
         children = new LinkedList<FilterSetNode>();
         GraphicSet gos = this.getMatchingObjects(MappingJTree.this.getGraphicObjects());
         List<Object> visitedValues = new LinkedList<Object>();
-        for (GraphicObject g : gos)
+        for (Object value : gos.getAttributeValues(attribute))
         {
-          for (Object value : g.getAttributeValues(attribute))
+          if (!visitedValues.contains(value))
           {
-            if (!visitedValues.contains(value))
+            visitedValues.add(value);
+            List<MappingFilter> possibleFilters = new ArrayList<MappingFilter>(4);
+            //create all 4 possible filters
+            MappingFilter pf = new MappingFilter(attribute, value);
+            possibleFilters.add(pf);
+            pf = new MappingFilter(attribute, value);
+            pf.setInverted(true);
+            possibleFilters.add(pf);
+            if (value instanceof Number)
             {
-              visitedValues.add(value);
-              //GraphicSet restObjects = this.getA().getMatchingObjects(gos);
-              MappingFilter f = new MappingFilter(attribute, value);
+              pf = new MappingFilter(attribute, value);
+              pf.setCompare(true);
+              possibleFilters.add(pf);
+              pf = new MappingFilter(attribute, value);
+              pf.setInverted(true);
+              pf.setCompare(true);
+              possibleFilters.add(pf);
+            }
+            for (MappingFilter f : possibleFilters)
+            {
               int newrest = f.getMatchingElements(gos).size();
               //Check if filter makes a difference
               if (newrest != 0 && newrest != gos.size())
@@ -244,13 +260,6 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
                 node.add(f);
                 if (!children.contains(node))
                 {
-                  children.add(node);
-                  //Add inverted filter
-                  f = new MappingFilter(attribute, value);
-                  f.setInverted(true);
-                  node = new FilterSetNode();
-                  node.addAll(this);
-                  node.add(f);
                   children.add(node);
                 }
               }
@@ -287,25 +296,6 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
     }
   }
 
-  private boolean hasUnmappedChildren(FilterSet fs)
-  {
-    //Calculate if there are matching elements which are
-    //not already mapped
-    GraphicSet unmapped = fs.getMatchingObjects(graphicObjects);
-    if (MappingJTree.this.mappings != null)
-    {
-      for (Mapping m : MappingJTree.this.mappings)
-      {
-        unmapped.removeAll(m.getFilterSet().getMatchingObjects(unmapped));
-        if (unmapped.size() == 0)
-        {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
   public MappingJTree()
   {
     this.setModel(this);
@@ -327,11 +317,6 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
           else if (o instanceof FilterSet)
           {
             FilterSet fs = (FilterSet) o;
-            boolean hasUnmappedChildren = MappingJTree.this.hasUnmappedChildren(fs);
-            if (!hasUnmappedChildren)
-            {//If all chilren are already mapped, change bgcolor
-              l.setText("<html><span style=\"background-color:" + bgHtml + "\">" + l.getText() + "</span></html>");
-            }
             if (fs instanceof FilterSetNode)
             {
               MappingFilter f = fs.peekLast();
@@ -339,11 +324,11 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
               {
                 if (f.getValue() instanceof Color)
                 {
-                  l.setText("<html><table" + (!hasUnmappedChildren ? " bgcolor=" + bgHtml : "") + "><tr><td>" + (f.isInverted() ? GraphicSet.translateAttVal("IS NOT") : GraphicSet.translateAttVal("IS")) + "</td><td border=1 bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
+                  l.setText("<html><table><tr><td>" + (f.isInverted() ? GraphicSet.translateAttVal("IS NOT") : GraphicSet.translateAttVal("IS")) + "</td><td border=1 bgcolor=" + Helper.toHtmlRGB((Color) f.getValue()) + ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table></html>");
                 }
                 else
                 {
-                  l.setText(GraphicSet.translateAttVal(f.getValue()));
+                  l.setText(f.getValueString());
                 }
               }
             }

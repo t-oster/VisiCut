@@ -109,7 +109,7 @@ public class SVGShape extends SVGObject implements ShapeObject
          {
            Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
          }
-         result.add("" + ((int) (width*100))/100d);
+         result.add((Double) width);
         break;
       }
       case Type:

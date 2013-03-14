@@ -40,27 +40,34 @@ import sun.awt.UNIXToolkit;
 public class PlatformIcon 
 {
  
-  public static final int NEW = 1;
-  public static final int SAVE = 2;
-  public static final int NEXT = 3;
-  public static final int PREV = 4;
-  public static final int UP = 5;
-  public static final int DOWN = 6;
-  public static final int LOAD = 7;
-  public static final int ADD = 8;
-  public static final int REMOVE = 9;
-  public static final int EDIT = 10;
-  public static final int UNDO = 11;
+  public static final String ADD = "add";
+  public static final String CAMERA = "camera";
+  public static final String DOWN = "down";
+  public static final String EDIT = "edit";
+  public static final String LOAD = "load";
+  //public static final String NEW = "new";
+  //public static final String NEXT = "next";
+  public static final String NO_IMAGE = "no-image";
+  //public static final String PREV = "prev";
+  public static final String REMOVE = "remove";
+  public static final String SAVE = "save";
+  public static final String UNDO = "undo";
+  public static final String UP = "up";
+  public static final String ZOOM_ACTUAL_EQUAL = "zoom-actual-equal";
+  public static final String ZOOM_ACTUAL = "zoom-actual";
+  public static final String ZOOM_FIT = "zoom-fit";
+  public static final String ZOOM_IN = "zoom-in";
+  public static final String ZOOM_OUT = "zoom-out";
   
-  private static final Map<Integer, String> gtkIconNames = new LinkedHashMap<Integer, String>();
+  private static final Map<String, String> gtkIconNames = new LinkedHashMap<String, String>();
   static
   {
-    gtkIconNames.put(NEW, "gtk-new");
+    //gtkIconNames.put(NEW, "gtk-new");
     gtkIconNames.put(SAVE, "gtk-save");
     gtkIconNames.put(UP, "gtk-go-up");
     gtkIconNames.put(DOWN, "gtk-go-down");
-    gtkIconNames.put(NEXT, "gtk-go-forward");
-    gtkIconNames.put(PREV, "gtk-go-back");
+    //gtkIconNames.put(NEXT, "gtk-go-forward");
+    //gtkIconNames.put(PREV, "gtk-go-back");
     gtkIconNames.put(EDIT, "gtk-edit");
     gtkIconNames.put(ADD, "gtk-add");
     gtkIconNames.put(REMOVE, "gtk-delete");
@@ -68,11 +75,15 @@ public class PlatformIcon
     gtkIconNames.put(UNDO, "gtk-undo");
   }
   
-  public static Icon get(int type)
+  public static Icon get(String type)
   {
+    if (type == null)
+    {
+      return null;
+    }
     try
     {
-      if (Helper.isLinux())
+      if (Helper.isLinux() && gtkIconNames.containsKey(type))
       {
         return loadGtkIcon(gtkIconNames.get(type));
       }
@@ -83,21 +94,11 @@ public class PlatformIcon
     }
     try
     {
-      switch (type)
-      {
-        case ADD: return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("resources/add.png")));
-        case REMOVE: return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("resources/remove.png")));
-        case UP: return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("resources/up.png")));
-        case DOWN: return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("resources/down.png")));
-        case EDIT: return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("resources/edit.png")));
-        case SAVE: return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("resources/save.png")));
-        case LOAD: return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("resources/load.png")));
-        case UNDO: return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("resources/undo.png")));
-      }
+      return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("platformicons/"+type+".png")));
     }
     catch (Exception ex)
     {
-      Logger.getLogger(PlatformIcon.class.getName()).log(Level.SEVERE, null, ex);
+      System.err.println("Error loading "+"platformicons/"+type+".png");
     }
     try
     {

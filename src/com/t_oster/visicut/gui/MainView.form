@@ -10,7 +10,7 @@
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="VisicutModel.getInstance()"/>
       </AuxValues>
     </Component>
-    <Component class="com.t_oster.visicut.gui.beans.FilesDropSupport" name="filesDropSupport1">
+    <Component class="com.t_oster.uicomponents.FilesDropSupport" name="filesDropSupport1">
       <Properties>
         <Property name="component" type="javax.swing.JComponent" editor="org.netbeans.modules.form.ComponentChooserEditor">
           <ComponentRef name="previewPanel"/>
@@ -394,7 +394,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" alignment="0" pref="693" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" pref="699" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -421,7 +421,9 @@
   <SubComponents>
     <Component class="javax.swing.JButton" name="captureImageButton">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" resourceKey="captureImageButton.icon"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.CAMERA)" type="code"/>
+        </Property>
         <Property name="text" type="java.lang.String" resourceKey="captureImageButton.text"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[129, 36]"/>
@@ -445,7 +447,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="jButton1">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" resourceKey="jButton1.icon"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.ZOOM_IN)" type="code"/>
+        </Property>
         <Property name="text" type="java.lang.String" resourceKey="jButton1.text"/>
         <Property name="toolTipText" type="java.lang.String" resourceKey="jButton1.toolTipText"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -465,7 +469,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="jButton2">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" resourceKey="jButton2.icon"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.ZOOM_OUT)" type="code"/>
+        </Property>
         <Property name="text" type="java.lang.String" resourceKey="jButton2.text"/>
         <Property name="toolTipText" type="java.lang.String" resourceKey="jButton2.toolTipText"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -485,7 +491,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btFitScreen">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" resourceKey="btFitScreen.icon"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.ZOOM_FIT)" type="code"/>
+        </Property>
         <Property name="text" type="java.lang.String" resourceKey="btFitScreen.text"/>
         <Property name="toolTipText" type="java.lang.String" resourceKey="btFitScreen.toolTipText"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -505,7 +513,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btFillScreen">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" resourceKey="btFillScreen.icon"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.ZOOM_ACTUAL_EQUAL)" type="code"/>
+        </Property>
         <Property name="text" type="java.lang.String" resourceKey="btFillScreen.text"/>
         <Property name="toolTipText" type="java.lang.String" resourceKey="btFillScreen.toolTipText"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -525,7 +535,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="bt1to1">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" resourceKey="bt1to1.icon"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.ZOOM_ACTUAL)" type="code"/>
+        </Property>
         <Property name="text" type="java.lang.String" resourceKey="bt1to1.text"/>
         <Property name="toolTipText" type="java.lang.String" resourceKey="bt1to1.toolTipText"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -694,10 +706,8 @@
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="btAddObject" max="32767" attributes="1"/>
                           <Component id="btRemoveObject" max="32767" attributes="1"/>
-                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="objectComboBox" alignment="0" max="32767" attributes="1"/>
-                          </Group>
+                          <Component id="objectComboBox" alignment="0" max="32767" attributes="1"/>
+                          <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="mappingTabbedPane" pref="405" max="32767" attributes="0"/>

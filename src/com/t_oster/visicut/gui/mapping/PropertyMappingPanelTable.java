@@ -41,6 +41,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
@@ -241,9 +242,10 @@ public class PropertyMappingPanelTable extends EditableTablePanel implements Edi
     this.setSaveButtonVisible(true);
     this.setLoadButtonVisible(true);
     ProfileManager.getInstance().addPropertyChangeListener(this);
-    VisicutModel.getInstance().addPropertyChangeListener(this); 
+    VisicutModel.getInstance().addPropertyChangeListener(this);
+    ((BetterJTable) this.getTable()).setColumnRelations(new int[]{6,16,9});
   }
-
+  
   private void refreshPropertiesEditor()
   {
     List<FilterSet> fss = new LinkedList<FilterSet>();
