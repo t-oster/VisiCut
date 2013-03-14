@@ -548,7 +548,7 @@ public class MainView extends javax.swing.JFrame
         setLocationByPlatform(true);
         setName("Form"); // NOI18N
 
-        captureImageButton.setIcon(resourceMap.getIcon("captureImageButton.icon")); // NOI18N
+        captureImageButton.setIcon(PlatformIcon.get(PlatformIcon.CAMERA));
         captureImageButton.setText(resourceMap.getString("captureImageButton.text")); // NOI18N
         captureImageButton.setMaximumSize(new java.awt.Dimension(129, 36));
         captureImageButton.setMinimumSize(new java.awt.Dimension(129, 36));
@@ -562,7 +562,7 @@ public class MainView extends javax.swing.JFrame
 
         progressBar.setName("progressBar"); // NOI18N
 
-        jButton1.setIcon(resourceMap.getIcon("jButton1.icon")); // NOI18N
+        jButton1.setIcon(PlatformIcon.get(PlatformIcon.ZOOM_IN));
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
         jButton1.setToolTipText(resourceMap.getString("jButton1.toolTipText")); // NOI18N
         jButton1.setMaximumSize(new java.awt.Dimension(40, 36));
@@ -575,7 +575,7 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
-        jButton2.setIcon(resourceMap.getIcon("jButton2.icon")); // NOI18N
+        jButton2.setIcon(PlatformIcon.get(PlatformIcon.ZOOM_OUT));
         jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
         jButton2.setToolTipText(resourceMap.getString("jButton2.toolTipText")); // NOI18N
         jButton2.setMaximumSize(new java.awt.Dimension(40, 36));
@@ -588,7 +588,7 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
-        btFitScreen.setIcon(resourceMap.getIcon("btFitScreen.icon")); // NOI18N
+        btFitScreen.setIcon(PlatformIcon.get(PlatformIcon.ZOOM_FIT));
         btFitScreen.setText(resourceMap.getString("btFitScreen.text")); // NOI18N
         btFitScreen.setToolTipText(resourceMap.getString("btFitScreen.toolTipText")); // NOI18N
         btFitScreen.setMaximumSize(new java.awt.Dimension(40, 36));
@@ -601,7 +601,7 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
-        btFillScreen.setIcon(resourceMap.getIcon("btFillScreen.icon")); // NOI18N
+        btFillScreen.setIcon(PlatformIcon.get(PlatformIcon.ZOOM_ACTUAL_EQUAL));
         btFillScreen.setText(resourceMap.getString("btFillScreen.text")); // NOI18N
         btFillScreen.setToolTipText(resourceMap.getString("btFillScreen.toolTipText")); // NOI18N
         btFillScreen.setMaximumSize(new java.awt.Dimension(40, 36));
@@ -614,7 +614,7 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
-        bt1to1.setIcon(resourceMap.getIcon("bt1to1.icon")); // NOI18N
+        bt1to1.setIcon(PlatformIcon.get(PlatformIcon.ZOOM_ACTUAL));
         bt1to1.setText(resourceMap.getString("bt1to1.text")); // NOI18N
         bt1to1.setToolTipText(resourceMap.getString("bt1to1.toolTipText")); // NOI18N
         bt1to1.setMaximumSize(new java.awt.Dimension(40, 36));
@@ -857,9 +857,8 @@ public class MainView extends javax.swing.JFrame
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btAddObject, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btRemoveObject, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel2)
-                        .addComponent(objectComboBox)))
+                    .addComponent(objectComboBox)
+                    .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(mappingTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 405, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -1161,7 +1160,7 @@ public class MainView extends javax.swing.JFrame
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 693, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 699, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)

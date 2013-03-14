@@ -34,8 +34,7 @@ import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.VectorProfile;
-import java.awt.Dimension;
-import java.awt.Point;
+import com.t_oster.uicomponents.PlatformIcon;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
@@ -252,7 +251,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
             }
         });
 
-        captureButton.setIcon(resourceMap.getIcon("captureButton.icon")); // NOI18N
+        captureButton.setIcon(PlatformIcon.get(PlatformIcon.CAMERA));
         captureButton.setText(resourceMap.getString("captureButton.text")); // NOI18N
         captureButton.setName("captureButton"); // NOI18N
         captureButton.addActionListener(new java.awt.event.ActionListener() {
@@ -288,7 +287,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
 
         jScrollPane1.setViewportView(calibrationPanel1);
 
-        btZoomIn.setIcon(resourceMap.getIcon("btZoomIn.icon")); // NOI18N
+        btZoomIn.setIcon(PlatformIcon.get(PlatformIcon.ZOOM_IN));
         btZoomIn.setText(resourceMap.getString("btZoomIn.text")); // NOI18N
         btZoomIn.setName("btZoomIn"); // NOI18N
         btZoomIn.addActionListener(new java.awt.event.ActionListener() {
@@ -297,7 +296,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
             }
         });
 
-        btZoomOut.setIcon(resourceMap.getIcon("btZoomOut.icon")); // NOI18N
+        btZoomOut.setIcon(PlatformIcon.get(PlatformIcon.ZOOM_OUT));
         btZoomOut.setText(resourceMap.getString("btZoomOut.text")); // NOI18N
         btZoomOut.setName("btZoomOut"); // NOI18N
         btZoomOut.addActionListener(new java.awt.event.ActionListener() {
@@ -331,8 +330,8 @@ public class CamCalibrationDialog extends javax.swing.JDialog
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(captureButton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btZoomIn)
-                    .addComponent(btZoomOut))
+                    .addComponent(btZoomIn, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btZoomOut, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
