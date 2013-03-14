@@ -35,6 +35,41 @@ import javax.swing.table.TableCellRenderer;
 public class BetterJTable extends JTable
 {
 
+  private int[] relativeWidths = null;
+  
+  public void setColumnRelations(int[] relativeWidths)
+  {
+    this.relativeWidths = relativeWidths;
+  }
+
+  
+  
+  @Override
+  public void doLayout()
+  {
+    int width = this.getWidth();
+    if (this.relativeWidths != null)
+    {
+      double sum = 0;
+      for (int w : this.relativeWidths)
+      {
+        sum += w;
+      }
+      double factor = width/sum;
+      //this.setAutoResizeMode(AUTO_RESIZE_OFF);
+      for (int c = 0; c < this.relativeWidths.length; c++)
+      {
+        this.getColumnModel().getColumn(c).setWidth((int) (factor*this.relativeWidths[c]));
+        this.getColumnModel().getColumn(c).setMinWidth((int) (factor*this.relativeWidths[c]));
+        this.getColumnModel().getColumn(c).setMaxWidth((int) (factor*this.relativeWidths[c]));
+        this.getColumnModel().getColumn(c).setPreferredWidth((int) (factor*this.relativeWidths[c]));
+      }
+    }
+    super.doLayout();
+  }
+  
+  
+  
   @Override
   public TableCellEditor getCellEditor(int row, int column)
   {

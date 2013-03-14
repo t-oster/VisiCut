@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut.gui.mapping;
 
+import com.t_oster.uicomponents.BetterJTable;
 import com.t_oster.uicomponents.EditableTablePanel;
 import com.t_oster.uicomponents.EditableTableProvider;
 import com.t_oster.visicut.VisicutModel;
@@ -204,6 +205,7 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     model.addTableModelListener(this);
     //in this table we have dialog-like-editors, so the focus will get lost
     this.getTable().putClientProperty("terminateEditOnFocusLost", Boolean.FALSE);
+    ((BetterJTable) this.getTable()).setColumnRelations(new int[]{6,16,9});
   }
 
   private void refreshProfilesEditor()
