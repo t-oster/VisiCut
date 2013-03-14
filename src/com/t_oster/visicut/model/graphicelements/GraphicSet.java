@@ -44,6 +44,10 @@ public class GraphicSet extends LinkedList<GraphicObject>
     {
       return null;
     }
+    if (att instanceof Number)
+    {
+      return "" + ((int) (((Number) att).doubleValue()*100))/100d;
+    }
     String attribute = att.toString();
     try
     {

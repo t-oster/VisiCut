@@ -49,7 +49,7 @@ public class FilterSet extends LinkedList<MappingFilter>
     result.addAll(elements);
     for (MappingFilter filter : this)
     {
-      result.removeAll(filter.getNotMatchingElements(elements));
+      result.removeAll(filter.getNotMatchingElements(result));
     }
     return result;
   }

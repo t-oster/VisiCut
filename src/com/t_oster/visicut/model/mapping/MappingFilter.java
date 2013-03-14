@@ -31,6 +31,24 @@ import java.awt.Color;
 public class MappingFilter
 {
 
+  /**
+   * If compare is false, the filter will
+   * use "=" or "!=" (when inverted),
+   * if compare is true, the filter will
+   * use "<=" or ">=" (when inverted)
+   */
+  protected boolean compare = false;
+
+  public boolean isCompare()
+  {
+    return compare;
+  }
+
+  public void setCompare(boolean compare)
+  {
+    this.compare = compare;
+  }
+  
   protected boolean inverted = false;
 
   /**
@@ -78,14 +96,18 @@ public class MappingFilter
 
   public final boolean matches(GraphicObject e)
   {
-    if (inverted)
+    boolean result;
+    if (value instanceof Number)
     {
-      return !(attribute == null || e.getAttributeValues(attribute).contains(value));
+      double number = ((Number) value).doubleValue();
+      double other = ((Number) e.getAttributeValues(attribute).get(0)).doubleValue();
+      result = attribute == null || (compare ? other <= number : other == number);
     }
     else
     {
-      return attribute == null || e.getAttributeValues(attribute).contains(value);
+      result = attribute == null || e.getAttributeValues(attribute).contains(value);
     }
+    return inverted ? !result : result;
   }
 
   public MappingFilter()
@@ -141,9 +163,17 @@ public class MappingFilter
     }
     else
     {
-      result += value.toString();
+      result += GraphicSet.translateAttVal(value);
     }
-    return (inverted ? GraphicSet.translateAttVal("IS NOT") : GraphicSet.translateAttVal("IS"))+result;
+    if (compare)
+    {
+      return (inverted ? GraphicSet.translateAttVal(">=") : GraphicSet.translateAttVal("<="))+result;
+    }
+    else
+    {
+      return (inverted ? GraphicSet.translateAttVal("IS NOT") : GraphicSet.translateAttVal("IS"))+result;
+    }
+    
   }
   
   @Override
@@ -153,6 +183,7 @@ public class MappingFilter
     hash = 29 * hash + (this.attribute != null ? this.attribute.hashCode() : 0);
     hash = 29 * hash + (this.value != null ? this.value.hashCode() : 0);
     hash = 29 * hash + (this.inverted ? 1 : 0);
+    hash = 29 * hash + (this.compare ? 1 : 0);
     return hash;
   }
 
@@ -162,7 +193,7 @@ public class MappingFilter
     if (o instanceof MappingFilter)
     {
       MappingFilter f = (MappingFilter) o;
-      return f.inverted == inverted && !Util.differ(f.attribute, attribute) && !Util.differ(f.value, value); 
+      return f.compare == compare && f.inverted == inverted && !Util.differ(f.attribute, attribute) && !Util.differ(f.value, value); 
     }
     return super.equals(o);
   }
@@ -172,6 +203,7 @@ public class MappingFilter
   {
     MappingFilter result = new MappingFilter(attribute, value);
     result.inverted = inverted;
+    result.compare = compare;
     return result;
   }
 }
