@@ -58,6 +58,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
@@ -272,6 +274,12 @@ public class MainView extends javax.swing.JFrame
     }
     PositionPanelController c = new PositionPanelController(positionPanel, visicutModel1);
     this.warningPanel.setVisible(false);
+    LaserDeviceManager.getInstance().addPropertyChangeListener(new PropertyChangeListener(){
+      public void propertyChange(PropertyChangeEvent pce)
+      {
+        refreshLaserDeviceComboBox();
+      }
+    });
   }
 
   private ActionListener exampleItemClicked = new ActionListener(){
@@ -368,6 +376,13 @@ public class MainView extends javax.swing.JFrame
    */
   private void fillComboBoxes()
   {
+    this.refreshLaserDeviceComboBox();
+    this.refreshMaterialComboBox();
+    this.refreshObjectComboBox();
+  }
+  
+  private void refreshLaserDeviceComboBox()
+  {
     String sld = this.visicutModel1.getSelectedLaserDevice() != null ? this.visicutModel1.getSelectedLaserDevice().getName() : null;
     ignoreLaserCutterComboBoxUpdates = true;
     this.laserCutterComboBox.removeAllItems();
@@ -392,11 +407,7 @@ public class MainView extends javax.swing.JFrame
       this.jLabel9.setVisible(true);
     }
     ignoreLaserCutterComboBoxUpdates = false;
-    this.refreshMaterialComboBox();
-
-    this.refreshObjectComboBox();
   }
-  
    /**
    * update entries of objectComboBox, then update selection
    * @param forceUpdate even update if the list of PlfParts has not changed
@@ -1814,7 +1825,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       if (this.visicutModel1.getSelectedLaserDevice() == null || this.visicutModel1.getSelectedLaserDevice().getCameraURL() == null || "".equals(this.visicutModel1.getSelectedLaserDevice().getCameraURL()))
       {
         this.visicutModel1.setBackgroundImage(null);
-        this.previewPanel.setEditRectangle(null);
       }
       else
       {
@@ -1836,7 +1846,20 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     {
       try
       {
+        LaserDevice old = VisicutModel.getInstance().getSelectedLaserDevice();
         LaserDeviceManager.getInstance().setAll(result);
+        if (old != null)
+        {
+          VisicutModel.getInstance().setSelectedLaserDevice(null);
+          for (LaserDevice ld : result)
+          {
+            if (ld.getName().equals(old.getName()))
+            {
+              VisicutModel.getInstance().setSelectedLaserDevice(ld);
+              break;
+            }
+          }
+        }
       }
       catch (Exception ex)
       {
