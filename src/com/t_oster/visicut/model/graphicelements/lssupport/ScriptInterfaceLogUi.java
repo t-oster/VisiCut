@@ -28,29 +28,22 @@ import javax.swing.JFrame;
  */
 public class ScriptInterfaceLogUi implements ScriptInterface
 {
-
+  
+  private static LogFrame win;
   private ScriptInterface decoratee;
-  private LogFrame win;
-  private boolean initialized = false;
   
   public ScriptInterfaceLogUi(ScriptInterface decoratee)
   {
     this.decoratee = decoratee;
   }
   
-  public void initialize()
-  {
-    win = new LogFrame("LaserScript output");
-    win.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    win.setVisible(true);
-    initialized = true;
-  }
-  
   public void echo(String text)
   {
-    if (!initialized)
+    if (win == null || !win.isVisible())
     {
-      initialize();
+      win = new LogFrame("LaserScript output");
+      win.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      win.setVisible(true);
     }
     win.addLine(text);
   }
