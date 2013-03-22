@@ -239,6 +239,10 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
     float thickness = VisicutModel.getInstance().getMaterialThickness();
     for(PlfPart p : VisicutModel.getInstance().getPlfFile())
     {
+      if (p.getMapping() == null)
+      {
+        continue;
+      }
       for (Mapping m : p.getMapping())
       {
         if (m != null && m.getProfile() != null)
