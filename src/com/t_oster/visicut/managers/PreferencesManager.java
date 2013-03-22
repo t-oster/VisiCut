@@ -73,80 +73,83 @@ public final class PreferencesManager
   private void generateDefault() throws FileNotFoundException, IOException
   {
     preferences = new Preferences();
-    preferences.setAvailableImporters(new String[]
-      {
-        "com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter",
-        "com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter",
-        "com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter",
-        "com.t_oster.visicut.model.graphicelements.epssupport.EPSImporter"
-      });
-    //Create a Laserdevice for each known driver
-    for (Class laserdriver : LibInfo.getSupportedDrivers())
+    if (LaserDeviceManager.getInstance().getAll().isEmpty())
     {
-      try
+      //Create a Laserdevice for each known driver
+      for (Class laserdriver : LibInfo.getSupportedDrivers())
       {
-        LaserDevice dev = new LaserDevice();
-        LaserCutter lc = (LaserCutter) laserdriver.newInstance();
-        dev.setLaserCutter(lc);
-        dev.setName(lc.getModelName());
-        dev.setThumbnailPath(new File(Helper.getBasePath(), "devices/"+lc.getModelName()+".png").getAbsolutePath());
         try
         {
-          LaserDeviceManager.getInstance().add(dev);
+          LaserDevice dev = new LaserDevice();
+          LaserCutter lc = (LaserCutter) laserdriver.newInstance();
+          dev.setLaserCutter(lc);
+          dev.setName(lc.getModelName());
+          dev.setThumbnailPath(new File(Helper.getBasePath(), "devices/"+lc.getModelName()+".png").getAbsolutePath());
+          try
+          {
+            LaserDeviceManager.getInstance().add(dev);
+          }
+          catch (IOException ex)
+          {
+            Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
+          }
+          if (preferences.getLastLaserDevice() == null)
+          {
+            preferences.setLastLaserDevice(dev.getName());
+          }
         }
-        catch (IOException ex)
+        catch (InstantiationException ex)
         {
           Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if (preferences.getLastLaserDevice() == null)
+        catch (IllegalAccessException ex)
         {
-          preferences.setLastLaserDevice(dev.getName());
+          Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-      }
-      catch (InstantiationException ex)
-      {
-        Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      catch (IllegalAccessException ex)
-      {
-        Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
     //generate default materials
-    MaterialProfile mp = new MaterialProfile();
-    mp.setName("Paper");
-    mp.setColor(Color.WHITE);
-    mp.setCutColor(Color.RED);
-    mp.setEngraveColor(Color.DARK_GRAY);
-    MaterialManager.getInstance().add(mp);
-    mp = new MaterialProfile();
-    mp.setName("Acrylic");
-    mp.setColor(Color.BLUE);
-    mp.setCutColor(Color.RED);
-    mp.setEngraveColor(Color.WHITE);
-    MaterialManager.getInstance().add(mp);
-    preferences.setLastMaterial(mp.getName());
+    //only if no materials found
+    if (MaterialManager.getInstance().getAll().isEmpty())
+    {
+      MaterialProfile mp = new MaterialProfile();
+      mp.setName("Paper");
+      mp.setColor(Color.WHITE);
+      mp.setCutColor(Color.RED);
+      mp.setEngraveColor(Color.DARK_GRAY);
+      MaterialManager.getInstance().add(mp);
+      mp = new MaterialProfile();
+      mp.setName("Acrylic");
+      mp.setColor(Color.BLUE);
+      mp.setCutColor(Color.RED);
+      mp.setEngraveColor(Color.WHITE);
+      MaterialManager.getInstance().add(mp);
+      preferences.setLastMaterial(mp.getName());
+    }
     
     //generate default Profiles
-    VectorProfile cut = new VectorProfile();
-    cut.setName("cut");
-    cut.setDescription("Cut through the material");
-    cut.setIsCut(true);
-    cut.setWidth(1f);
-    ProfileManager.getInstance().add(cut);
-    VectorProfile mark = new VectorProfile();
-    mark.setName("mark");
-    mark.setDescription("Cut through the material");
-    mark.setIsCut(true);
-    mark.setWidth(1f);
-    ProfileManager.getInstance().add(mark);
-    RasterProfile engrave = new RasterProfile();
-    engrave.setName("engrave");
-    ProfileManager.getInstance().add(engrave);
-    Raster3dProfile engrave3d = new Raster3dProfile();
-    engrave3d.setName("engrave 3d");
-    ProfileManager.getInstance().add(engrave3d);
-    
+    //only if none found
+    if (ProfileManager.getInstance().getAll().isEmpty())
+    {
+      VectorProfile cut = new VectorProfile();
+      cut.setName("cut");
+      cut.setDescription("Cut through the material");
+      cut.setIsCut(true);
+      cut.setWidth(1f);
+      ProfileManager.getInstance().add(cut);
+      VectorProfile mark = new VectorProfile();
+      mark.setName("mark");
+      mark.setDescription("Cut through the material");
+      mark.setIsCut(true);
+      mark.setWidth(1f);
+      ProfileManager.getInstance().add(mark);
+      RasterProfile engrave = new RasterProfile();
+      engrave.setName("engrave");
+      ProfileManager.getInstance().add(engrave);
+      Raster3dProfile engrave3d = new Raster3dProfile();
+      engrave3d.setName("engrave 3d");
+      ProfileManager.getInstance().add(engrave3d);
+    }
   }
 
   private void initializeSettingDirectory()

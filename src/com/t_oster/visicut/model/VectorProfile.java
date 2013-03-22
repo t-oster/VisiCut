@@ -65,7 +65,7 @@ public class VectorProfile extends LaserProfile
     this.setName("cut");
   }
 
-  protected OrderStrategy orderStrategy = OrderStrategy.NEAREST;
+  protected OrderStrategy orderStrategy = OrderStrategy.INNER_FIRST;
 
   /**
    * Get the value of orderStrategy
@@ -76,7 +76,7 @@ public class VectorProfile extends LaserProfile
   {
     if (orderStrategy == null)
     {
-      orderStrategy = OrderStrategy.NEAREST;
+      orderStrategy = OrderStrategy.INNER_FIRST;
     }
     return orderStrategy;
   }
