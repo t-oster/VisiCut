@@ -1847,14 +1847,20 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         LaserDeviceManager.getInstance().setAll(result);
         if (old != null)
         {
+          boolean found = false;
           VisicutModel.getInstance().setSelectedLaserDevice(null);
           for (LaserDevice ld : result)
           {
             if (ld.getName().equals(old.getName()))
             {
+              found = true;
               VisicutModel.getInstance().setSelectedLaserDevice(ld);
               break;
             }
+          }
+          if (!found && result.size() > 0)
+          {//if the current selected lasercutter was deleted, select the first
+            VisicutModel.getInstance().setSelectedLaserDevice(result.get(0));
           }
         }
       }
