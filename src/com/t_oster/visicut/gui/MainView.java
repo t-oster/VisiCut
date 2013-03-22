@@ -2388,7 +2388,12 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
         {
           return null;
         }
+        //changing the DPI changes the hash-code, so we have to
+        //remove and re-assign the profile to the map
+        List<LaserProperty> val = result.get(lp);
+        result.remove(lp);
         lp.setDPI(res);
+        result.put(lp, val);
       }
     }
     return result;
