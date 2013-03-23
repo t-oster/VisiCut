@@ -23,6 +23,7 @@ import com.kitfox.svg.Gradient;
 import com.kitfox.svg.Group;
 import com.kitfox.svg.ImageSVG;
 import com.kitfox.svg.PatternSVG;
+import com.kitfox.svg.SVGConst;
 import com.kitfox.svg.SVGElement;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.SVGRoot;
@@ -50,9 +51,10 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.URI;
 import java.util.List;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -105,27 +107,34 @@ public class SVGImporter implements Importer
     }
   }
 
-  public GraphicSet importFile(InputStream in, String name, double svgResolution, List<String> warnings) throws Exception
+  public GraphicSet importFile(InputStream in, String name, double svgResolution, final List<String> warnings) throws Exception
   {
+    Handler svgImportLoggerHandler = new Handler()
+    {
+      @Override
+      public void publish(LogRecord lr)
+      {
+        warnings.add(lr.getMessage());
+      }
+
+      @Override
+      public void flush(){}
+
+      @Override
+      public void close() throws SecurityException{}
+
+    };
+    
     try
     {
       u.clear();
-      ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      PrintStream bak = System.err;
-      System.setErr(new PrintStream(bos));
-      URI svg = u.loadSVG(in, Helper.toPathName(name));
-      System.setErr(bak);
-      for (String line : bos.toString().split("\n"))
-      {
-        if (line.startsWith("Could not load image:"))
-        {
-          warnings.add(line);
-        }
-      }
+      Logger.getLogger(SVGConst.SVG_LOGGER).addHandler(svgImportLoggerHandler);
+      URI svg = u.loadSVG(in, Helper.toPathName(name));   
       root = u.getDiagram(svg).getRoot();
       GraphicSet result = new GraphicSet();
       result.setBasicTransform(determineTransformation(root, svgResolution));
       importNode(root, result, svgResolution, warnings);
+      Logger.getLogger(SVGConst.SVG_LOGGER).removeHandler(svgImportLoggerHandler);
       return result;
     }
     catch (Exception e)
