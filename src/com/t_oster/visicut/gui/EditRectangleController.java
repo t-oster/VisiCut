@@ -19,6 +19,7 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 
 /**
@@ -30,7 +31,12 @@ public class EditRectangleController
 {
   protected GraphicSet getSelectedSet()
   {
-    return VisicutModel.getInstance().getSelectedPart() == null ? null : VisicutModel.getInstance().getSelectedPart().getGraphicObjects();
+    return getSelectedPart() == null ? null : getSelectedPart().getGraphicObjects();
+  }
+  
+  protected PlfPart getSelectedPart()
+  {
+    return VisicutModel.getInstance().getSelectedPart();
   }
   
 }
