@@ -92,7 +92,7 @@ public class PlfPart {
     if (boundingBoxCache == null)
     {
       GraphicSet objects = this.graphicObjects;
-      if (this.mapping != null)
+      if (this.mapping != null && !this.mapping.isEmpty())
       {
         objects = new GraphicSet();
         objects.setBasicTransform(this.graphicObjects.getBasicTransform());
