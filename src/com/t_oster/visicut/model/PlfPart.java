@@ -19,11 +19,12 @@
 package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.platform.Util;
-import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.geom.Rectangle2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 
 /**
@@ -50,13 +51,28 @@ public class PlfPart {
     return graphicObjects;
   }
 
+  private PropertyChangeListener boundingBoxListener = new PropertyChangeListener(){
+    public void propertyChange(PropertyChangeEvent pce)
+    {
+      boundingBoxCache = null;
+    }
+  };
+  
   public void setGraphicObjects(GraphicSet graphicObjects)
   {
     if (Util.differ(graphicObjects, this.graphicObjects))
     {
+      if (this.graphicObjects != null)
+      {
+        this.graphicObjects.removePropertyChangeListener(boundingBoxListener);
+      }
+      this.graphicObjects = graphicObjects;
       boundingBoxCache = null;
+      if (this.graphicObjects != null)
+      {
+        this.graphicObjects.addPropertyChangeListener(boundingBoxListener);
+      }
     }
-    this.graphicObjects = graphicObjects;
   }
 
   public MappingSet getMapping()
@@ -72,16 +88,7 @@ public class PlfPart {
     }
     this.mapping = mapping;
   }
-  
-  public Rectangle2D getBoundingBox(boolean forceRefresh)
-  {
-    if (forceRefresh)
-    {
-      boundingBoxCache = null;
-    }
-    return getBoundingBox();
-  }
-  
+    
   private Rectangle2D boundingBoxCache = null;
   /*
    * Returns the bounding box respecting the

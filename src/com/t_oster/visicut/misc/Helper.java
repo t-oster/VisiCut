@@ -21,7 +21,9 @@ package com.t_oster.visicut.misc;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
@@ -41,7 +43,6 @@ import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.charset.IllegalCharsetNameException;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -527,6 +528,68 @@ public class Helper
       if (p.y < minY) {minY = p.y;}
       if (p.x > maxX) {maxX = p.x;}
       if (p.y > maxY) {maxY = p.y;}
+    }
+    return new Rectangle.Double(minX, minY, maxX-minX, maxY - minY);
+  }
+  
+  public static Rectangle2D smallestBoundingBox(Shape s, AffineTransform t)
+  {
+    double minX = 0;
+    double maxX = 0;
+    double minY = 0;
+    double maxY = 0;
+    PathIterator pi = s.getPathIterator(t, 1);
+    double[] last = null;
+    boolean first = true;
+    while (!pi.isDone())
+    {
+      double[] d = new double[8];
+      switch(pi.currentSegment(d))
+      {
+        case PathIterator.SEG_LINETO:
+        {
+          if (last != null)
+          {
+            if (first)
+            {
+              minX = last[0];
+              maxX = last[0];
+              minY = last[1];
+              maxY = last[1];
+              first = false;
+            }
+            else
+            {
+              if (last[0] < minX) { minX = last[0]; }
+              if (last[0] > maxX) { maxX = last[0]; }
+              if (last[1] < minY) { minY = last[1]; }
+              if (last[1] > maxY) { maxY = last[1]; }
+            }
+          }
+          if (first)
+          {
+            minX = d[0];
+            maxX = d[0];
+            minY = d[1];
+            maxY = d[1];
+            first = false;
+          }
+          else
+          {
+            if (d[0] < minX) { minX = d[0]; }
+            if (d[0] > maxX) { maxX = d[0]; }
+            if (d[1] < minY) { minY = d[1]; }
+            if (d[1] > maxY) { maxY = d[1]; }
+          }
+          break;
+        }
+        case PathIterator.SEG_MOVETO:
+        {
+          last = d;
+          break;
+        }
+      }
+      pi.next();
     }
     return new Rectangle.Double(minX, minY, maxX-minX, maxY - minY);
   }

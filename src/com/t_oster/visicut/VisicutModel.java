@@ -611,7 +611,6 @@ public class VisicutModel
 
   private PlfPart loadGraphicFile(File f, List<String> warnings) throws ImportException
   {
-    AffineTransform at = null;
     GraphicSet gs = this.loadSetFromFile(f, warnings);
     PlfPart p = null;
     if (gs != null)

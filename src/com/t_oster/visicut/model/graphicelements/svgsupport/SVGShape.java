@@ -35,8 +35,10 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -224,7 +226,7 @@ public class SVGShape extends SVGObject implements ShapeObject
       Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
       at = new AffineTransform();
     }
-    Rectangle2D bb = this.getDecoratee().getShape().getBounds2D();
+    Rectangle2D bb = Helper.smallestBoundingBox(this.getDecoratee().getShape(), at);
     StyleAttribute sa = getStyleAttributeRecursive("stroke-width");
     if (sa != null)
     {
@@ -232,9 +234,9 @@ public class SVGShape extends SVGObject implements ShapeObject
       //TODO: get Stroke width with unit and add it to width/height of BB
       bb.setRect(bb.getX()-w/2, bb.getY()-w/2, bb.getWidth()+w, bb.getHeight()+w);
     }
-    return Helper.transform(bb, at);
+    return bb;
   }
-
+  
   public Shape getShape()
   {
     try

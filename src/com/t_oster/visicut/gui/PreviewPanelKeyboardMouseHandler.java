@@ -258,7 +258,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
 
   private void flip(boolean horizontal)
   {
-    Rectangle2D bb = getSelectedPart().getBoundingBox(true);
+    Rectangle2D bb = getSelectedPart().getBoundingBox();
     double mx = bb.getX()+bb.getWidth()/2;
     double my = bb.getY()+bb.getHeight()/2;
     AffineTransform flipX = AffineTransform.getTranslateInstance(mx, my);
@@ -323,7 +323,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   private void applyEditRectoToSet()
   {
     //Apply changes to the EditRectangle to the getSelectedSet()
-    Rectangle2D src = getSelectedPart().getBoundingBox(true);
+    Rectangle2D src = getSelectedPart().getBoundingBox();
     AffineTransform t = getSelectedSet().getTransform();
     t.preConcatenate(Helper.getTransform(src, getEditRect()));
     getSelectedSet().setTransform(t);
@@ -538,7 +538,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     {
       if (getEditRect() != null)
       {
-        Rectangle2D bb = getSelectedPart().getBoundingBox(true);
+        Rectangle2D bb = getSelectedPart().getBoundingBox();
         Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
         if (e.contains(me.getPoint()))
         {
@@ -717,7 +717,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
           }
           case rotatingSet:
           {
-            Rectangle2D bb = getSelectedPart().getBoundingBox(true);
+            Rectangle2D bb = getSelectedPart().getBoundingBox();
             Point2D middle = previewPanel.getMmToPxTransform().transform(new Point2D.Double(bb.getCenterX(), bb.getCenterY()), null);
             double angle = Math.atan2(evt.getPoint().y-middle.getY(), evt.getPoint().x-middle.getX());
             this.rotateTo(angle);
@@ -833,8 +833,8 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
 
   private void moveSet(double mmDiffX, double mmDiffY)
   {
-    Rectangle2D bb = getSelectedPart().getBoundingBox(true);
-    //make sure, we're not moving the bb out of the laser-area
+//make sure, we're not moving the bb out of the laser-area
+//    Rectangle2D bb = getSelectedPart().getBoundingBox();
 //    if (bb.getX() + mmDiffX < 0)
 //    {
 //      mmDiffX = -bb.getX();
@@ -861,7 +861,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       tr.concatenate(getSelectedSet().getTransform());
     }
     getSelectedSet().setTransform(tr);
-    this.previewPanel.setEditRectangle(new EditRectangle(getSelectedPart().getBoundingBox(true)));
+    this.previewPanel.setEditRectangle(new EditRectangle(getSelectedPart().getBoundingBox()));
   }
 
   public void mouseMoved(MouseEvent evt)

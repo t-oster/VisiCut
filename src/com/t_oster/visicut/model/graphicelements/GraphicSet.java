@@ -21,11 +21,12 @@ package com.t_oster.visicut.model.graphicelements;
 import com.t_oster.visicut.misc.Helper;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -107,10 +108,10 @@ public class GraphicSet extends LinkedList<GraphicObject>
   {
     AffineTransform oldTransform = this.transform;
     this.transform = transform;
-    propertyChangeSupport.firePropertyChange(PROP_TRANSFORM, oldTransform, transform);
     this.boundingBoxCache = null;
+    firePropertyChange(PROP_TRANSFORM, oldTransform, transform);
   }
-  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+  private List<PropertyChangeListener> pcls = new LinkedList<PropertyChangeListener>();
   private Rectangle2D originalBoundingBoxCache = null;
 
   /**
@@ -182,7 +183,7 @@ public class GraphicSet extends LinkedList<GraphicObject>
    */
   public void addPropertyChangeListener(PropertyChangeListener listener)
   {
-    propertyChangeSupport.addPropertyChangeListener(listener);
+    pcls.add(listener);
   }
 
   /**
@@ -192,7 +193,7 @@ public class GraphicSet extends LinkedList<GraphicObject>
    */
   public void removePropertyChangeListener(PropertyChangeListener listener)
   {
-    propertyChangeSupport.removePropertyChangeListener(listener);
+    pcls.remove(listener);
   }
 
   @Override
@@ -305,5 +306,14 @@ public class GraphicSet extends LinkedList<GraphicObject>
   {
     double old = transform != null ? Helper.getRotationAngle(transform) : 0;
     this.rotateRelative(angle-old);
+  }
+
+  private void firePropertyChange(String prop, Object oldValue, Object value)
+  {
+    PropertyChangeEvent e = new PropertyChangeEvent(this, prop, oldValue, value);
+    for (PropertyChangeListener l : pcls)
+    {
+      l.propertyChange(e);
+    }
   }
 }
