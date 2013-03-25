@@ -783,23 +783,23 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
                 break;
               }
             }
-            if (getEditRect().width < 0.1
-              ||getEditRect().height < 0.1
-              ||getEditRect().x < 0
-              ||getEditRect().y < 0
-              ||getEditRect().x + getEditRect().width > previewPanel.getAreaSize().x
-              ||getEditRect().y + getEditRect().height > previewPanel.getAreaSize().y)
-            {
-              Rectangle2D bb = getSelectedPart().getBoundingBox(true);
-              getEditRect().x = bb.getX();
-              getEditRect().y = bb.getY();
-              getEditRect().width = bb.getWidth();
-              getEditRect().height = bb.getHeight();
-            }
-            else
-            {
+//            if (getEditRect().width < 0.1
+//              ||getEditRect().height < 0.1
+//              ||getEditRect().x < 0
+//              ||getEditRect().y < 0
+//              ||getEditRect().x + getEditRect().width > previewPanel.getAreaSize().x
+//              ||getEditRect().y + getEditRect().height > previewPanel.getAreaSize().y)
+//            {
+//              Rectangle2D bb = getSelectedPart().getBoundingBox(true);
+//              getEditRect().x = bb.getX();
+//              getEditRect().y = bb.getY();
+//              getEditRect().width = bb.getWidth();
+//              getEditRect().height = bb.getHeight();
+//            }
+//            else
+//            {
               this.applyEditRectoToSet();
-            }
+//            }
             break;
           }
           case movingSet:
@@ -835,22 +835,22 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   {
     Rectangle2D bb = getSelectedPart().getBoundingBox(true);
     //make sure, we're not moving the bb out of the laser-area
-    if (bb.getX() + mmDiffX < 0)
-    {
-      mmDiffX = -bb.getX();
-    }
-    if (bb.getY() + mmDiffY < 0)
-    {
-      mmDiffY = -bb.getY();
-    }
-    if (bb.getX() + bb.getWidth() + mmDiffX > previewPanel.getAreaSize().x)
-    {
-      mmDiffX = previewPanel.getAreaSize().x - (bb.getX() + bb.getWidth());
-    }
-    if (bb.getY() + bb.getHeight() + mmDiffY > previewPanel.getAreaSize().y)
-    {
-      mmDiffY = previewPanel.getAreaSize().y - (bb.getY() + bb.getHeight());
-    }
+//    if (bb.getX() + mmDiffX < 0)
+//    {
+//      mmDiffX = -bb.getX();
+//    }
+//    if (bb.getY() + mmDiffY < 0)
+//    {
+//      mmDiffY = -bb.getY();
+//    }
+//    if (bb.getX() + bb.getWidth() + mmDiffX > previewPanel.getAreaSize().x)
+//    {
+//      mmDiffX = previewPanel.getAreaSize().x - (bb.getX() + bb.getWidth());
+//    }
+//    if (bb.getY() + bb.getHeight() + mmDiffY > previewPanel.getAreaSize().y)
+//    {
+//      mmDiffY = previewPanel.getAreaSize().y - (bb.getY() + bb.getHeight());
+//    }
     if (mmDiffX == 0 && mmDiffY == 0)
     {
       return;
