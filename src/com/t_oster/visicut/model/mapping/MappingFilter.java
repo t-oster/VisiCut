@@ -127,6 +127,7 @@ public class MappingFilter
   private GraphicSet getMatchingElements(GraphicSet elements, boolean invert)
   {
     GraphicSet result = new GraphicSet();
+    result.setBasicTransform(elements.getBasicTransform());
     result.setTransform(elements.getTransform());
     for (GraphicObject e : elements)
     {

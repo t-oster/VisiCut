@@ -114,7 +114,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       {
         PreviewPanelKeyboardMouseHandler.this.getSelectedSet().setTransform(
           PreviewPanelKeyboardMouseHandler.this.getSelectedSet().getBasicTransform());
-        PreviewPanelKeyboardMouseHandler.this.previewPanel.setEditRectangle(new EditRectangle(getSelectedSet().getBoundingBox()));
+        PreviewPanelKeyboardMouseHandler.this.previewPanel.setEditRectangle(new EditRectangle(VisicutModel.getInstance().getSelectedPart().getBoundingBox()));
         PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
       }
     });
@@ -258,7 +258,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
 
   private void flip(boolean horizontal)
   {
-    Rectangle2D bb = getSelectedSet().getBoundingBox();
+    Rectangle2D bb = VisicutModel.getInstance().getSelectedPart().getBoundingBox();
     double mx = bb.getX()+bb.getWidth()/2;
     double my = bb.getY()+bb.getHeight()/2;
     AffineTransform flipX = AffineTransform.getTranslateInstance(mx, my);
@@ -323,7 +323,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   private void applyEditRectoToSet()
   {
     //Apply changes to the EditRectangle to the getSelectedSet()
-    Rectangle2D src = getSelectedSet().getBoundingBox();
+    Rectangle2D src = VisicutModel.getInstance().getSelectedPart().getBoundingBox(true);
     AffineTransform t = getSelectedSet().getTransform();
     t.preConcatenate(Helper.getTransform(src, getEditRect()));
     getSelectedSet().setTransform(t);
@@ -482,9 +482,9 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       List<PlfPart> elementsUnderCursor = new LinkedList<PlfPart>();
       for(PlfPart p : parts)
       {
-        if (p.getGraphicObjects() != null && p.getGraphicObjects().getBoundingBox() != null)
+        if (p.getGraphicObjects() != null && p.getBoundingBox() != null)
         {
-          Rectangle2D bb = p.getGraphicObjects().getBoundingBox();
+          Rectangle2D bb = p.getBoundingBox();
           Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
           if (e.contains(me.getPoint()))
           {
@@ -501,7 +501,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
           {//after rotate mode, select next available element
             if (elementsUnderCursor.size() == 1)
             {//only 1 element => toggle back to resize mode
-              this.previewPanel.setEditRectangle(new EditRectangle(getSelectedSet().getBoundingBox()));
+              this.previewPanel.setEditRectangle(new EditRectangle(VisicutModel.getInstance().getSelectedPart().getBoundingBox()));
             }
             else
             {//select next available element
@@ -538,7 +538,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     {
       if (getEditRect() != null)
       {
-        Rectangle2D bb = getSelectedSet().getBoundingBox();
+        Rectangle2D bb = VisicutModel.getInstance().getSelectedPart().getBoundingBox();
         Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
         if (e.contains(me.getPoint()))
         {
@@ -717,7 +717,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
           }
           case rotatingSet:
           {
-            Rectangle2D bb = getSelectedSet().getBoundingBox();
+            Rectangle2D bb = VisicutModel.getInstance().getSelectedPart().getBoundingBox();
             Point2D middle = previewPanel.getMmToPxTransform().transform(new Point2D.Double(bb.getCenterX(), bb.getCenterY()), null);
             double angle = Math.atan2(evt.getPoint().y-middle.getY(), evt.getPoint().x-middle.getX());
             this.rotateTo(angle);
@@ -790,7 +790,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
               ||getEditRect().x + getEditRect().width > previewPanel.getAreaSize().x
               ||getEditRect().y + getEditRect().height > previewPanel.getAreaSize().y)
             {
-              Rectangle2D bb = getSelectedSet().getBoundingBox();
+              Rectangle2D bb = VisicutModel.getInstance().getSelectedPart().getBoundingBox(true);
               getEditRect().x = bb.getX();
               getEditRect().y = bb.getY();
               getEditRect().width = bb.getWidth();
@@ -833,7 +833,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
 
   private void moveSet(double mmDiffX, double mmDiffY)
   {
-    Rectangle2D bb = getSelectedSet().getBoundingBox();
+    Rectangle2D bb = VisicutModel.getInstance().getSelectedPart().getBoundingBox(true);
     //make sure, we're not moving the bb out of the laser-area
     if (bb.getX() + mmDiffX < 0)
     {
@@ -861,7 +861,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       tr.concatenate(getSelectedSet().getTransform());
     }
     getSelectedSet().setTransform(tr);
-    this.previewPanel.setEditRectangle(new EditRectangle(getSelectedSet().getBoundingBox()));
+    this.previewPanel.setEditRectangle(new EditRectangle(VisicutModel.getInstance().getSelectedPart().getBoundingBox()));
   }
 
   public void mouseMoved(MouseEvent evt)
@@ -956,7 +956,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       }
       for (PlfPart part : VisicutModel.getInstance().getPlfFile())
       {
-        if (part.getGraphicObjects().getBoundingBox().contains(mouseInMm))
+        if (part.getBoundingBox().contains(mouseInMm))
         {
           cursor = Cursor.HAND_CURSOR;
           break cursorcheck;

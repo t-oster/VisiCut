@@ -54,7 +54,7 @@ public class PositionPanelController extends EditRectangleController implements 
       {
         if (PositionPanel.PROP_RECTANGLE.equals(pce.getPropertyName()))
         {
-          Rectangle2D src = getSelectedSet().getBoundingBox();
+          Rectangle2D src = VisicutModel.getInstance().getSelectedPart().getBoundingBox();
           AffineTransform t = getSelectedSet().getTransform();
           t.preConcatenate(Helper.getTransform(src, this.pp.getRectangle()));
           getSelectedSet().setTransform(t);
@@ -73,7 +73,7 @@ public class PositionPanelController extends EditRectangleController implements 
           || VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()))
         {
           this.ignorePpUpdates = true;
-          this.pp.setRectangle(getSelectedSet().getBoundingBox());
+          this.pp.setRectangle(VisicutModel.getInstance().getSelectedPart().getBoundingBox());
           AffineTransform t = getSelectedSet().getTransform();
           this.pp.setAngle(t != null ? Helper.getRotationAngle(t) : 0);
           this.ignorePpUpdates = false;

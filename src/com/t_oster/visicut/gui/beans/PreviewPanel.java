@@ -97,7 +97,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     else if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName()))
     {
       PlfPart p = VisicutModel.getInstance().getSelectedPart();
-      this.setEditRectangle(p != null ? new EditRectangle(p.getGraphicObjects().getBoundingBox()) : null);
+      this.setEditRectangle(p != null ? new EditRectangle(p.getBoundingBox()) : null);
       //this.repaint();//setEditRectangle does already repaint
     }
     else if (VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()))
@@ -112,7 +112,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
         this.clearCache(p);
         if (p.equals(VisicutModel.getInstance().getSelectedPart()))
         {
-          this.setEditRectangle(new EditRectangle(p.getGraphicObjects().getBoundingBox()));
+          this.setEditRectangle(new EditRectangle(p.getBoundingBox()));
         }
       }
     }
@@ -588,6 +588,9 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
                       {
                         AffineTransform laserPxToPreviewPx = Helper.getTransform(procThread.getBoundingBox(), bbInPx);
                         laserPxToPreviewPx.translate(procThread.getBoundingBox().x, procThread.getBoundingBox().y);
+                        gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+      
                         gg.drawRenderedImage(procThread.getImage(), laserPxToPreviewPx);
                       }
                     }

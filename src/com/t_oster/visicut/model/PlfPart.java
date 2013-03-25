@@ -18,10 +18,12 @@
  **/
 package com.t_oster.visicut.model;
 
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 
 /**
@@ -50,6 +52,10 @@ public class PlfPart {
 
   public void setGraphicObjects(GraphicSet graphicObjects)
   {
+    if (Util.differ(graphicObjects, this.graphicObjects))
+    {
+      boundingBoxCache = null;
+    }
     this.graphicObjects = graphicObjects;
   }
 
@@ -60,7 +66,48 @@ public class PlfPart {
 
   public void setMapping(MappingSet mapping)
   {
+    if (Util.differ(mapping, this.mapping))
+    {
+      boundingBoxCache = null;
+    }
     this.mapping = mapping;
+  }
+  
+  public Rectangle2D getBoundingBox(boolean forceRefresh)
+  {
+    if (forceRefresh)
+    {
+      boundingBoxCache = null;
+    }
+    return getBoundingBox();
+  }
+  
+  private Rectangle2D boundingBoxCache = null;
+  /*
+   * Returns the bounding box respecting the
+   * current mapping
+   */
+  public Rectangle2D getBoundingBox()
+  {
+    if (boundingBoxCache == null)
+    {
+      GraphicSet objects = this.graphicObjects;
+      if (this.mapping != null)
+      {
+        objects = new GraphicSet();
+        objects.setBasicTransform(this.graphicObjects.getBasicTransform());
+        objects.setTransform(this.graphicObjects.getTransform());
+        for (Mapping m : this.mapping)
+        {
+          if (m.getProfile() != null)
+          {
+            objects.addAll(m.getFilterSet().getMatchingObjects(this.graphicObjects));
+          }
+        }
+      }
+      boundingBoxCache = objects.getBoundingBox();
+    }
+    return boundingBoxCache;
   }
   
   @Override

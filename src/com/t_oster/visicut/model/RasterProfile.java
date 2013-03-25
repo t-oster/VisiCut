@@ -144,7 +144,7 @@ public class RasterProfile extends LaserProfile
       pipe.concatenate(mm2px);
       pipe.concatenate(objects.getTransform());
       g.setTransform(pipe);
-      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
       g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
       for (GraphicObject o : objects)
       {
