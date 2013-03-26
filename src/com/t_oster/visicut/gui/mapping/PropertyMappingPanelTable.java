@@ -170,6 +170,7 @@ public class PropertyMappingPanelTable extends EditableTablePanel implements Edi
       }
       this.entries.clear();
       this.entries.addAll(result);
+      this.addDefaultEntries(attribute);
       suppressMappingUpdate = true;
       this.model.fireTableDataChanged();
       suppressMappingUpdate = false;
@@ -266,9 +267,16 @@ public class PropertyMappingPanelTable extends EditableTablePanel implements Edi
     profileEditor.refresh(entries);
   }
 
-  private void generateDefaultEntries(String attribute)
-  {
+  /// fill the table with default entries
+  private void generateDefaultEntries(String attribute) {
     entries.clear();
+    addDefaultEntries(attribute);
+  }
+  
+  /// add a disabled default entry for all values of the given attribute that have no entry yet
+  private void addDefaultEntries(String attribute)
+  {
+    LaserProfile defaultProfile = ProfileManager.getInstance().getAll().isEmpty() ? null : ProfileManager.getInstance().getAll().get(0);
     if (attribute != null && vm.getSelectedPart() != null && vm.getSelectedPart().getGraphicObjects() != null)
     {
       for (Object value : VisicutModel.getInstance().getSelectedPart().getGraphicObjects().getAttributeValues(attribute))
@@ -277,15 +285,28 @@ public class PropertyMappingPanelTable extends EditableTablePanel implements Edi
         e.enabled = false;
         e.filterSet = new FilterSet();
         e.filterSet.add(new MappingFilter(attribute, value));
-        e.profile = ProfileManager.getInstance().getAll().isEmpty() ? null : ProfileManager.getInstance().getAll().get(0);
-        entries.add(e);
+        e.profile = defaultProfile;
+        
+        // does the table already have an entry of this attribute-value combination?
+        boolean alreadyExists=false;
+        for (MappingTableEntry existingEntry: entries) {
+          if (e.filterSet.equals(existingEntry.filterSet)) {
+            alreadyExists=true;
+            break;
+          }
+        }
+        
+        // add entry if not already existing
+        if (!alreadyExists) {
+          entries.add(e);
+        }
       }
     }
     //add everything else
     MappingTableEntry e = new MappingTableEntry();
     e.enabled = false;
     e.filterSet = null;
-    e.profile = ProfileManager.getInstance().getAll().isEmpty() ? null : ProfileManager.getInstance().getAll().get(0);
+    e.profile = defaultProfile;
     entries.add(e);
     suppressMappingUpdate = true;
     model.fireTableDataChanged();
