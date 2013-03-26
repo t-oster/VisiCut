@@ -22,6 +22,7 @@ package com.t_oster.uicomponents;
 import com.t_oster.visicut.misc.Helper;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -29,7 +30,6 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import sun.awt.UNIXToolkit;
 
 /**
  * This class provides a set of icons and tries to load the native
@@ -112,12 +112,20 @@ public class PlatformIcon
   }
   
   private static Icon loadGtkIcon(String id) {
-    int widgetType = -1; // Go with the default 
-    int dir = 1; // NONE=0 ; LTR=1; RTL=2;
-    int size = 1;
-
-    UNIXToolkit utk = (UNIXToolkit)Toolkit.getDefaultToolkit();
-    BufferedImage img = utk.getStockIcon(widgetType,id,size,dir,null);                                       
-    return new ImageIcon(img); // Will throw if img==null
+    try
+    {
+      int widgetType = -1; // Go with the default 
+      int dir = 1; // NONE=0 ; LTR=1; RTL=2;
+      int size = 1;
+      Toolkit utk = Toolkit.getDefaultToolkit();
+      //use reflection to avoid compiler warnings and errors on other platforms.
+      Method m = utk.getClass().getMethod("getStockIcon", int.class, String.class, int.class, int.class, String.class);
+      BufferedImage img = (BufferedImage) m.invoke(utk, widgetType,id,size,dir,null);                                       
+      return new ImageIcon(img); // Will throw if img==null
+    }
+    catch (Exception ex)
+    {
+    }
+    return null;
   }
 }
