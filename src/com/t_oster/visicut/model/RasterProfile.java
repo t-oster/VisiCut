@@ -135,7 +135,8 @@ public class RasterProfile extends LaserProfile
     {//Create an Image which fits the bounding box
       final BufferedImage scaledImg = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_INT_ARGB);
       Graphics2D g = scaledImg.createGraphics();
-      //fill it with white background for dithering
+      //fill it with black or white background for dithering depending on invert flag
+      g.setColor( (invertColors ? Color.black : Color.white) );
       g.setColor(Color.white);
       g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
       g.setClip(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
