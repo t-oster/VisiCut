@@ -137,7 +137,6 @@ public class RasterProfile extends LaserProfile
       Graphics2D g = scaledImg.createGraphics();
       //fill it with black or white background for dithering depending on invert flag
       g.setColor( (invertColors ? Color.black : Color.white) );
-      g.setColor(Color.white);
       g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
       g.setClip(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
       //render all objects onto the image, moved to the images origin
