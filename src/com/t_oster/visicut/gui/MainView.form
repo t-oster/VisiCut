@@ -364,20 +364,18 @@
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="jScrollPane2" alignment="0" pref="650" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" alignment="0" pref="743" max="32767" attributes="0"/>
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="jButton2" min="-2" pref="34" max="-2" attributes="0"/>
+                              <Component id="jButton2" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jButton1" min="-2" pref="34" max="-2" attributes="0"/>
+                              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="btFitScreen" min="-2" pref="32" max="-2" attributes="0"/>
+                              <Component id="btFitScreen" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="btFillScreen" min="-2" pref="31" max="-2" attributes="0"/>
+                              <Component id="bt1to1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="bt1to1" min="-2" pref="32" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="captureImageButton" min="-2" pref="181" max="-2" attributes="0"/>
-                              <EmptySpace pref="126" max="32767" attributes="0"/>
+                              <Component id="captureImageButton" min="-2" pref="155" max="-2" attributes="0"/>
+                              <EmptySpace pref="278" max="32767" attributes="0"/>
                               <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -385,7 +383,7 @@
                   </Group>
               </Group>
               <Component id="jScrollPane1" min="-2" pref="494" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -394,22 +392,19 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" alignment="0" pref="699" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" pref="704" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="jButton2" max="32767" attributes="1"/>
-                              <Component id="jButton1" alignment="0" max="32767" attributes="1"/>
-                              <Component id="captureImageButton" alignment="0" max="32767" attributes="1"/>
-                              <Component id="btFitScreen" alignment="0" max="32767" attributes="1"/>
-                              <Component id="btFillScreen" alignment="0" max="32767" attributes="1"/>
-                              <Component id="bt1to1" alignment="0" max="32767" attributes="1"/>
-                          </Group>
-                          <Component id="progressBar" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="jButton1" alignment="0" max="32767" attributes="1"/>
+                          <Component id="jButton2" alignment="0" max="32767" attributes="1"/>
+                          <Component id="btFitScreen" alignment="0" max="32767" attributes="1"/>
+                          <Component id="bt1to1" alignment="0" max="32767" attributes="1"/>
+                          <Component id="progressBar" alignment="0" max="32767" attributes="1"/>
+                          <Component id="captureImageButton" alignment="0" max="32767" attributes="1"/>
                       </Group>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="651" max="32767" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jScrollPane2" min="-2" pref="651" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="warningPanel" pref="0" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -426,14 +421,14 @@
         </Property>
         <Property name="text" type="java.lang.String" resourceKey="captureImageButton.text"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[129, 36]"/>
+          <Dimension value="[129, 35]"/>
         </Property>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[129, 36]"/>
+          <Dimension value="[129, 35]"/>
         </Property>
         <Property name="name" type="java.lang.String" value="captureImageButton" noResource="true"/>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[129, 36]"/>
+          <Dimension value="[129, 35]"/>
         </Property>
       </Properties>
       <Events>
@@ -453,14 +448,14 @@
         <Property name="text" type="java.lang.String" resourceKey="jButton1.text"/>
         <Property name="toolTipText" type="java.lang.String" resourceKey="jButton1.toolTipText"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[40, 36]"/>
+          <Dimension value="[30, 30]"/>
         </Property>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[40, 36]"/>
+          <Dimension value="[30, 30]"/>
         </Property>
         <Property name="name" type="java.lang.String" value="jButton1" noResource="true"/>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[40, 36]"/>
+          <Dimension value="[35, 35]"/>
         </Property>
       </Properties>
       <Events>
@@ -475,14 +470,14 @@
         <Property name="text" type="java.lang.String" resourceKey="jButton2.text"/>
         <Property name="toolTipText" type="java.lang.String" resourceKey="jButton2.toolTipText"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[40, 36]"/>
+          <Dimension value="[30, 30]"/>
         </Property>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[40, 36]"/>
+          <Dimension value="[30, 30]"/>
         </Property>
         <Property name="name" type="java.lang.String" value="jButton2" noResource="true"/>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[40, 36]"/>
+          <Dimension value="[35, 35]"/>
         </Property>
       </Properties>
       <Events>
@@ -492,45 +487,23 @@
     <Component class="javax.swing.JButton" name="btFitScreen">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="PlatformIcon.get(PlatformIcon.ZOOM_FIT)" type="code"/>
+          <Connection code="PlatformIcon.get(PlatformIcon.ZOOM_LASERBED)" type="code"/>
         </Property>
         <Property name="text" type="java.lang.String" resourceKey="btFitScreen.text"/>
         <Property name="toolTipText" type="java.lang.String" resourceKey="btFitScreen.toolTipText"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[40, 36]"/>
+          <Dimension value="[35, 35]"/>
         </Property>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[40, 36]"/>
+          <Dimension value="[35, 35]"/>
         </Property>
         <Property name="name" type="java.lang.String" value="btFitScreen" noResource="true"/>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[40, 36]"/>
+          <Dimension value="[35, 35]"/>
         </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btFitScreenActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="btFillScreen">
-      <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="PlatformIcon.get(PlatformIcon.ZOOM_ACTUAL_EQUAL)" type="code"/>
-        </Property>
-        <Property name="text" type="java.lang.String" resourceKey="btFillScreen.text"/>
-        <Property name="toolTipText" type="java.lang.String" resourceKey="btFillScreen.toolTipText"/>
-        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[40, 36]"/>
-        </Property>
-        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[40, 36]"/>
-        </Property>
-        <Property name="name" type="java.lang.String" value="btFillScreen" noResource="true"/>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[40, 36]"/>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btFillScreenActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="bt1to1">
@@ -541,14 +514,14 @@
         <Property name="text" type="java.lang.String" resourceKey="bt1to1.text"/>
         <Property name="toolTipText" type="java.lang.String" resourceKey="bt1to1.toolTipText"/>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[40, 36]"/>
+          <Dimension value="[35, 35]"/>
         </Property>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[40, 36]"/>
+          <Dimension value="[35, 35]"/>
         </Property>
         <Property name="name" type="java.lang.String" value="bt1to1" noResource="true"/>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[40, 36]"/>
+          <Dimension value="[35, 35]"/>
         </Property>
       </Properties>
       <Events>
@@ -581,7 +554,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="642" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="716" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -623,7 +596,7 @@
                                       <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="timeLabel" min="-2" pref="166" max="-2" attributes="0"/>
-                                      <EmptySpace pref="124" max="32767" attributes="0"/>
+                                      <EmptySpace pref="232" max="32767" attributes="0"/>
                                       <Component id="calculateTimeButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -634,18 +607,18 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="objectComboBox" pref="351" max="32767" attributes="0"/>
+                                      <Component id="objectComboBox" pref="492" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="btAddObject" min="-2" pref="31" max="-2" attributes="0"/>
+                                      <Component id="btAddObject" pref="36" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="btRemoveObject" min="-2" pref="31" max="-2" attributes="0"/>
+                                      <Component id="btRemoveObject" min="-2" pref="35" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="jSeparator1" alignment="0" pref="465" max="32767" attributes="0"/>
+                                  <Component id="jSeparator1" alignment="0" pref="606" max="32767" attributes="0"/>
                                   <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="laserCutterComboBox" alignment="0" pref="465" max="32767" attributes="1"/>
+                                  <Component id="laserCutterComboBox" alignment="0" pref="606" max="32767" attributes="1"/>
                                   <Group type="102" alignment="1" attributes="0">
-                                      <Component id="materialComboBox" pref="428" max="32767" attributes="1"/>
+                                      <Component id="materialComboBox" pref="569" max="32767" attributes="1"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="btAddMaterial" min="-2" pref="31" max="-2" attributes="0"/>
                                   </Group>
@@ -658,7 +631,7 @@
                                           </Group>
                                           <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace pref="109" max="32767" attributes="0"/>
+                                      <EmptySpace pref="250" max="32767" attributes="0"/>
                                       <Component id="jCheckBox1" min="-2" pref="197" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -702,8 +675,8 @@
                               <Component id="objectComboBox" alignment="3" max="32767" attributes="1"/>
                               <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="btRemoveObject" min="-2" pref="31" max="-2" attributes="1"/>
-                          <Component id="btAddObject" min="-2" pref="31" max="-2" attributes="1"/>
+                          <Component id="btRemoveObject" min="-2" pref="35" max="-2" attributes="1"/>
+                          <Component id="btAddObject" min="-2" pref="35" max="-2" attributes="1"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="mappingTabbedPane" pref="405" max="32767" attributes="0"/>
@@ -924,12 +897,21 @@
             <Component class="javax.swing.JButton" name="btRemoveObject">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="PlatformIcon.get(PlatformIcon.REMOVE)" type="code"/>
+                  <Connection code="PlatformIcon.get(PlatformIcon.REMOVE_FILE)" type="code"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="com/t_oster/uicomponents/resources/EditableTablePanel.properties" key="-" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
+                <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[35, 35]"/>
+                </Property>
+                <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[35, 35]"/>
+                </Property>
                 <Property name="name" type="java.lang.String" value="btRemoveObject" noResource="true"/>
+                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[35, 35]"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btRemoveObjectActionPerformed"/>
@@ -938,12 +920,21 @@
             <Component class="javax.swing.JButton" name="btAddObject">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="PlatformIcon.get(PlatformIcon.ADD)" type="code"/>
+                  <Connection code="PlatformIcon.get(PlatformIcon.ADD_FILE)" type="code"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="com/t_oster/uicomponents/resources/EditableTablePanel.properties" key="+" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
+                <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[35, 35]"/>
+                </Property>
+                <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[35, 35]"/>
+                </Property>
                 <Property name="name" type="java.lang.String" value="btAddObject" noResource="true"/>
+                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[35, 35]"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btAddObjectActionPerformed"/>

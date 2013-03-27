@@ -41,6 +41,7 @@ public class PlatformIcon
 {
  
   public static final String ADD = "add";
+  public static final String ADD_FILE = "add-file";
   public static final String CAMERA = "camera";
   public static final String DOWN = "down";
   public static final String EDIT = "edit";
@@ -50,12 +51,13 @@ public class PlatformIcon
   public static final String NO_IMAGE = "no-image";
   //public static final String PREV = "prev";
   public static final String REMOVE = "remove";
+  public static final String REMOVE_FILE = "remove-file";
   public static final String SAVE = "save";
   public static final String UNDO = "undo";
   public static final String UP = "up";
-  public static final String ZOOM_ACTUAL_EQUAL = "zoom-actual-equal";
+  //public static final String ZOOM_ACTUAL_EQUAL = "zoom-actual-equal";
   public static final String ZOOM_ACTUAL = "zoom-actual";
-  public static final String ZOOM_FIT = "zoom-fit";
+  public static final String ZOOM_LASERBED = "zoom-laserbed"; //ZOOM_FIT
   public static final String ZOOM_IN = "zoom-in";
   public static final String ZOOM_OUT = "zoom-out";
   
@@ -70,7 +72,9 @@ public class PlatformIcon
     //gtkIconNames.put(PREV, "gtk-go-back");
     gtkIconNames.put(EDIT, "gtk-edit");
     gtkIconNames.put(ADD, "gtk-add");
+    gtkIconNames.put(ADD_FILE, "gtk-add");
     gtkIconNames.put(REMOVE, "gtk-delete");
+    gtkIconNames.put(REMOVE_FILE, "gtk-delete");
     gtkIconNames.put(LOAD, "gtk-open");
     gtkIconNames.put(UNDO, "gtk-undo");
   }
