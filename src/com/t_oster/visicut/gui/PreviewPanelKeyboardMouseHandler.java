@@ -114,7 +114,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       {
         PreviewPanelKeyboardMouseHandler.this.getSelectedSet().setTransform(
         PreviewPanelKeyboardMouseHandler.this.getSelectedSet().getBasicTransform());
-        PreviewPanelKeyboardMouseHandler.this.previewPanel.setEditRectangle(new EditRectangle(getSelectedPart().getBoundingBox()));
+        PreviewPanelKeyboardMouseHandler.this.previewPanel.updateEditRectangle();
         PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
       }
     });
@@ -267,7 +267,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     AffineTransform cur = getSelectedSet().getTransform();
     cur.preConcatenate(flipX);
     getSelectedSet().setTransform(cur);
-    previewPanel.setEditRectangle(null);
+    previewPanel.updateEditRectangle();
     previewPanel.clearCache(getSelectedPart());
     previewPanel.repaint();
   }
@@ -501,7 +501,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
           {//after rotate mode, select next available element
             if (elementsUnderCursor.size() == 1)
             {//only 1 element => toggle back to resize mode
-              this.previewPanel.setEditRectangle(new EditRectangle(VisicutModel.getInstance().getSelectedPart().getBoundingBox()));
+              this.previewPanel.updateEditRectangle();
             }
             else
             {//select next available element
@@ -861,7 +861,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       tr.concatenate(getSelectedSet().getTransform());
     }
     getSelectedSet().setTransform(tr);
-    this.previewPanel.setEditRectangle(new EditRectangle(getSelectedPart().getBoundingBox()));
+    this.previewPanel.updateEditRectangle();
   }
 
   public void mouseMoved(MouseEvent evt)

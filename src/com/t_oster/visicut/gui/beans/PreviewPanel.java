@@ -96,9 +96,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     }
     else if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName()))
     {
-      PlfPart p = VisicutModel.getInstance().getSelectedPart();
-      this.setEditRectangle(p != null ? new EditRectangle(p.getBoundingBox()) : null);
-      //this.repaint();//setEditRectangle does already repaint
+      updateEditRectangle();
     }
     else if (VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()))
     {
@@ -112,7 +110,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
         this.clearCache(p);
         if (p.equals(VisicutModel.getInstance().getSelectedPart()))
         {
-          this.setEditRectangle(new EditRectangle(p.getBoundingBox()));
+          updateEditRectangle();
         }
       }
     }
@@ -124,7 +122,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     else if (VisicutModel.PROP_MATERIAL.equals(pce.getPropertyName())
       || VisicutModel.PROP_PLF_FILE_CHANGED.equals(pce.getPropertyName()))
     {
-      this.setEditRectangle(null);
+      updateEditRectangle();
       this.clearCache();
       repaint();
     }
@@ -404,12 +402,27 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   }
 
   /**
+   * set editRectangle to the bounding-box of the selected part (or null if nothing is selected)
+   * side-effects: highlights the selection (thick border with resize controls) and calls repaint
+   */
+  public void updateEditRectangle() {
+    // TODO: instead of calling this from many different places, always update the edit-rectangle on repaint
+    // TODO: for this, the side effects of setEditRectangle need to be removed and, where necessary, explicit calls to them be added
+    PlfPart selectedPart = VisicutModel.getInstance().getSelectedPart();
+    if (selectedPart == null) {
+      setEditRectangle(null);
+    } else {
+      setEditRectangle(new EditRectangle(selectedPart.getBoundingBox()));
+    }
+  }
+  /**
    * Set the value of editRectangle
    * The EditRectangele is drawn if
    * The Values of the Rectangle are exspected to be
    * in LaserCutter Coordinate Space.
    *
    * @param editRectangle new value of editRectangle
+   * @see updateEditRectangle
    */
   public void setEditRectangle(EditRectangle editRectangle)
   {
