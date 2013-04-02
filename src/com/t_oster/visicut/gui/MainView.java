@@ -1643,7 +1643,6 @@ private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 }//GEN-LAST:event_saveMenuItemActionPerformed
 
 private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newMenuItemActionPerformed
-  this.previewPanel.setEditRectangle(null);
   this.previewPanel.setZoom(100d);
   this.visicutModel1.newPlfFile();
 }//GEN-LAST:event_newMenuItemActionPerformed
