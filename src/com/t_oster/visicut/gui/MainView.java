@@ -182,6 +182,8 @@ public class MainView extends javax.swing.JFrame
       zoomInMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ADD, java.awt.event.InputEvent.META_MASK));
       zoomOutMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SUBTRACT, java.awt.event.InputEvent.META_MASK));
     }
+    
+    fixMaterialThicknesses();    
     fillComboBoxes();
     refreshMaterialThicknessesComboBox();
 
@@ -356,7 +358,7 @@ public class MainView extends javax.swing.JFrame
       }
     }
     this.ignoreMaterialComboBoxChanges = false;
-    //hide lasercutter combo box if only one lasercutter available
+    //hide material combo box if only one material available
     boolean materialUiVisible = true;
     if (this.materialComboBox.getItemCount() == 1 && MaterialManager.getInstance().getAll().get(0).getMaterialThicknesses().size() == 1)
     {
@@ -369,6 +371,25 @@ public class MainView extends javax.swing.JFrame
     this.btAddMaterialThickness.setVisible(materialUiVisible);
     this.jLabel1.setVisible(materialUiVisible);
     this.jLabel5.setVisible(materialUiVisible);
+  }
+  
+  // add a "0.0mm" material thickness if the material has an empty list of thicknesses
+  private void fixMaterialThicknesses() {
+    List<MaterialProfile> materials = MaterialManager.getInstance().getAll();
+    for (MaterialProfile mp: materials) {
+      if (mp.getMaterialThicknesses().isEmpty()) {
+        LinkedList<Float> l = new LinkedList<Float>();
+        l.add((float) 0.0);
+        mp.setMaterialThicknesses(l);
+        System.err.println("Found material \"" + mp.getName() + "\" without a thickness entry - this should not happen! Adding a thickness 0.0 for this material. Please report if you find a way to create materials without a thickness.");
+        try {
+          MaterialManager.getInstance().save(mp);
+        } catch(IOException e) {
+          System.err.println("Failed to fix because of exception " + e);
+        }
+        
+      }
+    }
   }
 
   /*
@@ -1787,6 +1808,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       try
       {
         MaterialManager.getInstance().setAll(result);
+        fixMaterialThicknesses();
         this.refreshMaterialComboBox();
         this.visicutModel1.setMaterial(this.materialComboBox.getSelectedItem() instanceof MaterialProfile ? (MaterialProfile) this.materialComboBox.getSelectedItem() : null);
       }
@@ -1794,6 +1816,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       {
         dialog.showErrorMessage(ex);
       }
+      
     }
   }//GEN-LAST:event_materialMenuItemActionPerformed
 
