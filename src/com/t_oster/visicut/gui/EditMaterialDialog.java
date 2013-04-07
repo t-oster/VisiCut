@@ -29,6 +29,7 @@ import com.t_oster.visicut.model.MaterialProfile;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -329,6 +330,11 @@ public class EditMaterialDialog extends javax.swing.JDialog implements EditableT
 
   private void jButton3ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton3ActionPerformed
   {//GEN-HEADEREND:event_jButton3ActionPerformed
+    // if no thickness was set, give a warning and don't close the dialog
+    if (this.currentMaterial.getMaterialThicknesses().isEmpty()) {
+      javax.swing.JOptionPane.showMessageDialog(null, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditMaterialDialog").getString("ERROR_PLEASE_ADD_A_THICKNESS"), "VisiCut", JOptionPane.WARNING_MESSAGE);
+      return;
+    }
     //clean up duplicates
     Set<Float> set = new LinkedHashSet<Float>();
     set.addAll(this.currentMaterial.getMaterialThicknesses());
