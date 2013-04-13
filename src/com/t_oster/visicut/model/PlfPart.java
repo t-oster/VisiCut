@@ -108,7 +108,14 @@ public class PlfPart {
         {
           if (m.getProfile() != null)
           {
-            objects.addAll(m.getFilterSet().getMatchingObjects(this.graphicObjects));
+            if (m.getFilterSet() == null)
+            {
+              objects.addAll(this.getUnmatchedObjects());
+            }
+            else
+            {
+              objects.addAll(m.getFilterSet().getMatchingObjects(this.graphicObjects));
+            }
           }
         }
       }
