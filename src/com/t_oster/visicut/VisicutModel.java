@@ -331,9 +331,10 @@ public class VisicutModel
     if (this.preferences != null)
     {
       this.graphicFileImporter = null;
+      List<LaserDevice> devices = LaserDeviceManager.getInstance().getAll();
       if (this.preferences.lastLaserDevice != null)
       {
-        for (LaserDevice ld : LaserDeviceManager.getInstance().getAll())
+        for (LaserDevice ld : devices)
         {
           if (this.preferences.lastLaserDevice.equals(ld.getName()))
           {
@@ -342,9 +343,14 @@ public class VisicutModel
           }
         }
       }
+      else if (!devices.isEmpty())
+      {//select first laser-device by default
+        this.setSelectedLaserDevice(devices.get(0));
+      }
+      List<MaterialProfile> materials = MaterialManager.getInstance().getAll();
       if (this.preferences.lastMaterial != null)
       {
-        for (MaterialProfile mp : MaterialManager.getInstance().getAll())
+        for (MaterialProfile mp : materials)
         {
           if (this.preferences.lastMaterial.equals(mp.getName()))
           {
@@ -352,6 +358,10 @@ public class VisicutModel
             break;
           }
         }
+      }
+      else if (!materials.isEmpty())
+      {//use first material by default
+        this.setMaterial(materials.get(0));
       }
       this.setUseThicknessAsFocusOffset(this.preferences.isUseThicknessAsFocusOffset());
     }
