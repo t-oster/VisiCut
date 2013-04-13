@@ -593,7 +593,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     }
     if (getEditRect() != null)
     {//something selected
-      Button b = getEditRect().getButtonByPoint(lastMousePositionMm, null);
+      Button b = getEditRect().getButtonByPoint(lastMousePositionMm, previewPanel.getMmToPxTransform());
       if (b != null)
       {//a button selected
         currentButton = b;
@@ -911,7 +911,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
             }
           }
         }
-        Button b = getEditRect().getButtonByPoint(mouseInMm, null);
+        Button b = getEditRect().getButtonByPoint(mouseInMm, previewPanel.getMmToPxTransform());
         if (b != null)
         {
           if (getEditRect().isRotateMode() && b == Button.ROTATE_BUTTON)

@@ -110,7 +110,7 @@ public class EditRectangle extends Rectangle2D.Double
    * @param b
    * @return
    */
-  private Rectangle2D getButton(Button b, Rectangle2D r)
+  private Rectangle2D getButton(Button b, Rectangle2D r, double buttonSize)
   {
     switch (b)
     {
@@ -134,9 +134,9 @@ public class EditRectangle extends Rectangle2D.Double
     return null;
   }
 
-  public Button getButtonByPoint(Point2D.Double p, AffineTransform atr)
+  public Button getButtonByPoint(Point2D.Double p, AffineTransform mm2px)
   {
-    Rectangle2D tr = atr == null ? this : Helper.transform(this, atr);
+    Rectangle2D tr = this;
     if (this.rotateMode)
     {
       double diagonal = Math.sqrt(tr.getWidth()*tr.getWidth()+tr.getHeight()*tr.getHeight());
@@ -148,9 +148,10 @@ public class EditRectangle extends Rectangle2D.Double
     }
     else
     {
+      double bs = this.buttonSize / mm2px.getScaleX();
       for (Button b : Button.values())
       {
-        if (b != Button.ROTATE_BUTTON && this.getButton(b, tr).contains(p))
+        if (b != Button.ROTATE_BUTTON && this.getButton(b, tr, bs).contains(p))
         {
           return b;
         }
@@ -247,7 +248,7 @@ public class EditRectangle extends Rectangle2D.Double
         gg.setColor(buttonColor);
         for (Button b : Button.values())
         {
-          Rectangle r = Helper.toRect(this.getButton(b,tr));
+          Rectangle r = Helper.toRect(this.getButton(b,tr,this.buttonSize));
           gg.fillRect(r.x, r.y, r.width, r.height);
         }
       }
