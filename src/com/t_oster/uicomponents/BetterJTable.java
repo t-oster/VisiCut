@@ -116,11 +116,11 @@ public class BetterJTable extends JTable
       }
       else if (o instanceof Double)
       {
-        super.setValueAt(Double.parseDouble(aValue.toString()), row, column);
+        super.setValueAt(Double.parseDouble(aValue.toString().replace(",", ".")), row, column);
       }
       else if (o instanceof Float)
       {
-        super.setValueAt(Float.parseFloat(aValue.toString()), row, column);
+        super.setValueAt(Float.parseFloat(aValue.toString().replace(",", ".")), row, column);
       }
       else
       {
