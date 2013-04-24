@@ -34,6 +34,18 @@ public class WarningPanel extends javax.swing.JPanel
 
   private List<Message> messages = new LinkedList<Message>();
   
+  public void removeAllWarnings()
+  {
+    for (Message m: messages)
+    {
+      warningContainer.remove(m);
+      m.setCloseListener(null);  
+    }
+    messages.clear();
+    revalidate();
+    setVisible(true);
+  }
+  
   public void addMessage(final Message m)
   {
     messages.add(m);

@@ -112,7 +112,7 @@ public class MainView extends javax.swing.JFrame
     @Override
     public void showSuccessMessage(String text)
     {
-      MainView.this.warningPanel.addMessage(new Message("Success", text, Message.Type.SUCCESS, null));
+      MainView.this.warningPanel.addMessage(new Message("Success", text, Message.Type.SUCCESS, null, 10000));
     }
 
     @Override
@@ -1498,6 +1498,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
           MainView.this.executeJobMenuItem.setEnabled(false);
           try
           {
+            MainView.this.warningPanel.removeAllWarnings();
             jobnumber++;
             String prefix = MainView.this.visicutModel1.getSelectedLaserDevice().getJobPrefix();
             List<String> warnings = new LinkedList<String>();

@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.Timer;
 
 /**
  *
@@ -120,7 +121,7 @@ public class Message extends javax.swing.JPanel
     }
   }
   
-  public Message(String title, String text, Type type, Action[] actions)
+  public Message(String title, String text, Type type, Action[] actions, int timeout)
   {
     this();
     this.setType(type != null ? type : Type.WARNING);
@@ -138,6 +139,21 @@ public class Message extends javax.swing.JPanel
       this.lbText.add(new JLabel(txt));
     }
     this.setActions(actions);
+    if (timeout > 0)
+    {
+      new Timer(timeout, new ActionListener()
+        {
+          public void actionPerformed(ActionEvent ae)
+          {
+            Message.this.btCloseActionPerformed(ae);
+          }
+        }).start();
+    }
+  }
+  
+  public Message(String title, String text, Type type, Action[] actions)
+  {
+    this(title, text, type, actions, 0);
   }
 
   /**
