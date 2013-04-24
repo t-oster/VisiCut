@@ -18,9 +18,19 @@
  **/
 package com.t_oster.visicut.gui.mapping;
 
+import com.t_oster.uicomponents.PlatformIcon;
 import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.gui.EditRaster3dProfileDialog;
+import com.t_oster.visicut.gui.EditRasterProfileDialog;
+import com.t_oster.visicut.gui.EditVectorProfileDialog;
+import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.misc.DialogHelper;
+import com.t_oster.visicut.model.LaserProfile;
+import com.t_oster.visicut.model.PlfPart;
+import com.t_oster.visicut.model.Raster3dProfile;
+import com.t_oster.visicut.model.RasterProfile;
+import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -92,12 +102,24 @@ public class MappingPanel extends javax.swing.JPanel
     predefinedMappingBox = new com.t_oster.visicut.gui.mapping.PredefinedMappingBox();
     propertyMappingPanel = new com.t_oster.visicut.gui.mapping.PropertyMappingPanel();
     customMappingPanel = new com.t_oster.visicut.gui.mapping.CustomMappingPanel();
+    btProfileSettings = new javax.swing.JButton();
 
     predefinedMappingBox.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
       {
         predefinedMappingBoxActionPerformed(evt);
+      }
+    });
+
+    btProfileSettings.setIcon(PlatformIcon.get(PlatformIcon.EDIT));
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/uicomponents/resources/EditableTablePanel"); // NOI18N
+    btProfileSettings.setToolTipText(bundle.getString("-")); // NOI18N
+    btProfileSettings.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btProfileSettingsActionPerformed(evt);
       }
     });
 
@@ -110,18 +132,23 @@ public class MappingPanel extends javax.swing.JPanel
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(propertyMappingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
           .addComponent(customMappingPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-          .addComponent(predefinedMappingBox, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(predefinedMappingBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(btProfileSettings)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(predefinedMappingBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(predefinedMappingBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(btProfileSettings))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addComponent(propertyMappingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(propertyMappingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(customMappingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE))
+        .addComponent(customMappingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
 
@@ -141,9 +168,28 @@ public class MappingPanel extends javax.swing.JPanel
       this.customMappingPanel.setVisible(predefinedMappingBox.CUSTOM.equals(selected));
       this.propertyMappingPanel.setVisible(predefinedMappingBox.BY_PROPERTY.equals(selected));
     }
+    this.btProfileSettings.setVisible(!predefinedMappingBox.NONE.equals(selected) && !predefinedMappingBox.CUSTOM.equals(selected));
+    
   }//GEN-LAST:event_predefinedMappingBoxActionPerformed
 
+  private void btProfileSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btProfileSettingsActionPerformed
+    PlfPart p = VisicutModel.getInstance().getSelectedPart();
+    if (p == null || p.getMapping() == null || p.getMapping().isEmpty()) { return; }
+    if (p.getMapping().size() > 1)
+    {
+      //TODO: ask user which profile to edit
+      return;
+    }
+    LaserProfile profile = MainView.getInstance().editLaserProfile(p.getMapping().get(0).getProfile());
+    if (profile != null)
+    {
+      p.getMapping().get(0).setProfile(profile);
+      VisicutModel.getInstance().firePartUpdated(p);
+    }
+  }//GEN-LAST:event_btProfileSettingsActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton btProfileSettings;
   private com.t_oster.visicut.gui.mapping.CustomMappingPanel customMappingPanel;
   private com.t_oster.visicut.gui.mapping.PredefinedMappingBox predefinedMappingBox;
   private com.t_oster.visicut.gui.mapping.PropertyMappingPanel propertyMappingPanel;

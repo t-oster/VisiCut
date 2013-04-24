@@ -46,6 +46,8 @@ import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.PlfPart;
+import com.t_oster.visicut.model.Raster3dProfile;
+import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.FileDialog;
@@ -149,6 +151,42 @@ public class MainView extends javax.swing.JFrame
     this.loadFileReal(loadedFile, true);
   }
 
+  /**
+   * Shows the according EditLaserProfile dialog for the given
+   * laser-profile and returns the altered clone of the profile if ok
+   * was pressed, and null else. The given LaserProfile is not touched
+   * @param lp
+   * @return 
+   */
+  public LaserProfile editLaserProfile(LaserProfile profile)
+  {
+    if (profile instanceof VectorProfile)
+    {
+      EditVectorProfileDialog d = new EditVectorProfileDialog(null, true);
+      d.setVectorProfile((VectorProfile) ((VectorProfile) profile).clone());
+      d.setOnlyEditParameters(true);
+      d.setVisible(true);
+      profile = d.isOkPressed() ? d.getVectorProfile() : null;
+    }
+    else if (profile instanceof RasterProfile)
+    {
+      EditRasterProfileDialog d = new EditRasterProfileDialog(null, true);
+      d.setRasterProfile((RasterProfile) profile);
+      d.setOnlyEditParameters(true);
+      d.setVisible(true);
+      profile = d.getRasterProfile();
+    }
+    else if (profile instanceof Raster3dProfile)
+    {
+      EditRaster3dProfileDialog d = new EditRaster3dProfileDialog(null, true);
+      d.setRasterProfile((Raster3dProfile) profile);
+      d.setOnlyEditParameters(true);
+      d.setVisible(true);
+      profile = d.getRasterProfile();
+    }
+    return profile;
+  }
+  
   /** Creates new form MainView */
   public MainView()
   {

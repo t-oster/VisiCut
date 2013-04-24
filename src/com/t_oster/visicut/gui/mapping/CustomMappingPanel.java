@@ -25,6 +25,7 @@ import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.EditRaster3dProfileDialog;
 import com.t_oster.visicut.gui.EditRasterProfileDialog;
 import com.t_oster.visicut.gui.EditVectorProfileDialog;
+import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
@@ -68,39 +69,10 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
       {
         return o;
       }
-      //edit laserprofile
-      if (e.profile instanceof VectorProfile)
+      LaserProfile p = MainView.getInstance().editLaserProfile(e.profile);
+      if (p != null)
       {
-        EditVectorProfileDialog d = new EditVectorProfileDialog(null, true);
-        d.setVectorProfile((VectorProfile) ((VectorProfile) e.profile).clone());
-        d.setOnlyEditParameters(true);
-        d.setVisible(true);
-        if (d.isOkPressed())
-        {
-          e.profile = d.getVectorProfile();
-        }
-      }
-      else if (e.profile instanceof RasterProfile)
-      {
-        EditRasterProfileDialog d = new EditRasterProfileDialog(null, true);
-        d.setRasterProfile((RasterProfile) e.profile);
-        d.setOnlyEditParameters(true);
-        d.setVisible(true);
-        if (d.getRasterProfile() != null)
-        {
-          e.profile = d.getRasterProfile();
-        }
-      }
-      else if (e.profile instanceof Raster3dProfile)
-      {
-        EditRaster3dProfileDialog d = new EditRaster3dProfileDialog(null, true);
-        d.setRasterProfile((Raster3dProfile) e.profile);
-        d.setOnlyEditParameters(true);
-        d.setVisible(true);
-        if (d.getRasterProfile() != null)
-        {
-          e.profile = d.getRasterProfile();
-        }
+        e.profile = p;
       }
     }
     return o;
