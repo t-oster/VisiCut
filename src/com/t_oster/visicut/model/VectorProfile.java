@@ -23,8 +23,8 @@ import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.liblasercut.utils.ShapeConverter;
-import com.t_oster.liblasercut.utils.VectorOptimizer;
-import com.t_oster.liblasercut.utils.VectorOptimizer.OrderStrategy;
+import com.t_oster.liblasercut.vectoroptimizers.VectorOptimizer;
+import com.t_oster.liblasercut.vectoroptimizers.VectorOptimizer.OrderStrategy;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ShapeDecorator;
@@ -307,7 +307,7 @@ public class VectorProfile extends LaserProfile
     }
     if (optimize)
     {
-      VectorOptimizer vo = new VectorOptimizer(this.getOrderStrategy());
+      VectorOptimizer vo = VectorOptimizer.create(this.getOrderStrategy());
       job.addPart(vo.optimize(part));
     }
     else

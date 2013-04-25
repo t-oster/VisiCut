@@ -18,11 +18,9 @@
  **/
 package com.t_oster.visicut.gui;
 
-import com.t_oster.liblasercut.utils.VectorOptimizer;
+import com.t_oster.liblasercut.vectoroptimizers.VectorOptimizer;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.model.VectorProfile;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 
 /**
  *
