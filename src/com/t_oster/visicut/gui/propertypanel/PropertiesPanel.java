@@ -192,6 +192,7 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
         p.validate();
         this.add(p);
       }
+      this.validate();
     }
   }
   
