@@ -82,8 +82,8 @@ public class SVGPanel extends JPanel {
         double factor = Math.min(w / (double) bb.getWidth(), h / (double) bb.getHeight());
         Graphics2D gg = (Graphics2D) g;
         AffineTransform bak = gg.getTransform();
-        gg.scale(factor, factor);
         gg.translate(x-bb.getX(), y-bb.getY());
+        gg.scale(factor, factor);
         root.render(gg);
         gg.setTransform(bak);
       }
