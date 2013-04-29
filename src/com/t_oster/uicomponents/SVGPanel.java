@@ -18,6 +18,7 @@
  **/
 package com.t_oster.uicomponents;
 
+import com.kitfox.svg.SVGDiagram;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.SVGRoot;
 import com.kitfox.svg.SVGUniverse;
@@ -29,6 +30,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
@@ -49,7 +51,10 @@ public class SVGPanel extends JPanel {
   public void setSvgFile(File svgFile)
   {
     this.svgFile = svgFile;
+    this.root = null;
   }
+  
+  private SVGRoot root;
   
   @Override
   protected void paintComponent(Graphics g)
@@ -68,8 +73,11 @@ public class SVGPanel extends JPanel {
         y += i.top;
         w -= x + i.right;
         h -= y + i.bottom;
-        SVGUniverse u = new SVGUniverse();
-        SVGRoot root = u.getDiagram(u.loadSVG(new FileInputStream(svgFile), svgFile.getName())).getRoot();
+        if (root == null)
+        {
+          SVGUniverse u = new SVGUniverse();
+          root = u.getDiagram(u.loadSVG(new FileInputStream(svgFile), svgFile.getName())).getRoot(); 
+        }
         Rectangle2D bb = root.getBoundingBox();
         double factor = Math.min(w / (double) bb.getWidth(), h / (double) bb.getHeight());
         Graphics2D gg = (Graphics2D) g;

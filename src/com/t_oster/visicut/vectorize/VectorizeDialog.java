@@ -18,19 +18,22 @@
  **/
 package com.t_oster.visicut.vectorize;
 
-import com.t_oster.visicut.Preferences;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  *
@@ -55,7 +58,26 @@ public class VectorizeDialog extends javax.swing.JDialog
     tmpBitmap.deleteOnExit();
     tmpBitmap2.deleteOnExit();
     dialog = new DialogHelper(this, "Vectorize");
-    
+    ChangeListener cl = new ChangeListener()
+    {
+      public void stateChanged(ChangeEvent ce)
+      {
+        triggerUpdate();
+      }
+    };
+    ActionListener al = new ActionListener()
+    {
+      public void actionPerformed(ActionEvent ae)
+      {
+        triggerUpdate();
+      }
+    };
+    this.cbBlur.addChangeListener(cl);
+    this.cbHighpassFilter.addChangeListener(cl);
+    this.cbInvert.addChangeListener(cl);
+    this.jSlider1.addChangeListener(cl);
+    this.tfBlur.addActionListener(al);
+    this.tfFilterValue.addActionListener(al);
   }
   
   private File inputFile = null;
@@ -75,6 +97,7 @@ public class VectorizeDialog extends javax.swing.JDialog
       BufferedImage img = ImageIO.read(inputFile);
       //TODO make svg panel to have according with and height...
       inputPanel.setImage(img);
+      triggerUpdate();
     }
     catch (IOException ex)
     {
@@ -99,7 +122,6 @@ public class VectorizeDialog extends javax.swing.JDialog
     btCancel = new javax.swing.JButton();
     jSlider1 = new javax.swing.JSlider();
     jLabel1 = new javax.swing.JLabel();
-    btUpdate = new javax.swing.JButton();
     inputPanel = new com.t_oster.uicomponents.ImagePanel();
     cbInvert = new javax.swing.JCheckBox();
     cbHighpassFilter = new javax.swing.JCheckBox();
@@ -134,15 +156,6 @@ public class VectorizeDialog extends javax.swing.JDialog
 
     jLabel1.setText(bundle.getString("TRESHOLD")); // NOI18N
 
-    btUpdate.setText(bundle.getString("UPDATE")); // NOI18N
-    btUpdate.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btUpdateActionPerformed(evt);
-      }
-    });
-
     inputPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("INPUT"))); // NOI18N
 
     javax.swing.GroupLayout inputPanelLayout = new javax.swing.GroupLayout(inputPanel);
@@ -153,7 +166,7 @@ public class VectorizeDialog extends javax.swing.JDialog
     );
     inputPanelLayout.setVerticalGroup(
       inputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 181, Short.MAX_VALUE)
+      .addGap(0, 175, Short.MAX_VALUE)
     );
 
     cbInvert.setText(bundle.getString("INVERT")); // NOI18N
@@ -202,26 +215,22 @@ public class VectorizeDialog extends javax.swing.JDialog
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(btOk))
           .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
               .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel1)
+                .addComponent(cbBlur)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSlider1, javax.swing.GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE))
-              .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                  .addGroup(layout.createSequentialGroup()
-                    .addComponent(cbBlur)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(tfBlur))
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cbInvert, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                      .addComponent(cbHighpassFilter)
-                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                      .addComponent(tfFilterValue, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(0, 0, Short.MAX_VALUE)))
-            .addGap(18, 18, 18)
-            .addComponent(btUpdate)))
+                .addComponent(tfBlur))
+              .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(cbInvert, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createSequentialGroup()
+                  .addComponent(cbHighpassFilter)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(tfFilterValue, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))))
+            .addGap(77, 271, Short.MAX_VALUE))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jLabel1)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jSlider1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -234,8 +243,7 @@ public class VectorizeDialog extends javax.swing.JDialog
         .addGap(18, 18, 18)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(layout.createSequentialGroup()
-            .addComponent(btUpdate)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 144, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(btOk)
               .addComponent(btCancel)))
@@ -253,7 +261,7 @@ public class VectorizeDialog extends javax.swing.JDialog
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(cbBlur)
               .addComponent(tfBlur, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 27, Short.MAX_VALUE)))
         .addContainerGap())
     );
 
@@ -384,20 +392,61 @@ public class VectorizeDialog extends javax.swing.JDialog
     potrace(cbInvert.isSelected(), tmpBitmap2, tmpResult);
   }
   
-  private void btUpdateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btUpdateActionPerformed
-  {//GEN-HEADEREND:event_btUpdateActionPerformed
-    try
+  private final Runnable updateThread = new Runnable(){
+    @Override
+    public void run()
     {
-      doVectorize();
-      svgPanel.setSvgFile(tmpResult);
-      svgPanel.repaint();
+      try
+      {
+        svgPanel.setEnabled(false);
+        while (true)
+        {
+          synchronized (updateThread)
+          {
+            updateAgain = false;
+          }
+          doVectorize();
+          synchronized (updateThread)
+          {
+            if (!updateAgain)
+            {
+              break;
+            }
+          }
+        }
+        svgPanel.setSvgFile(tmpResult);
+        svgPanel.repaint();
+        svgPanel.setEnabled(true);
+      }
+      catch (Exception ex)
+      {
+        dialog.showErrorMessage(ex, java.util.ResourceBundle.getBundle("com/t_oster/visicut/vectorize/resources/VectorizeDialog").getString("ERRORMSG"));
+      }
+      synchronized(updateThread)
+      {
+        updating = false;
+      }
     }
-    catch (Exception ex)
+  };
+  
+  private boolean updating = false;
+  private boolean updateAgain = false;
+  private void triggerUpdate()
+  {
+    synchronized(updateThread)
     {
-      dialog.showErrorMessage(ex, java.util.ResourceBundle.getBundle("com/t_oster/visicut/vectorize/resources/VectorizeDialog").getString("ERRORMSG"));
+      if (!updating)
+      {
+        updating = true;
+        new Thread(updateThread).start();
+      }
+      else
+      {
+        updateAgain = true;
+      }
     }
-  }//GEN-LAST:event_btUpdateActionPerformed
-
+  }
+  
   private void btOkActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btOkActionPerformed
   {//GEN-HEADEREND:event_btOkActionPerformed
     try
@@ -418,7 +467,6 @@ public class VectorizeDialog extends javax.swing.JDialog
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton btCancel;
   private javax.swing.JToggleButton btOk;
-  private javax.swing.JButton btUpdate;
   private javax.swing.JCheckBox cbBlur;
   private javax.swing.JCheckBox cbHighpassFilter;
   private javax.swing.JCheckBox cbInvert;
