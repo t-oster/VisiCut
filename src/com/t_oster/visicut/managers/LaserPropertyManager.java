@@ -30,6 +30,8 @@ import com.thoughtworks.xstream.XStream;
 import java.beans.XMLDecoder;
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class manages the available Material Profiles
@@ -110,25 +112,37 @@ public class LaserPropertyManager
       if (result != null)
       {
         //check if it is still the correct type for the laser-cutter
-        Class expectedClass = null;
-        if (lp instanceof RasterProfile)
-        {
-          expectedClass = ld.getLaserCutter().getLaserPropertyForRasterPart().getClass();
-        }
-        else if (lp instanceof VectorProfile)
-        {
-          expectedClass = ld.getLaserCutter().getLaserPropertyForVectorPart().getClass();
-        }
-        else if (lp instanceof Raster3dProfile)
-        {
-          expectedClass = ld.getLaserCutter().getLaserPropertyForRaster3dPart().getClass();
-        }
         for (LaserProperty p : result)
         {
-          if (!expectedClass.isAssignableFrom(p.getClass()))
+          LaserProperty expected = null;
+          if (lp instanceof RasterProfile)
           {
-            System.err.println("Tried to load a laser-property of class " + p.getClass().toString() + ", but lasercutter expects " + expectedClass.toString());
-            return null;
+            expected = ld.getLaserCutter().getLaserPropertyForRasterPart();
+          }
+          else if (lp instanceof VectorProfile)
+          {
+            expected = ld.getLaserCutter().getLaserPropertyForVectorPart();
+          }
+          else if (lp instanceof Raster3dProfile)
+          {
+            expected = ld.getLaserCutter().getLaserPropertyForRaster3dPart();
+          }
+          if (!expected.getClass().isAssignableFrom(p.getClass()))
+          {
+            System.err.println("Tried to load a laser-property of class " + p.getClass().toString() + ", but lasercutter expects " + expected.toString());
+            System.err.println("Trying to copy most values");
+            for (String k : p.getPropertyKeys())
+            {
+              try
+              {
+                expected.setProperty(k, p.getProperty(k));
+              }
+              catch (Exception e)
+              {
+                System.err.println("Could not transfer property: "+k);
+              }
+            }
+            result.set(result.indexOf(p), expected);
           }
         }
       }
