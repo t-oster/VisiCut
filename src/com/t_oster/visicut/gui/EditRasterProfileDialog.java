@@ -27,6 +27,7 @@ import com.t_oster.liblasercut.BlackWhiteRaster;
 import com.t_oster.liblasercut.BlackWhiteRaster.DitherAlgorithm;
 import com.t_oster.liblasercut.dithering.DitheringAlgorithm;
 import com.t_oster.uicomponents.BetterJTable;
+import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.CustomizableTableModel;
 import com.t_oster.visicut.model.RasterProfile;
 
@@ -119,6 +120,14 @@ public class EditRasterProfileDialog extends javax.swing.JDialog
       jComboBox1.addItem(BlackWhiteRaster.getDitheringAlgorithm(a));
     }
     this.jTable1.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+    cbResolution.removeAllItems();
+    if (VisicutModel.getInstance().getSelectedLaserDevice() != null)
+    {
+      for (Double d: VisicutModel.getInstance().getSelectedLaserDevice().getLaserCutter().getResolutions())
+      {
+        this.cbResolution.addItem(d);
+      }
+    }
   }
 
   /** This method is called from within the constructor to
@@ -145,8 +154,8 @@ public class EditRasterProfileDialog extends javax.swing.JDialog
         lbGreyscaleShift = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new BetterJTable();
-        tfResolution = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
+        cbResolution = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditRasterProfileDialog"); // NOI18N
@@ -239,13 +248,15 @@ public class EditRasterProfileDialog extends javax.swing.JDialog
         jTable1.setName("jTable1"); // NOI18N
         jScrollPane1.setViewportView(jTable1);
 
-        tfResolution.setName("tfResolution"); // NOI18N
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentRasterProfile.DPI}"), tfResolution, org.jdesktop.beansbinding.BeanProperty.create("text"), "res");
-        bindingGroup.addBinding(binding);
-
         jLabel1.setText(resourceMap.getString("Resolution")); // NOI18N
         jLabel1.setName("jLabel1"); // NOI18N
+
+        cbResolution.setEditable(true);
+        cbResolution.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbResolution.setName("cbResolution"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentRasterProfile.DPI}"), cbResolution, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"), "cbBinding");
+        bindingGroup.addBinding(binding);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -276,7 +287,7 @@ public class EditRasterProfileDialog extends javax.swing.JDialog
                             .addComponent(tfName, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jComboBox1, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
-                            .addComponent(tfResolution, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addComponent(cbResolution, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(24, 24, 24))))
         );
         layout.setVerticalGroup(
@@ -295,8 +306,8 @@ public class EditRasterProfileDialog extends javax.swing.JDialog
                     .addComponent(tfDescription, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(8, 8, 8)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(tfResolution, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addComponent(jLabel1)
+                    .addComponent(cbResolution, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
@@ -352,6 +363,7 @@ private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
    */
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox cbInvertColors;
+    private javax.swing.JComboBox cbResolution;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JComboBox jComboBox1;
@@ -366,7 +378,6 @@ private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     private com.t_oster.uicomponents.SelectThumbnailButton selectThumbnailButton1;
     private javax.swing.JTextField tfDescription;
     private javax.swing.JTextField tfName;
-    private javax.swing.JTextField tfResolution;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 

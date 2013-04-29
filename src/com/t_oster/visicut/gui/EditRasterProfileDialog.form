@@ -53,7 +53,7 @@
                           <Component id="tfName" alignment="0" max="32767" attributes="1"/>
                           <Component id="jComboBox1" alignment="0" max="32767" attributes="1"/>
                           <Component id="jScrollPane1" alignment="0" pref="235" max="32767" attributes="1"/>
-                          <Component id="tfResolution" alignment="0" max="32767" attributes="1"/>
+                          <Component id="cbResolution" alignment="0" max="32767" attributes="1"/>
                       </Group>
                       <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
                   </Group>
@@ -80,8 +80,8 @@
               </Group>
               <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="tfResolution" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cbResolution" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
@@ -258,22 +258,30 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JTextField" name="tfResolution">
-      <Properties>
-        <Property name="name" type="java.lang.String" value="tfResolution" noResource="true"/>
-      </Properties>
-      <BindingProperties>
-        <BindingProperty name="text" source="Form" sourcePath="${currentRasterProfile.DPI}" target="tfResolution" targetPath="text" updateStrategy="0" immediately="false">
-          <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
-          <Property name="name" type="java.lang.String" value="res"/>
-        </BindingProperty>
-      </BindingProperties>
-    </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
         <Property name="text" type="java.lang.String" resourceKey="Resolution"/>
         <Property name="name" type="java.lang.String" value="jLabel1" noResource="true"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbResolution">
+      <Properties>
+        <Property name="editable" type="boolean" value="true"/>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="4">
+            <StringItem index="0" value="Item 1"/>
+            <StringItem index="1" value="Item 2"/>
+            <StringItem index="2" value="Item 3"/>
+            <StringItem index="3" value="Item 4"/>
+          </StringArray>
+        </Property>
+        <Property name="name" type="java.lang.String" value="cbResolution" noResource="true"/>
+      </Properties>
+      <BindingProperties>
+        <BindingProperty name="selectedItem" source="Form" sourcePath="${currentRasterProfile.DPI}" target="cbResolution" targetPath="selectedItem" updateStrategy="0" immediately="false">
+          <Property name="name" type="java.lang.String" value="cbBinding"/>
+        </BindingProperty>
+      </BindingProperties>
     </Component>
   </SubComponents>
 </Form>
