@@ -316,6 +316,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       else
       {
         this.moveSet(diffx, diffy);
+        VisicutModel.getInstance().firePartUpdated(getSelectedPart());
       }
     }
   }
@@ -336,6 +337,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     {
       this.previewPanel.setFastPreview(false);
       this.applyEditRectoToSet();
+      VisicutModel.getInstance().firePartUpdated(getSelectedPart());
     }
     else if (ke.getKeyCode() == KeyEvent.VK_DELETE)
     {
@@ -386,6 +388,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
               return true;
             }
             this.rotateTo(a);
+            VisicutModel.getInstance().firePartUpdated(getSelectedPart());
             return true;
           }
         }
@@ -405,6 +408,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
             }
             this.getEditRect().x = x;
             this.applyEditRectoToSet();
+            VisicutModel.getInstance().firePartUpdated(getSelectedPart());
             return true;
           }
           if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.Y).contains(me.getPoint()))
@@ -421,6 +425,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
             }
             this.getEditRect().y = y;
             this.applyEditRectoToSet();
+            VisicutModel.getInstance().firePartUpdated(getSelectedPart());
             return true;
           }
           if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.WIDTH).contains(me.getPoint()))
@@ -437,6 +442,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
             }
             this.getEditRect().width = w;
             this.applyEditRectoToSet();
+            VisicutModel.getInstance().firePartUpdated(getSelectedPart());
             return true;
           }
           if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.HEIGHT).contains(me.getPoint()))
@@ -453,6 +459,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
             }
             this.getEditRect().height = h;
             this.applyEditRectoToSet();
+            VisicutModel.getInstance().firePartUpdated(getSelectedPart());
             return true;
           }
         }
