@@ -28,19 +28,38 @@ import javax.swing.filechooser.FileFilter;
 public class ExtensionFilter extends FileFilter
   {
 
-    private String extension = ".xml";
+    private String[] extensions = new String[]{".xml"};
     private String description = "XML Document";
     
     public ExtensionFilter(String extension, String description)
     {
-      this.extension = extension;
+      this(new String[]{extension},description);
+    }
+
+    public ExtensionFilter(String[] extensions, String description)
+    {
+      this.extensions = extensions;
       this.description = description;
     }
 
     @Override
     public boolean accept(File file)
     {
-      return file.isDirectory() || file.getName().toLowerCase().endsWith(extension);
+      if (file.isDirectory())
+      {
+        return true;
+      }
+      else
+      {
+        for (String extension : this.extensions)
+        {
+          if (file.getName().toLowerCase().endsWith(extension))
+          {
+            return true;
+          }
+        }
+      }
+      return false; 
     }
 
     @Override

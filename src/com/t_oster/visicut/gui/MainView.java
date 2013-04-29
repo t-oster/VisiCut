@@ -2001,9 +2001,9 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
     }
     if (file != null)
     {
-      if (!file.getName().toLowerCase().endsWith("zip"))
+      if (!file.getName().toLowerCase().endsWith(".vcsettings"))
       {
-        file = new File(file.getParentFile(), file.getName()+".zip");
+        file = new File(file.getParentFile(), file.getName()+".vcsettings");
       }
       try
       {
@@ -2030,7 +2030,7 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
       {
         try
         {
-          final FileFilter zipFilter = new ExtensionFilter("zip", bundle.getString("ZIPPED SETTINGS (*.ZIP)"));
+          final FileFilter zipFilter = new ExtensionFilter(new String[]{".zip",".vcsettings"}, bundle.getString("ZIPPED SETTINGS (*.ZIP)"));
           File file = null;
           //On Mac os, awt.FileDialog looks more native
           if (Helper.isMacOS())
@@ -2043,7 +2043,6 @@ private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
             }
             openFileChooser.setFilenameFilter(new FilenameFilter()
             {
-
               public boolean accept(File dir, String file)
               {
                 return zipFilter.accept(new File(dir, file));
