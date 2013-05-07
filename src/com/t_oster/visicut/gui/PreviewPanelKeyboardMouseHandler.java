@@ -121,6 +121,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
         PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
       }
     });
+    objectmenu.add(resetMenuItem);
     reloadMenuItem.addActionListener(new ActionListener()
     {
       public void actionPerformed(ActionEvent ae)
@@ -137,7 +138,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
         }
       }
     });
-    objectmenu.add(resetMenuItem);
+    objectmenu.add(reloadMenuItem);
     vectorizeMenuItem.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae)
       {
