@@ -20,6 +20,7 @@ package com.t_oster.visicut.gui;
 
 import com.apple.eawt.AppEvent.AboutEvent;
 import com.apple.eawt.AppEvent.OpenFilesEvent;
+import com.apple.eawt.AppEvent.PreferencesEvent;
 import com.apple.eawt.AppEvent.QuitEvent;
 import com.apple.eawt.QuitResponse;
 import com.t_oster.liblasercut.IllegalJobException;
@@ -50,7 +51,9 @@ import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import java.awt.Dimension;
 import java.awt.FileDialog;
+import java.awt.Frame;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -79,6 +82,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -231,14 +235,23 @@ public class MainView extends javax.swing.JFrame
     if (Helper.isMacOS())
     {
       com.apple.eawt.Application macApplication = com.apple.eawt.Application.getApplication();
+      jmPreferences.setVisible(false);
+      macApplication.setPreferencesHandler(new com.apple.eawt.PreferencesHandler() {
+
+        public void handlePreferences(PreferencesEvent pe)
+        {
+          MainView.this.jmPreferencesActionPerformed(null);
+        }
+      });
+      exitMenuItem.setVisible(false);
       macApplication.setQuitHandler(new com.apple.eawt.QuitHandler() {
 
         public void handleQuitRequestWith(QuitEvent qe, QuitResponse qr)
         {
-          MainView.this.visicutModel1.updatePreferences();
-          System.exit(0);
+          MainView.this.exitMenuItemActionPerformed(null);
         }
       });
+      aboutMenuItem.setVisible(false);
       macApplication.setAboutHandler(new com.apple.eawt.AboutHandler() {
 
         public void handleAbout(AboutEvent ae)
@@ -267,8 +280,7 @@ public class MainView extends javax.swing.JFrame
 
       public void windowClosing(WindowEvent e)
       {
-        PreferencesManager.getInstance().getPreferences().setWindowBounds(MainView.this.getBounds());
-        MainView.this.visicutModel1.updatePreferences();
+        MainView.this.exitMenuItemActionPerformed(null);
       }
 
       public void windowClosed(WindowEvent e)
@@ -303,14 +315,6 @@ public class MainView extends javax.swing.JFrame
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDLASERDEVICE, null, null));
     this.visicutModel1PropertyChange(new java.beans.PropertyChangeEvent(visicutModel1, VisicutModel.PROP_SELECTEDPART, null, null));
 
-    //apply the saved window size and position, if in current screen size
-    Rectangle lastBounds = PreferencesManager.getInstance().getPreferences().getWindowBounds();
-    if (lastBounds != null && this.getGraphicsConfiguration().getBounds().contains(lastBounds))
-    {
-      this.setSize(lastBounds.width, lastBounds.height);
-      this.validate();
-      this.setLocation(lastBounds.x, lastBounds.y);
-    }
     PositionPanelController c = new PositionPanelController(positionPanel, visicutModel1);
     this.warningPanel.setVisible(false);
     LaserDeviceManager.getInstance().addPropertyChangeListener(new PropertyChangeListener(){
@@ -319,6 +323,14 @@ public class MainView extends javax.swing.JFrame
         refreshLaserDeviceComboBox();
       }
     });
+    //apply the saved window size and position, if in current screen size
+    Rectangle lastBounds = PreferencesManager.getInstance().getPreferences().getWindowBounds();
+    if (lastBounds != null && this.getGraphicsConfiguration().getBounds().contains(lastBounds))
+    {
+      this.setExtendedState(JFrame.NORMAL);
+      this.setPreferredSize(new Dimension(lastBounds.width, lastBounds.height));
+      this.setBounds(lastBounds);
+    }
   }
 
   private ActionListener exampleItemClicked = new ActionListener(){
@@ -569,10 +581,10 @@ public class MainView extends javax.swing.JFrame
         jmExamples = new javax.swing.JMenu();
         saveMenuItem = new javax.swing.JMenuItem();
         saveAsMenuItem = new javax.swing.JMenuItem();
+        executeJobMenuItem = new javax.swing.JMenuItem();
         exitMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
         calibrateCameraMenuItem = new javax.swing.JMenuItem();
-        executeJobMenuItem = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
         jmImportSettings = new javax.swing.JMenuItem();
         jmExportSettings = new javax.swing.JMenuItem();
@@ -613,7 +625,6 @@ public class MainView extends javax.swing.JFrame
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(MainView.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
-        setLocationByPlatform(true);
         setName("Form"); // NOI18N
 
         captureImageButton.setIcon(PlatformIcon.get(PlatformIcon.CAMERA));
@@ -994,6 +1005,16 @@ public class MainView extends javax.swing.JFrame
         });
         fileMenu.add(saveAsMenuItem);
 
+        executeJobMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
+        executeJobMenuItem.setText(resourceMap.getString("executeJobMenuItem.text")); // NOI18N
+        executeJobMenuItem.setName("executeJobMenuItem"); // NOI18N
+        executeJobMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                executeJobMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(executeJobMenuItem);
+
         exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
         exitMenuItem.setMnemonic('x');
         exitMenuItem.setText(resourceMap.getString("exitMenuItem.text")); // NOI18N
@@ -1019,16 +1040,6 @@ public class MainView extends javax.swing.JFrame
             }
         });
         editMenu.add(calibrateCameraMenuItem);
-
-        executeJobMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
-        executeJobMenuItem.setText(resourceMap.getString("executeJobMenuItem.text")); // NOI18N
-        executeJobMenuItem.setName("executeJobMenuItem"); // NOI18N
-        executeJobMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                executeJobMenuItemActionPerformed(evt);
-            }
-        });
-        editMenu.add(executeJobMenuItem);
 
         jMenu1.setText(resourceMap.getString("jMenu1.text")); // NOI18N
         jMenu1.setName("jMenu1"); // NOI18N
@@ -1230,6 +1241,7 @@ public class MainView extends javax.swing.JFrame
     }// </editor-fold>//GEN-END:initComponents
 
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
+      PreferencesManager.getInstance().getPreferences().setWindowBounds(MainView.this.getBounds());
       this.visicutModel1.updatePreferences();
       System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
