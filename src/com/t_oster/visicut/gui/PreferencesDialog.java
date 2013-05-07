@@ -30,7 +30,7 @@ public class PreferencesDialog extends javax.swing.JDialog
     final String NONE =  java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox").getString("NONE");
     cbDefaultMapping.setRenderer(new DefaultListCellRenderer(){
       @Override
-      public Component getListCellRendererComponent(JList<> list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+      public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
       {
         Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus); //To change body of generated methods, choose Tools | Templates.
         if (c instanceof JLabel && value == null)
