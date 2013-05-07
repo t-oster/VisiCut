@@ -29,6 +29,7 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.PlfFile;
 import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.vectorize.VectorizeDialog;
 import java.awt.Cursor;
 import java.awt.Point;
@@ -70,6 +71,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   private DialogHelper dialogHelper;
   private JPopupMenu objectmenu;
   private JMenuItem resetMenuItem;
+  private JMenuItem reloadMenuItem;
   private JMenuItem vectorizeMenuItem;
   private JMenuItem duplicateMenuItem;
   private JMenuItem deleteMenuItem;
@@ -96,6 +98,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler");
     objectmenu = new JPopupMenu();
     resetMenuItem = new JMenuItem(bundle.getString("RESET TRANSFORMATION"));
+    reloadMenuItem = new JMenuItem(bundle.getString("RELOAD"));
     duplicateMenuItem = new JMenuItem(bundle.getString("DUPLICATE"));
     vectorizeMenuItem = new JMenuItem(bundle.getString("VECTORIZE"));
     deleteMenuItem = new JMenuItem(bundle.getString("REMOVE"));
@@ -116,6 +119,22 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
         PreviewPanelKeyboardMouseHandler.this.getSelectedSet().getBasicTransform());
         PreviewPanelKeyboardMouseHandler.this.previewPanel.updateEditRectangle();
         PreviewPanelKeyboardMouseHandler.this.previewPanel.repaint();
+      }
+    });
+    reloadMenuItem.addActionListener(new ActionListener()
+    {
+      public void actionPerformed(ActionEvent ae)
+      {
+        try
+        {
+          LinkedList<String> warnings = new LinkedList<String>();
+          VisicutModel.getInstance().reloadSelectedPart(warnings);
+          dialogHelper.showWarningMessage(warnings);
+        }
+        catch (ImportException ex)
+        {
+          dialogHelper.showErrorMessage(ex);
+        }
       }
     });
     objectmenu.add(resetMenuItem);

@@ -149,6 +149,11 @@ public class MappingManager extends FilebasedManager<MappingSet>
         return obj;
       }
     }
+    for (MappingSet obj: this.generateDefaultMappings()) {
+      if (obj.getName().equals(name)) {
+        return obj;
+      }
+    }
     return null;
   }
 

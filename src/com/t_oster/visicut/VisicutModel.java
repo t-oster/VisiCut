@@ -438,6 +438,17 @@ public class VisicutModel
         this.setPlfFile(nf);
       }
       PlfPart p = loadGraphicFile(file, warnings);
+      if (this.preferences.getDefaultMapping() != null)
+      {
+        try
+        {
+          p.setMapping(MappingManager.getInstance().getItemByName(this.preferences.getDefaultMapping()));
+        }
+        catch (Exception e)
+        {
+          System.err.println("Could not load mapping '"+this.preferences.getDefaultMapping()+"'");
+        }
+      }
       this.plfFile.add(p);
       this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_ADDED, null, p);
       this.setSelectedPart(p);

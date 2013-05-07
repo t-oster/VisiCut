@@ -32,6 +32,18 @@ public class Preferences
   {
   }
   
+  private String defaultMapping = null;
+
+  public String getDefaultMapping()
+  {
+    return defaultMapping;
+  }
+
+  public void setDefaultMapping(String defaultMapping)
+  {
+    this.defaultMapping = defaultMapping;
+  }
+  
   private boolean disableSandbox = false;
   
   public boolean isDisableSandbox()
@@ -219,7 +231,6 @@ public class Preferences
   {
     this.availableLasercutterDrivers = availableLasercutterDrivers;
   }
-
   
   protected static String[] builtinImporters = new String[]{
     "com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter",
@@ -280,4 +291,31 @@ public class Preferences
     this.editSettingsBeforeExecuting = editSettingsBeforeExecuting;
   }
 
+  @Override
+  public Preferences clone()
+  {
+    Preferences result = new Preferences();
+    if (availableImporters != null)
+    {
+      result.availableImporters = new String[availableImporters.length];
+      System.arraycopy(availableImporters, 0, result.availableImporters, 0, availableImporters.length);
+    }
+    if (availableLasercutterDrivers != null)
+    {
+      result.availableLasercutterDrivers = new String[availableLasercutterDrivers.length];
+      System.arraycopy(availableLasercutterDrivers, 0, result.availableLasercutterDrivers, 0, availableLasercutterDrivers.length);
+    }
+    result.defaultMapping = defaultMapping;
+    result.disableSandbox = disableSandbox;
+    result.editSettingsBeforeExecuting = editSettingsBeforeExecuting;
+    result.lastLaserDevice = lastLaserDevice;
+    result.lastMaterial = lastMaterial;
+    result.mkbitmapPath = mkbitmapPath;
+    result.potracePath = potracePath;
+    result.recentFiles = new LinkedList<String>();
+    result.recentFiles.addAll(recentFiles);
+    result.useThicknessAsFocusOffset = useThicknessAsFocusOffset;
+    result.windowBounds = windowBounds;
+    return result;
+  }
 }

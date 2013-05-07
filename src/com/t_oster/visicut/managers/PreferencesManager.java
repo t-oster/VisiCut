@@ -271,6 +271,12 @@ public final class PreferencesManager
     return preferences;
   }
 
+  public void savePreferences(Preferences pref) throws FileNotFoundException, IOException
+  {
+    this.preferences = pref;
+    savePreferences();
+  }
+  
   public void savePreferences() throws FileNotFoundException, IOException
   {
     File target = this.getPreferencesPath();

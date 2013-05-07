@@ -213,7 +213,6 @@ public class MainView extends javax.swing.JFrame
     {//Mac OS has its own exit menu and different Keybindings
       fileMenu.remove(exitMenuItem);
       openMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.META_MASK));
-      reloadMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.META_MASK));
       newMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.META_MASK));
       saveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.META_MASK));
       executeJobMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.META_MASK));
@@ -573,7 +572,6 @@ public class MainView extends javax.swing.JFrame
         exitMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
         calibrateCameraMenuItem = new javax.swing.JMenuItem();
-        reloadMenuItem = new javax.swing.JMenuItem();
         executeJobMenuItem = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
         jmImportSettings = new javax.swing.JMenuItem();
@@ -582,6 +580,7 @@ public class MainView extends javax.swing.JFrame
         jmManageLaserprofiles = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         materialMenuItem = new javax.swing.JMenuItem();
+        jmPreferences = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
         jmShowPhoto = new javax.swing.JCheckBoxMenuItem();
@@ -1021,18 +1020,6 @@ public class MainView extends javax.swing.JFrame
         });
         editMenu.add(calibrateCameraMenuItem);
 
-        reloadMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
-        reloadMenuItem.setText(resourceMap.getString("reloadMenuItem.text")); // NOI18N
-        reloadMenuItem.setToolTipText(resourceMap.getString("reloadMenuItem.toolTipText")); // NOI18N
-        reloadMenuItem.setEnabled(false);
-        reloadMenuItem.setName("reloadMenuItem"); // NOI18N
-        reloadMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                reloadMenuItemActionPerformed(evt);
-            }
-        });
-        editMenu.add(reloadMenuItem);
-
         executeJobMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
         executeJobMenuItem.setText(resourceMap.getString("executeJobMenuItem.text")); // NOI18N
         executeJobMenuItem.setName("executeJobMenuItem"); // NOI18N
@@ -1101,6 +1088,15 @@ public class MainView extends javax.swing.JFrame
         jMenu1.add(materialMenuItem);
 
         editMenu.add(jMenu1);
+
+        jmPreferences.setText(bundle1.getString("PREFERENCES")); // NOI18N
+        jmPreferences.setName("jmPreferences"); // NOI18N
+        jmPreferences.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmPreferencesActionPerformed(evt);
+            }
+        });
+        editMenu.add(jmPreferences);
 
         menuBar.add(editMenu);
 
@@ -1668,7 +1664,6 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
   else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART))
   {
     PlfPart p = this.visicutModel1.getSelectedPart();
-    this.reloadMenuItem.setEnabled(p != null);
     this.mappingTabbedPane.setVisible(p != null);
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_MATERIAL))
@@ -1951,25 +1946,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   {//GEN-HEADEREND:event_jButton2ActionPerformed
     previewPanel.setZoom(previewPanel.getZoom() - (previewPanel.getZoom() / 32));
   }//GEN-LAST:event_jButton2ActionPerformed
-
-private void reloadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadMenuItemActionPerformed
-  if (this.visicutModel1.getSelectedPart() != null)
-  {
-    try
-    {
-      LinkedList<String> warnings = new LinkedList<String>();
-      this.visicutModel1.reloadSelectedPart(warnings);
-      for(String s : warnings)
-      {
-        dialog.showWarningMessage(s);
-      }
-    }
-    catch (Exception ex)
-    {
-      dialog.showErrorMessage(ex, bundle.getString("ERROR RELOADING FILE"));
-    }
-  }
-}//GEN-LAST:event_reloadMenuItemActionPerformed
 
   private void jmExportSettingsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmExportSettingsActionPerformed
   {//GEN-HEADEREND:event_jmExportSettingsActionPerformed
@@ -2302,6 +2278,24 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
   VisicutModel.getInstance().setSelectedPart(selected);
 }//GEN-LAST:event_objectComboBoxChangeHandler
 
+private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmPreferencesActionPerformed
+  PreferencesDialog pd = new PreferencesDialog(this, true);
+  pd.setPreferences(this.visicutModel1.getPreferences().clone());
+  pd.setVisible(true);
+  if (pd.getPreferences() != null)
+  {
+    try
+    {
+      this.visicutModel1.setPreferences(pd.getPreferences());
+      PreferencesManager.getInstance().savePreferences(pd.getPreferences());
+    }
+    catch (Exception ex)
+    {
+      dialog.showErrorMessage(ex);
+    }
+  }
+}//GEN-LAST:event_jmPreferencesActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton bt1to1;
@@ -2345,6 +2339,7 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
     private javax.swing.JMenuItem jmInstallIllustrator;
     private javax.swing.JMenuItem jmInstallInkscape;
     private javax.swing.JMenuItem jmManageLaserprofiles;
+    private javax.swing.JMenuItem jmPreferences;
     private javax.swing.JCheckBoxMenuItem jmShowPhoto;
     private com.t_oster.uicomponents.ImageComboBox laserCutterComboBox;
     private com.t_oster.visicut.gui.mapping.MappingPanel mappingPanel;
@@ -2361,7 +2356,6 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
     private com.t_oster.visicut.gui.propertypanel.PropertiesPanel propertiesPanel;
     private javax.swing.JScrollPane propertyPanelContainer;
     private javax.swing.JMenu recentFilesMenu;
-    private javax.swing.JMenuItem reloadMenuItem;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JFileChooser saveFileChooser;
     private javax.swing.JMenuItem saveMenuItem;
