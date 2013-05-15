@@ -171,6 +171,7 @@ File /r "stream\"
   ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR" 
 
   ; register file extensions
+  ${registerExtension} "$INSTDIR\VisiCut.exe" ".ls" "VisiCut LaserScript File"
   ${registerExtension} "$INSTDIR\VisiCut.exe" ".plf" "VisiCut Portable Laser File"
   ${registerExtension} "$INSTDIR\VisiCut.exe" ".svg" "SVG File"
   ${registerExtension} "$INSTDIR\VisiCut.exe" ".dxf" "DXF File"

@@ -12,6 +12,8 @@ install:
 	cp -r dist $(DESTDIR)$(PREFIX)/share/visicut
 	mkdir -p $(DESTDIR)$(PREFIX)/share/pixmaps
 	cp icon.png $(DESTDIR)$(PREFIX)/share/pixmaps/visicut.png
+	cp icon-48.png $(DESTDIR)$(PREFIX)/share/pixmaps/visicut-48.png
+	cp icon-32.png $(DESTDIR)$(PREFIX)/share/pixmaps/visicut-32.png
 	cp distribute/linux/visicut $(DESTDIR)$(PREFIX)/share/visicut/
 	cp -r distribute/files/* $(DESTDIR)$(PREFIX)/share/visicut/
 	mkdir -p $(DESTDIR)$(PREFIX)/share/visicut/inkscape_extension

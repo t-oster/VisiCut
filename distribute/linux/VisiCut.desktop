@@ -6,5 +6,5 @@ Exec=visicut %F
 Terminal=false
 Type=Application
 Categories=Graphics;VectorGraphics;GTK;
-MimeType=image/vnd.dxf;image/svg+xml;image/x-eps;image/jpeg;image/png;application/x-plf;
+MimeType=image/vnd.dxf;image/svg+xml;image/x-eps;image/jpeg;image/png;application/x-plf;application/x-ls;
 StartupNotify=true

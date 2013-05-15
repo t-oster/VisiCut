@@ -21,10 +21,12 @@ changelog=
 source=(
 https://github.com/t-oster/VisiCut/archive/$pkgver.tar.gz 
 plf-mime.xml
+ls-mime.xml
 https://github.com/t-oster/LibLaserCut/archive/visicut$pkgver.tar.gz
 )
 md5sums=('e999d42ff2fe3eb0b67d2b2e15684030'
          '023d09901b9075e86821a23953e82710'
+	 'daeabc0ae9054e49f0154f5d2f57a700'
          'bdc355978fb4d356f6874bfbd05c4bf8')
 _gitdir=t-oster-VisiCut-
 
@@ -41,4 +43,6 @@ package() {
   cd "$srcdir/${_gitdir}"*
   make DESTDIR="$pkgdir/" install
   cp "$srcdir/plf-mime.xml" "$pkgdir/usr/share/visicut/"
+  cp "$srcdir/ls-mime.xml" "$pkgdir/usr/share/visicut/"
+
 }
