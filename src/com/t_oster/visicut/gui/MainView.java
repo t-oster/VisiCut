@@ -54,6 +54,7 @@ import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Frame;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -194,6 +195,15 @@ public class MainView extends javax.swing.JFrame
   /** Creates new form MainView */
   public MainView()
   {
+    try
+    {
+      Image i = ImageIO.read(this.getClass().getResourceAsStream("resources/visicut.png"));
+      this.setIconImage(i);
+    }
+    catch (Exception e)
+    {
+      System.err.println("Error reading image: "+e);
+    }
     instance = this;
     initComponents();
     jScrollPane2.setColumnHeaderView(new Ruler(this.previewPanel, Ruler.HORIZONTAL));
