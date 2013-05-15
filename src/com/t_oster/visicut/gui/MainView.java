@@ -34,6 +34,7 @@ import com.t_oster.uicomponents.warnings.Message;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.CreateNewMaterialDialog;
 import com.t_oster.visicut.gui.beans.CreateNewThicknessDialog;
+import com.t_oster.visicut.gui.parameterpanel.ParameterPanel;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.managers.MappingManager;
@@ -50,6 +51,7 @@ import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
+import com.t_oster.visicut.model.graphicelements.psvgsupport.PSVGImporter;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Dimension;
 import java.awt.FileDialog;
@@ -102,6 +104,8 @@ public class MainView extends javax.swing.JFrame
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView");
 
+  private ParameterPanel parameterPanel = new ParameterPanel();
+  
   public static MainView getInstance()
   {
     return instance;
@@ -1687,6 +1691,23 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
   {
     PlfPart p = this.visicutModel1.getSelectedPart();
     this.mappingTabbedPane.setVisible(p != null);
+    if (p != null)
+    {
+      if (PSVGImporter.FILTER.accept(p.getSourceFile()))
+      {
+        if (this.mappingTabbedPane.indexOfTabComponent(this.parameterPanel) == -1)
+        {
+          this.mappingTabbedPane.add("Parameters", this.parameterPanel);
+        }
+      }
+      else
+      {
+        if (this.mappingTabbedPane.indexOfTabComponent(this.parameterPanel) == -1)
+        {
+          this.mappingTabbedPane.remove(this.parameterPanel);
+        }
+      }
+    }
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_MATERIAL))
   {
@@ -2450,6 +2471,11 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       }
     }
     return result;
+  }
+
+  public DialogHelper getDialog()
+  {
+    return this.dialog;
   }
 
 }

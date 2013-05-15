@@ -35,6 +35,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.filechooser.FileFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -52,7 +54,9 @@ import org.xml.sax.SAXException;
 public class PSVGImporter implements Importer
 {
 
-  private Map<String, Object> parseParameters(File inputFile, List<String> warnings) throws ParserConfigurationException, SAXException, IOException
+  public static FileFilter FILTER = new ExtensionFilter(".psvg", "Parametric SVG files");
+  
+  public Map<String, Object> parseParameters(File inputFile, List<String> warnings) throws ParserConfigurationException, SAXException, IOException
   {
     
     Map<String, Object> result = new LinkedHashMap<String, Object>();
@@ -61,7 +65,6 @@ public class PSVGImporter implements Importer
     Document doc = docBuilder.parse(inputFile);
 
     NodeList defs = doc.getElementsByTagName("ref");
-    int totalPersons = defs.getLength();
     for (int i = 0; i < defs.getLength(); i++)
     {
       Node n = defs.item(i);
@@ -88,7 +91,7 @@ public class PSVGImporter implements Importer
   
   public FileFilter getFileFilter()
   {
-    return new ExtensionFilter(".psvg", "Parametric SVG files");
+    return FILTER;
   }
 
   public GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException
@@ -96,6 +99,18 @@ public class PSVGImporter implements Importer
     try
     {
       Map<String, Object> parameters = this.parseParameters(inputFile, warnings);
+      return this.importFile(inputFile, warnings, parameters);
+    }
+    catch (Exception ex)
+    {
+      throw new ImportException(ex);
+    }
+  }
+  
+  public GraphicSet importFile(File inputFile, List<String> warnings, Map<String, Object> parameters) throws ImportException
+  {
+    try
+    {
       Configuration cfg = new Configuration();
       // Specify the data source where the template files come from.
       // Here I set a file directory for it:
