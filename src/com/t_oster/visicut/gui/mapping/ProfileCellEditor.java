@@ -19,24 +19,25 @@
 
 package com.t_oster.visicut.gui.mapping;
 
-import com.t_oster.uicomponents.ComboBoxCellEditor;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.model.LaserProfile;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 
 /**
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-class ProfileCellEditor extends ComboBoxCellEditor{
+class ProfileCellEditor extends DefaultCellEditor{
   private JComboBox profiles;
   public String IGNORE = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("IGNORE");
   
   public ProfileCellEditor()
   {
-    profiles = this.getComboBox();
+    super(new JComboBox());
+    profiles = (JComboBox) this.getComponent();
   }
 
   @Override
