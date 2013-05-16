@@ -6,7 +6,7 @@ import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.psvgsupport.PSVGImporter;
-import com.t_oster.visicut.model.graphicelements.psvgsupport.ParameterTableModel;
+import com.t_oster.uicomponents.ParameterTableModel;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

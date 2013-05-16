@@ -18,7 +18,6 @@
  **/
 package com.t_oster.uicomponents;
 
-import com.t_oster.visicut.model.graphicelements.psvgsupport.ParameterTableModel;
 import java.awt.Component;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
