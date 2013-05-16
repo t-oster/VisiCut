@@ -115,6 +115,7 @@ public class ParameterPanel extends javax.swing.JPanel
 
   public void refresh()
   {
+    ignoreChanges = true;
     PlfPart p = VisicutModel.getInstance().getSelectedPart();
     if (p != null && PSVGImporter.FILTER.accept(p.getSourceFile()))
     {
@@ -125,6 +126,7 @@ public class ParameterPanel extends javax.swing.JPanel
     {
       model.setParameterMap(null);
     }
+    ignoreChanges = false;
   }
 
   /**
