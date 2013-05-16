@@ -47,6 +47,10 @@ public class ParameterPanel extends javax.swing.JPanel
         {
           refresh();
         }
+        else if (VisicutModel.PROP_PLF_PART_REMOVED.equals(pce.getPropertyName())|| VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()))
+        {
+          parameters.remove((PlfPart) pce.getOldValue());
+        }
       }
     });
     this.model.addTableModelListener(new TableModelListener()
