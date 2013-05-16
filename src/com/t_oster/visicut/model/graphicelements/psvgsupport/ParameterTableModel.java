@@ -19,6 +19,7 @@
 
 package com.t_oster.visicut.model.graphicelements.psvgsupport;
 
+import com.t_oster.uicomponents.Parameter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.table.DefaultTableModel;
@@ -30,14 +31,14 @@ import javax.swing.table.DefaultTableModel;
 public class ParameterTableModel extends DefaultTableModel
 {
   
-  private Map<String, Object> map = new LinkedHashMap<String, Object>();
+  private Map<String, Parameter> map = new LinkedHashMap<String, Parameter>();
   private String[] keys = new String[0];
   
-  public void setParameterMap(Map<String, Object> map)
+  public void setParameterMap(Map<String, Parameter> map)
   {
     if (map == null)
     {
-      this.map = new LinkedHashMap<String, Object>();
+      this.map = new LinkedHashMap<String, Parameter>();
       this.keys = new String[0];
     }
     else
@@ -63,7 +64,8 @@ public class ParameterTableModel extends DefaultTableModel
   @Override
   public String getColumnName(int column)
   {
-    return column == 0 ? "Key" : "Value";
+    //TODO: Translate
+    return column == 0 ? "Parameter" : "Value";
   }
 
   @Override
@@ -75,13 +77,25 @@ public class ParameterTableModel extends DefaultTableModel
   @Override
   public Object getValueAt(int row, int column)
   {
-    return column == 0 ? keys[row] : map.get(keys[row]);
+    if (column == 0)
+    {
+      return map.get(keys[row]).label == null ? keys[row] : map.get(keys[row]).label;
+    }
+    else
+    {
+      return map.get(keys[row]).value;
+    }
+  }
+  
+  public Parameter getParameterAt(int row)
+  {
+    return map.get(keys[row]);
   }
 
   @Override
   public void setValueAt(Object aValue, int row, int column)
   {
-    map.put(keys[row], aValue);
+    map.get(keys[row]).value =  aValue;
     this.fireTableCellUpdated(row, column);
   }
   

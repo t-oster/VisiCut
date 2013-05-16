@@ -19,6 +19,7 @@
 
 package com.t_oster.visicut.model.graphicelements.psvgsupport;
 
+import com.t_oster.uicomponents.Parameter;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
@@ -32,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import javax.swing.filechooser.FileFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -54,11 +56,11 @@ public class PSVGImporter implements Importer
 {
 
   public static FileFilter FILTER = new ExtensionFilter(".parametric.svg", "Parametric SVG files");
-   
-  public Map<String, Object> parseParameters(File inputFile, List<String> warnings) throws ParserConfigurationException, SAXException, IOException
+  
+  public Map<String, Parameter> parseParameters(File inputFile, List<String> warnings) throws ParserConfigurationException, SAXException, IOException
   {
     
-    Map<String, Object> result = new LinkedHashMap<String, Object>();
+    Map<String, Parameter> result = new LinkedHashMap<String, Parameter>();
     DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
     DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
     Document doc = docBuilder.parse(inputFile);
@@ -69,35 +71,72 @@ public class PSVGImporter implements Importer
       Node n = defs.item(i);
       if (n.getNodeType() == Node.ELEMENT_NODE)
       {
+        Parameter parameter = new Parameter();
         NamedNodeMap attributes = n.getAttributes();
         Node param = attributes.getNamedItem("param");
         Node deflt = attributes.getNamedItem("default");
+        Node label = attributes.getNamedItem("label");
+        if (label != null)
+        {
+          parameter.label = label.getNodeValue();
+        }
+        else
+        {
+          parameter.label = param.getNodeValue();
+        }
         Node typeNode = attributes.getNamedItem("type");
         String type = typeNode == null ? "Double" : typeNode.getNodeValue();
-        if ("Double".equals(type))
+        String[] possibleValues = null;
+        if (type.contains("(") && type.endsWith(")"))
         {
-          result.put(param.getNodeValue(), deflt != null ? Double.parseDouble(deflt.getNodeValue()) : (Double) 0.0);
+          String betweenBrackets = type.substring(1+type.indexOf("("),type.length()-2);
+          possibleValues = betweenBrackets.split(",");
         }
-        else if ("Integer".equals(type))
+        if (type.startsWith("Double"))
         {
-          result.put(param.getNodeValue(), deflt != null ? Integer.parseInt(deflt.getNodeValue()) : (Integer) 0);
+          parameter.deflt = deflt != null ? Double.parseDouble(deflt.getNodeValue()) : null;
+          parameter.value = parameter.deflt != null ? parameter.deflt : (Double) 0.0;
+          if (possibleValues != null)
+          {
+            parameter.possibleValues = new Double[possibleValues.length];
+            for (int k = 0; k < possibleValues.length; k++)
+            {
+              parameter.possibleValues[k] = Double.parseDouble(possibleValues[k]);
+            }
+          }
         }
-        else if ("Boolean".equals(type))
+        else if (type.startsWith("Integer"))
         {
-          result.put(param.getNodeValue(), deflt != null ? Boolean.parseBoolean(deflt.getNodeValue()) : (Boolean) false);
+          parameter.deflt = deflt != null ? Integer.parseInt(deflt.getNodeValue()) : null;
+          parameter.value = parameter.deflt != null ? parameter.deflt : (Integer) 0;
+          if (possibleValues != null)
+          {
+            parameter.possibleValues = new Integer[possibleValues.length];
+            for (int k = 0; k < possibleValues.length; k++)
+            {
+              parameter.possibleValues[k] = Integer.parseInt(possibleValues[k]);
+            }
+          }
         }
-        else if ("String".equals(type))
+        else if (type.startsWith("Boolean"))
         {
-          result.put(param.getNodeValue(), deflt != null ? deflt.getNodeValue() : "");
+          parameter.deflt = deflt != null ? Boolean.parseBoolean(deflt.getNodeValue()) : null;
+          parameter.value = parameter.deflt != null ? parameter.deflt : (Boolean) false;
         }
-        else if ("List".equals(type))
+        else if (type.startsWith("String"))
         {
-          
+          parameter.deflt = deflt != null ? deflt.getNodeValue() : null;
+          parameter.value = parameter.deflt != null ? parameter.deflt : "";
+          if (possibleValues != null)
+          {
+            parameter.possibleValues = possibleValues;
+          }
         }
         else
         {
           warnings.add("Unknown Parameter Type '"+type+"' for parameter '"+param.getNodeValue()+"'");
         }
+        result.put(param.getNodeValue(), parameter);
       }
     }
     return result;
@@ -112,7 +151,7 @@ public class PSVGImporter implements Importer
   {
     try
     {
-      Map<String, Object> parameters = this.parseParameters(inputFile, warnings);
+      Map<String, Parameter> parameters = this.parseParameters(inputFile, warnings);
       return this.importFile(inputFile, warnings, parameters);
     }
     catch (Exception ex)
@@ -134,9 +173,13 @@ public class PSVGImporter implements Importer
     return _templateEngine;
   }
   
-  private IContext getContext(final Map<String, Object> parameters)
+  private IContext getContext(final Map<String, Parameter> parameters)
   {
-    final VariablesMap<String, Object> map = new VariablesMap<String, Object>(parameters);
+    final VariablesMap<String, Object> map = new VariablesMap<String, Object>();
+    for (Entry<String, Parameter> e : parameters.entrySet())
+    {
+      map.put(e.getKey(), e.getValue().value);
+    }
     return new IContext(){
   
       public VariablesMap<String, Object> getVariables()
@@ -155,7 +198,7 @@ public class PSVGImporter implements Importer
     };
   }
   
-  public GraphicSet importFile(File inputFile, List<String> warnings, Map<String, Object> parameters) throws ImportException
+  public GraphicSet importFile(File inputFile, List<String> warnings, Map<String, Parameter> parameters) throws ImportException
   {
     try
     {

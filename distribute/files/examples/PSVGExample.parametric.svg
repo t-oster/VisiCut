@@ -48,8 +48,9 @@
      id="defs4">
     <ref
        param="Name"
+       label="Eigener Name"
        default="Max Mustermann"
-       type="String"
+       type="String('Hello', 'World')"
        id="ref6" />
     <ref
        id="ref2988"
@@ -64,7 +65,7 @@
     <ref
        param="Sterne"
        default="1"
-       type="Integer"
+       type="Integer(1,0,5)"
        id="ref10" />
   </defs>
   <text

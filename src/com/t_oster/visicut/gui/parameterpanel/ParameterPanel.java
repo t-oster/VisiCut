@@ -1,5 +1,6 @@
 package com.t_oster.visicut.gui.parameterpanel;
 
+import com.t_oster.uicomponents.Parameter;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.model.PlfPart;
@@ -27,7 +28,7 @@ import org.xml.sax.SAXException;
 public class ParameterPanel extends javax.swing.JPanel
 {
 
-  private Map<PlfPart, Map<String, Object>> parameters = new LinkedHashMap<PlfPart, Map<String, Object>>();
+  private Map<PlfPart, Map<String, Parameter>> parameters = new LinkedHashMap<PlfPart, Map<String, Parameter>>();
   private ParameterTableModel model = new ParameterTableModel();
   private PSVGImporter pi = new PSVGImporter();
 
@@ -69,7 +70,7 @@ public class ParameterPanel extends javax.swing.JPanel
     {
       try
       {
-        Map<String, Object> parms = this.getParameters(p);
+        Map<String, Parameter> parms = this.getParameters(p);
         AffineTransform t = p.getGraphicObjects().getTransform();
         p.setGraphicObjects(pi.importFile(p.getSourceFile(), new LinkedList<String>(), parms));
         p.getGraphicObjects().setTransform(t);
@@ -83,7 +84,7 @@ public class ParameterPanel extends javax.swing.JPanel
     ignoreChanges = false;
   }
 
-  private Map<String, Object> getParameters(PlfPart p)
+  private Map<String, Parameter> getParameters(PlfPart p)
   {
     if (!this.parameters.containsKey(p))
     {
@@ -112,7 +113,7 @@ public class ParameterPanel extends javax.swing.JPanel
     PlfPart p = VisicutModel.getInstance().getSelectedPart();
     if (p != null && PSVGImporter.FILTER.accept(p.getSourceFile()))
     {
-      Map<String, Object> params = this.getParameters(p);
+      Map<String, Parameter> params = this.getParameters(p);
       model.setParameterMap(params);
     }
     else
