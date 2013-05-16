@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.48.4 r9939"
+   width="100%"
+   height="100%"
+   sodipodi:docname="PSVGExample.parametric.svg">
+  <metadata
+     id="metadata18">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1680"
+     inkscape:window-height="999"
+     id="namedview16"
+     showgrid="false"
+     inkscape:zoom="0.63429569"
+     inkscape:cx="585.27766"
+     inkscape:cy="652.30523"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <defs
+     id="defs4">
+    <ref
+       param="Name"
+       default="Max Mustermann"
+       type="String"
+       id="ref6" />
+    <ref
+       id="ref2988"
+       type="String"
+       default="Max Mustermann"
+       param="Untertitel" />
+    <ref
+       param="Schneiderand"
+       default="true"
+       type="Boolean"
+       id="ref8" />
+    <ref
+       param="Sterne"
+       default="1"
+       type="Integer"
+       id="ref10" />
+  </defs>
+  <text
+     th:text="${Name}"
+     x="382.43036"
+     y="581.97516"
+     font-size="55"
+     id="text12"
+     style="font-size:55px;fill:#0000ff;font-family:Verdana">Bitte mit VisiCut öffnen</text>
+  <rect
+     width="949.65588"
+     height="640.67358"
+     style="fill:none;stroke:#0000ff;stroke-width:11.03565407;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     id="rect14"
+     x="-1010.5455"
+     y="16.297951"
+     transform="scale(-1,1)"
+     th:if="${Schneiderand}" />
+  <path
+     sodipodi:type="star"
+     style="fill:none;stroke:#0000ff;stroke-width:7.08661413;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+     id="path3763"
+     sodipodi:sides="5"
+     sodipodi:cx="171.84415"
+     sodipodi:cy="357.10284"
+     sodipodi:r1="122.00718"
+     sodipodi:r2="61.00359"
+     sodipodi:arg1="1.130266"
+     sodipodi:arg2="1.7585845"
+     inkscape:flatsided="false"
+     inkscape:rounded="0"
+     inkscape:randomized="0"
+     d="m 223.87035,467.46147 -63.41474,-50.42751 -77.491769,23.65144 28.363169,-75.89397 -46.440119,-66.39035 80.944149,3.52245 48.79019,-64.68292 21.66307,78.07096 76.59412,26.4141 -67.55564,44.72805 z"
+     inkscape:transform-center-x="-7.0385063"
+     inkscape:transform-center-y="-4.7518082"
+     transform="translate(47.296553,116.66483)"
+     th:if="${Sterne gt 0}"
+     th:each="i : ${#numbers.sequence(1, Sterne)}"
+     th:attr="transform='translate(' + ${200 * i + 47.296553} + ',116.66483)'" />
+  <path
+     sodipodi:type="arc"
+     style="fill:none;stroke:#0000ff;stroke-width:7.08661413;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+     id="path2987"
+     sodipodi:cx="700.77728"
+     sodipodi:cy="373.65665"
+     sodipodi:rx="65.426895"
+     sodipodi:ry="55.967587"
+     d="m 766.20418,373.65665 a 65.426895,55.967587 0 1 1 -130.85379,0 65.426895,55.967587 0 1 1 130.85379,0 z" />
+  <text
+     xml:space="preserve"
+     style="font-size:144px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+     x="238.05933"
+     y="144.26836"
+     id="text2990"
+     sodipodi:linespacing="125%"
+     th:text="${Untertitel + ' lalal'}"><tspan
+       sodipodi:role="line"
+       id="tspan2992"
+       x="238.05933"
+       y="144.26836">Blabla</tspan></text>
+</svg>

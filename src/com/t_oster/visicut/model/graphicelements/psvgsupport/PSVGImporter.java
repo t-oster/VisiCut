@@ -25,22 +25,21 @@ import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.Importer;
 import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.filechooser.FileFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.VariablesMap;
+import org.thymeleaf.templateresolver.FileTemplateResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -54,8 +53,8 @@ import org.xml.sax.SAXException;
 public class PSVGImporter implements Importer
 {
 
-  public static FileFilter FILTER = new ExtensionFilter(".psvg", "Parametric SVG files");
-  
+  public static FileFilter FILTER = new ExtensionFilter(".parametric.svg", "Parametric SVG files");
+   
   public Map<String, Object> parseParameters(File inputFile, List<String> warnings) throws ParserConfigurationException, SAXException, IOException
   {
     
@@ -73,16 +72,31 @@ public class PSVGImporter implements Importer
         NamedNodeMap attributes = n.getAttributes();
         Node param = attributes.getNamedItem("param");
         Node deflt = attributes.getNamedItem("default");
-        if (param != null)
+        Node typeNode = attributes.getNamedItem("type");
+        String type = typeNode == null ? "Double" : typeNode.getNodeValue();
+        if ("Double".equals(type))
         {
-          if (deflt != null)
-          {
-            result.put(param.getNodeValue(), Double.parseDouble(deflt.getNodeValue()));
-          }
-          else
-          {
-            warnings.add("Parameter "+param.getNodeValue()+" has no default");
-          }
+          result.put(param.getNodeValue(), deflt != null ? Double.parseDouble(deflt.getNodeValue()) : (Double) 0.0);
+        }
+        else if ("Integer".equals(type))
+        {
+          result.put(param.getNodeValue(), deflt != null ? Integer.parseInt(deflt.getNodeValue()) : (Integer) 0);
+        }
+        else if ("Boolean".equals(type))
+        {
+          result.put(param.getNodeValue(), deflt != null ? Boolean.parseBoolean(deflt.getNodeValue()) : (Boolean) false);
+        }
+        else if ("String".equals(type))
+        {
+          result.put(param.getNodeValue(), deflt != null ? deflt.getNodeValue() : "");
+        }
+        else if ("List".equals(type))
+        {
+          
+        }
+        else
+        {
+          warnings.add("Unknown Parameter Type '"+type+"' for parameter '"+param.getNodeValue()+"'");
         }
       }
     }
@@ -107,23 +121,48 @@ public class PSVGImporter implements Importer
     }
   }
   
+  private TemplateEngine _templateEngine = null;
+  private TemplateEngine getTemplateEngine()
+  {
+    if (_templateEngine == null)
+    {
+      _templateEngine = new TemplateEngine();
+      FileTemplateResolver ftr = new FileTemplateResolver();
+      ftr.setCacheable(false);
+      _templateEngine.setTemplateResolver(ftr);
+    }
+    return _templateEngine;
+  }
+  
+  private IContext getContext(final Map<String, Object> parameters)
+  {
+    final VariablesMap<String, Object> map = new VariablesMap<String, Object>(parameters);
+    return new IContext(){
+  
+      public VariablesMap<String, Object> getVariables()
+      {
+        return map;
+      }
+
+      public Locale getLocale()
+      {
+        return Locale.getDefault();
+      }
+
+      public void addContextExecutionInfo(String string)
+      {
+      }
+    };
+  }
+  
   public GraphicSet importFile(File inputFile, List<String> warnings, Map<String, Object> parameters) throws ImportException
   {
     try
     {
-      Configuration cfg = new Configuration();
-      // Specify the data source where the template files come from.
-      // Here I set a file directory for it:
-      cfg.setDirectoryForTemplateLoading(inputFile.getParentFile());
-      // Specify how templates will see the data-model. This is an advanced topic...
-      // but just use this:
-      cfg.setObjectWrapper(new DefaultObjectWrapper());
-      cfg.setTagSyntax(Configuration.AUTO_DETECT_TAG_SYNTAX);
-      
-      Template t = cfg.getTemplate(inputFile.getName());
+      TemplateEngine te = this.getTemplateEngine();
       File tmpFile = FileUtils.getNonexistingWritableFile(inputFile.getName()+".svg");
       FileWriter w = new FileWriter(tmpFile);
-      t.process(parameters, w);
+      te.process(inputFile.getAbsolutePath(), this.getContext(parameters), w);
       w.close();
       return (new SVGImporter()).importFile(tmpFile, warnings);
     }

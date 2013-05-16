@@ -133,8 +133,13 @@ public class MainView extends javax.swing.JFrame
     }
 
     @Override
-    public void showErrorMessage(Exception cause)
+    public void showErrorMessage(Exception ex)
     {
+      Throwable cause = ex;
+      while ((cause.getMessage() == null || "".equals(cause.getMessage())) && cause.getCause() != null)
+      {
+        cause = cause.getCause();
+      }
       cause.printStackTrace();
       MainView.this.warningPanel.addMessage(new Message("Error", "Exception: "+cause.getLocalizedMessage(), Message.Type.ERROR, null));
     }
