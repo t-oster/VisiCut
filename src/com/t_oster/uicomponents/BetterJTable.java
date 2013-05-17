@@ -35,6 +35,14 @@ import javax.swing.table.TableCellRenderer;
 public class BetterJTable extends JTable
 {
 
+  public BetterJTable()
+  {
+    if (this.getRowHeight() < 23)
+    {
+      this.setRowHeight(23);
+    }
+  }
+  
   private int[] relativeWidths = null;
   
   public void setColumnRelations(int[] relativeWidths)
