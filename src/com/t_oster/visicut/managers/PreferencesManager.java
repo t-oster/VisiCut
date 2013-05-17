@@ -36,8 +36,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipException;
@@ -165,36 +165,22 @@ public final class PreferencesManager
     File vc = Helper.getVisiCutFolder();
     if (vc != null && vc.isDirectory())
     {
-      for (String folder : new String[]{"examples", "profiles", "materials", "mappings", "devices", "laserprofiles"})
+      for (String folder : new String[]{"profiles", "materials", "mappings", "devices", "laserprofiles"})
       {
-      if (new File(vc, "examples").isDirectory())
+        if (new File(vc, folder).isDirectory())
         {
           try
           {
-            System.out.println("Copying "+folder+"...");
+            System.out.println("Copying default settings...");
             FileUtils.copyDirectoryToDirectory(new File(vc, folder), new File(bp, folder));
             System.out.println("done.");
+            return;
           }
           catch (Exception ex)
           {
             Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println("Can't copy default settings.");
           }
-        }
-      }
-      if (new File(vc, "settings").isDirectory())
-      {
-        try
-        {
-          System.out.println("Copying default settings...");
-          FileUtils.copyDirectoryToDirectory(new File(vc, "settings"), new File(bp, "settings"));
-          System.out.println("done.");
-          return;
-        }
-        catch (Exception ex)
-        {
-          Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
-          System.err.println("Can't copy default settings.");
         }
       }
     }
@@ -211,31 +197,52 @@ public final class PreferencesManager
       System.err.println("Couldn't save preferences");
     }
   }
-
-  private List<String> exampleFilenames = null;
-  public List<String> getExampleFilenames()
+  private Map<String, Object> listDirectory(File dir)
   {
-    if (exampleFilenames == null)
+    Map<String, Object> result = new LinkedHashMap<String, Object>();
+    if (dir.exists() && dir.isDirectory())
     {
-      exampleFilenames = new LinkedList<String>();
-      File dir = new File(Helper.getBasePath(), "examples");
-      if (dir.exists() && dir.isDirectory())
+      for(File f : dir.listFiles())
       {
-        for(File f : dir.listFiles())
+        if (f.isFile())
         {
-          if (f.isFile())
-          {
-            exampleFilenames.add(f.getName());
-          }
+          result.put(f.getName(), f);
+        }
+        else if (f.isDirectory())
+        {
+          result.put(f.getName(), this.listDirectory(f));
         }
       }
     }
-    return exampleFilenames;
+    return result;
   }
   
-  public File getExampleFile(String name)
+  /*
+   * A Map either containing a name and a file each
+   * or a name and another list of the same form
+   * (aka the example files tree)
+   */
+  private Map<String, Object> exampleFiles = null;
+  public Map<String, Object> getExampleFiles()
   {
-    return new File(new File(Helper.getBasePath(), "examples"), name);
+    if (exampleFiles == null)
+    {
+      exampleFiles = this.listDirectory(
+        new File(Helper.getBasePath(), "examples")
+        );
+    }
+    return exampleFiles;
+  }
+  
+  private Map<String, Object> builtinExampleFiles = null;
+  public Map<String, Object> getBuiltinExampleFiles()
+  {
+    if (builtinExampleFiles == null)
+    {
+      builtinExampleFiles = this.listDirectory(
+        new File(Helper.getVisiCutFolder(), "examples"));
+    }
+    return builtinExampleFiles;
   }
   
   public Preferences getPreferences()
@@ -335,7 +342,7 @@ public final class PreferencesManager
   {
     FileUtils.cleanDirectory(Helper.getBasePath());
     FileUtils.unzipToDirectory(file, Helper.getBasePath());
-    this.exampleFilenames = null;
+    this.exampleFiles = null;
     try
     {
       preferences = this.loadPreferences(this.getPreferencesPath());

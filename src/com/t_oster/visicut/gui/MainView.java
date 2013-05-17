@@ -87,10 +87,13 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
 import org.jdesktop.application.Action;
 
@@ -357,31 +360,48 @@ public class MainView extends javax.swing.JFrame
       {
         if (!"".equals(ae.getActionCommand()))
         {
-          MainView.this.loadFile(PreferencesManager.getInstance().getExampleFile(ae.getActionCommand()), false);
+          MainView.this.loadFile(new File(ae.getActionCommand()), false);
         }
       }
     };
 
+  private void fillMenu(JMenu parent, Map<String, Object> map)
+  {
+    for (Entry<String, Object> e: map.entrySet())
+    {
+      if (e.getValue() instanceof File)
+      {
+        JMenuItem item = new JMenuItem(e.getKey());
+        item.setActionCommand(((File) e.getValue()).getAbsolutePath());
+        item.addActionListener(exampleItemClicked);
+        parent.add(item);
+      }
+      else if (e.getValue() instanceof Map)
+      {
+        JMenu m = new JMenu(e.getKey());
+        fillMenu(m, (Map) e.getValue());
+        parent.add(m);
+      }
+    }
+  }
+  
   private JMenuItem openExamples;
   private void refreshExampleMenu()
   {
     jmExamples.removeAll();
-    for (String example : PreferencesManager.getInstance().getExampleFilenames())
-    {
-      JMenuItem item = new JMenuItem(example);
-      item.setActionCommand(example);
-      item.addActionListener(exampleItemClicked);
-      this.jmExamples.add(item);
-    }
+    JMenu builtin = new JMenu(bundle.getString("BUILTIN"));
+    this.fillMenu(builtin, PreferencesManager.getInstance().getBuiltinExampleFiles());
+    jmExamples.add(builtin);
+    this.fillMenu(jmExamples, PreferencesManager.getInstance().getExampleFiles());
     if (openExamples == null)
     {
-      //TODO: i10n
       openExamples = new JMenuItem(bundle.getString("EDIT"));
       openExamples.addActionListener(new ActionListener(){
 
         public void actionPerformed(ActionEvent ae)
         {
           dialog.openInFilebrowser(new File(Helper.getBasePath(), "examples"));
+          //TODO refresh menu on next click (menu and action-listener don't work)
         }
       });
     }
