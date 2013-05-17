@@ -74,6 +74,10 @@ public class PSVGImporter implements Importer
         Parameter parameter = new Parameter();
         NamedNodeMap attributes = n.getAttributes();
         Node param = attributes.getNamedItem("param");
+        if (param == null)
+        {
+          continue;
+        }
         Node deflt = attributes.getNamedItem("default");
         Node label = attributes.getNamedItem("label");
         Node min = attributes.getNamedItem("min");
