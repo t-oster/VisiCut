@@ -17,7 +17,7 @@
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package com.t_oster.uicomponents;
+package com.t_oster.uicomponents.parameter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

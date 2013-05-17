@@ -19,7 +19,7 @@
 
 package com.t_oster.visicut.model.graphicelements.psvgsupport;
 
-import com.t_oster.uicomponents.Parameter;
+import com.t_oster.uicomponents.parameter.Parameter;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
@@ -76,6 +76,8 @@ public class PSVGImporter implements Importer
         Node param = attributes.getNamedItem("param");
         Node deflt = attributes.getNamedItem("default");
         Node label = attributes.getNamedItem("label");
+        Node min = attributes.getNamedItem("min");
+        Node max = attributes.getNamedItem("max");
         if (label != null)
         {
           parameter.label = label.getNodeValue();
@@ -116,6 +118,14 @@ public class PSVGImporter implements Importer
             {
               parameter.possibleValues[k] = Integer.parseInt(possibleValues[k]);
             }
+          }
+          if (min != null)
+          {
+            parameter.minValue = Integer.parseInt(min.getNodeValue());
+          }
+          if (max != null)
+          {
+            parameter.maxValue = Integer.parseInt(max.getNodeValue());
           }
         }
         else if (type.startsWith("Boolean"))

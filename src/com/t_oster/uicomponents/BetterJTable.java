@@ -20,7 +20,6 @@ package com.t_oster.uicomponents;
 
 import java.awt.Component;
 import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
@@ -76,18 +75,7 @@ public class BetterJTable extends JTable
   {
     Object o = this.getValueAt(row, column);
     TableCellEditor result;
-    if (this.getModel() instanceof ParameterTableModel && ((ParameterTableModel) this.getModel()).getParameterAt(row).possibleValues != null)
-    {
-      JComboBox cb = new JComboBox();
-      for (Object e : ((ParameterTableModel) this.getModel()).getParameterAt(row).possibleValues)
-      {
-        cb.addItem(e);
-      }
-      cb.setEditable(true);
-      cb.setSelectedItem(o);
-      return new DefaultCellEditor(cb);
-    }
-    else if (o instanceof Boolean)
+    if (o instanceof Boolean)
     {
       result = this.getDefaultEditor(Boolean.class);
     }

@@ -54,8 +54,10 @@
        id="ref6" />
     <ref
        id="ref3020"
-       type="Double"
+       type="Integer"
        default="100"
+       min="10"
+       max="200"
        param="height" />
     <ref
        id="ref2988"

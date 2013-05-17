@@ -1,12 +1,12 @@
 package com.t_oster.visicut.gui.parameterpanel;
 
-import com.t_oster.uicomponents.Parameter;
+import com.t_oster.uicomponents.parameter.Parameter;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.psvgsupport.PSVGImporter;
-import com.t_oster.uicomponents.ParameterTableModel;
+import com.t_oster.uicomponents.parameter.ParameterTableModel;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -38,7 +38,7 @@ public class ParameterPanel extends javax.swing.JPanel
   public ParameterPanel()
   {
     initComponents();
-    this.betterJTable1.setModel(model);
+    this.parameterJTable1.setModel(model);
     VisicutModel.getInstance().addPropertyChangeListener(new PropertyChangeListener()
     {
       public void propertyChange(PropertyChangeEvent pce)
@@ -139,10 +139,10 @@ public class ParameterPanel extends javax.swing.JPanel
   private void initComponents()
   {
 
-    jScrollPane1 = new javax.swing.JScrollPane();
-    betterJTable1 = new com.t_oster.uicomponents.BetterJTable();
+    jScrollPane2 = new javax.swing.JScrollPane();
+    parameterJTable1 = new com.t_oster.uicomponents.parameter.ParameterJTable();
 
-    betterJTable1.setModel(new javax.swing.table.DefaultTableModel(
+    parameterJTable1.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][]
       {
         {null, null, null, null},
@@ -155,23 +155,21 @@ public class ParameterPanel extends javax.swing.JPanel
         "Title 1", "Title 2", "Title 3", "Title 4"
       }
     ));
-    jScrollPane1.setViewportView(betterJTable1);
+    jScrollPane2.setViewportView(parameterJTable1);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+      .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addGap(0, 12, Short.MAX_VALUE))
+      .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
     );
   }// </editor-fold>//GEN-END:initComponents
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private com.t_oster.uicomponents.BetterJTable betterJTable1;
-  private javax.swing.JScrollPane jScrollPane1;
+  private javax.swing.JScrollPane jScrollPane2;
+  private com.t_oster.uicomponents.parameter.ParameterJTable parameterJTable1;
   // End of variables declaration//GEN-END:variables
 }
