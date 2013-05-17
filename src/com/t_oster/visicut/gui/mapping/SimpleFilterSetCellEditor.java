@@ -19,11 +19,7 @@
 
 package com.t_oster.visicut.gui.mapping;
 
-import com.t_oster.uicomponents.ComboBoxCellEditor;
 import com.t_oster.visicut.model.mapping.FilterSet;
-import java.awt.Component;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 
@@ -31,7 +27,7 @@ import javax.swing.JComboBox;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-class SimpleFilterSetCellEditor extends ComboBoxCellEditor
+class SimpleFilterSetCellEditor extends DefaultCellEditor
 {
 
   private JComboBox filterSets;
@@ -39,7 +35,8 @@ class SimpleFilterSetCellEditor extends ComboBoxCellEditor
 
   public SimpleFilterSetCellEditor()
   {
-    filterSets = this.getComboBox();
+    super(new JComboBox());
+    filterSets = (JComboBox) this.getComponent();
     filterSets.setRenderer(new SimpleFilterSetListCellRenderer());
   }
 
