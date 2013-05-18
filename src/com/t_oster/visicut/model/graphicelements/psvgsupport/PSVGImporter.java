@@ -81,7 +81,8 @@ public class PSVGImporter implements Importer
         }
         Node deflt = attributes.getNamedItem("default");
         Node label = attributes.getNamedItem("label");
-        Node label_i10n = attributes.getNamedItem("label_"+Locale.getDefault().toLanguageTag());
+        Locale l = Locale.getDefault();
+        Node label_i10n = attributes.getNamedItem("label_"+l.getLanguage()+"-"+l.getCountry());
         Node min = attributes.getNamedItem("min");
         Node max = attributes.getNamedItem("max");
         if (label_i10n != null)
