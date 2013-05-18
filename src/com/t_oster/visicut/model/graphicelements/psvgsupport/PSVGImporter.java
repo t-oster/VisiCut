@@ -89,7 +89,7 @@ public class PSVGImporter extends ParametricSVGImporter
         {
           expression += "var "+e.getKey()+"="+e.getValue()+";";
         }
-        expression += n.getNodeValue();
+        expression += n.getNodeValue().replace("$", "");
         Double result = Helper.evaluateExpression(expression);
         String parameterName = parent.getAttributes().getNamedItem("param").getNodeValue().replace("$", "");
         parameters.put(parameterName, result);
