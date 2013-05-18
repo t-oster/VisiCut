@@ -21,6 +21,7 @@ package com.t_oster.uicomponents.parameter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -29,6 +30,8 @@ import javax.swing.table.DefaultTableModel;
  */
 public class ParameterTableModel extends DefaultTableModel
 {
+  
+  private ResourceBundle bundle = ResourceBundle.getBundle("com/t_oster/uicomponents/parameter/resources/ParameterTableModel");
   
   private Map<String, Parameter> map = new LinkedHashMap<String, Parameter>();
   private String[] keys = new String[0];
@@ -57,20 +60,26 @@ public class ParameterTableModel extends DefaultTableModel
   @Override
   public int getColumnCount()
   {
-    return 2;
+    return 3;
   }
   
   @Override
   public String getColumnName(int column)
   {
     //TODO: Translate
-    return column == 0 ? "Parameter" : "Value";
+    switch (column)
+    {
+      case 0: return bundle.getString("KEY");
+      case 1: return bundle.getString("VALUE");
+      case 2: return bundle.getString("RESET");
+    }
+    return null;
   }
 
   @Override
   public boolean isCellEditable(int row, int column)
   {
-    return column == 1;
+    return column >= 1;
   }
 
   @Override

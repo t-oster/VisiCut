@@ -20,10 +20,14 @@
 package com.t_oster.uicomponents.parameter;
 
 import com.t_oster.uicomponents.BetterJTable;
+import com.t_oster.uicomponents.PlatformIcon;
+import com.t_oster.uicomponents.TableButton;
+import com.t_oster.uicomponents.TableButtonListener;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -32,9 +36,32 @@ import javax.swing.table.TableCellRenderer;
 public class ParameterJTable extends BetterJTable
 {
 
+  private TableButton resetButton;
+  
+  public ParameterJTable()
+  {
+    this.setRowHeight(28);
+    resetButton = new TableButton("");
+    resetButton.setIcon(PlatformIcon.get(PlatformIcon.UNDO));
+    resetButton.addTableButtonListener(new TableButtonListener() {
+      @Override
+      public void tableButtonClicked(int row, int col) {
+        TableModel m = getModel();
+        if (m instanceof ParameterTableModel)
+        {
+          setValueAt(((ParameterTableModel) m).getParameterAt(row).deflt, row, col);
+        }
+      }     
+    }); 
+  }
+  
   @Override
   public TableCellRenderer getCellRenderer(int row, int column)
   {
+    if (this.getModel() instanceof ParameterTableModel && column == 2)
+    {
+      return resetButton;
+    }
     /*
      * if (this.getModel() instanceof ParameterTableModel)
     {
@@ -54,6 +81,10 @@ public class ParameterJTable extends BetterJTable
   {
     if (this.getModel() instanceof ParameterTableModel)
     {
+      if (column == 2)
+      {
+        return resetButton;
+      }
       Parameter p = ((ParameterTableModel) this.getModel()).getParameterAt(row);
       if (p.possibleValues != null)
       {
