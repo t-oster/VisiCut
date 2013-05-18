@@ -580,7 +580,7 @@ public class VisicutModel
       {
         // Add source GraphicsFile to the Zip File
         out.putNextEntry(new ZipEntry((i > 0 ? i+"/" : "")+plf.get(i).getSourceFile().getName()+".parameters"));
-        ParametricPlfPart.serializeParameters(((ParametricPlfPart) plf.get(i)).getParameters(), out);
+        ParametricPlfPart.serializeParameterValues(((ParametricPlfPart) plf.get(i)).getParameters(), out);
         // Complete the entry
         out.closeEntry(); 
       }

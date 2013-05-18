@@ -25,10 +25,11 @@ import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.thoughtworks.xstream.XStream;
 import java.awt.geom.AffineTransform;
 import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.zip.ZipOutputStream;
+import java.util.Map.Entry;
 
 /**
  *
@@ -43,20 +44,42 @@ public class ParametricPlfPart extends PlfPart
     if (_xstream == null)
     {
       _xstream = new XStream();
+      _xstream.alias("parameters", LinkedHashMap.class);
+      _xstream.alias("parameter", Entry.class);
     }
     return _xstream;
   }
   
-  public static void serializeParameters(Map<String, Parameter> parameters, ZipOutputStream out)
+  /**
+   * Saves the curent values of the given parameters to XML
+   * @param parameters
+   * @param out 
+   */
+  public static void serializeParameterValues(Map<String, Parameter> parameters, OutputStream out)
   {
     XStream xstream = getXStream();
-    xstream.toXML(parameters, out);
+    Map<String, Object> values = new LinkedHashMap<String, Object>();
+    for (Entry<String, Parameter> e : parameters.entrySet())
+    {
+      values.put(e.getKey(), e.getValue().value);
+    }
+    xstream.toXML(values, out);
   }
 
-  static Map<String, Parameter> unserializeParameters(FileInputStream in)
+  /*
+   * Updates the current values of the given parameters from XML
+   */
+  static void unserializeParameterValues(Map<String, Parameter> parameters, FileInputStream in)
   {
     XStream xstream = getXStream();
-    return (Map) xstream.fromXML(in);
+    Map<String, Object> values = (Map<String, Object>) xstream.fromXML(in);
+    for (Entry<String, Object> e : values.entrySet())
+    {
+      if (parameters.containsKey(e.getKey()))
+      {
+        parameters.get(e.getKey()).value = e.getValue();
+      }
+    }
   }
   private Map<String, Parameter> map;
   

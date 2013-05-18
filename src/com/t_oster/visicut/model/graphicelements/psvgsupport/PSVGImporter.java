@@ -179,23 +179,19 @@ public class PSVGImporter implements Importer
   {
     try
     {
-      Map<String, Parameter> parameters = null;
-      try
+      Map<String, Parameter> parameters =  this.parseParameters(inputFile, warnings);
+      if (new File(inputFile.getAbsolutePath()+".parameters").exists())
       {
-        if (new File(inputFile.getAbsolutePath()+".parameters").exists())
+        try
         {
           FileInputStream in = new FileInputStream(new File(inputFile.getAbsolutePath()+".parameters"));
-          parameters = ParametricPlfPart.unserializeParameters(in);
+          ParametricPlfPart.unserializeParameterValues(parameters, in);
           in.close();
         }
-      }
-      catch (Exception e)
-      {
-        System.err.println("Error loading .parameters file for "+inputFile.getName());
-      }
-      if (parameters == null)
-      {
-        parameters = this.parseParameters(inputFile, warnings);
+        catch (Exception e)
+        {
+          System.err.println("Error loading .parameters file for "+inputFile.getName());
+        }  
       }
       return this.importFile(inputFile, warnings, parameters);
     }
