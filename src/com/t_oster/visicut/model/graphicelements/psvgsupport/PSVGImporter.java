@@ -80,9 +80,14 @@ public class PSVGImporter implements Importer
         }
         Node deflt = attributes.getNamedItem("default");
         Node label = attributes.getNamedItem("label");
+        Node label_i10n = attributes.getNamedItem("label_"+Locale.getDefault().toLanguageTag());
         Node min = attributes.getNamedItem("min");
         Node max = attributes.getNamedItem("max");
-        if (label != null)
+        if (label_i10n != null)
+        {
+          parameter.label = label_i10n.getNodeValue();
+        }
+        else if (label != null)
         {
           parameter.label = label.getNodeValue();
         }
@@ -109,6 +114,14 @@ public class PSVGImporter implements Importer
             {
               parameter.possibleValues[k] = Double.parseDouble(possibleValues[k]);
             }
+          }
+          if (min != null)
+          {
+            parameter.minValue = Double.parseDouble(min.getNodeValue());
+          }
+          if (max != null)
+          {
+            parameter.maxValue = Double.parseDouble(max.getNodeValue());
           }
         }
         else if (type.startsWith("Integer"))
