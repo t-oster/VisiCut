@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:th="http://www.thymeleaf.org"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.48.4 r9939"
+   width="100%"
+   height="100%"
+   sodipodi:docname="Card.parametric.svg">
+  <metadata
+     id="metadata18">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1680"
+     inkscape:window-height="992"
+     id="namedview16"
+     showgrid="false"
+     inkscape:zoom="0.63429569"
+     inkscape:cx="241.58937"
+     inkscape:cy="661.96126"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <defs
+     id="defs4">
+    <ref
+       param="Name"
+       label="Your Name"
+       default="Max Mustermann"
+       type="String"
+       id="ref6"
+       label_de-DE="Ihr Name" />
+    <ref
+       id="ref2988"
+       type="String(HP,Apple,Microsoft)"
+       default="Microsoft"
+       param="Company"
+       label_de-DE="Firma" />
+    <ref
+       param="Schneiderand"
+       default="true"
+       type="Boolean"
+       id="ref8"
+       label="Cut out"
+       label_de-DE="Schneiderand" />
+    <ref
+       param="smileys"
+       default="1"
+       type="Integer(0,1,2,3)"
+       id="ref10"
+       label="Number of Smileys"
+       label_de-DE="Anzahl Smileys" />
+  </defs>
+  <text
+     th:text="${Name}"
+     x="127.02896"
+     y="134.23448"
+     font-size="55"
+     id="text12"
+     style="font-size:72px;font-style:italic;font-weight:bold;fill:#0000ff;font-family:Verdana;-inkscape-font-specification:Verdana Bold Italic">Max Mustermann</text>
+  <rect
+     width="949.65588"
+     height="640.67358"
+     style="fill:none;stroke:#0000ff;stroke-width:11.03565407;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     id="rect14"
+     x="-974.28479"
+     y="17.874624"
+     transform="scale(-1,1)"
+     th:if="${Schneiderand}" />
+  <g
+     id="smiley"
+     th:each="i : ${#numbers.sequence(1, smileys)}"
+     th:attr="transform='translate(' + ${ i*140} + ',0)'"
+     th:if="${smileys gt 0}">
+    <path
+       transform="translate(44.14345,-302.69794)"
+       d="m 203.37518,806.4201 a 59.908966,63.062073 0 1 1 -119.817929,0 59.908966,63.062073 0 1 1 119.817929,0 z"
+       sodipodi:ry="63.062073"
+       sodipodi:rx="59.908966"
+       sodipodi:cy="806.4201"
+       sodipodi:cx="143.46622"
+       id="path2991"
+       style="fill:none;stroke:#ff0000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       sodipodi:type="arc" />
+    <path
+       transform="translate(-183.85655,-302.69794)"
+       d="m 356.3007,796.96082 a 8.6710348,9.4593105 0 1 1 -17.34207,0 8.6710348,9.4593105 0 1 1 17.34207,0 z"
+       sodipodi:ry="9.4593105"
+       sodipodi:rx="8.6710348"
+       sodipodi:cy="796.96082"
+       sodipodi:cx="347.62967"
+       id="path2993"
+       style="fill:none;stroke:#ff0000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       sodipodi:type="arc" />
+    <path
+       sodipodi:type="arc"
+       style="fill:none;stroke:#ff0000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="path2995"
+       sodipodi:cx="347.62967"
+       sodipodi:cy="796.96082"
+       sodipodi:rx="8.6710348"
+       sodipodi:ry="9.4593105"
+       d="m 356.3007,796.96082 a 8.6710348,9.4593105 0 1 1 -17.34207,0 8.6710348,9.4593105 0 1 1 17.34207,0 z"
+       transform="translate(-131.85655,-302.69794)" />
+    <path
+       transform="matrix(0.84551656,0,0,0.83133376,-86.55719,-225.91769)"
+       sodipodi:open="true"
+       sodipodi:end="3.0722974"
+       sodipodi:start="0"
+       d="m 367.33657,895.4953 a 44.931725,35.472416 0 0 1 -89.75561,2.4561"
+       sodipodi:ry="35.472416"
+       sodipodi:rx="44.931725"
+       sodipodi:cy="895.4953"
+       sodipodi:cx="322.40485"
+       id="path2997"
+       style="fill:none;stroke:#ff0000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       sodipodi:type="arc" />
+  </g>
+  <text
+     xml:space="preserve"
+     style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:ClearlyU"
+     x="305.85104"
+     y="219.94284"
+     id="text3005"
+     sodipodi:linespacing="125%"
+     th:text="${'CEO of ' + Company}"><tspan
+       sodipodi:role="line"
+       id="tspan3007"
+       x="305.85104"
+       y="219.94284">CEO of Microsoft</tspan></text>
+</svg>
