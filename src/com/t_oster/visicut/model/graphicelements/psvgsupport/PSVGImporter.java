@@ -27,6 +27,7 @@ import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.Importer;
 import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -55,7 +56,7 @@ import org.xml.sax.SAXException;
 public class PSVGImporter implements Importer
 {
 
-  public static FileFilter FILTER = new ExtensionFilter(".parametric.svg", "Parametric SVG files");
+  private static FileFilter FILTER = new ExtensionFilter(".parametric.svg", "Parametric SVG files");
   
   public Map<String, Parameter> parseParameters(File inputFile, List<String> warnings) throws ParserConfigurationException, SAXException, IOException
   {
@@ -173,12 +174,29 @@ public class PSVGImporter implements Importer
   {
     return FILTER;
   }
-
-  public GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException
+  
+  public ParametricPlfPart importFile(File inputFile, List<String> warnings) throws ImportException
   {
     try
     {
-      Map<String, Parameter> parameters = this.parseParameters(inputFile, warnings);
+      Map<String, Parameter> parameters = null;
+      try
+      {
+        if (new File(inputFile.getAbsolutePath()+".parameters").exists())
+        {
+          FileInputStream in = new FileInputStream(new File(inputFile.getAbsolutePath()+".parameters"));
+          parameters = ParametricPlfPart.unserializeParameters(in);
+          in.close();
+        }
+      }
+      catch (Exception e)
+      {
+        System.err.println("Error loading .parameters file for "+inputFile.getName());
+      }
+      if (parameters == null)
+      {
+        parameters = this.parseParameters(inputFile, warnings);
+      }
       return this.importFile(inputFile, warnings, parameters);
     }
     catch (Exception ex)
@@ -225,7 +243,7 @@ public class PSVGImporter implements Importer
     };
   }
   
-  public GraphicSet importFile(File inputFile, List<String> warnings, Map<String, Parameter> parameters) throws ImportException
+  public GraphicSet importSetFromFile(File inputFile, List<String> warnings, Map<String, Parameter> parameters) throws ImportException
   {
     try
     {
@@ -234,7 +252,24 @@ public class PSVGImporter implements Importer
       FileWriter w = new FileWriter(tmpFile);
       te.process(inputFile.getAbsolutePath(), this.getContext(parameters), w);
       w.close();
-      return (new SVGImporter()).importFile(tmpFile, warnings);
+      tmpFile.deleteOnExit();
+      return (new SVGImporter()).importSetFromFile(tmpFile, warnings);
+    }
+    catch (Exception ex)
+    {
+      throw new ImportException(ex);
+    }
+  }
+  
+  public ParametricPlfPart importFile(File inputFile, List<String> warnings, Map<String, Parameter> parameters) throws ImportException
+  {
+    try
+    {
+      ParametricPlfPart result = new ParametricPlfPart();
+      result.setSourceFile(inputFile);
+      result.setParameters(parameters);
+      result.setGraphicObjects(this.importSetFromFile(inputFile, warnings, parameters));
+      return result;
     }
     catch (Exception ex)
     {

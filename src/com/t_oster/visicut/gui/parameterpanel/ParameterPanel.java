@@ -7,6 +7,7 @@ import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.psvgsupport.PSVGImporter;
 import com.t_oster.uicomponents.parameter.ParameterTableModel;
+import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -28,9 +29,7 @@ import org.xml.sax.SAXException;
 public class ParameterPanel extends javax.swing.JPanel
 {
 
-  private Map<PlfPart, Map<String, Parameter>> parameters = new LinkedHashMap<PlfPart, Map<String, Parameter>>();
   private ParameterTableModel model = new ParameterTableModel();
-  private PSVGImporter pi = new PSVGImporter();
 
   /**
    * Creates new form ParameterPanel
@@ -49,7 +48,6 @@ public class ParameterPanel extends javax.swing.JPanel
         }
         else if (VisicutModel.PROP_PLF_PART_REMOVED.equals(pce.getPropertyName())|| VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()))
         {
-          parameters.remove((PlfPart) pce.getOldValue());
           refresh();
         }
       }
@@ -71,14 +69,11 @@ public class ParameterPanel extends javax.swing.JPanel
   {
     ignoreChanges = true;
     PlfPart p = VisicutModel.getInstance().getSelectedPart();
-    if (p != null && PSVGImporter.FILTER.accept(p.getSourceFile()))
+    if (p != null && p instanceof ParametricPlfPart)
     {
       try
       {
-        Map<String, Parameter> parms = this.getParameters(p);
-        AffineTransform t = p.getGraphicObjects().getTransform();
-        p.setGraphicObjects(pi.importFile(p.getSourceFile(), new LinkedList<String>(), parms));
-        p.getGraphicObjects().setTransform(t);
+        ((ParametricPlfPart) p).applyParameters();
         VisicutModel.getInstance().firePartUpdated(p);
       }
       catch (Exception e)
@@ -89,37 +84,13 @@ public class ParameterPanel extends javax.swing.JPanel
     ignoreChanges = false;
   }
 
-  private Map<String, Parameter> getParameters(PlfPart p)
-  {
-    if (!this.parameters.containsKey(p))
-    {
-      try
-      {
-        this.parameters.put(p, pi.parseParameters(p.getSourceFile(), new LinkedList<String>()));
-      }
-      catch (ParserConfigurationException ex)
-      {
-        Logger.getLogger(ParameterPanel.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      catch (SAXException ex)
-      {
-        Logger.getLogger(ParameterPanel.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      catch (IOException ex)
-      {
-        Logger.getLogger(ParameterPanel.class.getName()).log(Level.SEVERE, null, ex);
-      }
-    }
-    return this.parameters.get(p);
-  }
-
   public void refresh()
   {
     ignoreChanges = true;
     PlfPart p = VisicutModel.getInstance().getSelectedPart();
-    if (p != null && PSVGImporter.FILTER.accept(p.getSourceFile()))
+    if (p != null && p instanceof ParametricPlfPart)
     {
-      Map<String, Parameter> params = this.getParameters(p);
+      Map<String, Parameter> params = ((ParametricPlfPart) p).getParameters();
       model.setParameterMap(params);
     }
     else

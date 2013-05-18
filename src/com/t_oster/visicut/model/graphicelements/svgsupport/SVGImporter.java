@@ -34,10 +34,10 @@ import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.graphicelements.AbstractImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
-import com.t_oster.visicut.model.graphicelements.Importer;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
@@ -59,7 +59,7 @@ import javax.swing.filechooser.FileFilter;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class SVGImporter implements Importer
+public class SVGImporter extends AbstractImporter
 {
 
   private SVGUniverse u = new SVGUniverse();
@@ -105,7 +105,7 @@ public class SVGImporter implements Importer
     }
   }
 
-  public GraphicSet importFile(InputStream in, String name, double svgResolution, final List<String> warnings) throws Exception
+  public GraphicSet importSetFromFile(InputStream in, String name, double svgResolution, final List<String> warnings) throws Exception
   {
     Handler svgImportLoggerHandler = new Handler()
     {
@@ -276,12 +276,12 @@ public class SVGImporter implements Importer
   }
 
   @Override
-  public GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException
+  public GraphicSet importSetFromFile(File inputFile, List<String> warnings) throws ImportException
   {
     try
     {
       double svgResolution = determineResolution(inputFile, warnings);
-      GraphicSet result = this.importFile(new FileInputStream(inputFile), inputFile.getName(), svgResolution, warnings);
+      GraphicSet result = this.importSetFromFile(new FileInputStream(inputFile), inputFile.getName(), svgResolution, warnings);
       return result;
     }
     catch (Exception ex)

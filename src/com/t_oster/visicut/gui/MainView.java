@@ -51,11 +51,10 @@ import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
-import com.t_oster.visicut.model.graphicelements.psvgsupport.PSVGImporter;
+import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Dimension;
 import java.awt.FileDialog;
-import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -92,8 +91,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
 import org.jdesktop.application.Action;
 
@@ -1718,7 +1715,7 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
     this.mappingTabbedPane.setVisible(p != null);
     if (p != null)
     {
-      if (PSVGImporter.FILTER.accept(p.getSourceFile()))
+      if (p instanceof ParametricPlfPart)
       {
         if (this.mappingTabbedPane.indexOfTabComponent(this.parameterPanel) == -1)
         {
