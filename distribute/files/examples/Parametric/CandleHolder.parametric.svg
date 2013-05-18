@@ -64,12 +64,12 @@
        id="ref10" />
     <ref
        param="candle_width"
-       label="width of canlde"
+       label="width of candle"
        default="20"
        id="ref12" />
     <ref
        param="candle_depth"
-       label="depth of canlde"
+       label="depth of candle"
        default="20"
        id="ref14" />
   </defs>

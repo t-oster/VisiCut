@@ -97,7 +97,7 @@ public class ParametricPlfPart extends PlfPart
     this.map = params;
   }
 
-  private PSVGImporter pi = new PSVGImporter();
+  private ParametricSVGImporter pi = new ParametricSVGImporter();
   public void applyParameters() throws ImportException
   {
     AffineTransform t = getGraphicObjects().getTransform();

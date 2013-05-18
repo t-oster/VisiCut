@@ -233,6 +233,7 @@ public class Preferences
   }
   
   protected static String[] builtinImporters = new String[]{
+    "com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricSVGImporter",
     "com.t_oster.visicut.model.graphicelements.psvgsupport.PSVGImporter",
     "com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter",
     "com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter",
