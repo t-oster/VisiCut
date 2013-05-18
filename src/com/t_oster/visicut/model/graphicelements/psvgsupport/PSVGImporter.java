@@ -101,7 +101,7 @@ public class PSVGImporter implements Importer
         String[] possibleValues = null;
         if (type.contains("(") && type.endsWith(")"))
         {
-          String betweenBrackets = type.substring(1+type.indexOf("("),type.length()-2);
+          String betweenBrackets = type.substring(1+type.indexOf("("),type.length()-1);
           possibleValues = betweenBrackets.split(",");
         }
         if (type.startsWith("Double"))
@@ -190,7 +190,7 @@ public class PSVGImporter implements Importer
         }
         catch (Exception e)
         {
-          System.err.println("Error loading .parameters file for "+inputFile.getName());
+          warnings.add("Error loading .parameters file for "+inputFile.getName()+": "+e.getMessage());
         }  
       }
       return this.importFile(inputFile, warnings, parameters);

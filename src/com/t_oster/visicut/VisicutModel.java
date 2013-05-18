@@ -864,6 +864,10 @@ public class VisicutModel
       PlfPart p = this.loadGraphicFile(this.selectedPart.getSourceFile(), warnings);
       p.getGraphicObjects().setTransform(tr);
       this.selectedPart.setGraphicObjects(p.getGraphicObjects());
+      if (p instanceof ParametricPlfPart && this.selectedPart instanceof ParametricPlfPart)
+      {
+        ((ParametricPlfPart) this.selectedPart).setParameters(((ParametricPlfPart) p).getParameters());
+      }
       this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_UPDATED, null, this.selectedPart);
     }
   }
