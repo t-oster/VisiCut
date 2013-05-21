@@ -190,7 +190,7 @@ public class PSVGImporter extends ParametricSVGImporter
   {
     try
     {
-      return super.importFile(translateToParametricSvg(inputFile), warnings); //To change body of generated methods, choose Tools | Templates.
+      return super.importFile(translateToParametricSvg(inputFile), warnings);
     }
     catch (Exception ex)
     {
@@ -203,7 +203,7 @@ public class PSVGImporter extends ParametricSVGImporter
   {
     try
     {
-      return super.importSetFromFile(translateToParametricSvg(inputFile), warnings, parameters); //To change body of generated methods, choose Tools | Templates.
+      return super.importSetFromFile(translateToParametricSvg(inputFile), warnings, parameters);
     }
     catch (Exception ex)
     {

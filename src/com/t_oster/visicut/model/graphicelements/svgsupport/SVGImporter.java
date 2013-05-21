@@ -174,7 +174,7 @@ public class SVGImporter extends AbstractImporter
    * @param f
    * @return
    */
-  private double determineResolution(File f, List<String> warnings)
+  public double determineResolution(File f, List<String> warnings)
   {
     BufferedReader in = null;;
     double result = 90;

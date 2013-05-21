@@ -30,11 +30,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.Writer;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.filechooser.FileFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -240,17 +246,34 @@ public class ParametricSVGImporter implements Importer
     };
   }
   
-  public GraphicSet importSetFromFile(File inputFile, List<String> warnings, Map<String, Parameter> parameters) throws ImportException
+  public GraphicSet importSetFromFile(final File inputFile, final List<String> warnings, final Map<String, Parameter> parameters) throws ImportException
   {
     try
     {
-      TemplateEngine te = this.getTemplateEngine();
-      File tmpFile = FileUtils.getNonexistingWritableFile(inputFile.getName()+".svg");
-      FileWriter w = new FileWriter(tmpFile);
-      te.process(inputFile.getAbsolutePath(), this.getContext(parameters), w);
-      w.close();
-      tmpFile.deleteOnExit();
-      return (new SVGImporter()).importSetFromFile(tmpFile, warnings);
+      
+      SVGImporter svg = new SVGImporter();
+      double resolution = svg.determineResolution(inputFile, warnings);
+      final PipedOutputStream out = new PipedOutputStream();
+      PipedInputStream in = new PipedInputStream(out);
+      new Thread()
+      {
+        @Override
+        public void run()
+        {
+          TemplateEngine te = getTemplateEngine();
+          Writer w = new OutputStreamWriter(out);
+          te.process(inputFile.getAbsolutePath(), getContext(parameters), w);
+          try
+          {
+            w.close();
+          }
+          catch (IOException ex)
+          {
+            warnings.add(ex.getMessage());
+          }
+        }
+      }.start();    
+      return (new SVGImporter()).importSetFromFile(in, inputFile.getName(), resolution, warnings);
     }
     catch (Exception ex)
     {
