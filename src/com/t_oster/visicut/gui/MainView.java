@@ -1719,7 +1719,7 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
       {
         if (this.mappingTabbedPane.indexOfTabComponent(this.parameterPanel) == -1)
         {
-          this.mappingTabbedPane.add("Parameters", this.parameterPanel);
+          this.mappingTabbedPane.add(bundle.getString("PARAMETERS"), this.parameterPanel);
         }
       }
       else
