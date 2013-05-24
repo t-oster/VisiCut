@@ -86,7 +86,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   public PreviewPanelKeyboardMouseHandler(PreviewPanel panel)
   {
     this.previewPanel = panel;
-    this.dialogHelper = new DialogHelper(panel, "VisiCut");
+    this.dialogHelper = MainView.getInstance().getDialog();
     this.previewPanel.addMouseListener(this);
     this.previewPanel.addMouseMotionListener(this);
     this.previewPanel.addKeyListener(this);

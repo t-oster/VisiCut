@@ -16,32 +16,42 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.t_oster.visicut.model.graphicelements;
+package com.t_oster.uicomponents.parameter;
 
-import com.t_oster.visicut.model.PlfPart;
-import java.io.File;
-import java.util.List;
-import javax.swing.filechooser.FileFilter;
+import java.awt.Component;
+import javax.swing.JSlider;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public interface Importer
+public class SliderCellRenderer extends DefaultTableCellRenderer
 {
+  private JSlider slider;
   
-  FileFilter getFileFilter();
-  /**
-   * Imports a file returning a graphic set
-   * If the import triggers any warnings, they can
-   * be added to the warnings list (if not null).
-   * They will be displayed to the user, but no
-   * further action is taken
-   * @param inputFile
-   * @param warnings
-   * @return
-   * @throws ImportException 
-   */
-  PlfPart importFile(File inputFile, List<String> warnings) throws ImportException;
+  public SliderCellRenderer()
+  {
+    slider = new JSlider();
+  }
+  
+  public SliderCellRenderer(int min, int max)
+  {
+    this();
+    slider.setMaximum(max);
+    slider.setMinimum(min);
+  }
+
+  @Override
+  public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+  {
+    if (value instanceof Integer)
+    {
+      slider.setValue((Integer) value);
+      return slider;
+    }
+    return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+  }
   
 }

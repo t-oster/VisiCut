@@ -16,32 +16,28 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
+
 package com.t_oster.visicut.model.graphicelements;
 
 import com.t_oster.visicut.model.PlfPart;
 import java.io.File;
 import java.util.List;
-import javax.swing.filechooser.FileFilter;
 
 /**
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public interface Importer
+public abstract class AbstractImporter implements Importer
 {
+
+  public PlfPart importFile(File inputFile, List<String> warnings) throws ImportException
+  {
+    PlfPart p = new PlfPart();
+    p.setSourceFile(inputFile);
+    p.setGraphicObjects(this.importSetFromFile(inputFile, warnings));
+    return p;
+  }
   
-  FileFilter getFileFilter();
-  /**
-   * Imports a file returning a graphic set
-   * If the import triggers any warnings, they can
-   * be added to the warnings list (if not null).
-   * They will be displayed to the user, but no
-   * further action is taken
-   * @param inputFile
-   * @param warnings
-   * @return
-   * @throws ImportException 
-   */
-  PlfPart importFile(File inputFile, List<String> warnings) throws ImportException;
-  
+  public abstract GraphicSet importSetFromFile(File inputFile, List<String> warnings) throws ImportException;
+
 }

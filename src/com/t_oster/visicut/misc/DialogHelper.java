@@ -166,6 +166,10 @@ public class DialogHelper
 
   public void showWarningMessage(List<String> text)
   {
+    if (text == null || text.isEmpty())
+    {
+      return;
+    }
     String txt = "";
     for(String s : text)
     {
