@@ -39,9 +39,9 @@ import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
+import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -460,18 +460,16 @@ public class VisicutModel
     ZipFile zip = new ZipFile(f);
     PlfFile resultingFile = new PlfFile();
     resultingFile.setFile(f);
-    Map<Integer,PlfPart> result = new LinkedHashMap<Integer,PlfPart>();
+    //Collect for each part the transform,mapping and sourceFile
     Map<Integer,AffineTransform> transforms = new LinkedHashMap<Integer,AffineTransform>();
+    Map<Integer,MappingSet> mappings = new LinkedHashMap<Integer, MappingSet>();
+    Map<Integer,File> sourceFiles = new LinkedHashMap<Integer, File>();
     Enumeration entries = zip.entries();
     while (entries.hasMoreElements())
     {
       ZipEntry entry = (ZipEntry) entries.nextElement();
       String name = entry.getName();
       Integer i = name.matches("[0-9]+/.*") ? Integer.parseInt(name.split("/")[0]) : 0;
-      if (!result.containsKey(i))
-      {
-        result.put(i, new PlfPart());
-      }
       if (name.equals((i > 0 ? i+"/" : "")+"transform.xml"))
       {
         XMLDecoder decoder = new XMLDecoder(zip.getInputStream(entry));
@@ -482,7 +480,7 @@ public class VisicutModel
         MappingSet map = mm.loadFromFile(zip.getInputStream(entry));
         if (map != null)
         {
-          result.get(i).setMapping(map);
+          mappings.put(i, map);
         }
         else
         {
@@ -491,11 +489,11 @@ public class VisicutModel
       }
       else
       {
-        int k = 0;
-        result.get(i).setSourceFile(FileUtils.getNonexistingWritableFile(name.replace("/","_")));
+        //source files get extracted
+        File tempFile = FileUtils.getNonexistingWritableFile(name.replace("/","_"));
         byte[] buf = new byte[1024];
         InputStream in = zip.getInputStream(entry);
-        FileOutputStream out = new FileOutputStream(result.get(i).getSourceFile());
+        FileOutputStream out = new FileOutputStream(tempFile);
         // Transfer bytes from the file to the ZIP file
         int len;
         while ((len = in.read(buf)) > 0)
@@ -504,27 +502,45 @@ public class VisicutModel
         }
         out.close();
         in.close();
-        result.get(i).getSourceFile().deleteOnExit();
+        tempFile.deleteOnExit();
+        //Parameter files for parametric svg files are just extracted next
+        //to the svg, but not counted as source file
+        if (!name.toLowerCase().endsWith(".parameters"))
+        {
+          sourceFiles.put(i, tempFile);
+        }
       }
     }
-    for (Integer i : result.keySet())
+    
+    for (Integer i : sourceFiles.keySet())
     {
-      result.get(i).setGraphicObjects(this.loadSetFromFile(result.get(i).getSourceFile(), warnings));
-      if (result.get(i).getGraphicObjects() == null)
+      try
       {
-        warnings.add("Corrupted input file "+i);
+        PlfPart p = this.loadGraphicFile(sourceFiles.get(i), warnings);
+        if (p.getGraphicObjects() == null)
+        {
+          warnings.add("Corrupted input file "+i);
+        }
+        else
+        {
+          if (transforms.containsKey(i))
+          {
+            p.getGraphicObjects().setTransform(transforms.get(i));
+          }
+          else
+          {
+            warnings.add("Could not load Transform "+i+" from PLF File");
+          }
+          if (mappings.containsKey(i))
+          {
+            p.setMapping(mappings.get(i));
+          }
+          resultingFile.add(p);
+        }
       }
-      else
+      catch (ImportException e)
       {
-        resultingFile.add(result.get(i));
-      }
-      if (transforms.containsKey(i))
-      {
-        result.get(i).getGraphicObjects().setTransform(transforms.get(i));
-      }
-      else
-      {
-        warnings.add("Could not load Transform "+i+" from PLF File");
+        warnings.add("Error loading "+sourceFiles.get(i).getName()+": "+e.getMessage());
       }
     }
     return resultingFile;
@@ -559,6 +575,15 @@ public class VisicutModel
       in.close();
       // Complete the entry
       out.closeEntry();
+      //If it's a Parametric PlfPart, write the parameters into an extra file
+      if (plf.get(i) instanceof ParametricPlfPart)
+      {
+        // Add source GraphicsFile to the Zip File
+        out.putNextEntry(new ZipEntry((i > 0 ? i+"/" : "")+plf.get(i).getSourceFile().getName()+".parameters"));
+        ParametricPlfPart.serializeParameterValues(((ParametricPlfPart) plf.get(i)).getParameters(), out);
+        // Complete the entry
+        out.closeEntry(); 
+      }
       AffineTransform at = plf.get(i).getGraphicObjects().getTransform();
       if (at != null)
       {
@@ -623,24 +648,9 @@ public class VisicutModel
     return graphicFileImporter;
   }
 
-  private GraphicSet loadSetFromFile(File f, List<String> warnings) throws ImportException
-  {
-    GraphicFileImporter im = this.getGraphicFileImporter();
-    GraphicSet set = im.importFile(f, warnings);
-    return set;
-  }
-
   private PlfPart loadGraphicFile(File f, List<String> warnings) throws ImportException
   {
-    GraphicSet gs = this.loadSetFromFile(f, warnings);
-    PlfPart p = null;
-    if (gs != null)
-    {
-      p = new PlfPart();
-      p.setGraphicObjects(gs);
-      p.setSourceFile(f);
-    }
-    return p;
+    return this.getGraphicFileImporter().importFile(f, warnings);
   }
   protected MaterialProfile material = null;
   public static final String PROP_MATERIAL = "material";
@@ -850,9 +860,14 @@ public class VisicutModel
   {
     if (this.selectedPart != null)
     {
-      AffineTransform tr = this.selectedPart.getGraphicObjects().getTransform();
-      this.selectedPart.setGraphicObjects(this.loadSetFromFile(this.selectedPart.getSourceFile(), warnings));
-      this.selectedPart.getGraphicObjects().setTransform(tr);
+      AffineTransform tr = this.selectedPart.getGraphicObjects().getTransform();   
+      PlfPart p = this.loadGraphicFile(this.selectedPart.getSourceFile(), warnings);
+      p.getGraphicObjects().setTransform(tr);
+      this.selectedPart.setGraphicObjects(p.getGraphicObjects());
+      if (p instanceof ParametricPlfPart && this.selectedPart instanceof ParametricPlfPart)
+      {
+        ((ParametricPlfPart) this.selectedPart).setParameters(((ParametricPlfPart) p).getParameters());
+      }
       this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_UPDATED, null, this.selectedPart);
     }
   }

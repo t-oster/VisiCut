@@ -34,6 +34,7 @@ import com.t_oster.uicomponents.warnings.Message;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.CreateNewMaterialDialog;
 import com.t_oster.visicut.gui.beans.CreateNewThicknessDialog;
+import com.t_oster.visicut.gui.parameterpanel.ParameterPanel;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.managers.MappingManager;
@@ -50,10 +51,10 @@ import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
+import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Dimension;
 import java.awt.FileDialog;
-import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -90,8 +91,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
 import org.jdesktop.application.Action;
 
@@ -105,6 +104,8 @@ public class MainView extends javax.swing.JFrame
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView");
 
+  private ParameterPanel parameterPanel = new ParameterPanel();
+  
   public static MainView getInstance()
   {
     return instance;
@@ -132,8 +133,13 @@ public class MainView extends javax.swing.JFrame
     }
 
     @Override
-    public void showErrorMessage(Exception cause)
+    public void showErrorMessage(Exception ex)
     {
+      Throwable cause = ex;
+      while ((cause.getMessage() == null || "".equals(cause.getMessage())) && cause.getCause() != null)
+      {
+        cause = cause.getCause();
+      }
       cause.printStackTrace();
       MainView.this.warningPanel.addMessage(new Message("Error", "Exception: "+cause.getLocalizedMessage(), Message.Type.ERROR, null));
     }
@@ -1707,6 +1713,23 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
   {
     PlfPart p = this.visicutModel1.getSelectedPart();
     this.mappingTabbedPane.setVisible(p != null);
+    if (p != null)
+    {
+      if (p instanceof ParametricPlfPart)
+      {
+        if (this.mappingTabbedPane.indexOfTabComponent(this.parameterPanel) == -1)
+        {
+          this.mappingTabbedPane.add(bundle.getString("PARAMETERS"), this.parameterPanel);
+        }
+      }
+      else
+      {
+        if (this.mappingTabbedPane.indexOfTabComponent(this.parameterPanel) == -1)
+        {
+          this.mappingTabbedPane.remove(this.parameterPanel);
+        }
+      }
+    }
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_MATERIAL))
   {
@@ -2470,6 +2493,11 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       }
     }
     return result;
+  }
+
+  public DialogHelper getDialog()
+  {
+    return this.dialog;
   }
 
 }

@@ -21,9 +21,9 @@ package com.t_oster.visicut.model.graphicelements.lssupport;
 import com.t_oster.liblasercut.laserscript.ScriptInterface;
 import com.t_oster.liblasercut.laserscript.ScriptInterpreter;
 import com.t_oster.visicut.managers.PreferencesManager;
+import com.t_oster.visicut.model.graphicelements.AbstractImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
-import com.t_oster.visicut.model.graphicelements.Importer;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.io.File;
@@ -33,7 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.prefs.PreferenceChangeEvent;
 import javax.script.ScriptException;
 import javax.swing.filechooser.FileFilter;
 
@@ -41,7 +40,7 @@ import javax.swing.filechooser.FileFilter;
  *
  * @author thommy
  */
-public class LaserScriptImporter implements Importer
+public class LaserScriptImporter extends AbstractImporter
 {
 
   public FileFilter getFileFilter()
@@ -65,7 +64,7 @@ public class LaserScriptImporter implements Importer
     };
   }
 
-  public GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException
+  public GraphicSet importSetFromFile(File inputFile, List<String> warnings) throws ImportException
   {
     GraphicSet result = new GraphicSet();
     result.setBasicTransform(new AffineTransform());

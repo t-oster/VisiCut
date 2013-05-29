@@ -18,10 +18,12 @@
  **/
 package com.t_oster.visicut.misc;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.FileChannel;
@@ -249,5 +251,28 @@ public class FileUtils
         deleteRecursively(f);
       }
     }
+  }
+
+  /**
+   * Reads a file into a String.
+   * From http://stackoverflow.com/questions/326390/how-to-create-a-java-string-from-the-contents-of-a-file
+   * @param inputFile
+   * @return
+   * @throws FileNotFoundException
+   * @throws IOException 
+   */
+  public static String readFileToString(File inputFile) throws FileNotFoundException, IOException
+  {
+    BufferedReader reader = new BufferedReader( new FileReader (inputFile));
+    String         line;
+    StringBuilder  stringBuilder = new StringBuilder();
+    String         ls = System.getProperty("line.separator");
+
+    while( ( line = reader.readLine() ) != null ) {
+        stringBuilder.append( line );
+        stringBuilder.append( ls );
+    }
+
+    return stringBuilder.toString();
   }
 }

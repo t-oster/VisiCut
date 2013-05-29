@@ -16,32 +16,14 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.t_oster.visicut.model.graphicelements;
+package com.t_oster.uicomponents;
 
-import com.t_oster.visicut.model.PlfPart;
-import java.io.File;
-import java.util.List;
-import javax.swing.filechooser.FileFilter;
+import java.util.EventListener;
 
 /**
- *
+ * from http://stackoverflow.com/questions/1475543/how-to-add-button-in-a-row-of-jtable-in-swing-java
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public interface Importer
-{
-  
-  FileFilter getFileFilter();
-  /**
-   * Imports a file returning a graphic set
-   * If the import triggers any warnings, they can
-   * be added to the warnings list (if not null).
-   * They will be displayed to the user, but no
-   * further action is taken
-   * @param inputFile
-   * @param warnings
-   * @return
-   * @throws ImportException 
-   */
-  PlfPart importFile(File inputFile, List<String> warnings) throws ImportException;
-  
+public interface TableButtonListener extends EventListener {
+  public void tableButtonClicked( int row, int col );
 }
