@@ -32,6 +32,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * This Button displays a Thumbnail if a thumbnailPath String is given.
@@ -42,8 +43,11 @@ import javax.swing.JPopupMenu;
 public class SelectThumbnailButton extends JButton implements ActionListener
 {
 
+  FileFilter filter;
+  
   public SelectThumbnailButton(String path)
   {
+    filter = new ExtensionFilter(new String[]{".png",".jpg",".jpeg"}, java.util.ResourceBundle.getBundle("com/t_oster/uicomponents/resources/SelectThumbnailButton").getString("ICON FILES (*.PNG,*.JPG)"));
     this.setThumbnailPath(path);
     this.addActionListener(this);
     this.prepareMenu();
@@ -170,7 +174,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
 
         public boolean accept(File file, String string)
         {
-          return string.toLowerCase().endsWith("png");
+          return filter.accept(new File(file, string));
         }
 
       });
@@ -195,7 +199,7 @@ public class SelectThumbnailButton extends JButton implements ActionListener
     {
       JFileChooser fc = new JFileChooser();
       fc.setAcceptAllFileFilterUsed(false);
-      fc.addChoosableFileFilter(new ExtensionFilter(".png", java.util.ResourceBundle.getBundle("com/t_oster/uicomponents/resources/SelectThumbnailButton").getString("PNG FILES (*.PNG)")));
+      fc.addChoosableFileFilter(filter);
       if (getDefaultDirectory() != null)
       {
         fc.setCurrentDirectory(getDefaultDirectory());
