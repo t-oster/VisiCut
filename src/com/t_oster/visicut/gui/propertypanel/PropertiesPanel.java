@@ -149,7 +149,7 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
     LaserDevice ld = VisicutModel.getInstance().getSelectedLaserDevice();
     MaterialProfile mp = VisicutModel.getInstance().getMaterial();
     float thickness = VisicutModel.getInstance().getMaterialThickness();
-    if (VisicutModel.getInstance().getSelectedPart() != null && VisicutModel.getInstance().getSelectedPart().getMapping() != null)
+    if (ld != null && VisicutModel.getInstance().getSelectedPart() != null && VisicutModel.getInstance().getSelectedPart().getMapping() != null)
     {
       for (Mapping m : VisicutModel.getInstance().getSelectedPart().getMapping())
       {
@@ -190,7 +190,14 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
         }
         p.setVisible(true);
         p.validate();
-        this.add(p);
+        if (unused)
+        {//put unused profiles at the end
+          this.add(p);
+        }
+        else
+        {
+          this.add(p, 0);
+        }
       }
       this.validate();
     }
