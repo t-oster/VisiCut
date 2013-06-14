@@ -141,7 +141,12 @@ public class MainView extends javax.swing.JFrame
         cause = cause.getCause();
       }
       cause.printStackTrace();
-      MainView.this.warningPanel.addMessage(new Message("Error", "Exception: "+cause.getLocalizedMessage(), Message.Type.ERROR, null));
+      String msg="Exception: "+cause.getLocalizedMessage();
+      // dirty HACK: UnknownHostException only has the host in its error message, but no meaningful text like "host ... not found"
+      if (cause instanceof java.net.UnknownHostException) {
+        msg="Unknown host: " + cause.getLocalizedMessage();
+      }
+      MainView.this.warningPanel.addMessage(new Message("Error", msg, Message.Type.ERROR, null));
     }
 
     @Override
