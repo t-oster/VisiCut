@@ -1596,6 +1596,14 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             {
               dialog.showWarningMessage(bundle.getString("YOU MATERIAL IS TOO HIGH FOR AUTOMATIC FOCUSSING.PLEASE FOCUS MANUALLY AND SET THE TOTAL HEIGHT TO 0."));
             }
+            else if (ex instanceof java.net.SocketTimeoutException)
+            {
+              dialog.showErrorMessage(ex, bundle.getString("SOCKETTIMEOUT")+" "+bundle.getString("CHECKSWITCHEDON"));
+            }
+            else if (ex instanceof java.net.UnknownHostException)
+            {
+              dialog.showErrorMessage(ex, bundle.getString("UNKNOWNHOST")+" "+bundle.getString("CHECKSWITCHEDON"));
+            }
             else
             {
               dialog.showErrorMessage(ex);
