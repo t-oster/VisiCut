@@ -190,13 +190,9 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
         }
         p.setVisible(true);
         p.validate();
-        if (unused)
-        {//put unused profiles at the end
+        if (!unused)
+        {//only show panels with used mappings. See #157
           this.add(p);
-        }
-        else
-        {
-          this.add(p, 0);
         }
       }
       this.validate();
