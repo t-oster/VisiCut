@@ -303,7 +303,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
 
   public void keyPressed(KeyEvent ke)
   {
-    if (this.getEditRect() != null)
+    if (this.getEditRect() != null && !this.getEditRect().isRotateMode())
     {
       double diffx = 0;
       double diffy = 0;
@@ -353,13 +353,13 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
 
   public void keyReleased(KeyEvent ke)
   {
-    if (ke.getKeyCode() == KeyEvent.VK_SHIFT)
+    if (ke.getKeyCode() == KeyEvent.VK_SHIFT && this.getEditRect() != null && !this.getEditRect().isRotateMode())
     {
       this.previewPanel.setFastPreview(false);
       this.applyEditRectoToSet();
       VisicutModel.getInstance().firePartUpdated(getSelectedPart());
     }
-    else if (ke.getKeyCode() == KeyEvent.VK_DELETE)
+    else if (ke.getKeyCode() == KeyEvent.VK_DELETE && this.getEditRect() != null)
     {
       VisicutModel.getInstance().removeSelectedPart();
     }
