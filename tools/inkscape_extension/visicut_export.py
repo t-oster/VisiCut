@@ -33,6 +33,8 @@ if (sys.platform == "linux"):
 		SINGLEINSTANCEPORT+=int(d)
 VISICUTBIN="visicut"
 INKSCAPEBIN="inkscape"
+#wether to add (true) or replace (false) current visicut's content
+IMPORT="true"
 #If on Windows, add .exe extension
 if "windows" in os.name:
   if not VISICUTBIN.lower().endswith(".exe"):
@@ -48,6 +50,8 @@ for arg in sys.argv[1:]:
    elements +=[arg[5:]]
   elif len(arg) >= 13 and arg[0:13] == "--visicutbin=":
    VISICUTBIN=arg[13:]
+  elif len(arg) >= 9 and arg[0:9] == "--import=":
+   IMPORT=arg[9:]
   else:
    arguments += [arg]
  else:
@@ -162,7 +166,10 @@ try:
   import socket
   s=socket.socket()
   s.connect(("localhost", SINGLEINSTANCEPORT))
-  s.send(filename+".svg\n")
+  if (IMPORT == "true"):
+    s.send("@"+filename+".svg\n")
+  else:
+    s.send(filename+".svg\n")
   s.close()
   sys.exit(0)
 except SystemExit, e:

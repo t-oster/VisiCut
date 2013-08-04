@@ -20,6 +20,7 @@ fi
 
 mkdir -p $TARGET
 cp visicut_export.inx $TARGET
+cp visicut_export_replace.inx $TARGET
 cp visicut_export.py $TARGET
 cp daemonize.py $TARGET
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-  <_name>Add to VisiCut</_name>
+  <_name>Open in VisiCut</_name>
   <id>visicut.export</id>
   <dependency type="executable" location="extensions">visicut_export.py</dependency>
-  <param name="import" type="boolean" _gui-hidden="true">true</param>  
+  <param name="import" type="boolean" _gui-hidden="true">false</param>  
   <effect needs-live-preview="false">
         <object-type>path</object-type>
         <effects-menu>
