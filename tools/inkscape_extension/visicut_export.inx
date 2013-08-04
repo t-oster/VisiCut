@@ -3,7 +3,7 @@
   <_name>Add to VisiCut</_name>
   <id>visicut.export</id>
   <dependency type="executable" location="extensions">visicut_export.py</dependency>
-  <param name="import" type="boolean" _gui-hidden="true">true</param>  
+  <param name="import" type="boolean" gui-hidden="true">true</param>  
   <effect needs-live-preview="false">
         <object-type>path</object-type>
         <effects-menu>

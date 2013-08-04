@@ -166,7 +166,7 @@ try:
   import socket
   s=socket.socket()
   s.connect(("localhost", SINGLEINSTANCEPORT))
-  if (IMPORT == "true"):
+  if (IMPORT == "true" or IMPORT == true or IMPORT == "\"true\""):
     s.send("@"+filename+".svg\n")
   else:
     s.send(filename+".svg\n")
