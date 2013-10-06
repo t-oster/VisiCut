@@ -18,6 +18,8 @@
  **/
 package com.t_oster.visicut.gui;
 
+import com.t_oster.liblasercut.LaserJob;
+import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
@@ -82,6 +84,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   private JMenuItem startPointSetMenuItem;
   private JMenuItem startPointRemoveMenuItem;
   private JMenuItem selectScreenshotMenuItem;
+  private JMenuItem moveToPositionMenuItem;
   
   public PreviewPanelKeyboardMouseHandler(PreviewPanel panel)
   {
@@ -109,6 +112,8 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     startPointSetMenuItem = new JMenuItem(bundle.getString("ADD_STARTPOINT"));
     startPointRemoveMenuItem = new JMenuItem(bundle.getString("REMOVE_STARTPOINT"));
     selectScreenshotMenuItem = new JMenuItem(bundle.getString("SELECT_SCREENSHOT"));
+    //TODO: i10n
+    moveToPositionMenuItem = new JMenuItem("MOVE TO POSITION");
 
     resetMenuItem.addActionListener(new ActionListener()
     {
@@ -274,6 +279,25 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       }
     });
     backgroundMenu.add(selectScreenshotMenuItem);
+    moveToPositionMenuItem.addActionListener(new ActionListener(){
+
+      public void actionPerformed(ActionEvent ae)
+      {
+        try
+        {
+          PreviewPanelKeyboardMouseHandler that = PreviewPanelKeyboardMouseHandler.this;
+          Point2D.Double p = new Point2D.Double(that.lastMousePosition.x, that.lastMousePosition.y);
+          that.previewPanel.getMmToPxTransform().createInverse().transform(p, p);
+          VisicutModel.getInstance().moveHeadTo(p);
+        }
+        catch (NoninvertibleTransformException ex)
+        {
+          Logger.getLogger(PreviewPanelKeyboardMouseHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+      
+    });
+    backgroundMenu.add(moveToPositionMenuItem);
   }
 
   private void flip(boolean horizontal)
@@ -563,7 +587,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     }
     else if (me.getButton() == MouseEvent.BUTTON3)
     {
-      if (getEditRect() != null)
+      if (this.previewPanel.isHighlightSelection() && getEditRect() != null)
       {
         Rectangle2D bb = getSelectedPart().getBoundingBox();
         Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
