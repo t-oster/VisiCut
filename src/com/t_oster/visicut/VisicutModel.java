@@ -774,8 +774,7 @@ public class VisicutModel
       {
         job.setStartPoint(this.startPoint.x, this.startPoint.y);
       }
-      //TODO use resolution for current job (which one?)
-      double dpi = 500;
+      double dpi = lasercutter.getResolutions().get(lasercutter.getResolutions().size()-1);
       double factor = Util.dpi2dpmm(dpi);
       AffineTransform mm2laserpx = AffineTransform.getScaleInstance(factor, factor);
       VectorPart part = new VectorPart(lasercutter.getLaserPropertyForVectorPart(), dpi);
