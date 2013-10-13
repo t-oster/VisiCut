@@ -27,7 +27,7 @@ echo "Copying content..."
 mkdir visicut
 cp -r ../dist/* visicut/
 cp -r files/* visicut/
-cp ../README visicut/
+cp ../README.md visicut/README
 cp ../COPYING.LESSER visicut/
 cp ../LICENSE visicut/
 chmod +x visicut/*.jar
@@ -99,11 +99,11 @@ then
   cp linux/description-pak ../
   cd ..
   # hide doc directory from checkinstall
-  mv doc doctmp
+  # mv doc doctmp
   sudo checkinstall --fstrans --type debian --install=no -y --pkgname visicut --pkgversion $VERSION --arch all --pkglicense LGPL --pkggroup other --pkgsource "http://visicut.org" --pkgaltsource "https://github.com/t-oster/VisiCut" --pakdir distribute/ --maintainer "'Thomas Oster <thomas.oster@rwth-aachen.de>'" --requires "java-runtime,potrace" make install -e PREFIX=/usr > /dev/null || exit 1
-  rm ../description-pak
-  sudo rm -rf ../doc-pak
-  mv doctmp doc
+  rm description-pak
+  sudo rm -rf doc-pak
+  # mv doctmp doc
   cd distribute
 fi
 
