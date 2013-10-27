@@ -23,6 +23,8 @@ import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
+import com.t_oster.liblasercut.VectorPart;
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.MaterialManager;
@@ -759,6 +761,36 @@ public class VisicutModel
       result.add(c);
     }
     return result;
+  }
+
+  //moves the laser head to the given position (in mm)
+  public void moveHeadTo(Point2D.Double p)
+  {
+    try
+    {
+      LaserCutter lasercutter = this.getSelectedLaserDevice().getLaserCutter();
+      LaserJob job = new LaserJob("move", "move", "visicut");
+      if (this.startPoint != null)
+      {
+        job.setStartPoint(this.startPoint.x, this.startPoint.y);
+      }
+      double dpi = lasercutter.getResolutions().get(lasercutter.getResolutions().size()-1);
+      double factor = Util.dpi2dpmm(dpi);
+      AffineTransform mm2laserpx = AffineTransform.getScaleInstance(factor, factor);
+      VectorPart part = new VectorPart(lasercutter.getLaserPropertyForVectorPart(), dpi);
+      mm2laserpx.transform(p, p);
+      part.moveto((int) p.x, (int) p.y);
+      job.addPart(part);
+      lasercutter.sendJob(job);
+    }
+    catch (IllegalJobException ex)
+    {
+      Logger.getLogger(VisicutModel.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    catch (Exception ex)
+    {
+      Logger.getLogger(VisicutModel.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
   public enum Modification
