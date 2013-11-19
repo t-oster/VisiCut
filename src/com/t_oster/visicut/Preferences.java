@@ -239,7 +239,8 @@ public class Preferences
     "com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter",
     "com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter",
     "com.t_oster.visicut.model.graphicelements.epssupport.EPSImporter",
-    "com.t_oster.visicut.model.graphicelements.lssupport.LaserScriptImporter"
+    "com.t_oster.visicut.model.graphicelements.lssupport.LaserScriptImporter",
+    "com.t_oster.visicut.model.graphicelements.gcodesupport.GCodeImporter"
   };
   
   protected String[] availableImporters = new String[0];
