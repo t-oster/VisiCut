@@ -195,7 +195,6 @@ public class GCodeImporter extends AbstractImporter
               }
               else
               {
-                //TODO: Circle cw from last_x/last_y to x/y with center last_x+cx/last_y+cy
                 double mid_x = cx;
                 double mid_y = cy;
                 radius = Math.sqrt((last_x-cx)*(last_x-cx)+(last_y-cy)*(last_y-cy));
@@ -209,13 +208,12 @@ public class GCodeImporter extends AbstractImporter
                 end = Math.atan2(y-mid_y, x-mid_x);
                 //convert to positive angle
                 if (end < 0) end += 2*Math.PI;
-                extend = end-start;
-                //convert to positive angle
-                if (extend < 0) extend+=2*Math.PI;
-                //invert direction
-                extend = 2*Math.PI-extend;
+                extend = start-end;
+                //convert to negative angle
+                if (extend > 0) extend-=2*Math.PI;
+                //strange stuff with the angles, but it seems to work
                 Arc2D arc = new Arc2D.Double();
-                arc.setArcByCenter(cx, cy, radius, Math.toDegrees(start), Math.toDegrees(extend), Arc2D.OPEN);
+                arc.setArcByCenter(cx, cy, radius, -Math.toDegrees(start)-360, Math.toDegrees(extend)+360, Arc2D.OPEN);
                 resultingShape.append(arc, true);
               }         
             }
