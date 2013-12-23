@@ -1380,6 +1380,7 @@ public class MainView extends javax.swing.JFrame
       //if the image is too big, fit it a nd notify the user
       this.fitObjectsIntoBed();
       this.progressBar.setIndeterminate(false);
+      this.refreshButtonStates();
     }
     catch (Exception e)
     {
