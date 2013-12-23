@@ -47,6 +47,7 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
+import com.t_oster.visicut.model.PlfFile;
 import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
@@ -1578,8 +1579,30 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             MainView.this.warningPanel.removeAllWarnings();
             jobnumber++;
             String prefix = MainView.this.visicutModel1.getSelectedLaserDevice().getJobPrefix();
+            String jobname = prefix+jobnumber;
+            if (PreferencesManager.getInstance().getPreferences().isUseFilenamesForJobs())
+            {
+              //use filename of the PLF file or any part with a filename as job name
+              PlfFile plf = MainView.this.visicutModel1.getPlfFile();
+              File f = plf.getFile();
+              if (f == null)
+              {
+                for (PlfPart p : plf)
+                {
+                  if (p.getSourceFile() != null)
+                  {
+                    f = p.getSourceFile();
+                    break;
+                  }
+                }
+              }
+              if (f != null)
+              {
+                jobname = f.getName();
+              }
+            }
             List<String> warnings = new LinkedList<String>();
-            MainView.this.visicutModel1.sendJob(prefix+jobnumber, pl, cuttingSettings, warnings);
+            MainView.this.visicutModel1.sendJob(jobname, pl, cuttingSettings, warnings);
             for (String w : warnings)
             {
               dialog.showWarningMessage(w);
@@ -1588,7 +1611,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             MainView.this.progressBar.setString("");
             MainView.this.progressBar.setStringPainted(false);
             String txt = MainView.this.visicutModel1.getSelectedLaserDevice().getJobSentText();
-            txt = txt.replace("$jobname", prefix + jobnumber).replace("$name", MainView.this.visicutModel1.getSelectedLaserDevice().getName());
+            txt = txt.replace("$jobname", jobname).replace("$name", MainView.this.visicutModel1.getSelectedLaserDevice().getName());
             dialog.showSuccessMessage(txt);
           }
           catch (Exception ex)
