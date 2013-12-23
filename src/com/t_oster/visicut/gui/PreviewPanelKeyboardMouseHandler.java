@@ -18,8 +18,6 @@
  **/
 package com.t_oster.visicut.gui;
 
-import com.t_oster.liblasercut.LaserJob;
-import com.t_oster.liblasercut.VectorPart;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
@@ -85,6 +83,8 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   private JMenuItem startPointRemoveMenuItem;
   private JMenuItem selectScreenshotMenuItem;
   private JMenuItem moveToPositionMenuItem;
+  
+  private boolean shiftKeyDown = false;
   
   public PreviewPanelKeyboardMouseHandler(PreviewPanel panel)
   {
@@ -327,6 +327,8 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
 
   public void keyPressed(KeyEvent ke)
   {
+    shiftKeyDown = ke.isShiftDown();
+    
     if (this.getEditRect() != null && !this.getEditRect().isRotateMode())
     {
       double diffx = 0;
@@ -377,6 +379,8 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
 
   public void keyReleased(KeyEvent ke)
   {
+    shiftKeyDown = ke.isShiftDown();
+    
     if (ke.getKeyCode() == KeyEvent.VK_SHIFT && this.getEditRect() != null && !this.getEditRect().isRotateMode())
     {
       this.previewPanel.setFastPreview(false);
@@ -771,6 +775,19 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
             Rectangle2D bb = getSelectedPart().getBoundingBox();
             Point2D middle = previewPanel.getMmToPxTransform().transform(new Point2D.Double(bb.getCenterX(), bb.getCenterY()), null);
             double angle = Math.atan2(evt.getPoint().y-middle.getY(), evt.getPoint().x-middle.getX());
+            //snap if shift is down
+            if (shiftKeyDown)
+            {
+              //180° workaround
+              if (Math.abs(angle-Math.toRadians(180)) <= Math.toRadians(15))
+              {
+                angle = Math.toRadians(180);
+              }
+              else
+              {
+                angle = Math.toRadians(15)* (int) (angle/Math.toRadians(15));
+              }
+            }
             this.rotateTo(angle);
             break;
           }
