@@ -99,6 +99,8 @@ public class PreferencesDialog extends javax.swing.JDialog
     cbDefaultMapping = new javax.swing.JComboBox();
     jLabel2 = new javax.swing.JLabel();
     cbSandboxLaserScript = new javax.swing.JCheckBox();
+    lbFilenamesForJobs = new javax.swing.JLabel();
+    cbSandboxLaserScript1 = new javax.swing.JCheckBox();
     btOk = new javax.swing.JButton();
     btCancel = new javax.swing.JButton();
 
@@ -119,6 +121,12 @@ public class PreferencesDialog extends javax.swing.JDialog
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.disableSandbox}"), cbSandboxLaserScript, org.jdesktop.beansbinding.BeanProperty.create("selected"));
     bindingGroup.addBinding(binding);
 
+    lbFilenamesForJobs.setText(bundle.getString("USE_FILENAMES_FOR_JOBS")); // NOI18N
+    lbFilenamesForJobs.setToolTipText(bundle.getString("FILENAMES_FOR_JOBS_TOOLTIP")); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.useFilenamesForJobs}"), cbSandboxLaserScript1, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+    bindingGroup.addBinding(binding);
+
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
@@ -127,14 +135,13 @@ public class PreferencesDialog extends javax.swing.JDialog
         .addContainerGap()
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jLabel2)
-          .addComponent(jLabel1))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+          .addComponent(jLabel1)
+          .addComponent(lbFilenamesForJobs))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(cbDefaultMapping, 0, 245, Short.MAX_VALUE)
-          .addGroup(jPanel1Layout.createSequentialGroup()
-            .addComponent(cbSandboxLaserScript)
-            .addGap(0, 0, Short.MAX_VALUE)))
-        .addContainerGap())
+          .addComponent(cbSandboxLaserScript1)
+          .addComponent(cbDefaultMapping, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(cbSandboxLaserScript)))
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -147,7 +154,11 @@ public class PreferencesDialog extends javax.swing.JDialog
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel2)
           .addComponent(cbSandboxLaserScript))
-        .addContainerGap(104, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(lbFilenamesForJobs)
+          .addComponent(cbSandboxLaserScript1))
+        .addContainerGap(77, Short.MAX_VALUE))
     );
 
     generalTab.addTab("general", jPanel1);
@@ -216,10 +227,12 @@ public class PreferencesDialog extends javax.swing.JDialog
   private javax.swing.JButton btOk;
   private javax.swing.JComboBox cbDefaultMapping;
   private javax.swing.JCheckBox cbSandboxLaserScript;
+  private javax.swing.JCheckBox cbSandboxLaserScript1;
   private javax.swing.JTabbedPane generalTab;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JPanel jPanel1;
+  private javax.swing.JLabel lbFilenamesForJobs;
   private org.jdesktop.beansbinding.BindingGroup bindingGroup;
   // End of variables declaration//GEN-END:variables
 }

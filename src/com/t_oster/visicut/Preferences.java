@@ -56,6 +56,18 @@ public class Preferences
     this.disableSandbox = disableSandbox;
   }
   
+  private boolean useFilenamesForJobs = false;
+
+  public boolean isUseFilenamesForJobs()
+  {
+    return useFilenamesForJobs;
+  }
+
+  public void setUseFilenamesForJobs(boolean useFilenamesForJobs)
+  {
+    this.useFilenamesForJobs = useFilenamesForJobs;
+  }
+  
   private String potracePath = null;
 
   public String getPotracePath()
@@ -319,6 +331,7 @@ public class Preferences
     result.recentFiles.addAll(recentFiles);
     result.useThicknessAsFocusOffset = useThicknessAsFocusOffset;
     result.windowBounds = windowBounds;
+    result.useFilenamesForJobs = useFilenamesForJobs;
     return result;
   }
 }
