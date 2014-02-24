@@ -156,12 +156,12 @@ public class SVGImporter extends AbstractImporter
       case NumberWithUnits.UT_CM:
         return 10.0 * n.getValue();
       case NumberWithUnits.UT_PT:
+        return Util.inch2mm(n.getValue()/72.0);
       case NumberWithUnits.UT_PX:
+      case NumberWithUnits.UT_UNITLESS:
         return Util.px2mm(n.getValue(), dpi);
       case NumberWithUnits.UT_IN:
         return Util.inch2mm(n.getValue());
-      case NumberWithUnits.UT_UNITLESS:
-        return n.getValue();
       default:
         return n.getValue();
     }
