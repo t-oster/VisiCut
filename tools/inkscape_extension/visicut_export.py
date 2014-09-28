@@ -6,6 +6,7 @@ the current svg, saves it under "<currenttmpfilename>.svg" and
 calls VisiCut on it.
 
 Copyright (C) 2012 Thomas Oster, thomas.oster@rwth-aachen.de
+Copyright (C) 2014 Max Gaukler, development@maxgaukler.de
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,23 +25,52 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import sys
 import os
+import re
+import subprocess
+from subprocess import Popen
+import traceback
+
 SINGLEINSTANCEPORT=6543
+
 # if on linux, add display variable to singleinstanceport
 if (sys.platform == "linux"):
-	d=os.environ.get("DISPLAY")
-	if (d != None):
-		d=d.split(':')[1].split('.')[0]
-		SINGLEINSTANCEPORT+=int(d)
-VISICUTBIN="visicut"
-INKSCAPEBIN="inkscape"
+    d=os.environ.get("DISPLAY")
+    if (d != None):
+        d=d.split(':')[1].split('.')[0]
+        SINGLEINSTANCEPORT+=int(d)
+
+# if on Windows with Terminal Services, choose a singleinstanceport unique for each session ID.
+# note: we cannot use SESSIONNAME here because it can change when disconnecting and reconnecting a session!
+#       (think of SESSIONNAME like a display that can be connected to different session IDs)
+if (sys.platform == "win32"):
+    d=os.environ.get("SESSIONNAME")
+    if d == None:
+        # no Terminal Services installed
+        pass
+    else:
+        # get ID by parsing output of `query session`:
+        # the relevant line looks like:
+        #  >rdp-tcp#0         Fablab                   12  Aktiv   rdpwd               
+        # where "12" is the ID.
+        query=Popen(["query", "session"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        query_output=query.communicate()[0]
+        
+        id=None
+        for line in query_output.splitlines():
+            if line.startswith(">"): # current session
+                numbers=re.findall("[0-9]+", line)
+                id=int(numbers[-1]) # ID is the last number on the line
+                break
+        assert id,  "could not parse TS session ID"
+        assert 0 < id < 1000
+        SINGLEINSTANCEPORT += 2 + id
+
+# if Visicut or Inkscape cannot be found, change these lines here to VISICUTBIN="C:/Programs/Visicut" or wherever you installed it.
+VISICUTBIN=None
+INKSCAPEBIN=None
+
 #wether to add (true) or replace (false) current visicut's content
 IMPORT="true"
-#If on Windows, add .exe extension
-if "windows" in os.name:
-  if not VISICUTBIN.lower().endswith(".exe"):
-    VISICUTBIN += ".exe"
-  if not INKSCAPEBIN.lower().endswith(".exe"):
-    INKSCAPEBIN += ".exe"
 # Store the IDs of selected Elements
 elements=[]
 
@@ -57,48 +87,52 @@ for arg in sys.argv[1:]:
  else:
   filename = arg
 
-def removeAllButThem(element, elements):
- if element.get('id') in elements:
-  return True
- else:
-  keepSubtree = False
-  for e in element:
-   if not removeAllButThem(e, elements):
-    element.remove(e)
-   else:
-    keepSubtree = True
-  return keepSubtree
-
-def which(program):
-  def is_exe(fpath):
-    return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
-
-  fpath, fname = os.path.split(program)
-  if fpath:
-    if is_exe(program):
-      return program
-  else:
-    for path in os.environ["PATH"].split(os.pathsep):
+# find executable in the PATH
+def which(program, extraPaths=[]):
+    pathlist=os.environ["PATH"].split(os.pathsep)+[""]
+    if "nt" in os.name: # Windows
+        if not program.lower().endswith(".exe"):
+            program += ".exe"
+        pathlist.append(os.environ.get("ProgramFiles","C:\Program Files\\"))
+        pathlist.append(os.environ.get("ProgramFiles(x86)","C:\Program Files (x86)\\"))
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and (os.access(fpath, os.X_OK) or fpath.endswith(".exe"))
+    for path in pathlist:
       exe_file = os.path.join(path, program)
       if is_exe(exe_file):
         return exe_file
+    raise Exception("Cannot find executable {0} in PATH={1}.\n\n"
+                    "Please make sure inkscape and visicut are in your PATH."
+                    "Otherwise set VISICUTBIN and INKSCAPEBIN in "
+                    "visicut_export.py in your inkscape extension directory."
+                    .format(str(program), str(pathlist)))
 
-    return None
+#def removeAllButThem(element, elements):
+# if element.get('id') in elements:
+#  return True
+# else:
+#  keepSubtree = False
+#  for e in element:
+#   if not removeAllButThem(e, elements):
+#    element.remove(e)
+#   else:
+#    keepSubtree = True
+#  return keepSubtree
+#
+## Strip SVG to only contain selected elements
+## LXML version
+#def stripSVG_lxml(src,dest,elements):
+# try:
+#  from lxml import etree
+#  tree = etree.parse(src)
+#  if len(elements) > 0:
+#   removeAllButThem(tree.getroot(), elements)
+#  tree.write(dest)
+# except:
+#  sys.stderr.write("Python-LXML not installed. Can only send complete SVG\n")
+#  import shutil
+#  shutil.copyfile(src, dest)
 
-
-# Strip SVG to only contain selected elements
-# LXML version
-def stripSVG_lxml(src,dest,elements):
- try:
-  from lxml import etree
-  tree = etree.parse(src)
-  if len(elements) > 0:
-   removeAllButThem(tree.getroot(), elements)
-  tree.write(dest)
- except:
-  sys.stderr.write("Python-LXML not installed. Can only send complete SVG\n")
-  import shutil
-  shutil.copyfile(src, dest)
 
 # Strip SVG to only contain selected elements, convert objects to paths, unlink clones
 # Inkscape version: takes care of special cases where the selected objects depend on non-selected ones.
@@ -120,8 +154,6 @@ def stripSVG_inkscape(src,dest,elements):
  # currently this only works with gui  because of a bug in inkscape: https://bugs.launchpad.net/inkscape/+bug/843260
  hidegui=[]
  
- import subprocess
- import os
  command = [INKSCAPEBIN]+hidegui+[dest,"--verb=UnlockAllInAllLayers","--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers","--verb=EditUnlinkClone","--verb=ObjectToPath","--verb=FileSave","--verb=FileClose"]
  inkscape_output="(not yet run)"
  try:
@@ -138,28 +170,21 @@ def stripSVG_inkscape(src,dest,elements):
    if "gtk_misc_set_alignment: assertion `GTK_IS_MISC (misc)' failed" in line:
     continue
    # something else happened - but since inkscape outputs much stuff, don't notify the user
-   errors = False # True
-  if errors:
-   sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect.\nInkscape's output was:\n" + inkscape_output)
+   #errors = True
+  #if errors:
+  # sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect.\nInkscape's output was:\n" + inkscape_output)
  except:
   sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect. Exception information: \n" + str(sys.exc_info()[0]) + "Inkscape's output was:\n" + inkscape_output)
  
- # visicut accepts inkscape-svg - no need to export as plain svg
- # call([INKSCAPEBIN,"--without-gui",dest,"--export-plain-svg="+dest])
 
-# Try to use inkscape to strip unused elements, but if not in PATH, try to use
-# lxml
-if which(INKSCAPEBIN) == None:
-  stripSVG_lxml(src=filename,dest=filename+".svg",elements=elements)
-else:
-  stripSVG_inkscape(src=filename,dest=filename+".svg",elements=elements)
+# find executable paths
+if not VISICUTBIN:
+    VISICUTBIN=which("visicut")
+if not INKSCAPEBIN:
+    INKSCAPEBIN=which("inkscape")
 
-# SVG -> PDF -> SVG (unused idea, pixelates some items, sometimes crashes inkscape)
-# TODO make this user configurable
-#if which(INKSCAPEBIN) != None:
-#  call([INKSCAPEBIN,"-z",filename+".svg","-T","--export-pdf="+filename+".clean.pdf"])
-#  call([INKSCAPEBIN,"-z",filename+".clean.pdf","--export-plain-svg="+filename+".clean.svg"])
-#  call([INKSCAPEBIN,"-z",filename+".clean.svg","--verb=EditSelectAllInAllLayers","--verb=SelectionUnGroup","--verb=FileSave","--verb=FileClose"])
+# remove all non-selected elements and convert inkscape-specific elements (text-to-path etc.)
+stripSVG_inkscape(src=filename,dest=filename+".svg",elements=elements)
 
 # Try to connect to running VisiCut instance
 try:
@@ -176,18 +201,24 @@ except SystemExit, e:
     sys.exit(e)
 except:
   pass
+  
 # Try to start own VisiCut instance
 try:
   arguments=["--singleinstanceport", str(SINGLEINSTANCEPORT)]
-  if which(VISICUTBIN) == None:
-    sys.stderr.write("Error: Can't find VisiCut at '"+VISICUTBIN+"'. Please start VisiCut manually, add '"+VISICUTBIN+"' to the PATH Variable or change the VISICUTBIN variable in the Inkscape Extension.\n")
+
+  creationflags=0
+  close_fds=False
+  if os.name=="nt":
+      DETACHED_PROCESS = 8 # start as "daemon"
+      creationflags=DETACHED_PROCESS
+      close_fds=True
   else:
-    try:
-      from subprocess import Popen    
-      import daemonize
-      daemonize.createDaemon()
-    except:
-      sys.stderr.write("Could not daemonize. Sorry, but Inkscape was blocked until VisiCut is closed")
-    Popen([VISICUTBIN]+arguments+[filename+".svg"])
+      try:
+        import daemonize
+        daemonize.createDaemon()
+      except:
+        sys.stderr.write("Could not daemonize. Sorry, but Inkscape was blocked until VisiCut is closed")
+  cmd=[VISICUTBIN]+arguments+[filename+".svg"]
+  Popen(cmd,creationflags=creationflags,close_fds=close_fds)
 except:
   sys.stderr.write("Can not start VisiCut ("+str(sys.exc_info()[0])+"). Please start manually or change the VISICUTBIN variable in the Inkscape-Extension script\n")
