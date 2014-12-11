@@ -12,3 +12,10 @@
 /distribute/visicut/
 /distribute/VisiCut.app/
 /settings/
+
+# Temporary files:
+*~
+
+# Maven stuff:
+/lib/nbproject/private/
+/lib/build/

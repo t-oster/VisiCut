@@ -18,6 +18,10 @@
  **/
 package com.t_oster.visicut.gui;
 
+// Do not add this import!
+// It is loaded dynamically iff JavaFX is available:
+// import com.tur0kk.thingiverse.gui.ThingiverseLoginDialog;
+
 import com.apple.eawt.AppEvent.AboutEvent;
 import com.apple.eawt.AppEvent.OpenFilesEvent;
 import com.apple.eawt.AppEvent.PreferencesEvent;
@@ -56,6 +60,10 @@ import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import com.tur0kk.SocialPlatformIcon;
+import com.tur0kk.facebook.FacebookManager;
+import com.tur0kk.facebook.gui.FacebookDialog;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Image;
@@ -77,8 +85,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLConnection;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -112,7 +124,7 @@ public class MainView extends javax.swing.JFrame
 
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView");
-
+  private FacebookDialog facebookDialog = null;
   private ParameterPanel parameterPanel = new ParameterPanel();
   
   public static MainView getInstance()
@@ -622,6 +634,7 @@ public class MainView extends javax.swing.JFrame
         btRemoveObject = new javax.swing.JButton();
         btAddObject = new javax.swing.JButton();
         warningPanel = new com.t_oster.uicomponents.warnings.WarningPanel();
+        btFacebook = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -910,7 +923,7 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 277, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 303, Short.MAX_VALUE)
                                 .addComponent(calculateTimeButton)))
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
@@ -918,7 +931,7 @@ public class MainView extends javax.swing.JFrame
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(objectComboBox, 0, 538, Short.MAX_VALUE)
+                                .addComponent(objectComboBox, 0, 520, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btAddObject, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -992,6 +1005,16 @@ public class MainView extends javax.swing.JFrame
 
         warningPanel.setName("warningPanel"); // NOI18N
         warningPanel.setPreferredSize(new java.awt.Dimension(276, 123));
+
+        btFacebook.setIcon(SocialPlatformIcon.get(SocialPlatformIcon.FACEBOOK_LOGO));
+        btFacebook.setText(resourceMap.getString("btFacebook.text")); // NOI18N
+        btFacebook.setToolTipText(resourceMap.getString("btFacebook.toolTipText")); // NOI18N
+        btFacebook.setName("btFacebook"); // NOI18N
+        btFacebook.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btFacebookActionPerformed(evt);
+            }
+        });
 
         menuBar.setName("menuBar"); // NOI18N
 
@@ -1248,14 +1271,14 @@ public class MainView extends javax.swing.JFrame
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
                         .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
+                        .addGap(2, 2, 2)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
@@ -1268,7 +1291,9 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(bt1to1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 280, Short.MAX_VALUE)
+                                .addGap(95, 95, 95)
+                                .addComponent(btFacebook, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 152, Short.MAX_VALUE)
                                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(8, 8, 8)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1279,21 +1304,25 @@ public class MainView extends javax.swing.JFrame
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 768, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 738, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btFitScreen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(bt1to1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(captureImageButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btFitScreen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(bt1to1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(captureImageButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(btFacebook, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 577, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE)))
                 .addContainerGap())
         );
+
+        btFacebook.getAccessibleContext().setAccessibleDescription(resourceMap.getString("btFacebook.AccessibleContext.accessibleDescription")); // NOI18N
 
         bindingGroup.bind();
 
@@ -1961,6 +1990,19 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
       }.start();
     }
   }
+  
+  public boolean isVisiCamDetected(){
+    try{
+      String url = MainView.this.visicutModel1.getSelectedLaserDevice().getCameraURL();
+      return !"".equals(url);
+    }catch(Exception e){
+      return false;
+    }
+  }
+  
+  public String getVisiCam(){
+    return MainView.this.visicutModel1.getSelectedLaserDevice().getCameraURL();
+  }
 
   @Action
   public void zoomIn()
@@ -2482,7 +2524,139 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     }
   }
 }//GEN-LAST:event_jmPreferencesActionPerformed
+  
+  private void btFacebookActionPerformed(java.awt.event.ActionEvent evt)                                           
+  {                                               
+    /*
+     * just hide facebookDialog on close to keep state.
+     * if logged out, create new instance of dialog
+     */
+    if(!FacebookManager.getInstance().isLoggedIn() || facebookDialog == null){
+      FacebookManager facebook = FacebookManager.getInstance();
 
+      try
+      {
+        // Try login with persistent access token.
+        boolean loginSuccess = facebook.logIn();
+
+        if (!loginSuccess)
+        {
+          String loginUrl = facebook.initiateAuthentication();
+          String browserCode;
+
+          if (isJavaFxAvailable())
+          {
+            browserCode = browserLoginDialog("Facebook Login", loginUrl, facebook.getRedirectUrlPrefix());
+          }
+          else
+          {
+            // JavaFX not available...
+            System.out.println("JavaFX is not available. Using fallback behavior.");
+            browserCode = systemBrowserLogin("Facebook", loginUrl);
+          }
+
+          facebook.logIn(browserCode);
+        }
+
+        if (facebook.isLoggedIn())
+        {
+          facebookDialog = new FacebookDialog(this, true);
+          facebookDialog.setVisible(true);
+        }
+      }
+      catch (Exception ex)
+      {
+        ex.printStackTrace();
+        this.dialog.showErrorMessage("Unable to load FacebookDialog");
+      }
+    }
+    else // instance available, show thingiverseDialog
+    {
+      facebookDialog.setVisible(true);
+    }
+  }                                          
+  
+  private String browserLoginDialog(String title, String loginUrl, String redirectUrlPrefix) throws Exception
+  {
+    // JavaFX available, load BrowserLoginDialog dynamically (depends on JavaFX)
+    String browserCode = null;
+    
+    URL jarUrl = MainView.class.getResource("lib/BrowserLoginDialog.jar");
+    URLClassLoader classLoader = new URLClassLoader(new URL[] { jarUrl }, MainView.class.getClassLoader());
+    Class<?> ThingiverseLoginDialog = classLoader.loadClass("com.tur0kk.thingiverse.fxgui.BrowserLoginDialog");
+
+    Class<?>[] constructorParameterTypes = new Class[]
+    {
+      java.awt.Frame.class,
+      boolean.class,
+      String.class,
+      String.class,
+      String.class
+    };
+
+    Constructor<?> constructor = ThingiverseLoginDialog.getConstructor(constructorParameterTypes);
+
+    // Create instance
+    Object loginDialog = constructor.newInstance(new Object[]
+    {
+      this, true, title, loginUrl, redirectUrlPrefix
+    });
+
+    // Parameter types for methods
+    Class<?>[] setVisibleParameterTypes = new Class[]
+    {
+      boolean.class
+    };
+
+    Class<?>[] getBrowserCodeParameterTypes = new Class[]
+    {
+
+    };
+
+    Method setVisibleMethod = ThingiverseLoginDialog.getMethod("setVisible", setVisibleParameterTypes);
+    Method getBrowserCodeMethod = ThingiverseLoginDialog.getMethod("getBrowserCode", getBrowserCodeParameterTypes);
+
+    Object[] setVisibleArgumentList = new Object[]
+    {
+      true
+    };
+
+    Object[] getBrowserCodeArgumentList = new Object[]
+    {
+
+    };
+
+    // invoke JavaFX browser with thingiverse website
+    setVisibleMethod.invoke(loginDialog, setVisibleArgumentList);
+    browserCode = (String) getBrowserCodeMethod.invoke(loginDialog, getBrowserCodeArgumentList);
+    
+    return browserCode;
+  }
+  
+  private String systemBrowserLogin(String name, String loginUrl) throws Exception
+  {
+    // if JavaFX is not available use system browser to show thingiverse website. Necessary to copy auth code by hand.
+    String browserCode;
+  
+    Desktop.getDesktop().browse(URI.create(loginUrl));
+    browserCode = javax.swing.JOptionPane.showInputDialog("Log in with your " + name + "-account, click allow, paste code here:");
+
+    return browserCode;
+  }
+  
+  private boolean isJavaFxAvailable()
+  {
+    try
+    {
+      ClassLoader classLoader = MainView.class.getClassLoader();
+      classLoader.loadClass("javafx.embed.swing.JFXPanel");
+      return true;
+    }
+    catch (ClassNotFoundException e)
+    {
+      return false;
+    }
+  }
 private boolean askForOverwriteSettings() {
     if (LaserDeviceManager.getInstance().getAll().isEmpty() && 
       MaterialManager.getInstance().getAll().isEmpty() &&
@@ -2556,6 +2730,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JButton btAddMaterial;
     private javax.swing.JButton btAddMaterialThickness;
     private javax.swing.JButton btAddObject;
+    private javax.swing.JButton btFacebook;
     private javax.swing.JButton btFitScreen;
     private javax.swing.JButton btRemoveObject;
     private javax.swing.ButtonGroup buttonGroup1;
