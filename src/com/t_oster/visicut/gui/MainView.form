@@ -360,15 +360,15 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="warningPanel" pref="0" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="jScrollPane2" alignment="0" pref="747" max="32767" attributes="0"/>
                           <Group type="102" alignment="1" attributes="0">
@@ -381,7 +381,12 @@
                               <Component id="bt1to1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="captureImageButton" min="-2" pref="155" max="-2" attributes="0"/>
-                              <EmptySpace pref="280" max="32767" attributes="0"/>
+
+                              <EmptySpace min="-2" pref="54" max="-2" attributes="0"/>
+                              <Component id="btThingiverse" min="-2" pref="35" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btFacebook" min="-2" pref="35" max="-2" attributes="0"/>
+                              <EmptySpace pref="152" max="32767" attributes="0"/>
                               <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -396,25 +401,29 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" alignment="0" pref="768" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" pref="738" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="jButton1" alignment="0" max="32767" attributes="1"/>
-                          <Component id="jButton2" alignment="0" max="32767" attributes="1"/>
-                          <Component id="btFitScreen" alignment="0" max="32767" attributes="1"/>
-                          <Component id="bt1to1" alignment="0" max="32767" attributes="1"/>
-                          <Component id="progressBar" alignment="0" max="32767" attributes="1"/>
-                          <Component id="captureImageButton" alignment="0" max="32767" attributes="1"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="jButton1" alignment="0" max="32767" attributes="1"/>
+                              <Component id="jButton2" alignment="0" max="32767" attributes="1"/>
+                              <Component id="btFitScreen" alignment="0" max="32767" attributes="1"/>
+                              <Component id="bt1to1" alignment="0" max="32767" attributes="1"/>
+                              <Component id="progressBar" alignment="0" max="32767" attributes="1"/>
+                              <Component id="captureImageButton" alignment="0" max="32767" attributes="1"/>
+                              <Component id="btThingiverse" min="-2" pref="35" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="btFacebook" min="-2" pref="35" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="592" max="32767" attributes="0"/>
+                      <Component id="jScrollPane2" pref="577" max="32767" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="warningPanel" max="32767" attributes="0"/>
+                      <Component id="warningPanel" pref="109" max="32767" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -602,7 +611,7 @@
                                       <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="timeLabel" min="-2" pref="166" max="-2" attributes="0"/>
-                                      <EmptySpace pref="277" max="32767" attributes="0"/>
+                                      <EmptySpace pref="303" max="32767" attributes="0"/>
                                       <Component id="calculateTimeButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -613,7 +622,7 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="objectComboBox" pref="538" max="32767" attributes="0"/>
+                                      <Component id="objectComboBox" pref="520" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="btAddObject" min="-2" pref="31" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -939,6 +948,38 @@
           <Dimension value="[276, 123]"/>
         </Property>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btThingiverse">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.THINGIVERSE_LOGO)" type="code"/>
+        </Property>
+        <Property name="text" type="java.lang.String" resourceKey="btThingiverse.text"/>
+        <Property name="toolTipText" type="java.lang.String" resourceKey="btThingiverse.toolTipText"/>
+        <Property name="name" type="java.lang.String" value="btThingiverse" noResource="true"/>
+      </Properties>
+      <AccessibilityProperties>
+        <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" resourceKey="btThingiverse.AccessibleContext.accessibleDescription"/>
+      </AccessibilityProperties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btThingiverseActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btFacebook">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="PlatformIcon.get(PlatformIcon.FACEBOOK_LOGO)" type="code"/>
+        </Property>
+        <Property name="text" type="java.lang.String" resourceKey="btFacebook.text"/>
+        <Property name="toolTipText" type="java.lang.String" resourceKey="btFacebook.toolTipText"/>
+        <Property name="name" type="java.lang.String" value="btFacebook" noResource="true"/>
+      </Properties>
+      <AccessibilityProperties>
+        <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" resourceKey="btFacebook.AccessibleContext.accessibleDescription"/>
+      </AccessibilityProperties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btFacebookActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>
