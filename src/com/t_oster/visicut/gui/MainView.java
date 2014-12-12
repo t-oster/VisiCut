@@ -583,7 +583,6 @@ public class MainView extends javax.swing.JFrame
         bt1to1 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         previewPanel = new com.t_oster.visicut.gui.beans.PreviewPanel();
-        jButton3 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -738,24 +737,15 @@ public class MainView extends javax.swing.JFrame
         previewPanel.setName("previewPanel"); // NOI18N
         com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler ppMouseHandler = new com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler(this.previewPanel);
 
-        jButton3.setText(resourceMap.getString("jButton3.text")); // NOI18N
-        jButton3.setName("jButton3"); // NOI18N
-
         javax.swing.GroupLayout previewPanelLayout = new javax.swing.GroupLayout(previewPanel);
         previewPanel.setLayout(previewPanelLayout);
         previewPanelLayout.setHorizontalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, previewPanelLayout.createSequentialGroup()
-                .addContainerGap(541, Short.MAX_VALUE)
-                .addComponent(jButton3)
-                .addGap(121, 121, 121))
+            .addGap(0, 735, Short.MAX_VALUE)
         );
         previewPanelLayout.setVerticalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(previewPanelLayout.createSequentialGroup()
-                .addGap(106, 106, 106)
-                .addComponent(jButton3)
-                .addContainerGap(617, Short.MAX_VALUE))
+            .addGap(0, 746, Short.MAX_VALUE)
         );
 
         jScrollPane2.setViewportView(previewPanel);
@@ -2427,7 +2417,6 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     private javax.swing.JMenuItem importMenuItem;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
