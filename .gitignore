@@ -12,3 +12,6 @@
 /distribute/visicut/
 /distribute/VisiCut.app/
 /settings/
+
+# Temporary files:
+*~
