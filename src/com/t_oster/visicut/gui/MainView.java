@@ -609,6 +609,8 @@ public class MainView extends javax.swing.JFrame
         btRemoveObject = new javax.swing.JButton();
         btAddObject = new javax.swing.JButton();
         warningPanel = new com.t_oster.uicomponents.warnings.WarningPanel();
+        btThingiverse = new javax.swing.JButton();
+        btFacebook = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -979,6 +981,23 @@ public class MainView extends javax.swing.JFrame
         warningPanel.setName("warningPanel"); // NOI18N
         warningPanel.setPreferredSize(new java.awt.Dimension(276, 123));
 
+        btThingiverse.setIcon(resourceMap.getIcon("btThingiverse.icon")); // NOI18N
+        btThingiverse.setText(resourceMap.getString("btThingiverse.text")); // NOI18N
+        btThingiverse.setName("btThingiverse"); // NOI18N
+        btThingiverse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btThingiverseActionPerformed(evt);
+            }
+        });
+
+        btFacebook.setText(resourceMap.getString("btFacebook.text")); // NOI18N
+        btFacebook.setName("btFacebook"); // NOI18N
+        btFacebook.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btFacebookActionPerformed(evt);
+            }
+        });
+
         menuBar.setName("menuBar"); // NOI18N
 
         fileMenu.setMnemonic('f');
@@ -1245,7 +1264,11 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(bt1to1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 282, Short.MAX_VALUE)
+                                .addGap(40, 40, 40)
+                                .addComponent(btThingiverse)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btFacebook)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
                                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(8, 8, 8)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1254,9 +1277,9 @@ public class MainView extends javax.swing.JFrame
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(41, 41, 41)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 768, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 738, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1264,11 +1287,14 @@ public class MainView extends javax.swing.JFrame
                             .addComponent(btFitScreen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(bt1to1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(captureImageButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(captureImageButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btThingiverse, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btFacebook, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 577, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE)))
+                        .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -2393,14 +2419,26 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
   }
 }//GEN-LAST:event_jmPreferencesActionPerformed
 
+  private void btThingiverseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btThingiverseActionPerformed
+  {//GEN-HEADEREND:event_btThingiverseActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_btThingiverseActionPerformed
+
+  private void btFacebookActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btFacebookActionPerformed
+  {//GEN-HEADEREND:event_btFacebookActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_btFacebookActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton bt1to1;
     private javax.swing.JButton btAddMaterial;
     private javax.swing.JButton btAddMaterialThickness;
     private javax.swing.JButton btAddObject;
+    private javax.swing.JButton btFacebook;
     private javax.swing.JButton btFitScreen;
     private javax.swing.JButton btRemoveObject;
+    private javax.swing.JButton btThingiverse;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton calculateTimeButton;
     private javax.swing.JMenuItem calibrateCameraMenuItem;
