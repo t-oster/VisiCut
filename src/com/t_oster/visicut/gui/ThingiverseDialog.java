@@ -10,12 +10,29 @@
  */
 package com.t_oster.visicut.gui;
 
+import com.t_oster.visicut.gui.mapping.ImageListRenderer;
+import com.t_oster.visicut.gui.mapping.MapListModel;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import javax.imageio.ImageIO;
+import javax.swing.AbstractListModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListModel;
+import java.awt.Dimension;
 
 /**
  *
@@ -23,20 +40,56 @@ import javax.swing.ImageIcon;
  */
 public class ThingiverseDialog extends javax.swing.JDialog
 {
+  String username = "";
+  ImageIcon profilePicture = null;
+  Map<String, ImageIcon> myThingsModel = null;
+  Map<String, ImageIcon> featuredModel = null;
 
   /** Creates new form ThingiverseDialog */
   public ThingiverseDialog(java.awt.Frame parent, boolean modal) throws MalformedURLException, IOException
   {
     super(parent, modal);
     initComponents();
+    initVariables();
     
-  String username = "Patrick!"; // call here the ThingiverseManager to get username
-  lUserName.setText("Hello " + username);
+    // display username
+    lUserName.setText("Hello " + username);
     
-  URL url = new URL("http://www.mkyong.com/image/mypic.jpg");
-  Image image = ImageIO.read(url);
-  ImageIcon icon = new ImageIcon(image); 
-  lProfilePicture.setIcon(icon);
+    // set profile picture
+    lProfilePicture.setIcon(profilePicture);
+    
+    // display MyThings
+    lstMyThings.setModel(new MapListModel(this.myThingsModel));
+    lstMyThings.setCellRenderer(new ImageListRenderer(this.myThingsModel));
+    
+    lstFeatured.setModel(new MapListModel(this.featuredModel));
+    lstFeatured.setCellRenderer(new ImageListRenderer(this.featuredModel));
+  
+  }
+   
+  // call here the ThingiverseManager to get variables
+  private void initVariables() throws MalformedURLException, IOException{
+    this.username = "Patrick!"; 
+    
+    // profile picture, resized to label
+    URL url = new URL("http://www.mkyong.com/image/mypic.jpg");
+    BufferedImage image = ImageIO.read(url);
+    Image dimage = image.getScaledInstance(lProfilePicture.getWidth(), lProfilePicture.getHeight(), Image.SCALE_SMOOTH);
+    profilePicture = new ImageIcon(dimage); 
+    
+    // create testing map
+    Map<String, ImageIcon> map = new HashMap<String, ImageIcon>();
+    try {
+        map.put("Mario", new ImageIcon(new URL("http://i.stack.imgur.com/NCsHu.png")));
+        map.put("Luigi", new ImageIcon(new URL("http://i.stack.imgur.com/UvHN4.png")));
+        map.put("Bowser", new ImageIcon(new URL("http://i.stack.imgur.com/s89ON.png")));
+        map.put("Koopa", new ImageIcon(new URL("http://i.stack.imgur.com/QEK2o.png")));
+        map.put("Princess", new ImageIcon(new URL("http://i.stack.imgur.com/f4T4l.png")));
+    } catch (Exception ex) {
+        ex.printStackTrace();
+    }
+    this.myThingsModel = map;
+    this.featuredModel = map;
   }
 
   /** This method is called from within the constructor to
@@ -50,6 +103,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         lProfilePicture = new javax.swing.JLabel();
         lUserName = new javax.swing.JLabel();
+        tpLists = new javax.swing.JTabbedPane();
+        sclpMyThings = new javax.swing.JScrollPane();
+        lstMyThings = new javax.swing.JList();
+        sclpFeatured = new javax.swing.JScrollPane();
+        lstFeatured = new javax.swing.JList();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(ThingiverseDialog.class);
@@ -59,11 +117,48 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         lProfilePicture.setBackground(resourceMap.getColor("lProfilePicture.background")); // NOI18N
         lProfilePicture.setText(resourceMap.getString("lProfilePicture.text")); // NOI18N
+        lProfilePicture.setAlignmentX(5.0F);
+        lProfilePicture.setAlignmentY(5.0F);
         lProfilePicture.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(-16777216,true)));
         lProfilePicture.setName("lProfilePicture"); // NOI18N
 
         lUserName.setText(resourceMap.getString("lUserName.text")); // NOI18N
         lUserName.setName("lUserName"); // NOI18N
+
+        tpLists.setAlignmentX(5.0F);
+        tpLists.setAlignmentY(5.0F);
+        tpLists.setMaximumSize(new Dimension(50000, 300));
+        tpLists.setMinimumSize(new Dimension(250, 300));
+        tpLists.setName("tpLists"); // NOI18N
+        tpLists.setPreferredSize(new Dimension(250, 300));
+
+        sclpMyThings.setBorder(null);
+        sclpMyThings.setName("sclpMyThings"); // NOI18N
+
+        lstMyThings.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        lstMyThings.setAlignmentX(0.0F);
+        lstMyThings.setAlignmentY(0.0F);
+        lstMyThings.setName("lstMyThings"); // NOI18N
+        sclpMyThings.setViewportView(lstMyThings);
+
+        tpLists.addTab(resourceMap.getString("sclpMyThings.TabConstraints.tabTitle"), sclpMyThings); // NOI18N
+
+        sclpFeatured.setBorder(null);
+        sclpFeatured.setName("sclpFeatured"); // NOI18N
+
+        lstFeatured.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        lstFeatured.setName("lstFeatured"); // NOI18N
+        sclpFeatured.setViewportView(lstFeatured);
+
+        tpLists.addTab(resourceMap.getString("sclpFeatured.TabConstraints.tabTitle"), sclpFeatured); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -71,22 +166,30 @@ public class ThingiverseDialog extends javax.swing.JDialog
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lUserName)
-                .addContainerGap(206, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(lUserName)))
+                .addGap(41, 41, 41)
+                .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lUserName)
-                    .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(191, Short.MAX_VALUE))
+                    .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lUserName)))
+                .addContainerGap())
         );
 
         lProfilePicture.getAccessibleContext().setAccessibleDescription(resourceMap.getString("lProfilePic.AccessibleContext.accessibleDescription")); // NOI18N
+        tpLists.getAccessibleContext().setAccessibleName(resourceMap.getString("tpLists.AccessibleContext.accessibleName")); // NOI18N
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -95,5 +198,10 @@ public class ThingiverseDialog extends javax.swing.JDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel lProfilePicture;
     private javax.swing.JLabel lUserName;
+    private javax.swing.JList lstFeatured;
+    private javax.swing.JList lstMyThings;
+    private javax.swing.JScrollPane sclpFeatured;
+    private javax.swing.JScrollPane sclpMyThings;
+    private javax.swing.JTabbedPane tpLists;
     // End of variables declaration//GEN-END:variables
 }
