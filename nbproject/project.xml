@@ -22,6 +22,9 @@
                 <id>jar</id>
             </reference>
         </references>
+        <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>thingiverse</word>
+        </spellchecker-wordlist>
         <swingapp xmlns="http://www.netbeans.org/ns/form-swingapp/1">
             <application-class name="com.t_oster.visicut.gui.VisicutApp"/>
         </swingapp>
