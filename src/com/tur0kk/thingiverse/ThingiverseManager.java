@@ -2,11 +2,21 @@ package com.tur0kk.thingiverse;
 
 import java.awt.Desktop;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.ImageIcon;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.thymeleaf.expression.Strings;
 
 /**
  * Singleton class managing all the communication with the Thingiverse API.
- * @author patrick
+ * @author Patrick
  */
 public class ThingiverseManager
 {
@@ -38,37 +48,131 @@ public class ThingiverseManager
   
   public void logIn()
   {
-    client = new ThingiverseClient(clientId, clientSecret, clientCallback);
-    String accessTokenString;
-    String authUrl = client.loginFirstTime();
     try
     {
-      //start the browser
-      Desktop.getDesktop().browse(URI.create(authUrl));
-    } 
-    catch (IOException ex)
-    {
-      System.err.println("Browser does not work.");
-    }
+      client = new ThingiverseClient(clientId, clientSecret, clientCallback);
+      String authUrl = client.loginFirstTime();
 
-    String browserCode = javax.swing.JOptionPane.showInputDialog("Log in with your Thingiverse-account, click allow, paste code here:");
-    accessTokenString = client.loginWithBrowserCode(browserCode);
-    
-    // Do some API-calls
-    // these are only visible in the commandline
-    System.out.println("Featured:");
-    String featured = client.featured();
-    System.out.println(featured);
-    System.out.println("Newest:");
-    String newest = client.newest();
-    System.out.println(newest);
-    System.out.println("Me:");
-    String me = client.user("me");
-    System.out.println(me);
+      // Start os default browser
+      Desktop.getDesktop().browse(URI.create(authUrl));
+
+      String browserCode = javax.swing.JOptionPane.showInputDialog("Log in with your Thingiverse-account, click allow, paste code here:");
+      String accessTokenString = client.loginWithBrowserCode(browserCode);
+      
+      assert(accessTokenString != null);
+      assert(!accessTokenString.isEmpty());
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+      client = null;
+    }
   }
   
   public void logOut()
   {
-   // throw new NotImplementedException();
+    client = null;
+  }
+  
+  public boolean isLoggedIn()
+  {
+    return client != null;
+  }
+  
+  /**
+   * Gets user name from thingiverse API.
+   * Returns "USER NAME" on error.
+   */
+  public String getUserName()
+  {
+    try
+    {
+      String json = client.user("me");
+      
+      JSONParser parser = new JSONParser();
+      JSONObject obj = (JSONObject)parser.parse(json);
+      return obj.get("name").toString();
+    }
+    catch(ParseException ex)
+    {
+      ex.printStackTrace();
+      return "USER NAME";
+    }
+  }
+  
+  /**
+   * Gets user avatar image from thingiverse API.
+   */
+  public ImageIcon getUserImage()
+  {
+    try
+    {
+      String json = client.user("me");
+      
+      JSONParser parser = new JSONParser();
+      JSONObject obj = (JSONObject)parser.parse(json);
+      String url = obj.get("thumbnail").toString();
+      
+      System.out.println(url);
+      
+      return new ImageIcon(new URL(url));
+    }
+    catch(Exception ex)
+    {
+      ex.printStackTrace();
+      return new ImageIcon();
+    }
+  }
+  
+  public Map<String, ImageIcon> getMyThings()
+  {
+    Map<String, ImageIcon> result = new HashMap<String, ImageIcon>();
+    
+    try
+    {
+      String json = client.thingsByUser("me");
+      
+      JSONParser parser = new JSONParser();
+      JSONArray array = (JSONArray)parser.parse(json);
+      for (Object obj : array)
+      {
+        JSONObject item = (JSONObject)obj;
+        String itemName = item.get("name").toString();
+        String imageUrl = item.get("thumbnail").toString();
+        result.put(itemName, new ImageIcon(new URL(imageUrl)));
+      }
+    }
+    catch(Exception ex)
+    {
+      ex.printStackTrace();
+    }
+    
+    return result;
+  }
+  
+  public Map<String, ImageIcon> getFeatured()
+  {
+    Map<String, ImageIcon> result = new HashMap<String, ImageIcon>();
+    
+    try
+    {
+      String json = client.featured();
+      
+      JSONParser parser = new JSONParser();
+      JSONArray array = (JSONArray)parser.parse(json);
+      for (Object obj : array)
+      {
+        JSONObject item = (JSONObject)obj;
+        String itemName = item.get("name").toString();
+        String imageUrl = item.get("thumbnail").toString();
+        result.put(itemName, new ImageIcon(new URL(imageUrl)));
+      }
+    }
+    catch(Exception ex)
+    {
+      ex.printStackTrace();
+    }
+    
+    return result;
   }
 }
