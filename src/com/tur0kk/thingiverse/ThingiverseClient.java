@@ -54,8 +54,8 @@ public class ThingiverseClient {
   }
 
   /**
-   * Use this when the user logs in for the first time, and you do not have a
-   * accestoken. The user needs to login at the given URL. Get the code from the
+   * Use this when the user logs in for the first time, and you do not have an
+   * access-token. The user needs to login at the given URL. Get the code from the
    * browser.
    *
    * @return url where the user must login.
