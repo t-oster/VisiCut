@@ -12,26 +12,12 @@ package com.t_oster.visicut.gui;
 
 import com.t_oster.visicut.gui.mapping.ImageListRenderer;
 import com.t_oster.visicut.gui.mapping.MapListModel;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Graphics2D;
+import com.tur0kk.thingiverse.ThingiverseManager;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import javax.imageio.ImageIO;
-import javax.swing.AbstractListModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListModel;
 import java.awt.Dimension;
 
 /**
@@ -64,32 +50,32 @@ public class ThingiverseDialog extends javax.swing.JDialog
     
     lstFeatured.setModel(new MapListModel(this.featuredModel));
     lstFeatured.setCellRenderer(new ImageListRenderer(this.featuredModel));
-  
   }
    
   // call here the ThingiverseManager to get variables
   private void initVariables() throws MalformedURLException, IOException{
-    this.username = "Patrick!"; 
+    
+    // Sven: I put all the calls to the ThigiverseManager into this method.
+    //       You can move them wherever you want...
+    ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+    thingiverse.logIn();
+    
+    // You can check if the user is logged in:
+    // thingiverse.isLoggedIn();
+    
+    this.username = thingiverse.getUserName();
     
     // profile picture, resized to label
-    URL url = new URL("http://www.mkyong.com/image/mypic.jpg");
-    BufferedImage image = ImageIO.read(url);
-    Image dimage = image.getScaledInstance(lProfilePicture.getWidth(), lProfilePicture.getHeight(), Image.SCALE_SMOOTH);
-    profilePicture = new ImageIcon(dimage); 
-    
+    Image rawImage = thingiverse.getUserImage().getImage();
+    Image scaledImage = rawImage.getScaledInstance(
+        lProfilePicture.getWidth(),
+        lProfilePicture.getHeight(),
+        Image.SCALE_SMOOTH);
+    this.profilePicture = new ImageIcon(scaledImage); 
+
     // create testing map
-    Map<String, ImageIcon> map = new HashMap<String, ImageIcon>();
-    try {
-        map.put("Mario", new ImageIcon(new URL("http://i.stack.imgur.com/NCsHu.png")));
-        map.put("Luigi", new ImageIcon(new URL("http://i.stack.imgur.com/UvHN4.png")));
-        map.put("Bowser", new ImageIcon(new URL("http://i.stack.imgur.com/s89ON.png")));
-        map.put("Koopa", new ImageIcon(new URL("http://i.stack.imgur.com/QEK2o.png")));
-        map.put("Princess", new ImageIcon(new URL("http://i.stack.imgur.com/f4T4l.png")));
-    } catch (Exception ex) {
-        ex.printStackTrace();
-    }
-    this.myThingsModel = map;
-    this.featuredModel = map;
+    this.myThingsModel = thingiverse.getMyThings();
+    this.featuredModel = thingiverse.getFeatured();
   }
 
   /** This method is called from within the constructor to

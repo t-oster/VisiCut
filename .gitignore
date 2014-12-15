@@ -15,3 +15,7 @@
 
 # Temporary files:
 *~
+
+# Maven stuff:
+/lib/nbproject/private/
+/lib/build/

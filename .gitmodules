@@ -1,6 +1,3 @@
 [submodule "lib/LibLaserCut"]
 	path = lib/LibLaserCut
 	url = git://github.com/t-oster/LibLaserCut.git 
-[submodule "lib/scribe-java"]
-	path = lib/scribe-java
-	url = https://github.com/fernandezpablo85/scribe-java.git
