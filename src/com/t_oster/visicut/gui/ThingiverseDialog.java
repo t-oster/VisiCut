@@ -10,15 +10,18 @@
  */
 package com.t_oster.visicut.gui;
 
+import com.t_oster.uicomponents.LoadingIcon;
 import com.t_oster.visicut.gui.mapping.ImageListRenderer;
 import com.t_oster.visicut.gui.mapping.MapListModel;
 import com.tur0kk.thingiverse.ThingiverseManager;
-import java.awt.Image;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Map;
-import javax.swing.ImageIcon;
 import java.awt.Dimension;
+import java.awt.Image;
+import java.rmi.AccessException;
+import javax.swing.*;
+
 
 /**
  *
@@ -26,56 +29,108 @@ import java.awt.Dimension;
  */
 public class ThingiverseDialog extends javax.swing.JDialog
 {
-  String username = "";
-  ImageIcon profilePicture = null;
   Map<String, ImageIcon> myThingsModel = null;
   Map<String, ImageIcon> featuredModel = null;
+  
 
   /** Creates new form ThingiverseDialog */
-  public ThingiverseDialog(java.awt.Frame parent, boolean modal) throws MalformedURLException, IOException
+  public ThingiverseDialog(java.awt.Frame parent, boolean modal) throws AccessException, MalformedURLException, IOException
   {
     super(parent, modal);
     initComponents();
-    initVariables();
+    initTabbedPaneHeader();
     
+    
+    // login necessary for this thingiverse integration
+    final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+    if(!thingiverse.isLoggedIn())
+    {
+      thingiverse.logIn();
+    }
+    if(!thingiverse.isLoggedIn())
+    {
+      throw new AccessException("No correct access token");
+    }
+    
+    //else
     // display username
-    lUserName.setText("Hello " + username);
+    new Thread(new Runnable() {
+      String username = null;
+      public void run()
+      {
+        username = thingiverse.getUserName();
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run()
+          {
+            lUserName.setText("Hello " + username);
+          }
+        });
+        
+      }
+    }).start();
     
     // set profile picture
-    lProfilePicture.setIcon(profilePicture);
+    new Thread(new Runnable() {
+      ImageIcon profilePicture = null;
+      
+      public void run()
+      {
+        // profile picture, resized to label
+        Image rawImage = thingiverse.getUserImage().getImage();
+        Image scaledImage = rawImage.getScaledInstance(
+          lProfilePicture.getWidth(),
+          lProfilePicture.getHeight(),
+          Image.SCALE_SMOOTH);
+          profilePicture = new ImageIcon(scaledImage);
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run()
+          {
+            lProfilePicture.setIcon(profilePicture);
+          }
+        });
+          
+      }
+    }).start();
     
     // display MyThings
-    lstMyThings.setModel(new MapListModel(this.myThingsModel));
-    lstMyThings.setCellRenderer(new ImageListRenderer(this.myThingsModel));
+    new Thread(new Runnable() {
+      Map<String, ImageIcon> myThingsModel = null;
+     
+      public void run()
+      {
+        myThingsModel = thingiverse.getMyThings();
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run()
+          {
+            lstMyThings.setModel(new MapListModel(myThingsModel));
+            lstMyThings.setCellRenderer(new ImageListRenderer(myThingsModel));
+            lblLoadingMyThings.setVisible(false);
+          }
+        });
+        
+      }
+    }).start();
     
-    lstFeatured.setModel(new MapListModel(this.featuredModel));
-    lstFeatured.setCellRenderer(new ImageListRenderer(this.featuredModel));
-  }
-   
-  // call here the ThingiverseManager to get variables
-  private void initVariables() throws MalformedURLException, IOException{
+    // display Featured
+    new Thread(new Runnable() {
+      Map<String, ImageIcon> myFeaturedModel = null;
+      
+      public void run()
+      {
+        myFeaturedModel = thingiverse.getFeatured();
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run()
+          {
+            lstFeatured.setModel(new MapListModel(myFeaturedModel));
+            lstFeatured.setCellRenderer(new ImageListRenderer(myFeaturedModel));
+            lblLoadingFeatured.setVisible(false);
+          }
+        });
+        
+        
+      }
+    }).start();
     
-    // Sven: I put all the calls to the ThigiverseManager into this method.
-    //       You can move them wherever you want...
-    ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-    thingiverse.logIn();
-    
-    // You can check if the user is logged in:
-    // thingiverse.isLoggedIn();
-    
-    this.username = thingiverse.getUserName();
-    
-    // profile picture, resized to label
-    Image rawImage = thingiverse.getUserImage().getImage();
-    Image scaledImage = rawImage.getScaledInstance(
-        lProfilePicture.getWidth(),
-        lProfilePicture.getHeight(),
-        Image.SCALE_SMOOTH);
-    this.profilePicture = new ImageIcon(scaledImage); 
-
-    // create testing map
-    this.myThingsModel = thingiverse.getMyThings();
-    this.featuredModel = thingiverse.getFeatured();
   }
 
   /** This method is called from within the constructor to
@@ -121,11 +176,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
         sclpMyThings.setBorder(null);
         sclpMyThings.setName("sclpMyThings"); // NOI18N
 
-        lstMyThings.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
         lstMyThings.setAlignmentX(0.0F);
         lstMyThings.setAlignmentY(0.0F);
         lstMyThings.setName("lstMyThings"); // NOI18N
@@ -136,11 +186,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
         sclpFeatured.setBorder(null);
         sclpFeatured.setName("sclpFeatured"); // NOI18N
 
-        lstFeatured.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
         lstFeatured.setName("lstFeatured"); // NOI18N
         sclpFeatured.setViewportView(lstFeatured);
 
@@ -157,8 +202,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(lUserName)))
-                .addGap(41, 41, 41)
-                .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -166,7 +211,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                    .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -181,6 +226,93 @@ public class ThingiverseDialog extends javax.swing.JDialog
     }// </editor-fold>//GEN-END:initComponents
 
   
+private void initTabbedPaneHeader(){
+  
+  // header for MyThings
+  pnlMyThings = new JPanel();
+  lblMyThings = new JLabel();
+  lblLoadingMyThings = new JLabel();
+  pnlMyThings.setAlignmentX(0.0F);
+  pnlMyThings.setAlignmentY(0.0F);
+  pnlMyThings.setName("pnlMyThings");
+  pnlMyThings.setOpaque(false);
+
+  lblMyThings.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+  lblMyThings.setText("MyThings");
+  lblMyThings.setAlignmentY(0.0F);
+  lblMyThings.setName("lblMyThings"); 
+
+  lblLoadingMyThings.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+  lblLoadingMyThings.setText("");
+  lblLoadingMyThings.setAlignmentY(0.0F);
+  lblLoadingMyThings.setName("lblLoadingMyThings"); 
+
+  javax.swing.GroupLayout pnlMyThingsLayout = new javax.swing.GroupLayout(pnlMyThings);
+  pnlMyThings.setLayout(pnlMyThingsLayout);
+  pnlMyThingsLayout.setHorizontalGroup(
+      pnlMyThingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(pnlMyThingsLayout.createSequentialGroup()
+          .addComponent(lblMyThings)
+          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+          .addComponent(lblLoadingMyThings, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
+  );
+  pnlMyThingsLayout.setVerticalGroup(
+      pnlMyThingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(pnlMyThingsLayout.createSequentialGroup()
+          .addContainerGap()
+          .addGroup(pnlMyThingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(lblLoadingMyThings, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(lblMyThings))
+          .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+  );
+  
+  
+  // header for Featured
+  pnlFeatured = new JPanel();
+  lblFeatured = new JLabel();
+  lblLoadingFeatured = new JLabel();
+  pnlFeatured.setAlignmentX(0.0F);
+  pnlFeatured.setAlignmentY(0.0F);
+  pnlFeatured.setName("pnlFeatured");
+  pnlFeatured.setOpaque(false);
+
+  lblFeatured.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+  lblFeatured.setText("Featured");
+  lblFeatured.setAlignmentY(0.0F);
+  lblFeatured.setName("lblFeatured"); 
+
+  lblLoadingFeatured.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+  lblLoadingFeatured.setText("");
+  lblLoadingFeatured.setAlignmentY(0.0F);
+  lblLoadingFeatured.setName("lblLoadingFeatured"); 
+
+  javax.swing.GroupLayout pnlFeaturedLayout = new javax.swing.GroupLayout(pnlFeatured);
+  pnlFeatured.setLayout(pnlFeaturedLayout);
+  pnlFeaturedLayout.setHorizontalGroup(
+      pnlFeaturedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(pnlFeaturedLayout.createSequentialGroup()
+          .addComponent(lblFeatured)
+          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+          .addComponent(lblLoadingFeatured, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
+  );
+  pnlFeaturedLayout.setVerticalGroup(
+      pnlFeaturedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(pnlFeaturedLayout.createSequentialGroup()
+          .addContainerGap()
+          .addGroup(pnlFeaturedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(lblLoadingFeatured, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(lblFeatured))
+          .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+  );
+  
+  
+  // set loading headers
+  ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL);
+  lblLoadingMyThings.setIcon((Icon)loadingIcon);
+  lblLoadingFeatured.setIcon((Icon)loadingIcon);
+  tpLists.setTabComponentAt(0, pnlMyThings);
+  tpLists.setTabComponentAt(1, pnlFeatured);
+}
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel lProfilePicture;
     private javax.swing.JLabel lUserName;
@@ -190,4 +322,12 @@ public class ThingiverseDialog extends javax.swing.JDialog
     private javax.swing.JScrollPane sclpMyThings;
     private javax.swing.JTabbedPane tpLists;
     // End of variables declaration//GEN-END:variables
+
+    // hand written variable declaration
+    private javax.swing.JPanel pnlMyThings;
+    private javax.swing.JLabel lblMyThings;
+    private javax.swing.JLabel lblLoadingMyThings;
+    private javax.swing.JPanel pnlFeatured;
+    private javax.swing.JLabel lblFeatured;
+    private javax.swing.JLabel lblLoadingFeatured;
 }
