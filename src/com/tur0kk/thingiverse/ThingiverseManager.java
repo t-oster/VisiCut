@@ -23,7 +23,7 @@ public class ThingiverseManager
   // App name: VisiCutThingiverse
   private static final String clientId = "0d3b8166624f6d05b738";
   private static final String clientSecret = "a0b5368a3d58ddb3b1ade12f4f8f14e7";
-  private static final String clientCallback = "http://hci.rwth-aachen.de/visicut";
+  private static final String clientCallback = "http://www.thingiverse.com";
   
   private static ThingiverseManager instance = null;
   
