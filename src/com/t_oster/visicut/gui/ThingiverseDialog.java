@@ -1,9 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
  * ThingiverseDialog.java
  *
  * Created on 13.12.2014, 17:42:20
@@ -19,7 +14,12 @@ import java.net.MalformedURLException;
 import java.util.Map;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.net.URL;
 import java.rmi.AccessException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 
 
@@ -94,11 +94,19 @@ public class ThingiverseDialog extends javax.swing.JDialog
     
     // display MyThings
     new Thread(new Runnable() {
-      Map<String, ImageIcon> myThingsModel = null;
      
       public void run()
       {
-        myThingsModel = thingiverse.getMyThings();
+        // get url map
+        Map<String, String> urlMap = thingiverse.getMyThings();
+        
+        // init my things model with loading images
+        myThingsModel = new HashMap<String, ImageIcon>();
+        Iterator<String> i1 = urlMap.keySet().iterator();
+        while (i1.hasNext()) {
+            myThingsModel.put(i1.next(), LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM));
+        }
+        // display myThingsModel in my things list
         SwingUtilities.invokeLater(new Runnable() {
           public void run()
           {
@@ -108,25 +116,99 @@ public class ThingiverseDialog extends javax.swing.JDialog
           }
         });
         
+        // start a thread for each image to load asynchronous
+        for (Map.Entry<String, String> entry : urlMap.entrySet())
+        {
+          final String key = entry.getKey();
+          final String url = entry.getValue();
+          new Thread(new Runnable() 
+          {
+              public void run()
+              {
+                // load image
+                final ImageIcon icon;
+                try
+                {
+                  icon = new ImageIcon(new URL(url));
+                }
+                catch (MalformedURLException ex)
+                {
+                  System.err.println("Image not found: " + url);
+                  return;
+                }
+                
+                // overwrite image
+                SwingUtilities.invokeLater(new Runnable() {
+                  public void run()
+                  {
+                    myThingsModel.put(key, icon);
+                    lstMyThings.updateUI();
+                  }
+                });
+              }
+            }).start();
+          }
+        
       }
     }).start();
     
+    
     // display Featured
     new Thread(new Runnable() {
-      Map<String, ImageIcon> myFeaturedModel = null;
-      
+     
       public void run()
       {
-        myFeaturedModel = thingiverse.getFeatured();
+        // get url map
+        Map<String, String> urlMap = thingiverse.getFeatured();
+        
+        // init my things model with loading images
+        featuredModel = new HashMap<String, ImageIcon>();
+        Iterator<String> i1 = urlMap.keySet().iterator();
+        while (i1.hasNext()) {
+            featuredModel.put(i1.next(), LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM));
+        }
+        // display myThingsModel in my things list
         SwingUtilities.invokeLater(new Runnable() {
           public void run()
           {
-            lstFeatured.setModel(new MapListModel(myFeaturedModel));
-            lstFeatured.setCellRenderer(new ImageListRenderer(myFeaturedModel));
+            lstFeatured.setModel(new MapListModel(featuredModel));
+            lstFeatured.setCellRenderer(new ImageListRenderer(featuredModel));
             lblLoadingFeatured.setVisible(false);
           }
         });
         
+        // start a thread for each image to load asynchronous
+        for (Map.Entry<String, String> entry : urlMap.entrySet())
+        {
+          final String key = entry.getKey();
+          final String url = entry.getValue();
+          new Thread(new Runnable() 
+          {
+              public void run()
+              {
+                // load image
+                final ImageIcon icon;
+                try
+                {
+                  icon = new ImageIcon(new URL(url));
+                }
+                catch (MalformedURLException ex)
+                {
+                  System.err.println("Image not found: " + url);
+                  return;
+                }
+                
+                // overwrite image
+                SwingUtilities.invokeLater(new Runnable() {
+                  public void run()
+                  {
+                    featuredModel.put(key, icon);
+                    lstFeatured.updateUI();
+                  }
+                });
+              }
+            }).start();
+          }
         
       }
     }).start();
@@ -203,7 +285,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
                         .addGap(10, 10, 10)
                         .addComponent(lUserName)))
                 .addGap(18, 18, 18)
-                .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
+                .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(

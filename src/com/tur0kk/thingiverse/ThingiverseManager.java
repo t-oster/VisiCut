@@ -124,9 +124,9 @@ public class ThingiverseManager
     }
   }
   
-  public Map<String, ImageIcon> getMyThings()
+  public Map<String, String> getMyThings()
   {
-    Map<String, ImageIcon> result = new HashMap<String, ImageIcon>();
+    Map<String, String> result = new HashMap<String, String>();
     
     try
     {
@@ -139,7 +139,7 @@ public class ThingiverseManager
         JSONObject item = (JSONObject)obj;
         String itemName = item.get("name").toString();
         String imageUrl = item.get("thumbnail").toString();
-        result.put(itemName, new ImageIcon(new URL(imageUrl)));
+        result.put(itemName, imageUrl);
       }
     }
     catch(Exception ex)
@@ -150,9 +150,9 @@ public class ThingiverseManager
     return result;
   }
   
-  public Map<String, ImageIcon> getFeatured()
+  public Map<String, String> getFeatured()
   {
-    Map<String, ImageIcon> result = new HashMap<String, ImageIcon>();
+    Map<String, String> result = new HashMap<String, String>();
     
     try
     {
@@ -165,7 +165,7 @@ public class ThingiverseManager
         JSONObject item = (JSONObject)obj;
         String itemName = item.get("name").toString();
         String imageUrl = item.get("thumbnail").toString();
-        result.put(itemName, new ImageIcon(new URL(imageUrl)));
+        result.put(itemName, imageUrl);
       }
     }
     catch(Exception ex)
