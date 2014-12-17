@@ -83,7 +83,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
         {
           String path = thingiverse.getUserImage();
           URL url = new URL(path);
-
           // Hack: Avoid loading the default image from web (which fails)          
           if (url.toString().startsWith("https://www.thingiverse.com/img/default/avatar/avatar"))
           {
@@ -161,7 +160,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
               {
                 
                 // load image
-                final ImageIcon icon;
+                ImageIcon icon;
                 try
                 {
                   icon = new ImageIcon(new URL(url));
@@ -169,15 +168,16 @@ public class ThingiverseDialog extends javax.swing.JDialog
                 catch (MalformedURLException ex)
                 {
                   System.err.println("Image not found: " + url);
-                  return;
+                  icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.jpg"));
                 }
                 
                 
                 // overwrite image
+                final ImageIcon objectImage = icon;
                 SwingUtilities.invokeLater(new Runnable() {
                   public void run()
                   {
-                    myThingsModel.put(key, icon);
+                    myThingsModel.put(key, objectImage);
                     lstMyThings.updateUI();
                     
                     // image loaded, decrement loading images
@@ -240,7 +240,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
               {
 
                 // load image
-                final ImageIcon icon;
+                ImageIcon icon;
                 try
                 {
                   icon = new ImageIcon(new URL(url));
@@ -248,14 +248,15 @@ public class ThingiverseDialog extends javax.swing.JDialog
                 catch (MalformedURLException ex)
                 {
                   System.err.println("Image not found: " + url);
-                  return;
+                  icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.jpg"));
                 }
                 
                 // overwrite image
+                final ImageIcon objectImage = icon;
                 SwingUtilities.invokeLater(new Runnable() {
                   public void run()
                   {
-                    featuredModel.put(key, icon);
+                    featuredModel.put(key, objectImage);
                     lstFeatured.updateUI();
                     
                     // image loaded, decrement loading images
