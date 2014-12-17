@@ -21,6 +21,7 @@ import java.net.URL;
 import java.rmi.AccessException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
 
 
@@ -32,7 +33,9 @@ public class ThingiverseDialog extends javax.swing.JDialog
 {
   Map<String, ImageIcon> myThingsModel = null;
   Map<String, ImageIcon> featuredModel = null;
-  
+
+  private AtomicInteger numberLoadingMyThings = new AtomicInteger();
+  private AtomicInteger numberLoadingFeatured = new AtomicInteger();
 
   /** Creates new form ThingiverseDialog */
   public ThingiverseDialog(java.awt.Frame parent, boolean modal) throws AccessException, MalformedURLException, IOException
@@ -140,9 +143,12 @@ public class ThingiverseDialog extends javax.swing.JDialog
           {
             lstMyThings.setModel(new MapListModel(myThingsModel));
             lstMyThings.setCellRenderer(new ImageListRenderer(myThingsModel));
-            lblLoadingMyThings.setVisible(false);
+            
           }
         });
+        
+        // set an atomic counter to keep track of number of loading icons. If 0 again, disable loading header.
+        numberLoadingMyThings.set(myThingsModel.keySet().size());
         
         // start a thread for each image to load asynchronous
         for (Map.Entry<String, String> entry : urlMap.entrySet())
@@ -153,6 +159,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
           {
               public void run()
               {
+                
                 // load image
                 final ImageIcon icon;
                 try
@@ -165,12 +172,18 @@ public class ThingiverseDialog extends javax.swing.JDialog
                   return;
                 }
                 
+                
                 // overwrite image
                 SwingUtilities.invokeLater(new Runnable() {
                   public void run()
                   {
                     myThingsModel.put(key, icon);
                     lstMyThings.updateUI();
+                    
+                    // image loaded, decrement loading images
+                    if(numberLoadingMyThings.decrementAndGet()==0){
+                      lblLoadingMyThings.setVisible(false);
+                    }
                   }
                 });
               }
@@ -211,9 +224,10 @@ public class ThingiverseDialog extends javax.swing.JDialog
           {
             lstFeatured.setModel(new MapListModel(featuredModel));
             lstFeatured.setCellRenderer(new ImageListRenderer(featuredModel));
-            lblLoadingFeatured.setVisible(false);
           }
         });
+        
+        numberLoadingFeatured.set(featuredModel.keySet().size());
         
         // start a thread for each image to load asynchronous
         for (Map.Entry<String, String> entry : urlMap.entrySet())
@@ -224,6 +238,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
           {
               public void run()
               {
+
                 // load image
                 final ImageIcon icon;
                 try
@@ -242,6 +257,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
                   {
                     featuredModel.put(key, icon);
                     lstFeatured.updateUI();
+                    
+                    // image loaded, decrement loading images
+                    if(numberLoadingFeatured.decrementAndGet()==0){
+                      lblLoadingFeatured.setVisible(false);
+                    }
                   }
                 });
               }

@@ -1,6 +1,7 @@
 package com.t_oster.visicut.gui.mapping;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.util.Map;
 import javax.swing.DefaultListCellRenderer;

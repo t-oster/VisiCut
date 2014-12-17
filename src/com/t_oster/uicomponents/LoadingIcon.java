@@ -13,7 +13,7 @@ import javax.swing.ImageIcon;
 public class LoadingIcon{
   public static final String CIRCLEBALL_SMALL = "circleball_small";
   public static final String CIRCLEBALL_MEDIUM = "circleball_medium";
-  public static final String CIRCLEBALL = "circleball";
+  
   
   public static ImageIcon get(String type){
     try
