@@ -168,7 +168,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
                 catch (MalformedURLException ex)
                 {
                   System.err.println("Image not found: " + url);
-                  icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.jpg"));
+                  icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
                 }
                 
                 
@@ -248,7 +248,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
                 catch (MalformedURLException ex)
                 {
                   System.err.println("Image not found: " + url);
-                  icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.jpg"));
+                  icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
                 }
                 
                 // overwrite image
