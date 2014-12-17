@@ -101,9 +101,9 @@ public class ThingiverseManager
   }
   
   /**
-   * Gets user avatar image from thingiverse API.
+   * Gets user avatar url from thingiverse API.
    */
-  public ImageIcon getUserImage()
+  public String getUserImage()
   {
     try
     {
@@ -115,12 +115,12 @@ public class ThingiverseManager
       
       System.out.println(url);
       
-      return new ImageIcon(new URL(url));
+      return url;
     }
     catch(Exception ex)
     {
       ex.printStackTrace();
-      return new ImageIcon();
+      return "";
     }
   }
   

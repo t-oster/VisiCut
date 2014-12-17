@@ -19,6 +19,7 @@ import java.net.MalformedURLException;
 import java.util.Map;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.net.URL;
 import java.rmi.AccessException;
 import javax.swing.*;
 
@@ -65,7 +66,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
             lUserName.setText("Hello " + username);
           }
         });
-        
       }
     }).start();
     
@@ -76,19 +76,35 @@ public class ThingiverseDialog extends javax.swing.JDialog
       public void run()
       {
         // profile picture, resized to label
-        Image rawImage = thingiverse.getUserImage().getImage();
-        Image scaledImage = rawImage.getScaledInstance(
-          lProfilePicture.getWidth(),
-          lProfilePicture.getHeight(),
-          Image.SCALE_SMOOTH);
-          profilePicture = new ImageIcon(scaledImage);
-        SwingUtilities.invokeLater(new Runnable() {
-          public void run()
+        try
+        {
+          String path = thingiverse.getUserImage();
+          URL url = new URL(path);
+
+          // Hack: Avoid loading the default image from web (which fails)          
+          if (url.toString().equals("https://www.thingiverse.com/img/default/avatar/avatar_default_thumb_medium.jpg"))
           {
-            lProfilePicture.setIcon(profilePicture);
+            url = LoadingIcon.class.getResource("resources/avatar_default.jpg");
           }
-        });
-          
+
+          ImageIcon imageIcon = new ImageIcon(url);
+          Image rawImage = imageIcon.getImage();
+          Image scaledImage = rawImage.getScaledInstance(
+            lProfilePicture.getWidth(),
+            lProfilePicture.getHeight(),
+            Image.SCALE_SMOOTH);
+          profilePicture = new ImageIcon(scaledImage);
+          SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+              lProfilePicture.setIcon(profilePicture);
+            }
+          });
+        }
+        catch (Exception ex)
+        {
+          ex.printStackTrace();
+        }
       }
     }).start();
     
