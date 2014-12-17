@@ -6,6 +6,7 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.uicomponents.LoadingIcon;
+import com.t_oster.uicomponents.resources.AnimationImageObserverList;
 import com.t_oster.visicut.gui.mapping.ImageListRenderer;
 import com.t_oster.visicut.gui.mapping.MapListModel;
 import com.tur0kk.thingiverse.ThingiverseManager;
@@ -14,6 +15,8 @@ import java.net.MalformedURLException;
 import java.util.Map;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.image.ImageObserver;
 import java.net.URL;
 import java.rmi.AccessException;
 import java.util.HashMap;
@@ -79,7 +82,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
           URL url = new URL(path);
 
           // Hack: Avoid loading the default image from web (which fails)          
-          if (url.toString().equals("https://www.thingiverse.com/img/default/avatar/avatar_default_thumb_medium.jpg"))
+          if (url.toString().startsWith("https://www.thingiverse.com/img/default/avatar/avatar"))
           {
             url = LoadingIcon.class.getResource("resources/avatar_default.jpg");
           }
@@ -117,8 +120,18 @@ public class ThingiverseDialog extends javax.swing.JDialog
         // init my things model with loading images
         myThingsModel = new HashMap<String, ImageIcon>();
         Iterator<String> i1 = urlMap.keySet().iterator();
-        while (i1.hasNext()) {
-            myThingsModel.put(i1.next(), LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM));
+        int index = 0;
+        while (i1.hasNext()) 
+        {
+          // get loading icon
+          ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
+          
+          // set changing observer for loading images to update gif 
+          loadingIcon.setImageObserver(new AnimationImageObserverList(lstMyThings, index));
+          
+          myThingsModel.put(i1.next(), loadingIcon);
+          
+          index +=1;
         }
        
         // display myThingsModel in my things list
@@ -179,9 +192,19 @@ public class ThingiverseDialog extends javax.swing.JDialog
         // init my things model with loading images
         featuredModel = new HashMap<String, ImageIcon>();
         Iterator<String> i1 = urlMap.keySet().iterator();
-        while (i1.hasNext()) {
-            featuredModel.put(i1.next(), LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM));
+        int index = 0;
+        while (i1.hasNext()) 
+        {
+          // get loading icon
+          ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
+          
+          // set changing observer for loading images to update gif 
+          loadingIcon.setImageObserver(new AnimationImageObserverList(lstFeatured, index));
+          
+          featuredModel.put(i1.next(), loadingIcon);
+          index += 1;
         }
+        
         // display myThingsModel in my things list
         SwingUtilities.invokeLater(new Runnable() {
           public void run()
