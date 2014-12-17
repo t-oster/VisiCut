@@ -6,7 +6,7 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.uicomponents.LoadingIcon;
-import com.t_oster.uicomponents.resources.AnimationImageObserverList;
+import com.t_oster.visicut.gui.mapping.AnimationImageObserverList;
 import com.t_oster.visicut.gui.mapping.ImageListRenderer;
 import com.t_oster.visicut.gui.mapping.MapListModel;
 import com.tur0kk.thingiverse.ThingiverseManager;
