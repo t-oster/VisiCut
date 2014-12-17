@@ -1,6 +1,7 @@
 package com.t_oster.visicut.gui.mapping;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.util.Map;
 import javax.swing.DefaultListCellRenderer;
@@ -29,10 +30,11 @@ public class ImageListRenderer extends DefaultListCellRenderer {
           JList list, Object value, int index,
           boolean isSelected, boolean cellHasFocus) {
 
-      setIcon(model.get((String) value));
-      setHorizontalTextPosition(JLabel.RIGHT);
-      setFont(font);
-      return this;
+      JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+      label.setIcon(model.get((String) value));
+      label.setHorizontalAlignment(JLabel.LEFT);
+      label.setFont(font);
+      return label;
   }
 
   @Override

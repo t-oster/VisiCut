@@ -6,6 +6,7 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.uicomponents.LoadingIcon;
+import com.t_oster.uicomponents.resources.AnimationImageObserverList;
 import com.t_oster.visicut.gui.mapping.ImageListRenderer;
 import com.t_oster.visicut.gui.mapping.MapListModel;
 import com.tur0kk.thingiverse.ThingiverseManager;
@@ -14,10 +15,13 @@ import java.net.MalformedURLException;
 import java.util.Map;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.image.ImageObserver;
 import java.net.URL;
 import java.rmi.AccessException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
 
 
@@ -29,7 +33,9 @@ public class ThingiverseDialog extends javax.swing.JDialog
 {
   Map<String, ImageIcon> myThingsModel = null;
   Map<String, ImageIcon> featuredModel = null;
-  
+
+  private AtomicInteger numberLoadingMyThings = new AtomicInteger();
+  private AtomicInteger numberLoadingFeatured = new AtomicInteger();
 
   /** Creates new form ThingiverseDialog */
   public ThingiverseDialog(java.awt.Frame parent, boolean modal) throws AccessException, MalformedURLException, IOException
@@ -77,9 +83,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
         {
           String path = thingiverse.getUserImage();
           URL url = new URL(path);
-
           // Hack: Avoid loading the default image from web (which fails)          
-          if (url.toString().equals("https://www.thingiverse.com/img/default/avatar/avatar_default_thumb_medium.jpg"))
+          if (url.toString().startsWith("https://www.thingiverse.com/img/default/avatar/avatar"))
           {
             url = LoadingIcon.class.getResource("resources/avatar_default.jpg");
           }
@@ -117,8 +122,18 @@ public class ThingiverseDialog extends javax.swing.JDialog
         // init my things model with loading images
         myThingsModel = new HashMap<String, ImageIcon>();
         Iterator<String> i1 = urlMap.keySet().iterator();
-        while (i1.hasNext()) {
-            myThingsModel.put(i1.next(), LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM));
+        int index = 0;
+        while (i1.hasNext()) 
+        {
+          // get loading icon
+          ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
+          
+          // set changing observer for loading images to update gif 
+          loadingIcon.setImageObserver(new AnimationImageObserverList(lstMyThings, index));
+          
+          myThingsModel.put(i1.next(), loadingIcon);
+          
+          index +=1;
         }
        
         // display myThingsModel in my things list
@@ -127,9 +142,12 @@ public class ThingiverseDialog extends javax.swing.JDialog
           {
             lstMyThings.setModel(new MapListModel(myThingsModel));
             lstMyThings.setCellRenderer(new ImageListRenderer(myThingsModel));
-            lblLoadingMyThings.setVisible(false);
+            
           }
         });
+        
+        // set an atomic counter to keep track of number of loading icons. If 0 again, disable loading header.
+        numberLoadingMyThings.set(myThingsModel.keySet().size());
         
         // start a thread for each image to load asynchronous
         for (Map.Entry<String, String> entry : urlMap.entrySet())
@@ -140,8 +158,9 @@ public class ThingiverseDialog extends javax.swing.JDialog
           {
               public void run()
               {
+                
                 // load image
-                final ImageIcon icon;
+                ImageIcon icon;
                 try
                 {
                   icon = new ImageIcon(new URL(url));
@@ -149,15 +168,22 @@ public class ThingiverseDialog extends javax.swing.JDialog
                 catch (MalformedURLException ex)
                 {
                   System.err.println("Image not found: " + url);
-                  return;
+                  icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.jpg"));
                 }
                 
+                
                 // overwrite image
+                final ImageIcon objectImage = icon;
                 SwingUtilities.invokeLater(new Runnable() {
                   public void run()
                   {
-                    myThingsModel.put(key, icon);
+                    myThingsModel.put(key, objectImage);
                     lstMyThings.updateUI();
+                    
+                    // image loaded, decrement loading images
+                    if(numberLoadingMyThings.decrementAndGet()==0){
+                      lblLoadingMyThings.setVisible(false);
+                    }
                   }
                 });
               }
@@ -179,18 +205,29 @@ public class ThingiverseDialog extends javax.swing.JDialog
         // init my things model with loading images
         featuredModel = new HashMap<String, ImageIcon>();
         Iterator<String> i1 = urlMap.keySet().iterator();
-        while (i1.hasNext()) {
-            featuredModel.put(i1.next(), LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM));
+        int index = 0;
+        while (i1.hasNext()) 
+        {
+          // get loading icon
+          ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
+          
+          // set changing observer for loading images to update gif 
+          loadingIcon.setImageObserver(new AnimationImageObserverList(lstFeatured, index));
+          
+          featuredModel.put(i1.next(), loadingIcon);
+          index += 1;
         }
+        
         // display myThingsModel in my things list
         SwingUtilities.invokeLater(new Runnable() {
           public void run()
           {
             lstFeatured.setModel(new MapListModel(featuredModel));
             lstFeatured.setCellRenderer(new ImageListRenderer(featuredModel));
-            lblLoadingFeatured.setVisible(false);
           }
         });
+        
+        numberLoadingFeatured.set(featuredModel.keySet().size());
         
         // start a thread for each image to load asynchronous
         for (Map.Entry<String, String> entry : urlMap.entrySet())
@@ -201,8 +238,9 @@ public class ThingiverseDialog extends javax.swing.JDialog
           {
               public void run()
               {
+
                 // load image
-                final ImageIcon icon;
+                ImageIcon icon;
                 try
                 {
                   icon = new ImageIcon(new URL(url));
@@ -210,15 +248,21 @@ public class ThingiverseDialog extends javax.swing.JDialog
                 catch (MalformedURLException ex)
                 {
                   System.err.println("Image not found: " + url);
-                  return;
+                  icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.jpg"));
                 }
                 
                 // overwrite image
+                final ImageIcon objectImage = icon;
                 SwingUtilities.invokeLater(new Runnable() {
                   public void run()
                   {
-                    featuredModel.put(key, icon);
+                    featuredModel.put(key, objectImage);
                     lstFeatured.updateUI();
+                    
+                    // image loaded, decrement loading images
+                    if(numberLoadingFeatured.decrementAndGet()==0){
+                      lblLoadingFeatured.setVisible(false);
+                    }
                   }
                 });
               }
