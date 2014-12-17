@@ -29,12 +29,10 @@ public class ImageListRenderer extends DefaultListCellRenderer {
           JList list, Object value, int index,
           boolean isSelected, boolean cellHasFocus) {
 
-      JLabel label = (JLabel) super.getListCellRendererComponent(
-              list, value, index, isSelected, cellHasFocus);
-      label.setIcon(model.get((String) value));
-      label.setHorizontalTextPosition(JLabel.RIGHT);
-      label.setFont(font);
-      return label;
+      setIcon(model.get((String) value));
+      setHorizontalTextPosition(JLabel.RIGHT);
+      setFont(font);
+      return this;
   }
 
   @Override

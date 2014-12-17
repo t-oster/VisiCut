@@ -18,8 +18,6 @@ import java.net.URL;
 import java.rmi.AccessException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 
 
@@ -91,7 +89,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
           
       }
     }).start();
-    
+   
+
     // display MyThings
     new Thread(new Runnable() {
      
@@ -106,6 +105,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         while (i1.hasNext()) {
             myThingsModel.put(i1.next(), LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM));
         }
+       
         // display myThingsModel in my things list
         SwingUtilities.invokeLater(new Runnable() {
           public void run()
@@ -152,7 +152,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
       }
     }).start();
     
-    
+  
     // display Featured
     new Thread(new Runnable() {
      
@@ -389,7 +389,7 @@ private void initTabbedPaneHeader(){
   
   
   // set loading headers
-  ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL);
+  ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL);
   lblLoadingMyThings.setIcon((Icon)loadingIcon);
   lblLoadingFeatured.setIcon((Icon)loadingIcon);
   tpLists.setTabComponentAt(0, pnlMyThings);
