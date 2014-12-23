@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 
 
@@ -108,7 +110,14 @@ public class ThingiverseDialog extends javax.swing.JDialog
       }
     }).start();
    
-
+    // fill thing lists
+    fillLists();
+    
+  }
+  
+  private void fillLists() {
+    final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+    
     // display MyThings
     new Thread(new Runnable() {
      
@@ -279,7 +288,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
         
       }
     }).start();
-    
   }
 
   /** This method is called from within the constructor to
@@ -347,6 +355,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         btnFilter.setText(resourceMap.getString("btnFilter.text")); // NOI18N
         btnFilter.setName("btnFilter"); // NOI18N
+        btnFilter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFilterActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -387,6 +400,13 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+  private void btnFilterActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnFilterActionPerformed
+  {//GEN-HEADEREND:event_btnFilterActionPerformed
+    // fill lists again with tag list from textfield, read out by this method
+    fillLists();
+
+  }//GEN-LAST:event_btnFilterActionPerformed
 
   
 private void initTabbedPaneHeader(){
