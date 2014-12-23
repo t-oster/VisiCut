@@ -8,7 +8,6 @@ package com.t_oster.visicut.gui;
 import com.t_oster.uicomponents.LoadingIcon;
 import com.t_oster.visicut.gui.mapping.AnimationImageObserverList;
 import com.t_oster.visicut.gui.mapping.ThingListRenderer;
-import com.t_oster.visicut.gui.mapping.MapListModel;
 import com.tur0kk.thingiverse.Thing;
 import com.tur0kk.thingiverse.ThingiverseManager;
 import java.io.IOException;
@@ -24,6 +23,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 
 
@@ -41,7 +42,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
   {
     super(parent, modal);
     initComponents();
-    initTabbedPaneHeader();
     
     
     // login necessary for this thingiverse integration
@@ -109,14 +109,25 @@ public class ThingiverseDialog extends javax.swing.JDialog
       }
     }).start();
    
-
+    // fill thing lists
+    fillLists();
+    
+  }
+  
+  private void fillLists() {
+    initTabbedPaneHeader();
+    
+    final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+    
     // display MyThings
     new Thread(new Runnable() {
      
       public void run()
       {
+        String tagList = txtFilter.getText();
+        
         // get things
-        LinkedList<Thing> things = thingiverse.getMyThings();
+        LinkedList<Thing> things = thingiverse.getMyThings(tagList);
         
         // init my things model with loading images
         DefaultListModel myThingsModel = new DefaultListModel(); // model for JList
@@ -200,8 +211,10 @@ public class ThingiverseDialog extends javax.swing.JDialog
      
       public void run()
       {
+        String tagList = txtFilter.getText();
+        
         // get url map
-        LinkedList<Thing> things = thingiverse.getFeatured();
+        LinkedList<Thing> things = thingiverse.getFeatured(tagList);
         
         // init my things model with loading images
         DefaultListModel featuredModel = new DefaultListModel(); // model for JList
@@ -276,7 +289,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
         
       }
     }).start();
-    
   }
 
   /** This method is called from within the constructor to
@@ -291,10 +303,18 @@ public class ThingiverseDialog extends javax.swing.JDialog
         lProfilePicture = new javax.swing.JLabel();
         lUserName = new javax.swing.JLabel();
         tpLists = new javax.swing.JTabbedPane();
+        spltpMyThings = new javax.swing.JSplitPane();
         sclpMyThings = new javax.swing.JScrollPane();
         lstMyThings = new javax.swing.JList();
+        sclpMyThingsThing = new javax.swing.JScrollPane();
+        lstMyThingsThing = new javax.swing.JList();
+        spltpFeatured = new javax.swing.JSplitPane();
         sclpFeatured = new javax.swing.JScrollPane();
         lstFeatured = new javax.swing.JList();
+        sclpFeaturedThing = new javax.swing.JScrollPane();
+        lstFeaturedThing = new javax.swing.JList();
+        txtFilter = new javax.swing.JTextField();
+        btnFilter = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(ThingiverseDialog.class);
@@ -319,7 +339,10 @@ public class ThingiverseDialog extends javax.swing.JDialog
         tpLists.setName("tpLists"); // NOI18N
         tpLists.setPreferredSize(new Dimension(250, 300));
 
+        spltpMyThings.setName("spltpMyThings"); // NOI18N
+
         sclpMyThings.setBorder(null);
+        sclpMyThings.setMinimumSize(new Dimension(220,300));
         sclpMyThings.setName("sclpMyThings"); // NOI18N
 
         lstMyThings.setAlignmentX(0.0F);
@@ -327,15 +350,47 @@ public class ThingiverseDialog extends javax.swing.JDialog
         lstMyThings.setName("lstMyThings"); // NOI18N
         sclpMyThings.setViewportView(lstMyThings);
 
-        tpLists.addTab(resourceMap.getString("sclpMyThings.TabConstraints.tabTitle"), sclpMyThings); // NOI18N
+        spltpMyThings.setLeftComponent(sclpMyThings);
+
+        sclpMyThingsThing.setName("sclpMyThingsThing"); // NOI18N
+
+        lstMyThingsThing.setName("lstMyThingsThing"); // NOI18N
+        sclpMyThingsThing.setViewportView(lstMyThingsThing);
+
+        spltpMyThings.setRightComponent(sclpMyThingsThing);
+
+        tpLists.addTab(resourceMap.getString("spltpMyThings.TabConstraints.tabTitle"), spltpMyThings); // NOI18N
+
+        spltpFeatured.setName("spltpFeatured"); // NOI18N
 
         sclpFeatured.setBorder(null);
+        sclpFeatured.setMinimumSize(new Dimension(220,300));
         sclpFeatured.setName("sclpFeatured"); // NOI18N
 
         lstFeatured.setName("lstFeatured"); // NOI18N
         sclpFeatured.setViewportView(lstFeatured);
 
-        tpLists.addTab(resourceMap.getString("sclpFeatured.TabConstraints.tabTitle"), sclpFeatured); // NOI18N
+        spltpFeatured.setLeftComponent(sclpFeatured);
+
+        sclpFeaturedThing.setName("sclpFeaturedThing"); // NOI18N
+
+        lstFeaturedThing.setName("lstFeaturedThing"); // NOI18N
+        sclpFeaturedThing.setViewportView(lstFeaturedThing);
+
+        spltpFeatured.setRightComponent(sclpFeaturedThing);
+
+        tpLists.addTab(resourceMap.getString("spltpFeatured.TabConstraints.tabTitle"), spltpFeatured); // NOI18N
+
+        txtFilter.setText(resourceMap.getString("txtFilter.text")); // NOI18N
+        txtFilter.setName("txtFilter"); // NOI18N
+
+        btnFilter.setText(resourceMap.getString("btnFilter.text")); // NOI18N
+        btnFilter.setName("btnFilter"); // NOI18N
+        btnFilter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFilterActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -347,9 +402,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
                     .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addComponent(lUserName)))
+                        .addComponent(lUserName))
+                    .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
+                .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -361,7 +418,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lUserName)))
+                        .addComponent(lUserName)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 113, Short.MAX_VALUE)
+                        .addComponent(btnFilter)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -370,6 +431,13 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+  private void btnFilterActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnFilterActionPerformed
+  {//GEN-HEADEREND:event_btnFilterActionPerformed
+    // fill lists again with tag list from textfield, read out by this method
+    fillLists();
+
+  }//GEN-LAST:event_btnFilterActionPerformed
 
   
 private void initTabbedPaneHeader(){
@@ -460,13 +528,21 @@ private void initTabbedPaneHeader(){
   tpLists.setTabComponentAt(1, pnlFeatured);
 }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnFilter;
     private javax.swing.JLabel lProfilePicture;
     private javax.swing.JLabel lUserName;
     private javax.swing.JList lstFeatured;
+    private javax.swing.JList lstFeaturedThing;
     private javax.swing.JList lstMyThings;
+    private javax.swing.JList lstMyThingsThing;
     private javax.swing.JScrollPane sclpFeatured;
+    private javax.swing.JScrollPane sclpFeaturedThing;
     private javax.swing.JScrollPane sclpMyThings;
+    private javax.swing.JScrollPane sclpMyThingsThing;
+    private javax.swing.JSplitPane spltpFeatured;
+    private javax.swing.JSplitPane spltpMyThings;
     private javax.swing.JTabbedPane tpLists;
+    private javax.swing.JTextField txtFilter;
     // End of variables declaration//GEN-END:variables
 
     // hand written variable declaration
