@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import javax.swing.ImageIcon;
 import org.json.simple.JSONArray;
@@ -124,9 +125,9 @@ public class ThingiverseManager
     }
   }
   
-  public Map<String, String> getMyThings()
+  public LinkedList<Thing> getMyThings()
   {
-    Map<String, String> result = new HashMap<String, String>();
+    LinkedList<Thing> things = new LinkedList<Thing>();
     
     try
     {
@@ -139,7 +140,7 @@ public class ThingiverseManager
         JSONObject item = (JSONObject)obj;
         String itemName = item.get("name").toString();
         String imageUrl = item.get("thumbnail").toString();
-        result.put(itemName, imageUrl);
+        things.add(new Thing(itemName, imageUrl));
       }
     }
     catch(Exception ex)
@@ -147,12 +148,12 @@ public class ThingiverseManager
       ex.printStackTrace();
     }
     
-    return result;
+    return things;
   }
   
-  public Map<String, String> getFeatured()
+  public LinkedList<Thing> getFeatured()
   {
-    Map<String, String> result = new HashMap<String, String>();
+    LinkedList<Thing> things = new LinkedList<Thing>();
     
     try
     {
@@ -165,7 +166,7 @@ public class ThingiverseManager
         JSONObject item = (JSONObject)obj;
         String itemName = item.get("name").toString();
         String imageUrl = item.get("thumbnail").toString();
-        result.put(itemName, imageUrl);
+        things.add(new Thing(itemName, imageUrl));
       }
     }
     catch(Exception ex)
@@ -173,6 +174,6 @@ public class ThingiverseManager
       ex.printStackTrace();
     }
     
-    return result;
+    return things;
   }
 }
