@@ -125,39 +125,13 @@ public class ThingiverseManager
     }
   }
   
-  public LinkedList<Thing> getMyThings(String tagList) // space separated tag list, maybe empty if not filter is set
+  public LinkedList<Thing> getMyThings()
   {
     LinkedList<Thing> things = new LinkedList<Thing>();
     
     try
     {
       String json = client.thingsByUser("me");
-      
-      JSONParser parser = new JSONParser();
-      JSONArray array = (JSONArray)parser.parse(json);
-      for (Object obj : array)
-      {
-        JSONObject item = (JSONObject)obj;
-        String itemName = item.get("name").toString();
-        String imageUrl = item.get("thumbnail").toString();
-        things.add(new Thing(itemName, imageUrl));
-      }
-    }
-    catch(Exception ex)
-    {
-      ex.printStackTrace();
-    }
-    
-    return things;
-  }
-  
-  public LinkedList<Thing> getFeatured(String tagList) // space separated tag List, maybe empty if not filter is set
-  {
-    LinkedList<Thing> things = new LinkedList<Thing>();
-    
-    try
-    {
-      String json = client.featured();
       
       JSONParser parser = new JSONParser();
       JSONArray array = (JSONArray)parser.parse(json);
