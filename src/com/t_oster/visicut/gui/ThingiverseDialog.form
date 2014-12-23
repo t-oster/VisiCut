@@ -33,6 +33,8 @@
                       <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                       <Component id="lUserName" min="-2" max="-2" attributes="0"/>
                   </Group>
+                  <Component id="txtFilter" alignment="0" min="-2" pref="77" max="-2" attributes="0"/>
+                  <Component id="btnFilter" alignment="0" min="-2" pref="51" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="tpLists" pref="228" max="32767" attributes="0"/>
@@ -50,6 +52,10 @@
                       <Component id="lProfilePicture" min="-2" pref="100" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lUserName" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="113" max="32767" attributes="0"/>
+                      <Component id="btnFilter" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="txtFilter" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -163,5 +169,17 @@
         </Container>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JTextField" name="txtFilter">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="txtFilter.text"/>
+        <Property name="name" type="java.lang.String" value="txtFilter" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnFilter">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="btnFilter.text"/>
+        <Property name="name" type="java.lang.String" value="btnFilter" noResource="true"/>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>

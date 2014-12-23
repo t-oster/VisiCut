@@ -8,7 +8,6 @@ package com.t_oster.visicut.gui;
 import com.t_oster.uicomponents.LoadingIcon;
 import com.t_oster.visicut.gui.mapping.AnimationImageObserverList;
 import com.t_oster.visicut.gui.mapping.ThingListRenderer;
-import com.t_oster.visicut.gui.mapping.MapListModel;
 import com.tur0kk.thingiverse.Thing;
 import com.tur0kk.thingiverse.ThingiverseManager;
 import java.io.IOException;
@@ -115,8 +114,10 @@ public class ThingiverseDialog extends javax.swing.JDialog
      
       public void run()
       {
+        String tagList = txtFilter.getText();
+        
         // get things
-        LinkedList<Thing> things = thingiverse.getMyThings();
+        LinkedList<Thing> things = thingiverse.getMyThings(tagList);
         
         // init my things model with loading images
         DefaultListModel myThingsModel = new DefaultListModel(); // model for JList
@@ -200,8 +201,10 @@ public class ThingiverseDialog extends javax.swing.JDialog
      
       public void run()
       {
+        String tagList = txtFilter.getText();
+        
         // get url map
-        LinkedList<Thing> things = thingiverse.getFeatured();
+        LinkedList<Thing> things = thingiverse.getFeatured(tagList);
         
         // init my things model with loading images
         DefaultListModel featuredModel = new DefaultListModel(); // model for JList
@@ -295,6 +298,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
         lstMyThings = new javax.swing.JList();
         sclpFeatured = new javax.swing.JScrollPane();
         lstFeatured = new javax.swing.JList();
+        txtFilter = new javax.swing.JTextField();
+        btnFilter = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(ThingiverseDialog.class);
@@ -337,6 +342,12 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         tpLists.addTab(resourceMap.getString("sclpFeatured.TabConstraints.tabTitle"), sclpFeatured); // NOI18N
 
+        txtFilter.setText(resourceMap.getString("txtFilter.text")); // NOI18N
+        txtFilter.setName("txtFilter"); // NOI18N
+
+        btnFilter.setText(resourceMap.getString("btnFilter.text")); // NOI18N
+        btnFilter.setName("btnFilter"); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -347,7 +358,9 @@ public class ThingiverseDialog extends javax.swing.JDialog
                     .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addComponent(lUserName)))
+                        .addComponent(lUserName))
+                    .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
                 .addContainerGap())
@@ -361,7 +374,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lUserName)))
+                        .addComponent(lUserName)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 113, Short.MAX_VALUE)
+                        .addComponent(btnFilter)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -460,6 +477,7 @@ private void initTabbedPaneHeader(){
   tpLists.setTabComponentAt(1, pnlFeatured);
 }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnFilter;
     private javax.swing.JLabel lProfilePicture;
     private javax.swing.JLabel lUserName;
     private javax.swing.JList lstFeatured;
@@ -467,6 +485,7 @@ private void initTabbedPaneHeader(){
     private javax.swing.JScrollPane sclpFeatured;
     private javax.swing.JScrollPane sclpMyThings;
     private javax.swing.JTabbedPane tpLists;
+    private javax.swing.JTextField txtFilter;
     // End of variables declaration//GEN-END:variables
 
     // hand written variable declaration

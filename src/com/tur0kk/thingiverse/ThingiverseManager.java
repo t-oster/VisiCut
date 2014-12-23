@@ -125,7 +125,7 @@ public class ThingiverseManager
     }
   }
   
-  public LinkedList<Thing> getMyThings()
+  public LinkedList<Thing> getMyThings(String tagList) // space separated tag list, maybe empty if not filter is set
   {
     LinkedList<Thing> things = new LinkedList<Thing>();
     
@@ -151,7 +151,7 @@ public class ThingiverseManager
     return things;
   }
   
-  public LinkedList<Thing> getFeatured()
+  public LinkedList<Thing> getFeatured(String tagList) // space separated tag List, maybe empty if not filter is set
   {
     LinkedList<Thing> things = new LinkedList<Thing>();
     
