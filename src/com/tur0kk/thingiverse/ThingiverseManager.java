@@ -176,4 +176,30 @@ public class ThingiverseManager
     
     return things;
   }
+  
+  public LinkedList<Thing> search(String query)
+  {
+    LinkedList<Thing> things = new LinkedList<Thing>();
+    
+    try
+    {
+      String json = client.search(query);
+      
+      JSONParser parser = new JSONParser();
+      JSONArray array = (JSONArray)parser.parse(json);
+      for (Object obj : array)
+      {
+        JSONObject item = (JSONObject)obj;
+        String itemName = item.get("name").toString();
+        String imageUrl = item.get("thumbnail").toString();
+        things.add(new Thing(itemName, imageUrl));
+      }
+    }
+    catch(Exception ex)
+    {
+      ex.printStackTrace();
+    }
+    
+    return things;
+  }
 }

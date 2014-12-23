@@ -16,24 +16,35 @@ public class Thing
   String imageLocation;
   ImageIcon image;
   
-  public Thing(String name, String imageLocation){
+  public Thing(String name, String imageLocation)
+  {
     this.name = name;
     this.imageLocation = imageLocation;
   }
   
-  public String getName(){
+  public String getName()
+  {
     return this.name;
   }
   
-  public String getImageLocation(){
+  public String getImageLocation()
+  {
     return this.imageLocation;
   }
   
-  public ImageIcon getImage(){
+  public ImageIcon getImage()
+  {
     return this.image;
   }
   
-  public void setImage(ImageIcon image){
+  public void setImage(ImageIcon image)
+  {
     this.image = image;
+  }
+  
+  @Override
+  public String toString()
+  {
+    return "Thing: " + name;
   }
 }
