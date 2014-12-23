@@ -42,7 +42,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
   {
     super(parent, modal);
     initComponents();
-    initTabbedPaneHeader();
     
     
     // login necessary for this thingiverse integration
@@ -116,6 +115,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
   }
   
   private void fillLists() {
+    initTabbedPaneHeader();
+    
     final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
     
     // display MyThings
@@ -302,10 +303,16 @@ public class ThingiverseDialog extends javax.swing.JDialog
         lProfilePicture = new javax.swing.JLabel();
         lUserName = new javax.swing.JLabel();
         tpLists = new javax.swing.JTabbedPane();
+        spltpMyThings = new javax.swing.JSplitPane();
         sclpMyThings = new javax.swing.JScrollPane();
         lstMyThings = new javax.swing.JList();
+        sclpMyThingsThing = new javax.swing.JScrollPane();
+        lstMyThingsThing = new javax.swing.JList();
+        spltpFeatured = new javax.swing.JSplitPane();
         sclpFeatured = new javax.swing.JScrollPane();
         lstFeatured = new javax.swing.JList();
+        sclpFeaturedThing = new javax.swing.JScrollPane();
+        lstFeaturedThing = new javax.swing.JList();
         txtFilter = new javax.swing.JTextField();
         btnFilter = new javax.swing.JButton();
 
@@ -332,7 +339,10 @@ public class ThingiverseDialog extends javax.swing.JDialog
         tpLists.setName("tpLists"); // NOI18N
         tpLists.setPreferredSize(new Dimension(250, 300));
 
+        spltpMyThings.setName("spltpMyThings"); // NOI18N
+
         sclpMyThings.setBorder(null);
+        sclpMyThings.setMinimumSize(new Dimension(220,300));
         sclpMyThings.setName("sclpMyThings"); // NOI18N
 
         lstMyThings.setAlignmentX(0.0F);
@@ -340,15 +350,36 @@ public class ThingiverseDialog extends javax.swing.JDialog
         lstMyThings.setName("lstMyThings"); // NOI18N
         sclpMyThings.setViewportView(lstMyThings);
 
-        tpLists.addTab(resourceMap.getString("sclpMyThings.TabConstraints.tabTitle"), sclpMyThings); // NOI18N
+        spltpMyThings.setLeftComponent(sclpMyThings);
+
+        sclpMyThingsThing.setName("sclpMyThingsThing"); // NOI18N
+
+        lstMyThingsThing.setName("lstMyThingsThing"); // NOI18N
+        sclpMyThingsThing.setViewportView(lstMyThingsThing);
+
+        spltpMyThings.setRightComponent(sclpMyThingsThing);
+
+        tpLists.addTab(resourceMap.getString("spltpMyThings.TabConstraints.tabTitle"), spltpMyThings); // NOI18N
+
+        spltpFeatured.setName("spltpFeatured"); // NOI18N
 
         sclpFeatured.setBorder(null);
+        sclpFeatured.setMinimumSize(new Dimension(220,300));
         sclpFeatured.setName("sclpFeatured"); // NOI18N
 
         lstFeatured.setName("lstFeatured"); // NOI18N
         sclpFeatured.setViewportView(lstFeatured);
 
-        tpLists.addTab(resourceMap.getString("sclpFeatured.TabConstraints.tabTitle"), sclpFeatured); // NOI18N
+        spltpFeatured.setLeftComponent(sclpFeatured);
+
+        sclpFeaturedThing.setName("sclpFeaturedThing"); // NOI18N
+
+        lstFeaturedThing.setName("lstFeaturedThing"); // NOI18N
+        sclpFeaturedThing.setViewportView(lstFeaturedThing);
+
+        spltpFeatured.setRightComponent(sclpFeaturedThing);
+
+        tpLists.addTab(resourceMap.getString("spltpFeatured.TabConstraints.tabTitle"), spltpFeatured); // NOI18N
 
         txtFilter.setText(resourceMap.getString("txtFilter.text")); // NOI18N
         txtFilter.setName("txtFilter"); // NOI18N
@@ -375,7 +406,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
                     .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
+                .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -501,9 +532,15 @@ private void initTabbedPaneHeader(){
     private javax.swing.JLabel lProfilePicture;
     private javax.swing.JLabel lUserName;
     private javax.swing.JList lstFeatured;
+    private javax.swing.JList lstFeaturedThing;
     private javax.swing.JList lstMyThings;
+    private javax.swing.JList lstMyThingsThing;
     private javax.swing.JScrollPane sclpFeatured;
+    private javax.swing.JScrollPane sclpFeaturedThing;
     private javax.swing.JScrollPane sclpMyThings;
+    private javax.swing.JScrollPane sclpMyThingsThing;
+    private javax.swing.JSplitPane spltpFeatured;
+    private javax.swing.JSplitPane spltpMyThings;
     private javax.swing.JTabbedPane tpLists;
     private javax.swing.JTextField txtFilter;
     // End of variables declaration//GEN-END:variables
