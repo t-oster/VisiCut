@@ -1,8 +1,10 @@
 package com.t_oster.visicut.gui.mapping;
 
+import com.tur0kk.thingiverse.Thing;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.LinkedList;
 import java.util.Map;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
@@ -16,13 +18,12 @@ import javax.swing.JList;
  * or even better use the corresponding MapListModel.
  * @author Sven
  */
-public class ImageListRenderer extends DefaultListCellRenderer {
+public class ThingListRenderer extends DefaultListCellRenderer {
 
   Font font = new Font("helvitica", Font.BOLD, 24);
-  Map<String, ImageIcon> model = null;
 
-  public ImageListRenderer(Map<String, ImageIcon> mapModel){
-    this.model = mapModel;
+  public ThingListRenderer(){
+    
   }
 
   @Override
@@ -30,8 +31,10 @@ public class ImageListRenderer extends DefaultListCellRenderer {
           JList list, Object value, int index,
           boolean isSelected, boolean cellHasFocus) {
 
+      Thing aThing = (Thing) value;
       JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-      label.setIcon(model.get((String) value));
+      label.setText(aThing.getName());
+      label.setIcon(aThing.getImage());
       label.setHorizontalAlignment(JLabel.LEFT);
       label.setFont(font);
       return label;
