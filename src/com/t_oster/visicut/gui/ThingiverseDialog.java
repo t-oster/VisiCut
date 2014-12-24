@@ -12,19 +12,13 @@ import com.tur0kk.thingiverse.Thing;
 import com.tur0kk.thingiverse.ThingiverseManager;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Map;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.image.ImageObserver;
 import java.net.URL;
 import java.rmi.AccessException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 
 
@@ -224,6 +218,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         lstSearch = new javax.swing.JList();
         sclpSearchThing = new javax.swing.JScrollPane();
         lstSearchThing = new javax.swing.JList();
+        btnLogout = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(ThingiverseDialog.class);
@@ -317,6 +312,14 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         tpLists.addTab(resourceMap.getString("spltpSearchContainer.TabConstraints.tabTitle"), spltpSearchContainer); // NOI18N
 
+        btnLogout.setText(resourceMap.getString("btnLogout.text")); // NOI18N
+        btnLogout.setName("btnLogout"); // NOI18N
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -327,7 +330,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
                     .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addComponent(lUserName)))
+                        .addComponent(lUserName))
+                    .addComponent(btnLogout))
                 .addGap(18, 18, 18)
                 .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
                 .addContainerGap())
@@ -341,7 +345,9 @@ public class ThingiverseDialog extends javax.swing.JDialog
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lUserName)))
+                        .addComponent(lUserName)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 139, Short.MAX_VALUE)
+                        .addComponent(btnLogout)))
                 .addContainerGap())
         );
 
@@ -449,6 +455,12 @@ public class ThingiverseDialog extends javax.swing.JDialog
     }).start();
   }//GEN-LAST:event_btnSearchActionPerformed
 
+  private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnLogoutActionPerformed
+  {//GEN-HEADEREND:event_btnLogoutActionPerformed
+    ThingiverseManager.getInstance().logOut();
+    this.dispose();
+  }//GEN-LAST:event_btnLogoutActionPerformed
+
   
 private void initTabbedPaneHeader(){
   
@@ -501,7 +513,7 @@ private void initTabbedPaneHeader(){
   pnlSearch.setOpaque(false);
 
   lblSearch.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-  lblSearch.setText("Featured");
+  lblSearch.setText("Search");
   lblSearch.setAlignmentY(0.0F);
   lblSearch.setName("lblFeatured"); 
 
@@ -540,6 +552,7 @@ private void initTabbedPaneHeader(){
   lblLoadingSearch.setVisible(false); // only visible if searching for things
 }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnSearch;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lProfilePicture;
