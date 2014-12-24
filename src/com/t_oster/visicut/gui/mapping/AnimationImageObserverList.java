@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.t_oster.visicut.gui.mapping;
 
 import java.awt.Image;
@@ -10,7 +6,9 @@ import java.awt.image.ImageObserver;
 import javax.swing.JList;
 
 /**
- *
+ * This class can be set to an image to listen for image changes such as it is when using gifs. It redraws the list element when the image changes.
+ * @param list model structure in which the image changes
+ * @param element index in the list
  * @author Sven
  */
 public class AnimationImageObserverList implements ImageObserver
