@@ -20,6 +20,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 
 /**
@@ -37,6 +39,45 @@ public class ThingiverseDialog extends javax.swing.JDialog
     super(parent, modal);
     initComponents();
     initTabbedPaneHeader();
+    
+    // list cell renderer for images + name
+    lstMyThings.setCellRenderer(new ThingListRenderer());
+    lstSearch.setCellRenderer(new ThingListRenderer());
+    
+    // click listener for items to display in thing panel
+    lstMyThings.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e)
+      {
+        boolean adjust = e.getValueIsAdjusting();
+        if (!adjust) 
+        {
+          JList list = (JList) e.getSource();
+          int selection = list.getSelectedIndex();
+          Thing selectionValue = (Thing) list.getSelectedValue();
+          
+          DefaultListModel myThingsThingModel = new DefaultListModel(); // model for JListThing
+          myThingsThingModel.addElement(selectionValue.getName()); 
+          lstMyThingsThing.setModel(myThingsThingModel);
+        }
+      }
+    });
+    
+    lstSearch.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e)
+      {
+        boolean adjust = e.getValueIsAdjusting();
+        if (!adjust) 
+        {
+          JList list = (JList) e.getSource();
+          int selection = list.getSelectedIndex();
+          Thing selectionValue = (Thing) list.getSelectedValue();
+          
+          DefaultListModel searchThingModel = new DefaultListModel(); // model for JListThing
+          searchThingModel.addElement(selectionValue.getName());
+          lstSearchThing.setModel(searchThingModel);
+        }
+      }
+    });
     
     // login necessary for this thingiverse integration
     final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
@@ -137,9 +178,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         SwingUtilities.invokeLater(new Runnable() {
           public void run()
           {
-            lstMyThings.setModel(model);
-            lstMyThings.setCellRenderer(new ThingListRenderer());
-            
+            lstMyThings.setModel(model);            
           }
         });
         
@@ -189,6 +228,102 @@ public class ThingiverseDialog extends javax.swing.JDialog
       }
     }).start();
     
+  }
+  
+  private void actionSearch(){
+    lblLoadingSearch.setVisible(true);
+
+    final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+
+    // display Featured
+    new Thread(new Runnable()
+    {
+
+      public void run()
+      {
+        String tagList = txtSearch.getText();
+
+        // get url map
+        LinkedList<Thing> things = thingiverse.search(tagList);
+
+        // init my things model with loading images
+        DefaultListModel searchModel = new DefaultListModel(); // model for JList
+        Iterator<Thing> i1 = things.iterator(); // iterate over each thingiverse thing and add to model
+        int index = 0;
+        while (i1.hasNext())
+        {
+          // get loading icon
+          ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
+
+          // set changing observer for loading images to update gif 
+          loadingIcon.setImageObserver(new AnimationImageObserverList(lstSearch, index));
+
+          // add thing to model
+          Thing aThing = i1.next();
+          aThing.setImage(loadingIcon);
+          searchModel.addElement(aThing);
+
+          index += 1;
+        }
+
+        // display myThingsModel in my things list
+        final DefaultListModel model = searchModel;
+        SwingUtilities.invokeLater(new Runnable()
+        {
+
+          public void run()
+          {
+            lstSearch.setModel(model);
+          }
+        });
+
+        numberLoadingSearch.set(searchModel.size());
+
+        // start a thread for each image to load asynchronous
+        for (final Thing entry : things)
+        {
+          final String url = entry.getImageLocation();
+          new Thread(new Runnable()
+          {
+
+            public void run()
+            {
+
+              // load image
+              ImageIcon icon;
+              try
+              {
+                icon = new ImageIcon(new URL(url));
+              }
+              catch (MalformedURLException ex)
+              {
+                System.err.println("Image not found: " + url);
+                icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
+              }
+
+              // overwrite image
+              final ImageIcon objectImage = icon;
+              SwingUtilities.invokeLater(new Runnable()
+              {
+
+                public void run()
+                {
+                  entry.setImage(objectImage);
+                  lstSearch.updateUI();
+
+                  // image loaded, decrement loading images
+                  if (numberLoadingSearch.decrementAndGet() == 0)
+                  {
+                    lblLoadingSearch.setVisible(false);
+                  }
+                }
+              });
+            }
+          }).start();
+        }
+
+      }
+    }).start();
   }
 
 
@@ -249,6 +384,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         sclpMyThings.setMinimumSize(new Dimension(220,300));
         sclpMyThings.setName("sclpMyThings"); // NOI18N
 
+        lstMyThings.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lstMyThings.setAlignmentX(0.0F);
         lstMyThings.setAlignmentY(0.0F);
         lstMyThings.setName("lstMyThings"); // NOI18N
@@ -258,6 +394,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         sclpMyThingsThing.setName("sclpMyThingsThing"); // NOI18N
 
+        lstMyThingsThing.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lstMyThingsThing.setName("lstMyThingsThing"); // NOI18N
         sclpMyThingsThing.setViewportView(lstMyThingsThing);
 
@@ -274,6 +411,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         txtSearch.setText(resourceMap.getString("txtSearch.text")); // NOI18N
         txtSearch.setName("txtSearch"); // NOI18N
+        txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtSearchKeyPressed(evt);
+            }
+        });
         jPanel1.add(txtSearch, java.awt.BorderLayout.CENTER);
 
         btnSearch.setText(resourceMap.getString("btnSearch.text")); // NOI18N
@@ -296,6 +438,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         sclpSearch.setMinimumSize(new Dimension(220,300));
         sclpSearch.setName("sclpSearch"); // NOI18N
 
+        lstSearch.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lstSearch.setName("lstSearch"); // NOI18N
         sclpSearch.setViewportView(lstSearch);
 
@@ -303,6 +446,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         sclpSearchThing.setName("sclpSearchThing"); // NOI18N
 
+        lstSearchThing.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lstSearchThing.setName("lstSearchThing"); // NOI18N
         sclpSearchThing.setViewportView(lstSearchThing);
 
@@ -359,100 +503,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
   private void btnSearchActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnSearchActionPerformed
   {//GEN-HEADEREND:event_btnSearchActionPerformed
-    lblLoadingSearch.setVisible(true);
-
-    final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-
-    // display Featured
-    new Thread(new Runnable()
-    {
-
-      public void run()
-      {
-        String tagList = txtSearch.getText();
-
-        // get url map
-        LinkedList<Thing> things = thingiverse.search(tagList);
-
-        // init my things model with loading images
-        DefaultListModel searchModel = new DefaultListModel(); // model for JList
-        Iterator<Thing> i1 = things.iterator(); // iterate over each thingiverse thing and add to model
-        int index = 0;
-        while (i1.hasNext())
-        {
-          // get loading icon
-          ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
-
-          // set changing observer for loading images to update gif 
-          loadingIcon.setImageObserver(new AnimationImageObserverList(lstSearch, index));
-
-          // add thing to model
-          Thing aThing = i1.next();
-          aThing.setImage(loadingIcon);
-          searchModel.addElement(aThing);
-
-          index += 1;
-        }
-
-        // display myThingsModel in my things list
-        final DefaultListModel model = searchModel;
-        SwingUtilities.invokeLater(new Runnable()
-        {
-
-          public void run()
-          {
-            lstSearch.setModel(model);
-            lstSearch.setCellRenderer(new ThingListRenderer());
-          }
-        });
-
-        numberLoadingSearch.set(searchModel.size());
-
-        // start a thread for each image to load asynchronous
-        for (final Thing entry : things)
-        {
-          final String url = entry.getImageLocation();
-          new Thread(new Runnable()
-          {
-
-            public void run()
-            {
-
-              // load image
-              ImageIcon icon;
-              try
-              {
-                icon = new ImageIcon(new URL(url));
-              }
-              catch (MalformedURLException ex)
-              {
-                System.err.println("Image not found: " + url);
-                icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
-              }
-
-              // overwrite image
-              final ImageIcon objectImage = icon;
-              SwingUtilities.invokeLater(new Runnable()
-              {
-
-                public void run()
-                {
-                  entry.setImage(objectImage);
-                  lstSearch.updateUI();
-
-                  // image loaded, decrement loading images
-                  if (numberLoadingSearch.decrementAndGet() == 0)
-                  {
-                    lblLoadingSearch.setVisible(false);
-                  }
-                }
-              });
-            }
-          }).start();
-        }
-
-      }
-    }).start();
+    this.actionSearch();
   }//GEN-LAST:event_btnSearchActionPerformed
 
   private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnLogoutActionPerformed
@@ -460,6 +511,16 @@ public class ThingiverseDialog extends javax.swing.JDialog
     ThingiverseManager.getInstance().logOut();
     this.dispose();
   }//GEN-LAST:event_btnLogoutActionPerformed
+
+  private void txtSearchKeyPressed(java.awt.event.KeyEvent evt)//GEN-FIRST:event_txtSearchKeyPressed
+  {//GEN-HEADEREND:event_txtSearchKeyPressed
+    char key = evt.getKeyChar();
+    
+    // on enter perform search
+    if(key == '\n'){
+      this.actionSearch();
+    }
+  }//GEN-LAST:event_txtSearchKeyPressed
 
   
 private void initTabbedPaneHeader(){
