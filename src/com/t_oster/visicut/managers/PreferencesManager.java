@@ -152,13 +152,33 @@ public final class PreferencesManager
     }
   }
 
-  private void initializeSettingDirectory()
+  private void initializeSettingDirectory() {
+    this.initializeSettingDirectory(false);
+  }
+  
+  /**
+   * create the settings directory
+   * @param generateDefaults : fill it with demo settings
+   */
+  private void initializeSettingDirectory(boolean generateDefaults)
   {
     File bp = Helper.getBasePath();
     System.out.println("'" + bp.getAbsolutePath() + "' doesn't exist. We create it.");
     if (!bp.mkdirs())
     {
       System.err.println("Can't create directory: '" + bp.getAbsolutePath() + "'. VisiCut won't save any settings");
+      return;
+    }
+    
+    if (!generateDefaults) {
+      try
+      {
+        this.savePreferences();
+      }
+      catch (Exception ex)
+      {
+        Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
+      }
       return;
     }
     //Try to copy skeleton from VisiCut's program folder
@@ -181,6 +201,8 @@ public final class PreferencesManager
             Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println("Can't copy default settings.");
           }
+        } else {
+          System.err.println("cannot find default settings folder for "+folder);
         }
       }
     }
@@ -260,15 +282,7 @@ public final class PreferencesManager
       }
       catch (Exception ex)
       {
-        System.err.println("Can't load settings. Using default ones...");
-        try
-        {
-          this.generateDefault();
-        }
-        catch (Exception ex1)
-        {
-          Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex1);
-        }
+        System.err.println("Can't load settings.");
       }
       if (preferences == null)
       {
@@ -338,22 +352,46 @@ public final class PreferencesManager
     FileUtils.zipDirectory(Helper.getBasePath(), file);
   }
 
-  public void importSettings(File file) throws ZipException, IOException
+  /**
+   * import settings from file created by exportSettings
+   * @param file, or null to load the example settings, or File("__EMPTY__") to delete everything
+   * @throws Exception when the file is invalid
+   */
+  public void importSettings(File file) throws Exception
   {
-    FileUtils.cleanDirectory(Helper.getBasePath());
-    FileUtils.unzipToDirectory(file, Helper.getBasePath());
-    this.exampleFiles = null;
     try
     {
-      preferences = this.loadPreferences(this.getPreferencesPath());
+      FileUtils.cleanDirectory(Helper.getBasePath());
+      this.exampleFiles = null;
+      if (file == null || "__EMPTY__".equals(file.getName())) {
+        Helper.getBasePath().delete();
+        LaserDeviceManager.getInstance().reload();
+        MappingManager.getInstance().reload();
+        MaterialManager.getInstance().reload();
+        ProfileManager.getInstance().reload();
+        if (file==null) {
+          // file==null: load example settings (generateDefault=true)
+          this.initializeSettingDirectory(true);
+        } else {
+          // file==__EMPTY__: clear settings (generateDefault=false)
+          this.initializeSettingDirectory(false);
+        }
+        this.preferences = new Preferences();
+      } else {
+        FileUtils.unzipSettingsToDirectory(file, Helper.getBasePath());
+      }
+      this.preferences = this.loadPreferences(this.getPreferencesPath());
     }
     catch (Exception e)
     {
       this.preferences = new Preferences();
+      throw new Exception("Error importing settings",e);
     }
-    LaserDeviceManager.getInstance().reload();
-    MappingManager.getInstance().reload();
-    MaterialManager.getInstance().reload();
-    ProfileManager.getInstance().reload();
+    finally {
+      LaserDeviceManager.getInstance().reload();
+      MappingManager.getInstance().reload();
+      MaterialManager.getInstance().reload();
+      ProfileManager.getInstance().reload();
+    }
   }
 }

@@ -28,6 +28,7 @@ import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.uicomponents.PlatformIcon;
 import com.t_oster.uicomponents.Ruler;
 import com.t_oster.uicomponents.warnings.Message;
@@ -351,6 +352,11 @@ public class MainView extends javax.swing.JFrame
       this.setPreferredSize(new Dimension(lastBounds.width, lastBounds.height));
       this.setBounds(lastBounds);
     }
+    
+    // all GUI parts are now initialised.
+    if (LaserDeviceManager.getInstance().getAll().isEmpty()) {
+      this.jmDownloadSettingsActionPerformed(null);
+    }
   }
 
   private ActionListener exampleItemClicked = new ActionListener(){
@@ -624,6 +630,7 @@ public class MainView extends javax.swing.JFrame
         calibrateCameraMenuItem = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
         jmImportSettings = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jmExportSettings = new javax.swing.JMenuItem();
         editMappingMenuItem = new javax.swing.JMenuItem();
         jmManageLaserprofiles = new javax.swing.JMenuItem();
@@ -904,17 +911,17 @@ public class MainView extends javax.swing.JFrame
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(objectComboBox, 0, 504, Short.MAX_VALUE)
+                                .addComponent(objectComboBox, 0, 538, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btAddObject, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btRemoveObject, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 618, Short.MAX_VALUE)
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE)
                             .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(laserCutterComboBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 618, Short.MAX_VALUE)
+                            .addComponent(laserCutterComboBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(materialComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)
+                                .addComponent(materialComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btAddMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
@@ -924,7 +931,7 @@ public class MainView extends javax.swing.JFrame
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(btAddMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jLabel5))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 262, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 286, Short.MAX_VALUE)
                                 .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(20, 20, 20))))
         );
@@ -1090,6 +1097,15 @@ public class MainView extends javax.swing.JFrame
         });
         jMenu1.add(jmImportSettings);
 
+        jMenuItem1.setText(resourceMap.getString("jmDownloadSettings.text")); // NOI18N
+        jMenuItem1.setName("jmDownloadSettings"); // NOI18N
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmDownloadSettingsActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
+
         jmExportSettings.setText(resourceMap.getString("jmExportSettings.text")); // NOI18N
         jmExportSettings.setName("jmExportSettings"); // NOI18N
         jmExportSettings.addActionListener(new java.awt.event.ActionListener() {
@@ -1245,7 +1261,7 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(bt1to1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 278, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 280, Short.MAX_VALUE)
                                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(8, 8, 8)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2090,73 +2106,81 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     }
   }//GEN-LAST:event_jmExportSettingsActionPerformed
 
+  /**
+   * load settings from file and update the GUI
+   * @param file : File or null for loading the default example settings
+   * @throws Exception 
+   */
+  private void importSettingsFromFile(File file) throws Exception {
+    PreferencesManager.getInstance().importSettings(file);
+    this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
+    this.fillComboBoxes();
+    this.refreshExampleMenu();
+    dialog.showSuccessMessage(bundle.getString("SETTINGS SUCCESSFULLY IMPORTED"));
+  }
+  
   private void jmImportSettingsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmImportSettingsActionPerformed
   {//GEN-HEADEREND:event_jmImportSettingsActionPerformed
-    switch (JOptionPane.showConfirmDialog(this, bundle.getString("THIS WILL OVERWRITE ALL YOUR SETTINGS INCLUDING LASERCUTTERS AND MATERIALS DO YOU WANT TO BACKUP YOUR SETTINGS BEFORE?"), bundle.getString("WARNING"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE))
-    {
-      case JOptionPane.YES_OPTION:
-      {
-        this.jmExportSettingsActionPerformed(null);
-        //no break statement, because we want to import after export
-      }
-      case JOptionPane.NO_OPTION:
-      {
-        try
-        {
-          final FileFilter zipFilter = new ExtensionFilter(new String[]{".zip",".vcsettings"}, bundle.getString("ZIPPED SETTINGS (*.ZIP)"));
-          File file = null;
-          //On Mac os, awt.FileDialog looks more native
-          if (Helper.isMacOS())
-          {
-            FileDialog openFileChooser = new FileDialog(this, bundle.getString("PLEASE SELECT A FILE"));
-            openFileChooser.setMode(FileDialog.LOAD);
-            if (lastDirectory != null)
-            {
-              openFileChooser.setDirectory(lastDirectory.getAbsolutePath());
-            }
-            openFileChooser.setFilenameFilter(new FilenameFilter()
-            {
-              public boolean accept(File dir, String file)
-              {
-                return zipFilter.accept(new File(dir, file));
-              }
-            });
-            openFileChooser.setVisible(true);
-            if (openFileChooser.getFile() != null)
-            {
-              file = new File(new File(openFileChooser.getDirectory()), openFileChooser.getFile());
-            }
-          }
-          else
-          {
-            JFileChooser openFileChooser = new JFileChooser();
-            openFileChooser.setAcceptAllFileFilterUsed(false);
-            openFileChooser.addChoosableFileFilter(zipFilter);
-            openFileChooser.setFileFilter(zipFilter);
-            openFileChooser.setCurrentDirectory(lastDirectory);
-            int returnVal = openFileChooser.showOpenDialog(this);
-            if (returnVal == JFileChooser.APPROVE_OPTION)
-            {
-              file = openFileChooser.getSelectedFile();
-            }
-          }
-          if (file != null)
-          {
-            PreferencesManager.getInstance().importSettings(file);
-            this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
-            this.fillComboBoxes();
-            this.refreshExampleMenu();
-            dialog.showSuccessMessage(bundle.getString("SETTINGS SUCCESSFULLY IMPORTED"));
-          }
-        }
-        catch (Exception e)
-        {
-          dialog.showErrorMessage(e);
-        }
-      }
+    if (!askForOverwriteSettings()) {
+      return;
     }
+    this.importSettingsAskForFile();
   }//GEN-LAST:event_jmImportSettingsActionPerformed
 
+  /**
+   * display a file chooser for importing settings and then import them
+   */
+  private void importSettingsAskForFile() {
+    try
+    {
+      final FileFilter zipFilter = new ExtensionFilter(new String[]{".zip",".vcsettings"}, bundle.getString("ZIPPED SETTINGS (*.ZIP)"));
+      File file = null;
+      //On Mac os, awt.FileDialog looks more native
+      if (Helper.isMacOS())
+      {
+        FileDialog openFileChooser = new FileDialog(this, bundle.getString("PLEASE SELECT A FILE"));
+        openFileChooser.setMode(FileDialog.LOAD);
+        if (lastDirectory != null)
+        {
+          openFileChooser.setDirectory(lastDirectory.getAbsolutePath());
+        }
+        openFileChooser.setFilenameFilter(new FilenameFilter()
+        {
+          public boolean accept(File dir, String file)
+          {
+            return zipFilter.accept(new File(dir, file));
+          }
+        });
+        openFileChooser.setVisible(true);
+        if (openFileChooser.getFile() != null)
+        {
+          file = new File(new File(openFileChooser.getDirectory()), openFileChooser.getFile());
+        }
+      }
+      else
+      {
+        JFileChooser openFileChooser = new JFileChooser();
+        openFileChooser.setAcceptAllFileFilterUsed(false);
+        openFileChooser.addChoosableFileFilter(zipFilter);
+        openFileChooser.setFileFilter(zipFilter);
+        openFileChooser.setCurrentDirectory(lastDirectory);
+        int returnVal = openFileChooser.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
+          file = openFileChooser.getSelectedFile();
+        }
+      }
+      if (file != null)
+      {
+        this.importSettingsFromFile(file);
+      }
+    }
+    catch (Exception e)
+    {
+      dialog.showErrorMessage(e);
+    }
+  }
+  
   private void jmManageLaserprofilesActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmManageLaserprofilesActionPerformed
   {//GEN-HEADEREND:event_jmManageLaserprofilesActionPerformed
     EditProfilesDialog d = new EditProfilesDialog(this, true);
@@ -2393,6 +2417,69 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
   }
 }//GEN-LAST:event_jmPreferencesActionPerformed
 
+private boolean askForOverwriteSettings() {
+    if (LaserDeviceManager.getInstance().getAll().isEmpty() && 
+      MaterialManager.getInstance().getAll().isEmpty() &&
+      ProfileManager.getInstance().getAll().isEmpty() &&
+      MappingManager.getInstance().getAll().isEmpty()) {
+      // do not ask if settings are empty
+      return true;
+    }
+    int answer=JOptionPane.showConfirmDialog(this, bundle.getString("IMPORT_SETTINGS_OVERWRITE?"), bundle.getString("WARNING"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+    return answer==JOptionPane.OK_OPTION;
+}
+
+private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmDownloadSettingsActionPerformed
+  warningPanel.removeAllWarnings();
+  Map<String,String> choices = new LinkedHashMap<String, String>();
+  choices.put(bundle.getString("EXAMPLE_SETTINGS"), "__DEFAULT__");
+  choices.put(bundle.getString("EMPTY_SETTINGS"), "__EMPTY__");
+  choices.put(bundle.getString("IMPORT_SETTINGS_FROM_FILE"),"__FILE__");
+  // TODO add FabLab Aachen etc.
+  // Want your lab in this list? Look at https://github.com/t-oster/VisiCut/wiki/How-to-add-default-settings-for-your-lab !
+  // choices.put("Country, City: Institution", "http://whatever.com/foo");
+  choices.put("Germany, Erlangen: FAU FabLab", "https://github.com/fau-fablab/visicut-settings/archive/master.zip");
+  choices.put("Netherlands, Amersfoort: FabLab", "http://fablabamersfoort.nl/downloads/VisiCut-settings-FabLab-Amersoort.vcsettings");
+  choices.put(bundle.getString("DOWNLOAD_NOT_IN_LIST"),"__HELP__");
+  String s = (String)JOptionPane.showInputDialog(this, bundle.getString("DOWNLOAD_SETTINGS_INFO"), null, JOptionPane.PLAIN_MESSAGE, null, choices.keySet().toArray(), choices.keySet().toArray()[0]);
+  if ((s==null) || (s.length() == 0)) {
+    return;
+  }
+  if (!askForOverwriteSettings()) {
+    return;
+  }
+  String url="";
+  try {
+    if (choices.containsKey(s)) {
+      url=choices.get(s);
+      if (url.equals("__DEFAULT__")) {
+        // load default settings
+        this.importSettingsFromFile(null);
+        return;
+      } else if (url.equals("__HELP__")) {
+        dialog.showInfoMessage("Please look at https://github.com/t-oster/VisiCut/wiki/How-to-add-default-settings-for-your-lab . \n You can reopen this dialog in Edit -> Settings -> Download.");
+        return;
+      } else if (url.equals("__FILE__")) {
+        this.importSettingsAskForFile();
+        return;
+      } else if (url.equals("__EMPTY__")) {
+        this.importSettingsFromFile(new File("__EMPTY__"));
+        return;
+      }
+    }
+    if (!(url.startsWith("https://") || url.startsWith("http://"))) {
+      dialog.showErrorMessage("Invalid URL or entry");
+      return;
+    }
+    File tempfile=File.createTempFile("vcsettings-download",".zip");
+    FileUtils.downloadUrlToFile(url,tempfile);
+    this.importSettingsFromFile(tempfile);
+    tempfile.delete();
+  } catch (Exception e) {
+    dialog.showErrorMessage("Could not download settings.\n"+e.getLocalizedMessage());
+  }
+}//GEN-LAST:event_jmDownloadSettingsActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton bt1to1;
@@ -2424,6 +2511,7 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
