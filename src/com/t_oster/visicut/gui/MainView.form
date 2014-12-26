@@ -167,6 +167,15 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmImportSettingsActionPerformed"/>
                   </Events>
                 </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="jmDownloadSettings.text"/>
+                    <Property name="name" type="java.lang.String" value="jmDownloadSettings" noResource="true"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmDownloadSettingsActionPerformed"/>
+                  </Events>
+                </MenuItem>
                 <MenuItem class="javax.swing.JMenuItem" name="jmExportSettings">
                   <Properties>
                     <Property name="text" type="java.lang.String" resourceKey="jmExportSettings.text"/>
@@ -372,7 +381,7 @@
                               <Component id="bt1to1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="captureImageButton" min="-2" pref="155" max="-2" attributes="0"/>
-                              <EmptySpace pref="278" max="32767" attributes="0"/>
+                              <EmptySpace pref="280" max="32767" attributes="0"/>
                               <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -604,18 +613,18 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="objectComboBox" pref="504" max="32767" attributes="0"/>
+                                      <Component id="objectComboBox" pref="538" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="btAddObject" min="-2" pref="31" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="btRemoveObject" min="-2" pref="31" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="jSeparator1" alignment="0" pref="618" max="32767" attributes="0"/>
+                                  <Component id="jSeparator1" alignment="0" pref="654" max="32767" attributes="0"/>
                                   <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="laserCutterComboBox" alignment="0" pref="618" max="32767" attributes="1"/>
+                                  <Component id="laserCutterComboBox" alignment="0" pref="654" max="32767" attributes="1"/>
                                   <Group type="102" alignment="1" attributes="0">
-                                      <Component id="materialComboBox" pref="581" max="32767" attributes="1"/>
+                                      <Component id="materialComboBox" pref="617" max="32767" attributes="1"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="btAddMaterial" min="-2" pref="31" max="-2" attributes="0"/>
                                   </Group>
@@ -628,7 +637,7 @@
                                           </Group>
                                           <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace pref="262" max="32767" attributes="0"/>
+                                      <EmptySpace pref="286" max="32767" attributes="0"/>
                                       <Component id="jCheckBox1" min="-2" pref="197" max="-2" attributes="0"/>
                                   </Group>
                               </Group>

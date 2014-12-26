@@ -26,7 +26,11 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -190,15 +194,42 @@ public class FileUtils
     out.close();
   }
   
-  public static void unzipToDirectory(File file, File dir) throws ZipException, IOException
+  public static void unzipSettingsToDirectory(File file, File dir) throws ZipException, IOException
   {
     ZipFile zip = new ZipFile(file);
+    
+    // does the zip file contain a settings/... folder?
+    // if not, strip the first folder name so that
+    // visicut-settings-master/settings/... becomes settings/...
+    // this allows directly importing a zip-download from github
+    boolean skipFirstFolder=true;
     Enumeration entries = zip.entries();
+    while (entries.hasMoreElements()) {
+      ZipEntry entry = (ZipEntry) entries.nextElement();
+      String name = entry.getName();
+      if ("settings/settings.xml".equals(name)) {
+        skipFirstFolder=false;
+        break;
+      }
+    }
+    
+    entries=zip.entries();
     File inputFile = null;
     while (entries.hasMoreElements())
     {
       ZipEntry entry = (ZipEntry) entries.nextElement();
       String name = entry.getName();
+      
+      if (skipFirstFolder) {
+        // remove first folder name: foo/settings/XY -> settings/XY
+        int pos=name.indexOf("/");
+        if (pos == -1) {
+          continue; // skip the first folder entry
+        } else {
+          // strip prefix and go on
+          name=name.substring(pos+1);
+        }
+      }
       inputFile = new File(dir, name);
       File parent = inputFile.getParentFile();
       if (!parent.exists())
@@ -274,5 +305,19 @@ public class FileUtils
     }
 
     return stringBuilder.toString();
+  }
+  
+  /**
+   * Download URL to file
+   * @param url
+   * @param file
+   * @throws MalformedURLException
+   * @throws IOException 
+   */
+  public static void downloadUrlToFile(String url, File file) throws MalformedURLException, IOException {
+    // thanks to https://stackoverflow.com/questions/921262/how-to-download-and-save-a-file-from-internet-using-java
+    ReadableByteChannel rbc = Channels.newChannel(new URL(url).openStream());
+    FileOutputStream fos = new FileOutputStream(file);
+    fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
   }
 }
