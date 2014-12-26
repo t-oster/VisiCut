@@ -54,7 +54,11 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
    */
   public List<LaserDevice> getLaserCutters()
   {
-    return laserCutters;
+    if (laserCutters == null) {
+      return null;
+    } else {
+      return new LinkedList<LaserDevice>(laserCutters);
+    }
   }
 
   /**
