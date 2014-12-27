@@ -2439,7 +2439,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   // Want your lab in this list? Look at https://github.com/t-oster/VisiCut/wiki/How-to-add-default-settings-for-your-lab !
   // choices.put("Country, City: Institution", "http://whatever.com/foo");
   choices.put("Germany, Erlangen: FAU FabLab", "https://github.com/fau-fablab/visicut-settings/archive/master.zip");
-  choices.put("Netherlands, Amersfoort: FabLab", "http://fablabamersfoort.nl/downloads/VisiCut-settings-FabLab-Amersoort.vcsettings");
+  choices.put("Netherlands, Amersfoort: FabLab", "https://github.com/Fablab-Amersfoort/visicut-settings/archive/master.zip");
   choices.put(bundle.getString("DOWNLOAD_NOT_IN_LIST"),"__HELP__");
   String s = (String)JOptionPane.showInputDialog(this, bundle.getString("DOWNLOAD_SETTINGS_INFO"), null, JOptionPane.PLAIN_MESSAGE, null, choices.keySet().toArray(), choices.keySet().toArray()[0]);
   if ((s==null) || (s.length() == 0)) {
