@@ -1,19 +1,10 @@
 package com.tur0kk.thingiverse;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
-import javax.swing.ImageIcon;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.thymeleaf.expression.Strings;
 
 /**
  * Singleton class managing all the communication with the Thingiverse API.
@@ -47,27 +38,31 @@ public class ThingiverseManager
     return instance;
   }
   
-  public void logIn()
+  /**
+   * Logs out the current user and starts the authentication procedure.
+   * @return Login URL
+   */
+  public String initiateLogin()
   {
-    try
+    client = new ThingiverseClient(clientId, clientSecret, clientCallback);
+    String loginUrl = client.loginFirstTime();
+    return loginUrl;
+  }
+ 
+  public void finishLogin(String browserCode)
+  {
+    if (browserCode == null || browserCode.isEmpty())
     {
-      client = new ThingiverseClient(clientId, clientSecret, clientCallback);
-      String authUrl = client.loginFirstTime();
-
-      // Start os default browser
-      Desktop.getDesktop().browse(URI.create(authUrl));
-
-      String browserCode = javax.swing.JOptionPane.showInputDialog("Log in with your Thingiverse-account, click allow, paste code here:");
-      String accessTokenString = client.loginWithBrowserCode(browserCode);
+      logOut();
       
-      assert(accessTokenString != null);
-      assert(!accessTokenString.isEmpty());
+      System.out.println("Login failed!");
+      return;
     }
-    catch (Exception ex)
-    {
-      ex.printStackTrace();
-      client = null;
-    }
+    
+    String accessTokenString = client.loginWithBrowserCode(browserCode);
+
+    assert(accessTokenString != null);
+    assert(!accessTokenString.isEmpty());
   }
   
   public void logOut()
@@ -113,8 +108,6 @@ public class ThingiverseManager
       JSONParser parser = new JSONParser();
       JSONObject obj = (JSONObject)parser.parse(json);
       String url = obj.get("thumbnail").toString();
-      
-      System.out.println(url);
       
       return url;
     }
