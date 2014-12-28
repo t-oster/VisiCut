@@ -2428,6 +2428,18 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
   private void btThingiverseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btThingiverseActionPerformed
   {//GEN-HEADEREND:event_btThingiverseActionPerformed
+//    ThingiverseLoginDialog loginDialog;
+//    try
+//    {
+//      loginDialog = new ThingiverseLoginDialog(this, true);
+//      loginDialog.setVisible(true);
+//    }
+//    catch (Exception ex)
+//    {
+//      ex.printStackTrace();
+//    }
+//    
+
     ThingiverseDialog d;
     try
     {
