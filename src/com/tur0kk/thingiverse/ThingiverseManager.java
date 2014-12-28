@@ -1,19 +1,10 @@
 package com.tur0kk.thingiverse;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
-import javax.swing.ImageIcon;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.thymeleaf.expression.Strings;
 
 /**
  * Singleton class managing all the communication with the Thingiverse API.
@@ -117,8 +108,6 @@ public class ThingiverseManager
       JSONParser parser = new JSONParser();
       JSONObject obj = (JSONObject)parser.parse(json);
       String url = obj.get("thumbnail").toString();
-      
-      System.out.println(url);
       
       return url;
     }
