@@ -47,27 +47,31 @@ public class ThingiverseManager
     return instance;
   }
   
-  public void logIn()
+  /**
+   * Logs out the current user and starts the authentication procedure.
+   * @return Login URL
+   */
+  public String initiateLogin()
   {
-    try
+    client = new ThingiverseClient(clientId, clientSecret, clientCallback);
+    String loginUrl = client.loginFirstTime();
+    return loginUrl;
+  }
+ 
+  public void finishLogin(String browserCode)
+  {
+    if (browserCode == null || browserCode.isEmpty())
     {
-      client = new ThingiverseClient(clientId, clientSecret, clientCallback);
-      String authUrl = client.loginFirstTime();
-
-      // Start os default browser
-      Desktop.getDesktop().browse(URI.create(authUrl));
-
-      String browserCode = javax.swing.JOptionPane.showInputDialog("Log in with your Thingiverse-account, click allow, paste code here:");
-      String accessTokenString = client.loginWithBrowserCode(browserCode);
+      logOut();
       
-      assert(accessTokenString != null);
-      assert(!accessTokenString.isEmpty());
+      System.out.println("Login failed!");
+      return;
     }
-    catch (Exception ex)
-    {
-      ex.printStackTrace();
-      client = null;
-    }
+    
+    String accessTokenString = client.loginWithBrowserCode(browserCode);
+
+    assert(accessTokenString != null);
+    assert(!accessTokenString.isEmpty());
   }
   
   public void logOut()

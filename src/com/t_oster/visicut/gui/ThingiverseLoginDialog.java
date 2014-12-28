@@ -42,12 +42,19 @@ public class ThingiverseLoginDialog extends javax.swing.JDialog
   private final JLabel lblStatus = new JLabel();
   private final JProgressBar progressBar = new JProgressBar();
 
-  public ThingiverseLoginDialog(java.awt.Frame parent, boolean modal)
+  private String browserCode = null;
+  
+  public String getBrowserCode()
+  {
+    return browserCode;
+  }
+  
+  public ThingiverseLoginDialog(java.awt.Frame parent, boolean modal, String url)
   {
     super(parent, modal);
     initComponents();
-    
-    loadURL("http://www.thingiverse.com");
+
+    loadURL(url);
   }
 
   private void initComponents()
@@ -56,22 +63,23 @@ public class ThingiverseLoginDialog extends javax.swing.JDialog
     // http://docs.oracle.com/javafx/2/swing/SimpleSwingBrowser.java.htm
     createScene();
 
-    this.setTitle("Thingiverse Login");
-    
-    progressBar.setPreferredSize(new Dimension(150, 18));
+    progressBar.setPreferredSize(new Dimension(1000, 18));
     progressBar.setStringPainted(true);
 
     JPanel statusBar = new JPanel(new BorderLayout(5, 0));
     statusBar.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
     statusBar.add(lblStatus, BorderLayout.CENTER);
-    statusBar.add(progressBar, BorderLayout.EAST);
+    statusBar.add(progressBar, BorderLayout.CENTER);
 
     swingPanel.add(jfxPanel, BorderLayout.CENTER);
     swingPanel.add(statusBar, BorderLayout.SOUTH);
 
     getContentPane().add(swingPanel);
-    setPreferredSize(new Dimension(1024, 600));
     pack();
+
+    setTitle("Thingiverse Login");
+    setSize(1024, 500);
+    setLocationRelativeTo(null);
   }
 
   private void createScene()
@@ -113,6 +121,30 @@ public class ThingiverseLoginDialog extends javax.swing.JDialog
               public void run()
               {
                 progressBar.setValue(newValue.intValue());
+              }
+            });
+          }
+        });
+        
+        // Close dialog on success
+        webEngine.locationProperty().addListener(new ChangeListener<String>()
+        {
+          @Override
+          public void changed(ObservableValue<? extends String> ov, String oldValue, final String newValue)
+          {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                String prefix = "http://hci.rwth-aachen.de/visicut?code=";
+                if (newValue.startsWith(prefix))
+                {
+                  browserCode = newValue.substring(prefix.length());
+                  
+                  // Close dialog
+                  ThingiverseLoginDialog.this.dispose();
+                }
               }
             });
           }

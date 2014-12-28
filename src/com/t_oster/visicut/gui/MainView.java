@@ -54,6 +54,7 @@ import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import com.tur0kk.thingiverse.ThingiverseManager;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Image;
@@ -2428,31 +2429,32 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
   private void btThingiverseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btThingiverseActionPerformed
   {//GEN-HEADEREND:event_btThingiverseActionPerformed
-//    ThingiverseLoginDialog loginDialog;
-//    try
-//    {
-//      loginDialog = new ThingiverseLoginDialog(this, true);
-//      loginDialog.setVisible(true);
-//    }
-//    catch (Exception ex)
-//    {
-//      ex.printStackTrace();
-//    }
-//    
 
-    ThingiverseDialog d;
-    try
+    ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+    String loginUrl = thingiverse.initiateLogin();
+    
+    ThingiverseLoginDialog loginDialog;
+    loginDialog = new ThingiverseLoginDialog(this, true, loginUrl);
+    loginDialog.setVisible(true);
+
+    String browserCode = loginDialog.getBrowserCode();
+    thingiverse.finishLogin(browserCode);
+    
+    if (thingiverse.isLoggedIn())
     {
-      d = new ThingiverseDialog(null, true);
-      d.setVisible(true);
-    }
-    catch (MalformedURLException ex)
-    {
-      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    catch (IOException ex)
-    {
-      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+      try
+      {
+        ThingiverseDialog thingiverseDialog = new ThingiverseDialog(this, true);
+        thingiverseDialog.setVisible(true);
+      }
+      catch (MalformedURLException ex)
+      {
+        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      catch (IOException ex)
+      {
+        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+      }
     }
   }//GEN-LAST:event_btThingiverseActionPerformed
 

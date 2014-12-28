@@ -40,6 +40,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
     initComponents();
     initTabbedPaneHeader();
     
+    final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+    
     // list cell renderer for images + name
     lstMyThings.setCellRenderer(new ThingListRenderer());
     lstSearch.setCellRenderer(new ThingListRenderer());
@@ -79,18 +81,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
       }
     });
     
-    // login necessary for this thingiverse integration
-    final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-    if(!thingiverse.isLoggedIn())
-    {
-      thingiverse.logIn();
-    }
-    if(!thingiverse.isLoggedIn())
-    {
-      throw new AccessException("No correct access token");
-    }
-    
-    //else
     // display username
     new Thread(new Runnable() {
       String username = null;
