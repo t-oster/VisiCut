@@ -8,7 +8,7 @@ package com.t_oster.visicut.gui;
 import com.t_oster.uicomponents.LoadingIcon;
 import com.t_oster.visicut.gui.mapping.AnimationImageObserverList;
 import com.t_oster.visicut.gui.mapping.ThingListRenderer;
-import com.tur0kk.thingiverse.Thing;
+import com.tur0kk.thingiverse.model.Thing;
 import com.tur0kk.thingiverse.ThingiverseManager;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
 
 /**
  *
@@ -178,7 +177,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         // start a thread for each image to load image asynchronous
         for (final Thing entry : things)
         {
-          final String url = entry.getImageLocation();
+          final String url = entry.getImageUrl();
           new Thread(new Runnable() 
           {
               public void run()
@@ -272,7 +271,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         // start a thread for each image to load asynchronous
         for (final Thing entry : things)
         {
-          final String url = entry.getImageLocation();
+          final String url = entry.getImageUrl();
           new Thread(new Runnable()
           {
 

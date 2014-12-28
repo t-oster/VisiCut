@@ -1,6 +1,6 @@
 package com.t_oster.visicut.gui.mapping;
 
-import com.tur0kk.thingiverse.Thing;
+import com.tur0kk.thingiverse.model.Thing;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;

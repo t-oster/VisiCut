@@ -2595,7 +2595,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     loginDialog.setVisible(true);
 
     String browserCode = loginDialog.getBrowserCode();
-    thingiverse.finishLogin(browserCode);
+    thingiverse.finalizeLogin(browserCode);
     
     if (thingiverse.isLoggedIn())
     {

@@ -1,25 +1,27 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package com.tur0kk.thingiverse;
+package com.tur0kk.thingiverse.model;
 
 import javax.swing.ImageIcon;
 
 /**
- *
- * @author Sven
+ * @author Sven, Patrick Schmidt
  */
 public class Thing
 {
+  String id;
   String name;
-  String imageLocation;
+  String imageUrl;
   ImageIcon image;
   
-  public Thing(String name, String imageLocation)
+  public Thing(String id, String name, String imageLocation)
   {
+    this.id = id;
     this.name = name;
-    this.imageLocation = imageLocation;
+    this.imageUrl = imageLocation;
+  }
+  
+  public String getId()
+  {
+    return this.id;
   }
   
   public String getName()
@@ -27,9 +29,9 @@ public class Thing
     return this.name;
   }
   
-  public String getImageLocation()
+  public String getImageUrl()
   {
-    return this.imageLocation;
+    return this.imageUrl;
   }
   
   public ImageIcon getImage()
