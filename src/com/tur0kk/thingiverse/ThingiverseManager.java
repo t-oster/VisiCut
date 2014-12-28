@@ -1,6 +1,15 @@
 package com.tur0kk.thingiverse;
 
+import com.tur0kk.thingiverse.model.Thing;
+import com.tur0kk.thingiverse.model.ThingFile;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -49,7 +58,7 @@ public class ThingiverseManager
     return loginUrl;
   }
  
-  public void finishLogin(String browserCode)
+  public void finalizeLogin(String browserCode)
   {
     if (browserCode == null || browserCode.isEmpty())
     {
@@ -131,9 +140,10 @@ public class ThingiverseManager
       for (Object obj : array)
       {
         JSONObject item = (JSONObject)obj;
+        String itemId = item.get("id").toString();
         String itemName = item.get("name").toString();
         String imageUrl = item.get("thumbnail").toString();
-        things.add(new Thing(itemName, imageUrl));
+        things.add(new Thing(itemId, itemName, imageUrl));
       }
     }
     catch(Exception ex)
@@ -157,9 +167,10 @@ public class ThingiverseManager
       for (Object obj : array)
       {
         JSONObject item = (JSONObject)obj;
+        String itemId = item.get("id").toString();
         String itemName = item.get("name").toString();
         String imageUrl = item.get("thumbnail").toString();
-        things.add(new Thing(itemName, imageUrl));
+        things.add(new Thing(itemId, itemName, imageUrl));
       }
     }
     catch(Exception ex)
@@ -168,5 +179,33 @@ public class ThingiverseManager
     }
     
     return things;
+  }
+  
+  public LinkedList<ThingFile> getSvgFiles(Thing thing)
+  {
+    LinkedList<ThingFile> files = new LinkedList<ThingFile>();
+    
+    try
+    {
+      String json = client.filesByThing(thing.getId());
+
+      JSONParser parser = new JSONParser();
+      JSONArray array = (JSONArray)parser.parse(json);
+      for (Object obj : array)
+      {
+        JSONObject file = (JSONObject)obj;
+        String fileId = file.get("id").toString();
+        String fileName = file.get("name").toString();
+        String fileUrl = file.get("download_url").toString();
+        String thumbnailUrl = file.get("thumbnail").toString();
+        files.add(new ThingFile(fileId, fileName, fileUrl, thumbnailUrl));
+      }
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+    }
+    
+    return files;
   }
 }

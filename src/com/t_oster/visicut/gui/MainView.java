@@ -2438,7 +2438,7 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     loginDialog.setVisible(true);
 
     String browserCode = loginDialog.getBrowserCode();
-    thingiverse.finishLogin(browserCode);
+    thingiverse.finalizeLogin(browserCode);
     
     if (thingiverse.isLoggedIn())
     {
