@@ -2431,14 +2431,22 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
   {//GEN-HEADEREND:event_btThingiverseActionPerformed
 
     ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-    String loginUrl = thingiverse.initiateLogin();
     
-    ThingiverseLoginDialog loginDialog;
-    loginDialog = new ThingiverseLoginDialog(this, true, loginUrl);
-    loginDialog.setVisible(true);
-
-    String browserCode = loginDialog.getBrowserCode();
-    thingiverse.finalizeLogin(browserCode);
+    // Try login with persistent access token.
+    boolean loginSuccess = thingiverse.logIn();
+    
+    if (!loginSuccess)
+    {
+      // Log in via browser dialog.
+      String loginUrl = thingiverse.initiateAuthentication();
+      
+      ThingiverseLoginDialog loginDialog;
+      loginDialog = new ThingiverseLoginDialog(this, true, loginUrl);    
+      loginDialog.setVisible(true);
+      
+      String browserCode = loginDialog.getBrowserCode();
+      thingiverse.logIn(browserCode);
+    }
     
     if (thingiverse.isLoggedIn())
     {

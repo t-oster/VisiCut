@@ -1,14 +1,16 @@
 package com.tur0kk.thingiverse;
 
+import com.t_oster.visicut.misc.Helper;
+import static com.t_oster.visicut.misc.Helper.getBasePath;
 import com.tur0kk.thingiverse.model.Thing;
 import com.tur0kk.thingiverse.model.ThingFile;
 import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.net.URL;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Properties;
+import javax.swing.plaf.metal.MetalIconFactory;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -48,18 +50,39 @@ public class ThingiverseManager
   }
   
   /**
+   * Tries login with access token that has been saved to file.
+   */
+  public boolean logIn()
+  {
+    String accessToken = loadAccesToken();
+    if (accessToken == null)
+    {
+      return false;
+    }
+    
+    client = new ThingiverseClient(clientId, clientSecret, clientCallback);
+    client.loginWithAccesToken(accessToken);
+    return true;
+  }
+  
+  /**
    * Logs out the current user and starts the authentication procedure.
    * @return Login URL
    */
-  public String initiateLogin()
+  public String initiateAuthentication()
   {
     client = new ThingiverseClient(clientId, clientSecret, clientCallback);
     String loginUrl = client.loginFirstTime();
     return loginUrl;
   }
  
-  public void finalizeLogin(String browserCode)
+  public void logIn(String browserCode)
   {
+    if (client == null)
+    {
+      client = new ThingiverseClient(clientId, clientSecret, clientCallback);
+    }
+    
     if (browserCode == null || browserCode.isEmpty())
     {
       logOut();
@@ -68,15 +91,23 @@ public class ThingiverseManager
       return;
     }
     
-    String accessTokenString = client.loginWithBrowserCode(browserCode);
+    String accessToken = client.loginWithBrowserCode(browserCode);
 
-    assert(accessTokenString != null);
-    assert(!accessTokenString.isEmpty());
+    if (accessToken == null || accessToken.isEmpty())
+    {
+      logOut();
+      
+      System.out.println("Login failed!");
+      return;
+    }
+    
+    saveAccessToken(accessToken);
   }
   
   public void logOut()
   {
     client = null;
+    deleteAccesToken();
   }
   
   public boolean isLoggedIn()
@@ -234,5 +265,93 @@ public class ThingiverseManager
     }
     
     return file;
+  }
+  
+  /**
+   * Save access token to file.
+   */
+  private void saveAccessToken(String accessToken)
+  {
+    try
+    {
+      File thingiverseFolder = new File(Helper.getBasePath(), "thingiverse");
+      thingiverseFolder.mkdirs();
+
+      File sessionFile = new File(thingiverseFolder, "session.properties");
+      sessionFile.createNewFile();
+
+      Properties properties = new Properties();
+      properties.load(new FileInputStream(sessionFile));
+      properties.setProperty("access_token", accessToken);
+      properties.store(new FileWriter(sessionFile), "session");
+    }
+    catch(Exception ex)
+    {
+      ex.printStackTrace();
+    }
+  }
+
+  /**
+   * Get access token from file.
+   * Returns null on failure.
+   */
+  private String loadAccesToken()
+  {
+    String result = null;
+    
+    try
+    {
+      File thingiverseFolder = new File(Helper.getBasePath(), "thingiverse");
+      if (!thingiverseFolder.exists())
+      {
+        return result;
+      }
+
+      File sessionFile = new File(thingiverseFolder, "session.properties");
+      if (!sessionFile.exists())
+      {
+        return result;
+      }
+
+      Properties properties = new Properties();
+      properties.load(new FileInputStream(sessionFile));
+      result = properties.getProperty("access_token");
+    }
+    catch(Exception ex)
+    {
+      ex.printStackTrace();
+    }
+ 
+    return result;
+  }
+  
+  /**
+   * Deletes the access token if it has been saved to file.
+   */
+  private void deleteAccesToken()
+  {
+    try
+    {
+      File thingiverseFolder = new File(Helper.getBasePath(), "thingiverse");
+      if (!thingiverseFolder.exists())
+      {
+        return;
+      }
+
+      File sessionFile = new File(thingiverseFolder, "session.properties");
+      if (!sessionFile.exists())
+      {
+        return;
+      }
+
+      Properties properties = new Properties();
+      properties.load(new FileInputStream(sessionFile));
+      properties.remove("access_token");
+      properties.store(new FileWriter(sessionFile), "session");
+    }
+    catch(Exception ex)
+    {
+      ex.printStackTrace();
+    }
   }
 }
