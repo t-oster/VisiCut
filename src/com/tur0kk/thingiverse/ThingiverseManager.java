@@ -1,7 +1,6 @@
 package com.tur0kk.thingiverse;
 
 import com.t_oster.visicut.misc.Helper;
-import static com.t_oster.visicut.misc.Helper.getBasePath;
 import com.tur0kk.thingiverse.model.Thing;
 import com.tur0kk.thingiverse.model.ThingFile;
 import java.io.File;
@@ -10,7 +9,6 @@ import java.io.FileWriter;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.Properties;
-import javax.swing.plaf.metal.MetalIconFactory;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
