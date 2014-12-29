@@ -212,4 +212,27 @@ public class ThingiverseManager
     
     return files;
   }
+  
+  /**
+   * Downloads an svg from thingiverse and returns a File object or null.
+   */
+  public File downloadSvgFile(ThingFile thingFile)
+  {
+    File file = null;
+    
+    try
+    {
+      URL url = new URL(thingFile.getUrl());
+      file = new File(thingFile.getName());
+      FileUtils.copyURLToFile(url, file);
+      
+      return file;
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+    }
+    
+    return file;
+  }
 }
