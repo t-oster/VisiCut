@@ -78,7 +78,7 @@ public class ThingiverseLoginDialog extends javax.swing.JDialog
     pack();
 
     setTitle("Thingiverse Login");
-    setSize(1024, 500);
+    setSize(1024, 600);
     setLocationRelativeTo(null);
   }
 
