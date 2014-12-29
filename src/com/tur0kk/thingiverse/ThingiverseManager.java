@@ -198,7 +198,11 @@ public class ThingiverseManager
         String fileName = file.get("name").toString();
         String fileUrl = file.get("download_url").toString();
         String thumbnailUrl = file.get("thumbnail").toString();
-        files.add(new ThingFile(fileId, fileName, fileUrl, thumbnailUrl));
+        
+        if (fileName.toLowerCase().endsWith("svg"))
+        {
+          files.add(new ThingFile(fileId, fileName, fileUrl, thumbnailUrl));
+        }
       }
     }
     catch (Exception ex)
