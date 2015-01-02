@@ -73,7 +73,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -85,6 +89,8 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -1868,10 +1874,13 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
           MainView.this.progressBar.setString(bundle.getString("CAPTURING PHOTO..."));
           MainView.this.progressBar.setIndeterminate(true);
           MainView.this.progressBar.repaint();
+          URLConnection conn=null;
           try
           {
             URL src = new URL(MainView.this.visicutModel1.getSelectedLaserDevice().getCameraURL());
-            BufferedImage back = ImageIO.read(src);
+            conn=src.openConnection();
+            ImageInputStream stream=new MemoryCacheImageInputStream(conn.getInputStream());
+            BufferedImage back = ImageIO.read(stream);
             if (back != null && MainView.this.visicutModel1.getBackgroundImage() == null)
             {//First Time Image is Captured => resize View
               MainView.this.previewPanel.setZoom(100d);
@@ -1885,8 +1894,47 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
           }
           catch (Exception ex)
           {
+            MainView.this.visicutModel1.setBackgroundImage(null);
             MainView.this.progressBar.setString("");
-            MainView.this.dialog.showErrorMessage(ex, bundle.getString("ERROR CAPTURING PHOTO"));
+            ex.printStackTrace();
+            if (ex instanceof IOException && conn instanceof HttpURLConnection) {
+              // possible HTTP error - if the server sent a message, display it
+              // This can be used by VisiCam to show an error message like "marker not found"
+              String msg="";
+              int responseCode=0;
+              try {
+                responseCode=((HttpURLConnection) conn).getResponseCode();
+                if (responseCode != 200) {
+                  // received a text error message, display it
+                  InputStream stream=((HttpURLConnection) conn).getErrorStream();
+                  if (stream == null) {
+                    msg="(no message sent)";
+                  } else {
+                    InputStreamReader errorReader=new InputStreamReader(stream);
+                    StringBuilder buffer=new StringBuilder();
+                    int c;
+                    while ((c=errorReader.read()) != -1) {
+                      // read until finished
+                      buffer.append((char) c);
+                      if (buffer.length() > 200) {
+                        buffer.append("...");
+                        break;
+                      }
+                    }
+                    msg=buffer.toString();
+                  }
+                } else {
+                  // server seht HTTP OK, so the exception is not a HTTP problem
+                  msg=ex.toString();
+                }
+              } catch(Exception e) {
+                e.printStackTrace();
+                msg="(could not get error message)";
+              }
+              MainView.this.dialog.showErrorMessage(bundle.getString("ERROR CAPTURING PHOTO") +" (" + responseCode + ")\n " + msg);
+            } else {
+              MainView.this.dialog.showErrorMessage(ex, bundle.getString("ERROR CAPTURING PHOTO"));
+            }
             MainView.this.progressBar.setIndeterminate(false);
             MainView.this.progressBar.repaint();
           }
@@ -1910,6 +1958,7 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
   }
 
 private void captureImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_captureImageButtonActionPerformed
+  this.warningPanel.removeAllWarnings(); // remove all messages like "cannot get image"
   captureImage();
 }//GEN-LAST:event_captureImageButtonActionPerformed
 
