@@ -3,7 +3,7 @@
  *
  * Created on 13.12.2014, 17:42:20
  */
-package com.t_oster.visicut.gui;
+package com.tur0kk.thingiverse.gui;
 
 import com.t_oster.uicomponents.LoadingIcon;
 import com.t_oster.visicut.gui.mapping.AnimationImageObserverList;

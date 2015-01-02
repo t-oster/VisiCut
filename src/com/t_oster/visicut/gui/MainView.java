@@ -18,6 +18,11 @@
  **/
 package com.t_oster.visicut.gui;
 
+// Do not add this import!
+// It is loaded dynamically iff JavaFX is available:
+// import com.tur0kk.thingiverse.gui.ThingiverseLoginDialog;
+
+import com.tur0kk.thingiverse.gui.ThingiverseDialog;
 import com.apple.eawt.AppEvent.AboutEvent;
 import com.apple.eawt.AppEvent.OpenFilesEvent;
 import com.apple.eawt.AppEvent.PreferencesEvent;
@@ -57,6 +62,7 @@ import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import com.tur0kk.thingiverse.ThingiverseManager;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Image;
@@ -78,9 +84,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -2589,40 +2598,119 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
 
     ThingiverseManager thingiverse = ThingiverseManager.getInstance();
     
-    // Try login with persistent access token.
-    boolean loginSuccess = thingiverse.logIn();
-    
-    if (!loginSuccess)
+    try
     {
-      // Log in via browser dialog.
-      String loginUrl = thingiverse.initiateAuthentication();
-      
-      ThingiverseLoginDialog loginDialog;
-      loginDialog = new ThingiverseLoginDialog(this, true, loginUrl);    
-      loginDialog.setVisible(true);
-      
-      String browserCode = loginDialog.getBrowserCode();
-      thingiverse.logIn(browserCode);
-    }
-    
-    if (thingiverse.isLoggedIn())
-    {
-      try
+      // Try login with persistent access token.
+      boolean loginSuccess = thingiverse.logIn();
+
+      if (!loginSuccess)
+      {
+        String loginUrl = thingiverse.initiateAuthentication();
+        String browserCode = "";
+
+        if (isJavaFxAvailable())
+        {
+          browserCode = javaFXLogin(loginUrl);
+        }
+        else
+        {
+          // JavaFX not available...
+          System.out.println("JavaFX is not available. Using fallback behavior.");
+          browserCode = systemBrowserLogin(loginUrl);
+        }
+
+        thingiverse.logIn(browserCode);
+      }
+
+      if (thingiverse.isLoggedIn())
       {
         ThingiverseDialog thingiverseDialog = new ThingiverseDialog(this, true);
         thingiverseDialog.setVisible(true);
       }
-      catch (MalformedURLException ex)
-      {
-        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      catch (IOException ex)
-      {
-        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-      }
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
     }
   }//GEN-LAST:event_btThingiverseActionPerformed
 
+  private String javaFXLogin(String loginUrl) throws Exception
+  {
+    String browserCode = null;
+    
+    URL jarUrl = MainView.class.getResource("lib/JavaFXThingiverseLoginDialog.jar");
+    URLClassLoader classLoader = new URLClassLoader(new URL[] { jarUrl }, MainView.class.getClassLoader());
+    Class<?> ThingiverseLoginDialog = classLoader.loadClass("com.tur0kk.thingiverse.fxgui.ThingiverseLoginDialog");
+
+    Class<?>[] constructorParameterTypes = new Class[]
+    {
+      java.awt.Frame.class,
+      boolean.class,
+      String.class
+    };
+
+    Constructor<?> constructor = ThingiverseLoginDialog.getConstructor(constructorParameterTypes);
+
+    // Create instance
+    Object loginDialog = constructor.newInstance(new Object[]
+    {
+      this, true, loginUrl
+    });
+
+    // Parameter types for methods
+    Class<?>[] setVisibleParameterTypes = new Class[]
+    {
+      boolean.class
+    };
+
+    Class<?>[] getBrowserCodeParameterTypes = new Class[]
+    {
+
+    };
+
+    Method setVisibleMethod = ThingiverseLoginDialog.getMethod("setVisible", setVisibleParameterTypes);
+    Method getBrowserCodeMethod = ThingiverseLoginDialog.getMethod("getBrowserCode", getBrowserCodeParameterTypes);
+
+    Object[] setVisibleArgumentList = new Object[]
+    {
+      true
+    };
+
+    Object[] getBrowserCodeArgumentList = new Object[]
+    {
+
+    };
+
+    setVisibleMethod.invoke(loginDialog, setVisibleArgumentList);
+    browserCode = (String) getBrowserCodeMethod.invoke(loginDialog, getBrowserCodeArgumentList);
+    
+    return browserCode;
+  }
+  
+   private String systemBrowserLogin(String loginUrl) throws Exception
+  {
+    String browserCode = null;
+  
+    Desktop.getDesktop().browse(URI.create(loginUrl));
+    browserCode = javax.swing.JOptionPane.showInputDialog("Log in with your Thingiverse-account, click allow, paste code here:");
+
+    return browserCode;
+  }
+  
+  private boolean isJavaFxAvailable()
+  {
+    try
+    {
+      ClassLoader classLoader = MainView.class.getClassLoader();
+      classLoader.loadClass("javafx.embed.swing.JFXPanel");
+      return true;
+    }
+    catch (ClassNotFoundException e)
+    {
+      return false;
+    }
+  }
+  
   private void btFacebookActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btFacebookActionPerformed
   {//GEN-HEADEREND:event_btFacebookActionPerformed
     // TODO add your handling code here:
