@@ -3,7 +3,7 @@
  *
  * Created on 23.12.2014, 22:55:29
  */
-package com.t_oster.visicut.gui;
+package com.tur0kk.thingiverse.gui;
 
 // We use JavaFX for its browser control.
 // This requires a recent Java version, e.g. Java 8.
