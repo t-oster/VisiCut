@@ -85,6 +85,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -2482,8 +2483,9 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
   {
     String browserCode = null;
     
-    // Dynamically load class that depends on JavaFX using Reflection
-    Class<?> ThingiverseLoginDialog = Class.forName("com.tur0kk.thingiverse.gui.ThingiverseLoginDialog");
+    URL jarUrl = MainView.class.getResource("lib/JavaFXThingiverseLoginDialog.jar");
+    URLClassLoader classLoader = new URLClassLoader(new URL[] { jarUrl }, MainView.class.getClassLoader());
+    Class<?> ThingiverseLoginDialog = classLoader.loadClass("com.tur0kk.thingiverse.fxgui.ThingiverseLoginDialog");
 
     Class<?>[] constructorParameterTypes = new Class[]
     {
