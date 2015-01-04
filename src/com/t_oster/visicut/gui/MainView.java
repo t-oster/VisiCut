@@ -60,6 +60,7 @@ import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import com.tur0kk.thingiverse.ThingiverseManager;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Image;
@@ -82,6 +83,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
@@ -2440,45 +2442,39 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
     ThingiverseManager thingiverse = ThingiverseManager.getInstance();
     
-    // Try login with persistent access token.
-    boolean loginSuccess = thingiverse.logIn();
-    
-    if (!loginSuccess)
+    try
     {
-      String loginUrl = thingiverse.initiateAuthentication();
-      String browserCode = "";
-     
-      if (isJavaFxAvailable())
+      // Try login with persistent access token.
+      boolean loginSuccess = thingiverse.logIn();
+
+      if (!loginSuccess)
       {
-        try
+        String loginUrl = thingiverse.initiateAuthentication();
+        String browserCode = "";
+
+        if (isJavaFxAvailable())
         {
           browserCode = javaFXLogin(loginUrl);
         }
-        catch (Exception ex)
+        else
         {
-          ex.printStackTrace();
+          // JavaFX not available...
+          System.out.println("JavaFX is not available. Using fallback behavior.");
+          browserCode = systemBrowserLogin(loginUrl);
         }
+
+        thingiverse.logIn(browserCode);
       }
-      else
-      {
-        // JavaFX not available...
-        System.out.println("JavaFX is not available. Using fallback behavior.");
-      }
-      
-      thingiverse.logIn(browserCode);
-    }
-    
-    if (thingiverse.isLoggedIn())
-    {
-      try
+
+      if (thingiverse.isLoggedIn())
       {
         ThingiverseDialog thingiverseDialog = new ThingiverseDialog(this, true);
         thingiverseDialog.setVisible(true);
       }
-      catch (Exception ex)
-      {
-        ex.printStackTrace();
-      }
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
     }
   }//GEN-LAST:event_btThingiverseActionPerformed
 
@@ -2531,6 +2527,16 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     setVisibleMethod.invoke(loginDialog, setVisibleArgumentList);
     browserCode = (String) getBrowserCodeMethod.invoke(loginDialog, getBrowserCodeArgumentList);
     
+    return browserCode;
+  }
+  
+   private String systemBrowserLogin(String loginUrl) throws Exception
+  {
+    String browserCode = null;
+  
+    Desktop.getDesktop().browse(URI.create(loginUrl));
+    browserCode = javax.swing.JOptionPane.showInputDialog("Log in with your Thingiverse-account, click allow, paste code here:");
+
     return browserCode;
   }
   
