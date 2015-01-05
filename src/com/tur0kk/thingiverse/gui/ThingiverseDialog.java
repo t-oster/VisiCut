@@ -5,11 +5,11 @@
  */
 package com.tur0kk.thingiverse.gui;
 
-import com.t_oster.uicomponents.LoadingIcon;
-import com.t_oster.visicut.gui.mapping.AnimationImageObserverList;
-import com.t_oster.visicut.gui.mapping.ThingListRenderer;
+import com.tur0kk.thingiverse.gui.mapping.AnimationImageObserverList;
+import com.tur0kk.thingiverse.gui.mapping.ThingListRenderer;
 import com.tur0kk.thingiverse.model.Thing;
 import com.tur0kk.thingiverse.ThingiverseManager;
+import com.tur0kk.thingiverse.uicomponents.LoadingIcon;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.awt.Dimension;
