@@ -952,7 +952,7 @@
     <Component class="javax.swing.JButton" name="btThingiverse">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="PlatformIcon.get(PlatformIcon.THINGIVERSE_LOGO)" type="code"/>
+          <Connection code="ThingiversePlatformIcon.get(ThingiversePlatformIcon.THINGIVERSE_LOGO)" type="code"/>
         </Property>
         <Property name="text" type="java.lang.String" resourceKey="btThingiverse.text"/>
         <Property name="toolTipText" type="java.lang.String" resourceKey="btThingiverse.toolTipText"/>
@@ -968,7 +968,7 @@
     <Component class="javax.swing.JButton" name="btFacebook">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="PlatformIcon.get(PlatformIcon.FACEBOOK_LOGO)" type="code"/>
+          <Connection code="ThingiversePlatformIcon.get(ThingiversePlatformIcon.FACEBOOK_LOGO)" type="code"/>
         </Property>
         <Property name="text" type="java.lang.String" resourceKey="btFacebook.text"/>
         <Property name="toolTipText" type="java.lang.String" resourceKey="btFacebook.toolTipText"/>

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.t_oster.uicomponents;
+package com.tur0kk.thingiverse.uicomponents;
 
 import javax.swing.ImageIcon;
 

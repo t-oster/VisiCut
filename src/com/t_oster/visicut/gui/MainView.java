@@ -62,6 +62,7 @@ import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import com.tur0kk.thingiverse.ThingiverseManager;
+import com.tur0kk.thingiverse.uicomponents.ThingiversePlatformIcon;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
@@ -1006,7 +1007,7 @@ public class MainView extends javax.swing.JFrame
         warningPanel.setName("warningPanel"); // NOI18N
         warningPanel.setPreferredSize(new java.awt.Dimension(276, 123));
 
-        btThingiverse.setIcon(PlatformIcon.get(PlatformIcon.THINGIVERSE_LOGO));
+        btThingiverse.setIcon(ThingiversePlatformIcon.get(ThingiversePlatformIcon.THINGIVERSE_LOGO));
         btThingiverse.setText(resourceMap.getString("btThingiverse.text")); // NOI18N
         btThingiverse.setToolTipText(resourceMap.getString("btThingiverse.toolTipText")); // NOI18N
         btThingiverse.setName("btThingiverse"); // NOI18N
@@ -1016,7 +1017,7 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
-        btFacebook.setIcon(PlatformIcon.get(PlatformIcon.FACEBOOK_LOGO));
+        btFacebook.setIcon(ThingiversePlatformIcon.get(ThingiversePlatformIcon.FACEBOOK_LOGO));
         btFacebook.setText(resourceMap.getString("btFacebook.text")); // NOI18N
         btFacebook.setToolTipText(resourceMap.getString("btFacebook.toolTipText")); // NOI18N
         btFacebook.setName("btFacebook"); // NOI18N
@@ -2636,6 +2637,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
 
   private String javaFXLogin(String loginUrl) throws Exception
   {
+    // JavaFX available, load JavaFXThingiverseLoginDialog dynamically (depends on JavaFX)
     String browserCode = null;
     
     URL jarUrl = MainView.class.getResource("lib/JavaFXThingiverseLoginDialog.jar");
@@ -2681,6 +2683,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
 
     };
 
+    // invoke JavaFX browser with thingiverse website
     setVisibleMethod.invoke(loginDialog, setVisibleArgumentList);
     browserCode = (String) getBrowserCodeMethod.invoke(loginDialog, getBrowserCodeArgumentList);
     
@@ -2689,6 +2692,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   
    private String systemBrowserLogin(String loginUrl) throws Exception
   {
+    // if JavaFX is not available use system browser to show thingiverse website. Necessary to copy auth code by hand.
     String browserCode = null;
   
     Desktop.getDesktop().browse(URI.create(loginUrl));

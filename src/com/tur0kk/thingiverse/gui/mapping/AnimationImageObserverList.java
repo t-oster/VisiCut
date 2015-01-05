@@ -1,4 +1,4 @@
-package com.t_oster.visicut.gui.mapping;
+package com.tur0kk.thingiverse.gui.mapping;
 
 import java.awt.Image;
 import java.awt.Rectangle;

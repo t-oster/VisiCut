@@ -1,4 +1,4 @@
-package com.t_oster.visicut.gui.mapping;
+package com.tur0kk.thingiverse.gui.mapping;
 
 import com.tur0kk.thingiverse.model.Thing;
 import java.awt.Component;
