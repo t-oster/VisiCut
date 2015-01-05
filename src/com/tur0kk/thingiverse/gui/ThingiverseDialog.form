@@ -24,18 +24,18 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="lProfilePicture" min="-2" pref="100" max="-2" attributes="0"/>
+                  <Component id="tpLists" alignment="1" pref="718" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-                      <Component id="lUserName" min="-2" max="-2" attributes="0"/>
+                      <Component id="lProfilePicture" min="-2" pref="60" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
+                      <EmptySpace pref="348" max="32767" attributes="0"/>
+                      <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="btnLogout" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="tpLists" pref="382" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -45,15 +45,12 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="tpLists" alignment="0" pref="282" max="32767" attributes="0"/>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="lProfilePicture" min="-2" pref="100" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="lUserName" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="167" max="32767" attributes="0"/>
-                      <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
-                  </Group>
+                  <Component id="lProfilePicture" min="-2" pref="60" max="-2" attributes="0"/>
+                  <Component id="btnLogout" min="-2" pref="21" max="-2" attributes="0"/>
+                  <Component id="lUserName" min="-2" pref="30" max="-2" attributes="0"/>
               </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Component id="tpLists" pref="473" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -74,6 +71,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lUserName">
       <Properties>
+        <Property name="verticalAlignment" type="int" value="1"/>
         <Property name="name" type="java.lang.String" value="lUserName" noResource="true"/>
       </Properties>
     </Component>
@@ -115,9 +113,12 @@
                   <Border info="null"/>
                 </Property>
                 <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="new Dimension(220,300)" type="code"/>
+                  <Connection code="new Dimension(200,300)" type="code"/>
                 </Property>
                 <Property name="name" type="java.lang.String" value="sclpMyThings" noResource="true"/>
+                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="new Dimension(400,300)" type="code"/>
+                </Property>
               </Properties>
               <AuxValues>
                 <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
@@ -145,6 +146,9 @@
             </Container>
             <Container class="javax.swing.JScrollPane" name="sclpMyThingsThing">
               <Properties>
+                <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="new Dimension(200,300)" type="code"/>
+                </Property>
                 <Property name="name" type="java.lang.String" value="sclpMyThingsThing" noResource="true"/>
               </Properties>
               <Constraints>
@@ -185,6 +189,9 @@
           <SubComponents>
             <Container class="javax.swing.JPanel" name="jPanel1">
               <Properties>
+                <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="new Dimension(25,300)" type="code"/>
+                </Property>
                 <Property name="name" type="java.lang.String" value="jPanel1" noResource="true"/>
               </Properties>
               <Constraints>
@@ -210,6 +217,7 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="btnSearch">
                   <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="btnSearch.text"/>
                     <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                       <Connection code="new Dimension(50,30)" type="code"/>
                     </Property>
@@ -250,9 +258,12 @@
                       <Border info="null"/>
                     </Property>
                     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                      <Connection code="new Dimension(220,300)" type="code"/>
+                      <Connection code="new Dimension(200,300)" type="code"/>
                     </Property>
                     <Property name="name" type="java.lang.String" value="sclpSearch" noResource="true"/>
+                    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="new Dimension(400,300)" type="code"/>
+                    </Property>
                   </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
@@ -275,6 +286,9 @@
                 </Container>
                 <Container class="javax.swing.JScrollPane" name="sclpSearchThing">
                   <Properties>
+                    <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="new Dimension(200,300)" type="code"/>
+                    </Property>
                     <Property name="name" type="java.lang.String" value="sclpSearchThing" noResource="true"/>
                   </Properties>
                   <Constraints>
@@ -304,6 +318,7 @@
     </Container>
     <Component class="javax.swing.JButton" name="btnLogout">
       <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="btnLogout.text"/>
         <Property name="name" type="java.lang.String" value="btnLogout" noResource="true"/>
       </Properties>
       <Events>
