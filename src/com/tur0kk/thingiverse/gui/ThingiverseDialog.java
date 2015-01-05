@@ -13,6 +13,7 @@ import com.tur0kk.thingiverse.uicomponents.LoadingIcon;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Image;
 import java.net.URL;
 import java.rmi.AccessException;
@@ -313,6 +314,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
       }
     }).start();
+    
+    
   }
 
 
@@ -345,19 +348,15 @@ public class ThingiverseDialog extends javax.swing.JDialog
         btnLogout = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(ThingiverseDialog.class);
-        setTitle(resourceMap.getString("thingiverseDialog.title")); // NOI18N
         setLocationByPlatform(true);
         setName("thingiverseDialog"); // NOI18N
 
-        lProfilePicture.setBackground(resourceMap.getColor("lProfilePicture.background")); // NOI18N
-        lProfilePicture.setText(resourceMap.getString("lProfilePicture.text")); // NOI18N
         lProfilePicture.setAlignmentX(5.0F);
         lProfilePicture.setAlignmentY(5.0F);
         lProfilePicture.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(-16777216,true)));
         lProfilePicture.setName("lProfilePicture"); // NOI18N
 
-        lUserName.setText(resourceMap.getString("lUserName.text")); // NOI18N
+        lUserName.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         lUserName.setName("lUserName"); // NOI18N
 
         tpLists.setAlignmentX(5.0F);
@@ -370,8 +369,9 @@ public class ThingiverseDialog extends javax.swing.JDialog
         spltpMyThings.setName("spltpMyThings"); // NOI18N
 
         sclpMyThings.setBorder(null);
-        sclpMyThings.setMinimumSize(new Dimension(220,300));
+        sclpMyThings.setMinimumSize(new Dimension(200,300));
         sclpMyThings.setName("sclpMyThings"); // NOI18N
+        sclpMyThings.setPreferredSize(new Dimension(400,300));
 
         lstMyThings.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lstMyThings.setAlignmentX(0.0F);
@@ -381,6 +381,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         spltpMyThings.setLeftComponent(sclpMyThings);
 
+        sclpMyThingsThing.setMinimumSize(new Dimension(200,300));
         sclpMyThingsThing.setName("sclpMyThingsThing"); // NOI18N
 
         lstMyThingsThing.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -389,16 +390,15 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         spltpMyThings.setRightComponent(sclpMyThingsThing);
 
-        tpLists.addTab(resourceMap.getString("spltpMyThings.TabConstraints.tabTitle"), spltpMyThings); // NOI18N
+        tpLists.addTab("MyThings", spltpMyThings);
 
         spltpSearchContainer.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         spltpSearchContainer.setName("spltpSearchContainer"); // NOI18N
 
-        jPanel1.setBackground(resourceMap.getColor("jPanel1.background")); // NOI18N
+        jPanel1.setMinimumSize(new Dimension(25,300));
         jPanel1.setName("jPanel1"); // NOI18N
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        txtSearch.setText(resourceMap.getString("txtSearch.text")); // NOI18N
         txtSearch.setName("txtSearch"); // NOI18N
         txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -407,6 +407,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         });
         jPanel1.add(txtSearch, java.awt.BorderLayout.CENTER);
 
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(ThingiverseDialog.class);
         btnSearch.setText(resourceMap.getString("btnSearch.text")); // NOI18N
         btnSearch.setMaximumSize(new Dimension(50,30));
         btnSearch.setMinimumSize(new Dimension(50,30));
@@ -424,8 +425,9 @@ public class ThingiverseDialog extends javax.swing.JDialog
         spltpSearch.setName("spltpSearch"); // NOI18N
 
         sclpSearch.setBorder(null);
-        sclpSearch.setMinimumSize(new Dimension(220,300));
+        sclpSearch.setMinimumSize(new Dimension(200,300));
         sclpSearch.setName("sclpSearch"); // NOI18N
+        sclpSearch.setPreferredSize(new Dimension(400,300));
 
         lstSearch.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lstSearch.setName("lstSearch"); // NOI18N
@@ -433,6 +435,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         spltpSearch.setLeftComponent(sclpSearch);
 
+        sclpSearchThing.setMinimumSize(new Dimension(200,300));
         sclpSearchThing.setName("sclpSearchThing"); // NOI18N
 
         lstSearchThing.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -443,7 +446,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         spltpSearchContainer.setRightComponent(spltpSearch);
 
-        tpLists.addTab(resourceMap.getString("spltpSearchContainer.TabConstraints.tabTitle"), spltpSearchContainer); // NOI18N
+        tpLists.addTab("Search", spltpSearchContainer);
 
         btnLogout.setText(resourceMap.getString("btnLogout.text")); // NOI18N
         btnLogout.setName("btnLogout"); // NOI18N
@@ -460,13 +463,13 @@ public class ThingiverseDialog extends javax.swing.JDialog
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tpLists, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 718, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(lUserName))
-                    .addComponent(btnLogout))
-                .addGap(18, 18, 18)
-                .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
+                        .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 348, Short.MAX_VALUE)
+                        .addComponent(btnLogout)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -474,18 +477,13 @@ public class ThingiverseDialog extends javax.swing.JDialog
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lUserName)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 139, Short.MAX_VALUE)
-                        .addComponent(btnLogout)))
+                    .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
                 .addContainerGap())
         );
-
-        lProfilePicture.getAccessibleContext().setAccessibleDescription(resourceMap.getString("lProfilePic.AccessibleContext.accessibleDescription")); // NOI18N
-        tpLists.getAccessibleContext().setAccessibleName(resourceMap.getString("tpLists.AccessibleContext.accessibleName")); // NOI18N
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -527,6 +525,7 @@ private void initTabbedPaneHeader(){
   lblMyThings.setText("MyThings");
   lblMyThings.setAlignmentY(0.0F);
   lblMyThings.setName("lblMyThings"); 
+  lblMyThings.setFont(new Font(lblMyThings.getFont().getName(), lblMyThings.getFont().getStyle(), 14));
 
   lblLoadingMyThings.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
   lblLoadingMyThings.setText("");
@@ -566,6 +565,7 @@ private void initTabbedPaneHeader(){
   lblSearch.setText("Search");
   lblSearch.setAlignmentY(0.0F);
   lblSearch.setName("lblFeatured"); 
+  lblSearch.setFont(new Font(lblSearch.getFont().getName(), lblSearch.getFont().getStyle(), 14));
 
   lblLoadingSearch.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
   lblLoadingSearch.setText("");
