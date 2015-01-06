@@ -2457,13 +2457,13 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
         if (isJavaFxAvailable())
         {
-          browserCode = javaFXLogin(loginUrl);
+          browserCode = javaFXThingiverseLogin(loginUrl);
         }
         else
         {
           // JavaFX not available...
           System.out.println("JavaFX is not available. Using fallback behavior.");
-          browserCode = systemBrowserLogin(loginUrl);
+          browserCode = systemBrowserThingiverseLogin(loginUrl);
         }
 
         thingiverse.logIn(browserCode);
@@ -2481,7 +2481,7 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     }
   }//GEN-LAST:event_btThingiverseActionPerformed
 
-  private String javaFXLogin(String loginUrl) throws Exception
+  private String javaFXThingiverseLogin(String loginUrl) throws Exception
   {
     // JavaFX available, load JavaFXThingiverseLoginDialog dynamically (depends on JavaFX)
     String browserCode = null;
@@ -2536,7 +2536,7 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     return browserCode;
   }
   
-   private String systemBrowserLogin(String loginUrl) throws Exception
+  private String systemBrowserThingiverseLogin(String loginUrl) throws Exception
   {
     // if JavaFX is not available use system browser to show thingiverse website. Necessary to copy auth code by hand.
     String browserCode = null;
@@ -2575,16 +2575,7 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         String loginUrl = facebook.initiateAuthentication();
         String browserCode = "";
 
-        if (isJavaFxAvailable())
-        {
-          browserCode = javaFXLogin(loginUrl);
-        }
-        else
-        {
-          // JavaFX not available...
-          System.out.println("JavaFX is not available. Using fallback behavior.");
-          browserCode = systemBrowserLogin(loginUrl);
-        }
+        browserCode = systemBrowserFacebookLogin(loginUrl);
         
         facebook.logIn(browserCode);
       }
@@ -2602,6 +2593,17 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     }
   }//GEN-LAST:event_btFacebookActionPerformed
 
+  private String systemBrowserFacebookLogin(String loginUrl) throws Exception
+  {
+    String browserCode = null;
+  
+    Desktop.getDesktop().browse(URI.create(loginUrl));
+    browserCode = javax.swing.JOptionPane.showInputDialog("Log in with your Facebook account, click allow, paste code here:");
+
+    return browserCode;
+  }
+  
+  
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton bt1to1;

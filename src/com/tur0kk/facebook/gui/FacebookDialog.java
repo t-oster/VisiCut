@@ -12,8 +12,6 @@ package com.tur0kk.facebook.gui;
 
 import com.github.sarxos.webcam.Webcam;
 import com.tur0kk.facebook.FacebookManager;
-import com.tur0kk.thingiverse.uicomponents.LoadingIcon;
-import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.net.URL;

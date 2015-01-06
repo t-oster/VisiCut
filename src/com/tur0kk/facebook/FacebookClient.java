@@ -112,7 +112,4 @@ public class FacebookClient
   public String userPicture() {
     return call(Verb.GET, "/me/picture?redirect=0&height=100&type=normal&width=100");
   }
-  
-  
-  
 }
