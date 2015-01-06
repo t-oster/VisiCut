@@ -29,18 +29,23 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="lProfilePicture" min="-2" pref="60" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
-                      <EmptySpace pref="346" max="32767" attributes="0"/>
-                      <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
+                          <Component id="btnLogout" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="btnPhoto" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="lblAttachMessage" min="-2" pref="118" max="-2" attributes="0"/>
+                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                      <Group type="102" alignment="0" attributes="1">
+                          <Component id="btnPhoto" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="btnPhotoRedo" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Component id="lblAttachMessage" min="-2" pref="118" max="-2" attributes="0"/>
+                      </Group>
+                      <Component id="lblPhoto" alignment="0" min="-2" pref="316" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="lblPhoto" alignment="0" min="-2" pref="316" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace pref="410" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -48,19 +53,23 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Component id="lProfilePicture" alignment="0" min="-2" pref="60" max="-2" attributes="0"/>
-                  <Component id="btnLogout" alignment="0" min="-2" pref="21" max="-2" attributes="0"/>
-                  <Component id="lUserName" alignment="0" min="-2" pref="30" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="1">
+                      <Component id="lUserName" min="-2" pref="30" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="btnLogout" min="-2" pref="21" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="lblAttachMessage" pref="23" max="32767" attributes="1"/>
-                  <Component id="btnPhoto" alignment="0" min="-2" max="-2" attributes="1"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="btnPhoto" alignment="3" min="-2" max="-2" attributes="1"/>
+                  <Component id="lblAttachMessage" alignment="3" pref="23" max="32767" attributes="1"/>
+                  <Component id="btnPhotoRedo" alignment="3" min="-2" max="-2" attributes="1"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="lblPhoto" min="-2" pref="230" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -69,6 +78,8 @@
     <Component class="javax.swing.JButton" name="btnLogout">
       <Properties>
         <Property name="text" type="java.lang.String" resourceKey="btnLogout.text"/>
+        <Property name="alignmentX" type="float" value="5.0"/>
+        <Property name="alignmentY" type="float" value="5.0"/>
         <Property name="name" type="java.lang.String" value="btnLogout" noResource="true"/>
       </Properties>
       <Events>
@@ -118,6 +129,15 @@
         <Property name="text" type="java.lang.String" resourceKey="lblAttachMessage.text"/>
         <Property name="name" type="java.lang.String" value="lblAttachMessage" noResource="true"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnPhotoRedo">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="btnPhotoRedo.text"/>
+        <Property name="name" type="java.lang.String" value="btnPhotoRedo" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPhotoRedoActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

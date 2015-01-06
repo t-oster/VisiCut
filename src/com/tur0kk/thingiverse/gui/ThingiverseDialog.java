@@ -20,6 +20,8 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.net.URL;
 import java.rmi.AccessException;
@@ -50,6 +52,46 @@ public class ThingiverseDialog extends javax.swing.JDialog
     initComponents();
     initTabbedPaneHeader();
     
+    // close window on 
+    this.addWindowListener(new WindowListener() {
+
+      public void windowOpened(WindowEvent e)
+      {
+
+      }
+
+      public void windowClosing(WindowEvent e)
+      {
+         dispose();
+      }
+
+      public void windowClosed(WindowEvent e)
+      {
+
+      }
+
+      public void windowIconified(WindowEvent e)
+      {
+
+      }
+
+      public void windowDeiconified(WindowEvent e)
+      {
+
+      }
+
+      public void windowActivated(WindowEvent e)
+      {
+
+      }
+
+      public void windowDeactivated(WindowEvent e)
+      {
+
+      }
+    });
+    
+    // correct styles
     txtSearch.setFont(new Font(txtSearch.getFont().getName(), txtSearch.getFont().getStyle(), 14));
     
     final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
@@ -628,6 +670,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
         tpLists.addTab("Search", spltpSearchContainer);
 
         btnLogout.setText(resourceMap.getString("btnLogout.text")); // NOI18N
+        btnLogout.setAlignmentX(5.0F);
+        btnLogout.setAlignmentY(5.0F);
         btnLogout.setName("btnLogout"); // NOI18N
         btnLogout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -646,19 +690,21 @@ public class ThingiverseDialog extends javax.swing.JDialog
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 349, Short.MAX_VALUE)
-                        .addComponent(btnLogout)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnLogout))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
                 .addContainerGap())
@@ -675,7 +721,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
   private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnLogoutActionPerformed
   {//GEN-HEADEREND:event_btnLogoutActionPerformed
     ThingiverseManager.getInstance().logOut();
-    this.dispose();
+    dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
   }//GEN-LAST:event_btnLogoutActionPerformed
 
   private void txtSearchKeyPressed(java.awt.event.KeyEvent evt)//GEN-FIRST:event_txtSearchKeyPressed

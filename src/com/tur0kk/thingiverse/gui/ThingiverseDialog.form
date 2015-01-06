@@ -31,9 +31,10 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="lProfilePicture" min="-2" pref="60" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
-                      <EmptySpace pref="349" max="32767" attributes="0"/>
-                      <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
+                          <Component id="btnLogout" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -44,10 +45,13 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Component id="lProfilePicture" min="-2" pref="60" max="-2" attributes="0"/>
-                  <Component id="btnLogout" min="-2" pref="21" max="-2" attributes="0"/>
-                  <Component id="lUserName" min="-2" pref="30" max="-2" attributes="0"/>
+                  <Group type="102" attributes="1">
+                      <Component id="lUserName" min="-2" pref="30" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="btnLogout" min="-2" pref="21" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="tpLists" pref="549" max="32767" attributes="0"/>
@@ -319,6 +323,8 @@
     <Component class="javax.swing.JButton" name="btnLogout">
       <Properties>
         <Property name="text" type="java.lang.String" resourceKey="btnLogout.text"/>
+        <Property name="alignmentX" type="float" value="5.0"/>
+        <Property name="alignmentY" type="float" value="5.0"/>
         <Property name="name" type="java.lang.String" value="btnLogout" noResource="true"/>
       </Properties>
       <Events>
