@@ -9,6 +9,8 @@ import com.tur0kk.thingiverse.gui.mapping.AnimationImageObserverList;
 import com.tur0kk.thingiverse.gui.mapping.ThingListRenderer;
 import com.tur0kk.thingiverse.model.Thing;
 import com.tur0kk.thingiverse.ThingiverseManager;
+import com.tur0kk.thingiverse.gui.mapping.ThingFileListRenderer;
+import com.tur0kk.thingiverse.model.ThingFile;
 import com.tur0kk.thingiverse.uicomponents.LoadingIcon;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -45,6 +47,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
     // list cell renderer for images + name
     lstMyThings.setCellRenderer(new ThingListRenderer());
     lstSearch.setCellRenderer(new ThingListRenderer());
+    lstSearchThing.setCellRenderer(new ThingFileListRenderer());
+    lstMyThingsThing.setCellRenderer(new ThingFileListRenderer());
     
     // click listener for items to display in thing panel
     lstMyThings.addListSelectionListener(new ListSelectionListener() {
@@ -55,11 +59,86 @@ public class ThingiverseDialog extends javax.swing.JDialog
         {
           JList list = (JList) e.getSource();
           int selection = list.getSelectedIndex();
-          Thing selectionValue = (Thing) list.getSelectedValue();
+          final Thing selectionValue = (Thing) list.getSelectedValue();
           
-          DefaultListModel myThingsThingModel = new DefaultListModel(); // model for JListThing
-          myThingsThingModel.addElement(selectionValue.getName()); 
-          lstMyThingsThing.setModel(myThingsThingModel);
+          // display SVGs
+          new Thread(new Runnable() {
+
+            public void run()
+            {        
+              // get things
+              LinkedList<ThingFile> things = thingiverse.getSvgFiles(selectionValue);
+                            
+              // init my things model with loading images
+              DefaultListModel svgModel = new DefaultListModel(); // model for JList
+              Iterator<ThingFile> i1 = things.iterator(); // iterate over each svg and add to model
+              int index = 0;
+              while (i1.hasNext()) 
+              {
+                // get loading icon
+                ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
+
+                // set changing observer for loading images to update gif 
+                loadingIcon.setImageObserver(new AnimationImageObserverList(lstMyThingsThing, index));
+
+                // add thing to model
+                ThingFile aThing = i1.next();
+                aThing.setThumbnail(loadingIcon);
+                svgModel.addElement(aThing);
+
+                index +=1;
+              }
+              
+              // display message if no SVG files were found
+              if(things.size() == 0){
+                svgModel.addElement("No SVG files found");
+              }
+
+              // display svgModel in search thing list
+              final DefaultListModel model = svgModel;
+              SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                  lstMyThingsThing.setModel(model);            
+                }
+              });
+
+              // start a thread for each image to load image asynchronous
+              for (final ThingFile entry : things)
+              {
+                final String url = entry.getThumbnailUrl();
+                new Thread(new Runnable() 
+                {
+                    public void run()
+                    {
+                      // load image
+                      ImageIcon icon;
+                      try
+                      {
+                        icon = new ImageIcon(new URL(url));
+                      }
+                      catch (MalformedURLException ex)
+                      {
+                        System.err.println("Image not found: " + url);
+                        icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
+                      }
+
+                      // overwrite image
+                      final ImageIcon objectImage = icon;
+                      SwingUtilities.invokeLater(new Runnable() {
+                        public void run()
+                        {
+                          // overwrite image
+                          entry.setThumbnail(objectImage);
+                          lstMyThingsThing.updateUI();
+                        }
+                      });
+                    }
+                  }).start();
+                }
+
+            }
+          }).start();
         }
       }
     });
@@ -72,11 +151,80 @@ public class ThingiverseDialog extends javax.swing.JDialog
         {
           JList list = (JList) e.getSource();
           int selection = list.getSelectedIndex();
-          Thing selectionValue = (Thing) list.getSelectedValue();
+          final Thing selectionValue = (Thing) list.getSelectedValue();
           
-          DefaultListModel searchThingModel = new DefaultListModel(); // model for JListThing
-          searchThingModel.addElement(selectionValue.getName());
-          lstSearchThing.setModel(searchThingModel);
+          // display SVGs
+          new Thread(new Runnable() {
+
+            public void run()
+            {        
+              // get things
+              LinkedList<ThingFile> things = thingiverse.getSvgFiles(selectionValue);
+              // init my things model with loading images
+              DefaultListModel svgModel = new DefaultListModel(); // model for JList
+              Iterator<ThingFile> i1 = things.iterator(); // iterate over each svg and add to model
+              int index = 0;
+              while (i1.hasNext()) 
+              {
+                // get loading icon
+                ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
+
+                // set changing observer for loading images to update gif 
+                loadingIcon.setImageObserver(new AnimationImageObserverList(lstSearchThing, index));
+
+                // add thing to model
+                ThingFile aThing = i1.next();
+                aThing.setThumbnail(loadingIcon);
+                svgModel.addElement(aThing);
+
+                index +=1;
+              }
+
+              // display svgModel in search thing list
+              final DefaultListModel model = svgModel;
+              SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                  lstSearchThing.setModel(model);            
+                }
+              });
+
+              // start a thread for each image to load image asynchronous
+              for (final ThingFile entry : things)
+              {
+                final String url = entry.getThumbnailUrl();
+                new Thread(new Runnable() 
+                {
+                    public void run()
+                    {
+                      // load image
+                      ImageIcon icon;
+                      try
+                      {
+                        icon = new ImageIcon(new URL(url));
+                      }
+                      catch (MalformedURLException ex)
+                      {
+                        System.err.println("Image not found: " + url);
+                        icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
+                      }
+
+                      // overwrite image
+                      final ImageIcon objectImage = icon;
+                      SwingUtilities.invokeLater(new Runnable() {
+                        public void run()
+                        {
+                          // overwrite image
+                          entry.setThumbnail(objectImage);
+                          lstSearchThing.updateUI();
+                        }
+                      });
+                    }
+                  }).start();
+                }
+
+            }
+          }).start();
         }
       }
     });

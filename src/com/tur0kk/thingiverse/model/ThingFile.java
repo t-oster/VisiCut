@@ -54,6 +54,6 @@ public class ThingFile
   @Override
   public String toString()
   {
-    return "Thing File: " + name;
+    return "Thing File: " + name + thumbnail;
   }
 }
