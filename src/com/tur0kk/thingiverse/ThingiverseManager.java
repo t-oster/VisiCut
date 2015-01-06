@@ -260,7 +260,7 @@ public class ThingiverseManager
       // We save all svgs to disk and only download them only if not yet present.
       // TODO: Replace if newer version available!
       File folder = new File(Helper.getBasePath(),
-                             "thingiverse/svg" +
+                             "thingiverse/svg/" +
                              thingFile.getThing().getId());
       folder.mkdirs();
       file = new File(folder, thingFile.getName());
