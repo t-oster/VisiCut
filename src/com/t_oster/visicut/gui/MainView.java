@@ -2585,7 +2585,7 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
           System.out.println("JavaFX is not available. Using fallback behavior.");
           browserCode = systemBrowserLogin(loginUrl);
         }
-
+        
         facebook.logIn(browserCode);
       }
 
@@ -2597,6 +2597,7 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     }
     catch (Exception ex)
     {
+      ex.printStackTrace();
       this.dialog.showErrorMessage("Unable to load FacebookDialog");
     }
   }//GEN-LAST:event_btFacebookActionPerformed

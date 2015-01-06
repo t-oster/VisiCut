@@ -93,7 +93,7 @@ public class FacebookClient
     if (!url.startsWith("/")) {
       urlEnd = "/" + url;
     }
-    OAuthRequest request = new OAuthRequest(verb, "https://graph.facebook.com" + urlEnd);
+    OAuthRequest request = new OAuthRequest(verb, "https://graph.facebook.com/v2.2" + urlEnd);
     request.addHeader("Authorization", "Bearer " + accesTokenString);
     Response response = request.send();
     return response.getBody();
@@ -108,5 +108,11 @@ public class FacebookClient
   public String user() {
     return call(Verb.GET, "/me");
   }
+  
+  public String userPicture() {
+    return call(Verb.GET, "/me/picture?redirect=0&height=100&type=normal&width=100");
+  }
+  
+  
   
 }

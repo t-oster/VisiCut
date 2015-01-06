@@ -5,7 +5,6 @@
  */
 package com.tur0kk.thingiverse.gui;
 
-import com.sun.org.apache.xml.internal.dtm.ref.DTMDefaultBaseIterators.ParentIterator;
 import com.t_oster.visicut.gui.MainView;
 import com.tur0kk.thingiverse.gui.mapping.AnimationImageObserverList;
 import com.tur0kk.thingiverse.gui.mapping.ThingListRenderer;
@@ -26,7 +25,6 @@ import java.net.URL;
 import java.rmi.AccessException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

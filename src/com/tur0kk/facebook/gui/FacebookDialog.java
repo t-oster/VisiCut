@@ -10,6 +10,14 @@
  */
 package com.tur0kk.facebook.gui;
 
+import com.tur0kk.facebook.FacebookManager;
+import com.tur0kk.thingiverse.uicomponents.LoadingIcon;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.net.URL;
+import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
+
 /**
  *
  * @author Sven
@@ -22,6 +30,57 @@ public class FacebookDialog extends javax.swing.JDialog
   {
     super(parent, modal);
     initComponents();
+    
+    final FacebookManager facebook = FacebookManager.getInstance();
+    
+    // display username
+    new Thread(new Runnable() {
+      String username = null;
+      public void run()
+      {
+        username = facebook.getUserName();
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run()
+          {
+            lUserName.setText("Hello " + username);
+          }
+        });
+      }
+    }).start();
+    
+    // set profile picture
+    new Thread(new Runnable() {
+      ImageIcon profilePicture = null;
+      
+      public void run()
+      {
+        // profile picture, resized to label
+        try
+        {
+          String path = facebook.getUserImage();
+          URL url = new URL(path);
+
+          // load profile picture and scale to label
+          ImageIcon imageIcon = new ImageIcon(url);
+          Image rawImage = imageIcon.getImage();
+          Image scaledImage = rawImage.getScaledInstance(
+            lProfilePicture.getWidth(),
+            lProfilePicture.getHeight(),
+            Image.SCALE_SMOOTH);
+          profilePicture = new ImageIcon(scaledImage);
+          SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+              lProfilePicture.setIcon(profilePicture);
+            }
+          });
+        }
+        catch (Exception ex)
+        {
+          ex.printStackTrace();
+        }
+      }
+    }).start();
   }
 
   /** This method is called from within the constructor to
@@ -33,22 +92,61 @@ public class FacebookDialog extends javax.swing.JDialog
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        btnLogout = new javax.swing.JButton();
+        lUserName = new javax.swing.JLabel();
+        lProfilePicture = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
+
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(FacebookDialog.class);
+        btnLogout.setText(resourceMap.getString("btnLogout.text")); // NOI18N
+        btnLogout.setName("btnLogout"); // NOI18N
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
+
+        lUserName.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        lUserName.setName("lUserName"); // NOI18N
+
+        lProfilePicture.setAlignmentX(5.0F);
+        lProfilePicture.setAlignmentY(5.0F);
+        lProfilePicture.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(-16777216,true)));
+        lProfilePicture.setName("lProfilePicture"); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 346, Short.MAX_VALUE)
+                .addComponent(btnLogout)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(337, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+    FacebookManager.getInstance().logOut();
+    this.dispose();
+}//GEN-LAST:event_btnLogoutActionPerformed
 
   /**
    * @param args the command line arguments
@@ -110,5 +208,8 @@ public class FacebookDialog extends javax.swing.JDialog
     });
   }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnLogout;
+    private javax.swing.JLabel lProfilePicture;
+    private javax.swing.JLabel lUserName;
     // End of variables declaration//GEN-END:variables
 }

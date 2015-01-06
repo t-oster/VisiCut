@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.Properties;
-import org.json.simple.JSONArray;
+import javax.swing.ImageIcon;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -20,7 +20,7 @@ import org.json.simple.parser.ParseException;
  */
 public class FacebookManager
 {
-  // App name: VisiCutFacebook
+  // App name: VisiCut
   private static final String clientId = "521766611285565";
   private static final String clientSecret = "8188c6a387ceaf7aa7919112190e22d8";
   private static final String clientCallback = "http://hci.rwth-aachen.de/visicut";
@@ -129,6 +129,31 @@ public class FacebookManager
     {
       ex.printStackTrace();
       return "USER NAME";
+    }
+  }
+  
+  /**
+   * Gets user avatar url from thingiverse API.
+   */
+  public String getUserImage()
+  {
+    try
+    {
+      String json = client.userPicture();
+      
+      
+      JSONParser parser = new JSONParser();
+      JSONObject dataObj = (JSONObject)parser.parse(json);
+      String data = dataObj.get("data") .toString();
+      JSONObject urlObject = (JSONObject)parser.parse(data);
+      String url = urlObject.get("url").toString();
+      
+      return url;
+    }
+    catch(Exception ex)
+    {
+      ex.printStackTrace();
+      return "";
     }
   }
   
