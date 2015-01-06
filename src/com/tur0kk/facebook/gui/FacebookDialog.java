@@ -12,11 +12,11 @@ package com.tur0kk.facebook.gui;
 
 import com.github.sarxos.webcam.Webcam;
 import com.tur0kk.facebook.FacebookManager;
-import com.tur0kk.thingiverse.uicomponents.LoadingIcon;
-import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
@@ -27,6 +27,8 @@ import javax.swing.SwingUtilities;
 public class FacebookDialog extends javax.swing.JDialog
 {
 
+  private Thread livecamThread;
+  
   /** Creates new form FacebookDialog */
   public FacebookDialog(java.awt.Frame parent, boolean modal)
   {
@@ -34,14 +36,7 @@ public class FacebookDialog extends javax.swing.JDialog
     initComponents();
     
     // enable picture taking
-    if(isCameraDetected()){
-      btnPhoto.setEnabled(true);
-      lblAttachMessage.setVisible(false);
-    }
-    else{
-      btnPhoto.setEnabled(false);
-      lblAttachMessage.setVisible(true);
-    }
+    setupCamera();
     
     final FacebookManager facebook = FacebookManager.getInstance();
     
@@ -192,36 +187,13 @@ private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
 
 private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPhotoActionPerformed
   if(isCameraDetected()){
-    
-    // start thread to take photo and display
-    new Thread(new Runnable() 
-    {
-        public void run()
-        {
-          // get webcam
-          Webcam webcam = Webcam.getDefault();
-          webcam.open();
-
-          // take picture
-          BufferedImage image = webcam.getImage();
-          ImageIcon imageIcon = new ImageIcon(image);
-
-          // scale to label
-          Image rawImage = imageIcon.getImage();
-          Image scaledImage = rawImage.getScaledInstance(
-            lblPhoto.getWidth(),
-            lblPhoto.getHeight(),
-            Image.SCALE_SMOOTH);
-          final ImageIcon picture = new ImageIcon(scaledImage);
-          SwingUtilities.invokeLater(new Runnable() {
-            public void run()
-            {
-              lblPhoto.setIcon(picture);
-            }
-          });
-        }
-      }).start();
-    
+    // take picture
+    livecamThread.interrupt();
+    ImageIcon picture = takePicture();
+    displayPicture(picture);
+  }
+  else{
+    setupCamera(); // disabled
   }
 }//GEN-LAST:event_btnPhotoActionPerformed
 
@@ -235,10 +207,77 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     private javax.swing.JLabel lblPhoto;
     // End of variables declaration//GEN-END:variables
 
+private void setupCamera(){
+  if(isCameraDetected()){
+    btnPhoto.setEnabled(true);
+    lblAttachMessage.setVisible(false);
+    
+    // start picture taking thread to display live preview
+    new Thread(new Runnable() 
+    {
+        public void run()
+        {
+          if(Thread.interrupted()){
+            return;
+          }
+          else{
+            
+            ImageIcon picture = takePicture();
+            displayPicture(picture);
+            
+            try
+            {
+              Thread.sleep(100);
+            }
+            catch (InterruptedException ex)
+            {
+              return;
+            }
+          }
+        }
+      }).start();
+  }
+  else{
+    btnPhoto.setEnabled(false);
+    lblAttachMessage.setVisible(true);
+  }
+}
+
+private void displayPicture(ImageIcon image){
+  
+  final ImageIcon picture = image;
+  
+  SwingUtilities.invokeLater(new Runnable() {
+    public void run()
+    {
+      lblPhoto.setIcon(picture);
+    }
+  });
+  
+}
+
+private ImageIcon takePicture(){
+  // get webcam
+  Webcam webcam = Webcam.getDefault();
+  webcam.open();
+
+  // take picture
+  BufferedImage image = webcam.getImage();
+  ImageIcon imageIcon = new ImageIcon(image);
+
+  // scale to label
+  Image rawImage = imageIcon.getImage();
+  Image scaledImage = rawImage.getScaledInstance(
+    lblPhoto.getWidth(),
+    lblPhoto.getHeight(),
+    Image.SCALE_SMOOTH);
+  ImageIcon picture = new ImageIcon(scaledImage);
+  return picture;
+}
 
 private boolean isCameraDetected(){
   Webcam webcam = Webcam.getDefault();
-  if (webcam != null) {
+  if (webcam != null) { 
     return true;
   } else {
     return false;
