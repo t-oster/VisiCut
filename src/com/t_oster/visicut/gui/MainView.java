@@ -59,6 +59,8 @@ import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import com.tur0kk.facebook.FacebookManager;
+import com.tur0kk.facebook.gui.FacebookDialog;
 import com.tur0kk.thingiverse.ThingiverseManager;
 import com.tur0kk.thingiverse.uicomponents.ThingiversePlatformIcon;
 import java.awt.Desktop;
@@ -2561,7 +2563,42 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
   
   private void btFacebookActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btFacebookActionPerformed
   {//GEN-HEADEREND:event_btFacebookActionPerformed
-    // TODO add your handling code here:
+    FacebookManager facebook = FacebookManager.getInstance();
+    
+    try
+    {
+      // Try login with persistent access token.
+      boolean loginSuccess = facebook.logIn();
+
+      if (!loginSuccess)
+      {
+        String loginUrl = facebook.initiateAuthentication();
+        String browserCode = "";
+
+        if (isJavaFxAvailable())
+        {
+          browserCode = javaFXLogin(loginUrl);
+        }
+        else
+        {
+          // JavaFX not available...
+          System.out.println("JavaFX is not available. Using fallback behavior.");
+          browserCode = systemBrowserLogin(loginUrl);
+        }
+
+        facebook.logIn(browserCode);
+      }
+
+      if (facebook.isLoggedIn())
+      {
+        FacebookDialog facebookDialog = new FacebookDialog(this, true);
+        facebookDialog.setVisible(true);
+      }
+    }
+    catch (Exception ex)
+    {
+      this.dialog.showErrorMessage("Unable to load FacebookDialog");
+    }
   }//GEN-LAST:event_btFacebookActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
