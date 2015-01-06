@@ -1,7 +1,5 @@
 package com.tur0kk.thingiverse;
 
-import com.kitfox.svg.SVGCache;
-import com.kitfox.svg.app.beans.SVGIcon;
 import com.t_oster.visicut.misc.Helper;
 import com.tur0kk.thingiverse.model.Thing;
 import com.tur0kk.thingiverse.model.ThingFile;
@@ -9,12 +7,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.io.StringReader;
-import java.net.URI;
-import java.net.URL;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
-import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -22,7 +17,7 @@ import org.json.simple.parser.ParseException;
 
 /**
  * Singleton class managing all the communication with the Thingiverse API.
- * @author Patrick
+ * @author Patrick Schmidt
  */
 public class ThingiverseManager
 {
@@ -215,7 +210,19 @@ public class ThingiverseManager
     return things;
   }
   
-  public LinkedList<ThingFile> getSvgFiles(Thing thing)
+  public LinkedList<ThingFile> getFiles(Thing thing)
+  {
+    return getFiles(thing, new LinkedList<String>());
+  }
+  
+  /**
+   * 
+   * @param thing
+   * @param fileExtensions Use this to filter the result for specific file
+   * extensions like svg or plf.
+   * @return 
+   */
+  public LinkedList<ThingFile> getFiles(Thing thing, List<String> fileExtensions)
   {
     LinkedList<ThingFile> files = new LinkedList<ThingFile>();
     
@@ -260,7 +267,7 @@ public class ThingiverseManager
       // We save all svgs to disk and only download them only if not yet present.
       // TODO: Replace if newer version available!
       File folder = new File(Helper.getBasePath(),
-                             "thingiverse/svg" +
+                             "thingiverse/svg/" +
                              thingFile.getThing().getId());
       folder.mkdirs();
       file = new File(folder, thingFile.getName());

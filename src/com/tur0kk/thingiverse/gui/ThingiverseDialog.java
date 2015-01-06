@@ -115,13 +115,13 @@ public class ThingiverseDialog extends javax.swing.JDialog
           int selection = list.getSelectedIndex();
           final Thing selectionValue = (Thing) list.getSelectedValue();
           
-          // display SVGs
+          // display files
           new Thread(new Runnable() {
 
             public void run()
             {        
               // get things
-              LinkedList<ThingFile> things = thingiverse.getSvgFiles(selectionValue);
+              LinkedList<ThingFile> things = thingiverse.getFiles(selectionValue);
                             
               // init my things model with loading images
               DefaultListModel svgModel = new DefaultListModel(); // model for JList
@@ -143,9 +143,9 @@ public class ThingiverseDialog extends javax.swing.JDialog
                 index +=1;
               }
               
-              // display message if no SVG files were found
+              // display message if no files were found
               if(things.size() == 0){
-                svgModel.addElement("No SVG files found");
+                svgModel.addElement("No files found.");
               }
 
               // display svgModel in search thing list
@@ -207,16 +207,16 @@ public class ThingiverseDialog extends javax.swing.JDialog
           int selection = list.getSelectedIndex();
           final Thing selectionValue = (Thing) list.getSelectedValue();
           
-          // display SVGs
+          // display files
           new Thread(new Runnable() {
 
             public void run()
             {        
               // get things
-              LinkedList<ThingFile> things = thingiverse.getSvgFiles(selectionValue);
+              LinkedList<ThingFile> things = thingiverse.getFiles(selectionValue);
               // init my things model with loading images
               DefaultListModel svgModel = new DefaultListModel(); // model for JList
-              Iterator<ThingFile> i1 = things.iterator(); // iterate over each svg and add to model
+              Iterator<ThingFile> i1 = things.iterator(); // iterate over each file and add to model
               int index = 0;
               while (i1.hasNext()) 
               {
