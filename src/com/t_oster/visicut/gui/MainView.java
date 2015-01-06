@@ -99,6 +99,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -2631,7 +2632,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
+      this.dialog.showErrorMessage("Unable to load ThingiverseDialog");
     }
   }//GEN-LAST:event_btThingiverseActionPerformed
 
