@@ -12,13 +12,15 @@ public class ThingFile
   String url;
   String thumbnailUrl;
   ImageIcon thumbnail;
+  Thing thing;
   
-  public ThingFile(String id, String name, String url, String thumbnailUrl)
+  public ThingFile(String id, String name, String url, String thumbnailUrl, Thing thing)
   {
     this.id = id;
     this.name = name;
     this.url = url;
     this.thumbnailUrl = thumbnailUrl;
+    this.thing = thing;
   }
 
   public String getId()
@@ -49,6 +51,11 @@ public class ThingFile
   public void setThumbnail(ImageIcon thumbnail)
   {
     this.thumbnail = thumbnail;
+  }
+  
+  public Thing getThing()
+  {
+    return this.thing;
   }
   
   @Override

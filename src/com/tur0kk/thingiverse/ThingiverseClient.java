@@ -427,4 +427,22 @@ public class ThingiverseClient {
     return call(Verb.GET, "/tags/" + id + "/");
   }
   
+  public String downloadSvg(String url) {
+    OAuthRequest request1 = new OAuthRequest(Verb.GET, url);
+    request1.addHeader("Authorization", "Bearer " + accesTokenString);
+    Response response1 = request1.send();
+    
+    if (response1.getCode() == 302 /* Found/Redirection */)
+    {
+      // Follow redirection...
+      OAuthRequest request2 = new OAuthRequest(Verb.GET, response1.getHeader("Location"));
+      Response response2 = request2.send();
+
+      return response2.getBody();
+    }
+    else
+    {
+      return response1.getBody();
+    }
+  }
 }
