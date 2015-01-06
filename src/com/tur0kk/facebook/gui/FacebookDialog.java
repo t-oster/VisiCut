@@ -13,6 +13,8 @@ package com.tur0kk.facebook.gui;
 import com.github.sarxos.webcam.Webcam;
 import com.tur0kk.facebook.FacebookManager;
 import java.awt.Image;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.logging.Level;
@@ -37,6 +39,46 @@ public class FacebookDialog extends javax.swing.JDialog
     
     // enable picture taking
     setupCamera();
+    
+    // close camera on exit
+    this.addWindowListener(new WindowListener() {
+
+      public void windowOpened(WindowEvent e)
+      {
+
+      }
+
+      public void windowClosing(WindowEvent e)
+      {
+         closeCamera();
+         dispose();
+      }
+
+      public void windowClosed(WindowEvent e)
+      {
+
+      }
+
+      public void windowIconified(WindowEvent e)
+      {
+
+      }
+
+      public void windowDeiconified(WindowEvent e)
+      {
+
+      }
+
+      public void windowActivated(WindowEvent e)
+      {
+
+      }
+
+      public void windowDeactivated(WindowEvent e)
+      {
+
+      }
+    });
     
     final FacebookManager facebook = FacebookManager.getInstance();
     
@@ -104,12 +146,15 @@ public class FacebookDialog extends javax.swing.JDialog
         btnPhoto = new javax.swing.JButton();
         lblPhoto = new javax.swing.JLabel();
         lblAttachMessage = new javax.swing.JLabel();
+        btnPhotoRedo = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(FacebookDialog.class);
         btnLogout.setText(resourceMap.getString("btnLogout.text")); // NOI18N
+        btnLogout.setAlignmentX(5.0F);
+        btnLogout.setAlignmentY(5.0F);
         btnLogout.setName("btnLogout"); // NOI18N
         btnLogout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -140,6 +185,14 @@ public class FacebookDialog extends javax.swing.JDialog
         lblAttachMessage.setText(resourceMap.getString("lblAttachMessage.text")); // NOI18N
         lblAttachMessage.setName("lblAttachMessage"); // NOI18N
 
+        btnPhotoRedo.setText(resourceMap.getString("btnPhotoRedo.text")); // NOI18N
+        btnPhotoRedo.setName("btnPhotoRedo"); // NOI18N
+        btnPhotoRedo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPhotoRedoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -150,31 +203,37 @@ public class FacebookDialog extends javax.swing.JDialog
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 346, Short.MAX_VALUE)
-                        .addComponent(btnLogout))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnPhoto)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblAttachMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(lblPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnLogout)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addComponent(btnPhoto)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(btnPhotoRedo)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblAttachMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(lblPhoto, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(410, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnPhoto)
                     .addComponent(lblAttachMessage, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
-                    .addComponent(btnPhoto))
+                    .addComponent(btnPhotoRedo))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -182,65 +241,88 @@ public class FacebookDialog extends javax.swing.JDialog
 
 private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
     FacebookManager.getInstance().logOut();
-    this.dispose();
+    dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 }//GEN-LAST:event_btnLogoutActionPerformed
 
 private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPhotoActionPerformed
   if(isCameraDetected()){
-    // take picture
-    livecamThread.interrupt();
-    ImageIcon picture = takePicture();
-    displayPicture(picture);
+    closeCamera();
+    btnPhoto.setEnabled(false);
+    btnPhotoRedo.setEnabled(true);
   }
   else{
     setupCamera(); // disabled
   }
 }//GEN-LAST:event_btnPhotoActionPerformed
 
+  private void btnPhotoRedoActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnPhotoRedoActionPerformed
+  {//GEN-HEADEREND:event_btnPhotoRedoActionPerformed
+    setupCamera();
+  }//GEN-LAST:event_btnPhotoRedoActionPerformed
+
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnPhoto;
+    private javax.swing.JButton btnPhotoRedo;
     private javax.swing.JLabel lProfilePicture;
     private javax.swing.JLabel lUserName;
     private javax.swing.JLabel lblAttachMessage;
     private javax.swing.JLabel lblPhoto;
     // End of variables declaration//GEN-END:variables
 
+    
+/*
+ * Camera functions
+ */
+    
 private void setupCamera(){
+  btnPhotoRedo.setEnabled(false);
+  
   if(isCameraDetected()){
-    btnPhoto.setEnabled(true);
     lblAttachMessage.setVisible(false);
     
     // start picture taking thread to display live preview
-    new Thread(new Runnable() 
+    livecamThread = new Thread(new Runnable() 
     {
         public void run()
         {
-          if(Thread.interrupted()){
+          try{
+            while(true){
+              if(Thread.interrupted()){
+                return;
+              }
+              else{
+
+                ImageIcon picture = takePicture();
+                displayPicture(picture);
+
+                Thread.sleep(100);
+
+              }
+            }
+          }catch(Exception ex){
             return;
           }
-          else{
-            
-            ImageIcon picture = takePicture();
-            displayPicture(picture);
-            
-            try
-            {
-              Thread.sleep(100);
-            }
-            catch (InterruptedException ex)
-            {
-              return;
-            }
-          }
+          
         }
-      }).start();
+      });
+    livecamThread.start();
+    
+    btnPhoto.setEnabled(true);
   }
   else{
+    // disable taking photos
     btnPhoto.setEnabled(false);
     lblAttachMessage.setVisible(true);
+    lblPhoto.setIcon(null);
   }
+}
+
+private void closeCamera(){
+  livecamThread.interrupt(); 
+  Webcam webcam = Webcam.getDefault();
+  webcam.close();
 }
 
 private void displayPicture(ImageIcon image){
