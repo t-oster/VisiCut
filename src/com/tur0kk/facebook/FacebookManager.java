@@ -133,7 +133,7 @@ public class FacebookManager
   }
   
   /**
-   * Gets user avatar url from thingiverse API.
+   * Gets user avatar url from facebook API.
    */
   public String getUserImage()
   {
