@@ -10,10 +10,12 @@
  */
 package com.tur0kk.facebook.gui;
 
+import com.github.sarxos.webcam.Webcam;
 import com.tur0kk.facebook.FacebookManager;
 import com.tur0kk.thingiverse.uicomponents.LoadingIcon;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
@@ -30,6 +32,16 @@ public class FacebookDialog extends javax.swing.JDialog
   {
     super(parent, modal);
     initComponents();
+    
+    // enable picture taking
+    if(isCameraDetected()){
+      btnPhoto.setEnabled(true);
+      lblAttachMessage.setVisible(false);
+    }
+    else{
+      btnPhoto.setEnabled(false);
+      lblAttachMessage.setVisible(true);
+    }
     
     final FacebookManager facebook = FacebookManager.getInstance();
     
@@ -50,7 +62,6 @@ public class FacebookDialog extends javax.swing.JDialog
     
     // set profile picture
     new Thread(new Runnable() {
-      ImageIcon profilePicture = null;
       
       public void run()
       {
@@ -67,7 +78,7 @@ public class FacebookDialog extends javax.swing.JDialog
             lProfilePicture.getWidth(),
             lProfilePicture.getHeight(),
             Image.SCALE_SMOOTH);
-          profilePicture = new ImageIcon(scaledImage);
+          final ImageIcon profilePicture = new ImageIcon(scaledImage);
           SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
@@ -95,6 +106,9 @@ public class FacebookDialog extends javax.swing.JDialog
         btnLogout = new javax.swing.JButton();
         lUserName = new javax.swing.JLabel();
         lProfilePicture = new javax.swing.JLabel();
+        btnPhoto = new javax.swing.JButton();
+        lblPhoto = new javax.swing.JLabel();
+        lblAttachMessage = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
@@ -116,17 +130,39 @@ public class FacebookDialog extends javax.swing.JDialog
         lProfilePicture.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(-16777216,true)));
         lProfilePicture.setName("lProfilePicture"); // NOI18N
 
+        btnPhoto.setText(resourceMap.getString("btnPhoto.text")); // NOI18N
+        btnPhoto.setName("btnPhoto"); // NOI18N
+        btnPhoto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPhotoActionPerformed(evt);
+            }
+        });
+
+        lblPhoto.setText(resourceMap.getString("lblPhoto.text")); // NOI18N
+        lblPhoto.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(-16777216,true)));
+        lblPhoto.setName("lblPhoto"); // NOI18N
+
+        lblAttachMessage.setText(resourceMap.getString("lblAttachMessage.text")); // NOI18N
+        lblAttachMessage.setName("lblAttachMessage"); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 346, Short.MAX_VALUE)
-                .addComponent(btnLogout)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 346, Short.MAX_VALUE)
+                        .addComponent(btnLogout))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnPhoto)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblAttachMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -137,7 +173,13 @@ public class FacebookDialog extends javax.swing.JDialog
                     .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(337, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblAttachMessage, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                    .addComponent(btnPhoto))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -148,68 +190,59 @@ private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
     this.dispose();
 }//GEN-LAST:event_btnLogoutActionPerformed
 
-  /**
-   * @param args the command line arguments
-   */
-  public static void main(String args[])
-  {
-    /* Set the Nimbus look and feel */
-    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-     * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-     */
-    try
+private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPhotoActionPerformed
+  if(isCameraDetected()){
+    
+    // start thread to take photo and display
+    new Thread(new Runnable() 
     {
-      for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels())
-      {
-        if ("Nimbus".equals(info.getName()))
+        public void run()
         {
-          javax.swing.UIManager.setLookAndFeel(info.getClassName());
-          break;
+          // get webcam
+          Webcam webcam = Webcam.getDefault();
+          webcam.open();
+
+          // take picture
+          BufferedImage image = webcam.getImage();
+          ImageIcon imageIcon = new ImageIcon(image);
+
+          // scale to label
+          Image rawImage = imageIcon.getImage();
+          Image scaledImage = rawImage.getScaledInstance(
+            lblPhoto.getWidth(),
+            lblPhoto.getHeight(),
+            Image.SCALE_SMOOTH);
+          final ImageIcon picture = new ImageIcon(scaledImage);
+          SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+              lblPhoto.setIcon(picture);
+            }
+          });
         }
-      }
-    }
-    catch (ClassNotFoundException ex)
-    {
-      java.util.logging.Logger.getLogger(FacebookDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    catch (InstantiationException ex)
-    {
-      java.util.logging.Logger.getLogger(FacebookDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    catch (IllegalAccessException ex)
-    {
-      java.util.logging.Logger.getLogger(FacebookDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    catch (javax.swing.UnsupportedLookAndFeelException ex)
-    {
-      java.util.logging.Logger.getLogger(FacebookDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    //</editor-fold>
-
-    /* Create and display the dialog */
-    java.awt.EventQueue.invokeLater(new Runnable()
-    {
-
-      public void run()
-      {
-        FacebookDialog dialog = new FacebookDialog(new javax.swing.JFrame(), true);
-        dialog.addWindowListener(new java.awt.event.WindowAdapter()
-        {
-
-          @Override
-          public void windowClosing(java.awt.event.WindowEvent e)
-          {
-            System.exit(0);
-          }
-        });
-        dialog.setVisible(true);
-      }
-    });
+      }).start();
+    
   }
+}//GEN-LAST:event_btnPhotoActionPerformed
+
+  
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLogout;
+    private javax.swing.JButton btnPhoto;
     private javax.swing.JLabel lProfilePicture;
     private javax.swing.JLabel lUserName;
+    private javax.swing.JLabel lblAttachMessage;
+    private javax.swing.JLabel lblPhoto;
     // End of variables declaration//GEN-END:variables
+
+
+private boolean isCameraDetected(){
+  Webcam webcam = Webcam.getDefault();
+  if (webcam != null) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 }

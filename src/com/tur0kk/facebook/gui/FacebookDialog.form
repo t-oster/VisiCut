@@ -23,13 +23,23 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="lProfilePicture" min="-2" pref="60" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
-              <EmptySpace pref="346" max="32767" attributes="0"/>
-              <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="lProfilePicture" min="-2" pref="60" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
+                      <EmptySpace pref="346" max="32767" attributes="0"/>
+                      <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="btnPhoto" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="lblAttachMessage" min="-2" pref="118" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="lblPhoto" alignment="0" min="-2" pref="316" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -43,7 +53,14 @@
                   <Component id="btnLogout" alignment="0" min="-2" pref="21" max="-2" attributes="0"/>
                   <Component id="lUserName" alignment="0" min="-2" pref="30" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="337" max="32767" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="lblAttachMessage" pref="23" max="32767" attributes="1"/>
+                  <Component id="btnPhoto" alignment="0" min="-2" max="-2" attributes="1"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="lblPhoto" min="-2" pref="230" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -74,6 +91,32 @@
           </Border>
         </Property>
         <Property name="name" type="java.lang.String" value="lProfilePicture" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnPhoto">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="btnPhoto.text"/>
+        <Property name="name" type="java.lang.String" value="btnPhoto" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPhotoActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblPhoto">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="lblPhoto.text"/>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+            <LineBorder/>
+          </Border>
+        </Property>
+        <Property name="name" type="java.lang.String" value="lblPhoto" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblAttachMessage">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="lblAttachMessage.text"/>
+        <Property name="name" type="java.lang.String" value="lblAttachMessage" noResource="true"/>
       </Properties>
     </Component>
   </SubComponents>
