@@ -1,11 +1,16 @@
 package com.tur0kk.thingiverse;
 
+import com.kitfox.svg.SVGCache;
+import com.kitfox.svg.app.beans.SVGIcon;
 import com.t_oster.visicut.misc.Helper;
 import com.tur0kk.thingiverse.model.Thing;
 import com.tur0kk.thingiverse.model.ThingFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.net.URI;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -230,7 +235,7 @@ public class ThingiverseManager
         
         if (fileName.toLowerCase().endsWith("svg"))
         {
-          files.add(new ThingFile(fileId, fileName, fileUrl, thumbnailUrl));
+          files.add(new ThingFile(fileId, fileName, fileUrl, thumbnailUrl, thing));
         }
       }
     }
@@ -243,7 +248,8 @@ public class ThingiverseManager
   }
   
   /**
-   * Downloads an svg from thingiverse and returns a File object or null.
+   * Downloads an svg from thingiverse (or disk),
+   * saves it to disk and returns a File object or null.
    */
   public File downloadSvgFile(ThingFile thingFile)
   {
@@ -251,11 +257,26 @@ public class ThingiverseManager
     
     try
     {
-      URL url = new URL(thingFile.getUrl());
-      file = new File(thingFile.getName());
-      FileUtils.copyURLToFile(url, file);
+      // We save all svgs to disk and only download them only if not yet present.
+      // TODO: Replace if newer version available!
+      File folder = new File(Helper.getBasePath(),
+                             "thingiverse/svg" +
+                             thingFile.getThing().getId());
+      folder.mkdirs();
+      file = new File(folder, thingFile.getName());
       
-      return file;
+      if (!file.exists())
+      {
+        file.createNewFile();
+
+        // Get svg content as string
+        String svgString = client.downloadSvg(thingFile.getUrl());
+        
+        // Write to disk
+        PrintWriter out = new PrintWriter(file);
+        out.print(svgString);
+        out.close();
+      }
     }
     catch (Exception ex)
     {
