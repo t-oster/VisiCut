@@ -5,7 +5,6 @@
  */
 package com.tur0kk.thingiverse.gui;
 
-import com.sun.org.apache.xml.internal.dtm.ref.DTMDefaultBaseIterators.ParentIterator;
 import com.t_oster.visicut.gui.MainView;
 import com.tur0kk.thingiverse.gui.mapping.AnimationImageObserverList;
 import com.tur0kk.thingiverse.gui.mapping.ThingListRenderer;
@@ -26,7 +25,6 @@ import java.net.URL;
 import java.rmi.AccessException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -52,9 +50,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
     initComponents();
     initTabbedPaneHeader();
     
+    txtSearch.setFont(new Font(txtSearch.getFont().getName(), txtSearch.getFont().getStyle(), 14));
+    
     final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
     
-    // list cell renderer for images + name
+    // list cell renderer for images + name of things
     lstMyThings.setCellRenderer(new ThingListRenderer());
     lstSearch.setCellRenderer(new ThingListRenderer());
     lstSearchThing.setCellRenderer(new ThingFileListRenderer());
@@ -242,6 +242,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
     });
     
     
+    // adapter for ThingFile list to listen for double clicks
     MouseAdapter doubleClickAdapterLoad = new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent evt) {
@@ -277,7 +278,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
     
     // set profile picture
     new Thread(new Runnable() {
-      ImageIcon profilePicture = null;
       
       public void run()
       {
@@ -298,7 +298,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
             lProfilePicture.getWidth(),
             lProfilePicture.getHeight(),
             Image.SCALE_SMOOTH);
-          profilePicture = new ImageIcon(scaledImage);
+          final ImageIcon profilePicture = new ImageIcon(scaledImage);
           SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
@@ -574,7 +574,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         spltpSearchContainer.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         spltpSearchContainer.setName("spltpSearchContainer"); // NOI18N
 
-        jPanel1.setMinimumSize(new Dimension(25,300));
+        jPanel1.setMinimumSize(new Dimension(300,300));
         jPanel1.setName("jPanel1"); // NOI18N
         jPanel1.setLayout(new java.awt.BorderLayout());
 
@@ -642,12 +642,12 @@ public class ThingiverseDialog extends javax.swing.JDialog
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tpLists, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 718, Short.MAX_VALUE)
+                    .addComponent(tpLists, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 719, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 348, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 349, Short.MAX_VALUE)
                         .addComponent(btnLogout)))
                 .addContainerGap())
         );
@@ -660,7 +660,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
                     .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
+                .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
