@@ -5,6 +5,8 @@
  */
 package com.tur0kk.thingiverse.gui;
 
+import com.sun.org.apache.xml.internal.dtm.ref.DTMDefaultBaseIterators.ParentIterator;
+import com.t_oster.visicut.gui.MainView;
 import com.tur0kk.thingiverse.gui.mapping.AnimationImageObserverList;
 import com.tur0kk.thingiverse.gui.mapping.ThingListRenderer;
 import com.tur0kk.thingiverse.model.Thing;
@@ -17,10 +19,14 @@ import java.net.MalformedURLException;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
 import java.net.URL;
 import java.rmi.AccessException;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -34,11 +40,15 @@ public class ThingiverseDialog extends javax.swing.JDialog
 {
   private AtomicInteger numberLoadingMyThings = new AtomicInteger();
   private AtomicInteger numberLoadingSearch = new AtomicInteger();
+  final private MainView mainview;
 
   /** Creates new form ThingiverseDialog */
   public ThingiverseDialog(java.awt.Frame parent, boolean modal) throws AccessException, MalformedURLException, IOException
   {
     super(parent, modal);
+    
+    this.mainview = (MainView) parent;
+    
     initComponents();
     initTabbedPaneHeader();
     
@@ -50,7 +60,9 @@ public class ThingiverseDialog extends javax.swing.JDialog
     lstSearchThing.setCellRenderer(new ThingFileListRenderer());
     lstMyThingsThing.setCellRenderer(new ThingFileListRenderer());
     
-    // click listener for items to display in thing panel
+    
+    /* click listener for items to display in thing panels */
+    
     lstMyThings.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e)
       {
@@ -228,6 +240,25 @@ public class ThingiverseDialog extends javax.swing.JDialog
         }
       }
     });
+    
+    
+    MouseAdapter doubleClickAdapterLoad = new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent evt) {
+        JList list = (JList) evt.getSource();
+        
+        if(evt.getClickCount() == 2){
+          int index = list.locationToIndex(evt.getPoint());
+          ThingFile aFile = (ThingFile) list.getModel().getElementAt(index);
+          ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+          File svgfile = thingiverse.downloadSvgFile(aFile);
+          mainview.loadFile(svgfile, false);
+        }
+      }
+    };
+    
+    lstSearchThing.addMouseListener(doubleClickAdapterLoad);
+    lstMyThingsThing.addMouseListener(doubleClickAdapterLoad);
     
     // display username
     new Thread(new Runnable() {
