@@ -136,7 +136,7 @@ public class FacebookClient
    * @param image as form data
    * @return the new image id if successful
    */
-  public String publishPicture(String msg, Image image) throws IOException {
+  public String publishPicture(String msg, Image image, String placeId) throws IOException {
     OAuthRequest request = new OAuthRequest(Verb.POST, "https://graph.facebook.com/v2.2/me/photos");
     request.addHeader("Authorization", "Bearer " + accesTokenString);
     
@@ -144,6 +144,7 @@ public class FacebookClient
       // multipart post structure
       MultipartEntityBuilder builder = MultipartEntityBuilder.create();
       builder.addTextBody("message", msg);
+      builder.addTextBody("place", placeId);
       
       BufferedImage bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
       Graphics2D bGr = bimage.createGraphics();
@@ -167,4 +168,6 @@ public class FacebookClient
       throw new RuntimeException("message and image needed");
     }
   }
+  
+  
 }

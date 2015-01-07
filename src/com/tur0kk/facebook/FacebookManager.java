@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.Properties;
-import javax.swing.ImageIcon;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -25,6 +24,7 @@ public class FacebookManager
   private static final String clientId = "521766611285565";
   private static final String clientSecret = "8188c6a387ceaf7aa7919112190e22d8";
   private static final String clientCallback = "http://hci.rwth-aachen.de/visicut";
+  private static final String fablabFacebookPageId = "191850277562397";
   
   private static FacebookManager instance = null;
   
@@ -170,8 +170,11 @@ public class FacebookManager
       // add fixed text
       message = "Look what I made with VisiCut:\n" + message;
       
+      // get Fablab ID
+      String fablabId = this.getFabLabPlace();
+      
       // post image
-      String json = client.publishPicture(message, icon);
+      String json = client.publishPicture(message, icon, fablabId);
       
       // evaluate success
       JSONParser parser = new JSONParser();
@@ -184,6 +187,13 @@ public class FacebookManager
       ex.printStackTrace();
       return false;
     }
+  }
+  
+  /*
+   * searches for FabLab Aachen place and returns id
+   */
+  public String getFabLabPlace(){
+    return fablabFacebookPageId;
   }
   
   /**
