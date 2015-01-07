@@ -12,6 +12,8 @@ package com.tur0kk.facebook.gui;
 
 import com.github.sarxos.webcam.Webcam;
 import com.tur0kk.facebook.FacebookManager;
+import com.tur0kk.thingiverse.ThingiverseManager;
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -19,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
@@ -147,6 +150,11 @@ public class FacebookDialog extends javax.swing.JDialog
         lblPhoto = new javax.swing.JLabel();
         lblAttachMessage = new javax.swing.JLabel();
         btnPhotoRedo = new javax.swing.JButton();
+        btnPublish = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtaPublish = new javax.swing.JTextArea();
+        lblPublish = new javax.swing.JLabel();
+        lblPublishSuccessStatus = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
@@ -193,6 +201,27 @@ public class FacebookDialog extends javax.swing.JDialog
             }
         });
 
+        btnPublish.setText(resourceMap.getString("btnPublish.text")); // NOI18N
+        btnPublish.setName("btnPublish"); // NOI18N
+        btnPublish.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPublishActionPerformed(evt);
+            }
+        });
+
+        jScrollPane1.setName("jScrollPane1"); // NOI18N
+
+        txtaPublish.setColumns(20);
+        txtaPublish.setRows(5);
+        txtaPublish.setName("txtaPublish"); // NOI18N
+        jScrollPane1.setViewportView(txtaPublish);
+
+        lblPublish.setText(resourceMap.getString("lblPublish.text")); // NOI18N
+        lblPublish.setName("lblPublish"); // NOI18N
+
+        lblPublishSuccessStatus.setText(resourceMap.getString("lblPublishSuccessStatus.text")); // NOI18N
+        lblPublishSuccessStatus.setName("lblPublishSuccessStatus"); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -201,20 +230,31 @@ public class FacebookDialog extends javax.swing.JDialog
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(btnPhoto)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnPhotoRedo)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lblAttachMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lblPhoto, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(28, 28, 28)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblPublish)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+                                .addComponent(lblPublishSuccessStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnPublish))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnLogout)))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addComponent(btnPhoto)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(btnPhotoRedo)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblAttachMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(lblPhoto, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(410, Short.MAX_VALUE))
+                            .addComponent(btnLogout))
+                        .addContainerGap(421, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -227,12 +267,18 @@ public class FacebookDialog extends javax.swing.JDialog
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnPhoto)
-                    .addComponent(lblAttachMessage, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
-                    .addComponent(btnPhotoRedo))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(lblPublish, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnPhoto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnPhotoRedo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblAttachMessage, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                        .addComponent(btnPublish, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblPublishSuccessStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -241,14 +287,19 @@ public class FacebookDialog extends javax.swing.JDialog
 
 private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
     FacebookManager.getInstance().logOut();
-    dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+    dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)); // closing event closes the camera
 }//GEN-LAST:event_btnLogoutActionPerformed
 
 private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPhotoActionPerformed
   if(isCameraDetected()){
     closeCamera();
+    
+    // enable publishing
     btnPhoto.setEnabled(false);
     btnPhotoRedo.setEnabled(true);
+    btnPublish.setEnabled(true);
+    txtaPublish.setEditable(true);
+    txtaPublish.setBackground(Color.white);
   }
   else{
     setupCamera(); // disabled
@@ -260,15 +311,65 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     setupCamera();
   }//GEN-LAST:event_btnPhotoRedoActionPerformed
 
+  private void btnPublishActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnPublishActionPerformed
+  {//GEN-HEADEREND:event_btnPublishActionPerformed
+    
+    
+    // disable controls for publishing
+    btnPhotoRedo.setEnabled(false);
+    btnPublish.setEnabled(false);
+    txtaPublish.setEditable(false);
+    txtaPublish.setBackground(Color.lightGray);
+    
+    // thingis to publish
+    ImageIcon icon = (ImageIcon)lblPhoto.getIcon();
+    final Image image = icon.getImage();    
+    final String message = txtaPublish.getText();
+    
+    
+    new Thread(new Runnable() {
+
+      public void run()
+      {
+        FacebookManager facebook = FacebookManager.getInstance();
+        boolean success = facebook.publishProject(message, image);
+        String msg = "";
+        if(success){
+          msg = "Successful upload";
+        }else{
+          msg = "Error uploading photo";
+        }
+        
+        final String message = msg;
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run()
+          {
+            lblPublishSuccessStatus.setText(message);
+            lblPublishSuccessStatus.setVisible(true);
+            btnPhotoRedo.setEnabled(true);
+          }
+        });
+        
+      }
+    }).start();
+    
+    
+  }//GEN-LAST:event_btnPublishActionPerformed
+
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnPhoto;
     private javax.swing.JButton btnPhotoRedo;
+    private javax.swing.JButton btnPublish;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lProfilePicture;
     private javax.swing.JLabel lUserName;
     private javax.swing.JLabel lblAttachMessage;
     private javax.swing.JLabel lblPhoto;
+    private javax.swing.JLabel lblPublish;
+    private javax.swing.JLabel lblPublishSuccessStatus;
+    private javax.swing.JTextArea txtaPublish;
     // End of variables declaration//GEN-END:variables
 
     
@@ -277,10 +378,16 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
  */
     
 private void setupCamera(){
+  // disable publish functions
+  lblPublishSuccessStatus.setVisible(false);
   btnPhotoRedo.setEnabled(false);
+  btnPublish.setEnabled(false);
+  txtaPublish.setText("");
+  txtaPublish.setEditable(false);
+  txtaPublish.setBackground(Color.lightGray);
   
   if(isCameraDetected()){
-    lblAttachMessage.setVisible(false);
+    lblAttachMessage.setVisible(false); // webcam error message
     
     // start picture taking thread to display live preview
     livecamThread = new Thread(new Runnable() 
@@ -295,6 +402,9 @@ private void setupCamera(){
               else{
 
                 ImageIcon picture = takePicture();
+                if(picture == null){
+                  return;
+                }
                 displayPicture(picture);
 
                 Thread.sleep(100);
@@ -314,17 +424,20 @@ private void setupCamera(){
   else{
     // disable taking photos
     btnPhoto.setEnabled(false);
-    lblAttachMessage.setVisible(true);
+    lblAttachMessage.setVisible(true); // webcam error message
     lblPhoto.setIcon(null);
   }
 }
 
 private void closeCamera(){
-  livecamThread.interrupt(); 
+  livecamThread.interrupt(); // stop live stream thread
   Webcam webcam = Webcam.getDefault();
   webcam.close();
 }
 
+/*
+ * displays an image in the photo label
+ */
 private void displayPicture(ImageIcon image){
   
   final ImageIcon picture = image;
@@ -338,25 +451,36 @@ private void displayPicture(ImageIcon image){
   
 }
 
+/*
+ * uses the attached webcam to take a photo
+ */
 private ImageIcon takePicture(){
-  // get webcam
-  Webcam webcam = Webcam.getDefault();
-  webcam.open();
+  
+  if(isCameraDetected()){
+    // get webcam
+    Webcam webcam = Webcam.getDefault();
+    webcam.open();
 
-  // take picture
-  BufferedImage image = webcam.getImage();
-  ImageIcon imageIcon = new ImageIcon(image);
+    // take picture
+    BufferedImage image = webcam.getImage();
+    ImageIcon imageIcon = new ImageIcon(image);
 
-  // scale to label
-  Image rawImage = imageIcon.getImage();
-  Image scaledImage = rawImage.getScaledInstance(
-    lblPhoto.getWidth(),
-    lblPhoto.getHeight(),
-    Image.SCALE_SMOOTH);
-  ImageIcon picture = new ImageIcon(scaledImage);
-  return picture;
+    // scale to label
+    Image rawImage = imageIcon.getImage();
+    Image scaledImage = rawImage.getScaledInstance(
+      lblPhoto.getWidth(),
+      lblPhoto.getHeight(),
+      Image.SCALE_SMOOTH);
+    ImageIcon picture = new ImageIcon(scaledImage);
+    return picture;
+  }else{
+    return null;
+  }
 }
 
+/*
+ * returns wether a camera is plugged in
+ */
 private boolean isCameraDetected(){
   Webcam webcam = Webcam.getDefault();
   if (webcam != null) { 

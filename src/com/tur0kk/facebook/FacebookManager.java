@@ -5,6 +5,7 @@
 package com.tur0kk.facebook;
 
 import com.t_oster.visicut.misc.Helper;
+import java.awt.Image;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -154,6 +155,34 @@ public class FacebookManager
     {
       ex.printStackTrace();
       return "";
+    }
+  }
+  
+  
+  /*
+   * publishs an project image to the users news feed
+   * @param message to display
+   * @param image to display
+   * @return true iff successful
+   */
+  public boolean publishProject(String message, Image icon){
+    try{
+      // add fixed text
+      message = "Look what I made with VisiCut:\n" + message;
+      
+      // post image
+      String json = client.publishPicture(message, icon);
+      
+      // evaluate success
+      JSONParser parser = new JSONParser();
+      JSONObject dataObj = (JSONObject)parser.parse(json);
+      String id = dataObj.get("id") .toString();
+      return true;
+    }
+    catch(Exception ex)
+    {
+      ex.printStackTrace();
+      return false;
     }
   }
   
