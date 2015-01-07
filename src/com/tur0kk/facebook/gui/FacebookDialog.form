@@ -27,25 +27,39 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="102" alignment="0" attributes="1">
+                              <Component id="btnPhoto" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="btnPhotoRedo" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="lblAttachMessage" min="-2" pref="118" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="lblPhoto" alignment="0" min="-2" pref="316" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="lblPublish" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace pref="44" max="32767" attributes="0"/>
+                              <Component id="lblPublishSuccessStatus" min="-2" pref="196" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="btnPublish" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="jScrollPane1" alignment="0" pref="372" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
                       <Component id="lProfilePicture" min="-2" pref="60" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
                           <Component id="btnLogout" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
-                  </Group>
-                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                      <Group type="102" alignment="0" attributes="1">
-                          <Component id="btnPhoto" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="btnPhotoRedo" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
-                          <Component id="lblAttachMessage" min="-2" pref="118" max="-2" attributes="0"/>
-                      </Group>
-                      <Component id="lblPhoto" alignment="0" min="-2" pref="316" max="-2" attributes="0"/>
+                      <EmptySpace pref="421" max="32767" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace pref="410" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -62,13 +76,21 @@
                   </Group>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="btnPhoto" alignment="3" min="-2" max="-2" attributes="1"/>
-                  <Component id="lblAttachMessage" alignment="3" pref="23" max="32767" attributes="1"/>
-                  <Component id="btnPhotoRedo" alignment="3" min="-2" max="-2" attributes="1"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="lblPublish" alignment="1" pref="23" max="32767" attributes="0"/>
+                  <Group type="103" alignment="1" groupAlignment="3" attributes="0">
+                      <Component id="btnPhoto" alignment="1" max="32767" attributes="1"/>
+                      <Component id="btnPhotoRedo" alignment="1" max="32767" attributes="1"/>
+                      <Component id="lblAttachMessage" alignment="3" pref="23" max="32767" attributes="1"/>
+                      <Component id="btnPublish" alignment="1" max="32767" attributes="1"/>
+                      <Component id="lblPublishSuccessStatus" alignment="3" min="-2" pref="21" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="lblPhoto" min="-2" pref="230" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="lblPhoto" min="-2" pref="230" max="-2" attributes="1"/>
+                  <Component id="jScrollPane1" pref="230" max="32767" attributes="1"/>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -138,6 +160,46 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPhotoRedoActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnPublish">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="btnPublish.text"/>
+        <Property name="name" type="java.lang.String" value="btnPublish" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPublishActionPerformed"/>
+      </Events>
+    </Component>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="jScrollPane1" noResource="true"/>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JTextArea" name="txtaPublish">
+          <Properties>
+            <Property name="columns" type="int" value="20"/>
+            <Property name="rows" type="int" value="5"/>
+            <Property name="name" type="java.lang.String" value="txtaPublish" noResource="true"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JLabel" name="lblPublish">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="lblPublish.text"/>
+        <Property name="name" type="java.lang.String" value="lblPublish" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblPublishSuccessStatus">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="lblPublishSuccessStatus.text"/>
+        <Property name="name" type="java.lang.String" value="lblPublishSuccessStatus" noResource="true"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

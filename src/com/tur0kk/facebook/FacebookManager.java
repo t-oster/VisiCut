@@ -5,11 +5,11 @@
 package com.tur0kk.facebook;
 
 import com.t_oster.visicut.misc.Helper;
+import java.awt.Image;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.Properties;
-import javax.swing.ImageIcon;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -24,6 +24,7 @@ public class FacebookManager
   private static final String clientId = "521766611285565";
   private static final String clientSecret = "8188c6a387ceaf7aa7919112190e22d8";
   private static final String clientCallback = "http://hci.rwth-aachen.de/visicut";
+  private static final String fablabFacebookPageId = "191850277562397";
   
   private static FacebookManager instance = null;
   
@@ -155,6 +156,44 @@ public class FacebookManager
       ex.printStackTrace();
       return "";
     }
+  }
+  
+  
+  /*
+   * publishs an project image to the users news feed
+   * @param message to display
+   * @param image to display
+   * @return true iff successful
+   */
+  public boolean publishProject(String message, Image icon){
+    try{
+      // add fixed text
+      message = "Look what I made with VisiCut:\n" + message;
+      
+      // get Fablab ID
+      String fablabId = this.getFabLabPlace();
+      
+      // post image
+      String json = client.publishPicture(message, icon, fablabId);
+      
+      // evaluate success
+      JSONParser parser = new JSONParser();
+      JSONObject dataObj = (JSONObject)parser.parse(json);
+      String id = dataObj.get("id") .toString();
+      return true;
+    }
+    catch(Exception ex)
+    {
+      ex.printStackTrace();
+      return false;
+    }
+  }
+  
+  /*
+   * searches for FabLab Aachen place and returns id
+   */
+  public String getFabLabPlace(){
+    return fablabFacebookPageId;
   }
   
   /**

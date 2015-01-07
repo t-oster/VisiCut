@@ -4,6 +4,22 @@
  */
 package com.tur0kk.facebook;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import javax.imageio.ImageIO;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.FacebookApi;
 import org.scribe.model.Verifier;
@@ -42,6 +58,7 @@ public class FacebookClient
             .apiKey(clientId)
             .apiSecret(clientSecret)
             .callback(clientCallback)
+      .scope("publish_actions")
             .build();
   }
   
@@ -112,4 +129,45 @@ public class FacebookClient
   public String userPicture() {
     return call(Verb.GET, "/me/picture?redirect=0&height=100&type=normal&width=100");
   }
+  
+  /*
+   * posts an image to the users news feed
+   * @param message to show
+   * @param image as form data
+   * @return the new image id if successful
+   */
+  public String publishPicture(String msg, Image image, String placeId) throws IOException {
+    OAuthRequest request = new OAuthRequest(Verb.POST, "https://graph.facebook.com/v2.2/me/photos");
+    request.addHeader("Authorization", "Bearer " + accesTokenString);
+    
+    if(msg != null && image != null){      
+      // multipart post structure
+      MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+      builder.addTextBody("message", msg);
+      builder.addTextBody("place", placeId);
+      
+      BufferedImage bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+      Graphics2D bGr = bimage.createGraphics();
+      bGr.drawImage(image, 0, 0, null);
+      bGr.dispose();
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ImageIO.write(bimage, "png", baos);
+      builder.addBinaryBody(msg, baos.toByteArray(), ContentType.MULTIPART_FORM_DATA, "test.png");
+      HttpEntity multipart = builder.build();
+      
+      ByteArrayOutputStream multipartOutStream = new ByteArrayOutputStream((int)multipart.getContentLength());
+      multipart.writeTo(multipartOutStream);
+      request.addPayload(multipartOutStream.toByteArray());
+      
+      Header contentType = multipart.getContentType();
+      request.addHeader(contentType.getName(), contentType.getValue());
+      
+      Response response = request.send();
+      return response.getBody();
+    }else{
+      throw new RuntimeException("message and image needed");
+    }
+  }
+  
+  
 }
