@@ -308,7 +308,7 @@ public class ThingiverseManager
       file.createNewFile();
 
       // Get content as string
-      String fileContents = client.downloadThingFile(thingFile.getUrl());
+      String fileContents = client.downloadTextFile(thingFile.getUrl());
 
       // Write to disk
       PrintWriter out = new PrintWriter(file);
