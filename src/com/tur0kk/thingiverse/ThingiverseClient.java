@@ -426,7 +426,7 @@ public class ThingiverseClient {
     return call(Verb.GET, "/tags/" + id + "/");
   }
   
-  public String downloadSvg(String url) {
+  public String downloadThingFile(String url) {
     OAuthRequest request1 = new OAuthRequest(Verb.GET, url);
     request1.addHeader("Authorization", "Bearer " + accesTokenString);
     Response response1 = request1.send();
