@@ -294,8 +294,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
           int index = list.locationToIndex(evt.getPoint());
           ThingFile aFile = (ThingFile) list.getModel().getElementAt(index);
           ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-          File svgfile = thingiverse.downloadSvgFile(aFile);
-          mainview.loadFile(svgfile, false);
+          File file = thingiverse.downloadThingFile(aFile);
+          mainview.loadFile(file, false);
         }
       }
     };
