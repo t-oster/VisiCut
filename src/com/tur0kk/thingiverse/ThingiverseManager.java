@@ -218,11 +218,12 @@ public class ThingiverseManager
   /**
    * 
    * @param thing
-   * @param fileExtensions Use this to filter the result for specific file
-   * extensions like svg or plf.
+   * @param allowedFileExtensions Use this to filter the result for specific file
+   * extensions like svg or plf. A file is returned if it matches one of the
+   * specified extensions. If the filter list is empty, all files are returned.
    * @return 
    */
-  public LinkedList<ThingFile> getFiles(Thing thing, List<String> fileExtensions)
+  public LinkedList<ThingFile> getFiles(Thing thing, List<String> allowedFileExtensions)
   {
     LinkedList<ThingFile> files = new LinkedList<ThingFile>();
     
@@ -240,7 +241,7 @@ public class ThingiverseManager
         String fileUrl = file.get("download_url").toString();
         String thumbnailUrl = file.get("thumbnail").toString();
         
-        if (fileName.toLowerCase().endsWith("svg"))
+        if (hasMatchingExtension(fileName, allowedFileExtensions))
         {
           files.add(new ThingFile(fileId, fileName, fileUrl, thumbnailUrl, thing));
         }
@@ -252,6 +253,20 @@ public class ThingiverseManager
     }
     
     return files;
+  }
+  
+  private boolean hasMatchingExtension(String fileName, List<String> fileExtensions)
+  {
+    String fileNameLower = fileName.toLowerCase();
+    for (String extension : fileExtensions)
+    {
+      if (fileNameLower.endsWith(extension.toLowerCase()))
+      {
+        return true;
+      }
+    }
+    
+    return false;
   }
   
   /**
