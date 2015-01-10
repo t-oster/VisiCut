@@ -48,6 +48,9 @@ public class ThingiverseDialog extends javax.swing.JDialog
   {
     super(parent, modal);
     
+    // just hide to keep state
+    this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+    
     // save parent for loading files to main view
     this.mainview = (MainView) parent;
     
@@ -61,9 +64,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
     // set general content padding
     JPanel content = (JPanel)this.getContentPane();
     content.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-    
-    // close window listener, dispose on close
-    initWindowListener();
     
     // list cell renderer for images + name of things
     initListCellRenderers();
@@ -643,8 +643,12 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
   private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnLogoutActionPerformed
   {//GEN-HEADEREND:event_btnLogoutActionPerformed
+    /*
+     * just hide thingiverseDialog on close to keep state.
+     * dispose only on logout
+     */
     ThingiverseManager.getInstance().logOut();
-    dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+    dispose();
   }//GEN-LAST:event_btnLogoutActionPerformed
 
   private void txtSearchKeyPressed(java.awt.event.KeyEvent evt)//GEN-FIRST:event_txtSearchKeyPressed
@@ -791,45 +795,6 @@ private void initTabbedPaneHeader(){
   lblLoadingSearch.setVisible(false); // only visible if searching for things
 }
 
-private void initWindowListener(){
-  this.addWindowListener(new WindowListener() {
-
-      public void windowOpened(WindowEvent e)
-      {
-
-      }
-
-      public void windowClosing(WindowEvent e)
-      {
-         dispose();
-      }
-
-      public void windowClosed(WindowEvent e)
-      {
-
-      }
-
-      public void windowIconified(WindowEvent e)
-      {
-
-      }
-
-      public void windowDeiconified(WindowEvent e)
-      {
-
-      }
-
-      public void windowActivated(WindowEvent e)
-      {
-
-      }
-
-      public void windowDeactivated(WindowEvent e)
-      {
-
-      }
-    });
-}
 
 private void initListCellRenderers(){
   // thing list renderer
@@ -924,6 +889,7 @@ private void initFilters(){
     }
   }
 }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLogout;
