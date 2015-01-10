@@ -10,27 +10,23 @@ import com.tur0kk.thingiverse.gui.mapping.AnimationImageObserverList;
 import com.tur0kk.thingiverse.gui.mapping.ThingListRenderer;
 import com.tur0kk.thingiverse.model.Thing;
 import com.tur0kk.thingiverse.ThingiverseManager;
+import com.tur0kk.thingiverse.gui.mapping.ThingFileClickListener;
 import com.tur0kk.thingiverse.gui.mapping.ThingFileListRenderer;
-import com.tur0kk.thingiverse.model.ThingFile;
+import com.tur0kk.thingiverse.gui.mapping.ThingSelectionListener;
 import com.tur0kk.thingiverse.uicomponents.LoadingIcon;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.File;
 import java.net.URL;
 import java.rmi.AccessException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -47,320 +43,47 @@ public class ThingiverseDialog extends javax.swing.JDialog
   {
     super(parent, modal);
     
+    // save parent for loading files to main view
     this.mainview = (MainView) parent;
     
+    // init componentes
     initComponents();
     initTabbedPaneHeader();
     
-    // close window on 
-    this.addWindowListener(new WindowListener() {
-
-      public void windowOpened(WindowEvent e)
-      {
-
-      }
-
-      public void windowClosing(WindowEvent e)
-      {
-         dispose();
-      }
-
-      public void windowClosed(WindowEvent e)
-      {
-
-      }
-
-      public void windowIconified(WindowEvent e)
-      {
-
-      }
-
-      public void windowDeiconified(WindowEvent e)
-      {
-
-      }
-
-      public void windowActivated(WindowEvent e)
-      {
-
-      }
-
-      public void windowDeactivated(WindowEvent e)
-      {
-
-      }
-    });
+    // set general content padding
+    JPanel content = (JPanel)this.getContentPane();
+    content.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
     
-    // correct styles
-    txtSearch.setFont(new Font(txtSearch.getFont().getName(), txtSearch.getFont().getStyle(), 14));
-    
-    final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+    // close window listener, dispose on close
+    initWindowListener();
     
     // list cell renderer for images + name of things
-    lstMyThings.setCellRenderer(new ThingListRenderer());
-    lstSearch.setCellRenderer(new ThingListRenderer());
-    lstSearchThing.setCellRenderer(new ThingFileListRenderer());
-    lstMyThingsThing.setCellRenderer(new ThingFileListRenderer());
+    initListCellRenderers();
     
     
     /* click listener for items to display in thing panels */
-    
-    lstMyThings.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e)
-      {
-        boolean adjust = e.getValueIsAdjusting();
-        if (!adjust) 
-        {
-          JList list = (JList) e.getSource();
-          int selection = list.getSelectedIndex();
-          final Thing selectionValue = (Thing) list.getSelectedValue();
-          
-          // display files
-          new Thread(new Runnable() {
-
-            public void run()
-            {        
-              // get things
-              LinkedList<ThingFile> things = thingiverse.getFiles(selectionValue);
-                            
-              // init my things model with loading images
-              DefaultListModel svgModel = new DefaultListModel(); // model for JList
-              Iterator<ThingFile> i1 = things.iterator(); // iterate over each svg and add to model
-              int index = 0;
-              while (i1.hasNext()) 
-              {
-                // get loading icon
-                ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
-
-                // set changing observer for loading images to update gif 
-                loadingIcon.setImageObserver(new AnimationImageObserverList(lstMyThingsThing, index));
-
-                // add thing to model
-                ThingFile aThing = i1.next();
-                aThing.setThumbnail(loadingIcon);
-                svgModel.addElement(aThing);
-
-                index +=1;
-              }
-              
-              // display message if no files were found
-              if(things.size() == 0){
-                svgModel.addElement("No files found.");
-              }
-
-              // display svgModel in search thing list
-              final DefaultListModel model = svgModel;
-              SwingUtilities.invokeLater(new Runnable() {
-                public void run()
-                {
-                  lstMyThingsThing.setModel(model);            
-                }
-              });
-
-              // start a thread for each image to load image asynchronous
-              for (final ThingFile entry : things)
-              {
-                final String url = entry.getThumbnailUrl();
-                new Thread(new Runnable() 
-                {
-                    public void run()
-                    {
-                      // load image
-                      ImageIcon icon;
-                      try
-                      {
-                        icon = new ImageIcon(new URL(url));
-                      }
-                      catch (MalformedURLException ex)
-                      {
-                        System.err.println("Image not found: " + url);
-                        icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
-                      }
-
-                      // overwrite image
-                      final ImageIcon objectImage = icon;
-                      SwingUtilities.invokeLater(new Runnable() {
-                        public void run()
-                        {
-                          // overwrite image
-                          entry.setThumbnail(objectImage);
-                          lstMyThingsThing.updateUI();
-                        }
-                      });
-                    }
-                  }).start();
-                }
-
-            }
-          }).start();
-        }
-      }
-    });
-    
-    lstSearch.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e)
-      {
-        boolean adjust = e.getValueIsAdjusting();
-        if (!adjust) 
-        {
-          JList list = (JList) e.getSource();
-          int selection = list.getSelectedIndex();
-          final Thing selectionValue = (Thing) list.getSelectedValue();
-          
-          // display files
-          new Thread(new Runnable() {
-
-            public void run()
-            {        
-              // get things
-              LinkedList<ThingFile> things = thingiverse.getFiles(selectionValue);
-              // init my things model with loading images
-              DefaultListModel svgModel = new DefaultListModel(); // model for JList
-              Iterator<ThingFile> i1 = things.iterator(); // iterate over each file and add to model
-              int index = 0;
-              while (i1.hasNext()) 
-              {
-                // get loading icon
-                ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
-
-                // set changing observer for loading images to update gif 
-                loadingIcon.setImageObserver(new AnimationImageObserverList(lstSearchThing, index));
-
-                // add thing to model
-                ThingFile aThing = i1.next();
-                aThing.setThumbnail(loadingIcon);
-                svgModel.addElement(aThing);
-
-                index +=1;
-              }
-
-              // display svgModel in search thing list
-              final DefaultListModel model = svgModel;
-              SwingUtilities.invokeLater(new Runnable() {
-                public void run()
-                {
-                  lstSearchThing.setModel(model);            
-                }
-              });
-
-              // start a thread for each image to load image asynchronous
-              for (final ThingFile entry : things)
-              {
-                final String url = entry.getThumbnailUrl();
-                new Thread(new Runnable() 
-                {
-                    public void run()
-                    {
-                      // load image
-                      ImageIcon icon;
-                      try
-                      {
-                        icon = new ImageIcon(new URL(url));
-                      }
-                      catch (MalformedURLException ex)
-                      {
-                        System.err.println("Image not found: " + url);
-                        icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
-                      }
-
-                      // overwrite image
-                      final ImageIcon objectImage = icon;
-                      SwingUtilities.invokeLater(new Runnable() {
-                        public void run()
-                        {
-                          // overwrite image
-                          entry.setThumbnail(objectImage);
-                          lstSearchThing.updateUI();
-                        }
-                      });
-                    }
-                  }).start();
-                }
-
-            }
-          }).start();
-        }
-      }
-    });
-    
-    
-    // adapter for ThingFile list to listen for double clicks
-    MouseAdapter doubleClickAdapterLoad = new MouseAdapter() {
-      @Override
-      public void mouseClicked(MouseEvent evt) {
-        JList list = (JList) evt.getSource();
-        
-        if(evt.getClickCount() == 2){
-          int index = list.locationToIndex(evt.getPoint());
-          ThingFile aFile = (ThingFile) list.getModel().getElementAt(index);
-          ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-          File file = thingiverse.downloadThingFile(aFile);
-          mainview.loadFile(file, false);
-        }
-      }
-    };
-    
-    lstSearchThing.addMouseListener(doubleClickAdapterLoad);
-    lstMyThingsThing.addMouseListener(doubleClickAdapterLoad);
+    initListClickListeners();
     
     // display username
-    new Thread(new Runnable() {
-      String username = null;
-      public void run()
-      {
-        username = thingiverse.getUserName();
-        SwingUtilities.invokeLater(new Runnable() {
-          public void run()
-          {
-            lUserName.setText("Hello " + username);
-          }
-        });
-      }
-    }).start();
+    initUserName();
     
     // set profile picture
-    new Thread(new Runnable() {
-      
-      public void run()
-      {
-        // profile picture, resized to label
-        try
-        {
-          String path = thingiverse.getUserImage();
-          URL url = new URL(path);
-          // Hack: Avoid loading the default image from web (which fails)          
-          if (url.toString().startsWith("https://www.thingiverse.com/img/default/avatar/avatar"))
-          {
-            url = LoadingIcon.class.getResource("resources/avatar_default.jpg");
-          }
-
-          ImageIcon imageIcon = new ImageIcon(url);
-          Image rawImage = imageIcon.getImage();
-          Image scaledImage = rawImage.getScaledInstance(
-            lProfilePicture.getWidth(),
-            lProfilePicture.getHeight(),
-            Image.SCALE_SMOOTH);
-          final ImageIcon profilePicture = new ImageIcon(scaledImage);
-          SwingUtilities.invokeLater(new Runnable() {
-            public void run()
-            {
-              lProfilePicture.setIcon(profilePicture);
-            }
-          });
-        }
-        catch (Exception ex)
-        {
-          ex.printStackTrace();
-        }
-      }
-    }).start();
+    initProfilePicture();
    
     
-    // display MyThings
+    // display things
+    actionLoadMyThings();
+    
+  }
+  
+  private void actionLoadMyThings(){
+    
     new Thread(new Runnable() {
      
       public void run()
       {        
+        ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+        
         // get things
         LinkedList<Thing> things = thingiverse.getMyThings();
         
@@ -438,7 +161,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
         
       }
     }).start();
-    
   }
   
   private void actionSearch(){
@@ -567,14 +289,21 @@ public class ThingiverseDialog extends javax.swing.JDialog
         sclpSearchThing = new javax.swing.JScrollPane();
         lstSearchThing = new javax.swing.JList();
         btnLogout = new javax.swing.JButton();
+        pnlFilter = new javax.swing.JPanel();
+        cbSVG = new javax.swing.JCheckBox();
+        cbDXF = new javax.swing.JCheckBox();
+        cbPLF = new javax.swing.JCheckBox();
+        cbEPS = new javax.swing.JCheckBox();
+        cbGCODE = new javax.swing.JCheckBox();
+        lblFilter = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setLocationByPlatform(true);
         setName("thingiverseDialog"); // NOI18N
 
-        lProfilePicture.setAlignmentX(5.0F);
-        lProfilePicture.setAlignmentY(5.0F);
-        lProfilePicture.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(-16777216,true)));
+        lProfilePicture.setAlignmentY(0.0F);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(ThingiverseDialog.class);
+        lProfilePicture.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("lProfilePicture.border.lineColor"))); // NOI18N
         lProfilePicture.setName("lProfilePicture"); // NOI18N
 
         lUserName.setVerticalAlignment(javax.swing.SwingConstants.TOP);
@@ -620,6 +349,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         jPanel1.setName("jPanel1"); // NOI18N
         jPanel1.setLayout(new java.awt.BorderLayout());
 
+        txtSearch.setFont(resourceMap.getFont("txtSearch.font")); // NOI18N
         txtSearch.setName("txtSearch"); // NOI18N
         txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -628,7 +358,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
         });
         jPanel1.add(txtSearch, java.awt.BorderLayout.CENTER);
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(ThingiverseDialog.class);
         btnSearch.setText(resourceMap.getString("btnSearch.text")); // NOI18N
         btnSearch.setMaximumSize(new Dimension(50,30));
         btnSearch.setMinimumSize(new Dimension(50,30));
@@ -679,35 +408,100 @@ public class ThingiverseDialog extends javax.swing.JDialog
             }
         });
 
+        pnlFilter.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("pnlFilter.border.lineColor"))); // NOI18N
+        pnlFilter.setAlignmentX(5.0F);
+        pnlFilter.setAlignmentY(5.0F);
+        pnlFilter.setName("pnlFilter"); // NOI18N
+
+        cbSVG.setSelected(true);
+        cbSVG.setText(resourceMap.getString("cbSVG.text")); // NOI18N
+        cbSVG.setName("cbSVG"); // NOI18N
+
+        cbDXF.setSelected(true);
+        cbDXF.setText(resourceMap.getString("cbDXF.text")); // NOI18N
+        cbDXF.setName("cbDXF"); // NOI18N
+
+        cbPLF.setSelected(true);
+        cbPLF.setText(resourceMap.getString("cbPLF.text")); // NOI18N
+        cbPLF.setName("cbPLF"); // NOI18N
+
+        cbEPS.setSelected(true);
+        cbEPS.setText(resourceMap.getString("cbEPS.text")); // NOI18N
+        cbEPS.setName("cbEPS"); // NOI18N
+
+        cbGCODE.setSelected(true);
+        cbGCODE.setText(resourceMap.getString("cbGCODE.text")); // NOI18N
+        cbGCODE.setName("cbGCODE"); // NOI18N
+
+        lblFilter.setText(resourceMap.getString("lblFilter.text")); // NOI18N
+        lblFilter.setName("lblFilter"); // NOI18N
+
+        javax.swing.GroupLayout pnlFilterLayout = new javax.swing.GroupLayout(pnlFilter);
+        pnlFilter.setLayout(pnlFilterLayout);
+        pnlFilterLayout.setHorizontalGroup(
+            pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlFilterLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblFilter)
+                .addGap(18, 18, 18)
+                .addGroup(pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cbDXF)
+                    .addComponent(cbSVG)
+                    .addComponent(cbPLF))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cbEPS)
+                    .addComponent(cbGCODE))
+                .addGap(99, 99, 99))
+        );
+        pnlFilterLayout.setVerticalGroup(
+            pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlFilterLayout.createSequentialGroup()
+                .addGroup(pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbSVG)
+                    .addComponent(cbEPS)
+                    .addComponent(lblFilter))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbDXF)
+                    .addComponent(cbGCODE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cbPLF)
+                .addGap(23, 23, 23))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tpLists, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 719, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnLogout))))
-                .addContainerGap())
+                        .addComponent(btnLogout)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 686, Short.MAX_VALUE)
+                        .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(677, Short.MAX_VALUE))))
+            .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 1022, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
-                .addContainerGap())
+                        .addContainerGap()
+                        .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
+                            .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(lProfilePicture, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)))
+                .addGap(17, 17, 17)
+                .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 513, Short.MAX_VALUE))
         );
 
         pack();
@@ -826,16 +620,141 @@ private void initTabbedPaneHeader(){
   
   lblLoadingSearch.setVisible(false); // only visible if searching for things
 }
+
+private void initWindowListener(){
+  this.addWindowListener(new WindowListener() {
+
+      public void windowOpened(WindowEvent e)
+      {
+
+      }
+
+      public void windowClosing(WindowEvent e)
+      {
+         dispose();
+      }
+
+      public void windowClosed(WindowEvent e)
+      {
+
+      }
+
+      public void windowIconified(WindowEvent e)
+      {
+
+      }
+
+      public void windowDeiconified(WindowEvent e)
+      {
+
+      }
+
+      public void windowActivated(WindowEvent e)
+      {
+
+      }
+
+      public void windowDeactivated(WindowEvent e)
+      {
+
+      }
+    });
+}
+
+private void initListCellRenderers(){
+  lstMyThings.setCellRenderer(new ThingListRenderer());
+  lstSearch.setCellRenderer(new ThingListRenderer());
+  lstSearchThing.setCellRenderer(new ThingFileListRenderer());
+  lstMyThingsThing.setCellRenderer(new ThingFileListRenderer());
+}
+
+private void initListClickListeners(){
+  // click listener loads files of selected thing  
+  lstMyThings.addListSelectionListener(new ThingSelectionListener(lstMyThingsThing));  
+  lstSearch.addListSelectionListener(new ThingSelectionListener(lstSearchThing));
+  
+  // set adapter for ThingFile-lists to listen for double clicks -> load selected file    
+  lstSearchThing.addMouseListener(new ThingFileClickListener(mainview));
+  lstMyThingsThing.addMouseListener(new ThingFileClickListener(mainview));
+}
+
+private void initUserName(){
+  new Thread(new Runnable() {
+    
+    String username = null;
+    public void run()
+    {
+      ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+      
+      username = thingiverse.getUserName();
+      SwingUtilities.invokeLater(new Runnable() {
+        public void run()
+        {
+          lUserName.setText("Hello " + username);
+        }
+      });
+    }
+  }).start();
+}
+
+private void initProfilePicture(){
+  
+    new Thread(new Runnable() {
+
+    public void run()
+    {
+      ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+      
+      // profile picture, resized to label
+      try
+      {
+        String path = thingiverse.getUserImage();
+        URL url = new URL(path);
+        // Hack: Avoid loading the default image from web (which fails)          
+        if (url.toString().startsWith("https://www.thingiverse.com/img/default/avatar/avatar"))
+        {
+          url = LoadingIcon.class.getResource("resources/avatar_default.jpg");
+        }
+
+        ImageIcon imageIcon = new ImageIcon(url);
+        Image rawImage = imageIcon.getImage();
+        Image scaledImage = rawImage.getScaledInstance(
+          lProfilePicture.getWidth(),
+          lProfilePicture.getHeight(),
+          Image.SCALE_SMOOTH);
+        final ImageIcon profilePicture = new ImageIcon(scaledImage);
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run()
+          {
+            lProfilePicture.setIcon(profilePicture);
+          }
+        });
+      }
+      catch (Exception ex)
+      {
+        ex.printStackTrace();
+      }
+    }
+  }).start();
+}
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnSearch;
+    private javax.swing.JCheckBox cbDXF;
+    private javax.swing.JCheckBox cbEPS;
+    private javax.swing.JCheckBox cbGCODE;
+    private javax.swing.JCheckBox cbPLF;
+    private javax.swing.JCheckBox cbSVG;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lProfilePicture;
     private javax.swing.JLabel lUserName;
+    private javax.swing.JLabel lblFilter;
     private javax.swing.JList lstMyThings;
     private javax.swing.JList lstMyThingsThing;
     private javax.swing.JList lstSearch;
     private javax.swing.JList lstSearchThing;
+    private javax.swing.JPanel pnlFilter;
     private javax.swing.JScrollPane sclpMyThings;
     private javax.swing.JScrollPane sclpMyThingsThing;
     private javax.swing.JScrollPane sclpSearch;

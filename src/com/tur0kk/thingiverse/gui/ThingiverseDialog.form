@@ -24,38 +24,43 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <Component id="lProfilePicture" min="-2" pref="100" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="tpLists" alignment="1" pref="719" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="lProfilePicture" min="-2" pref="60" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
-                          <Component id="btnLogout" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="686" max="32767" attributes="0"/>
+                      <Component id="pnlFilter" min="-2" pref="165" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
+                      <EmptySpace pref="677" max="32767" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
           </Group>
+          <Component id="tpLists" alignment="0" pref="1022" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="lProfilePicture" min="-2" pref="60" max="-2" attributes="0"/>
-                  <Group type="102" attributes="1">
-                      <Component id="lUserName" min="-2" pref="30" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Component id="btnLogout" min="-2" pref="21" max="-2" attributes="0"/>
+          <Group type="102" attributes="0">
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="pnlFilter" min="-2" pref="72" max="-2" attributes="1"/>
+                  </Group>
+                  <Group type="103" alignment="1" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="lUserName" min="-2" pref="30" max="-2" attributes="0"/>
+                          <EmptySpace pref="61" max="32767" attributes="0"/>
+                          <Component id="btnLogout" min="-2" pref="21" max="-2" attributes="0"/>
+                      </Group>
+                      <Component id="lProfilePicture" pref="112" max="32767" attributes="1"/>
                   </Group>
               </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="tpLists" pref="549" max="32767" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
+              <Component id="tpLists" pref="513" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -63,11 +68,12 @@
   <SubComponents>
     <Component class="javax.swing.JLabel" name="lProfilePicture">
       <Properties>
-        <Property name="alignmentX" type="float" value="5.0"/>
-        <Property name="alignmentY" type="float" value="5.0"/>
+        <Property name="alignmentY" type="float" value="0.0"/>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
-            <LineBorder/>
+            <LineBorder>
+              <Property name="color" resourceKey="lProfilePicture.border.lineColor"/>
+            </LineBorder>
           </Border>
         </Property>
         <Property name="name" type="java.lang.String" value="lProfilePicture" noResource="true"/>
@@ -208,6 +214,7 @@
               <SubComponents>
                 <Component class="javax.swing.JTextField" name="txtSearch">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" resourceKey="txtSearch.font"/>
                     <Property name="name" type="java.lang.String" value="txtSearch" noResource="true"/>
                   </Properties>
                   <Events>
@@ -331,5 +338,104 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLogoutActionPerformed"/>
       </Events>
     </Component>
+    <Container class="javax.swing.JPanel" name="pnlFilter">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+            <LineBorder>
+              <Property name="color" resourceKey="pnlFilter.border.lineColor"/>
+            </LineBorder>
+          </Border>
+        </Property>
+        <Property name="alignmentX" type="float" value="5.0"/>
+        <Property name="alignmentY" type="float" value="5.0"/>
+        <Property name="name" type="java.lang.String" value="pnlFilter" noResource="true"/>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <Component id="lblFilter" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="cbDXF" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbSVG" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbPLF" alignment="0" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="cbEPS" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbGCODE" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="-2" pref="99" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="cbSVG" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbEPS" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="lblFilter" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="cbDXF" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbGCODE" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="cbPLF" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JCheckBox" name="cbSVG">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" resourceKey="cbSVG.text"/>
+            <Property name="name" type="java.lang.String" value="cbSVG" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="cbDXF">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" resourceKey="cbDXF.text"/>
+            <Property name="name" type="java.lang.String" value="cbDXF" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="cbPLF">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" resourceKey="cbPLF.text"/>
+            <Property name="name" type="java.lang.String" value="cbPLF" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="cbEPS">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" resourceKey="cbEPS.text"/>
+            <Property name="name" type="java.lang.String" value="cbEPS" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="cbGCODE">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" resourceKey="cbGCODE.text"/>
+            <Property name="name" type="java.lang.String" value="cbGCODE" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="lblFilter">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="lblFilter.text"/>
+            <Property name="name" type="java.lang.String" value="lblFilter" noResource="true"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
   </SubComponents>
 </Form>
