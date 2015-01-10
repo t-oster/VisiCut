@@ -450,6 +450,11 @@ public class ThingiverseClient {
     // Perform http request
     OAuthRequest request = new OAuthRequest(Verb.GET, url);
     request.addHeader("Authorization", "Bearer " + accesTokenString);
+    
+    // Quick and dirty solution:
+    // Fake user-agent. Otherwise thingiverse may give us 403 Forbidden.
+    request.addHeader("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:34.0) Gecko/20100101 Firefox/34.0");
+    
     Response response = request.send();
     response = followRedirects(response, 2);
 
