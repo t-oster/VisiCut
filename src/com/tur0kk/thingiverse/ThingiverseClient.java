@@ -426,7 +426,11 @@ public class ThingiverseClient {
     return call(Verb.GET, "/tags/" + id + "/");
   }
   
-  public String downloadTextFile(String url) {
+  public String likedThings() {
+    return call(Verb.GET, "/users/me/likes/");
+  }
+  
+  public String downloadTextFile  (String url) {
     OAuthRequest request1 = new OAuthRequest(Verb.GET, url);
     request1.addHeader("Authorization", "Bearer " + accesTokenString);
     Response response1 = request1.send();
