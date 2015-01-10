@@ -9,8 +9,7 @@ import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuthService;
 
 /**
- *
- * @author frankkie
+ * @author frankkie, Patrick Schmidt
  */
 public class ThingiverseClient {
 
