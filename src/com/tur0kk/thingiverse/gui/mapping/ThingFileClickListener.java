@@ -35,7 +35,7 @@ public class ThingFileClickListener extends MouseAdapter
       int index = list.locationToIndex(evt.getPoint());
       ThingFile aFile = (ThingFile) list.getModel().getElementAt(index);
       ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-      File svgfile = thingiverse.downloadSvgFile(aFile);
+      File svgfile = thingiverse.downloadThingFile(aFile);
       mainview.loadFile(svgfile, false);
     }
   }

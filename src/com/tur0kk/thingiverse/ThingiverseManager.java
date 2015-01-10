@@ -218,11 +218,12 @@ public class ThingiverseManager
   /**
    * 
    * @param thing
-   * @param fileExtensions Use this to filter the result for specific file
-   * extensions like svg or plf.
+   * @param allowedFileExtensions Use this to filter the result for specific file
+   * extensions like svg or plf. A file is returned if it matches one of the
+   * specified extensions. If the filter list is empty, all files are returned.
    * @return 
    */
-  public LinkedList<ThingFile> getFiles(Thing thing, List<String> fileExtensions)
+  public LinkedList<ThingFile> getFiles(Thing thing, List<String> allowedFileExtensions)
   {
     LinkedList<ThingFile> files = new LinkedList<ThingFile>();
     
@@ -240,7 +241,7 @@ public class ThingiverseManager
         String fileUrl = file.get("download_url").toString();
         String thumbnailUrl = file.get("thumbnail").toString();
         
-        if (fileName.toLowerCase().endsWith("svg"))
+        if (hasMatchingExtension(fileName, allowedFileExtensions))
         {
           files.add(new ThingFile(fileId, fileName, fileUrl, thumbnailUrl, thing));
         }
@@ -255,35 +256,64 @@ public class ThingiverseManager
   }
   
   /**
+   * 
+   * @param fileName
+   * @param fileExtensions
+   * @return True if the file name ends with on of the given file extensions
+   * (ignoring case) or the list of extensions is empty. 
+   */
+  private boolean hasMatchingExtension(String fileName, List<String> fileExtensions)
+  {
+    if (fileExtensions.isEmpty())
+    {
+      return true;
+    }
+    
+    String fileNameLower = fileName.toLowerCase();
+    for (String extension : fileExtensions)
+    {
+      if (fileNameLower.endsWith(extension.toLowerCase()))
+      {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+  
+  /**
    * Downloads an svg from thingiverse (or disk),
    * saves it to disk and returns a File object or null.
    */
-  public File downloadSvgFile(ThingFile thingFile)
+  public File downloadThingFile(ThingFile thingFile)
   {
     File file = null;
     
     try
     {
-      // We save all svgs to disk and only download them only if not yet present.
-      // TODO: Replace if newer version available!
       File folder = new File(Helper.getBasePath(),
-                             "thingiverse/svg/" +
+                             "thingiverse/files/" +
                              thingFile.getThing().getId());
       folder.mkdirs();
       file = new File(folder, thingFile.getName());
       
-      if (!file.exists())
+      // Delete old file from disk.
+      // (There may have been an update and we want to download the most recent
+      // version each time)
+      if (file.exists())
       {
-        file.createNewFile();
-
-        // Get svg content as string
-        String svgString = client.downloadSvg(thingFile.getUrl());
-        
-        // Write to disk
-        PrintWriter out = new PrintWriter(file);
-        out.print(svgString);
-        out.close();
+        file.delete();
       }
+      
+      file.createNewFile();
+
+      // Get content as string
+      String fileContents = client.downloadThingFile(thingFile.getUrl());
+
+      // Write to disk
+      PrintWriter out = new PrintWriter(file);
+      out.print(fileContents);
+      out.close();
     }
     catch (Exception ex)
     {

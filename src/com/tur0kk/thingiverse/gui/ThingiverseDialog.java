@@ -64,7 +64,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
     /* click listener for items to display in thing panels */
     initListClickListeners();
     
-    
     // display username
     initUserName();
     
