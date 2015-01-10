@@ -2477,6 +2477,7 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     }
     catch (Exception ex)
     {
+      ex.printStackTrace();
       this.dialog.showErrorMessage("Unable to load ThingiverseDialog");
     }
   }//GEN-LAST:event_btThingiverseActionPerformed
