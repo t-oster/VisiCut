@@ -6,7 +6,6 @@ import com.tur0kk.thingiverse.model.ThingFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -309,7 +308,7 @@ public class ThingiverseManager
   }
   
   /**
-   * Downloads an svg from thingiverse (or disk),
+   * Downloads a file from thingiverse,
    * saves it to disk and returns a File object or null.
    */
   public File downloadThingFile(ThingFile thingFile)
@@ -334,6 +333,46 @@ public class ThingiverseManager
       
       file.createNewFile();
       client.downloadBinaryFile(thingFile.getUrl(), file);
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+    }
+    
+    return file;
+  }
+  
+  /**
+   * Downloads an image from thingiverse,
+   * saves it to disk and returns a File object or null.
+   */
+  public File downloadImage(String url)
+  {
+    File file = null;
+    
+    try
+    {
+      File folder = new File(Helper.getBasePath(),
+                             "thingiverse/images/");
+      
+      // Generate a "unique" filename...
+      String filename = ((Integer)url.hashCode()).toString()
+                      + "."
+                      + url.substring(url.length() - 3);
+      
+      folder.mkdirs();
+      file = new File(folder, filename);
+      
+      // Delete old file from disk.
+      // (There may have been an update and we want to download the most recent
+      // version each time)
+      if (file.exists())
+      {
+        file.delete();
+      }
+      
+      file.createNewFile();
+      client.downloadBinaryFile(url, file);
     }
     catch (Exception ex)
     {
