@@ -1,5 +1,11 @@
 package com.tur0kk.thingiverse;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
@@ -431,21 +437,54 @@ public class ThingiverseClient {
   }
   
   public String downloadTextFile  (String url) {
-    OAuthRequest request1 = new OAuthRequest(Verb.GET, url);
-    request1.addHeader("Authorization", "Bearer " + accesTokenString);
-    Response response1 = request1.send();
+    OAuthRequest request = new OAuthRequest(Verb.GET, url);
+    request.addHeader("Authorization", "Bearer " + accesTokenString);
+    Response response = request.send();
+    response = followRedirects(response, 2);
     
-    if (response1.getCode() == 302 /* Found/Redirection */)
-    {
-      // Follow redirection...
-      OAuthRequest request2 = new OAuthRequest(Verb.GET, response1.getHeader("Location"));
-      Response response2 = request2.send();
+    return response.getBody();
+  }
+  
+  public boolean downloadBinaryFile(String url, File outFile) throws IOException
+  {
+    // Perform http request
+    OAuthRequest request = new OAuthRequest(Verb.GET, url);
+    request.addHeader("Authorization", "Bearer " + accesTokenString);
+    Response response = request.send();
+    response = followRedirects(response, 2);
 
-      return response2.getBody();
-    }
-    else
+    if (!response.isSuccessful())
     {
-      return response1.getBody();
+      return false;
     }
+    
+    // Save binary contents to file
+    InputStream inputStream = response.getStream();
+    OutputStream outputStream = new FileOutputStream(outFile);
+    
+    byte[] buffer = new byte[4096];
+    int n;
+    while ((n = inputStream.read(buffer)) != -1)
+    {
+      outputStream.write(buffer, 0, n);
+    }
+    outputStream.close();
+    
+    return true;
+  }
+  
+  private Response followRedirects(Response response, int maxRedirects)
+  {
+    if (maxRedirects < 1 || response.getCode() != 302)
+    {
+      return response;
+    }
+    
+    // Follow redirect once
+    OAuthRequest redirectRequest = new OAuthRequest(Verb.GET, response.getHeader("Location"));
+    Response redirectResponse = redirectRequest.send();
+    
+    // Recursively follow redirects until success or max tries exceeded
+    return followRedirects(redirectResponse, maxRedirects - 1);
   }
 }
