@@ -12,16 +12,12 @@ package com.tur0kk.facebook.gui;
 
 import com.github.sarxos.webcam.Webcam;
 import com.tur0kk.facebook.FacebookManager;
-import com.tur0kk.thingiverse.ThingiverseManager;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
