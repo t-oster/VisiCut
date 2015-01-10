@@ -70,10 +70,12 @@ import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.AffineTransform;
@@ -127,7 +129,7 @@ public class MainView extends javax.swing.JFrame
 
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView");
-
+  private ThingiverseDialog thingiverseDialog = null;
   private ParameterPanel parameterPanel = new ParameterPanel();
   
   public static MainView getInstance()
@@ -2600,42 +2602,52 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   private void btThingiverseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btThingiverseActionPerformed
   {//GEN-HEADEREND:event_btThingiverseActionPerformed
 
-    ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-    
-    try
-    {
-      // Try login with persistent access token.
-      boolean loginSuccess = thingiverse.logIn();
+    /*
+     * just hide thingiverseDialog on close to keep state.
+     * if logged out, create new instance of ThingiverseDialog
+     */
+    if(!ThingiverseManager.getInstance().isLoggedIn() || thingiverseDialog == null){
+      ThingiverseManager thingiverse = ThingiverseManager.getInstance();
 
-      if (!loginSuccess)
+      try
       {
-        String loginUrl = thingiverse.initiateAuthentication();
-        String browserCode = "";
+        // Try login with persistent access token.
+        boolean loginSuccess = thingiverse.logIn();
 
-        if (isJavaFxAvailable())
+        if (!loginSuccess)
         {
-          browserCode = javaFXThingiverseLogin(loginUrl);
-        }
-        else
-        {
-          // JavaFX not available...
-          System.out.println("JavaFX is not available. Using fallback behavior.");
-          browserCode = systemBrowserThingiverseLogin(loginUrl);
+          String loginUrl = thingiverse.initiateAuthentication();
+          String browserCode = "";
+
+          if (isJavaFxAvailable())
+          {
+            browserCode = javaFXThingiverseLogin(loginUrl);
+          }
+          else
+          {
+            // JavaFX not available...
+            System.out.println("JavaFX is not available. Using fallback behavior.");
+            browserCode = systemBrowserThingiverseLogin(loginUrl);
+          }
+
+          thingiverse.logIn(browserCode);
         }
 
-        thingiverse.logIn(browserCode);
+        if (thingiverse.isLoggedIn())
+        {
+          thingiverseDialog = new ThingiverseDialog(this, true);
+          thingiverseDialog.setVisible(true);
+        }
       }
-
-      if (thingiverse.isLoggedIn())
+      catch (Exception ex)
       {
-        ThingiverseDialog thingiverseDialog = new ThingiverseDialog(this, true);
-        thingiverseDialog.setVisible(true);
+        ex.printStackTrace();
+        this.dialog.showErrorMessage("Unable to load ThingiverseDialog");
       }
     }
-    catch (Exception ex)
+    else // instance available, show thingiverseDialog
     {
-      ex.printStackTrace();
-      this.dialog.showErrorMessage("Unable to load ThingiverseDialog");
+      thingiverseDialog.setVisible(true);
     }
   }//GEN-LAST:event_btThingiverseActionPerformed
 
