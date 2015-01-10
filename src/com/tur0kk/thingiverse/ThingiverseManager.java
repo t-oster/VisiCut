@@ -333,14 +333,7 @@ public class ThingiverseManager
       }
       
       file.createNewFile();
-
-      // Get content as string
-      String fileContents = client.downloadTextFile(thingFile.getUrl());
-
-      // Write to disk
-      PrintWriter out = new PrintWriter(file);
-      out.print(fileContents);
-      out.close();
+      client.downloadBinaryFile(thingFile.getUrl(), file);
     }
     catch (Exception ex)
     {
