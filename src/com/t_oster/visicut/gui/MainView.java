@@ -2634,6 +2634,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     }
     catch (Exception ex)
     {
+      ex.printStackTrace();
       this.dialog.showErrorMessage("Unable to load ThingiverseDialog");
     }
   }//GEN-LAST:event_btThingiverseActionPerformed
