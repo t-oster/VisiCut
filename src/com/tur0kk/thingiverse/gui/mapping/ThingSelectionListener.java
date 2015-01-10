@@ -96,7 +96,7 @@ public class ThingSelectionListener implements ListSelectionListener
                 }
               });
 
-              // start a thread for each image to load image asynchronous
+              // start a thread for each image to load image asynchronously
               for (final ThingFile entry : things)
               {
                 final String url = entry.getThumbnailUrl();
