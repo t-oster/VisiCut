@@ -57,7 +57,7 @@ public class ThingSelectionListener implements ListSelectionListener
                 }
               }
               
-              ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+              final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
               
               // get things
               LinkedList<ThingFile> things = thingiverse.getFiles(selectionValue, selectedFileTypes);
@@ -104,20 +104,17 @@ public class ThingSelectionListener implements ListSelectionListener
                 {
                     public void run()
                     {
-                      // load image
-                      ImageIcon icon;
-                      try
-                      {
-                        icon = new ImageIcon(new URL(url));
+                      String file = thingiverse.downloadImage(url); // download  image
+                      ImageIcon imageIcon = null;
+                      if("".equals(file)){ // load default image if image not avaliable
+                        imageIcon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
                       }
-                      catch (MalformedURLException ex)
-                      {
-                        System.err.println("Image not found: " + url);
-                        icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
+                      else{
+                        imageIcon = new ImageIcon(file);
                       }
 
                       // overwrite image
-                      final ImageIcon objectImage = icon;
+                      final ImageIcon objectImage = imageIcon;
                       SwingUtilities.invokeLater(new Runnable() {
                         public void run()
                         {

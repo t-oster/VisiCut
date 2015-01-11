@@ -3,6 +3,9 @@
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
+    <Property name="iconImage" type="java.awt.Image" editor="org.netbeans.modules.form.ComponentChooserEditor">
+      <ComponentRef name="null"/>
+    </Property>
     <Property name="locationByPlatform" type="boolean" value="true"/>
     <Property name="name" type="java.lang.String" value="thingiverseDialog" noResource="true"/>
   </Properties>
@@ -25,17 +28,20 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
-              <Component id="lProfilePicture" min="-2" pref="100" max="-2" attributes="0"/>
+              <Component id="lProfilePicture" min="-2" pref="112" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="686" max="32767" attributes="0"/>
-                      <Component id="pnlFilter" min="-2" pref="165" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
-                      <EmptySpace pref="677" max="32767" attributes="0"/>
+                      <EmptySpace pref="598" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace min="-2" pref="275" max="-2" attributes="0"/>
+                      <Component id="lblOpeningFile" min="-2" pref="88" max="-2" attributes="0"/>
+                      <EmptySpace pref="313" max="32767" attributes="0"/>
+                      <Component id="pnlFilter" min="-2" pref="165" max="-2" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -51,12 +57,14 @@
                       <Component id="pnlFilter" min="-2" pref="72" max="-2" attributes="1"/>
                   </Group>
                   <Group type="103" alignment="1" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="1" attributes="0">
-                          <Component id="lUserName" min="-2" pref="30" max="-2" attributes="0"/>
-                          <EmptySpace pref="61" max="32767" attributes="0"/>
-                          <Component id="btnLogout" min="-2" pref="21" max="-2" attributes="0"/>
+                      <Component id="lUserName" alignment="0" min="-2" pref="30" max="-2" attributes="0"/>
+                      <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                          <Component id="lProfilePicture" alignment="1" min="-2" pref="112" max="-2" attributes="1"/>
+                          <Group type="103" alignment="1" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="lblOpeningFile" alignment="1" max="32767" attributes="1"/>
+                              <Component id="btnLogout" alignment="1" pref="21" max="32767" attributes="1"/>
+                          </Group>
                       </Group>
-                      <Component id="lProfilePicture" pref="112" max="32767" attributes="1"/>
                   </Group>
               </Group>
               <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
@@ -68,6 +76,7 @@
   <SubComponents>
     <Component class="javax.swing.JLabel" name="lProfilePicture">
       <Properties>
+        <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="alignmentY" type="float" value="0.0"/>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
@@ -76,6 +85,7 @@
             </LineBorder>
           </Border>
         </Property>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
         <Property name="name" type="java.lang.String" value="lProfilePicture" noResource="true"/>
       </Properties>
     </Component>
@@ -516,5 +526,15 @@
         </Component>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JLabel" name="lblOpeningFile">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="4"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL)" type="code"/>
+        </Property>
+        <Property name="text" type="java.lang.String" resourceKey="lblOpeningFile.text"/>
+        <Property name="name" type="java.lang.String" value="lblOpeningFile" noResource="true"/>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>
