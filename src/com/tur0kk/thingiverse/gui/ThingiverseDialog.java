@@ -57,13 +57,10 @@ public class ThingiverseDialog extends javax.swing.JDialog
     // init componentes
     initComponents(); // auto generated code
     initTabbedPaneHeader();
+    initComponentsByHand();
     
     // init filter checkboxes list to be passed to non gui class 
     initFilters();
-    
-    // set general content padding
-    JPanel content = (JPanel)this.getContentPane();
-    content.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
     
     // list cell renderer for images + name of things
     initListCellRenderers();
@@ -94,7 +91,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
      
       public void run()
       {        
-        ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+        final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
         
         // get things
         LinkedList<Thing> things = thingiverse.getLikedThings();
@@ -140,20 +137,18 @@ public class ThingiverseDialog extends javax.swing.JDialog
               public void run()
               {
                 
-                // load image
-                ImageIcon icon;
-                try
-                {
-                  icon = new ImageIcon(new URL(url));
+                String file = thingiverse.downloadImage(url); // download  image
+                ImageIcon imageIcon = null;
+                if("".equals(file)){ // load default image if image not avaliable
+                  imageIcon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
                 }
-                catch (MalformedURLException ex)
-                {
-                  System.err.println("Image not found: " + url);
-                  icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
+                else{
+                  imageIcon = new ImageIcon(file);
                 }
+                
                      
                 // overwrite image
-                final ImageIcon objectImage = icon;
+                final ImageIcon objectImage = imageIcon;
                 SwingUtilities.invokeLater(new Runnable() {
                   public void run()
                   {
@@ -181,7 +176,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
      
       public void run()
       {        
-        ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+        final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
         
         // get things
         LinkedList<Thing> things = thingiverse.getMyThings();
@@ -227,20 +222,17 @@ public class ThingiverseDialog extends javax.swing.JDialog
               public void run()
               {
                 
-                // load image
-                ImageIcon icon;
-                try
-                {
-                  icon = new ImageIcon(new URL(url));
+                String file = thingiverse.downloadImage(url); // download  image
+                ImageIcon imageIcon = null;
+                if("".equals(file)){ // load default image if image not avaliable
+                  imageIcon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
                 }
-                catch (MalformedURLException ex)
-                {
-                  System.err.println("Image not found: " + url);
-                  icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
+                else{
+                  imageIcon = new ImageIcon(file);
                 }
                      
                 // overwrite image
-                final ImageIcon objectImage = icon;
+                final ImageIcon objectImage = imageIcon;
                 SwingUtilities.invokeLater(new Runnable() {
                   public void run()
                   {
@@ -321,20 +313,17 @@ public class ThingiverseDialog extends javax.swing.JDialog
             public void run()
             {
 
-              // load image
-              ImageIcon icon;
-              try
-              {
-                icon = new ImageIcon(new URL(url));
+              String file = thingiverse.downloadImage(url); // download  image
+              ImageIcon imageIcon = null;
+              if("".equals(file)){ // load default image if image not avaliable
+                imageIcon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
               }
-              catch (MalformedURLException ex)
-              {
-                System.err.println("Image not found: " + url);
-                icon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
+              else{
+                imageIcon = new ImageIcon(file);
               }
 
               // overwrite image
-              final ImageIcon objectImage = icon;
+              final ImageIcon objectImage = imageIcon;
               SwingUtilities.invokeLater(new Runnable()
               {
 
@@ -400,14 +389,18 @@ public class ThingiverseDialog extends javax.swing.JDialog
         cbEPS = new javax.swing.JCheckBox();
         cbGCODE = new javax.swing.JCheckBox();
         lblFilter = new javax.swing.JLabel();
+        lblOpeningFile = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setIconImage(null);
         setLocationByPlatform(true);
         setName("thingiverseDialog"); // NOI18N
 
+        lProfilePicture.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lProfilePicture.setAlignmentY(0.0F);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(ThingiverseDialog.class);
         lProfilePicture.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("lProfilePicture.border.lineColor"))); // NOI18N
+        lProfilePicture.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         lProfilePicture.setName("lProfilePicture"); // NOI18N
 
         lUserName.setVerticalAlignment(javax.swing.SwingConstants.TOP);
@@ -600,21 +593,29 @@ public class ThingiverseDialog extends javax.swing.JDialog
                 .addGap(23, 23, 23))
         );
 
+        lblOpeningFile.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblOpeningFile.setIcon(LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL));
+        lblOpeningFile.setText(resourceMap.getString("lblOpeningFile.text")); // NOI18N
+        lblOpeningFile.setName("lblOpeningFile"); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnLogout)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 686, Short.MAX_VALUE)
-                        .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
+                .addComponent(btnLogout)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(677, Short.MAX_VALUE))))
+                        .addContainerGap(598, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(275, 275, 275)
+                        .addComponent(lblOpeningFile, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 313, Short.MAX_VALUE)
+                        .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))))
             .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 1022, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -625,11 +626,12 @@ public class ThingiverseDialog extends javax.swing.JDialog
                         .addContainerGap()
                         .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
-                            .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(lProfilePicture, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)))
+                        .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(lblOpeningFile, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnLogout, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 21, Short.MAX_VALUE)))))
                 .addGap(17, 17, 17)
                 .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 513, Short.MAX_VALUE))
         );
@@ -637,6 +639,14 @@ public class ThingiverseDialog extends javax.swing.JDialog
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+private void initComponentsByHand(){
+  // set general content padding
+  JPanel content = (JPanel)this.getContentPane();
+  content.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+  
+  // disable controls
+  lblOpeningFile.setVisible(false);
+}  
   private void btnSearchActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnSearchActionPerformed
   {//GEN-HEADEREND:event_btnSearchActionPerformed
     this.actionSearch();
@@ -816,9 +826,9 @@ private void initListClickListeners(){
   lstLiked.addListSelectionListener(new ThingSelectionListener(lstLikedThing, filterCheckBoxes));
   
   // set adapter for ThingFile-lists to listen for double clicks -> load selected file    
-  lstSearchThing.addMouseListener(new ThingFileClickListener(mainview));
-  lstMyThingsThing.addMouseListener(new ThingFileClickListener(mainview));
-  lstLikedThing.addMouseListener(new ThingFileClickListener(mainview));
+  lstSearchThing.addMouseListener(new ThingFileClickListener(mainview, lblOpeningFile));
+  lstMyThingsThing.addMouseListener(new ThingFileClickListener(mainview, lblOpeningFile));
+  lstLikedThing.addMouseListener(new ThingFileClickListener(mainview, lblOpeningFile));
 }
 
 private void initUserName(){
@@ -851,20 +861,35 @@ private void initProfilePicture(){
       // profile picture, resized to label
       try
       {
+        // get loading icon
+        final ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
+        // display loading icon in label
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run()
+          {
+            lProfilePicture.setIcon(loadingIcon);
+          }
+        });
+        
+        // get actual user profile picture
         String path = thingiverse.getUserImage();
-        URL url = new URL(path);
-        // Hack: Avoid loading the default image from web (which fails)          
-        if (url.toString().startsWith("https://www.thingiverse.com/img/default/avatar/avatar"))
-        {
-          url = LoadingIcon.class.getResource("resources/avatar_default.jpg");
+        String file = thingiverse.downloadImage(path); // download user image
+        ImageIcon imageIcon = null;
+        if(file == ""){ // load default image if image not avaliable
+          imageIcon = new ImageIcon(LoadingIcon.class.getResource("resources/avatar_default.jpg"));
         }
-
-        ImageIcon imageIcon = new ImageIcon(url);
+        else{
+          imageIcon = new ImageIcon(file);
+        }
+        
+        // scale image to label size
         Image rawImage = imageIcon.getImage();
         Image scaledImage = rawImage.getScaledInstance(
           lProfilePicture.getWidth(),
           lProfilePicture.getHeight(),
           Image.SCALE_SMOOTH);
+        
+        // display image in label
         final ImageIcon profilePicture = new ImageIcon(scaledImage);
         SwingUtilities.invokeLater(new Runnable() {
           public void run()
@@ -904,6 +929,7 @@ private void initFilters(){
     private javax.swing.JLabel lProfilePicture;
     private javax.swing.JLabel lUserName;
     private javax.swing.JLabel lblFilter;
+    private javax.swing.JLabel lblOpeningFile;
     private javax.swing.JList lstLiked;
     private javax.swing.JList lstLikedThing;
     private javax.swing.JList lstMyThings;

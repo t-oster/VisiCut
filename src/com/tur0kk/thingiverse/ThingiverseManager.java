@@ -346,8 +346,9 @@ public class ThingiverseManager
    * Downloads an image from thingiverse,
    * saves it to disk and returns a File object or null.
    */
-  public File downloadImage(String url)
+  public String downloadImage(String url)
   {
+    String fullFilename = "";
     File file = null;
     
     try
@@ -373,13 +374,15 @@ public class ThingiverseManager
       
       file.createNewFile();
       client.downloadBinaryFile(url, file);
+      
+      fullFilename = Helper.getBasePath() + "\\thingiverse\\images\\" + filename;
     }
     catch (Exception ex)
     {
       ex.printStackTrace();
     }
     
-    return file;
+    return fullFilename;
   }
   
   /**
