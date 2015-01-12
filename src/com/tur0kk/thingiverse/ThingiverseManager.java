@@ -348,7 +348,7 @@ public class ThingiverseManager
    */
   public String downloadImage(String url)
   {
-    String fullFilename = "";
+    String returnPath = "";
     File file = null;
     
     try
@@ -375,14 +375,14 @@ public class ThingiverseManager
       file.createNewFile();
       client.downloadBinaryFile(url, file);
       
-      fullFilename = Helper.getBasePath() + "\\thingiverse\\images\\" + filename;
+      returnPath = file.getAbsolutePath();
     }
     catch (Exception ex)
     {
       ex.printStackTrace();
     }
     
-    return fullFilename;
+    return returnPath;
   }
   
   /**
