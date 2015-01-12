@@ -332,7 +332,7 @@ public class ThingiverseManager
       }
       
       file.createNewFile();
-      client.downloadBinaryFile(thingFile.getUrl(), file);
+      client.downloadBinaryFile(thingFile.getUrl(), file, true);
     }
     catch (Exception ex)
     {
@@ -373,7 +373,7 @@ public class ThingiverseManager
       }
       
       file.createNewFile();
-      client.downloadBinaryFile(url, file);
+      client.downloadBinaryFile(url, file, false);
       
       returnPath = file.getAbsolutePath();
     }

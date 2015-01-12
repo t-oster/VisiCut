@@ -445,11 +445,15 @@ public class ThingiverseClient {
     return response.getBody();
   }
   
-  public boolean downloadBinaryFile(String url, File outFile) throws IOException
+  public boolean downloadBinaryFile(String url, File outFile, boolean authorizationRequired) throws IOException
   {
     // Perform http request
     OAuthRequest request = new OAuthRequest(Verb.GET, url);
-    request.addHeader("Authorization", "Bearer " + accesTokenString);
+    
+    if (authorizationRequired)
+    {
+      request.addHeader("Authorization", "Bearer " + accesTokenString);
+    }
     
     // Quick and dirty solution:
     // Fake user-agent. Otherwise thingiverse may give us 403 Forbidden.
