@@ -30,20 +30,16 @@
           <Group type="102" attributes="0">
               <Component id="lProfilePicture" min="-2" pref="112" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="lUserName" alignment="0" min="-2" pref="239" max="-2" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
-                      <EmptySpace pref="598" max="32767" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="1" attributes="0">
+                      <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="275" max="-2" attributes="0"/>
                       <Component id="lblOpeningFile" min="-2" pref="88" max="-2" attributes="0"/>
-                      <EmptySpace pref="313" max="32767" attributes="0"/>
-                      <Component id="pnlFilter" min="-2" pref="165" max="-2" attributes="0"/>
                   </Group>
               </Group>
+              <EmptySpace pref="285" max="32767" attributes="0"/>
+              <Component id="pnlFilter" min="-2" pref="191" max="-2" attributes="0"/>
           </Group>
           <Component id="tpLists" alignment="0" pref="1022" max="32767" attributes="0"/>
       </Group>
@@ -51,24 +47,22 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Group type="102" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="pnlFilter" min="-2" pref="72" max="-2" attributes="1"/>
-                  </Group>
-                  <Group type="103" alignment="1" groupAlignment="0" attributes="0">
-                      <Component id="lUserName" alignment="0" min="-2" pref="30" max="-2" attributes="0"/>
-                      <Group type="103" alignment="0" groupAlignment="1" attributes="0">
-                          <Component id="lProfilePicture" alignment="1" min="-2" pref="112" max="-2" attributes="1"/>
-                          <Group type="103" alignment="1" groupAlignment="0" max="-2" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                      <Group type="102" alignment="1" attributes="1">
+                          <Component id="lUserName" min="-2" pref="30" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="lblOpeningFile" alignment="1" max="32767" attributes="1"/>
                               <Component id="btnLogout" alignment="1" pref="21" max="32767" attributes="1"/>
                           </Group>
                       </Group>
+                      <Component id="lProfilePicture" alignment="1" pref="112" max="32767" attributes="1"/>
                   </Group>
+                  <Component id="pnlFilter" min="-2" max="-2" attributes="1"/>
               </Group>
-              <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
-              <Component id="tpLists" pref="513" max="32767" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="tpLists" pref="512" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -445,20 +439,24 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="lblFilter" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="cbDXF" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="cbSVG" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="cbPLF" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="cbDXF" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="cbSVG" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="cbEPS" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="cbGCODE" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="cbEPS" min="-2" max="-2" attributes="0"/>
-                      <Component id="cbGCODE" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace min="-2" pref="99" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -467,17 +465,17 @@
               <Group type="102" alignment="0" attributes="0">
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="cbSVG" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="cbEPS" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="lblFilter" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbEPS" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="cbDXF" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="cbGCODE" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="cbPLF" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
+                  <EmptySpace pref="32" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
