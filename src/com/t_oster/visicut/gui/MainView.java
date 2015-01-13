@@ -70,12 +70,10 @@ import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.AffineTransform;
@@ -103,7 +101,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -130,6 +127,7 @@ public class MainView extends javax.swing.JFrame
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView");
   private ThingiverseDialog thingiverseDialog = null;
+  private FacebookDialog facebookDialog = null;
   private ParameterPanel parameterPanel = new ParameterPanel();
   
   public static MainView getInstance()
@@ -2627,7 +2625,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
           {
             // JavaFX not available...
             System.out.println("JavaFX is not available. Using fallback behavior.");
-            browserCode = systemBrowserThingiverseLogin(loginUrl);
+            browserCode = systemBrowserLogin("Thingiverse", loginUrl);
           }
 
           thingiverse.logIn(browserCode);
@@ -2706,13 +2704,13 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     return browserCode;
   }
   
-  private String systemBrowserThingiverseLogin(String loginUrl) throws Exception
+  private String systemBrowserLogin(String name, String loginUrl) throws Exception
   {
     // if JavaFX is not available use system browser to show thingiverse website. Necessary to copy auth code by hand.
-    String browserCode = null;
+    String browserCode;
   
     Desktop.getDesktop().browse(URI.create(loginUrl));
-    browserCode = javax.swing.JOptionPane.showInputDialog("Log in with your Thingiverse-account, click allow, paste code here:");
+    browserCode = javax.swing.JOptionPane.showInputDialog("Log in with your " + name + "-account, click allow, paste code here:");
 
     return browserCode;
   }
@@ -2733,45 +2731,56 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   
   private void btFacebookActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btFacebookActionPerformed
   {//GEN-HEADEREND:event_btFacebookActionPerformed
-    FacebookManager facebook = FacebookManager.getInstance();
+    /*
+     * just hide facebookDialog on close to keep state.
+     * if logged out, create new instance of dialog
+     */
+    if(!FacebookManager.getInstance().isLoggedIn() || facebookDialog == null){
+      FacebookManager facebook = FacebookManager.getInstance();
+
+      try
+      {
+        // Try login with persistent access token.
+        boolean loginSuccess = facebook.logIn();
+
+        if (!loginSuccess)
+        {
+          String loginUrl = facebook.initiateAuthentication();
+          String browserCode = "";
+
+          if (false)//isJavaFxAvailable())
+          {
+            //browserCode = javaFXFacebookLogin(loginUrl);
+          }
+          else
+          {
+            // JavaFX not available...
+            System.out.println("JavaFX is not available. Using fallback behavior.");
+            browserCode = systemBrowserLogin("Facebook", loginUrl);
+          }
+
+          facebook.logIn(browserCode);
+        }
+
+        if (facebook.isLoggedIn())
+        {
+          facebookDialog = new FacebookDialog(this, true);
+          facebookDialog.setVisible(true);
+        }
+      }
+      catch (Exception ex)
+      {
+        ex.printStackTrace();
+        this.dialog.showErrorMessage("Unable to load FacebookDialog");
+      }
+    }
+    else // instance available, show thingiverseDialog
+    {
+      facebookDialog.setVisible(true);
+    }
     
-    try
-    {
-      // Try login with persistent access token.
-      boolean loginSuccess = facebook.logIn();
-
-      if (!loginSuccess)
-      {
-        String loginUrl = facebook.initiateAuthentication();
-        String browserCode = "";
-
-        browserCode = systemBrowserFacebookLogin(loginUrl);
-        
-        facebook.logIn(browserCode);
-      }
-
-      if (facebook.isLoggedIn())
-      {
-        FacebookDialog facebookDialog = new FacebookDialog(this, true);
-        facebookDialog.setVisible(true);
-      }
-    }
-    catch (Exception ex)
-    {
-      ex.printStackTrace();
-      this.dialog.showErrorMessage("Unable to load FacebookDialog");
-    }
+    
   }//GEN-LAST:event_btFacebookActionPerformed
-
-  private String systemBrowserFacebookLogin(String loginUrl) throws Exception
-  {
-    String browserCode = null;
-  
-    Desktop.getDesktop().browse(URI.create(loginUrl));
-    browserCode = javax.swing.JOptionPane.showInputDialog("Log in with your Facebook account, click allow, paste code here:");
-
-    return browserCode;
-  }
   
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
