@@ -486,6 +486,7 @@
           <Properties>
             <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" resourceKey="cbSVG.text"/>
+            <Property name="horizontalAlignment" type="int" value="2"/>
             <Property name="name" type="java.lang.String" value="cbSVG" noResource="true"/>
           </Properties>
         </Component>
@@ -493,6 +494,7 @@
           <Properties>
             <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" resourceKey="cbDXF.text"/>
+            <Property name="horizontalAlignment" type="int" value="2"/>
             <Property name="name" type="java.lang.String" value="cbDXF" noResource="true"/>
           </Properties>
         </Component>
@@ -500,6 +502,7 @@
           <Properties>
             <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" resourceKey="cbPLF.text"/>
+            <Property name="horizontalAlignment" type="int" value="2"/>
             <Property name="name" type="java.lang.String" value="cbPLF" noResource="true"/>
           </Properties>
         </Component>
@@ -507,6 +510,7 @@
           <Properties>
             <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" resourceKey="cbEPS.text"/>
+            <Property name="horizontalAlignment" type="int" value="2"/>
             <Property name="name" type="java.lang.String" value="cbEPS" noResource="true"/>
           </Properties>
         </Component>
@@ -514,6 +518,7 @@
           <Properties>
             <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" resourceKey="cbGCODE.text"/>
+            <Property name="horizontalAlignment" type="int" value="2"/>
             <Property name="name" type="java.lang.String" value="cbGCODE" noResource="true"/>
           </Properties>
         </Component>

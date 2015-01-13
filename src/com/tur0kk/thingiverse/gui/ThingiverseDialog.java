@@ -534,22 +534,27 @@ public class ThingiverseDialog extends javax.swing.JFrame
 
         cbSVG.setSelected(true);
         cbSVG.setText(resourceMap.getString("cbSVG.text")); // NOI18N
+        cbSVG.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         cbSVG.setName("cbSVG"); // NOI18N
 
         cbDXF.setSelected(true);
         cbDXF.setText(resourceMap.getString("cbDXF.text")); // NOI18N
+        cbDXF.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         cbDXF.setName("cbDXF"); // NOI18N
 
         cbPLF.setSelected(true);
         cbPLF.setText(resourceMap.getString("cbPLF.text")); // NOI18N
+        cbPLF.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         cbPLF.setName("cbPLF"); // NOI18N
 
         cbEPS.setSelected(true);
         cbEPS.setText(resourceMap.getString("cbEPS.text")); // NOI18N
+        cbEPS.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         cbEPS.setName("cbEPS"); // NOI18N
 
         cbGCODE.setSelected(true);
         cbGCODE.setText(resourceMap.getString("cbGCODE.text")); // NOI18N
+        cbGCODE.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         cbGCODE.setName("cbGCODE"); // NOI18N
 
         lblFilter.setText(resourceMap.getString("lblFilter.text")); // NOI18N
