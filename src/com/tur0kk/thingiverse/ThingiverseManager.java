@@ -24,6 +24,7 @@ public class ThingiverseManager
   private static final String clientId = "0d3b8166624f6d05b738";
   private static final String clientSecret = "a0b5368a3d58ddb3b1ade12f4f8f14e7";
   private static final String clientCallback = "http://www.thingiverse.com";
+  private static final String redirectUrlPrefix = "http://hci.rwth-aachen.de/visicut?code=";
   
   private static ThingiverseManager instance = null;
   
@@ -44,6 +45,11 @@ public class ThingiverseManager
       instance = new ThingiverseManager();
     }
     return instance;
+  }
+  
+  public String getRedirectUrlPrefix()
+  {
+    return this.redirectUrlPrefix;
   }
   
   /**

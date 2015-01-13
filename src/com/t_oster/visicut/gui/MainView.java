@@ -2599,7 +2599,6 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
 
   private void btThingiverseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btThingiverseActionPerformed
   {//GEN-HEADEREND:event_btThingiverseActionPerformed
-
     /*
      * just hide thingiverseDialog on close to keep state.
      * if logged out, create new instance of ThingiverseDialog
@@ -2619,7 +2618,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
 
           if (isJavaFxAvailable())
           {
-            browserCode = javaFXThingiverseLogin(loginUrl);
+            browserCode = browserLoginDialog("Thingiverse Login", loginUrl, thingiverse.getRedirectUrlPrefix());
           }
           else
           {
@@ -2648,20 +2647,73 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
       thingiverseDialog.setVisible(true);
     }
   }//GEN-LAST:event_btThingiverseActionPerformed
+  
+  private void btFacebookActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btFacebookActionPerformed
+  {//GEN-HEADEREND:event_btFacebookActionPerformed
+    /*
+     * just hide facebookDialog on close to keep state.
+     * if logged out, create new instance of dialog
+     */
+    if(!FacebookManager.getInstance().isLoggedIn() || facebookDialog == null){
+      FacebookManager facebook = FacebookManager.getInstance();
 
-  private String javaFXThingiverseLogin(String loginUrl) throws Exception
+      try
+      {
+        // Try login with persistent access token.
+        boolean loginSuccess = facebook.logIn();
+
+        if (!loginSuccess)
+        {
+          String loginUrl = facebook.initiateAuthentication();
+          String browserCode;
+
+          if (isJavaFxAvailable())
+          {
+            browserCode = browserLoginDialog("Facebook Login", loginUrl, facebook.getRedirectUrlPrefix());
+          }
+          else
+          {
+            // JavaFX not available...
+            System.out.println("JavaFX is not available. Using fallback behavior.");
+            browserCode = systemBrowserLogin("Facebook", loginUrl);
+          }
+
+          facebook.logIn(browserCode);
+        }
+
+        if (facebook.isLoggedIn())
+        {
+          facebookDialog = new FacebookDialog(this, true);
+          facebookDialog.setVisible(true);
+        }
+      }
+      catch (Exception ex)
+      {
+        ex.printStackTrace();
+        this.dialog.showErrorMessage("Unable to load FacebookDialog");
+      }
+    }
+    else // instance available, show thingiverseDialog
+    {
+      facebookDialog.setVisible(true);
+    }
+  }//GEN-LAST:event_btFacebookActionPerformed
+  
+  private String browserLoginDialog(String title, String loginUrl, String redirectUrlPrefix) throws Exception
   {
-    // JavaFX available, load JavaFXThingiverseLoginDialog dynamically (depends on JavaFX)
+    // JavaFX available, load BrowserLoginDialog dynamically (depends on JavaFX)
     String browserCode = null;
     
-    URL jarUrl = MainView.class.getResource("lib/JavaFXThingiverseLoginDialog.jar");
+    URL jarUrl = MainView.class.getResource("lib/BrowserLoginDialog.jar");
     URLClassLoader classLoader = new URLClassLoader(new URL[] { jarUrl }, MainView.class.getClassLoader());
-    Class<?> ThingiverseLoginDialog = classLoader.loadClass("com.tur0kk.thingiverse.fxgui.ThingiverseLoginDialog");
+    Class<?> ThingiverseLoginDialog = classLoader.loadClass("com.tur0kk.thingiverse.fxgui.BrowserLoginDialog");
 
     Class<?>[] constructorParameterTypes = new Class[]
     {
       java.awt.Frame.class,
       boolean.class,
+      String.class,
+      String.class,
       String.class
     };
 
@@ -2670,7 +2722,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     // Create instance
     Object loginDialog = constructor.newInstance(new Object[]
     {
-      this, true, loginUrl
+      this, true, title, loginUrl, redirectUrlPrefix
     });
 
     // Parameter types for methods
@@ -2728,60 +2780,6 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
       return false;
     }
   }
-  
-  private void btFacebookActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btFacebookActionPerformed
-  {//GEN-HEADEREND:event_btFacebookActionPerformed
-    /*
-     * just hide facebookDialog on close to keep state.
-     * if logged out, create new instance of dialog
-     */
-    if(!FacebookManager.getInstance().isLoggedIn() || facebookDialog == null){
-      FacebookManager facebook = FacebookManager.getInstance();
-
-      try
-      {
-        // Try login with persistent access token.
-        boolean loginSuccess = facebook.logIn();
-
-        if (!loginSuccess)
-        {
-          String loginUrl = facebook.initiateAuthentication();
-          String browserCode = "";
-
-          if (false)//isJavaFxAvailable())
-          {
-            //browserCode = javaFXFacebookLogin(loginUrl);
-          }
-          else
-          {
-            // JavaFX not available...
-            System.out.println("JavaFX is not available. Using fallback behavior.");
-            browserCode = systemBrowserLogin("Facebook", loginUrl);
-          }
-
-          facebook.logIn(browserCode);
-        }
-
-        if (facebook.isLoggedIn())
-        {
-          facebookDialog = new FacebookDialog(this, true);
-          facebookDialog.setVisible(true);
-        }
-      }
-      catch (Exception ex)
-      {
-        ex.printStackTrace();
-        this.dialog.showErrorMessage("Unable to load FacebookDialog");
-      }
-    }
-    else // instance available, show thingiverseDialog
-    {
-      facebookDialog.setVisible(true);
-    }
-    
-    
-  }//GEN-LAST:event_btFacebookActionPerformed
-  
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
