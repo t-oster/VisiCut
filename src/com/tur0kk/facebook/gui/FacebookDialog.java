@@ -28,7 +28,7 @@ import javax.swing.SwingUtilities;
  *
  * @author Sven
  */
-public class FacebookDialog extends javax.swing.JDialog
+public class FacebookDialog extends javax.swing.JFrame
 {
 
   private Thread livecamThread;
@@ -36,7 +36,6 @@ public class FacebookDialog extends javax.swing.JDialog
   /** Creates new form FacebookDialog */
   public FacebookDialog(java.awt.Frame parent, boolean modal)
   {
-    super(parent, modal);
     initComponents();
     
     
@@ -239,7 +238,7 @@ public class FacebookDialog extends javax.swing.JDialog
                         .addComponent(pnlFoto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(pnlPublish, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

@@ -34,7 +34,7 @@ import javax.swing.*;
  *
  * @author Sven
  */
-public class ThingiverseDialog extends javax.swing.JDialog
+public class ThingiverseDialog extends javax.swing.JFrame
 {
   private AtomicInteger numberLoadingLiked = new AtomicInteger();
   private AtomicInteger numberLoadingMyThings = new AtomicInteger();
@@ -45,9 +45,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
   /** Creates new form ThingiverseDialog */
   public ThingiverseDialog(java.awt.Frame parent, boolean modal) throws AccessException, MalformedURLException, IOException
-  {
-    super(parent, modal);
-    
+  {    
     // just hide to keep state
     this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
     
@@ -391,7 +389,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
         lblOpeningFile = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setIconImage(null);
         setLocationByPlatform(true);
         setName("thingiverseDialog"); // NOI18N
 
@@ -570,28 +567,29 @@ public class ThingiverseDialog extends javax.swing.JDialog
                     .addComponent(cbPLF)
                     .addGroup(pnlFilterLayout.createSequentialGroup()
                         .addGroup(pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cbDXF)
-                            .addComponent(cbSVG))
-                        .addGap(18, 18, 18)
+                            .addComponent(cbSVG)
+                            .addComponent(cbDXF))
+                        .addGap(6, 6, 6)
                         .addGroup(pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cbEPS)
-                            .addComponent(cbGCODE))))
-                .addGap(19, 19, 19))
+                            .addComponent(cbGCODE)
+                            .addComponent(cbEPS))))
+                .addGap(26, 26, 26))
         );
         pnlFilterLayout.setVerticalGroup(
             pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlFilterLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbSVG)
                     .addComponent(lblFilter)
-                    .addComponent(cbEPS))
-                .addGap(5, 5, 5)
+                    .addComponent(cbEPS)
+                    .addComponent(cbSVG))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbDXF)
-                    .addComponent(cbGCODE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(cbGCODE)
+                    .addComponent(cbDXF))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cbPLF)
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         lblOpeningFile.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -607,13 +605,15 @@ public class ThingiverseDialog extends javax.swing.JDialog
                 .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 494, Short.MAX_VALUE)
+                        .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnLogout)
                         .addGap(275, 275, 275)
-                        .addComponent(lblOpeningFile, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 285, Short.MAX_VALUE)
-                .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(lblOpeningFile, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(476, Short.MAX_VALUE))))
             .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 1022, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
