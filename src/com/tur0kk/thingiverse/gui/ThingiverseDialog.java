@@ -383,10 +383,10 @@ public class ThingiverseDialog extends javax.swing.JFrame
         cbSVG = new javax.swing.JCheckBox();
         cbDXF = new javax.swing.JCheckBox();
         cbPLF = new javax.swing.JCheckBox();
-        cbEPS = new javax.swing.JCheckBox();
         cbGCODE = new javax.swing.JCheckBox();
-        lblFilter = new javax.swing.JLabel();
+        cbEPS = new javax.swing.JCheckBox();
         lblOpeningFile = new javax.swing.JLabel();
+        lblFilter = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setLocationByPlatform(true);
@@ -528,79 +528,48 @@ public class ThingiverseDialog extends javax.swing.JFrame
         });
 
         pnlFilter.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("pnlFilter.border.lineColor"))); // NOI18N
-        pnlFilter.setAlignmentX(5.0F);
-        pnlFilter.setAlignmentY(5.0F);
+        pnlFilter.setAlignmentX(0.0F);
+        pnlFilter.setAlignmentY(0.0F);
         pnlFilter.setName("pnlFilter"); // NOI18N
+        pnlFilter.setLayout(new java.awt.GridLayout(3, 3, 1, 0));
 
         cbSVG.setSelected(true);
         cbSVG.setText(resourceMap.getString("cbSVG.text")); // NOI18N
         cbSVG.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         cbSVG.setName("cbSVG"); // NOI18N
+        pnlFilter.add(cbSVG);
 
         cbDXF.setSelected(true);
         cbDXF.setText(resourceMap.getString("cbDXF.text")); // NOI18N
         cbDXF.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         cbDXF.setName("cbDXF"); // NOI18N
+        pnlFilter.add(cbDXF);
 
         cbPLF.setSelected(true);
         cbPLF.setText(resourceMap.getString("cbPLF.text")); // NOI18N
         cbPLF.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         cbPLF.setName("cbPLF"); // NOI18N
-
-        cbEPS.setSelected(true);
-        cbEPS.setText(resourceMap.getString("cbEPS.text")); // NOI18N
-        cbEPS.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        cbEPS.setName("cbEPS"); // NOI18N
+        pnlFilter.add(cbPLF);
 
         cbGCODE.setSelected(true);
         cbGCODE.setText(resourceMap.getString("cbGCODE.text")); // NOI18N
         cbGCODE.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         cbGCODE.setName("cbGCODE"); // NOI18N
+        pnlFilter.add(cbGCODE);
 
-        lblFilter.setText(resourceMap.getString("lblFilter.text")); // NOI18N
-        lblFilter.setName("lblFilter"); // NOI18N
-
-        javax.swing.GroupLayout pnlFilterLayout = new javax.swing.GroupLayout(pnlFilter);
-        pnlFilter.setLayout(pnlFilterLayout);
-        pnlFilterLayout.setHorizontalGroup(
-            pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlFilterLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblFilter)
-                .addGap(18, 18, 18)
-                .addGroup(pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cbPLF)
-                    .addGroup(pnlFilterLayout.createSequentialGroup()
-                        .addGroup(pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cbSVG)
-                            .addComponent(cbDXF))
-                        .addGap(6, 6, 6)
-                        .addGroup(pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cbGCODE)
-                            .addComponent(cbEPS))))
-                .addGap(26, 26, 26))
-        );
-        pnlFilterLayout.setVerticalGroup(
-            pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlFilterLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblFilter)
-                    .addComponent(cbEPS)
-                    .addComponent(cbSVG))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbGCODE)
-                    .addComponent(cbDXF))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbPLF)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        cbEPS.setSelected(true);
+        cbEPS.setText(resourceMap.getString("cbEPS.text")); // NOI18N
+        cbEPS.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        cbEPS.setName("cbEPS"); // NOI18N
+        pnlFilter.add(cbEPS);
 
         lblOpeningFile.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblOpeningFile.setIcon(LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL));
         lblOpeningFile.setText(resourceMap.getString("lblOpeningFile.text")); // NOI18N
         lblOpeningFile.setName("lblOpeningFile"); // NOI18N
+
+        lblFilter.setText(resourceMap.getString("lblFilter.text")); // NOI18N
+        lblFilter.setName("lblFilter"); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -611,29 +580,37 @@ public class ThingiverseDialog extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 494, Short.MAX_VALUE)
-                        .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addComponent(btnLogout)
-                        .addGap(275, 275, 275)
-                        .addComponent(lblOpeningFile, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(476, Short.MAX_VALUE))))
-            .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 1022, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(399, 399, 399)
+                                .addComponent(lblOpeningFile, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 261, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblFilter)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                        .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
+            .addComponent(tpLists, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1044, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblOpeningFile, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(lblFilter)
+                        .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(lblOpeningFile, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnLogout, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 21, Short.MAX_VALUE)))
-                        .addComponent(lProfilePicture, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE))
-                    .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnLogout))
+                        .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE))
         );
