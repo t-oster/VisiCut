@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tur0kk.facebook;
 
 import java.awt.Graphics2D;
@@ -24,7 +20,6 @@ import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 
 /**
- *
  * @author Sven
  */
 public class FacebookClient
@@ -162,6 +157,4 @@ public class FacebookClient
       throw new RuntimeException("message and image needed");
     }
   }
-  
-  
 }

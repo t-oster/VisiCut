@@ -25,6 +25,7 @@ public class FacebookManager
   private static final String clientSecret = "8188c6a387ceaf7aa7919112190e22d8";
   private static final String clientCallback = "http://hci.rwth-aachen.de/visicut";
   private static final String fablabFacebookPageId = "191850277562397";
+  private static final String redirectUrlPrefix = "http://hci.rwth-aachen.de/visicut?code=";
   
   private static FacebookManager instance = null;
   
@@ -44,6 +45,11 @@ public class FacebookManager
       instance = new FacebookManager();
     }
     return instance;
+  }
+  
+  public String getRedirectUrlPrefix()
+  {
+    return this.redirectUrlPrefix;
   }
   
   /**
@@ -283,5 +289,4 @@ public class FacebookManager
       ex.printStackTrace();
     }
   }
-  
 }
