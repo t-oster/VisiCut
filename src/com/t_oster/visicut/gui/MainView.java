@@ -33,6 +33,7 @@ import com.t_oster.uicomponents.PlatformIcon;
 import com.t_oster.uicomponents.Ruler;
 import com.t_oster.uicomponents.warnings.Message;
 import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.VisicutModel.Modification;
 import com.t_oster.visicut.gui.beans.CreateNewMaterialDialog;
 import com.t_oster.visicut.gui.beans.CreateNewThicknessDialog;
 import com.t_oster.visicut.gui.parameterpanel.ParameterPanel;
@@ -1348,7 +1349,8 @@ public class MainView extends javax.swing.JFrame
       backup.put(p, new AffineTransform(p.getGraphicObjects().getTransform()));
     }
     String text = "";
-    switch (this.visicutModel1.fitObjectsIntoBed())
+    Modification modification = this.visicutModel1.fitObjectsIntoBed();
+    switch (modification.type)
     {
       case MOVE:
       {
@@ -1370,6 +1372,21 @@ public class MainView extends javax.swing.JFrame
         return;
       }
     }
+    
+    if( (modification.oldX != modification.newX) || (modification.oldY != modification.newY) )
+    {
+      text += "\n"+bundle.getString("OLDXY")+": (" + modification.oldX+","+ modification.oldY +")";
+      text += "\n"+bundle.getString("CHANGED_TO")+": (" + modification.newX+","+ modification.newY +")";
+    }    
+    
+    if( (modification.oldWidth != modification.newWidth) || (modification.oldHeight != modification.newHeight) )
+    {
+      text += "\n"+bundle.getString("OLDWH")+": (" +  modification.oldWidth+","+modification.oldHeight+")";
+      text += "\n"+bundle.getString("CHANGED_TO")+": (" + modification.newWidth+","+modification.newHeight+")";
+      text += "\n scaling factor: "+modification.factor;
+    }
+    
+    
     warningPanel.addMessage(new Message("Info", text, Message.Type.INFO, new com.t_oster.uicomponents.warnings.Action[]
     {
       new com.t_oster.uicomponents.warnings.Action(bundle.getString("UNDO"))
