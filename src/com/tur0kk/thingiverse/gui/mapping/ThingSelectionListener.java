@@ -84,7 +84,7 @@ public class ThingSelectionListener implements ListSelectionListener
               
               // display message if no files were found
               if(things.size() == 0){
-                fileModel.addElement("No files found.");
+                fileModel.addElement("No lasercutterfiles found.");
               }
 
               // display svgModel in search thing list
