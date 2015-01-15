@@ -793,37 +793,13 @@ public class VisicutModel
     }
   }
 
-  public enum ModificationEnum
+  public enum Modification
   {
     NONE,
     RESIZE,
     MOVE,
     ROTATE
   }
-  
-  public class Modification
-  {
-    public ModificationEnum type = ModificationEnum.NONE;
-    public double oldWidth = 0;
-    public double oldHeight = 0;
-    
-    public double newWidth = 0;
-    public double newHeight = 0;
-    
-    public double oldX = 0;
-    public double oldY = 0;
-    
-    public double newX = 0;
-    public double newY = 0;
-    
-    public double factor = 0;
-    
-    public Modification(ModificationEnum e)
-    {
-      type = e;
-    }
-  }
-  
   
   /**
    * Adjusts the Transform of the Graphic-Objects such that the Objects
@@ -834,21 +810,13 @@ public class VisicutModel
   public Modification fitObjectsIntoBed()
   {
     //TODO rotate file 90° if it would fit then
-    Modification result = new Modification(ModificationEnum.NONE);
-    
+    Modification result = Modification.NONE;
     double bw = getSelectedLaserDevice() != null ? getSelectedLaserDevice().getLaserCutter().getBedWidth() : 600d;
     double bh = getSelectedLaserDevice() != null ? getSelectedLaserDevice().getLaserCutter().getBedHeight() : 300d;
-    
-    
     for(PlfPart p : this.plfFile)
     {
       boolean modified = false;
       Rectangle2D bb = p.getGraphicObjects().getBoundingBox();
-      
-      result.oldHeight = bb.getHeight();
-      result.oldWidth = bb.getWidth();
-    
-      
       AffineTransform trans = p.getGraphicObjects().getTransform();
       //first try moving to origin, if not in range
       if (bb.getX() < 0 || bb.getX() + bb.getWidth() > bw)
@@ -857,11 +825,7 @@ public class VisicutModel
         p.getGraphicObjects().setTransform(trans);
         bb = p.getGraphicObjects().getBoundingBox();
         modified = true;
-        result.type = ModificationEnum.MOVE;
-        result.newHeight = bb.getHeight();
-        result.newWidth = bb.getWidth();
-        result.newX = bb.getX();
-        result.newY = bb.getY();        
+        result = Modification.MOVE;
       }
       if (bb.getY() < 0 || bb.getY() + bb.getHeight() > bh)
       {
@@ -869,11 +833,7 @@ public class VisicutModel
         p.getGraphicObjects().setTransform(trans);
         bb = p.getGraphicObjects().getBoundingBox();
         modified = true;
-        result.type = ModificationEnum.MOVE;
-        result.newHeight = bb.getHeight();
-        result.newWidth = bb.getWidth();
-        result.newX = bb.getX();
-        result.newY = bb.getY();          
+        result = Modification.MOVE;
       }
       //if still too big (we're in origin now) check if rotation is useful 
       if (bb.getX() + bb.getWidth() > bw || bb.getY() + bb.getHeight() > bh)
@@ -883,21 +843,14 @@ public class VisicutModel
         {//if so, rotate the graphic 90 degrees, keeping the x and y value
           double oldX = bb.getX();
           double oldY = bb.getY();
-          result.oldX = oldX;
-          result.oldY = oldY;
-          
           trans.preConcatenate(AffineTransform.getQuadrantRotateInstance(3));
           p.getGraphicObjects().setTransform(trans);
           bb = p.getGraphicObjects().getBoundingBox();
           //move to old position
           trans.preConcatenate(AffineTransform.getTranslateInstance(oldX-bb.getX(), oldY-bb.getY()));
           p.getGraphicObjects().setTransform(trans);
-          result.type = ModificationEnum.ROTATE;
           bb = p.getGraphicObjects().getBoundingBox();
-          result.newHeight = bb.getHeight();
-          result.newWidth = bb.getWidth();
-          result.newX = bb.getX();
-          result.newY = bb.getY();
+          result = Modification.ROTATE;
         }
       }
       //Do not scale the object, because this might be very confising for the user
@@ -905,17 +858,10 @@ public class VisicutModel
       if (bb.getX() + bb.getWidth() > bw || bb.getY() + bb.getHeight() > bh)
       {
         double factor = Math.min(bw/bb.getWidth(), bh/bb.getHeight());
-        
         trans.preConcatenate(AffineTransform.getScaleInstance(factor, factor));
         p.getGraphicObjects().setTransform(trans);
         modified = true;
-        bb = p.getGraphicObjects().getBoundingBox();
-        result.newHeight = bb.getHeight();
-        result.newWidth = bb.getWidth();
-        result.newX = bb.getX();
-        result.newY = bb.getY();
-        result.factor = factor;
-        result.type = ModificationEnum.RESIZE;
+        result = Modification.RESIZE;
       }
       if (modified)
       {
