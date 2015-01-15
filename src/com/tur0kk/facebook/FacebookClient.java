@@ -133,7 +133,10 @@ public class FacebookClient
       // multipart post structure
       MultipartEntityBuilder builder = MultipartEntityBuilder.create();
       builder.addTextBody("message", msg);
-      builder.addTextBody("place", placeId);
+      
+      if(placeId != ""){
+        builder.addTextBody("place", placeId);
+      }
       
       BufferedImage bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
       Graphics2D bGr = bimage.createGraphics();
