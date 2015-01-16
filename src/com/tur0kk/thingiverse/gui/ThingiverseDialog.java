@@ -259,10 +259,19 @@ public class ThingiverseDialog extends javax.swing.JFrame
 
       public void run()
       {
-        String tagList = txtSearch.getText();
+        String queryString = txtSearch.getText();
+
+        List<String> selectedFileTypes = new LinkedList<String>();
+        for (JCheckBox filterCheckBox : filterCheckBoxes)
+        {
+          if (filterCheckBox.isSelected())
+          {
+            selectedFileTypes.add(filterCheckBox.getText());
+          }
+        }
 
         // get url map
-        LinkedList<Thing> things = thingiverse.search(tagList);
+        LinkedList<Thing> things = thingiverse.search(queryString, selectedFileTypes);
 
         // init my things model with loading images
         DefaultListModel searchModel = new DefaultListModel(); // model for JList
