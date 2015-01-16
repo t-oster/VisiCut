@@ -272,6 +272,11 @@ public class ThingiverseManager
   
   public LinkedList<Thing> search(String query)
   {
+    return search(query, new LinkedList<String>());
+  }
+  
+  public LinkedList<Thing> search(String query, List<String> allowedFileExtensions)
+  {
     LinkedList<Thing> things = new LinkedList<Thing>();
     
     try
@@ -286,7 +291,17 @@ public class ThingiverseManager
         String itemId = item.get("id").toString();
         String itemName = item.get("name").toString();
         String imageUrl = item.get("thumbnail").toString();
-        things.add(new Thing(itemId, itemName, imageUrl));
+        Thing thing = new Thing(itemId, itemName, imageUrl);
+        
+        // Get all files and check if at least one extension matches our filter.
+        // This is a workaround because filtering by extension is not (yet)
+        // supported by the thingierse api
+        List<ThingFile> files = getFiles(thing, allowedFileExtensions);
+        
+        if (!files.isEmpty())
+        {
+          things.add(thing);
+        }
       }
     }
     catch(Exception ex)
