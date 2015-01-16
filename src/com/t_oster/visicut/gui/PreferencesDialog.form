@@ -75,12 +75,17 @@
                           <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="lbFilenamesForJobs" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel3" alignment="0" min="-2" pref="130" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="47" max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
+                      <EmptySpace pref="18" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="cbSandboxLaserScript1" min="-2" max="-2" attributes="0"/>
                           <Component id="cbDefaultMapping" min="-2" pref="194" max="-2" attributes="0"/>
                           <Component id="cbSandboxLaserScript" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jTextFieldLabName" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
               </Group>
@@ -94,16 +99,21 @@
                           <Component id="cbDefaultMapping" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="cbSandboxLaserScript" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="lbFilenamesForJobs" min="-2" max="-2" attributes="0"/>
                           <Component id="cbSandboxLaserScript1" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="77" max="32767" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jTextFieldLabName" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace pref="37" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -165,6 +175,24 @@
               <BindingProperties>
                 <BindingProperty name="selected" source="Form" sourcePath="${preferences.useFilenamesForJobs}" target="cbSandboxLaserScript1" targetPath="selected" updateStrategy="0" immediately="false"/>
               </BindingProperties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="jTextFieldLabName">
+              <BindingProperties>
+                <BindingProperty name="text" source="Form" sourcePath="${preferences.labName}" target="jTextFieldLabName" targetPath="text" updateStrategy="0" immediately="false">
+                  <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
+                </BindingProperty>
+              </BindingProperties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextFieldLabNameActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="jLabel3">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Lab name:"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="jLabel3.setText(bundle.getString(&quot;LAB_NAME&quot;)); // NOI18N&#xa;&#xa;jLabel3.setToolTipText(bundle.getString(&quot;LAB_NAME_TOOLTIP&quot;)); // NOI18N"/>
+              </AuxValues>
             </Component>
           </SubComponents>
         </Container>

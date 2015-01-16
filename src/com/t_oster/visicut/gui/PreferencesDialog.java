@@ -101,6 +101,8 @@ public class PreferencesDialog extends javax.swing.JDialog
     cbSandboxLaserScript = new javax.swing.JCheckBox();
     lbFilenamesForJobs = new javax.swing.JLabel();
     cbSandboxLaserScript1 = new javax.swing.JCheckBox();
+    jTextFieldLabName = new javax.swing.JTextField();
+    jLabel3 = new javax.swing.JLabel();
     btOk = new javax.swing.JButton();
     btCancel = new javax.swing.JButton();
 
@@ -127,6 +129,22 @@ public class PreferencesDialog extends javax.swing.JDialog
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.useFilenamesForJobs}"), cbSandboxLaserScript1, org.jdesktop.beansbinding.BeanProperty.create("selected"));
     bindingGroup.addBinding(binding);
 
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.labName}"), jTextFieldLabName, org.jdesktop.beansbinding.BeanProperty.create("text"));
+    bindingGroup.addBinding(binding);
+
+    jTextFieldLabName.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        jTextFieldLabNameActionPerformed(evt);
+      }
+    });
+
+    jLabel3.setText("Lab name:");
+    jLabel3.setText(bundle.getString("LAB_NAME")); // NOI18N
+
+    jLabel3.setToolTipText(bundle.getString("LAB_NAME_TOOLTIP")); // NOI18N
+
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
@@ -136,12 +154,16 @@ public class PreferencesDialog extends javax.swing.JDialog
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jLabel2)
           .addComponent(jLabel1)
-          .addComponent(lbFilenamesForJobs))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
-        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(lbFilenamesForJobs)
+          .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addComponent(cbSandboxLaserScript1)
           .addComponent(cbDefaultMapping, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(cbSandboxLaserScript)))
+          .addComponent(cbSandboxLaserScript)
+          .addGroup(jPanel1Layout.createSequentialGroup()
+            .addComponent(jTextFieldLabName)
+            .addContainerGap())))
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -151,14 +173,18 @@ public class PreferencesDialog extends javax.swing.JDialog
           .addComponent(jLabel1)
           .addComponent(cbDefaultMapping, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jLabel2)
-          .addComponent(cbSandboxLaserScript))
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(cbSandboxLaserScript)
+          .addComponent(jLabel2))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(lbFilenamesForJobs)
           .addComponent(cbSandboxLaserScript1))
-        .addContainerGap(77, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jTextFieldLabName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel3))
+        .addContainerGap(37, Short.MAX_VALUE))
     );
 
     generalTab.addTab("general", jPanel1);
@@ -222,6 +248,11 @@ public class PreferencesDialog extends javax.swing.JDialog
     this.setVisible(false);
   }//GEN-LAST:event_btOkActionPerformed
 
+  private void jTextFieldLabNameActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jTextFieldLabNameActionPerformed
+  {//GEN-HEADEREND:event_jTextFieldLabNameActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_jTextFieldLabNameActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton btCancel;
   private javax.swing.JButton btOk;
@@ -231,7 +262,9 @@ public class PreferencesDialog extends javax.swing.JDialog
   private javax.swing.JTabbedPane generalTab;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
+  private javax.swing.JLabel jLabel3;
   private javax.swing.JPanel jPanel1;
+  private javax.swing.JTextField jTextFieldLabName;
   private javax.swing.JLabel lbFilenamesForJobs;
   private org.jdesktop.beansbinding.BindingGroup bindingGroup;
   // End of variables declaration//GEN-END:variables

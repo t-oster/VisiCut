@@ -68,6 +68,22 @@ public class Preferences
     this.useFilenamesForJobs = useFilenamesForJobs;
   }
   
+  private String labName = null;
+  
+  public String getLabName()
+  {
+    if(labName == null)
+    {
+      labName = "unknown lab";
+    }
+    return labName;
+  }
+  
+  public void setLabName(String labName)
+  {
+    this.labName = labName;
+  }
+  
   private String potracePath = null;
 
   public String getPotracePath()
@@ -332,6 +348,7 @@ public class Preferences
     result.useThicknessAsFocusOffset = useThicknessAsFocusOffset;
     result.windowBounds = windowBounds;
     result.useFilenamesForJobs = useFilenamesForJobs;
+    result.labName = labName;
     return result;
   }
 }
