@@ -2,6 +2,7 @@ package com.tur0kk.thingiverse;
 
 import com.t_oster.visicut.misc.Helper;
 import com.tur0kk.thingiverse.model.Thing;
+import com.tur0kk.thingiverse.model.ThingCollection;
 import com.tur0kk.thingiverse.model.ThingFile;
 import java.io.File;
 import java.io.FileInputStream;
@@ -205,6 +206,60 @@ public class ThingiverseManager
         String itemName = item.get("name").toString();
         String imageUrl = item.get("thumbnail").toString();
         things.add(new Thing(itemId, itemName, imageUrl));
+      }
+    }
+    catch(Exception ex)
+    {
+      ex.printStackTrace();
+    }
+    
+    return things;
+  }
+  
+  public LinkedList<ThingCollection> getMyCollections()
+  {
+    LinkedList<ThingCollection> collections = new LinkedList<ThingCollection>();
+    
+    try
+    {
+      String json = client.collectionsByUser("me");
+      
+      JSONParser parser = new JSONParser();
+      JSONArray array = (JSONArray)parser.parse(json);
+      for (Object obj : array)
+      {
+        JSONObject jsonCollection = (JSONObject)obj;
+        String collectionId = jsonCollection.get("id").toString();
+        String collectionName = jsonCollection.get("name").toString();
+        String imageUrl = jsonCollection.get("thumbnail").toString();
+        collections.add(new ThingCollection(collectionId, collectionName, imageUrl));
+      }
+    }
+    catch(Exception ex)
+    {
+      ex.printStackTrace();
+    }
+    
+    return collections;
+  }
+  
+  public LinkedList<Thing> getThingsByCollection(ThingCollection collection)
+  {
+    LinkedList<Thing> things = new LinkedList<Thing>();
+    
+    try
+    {
+      String json = client.thingsByCollection(collection.getId());
+
+      JSONParser parser = new JSONParser();
+      JSONArray array = (JSONArray)parser.parse(json);
+      for (Object obj : array)
+      {
+        JSONObject jsonThing = (JSONObject)obj;
+        String thingId = jsonThing.get("id").toString();
+        String thingName = jsonThing.get("name").toString();
+        String imageUrl = jsonThing.get("thumbnail").toString();
+        things.add(new Thing(thingId, thingName, imageUrl));
       }
     }
     catch(Exception ex)
