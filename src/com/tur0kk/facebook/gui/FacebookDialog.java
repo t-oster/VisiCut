@@ -20,8 +20,10 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -34,11 +36,23 @@ import javax.swing.event.ChangeListener;
 public class FacebookDialog extends javax.swing.JFrame
 {
   private Thread livecamThread;
+  final private MainView mainview;
   
   /** Creates new form FacebookDialog */
-  public FacebookDialog(java.awt.Frame parent, boolean modal)
-  {
+  public FacebookDialog(java.awt.Frame parent, boolean modal){
     initComponents();
+    
+    // just hide to keep state
+    this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+    
+    // close camera on exit
+    initWindowListener();
+    
+    // save parent for modality faking
+    this.mainview = (MainView) parent;
+    
+    // fake modality of JFrame
+    this.mainview.setEnabled(false);
     
     // change cam 
     slCam.addChangeListener(new ChangeListener() {
@@ -46,7 +60,6 @@ public class FacebookDialog extends javax.swing.JFrame
       public void stateChanged(ChangeEvent e)
       {
         if(!slCam.getValueIsAdjusting()){
-          System.out.println("Cam change");
           setupCamera();
         }
         
@@ -55,9 +68,6 @@ public class FacebookDialog extends javax.swing.JFrame
     
     // enable picture taking
     setupCamera();
-    
-    // close camera on exit
-    initWindowListener();
     
     // user name
     initUsername();
@@ -382,7 +392,7 @@ private void initWindowListener(){
       public void windowClosing(WindowEvent e)
       {
          closeCamera();
-         dispose();
+         mainview.setEnabled(true);
       }
 
       public void windowClosed(WindowEvent e)
@@ -566,10 +576,16 @@ private void closeCamera(){
     livecamThread = null;
   }
     
-  if(isCameraDetected()){
-    Webcam webcam = Webcam.getDefault();
-    if(webcam.isOpen()){
-      webcam.close();
+  if(isCameraDetected()){ // camera is in use
+    if(slCam.getValue() == 1){ // webcam
+      Webcam webcam = Webcam.getDefault();
+      if(webcam.isOpen()){
+        webcam.close();
+      }
+    }
+    else{
+      //visicam
+      // nothing to close, just request no further images
     }
   }
 }
@@ -594,25 +610,38 @@ private void displayPicture(ImageIcon image){
  * uses the attached webcam to take a photo
  */
 private ImageIcon takePicture(){
-  
   if(isCameraDetected()){
-    // get webcam
-    Webcam webcam = Webcam.getDefault();
-    webcam.open();
+    
+    ImageIcon imageIcon = null;
+    if(slCam.getValue() == 1){ // webcam
+        // get webcam
+        Webcam webcam = Webcam.getDefault();
+        webcam.open();
 
-    // take picture
-    BufferedImage image = webcam.getImage();
-    ImageIcon imageIcon = new ImageIcon(image);
+        // take picture
+        BufferedImage image = webcam.getImage();
+        imageIcon = new ImageIcon(image);
 
+    }
+    else{ // visicam
+      try{
+        URL src = new URL(mainview.getVisiCam());
+        imageIcon = new ImageIcon(src);
+      }
+      catch(Exception e){
+        return null;
+      } 
+    }
     // scale to label
-    Image rawImage = imageIcon.getImage();
-    Image scaledImage = rawImage.getScaledInstance(
-      lblPhoto.getWidth(),
-      lblPhoto.getHeight(),
-      Image.SCALE_SMOOTH);
-    ImageIcon picture = new ImageIcon(scaledImage);
-    return picture;
-  }else{
+      Image rawImage = imageIcon.getImage();
+      Image scaledImage = rawImage.getScaledInstance(
+        lblPhoto.getWidth(),
+        lblPhoto.getHeight(),
+        Image.SCALE_SMOOTH);
+      ImageIcon picture = new ImageIcon(scaledImage);
+      return picture;
+  }
+  else{
     return null;
   }
 }
@@ -621,7 +650,7 @@ private ImageIcon takePicture(){
  * returns wether a camera is plugged in
  */
 private boolean isCameraDetected(){
-  if(slCam.getValue() == 0){ // webcam
+  if(slCam.getValue() == 1){ // webcam
     Webcam webcam = Webcam.getDefault();
     if (webcam != null) { 
       return true;
@@ -630,7 +659,8 @@ private boolean isCameraDetected(){
     }
   }
   else{
-    return false;
+    // visicam
+    return mainview.isVisiCamDetected();
   }
   
 }

@@ -2008,6 +2008,19 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
       }.start();
     }
   }
+  
+  public boolean isVisiCamDetected(){
+    try{
+      String url = MainView.this.visicutModel1.getSelectedLaserDevice().getCameraURL();
+      return !"".equals(url);
+    }catch(Exception e){
+      return false;
+    }
+  }
+  
+  public String getVisiCam(){
+    return MainView.this.visicutModel1.getSelectedLaserDevice().getCameraURL();
+  }
 
   @Action
   public void zoomIn()
