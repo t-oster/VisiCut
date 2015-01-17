@@ -307,10 +307,15 @@ public class ThingiverseClient {
   public String collection(String id) {
     return call(Verb.GET, "/collections/" + id + "/");
   }
+  
+  @ThingMethod(params = {"username"})
+  public String collectionsByUser(String username) {
+    return call(Verb.GET, "/users/" + username + "/collections/");
+  }
 
   @ThingMethod(params = {"id"})
   public String thingsByCollection(String id) {
-    return call(Verb.GET, "/collections/" + id + "/");
+    return call(Verb.GET, "/collections/" + id + "/things/");
   }
 
   @ThingMethod(params = {"name","description"})
