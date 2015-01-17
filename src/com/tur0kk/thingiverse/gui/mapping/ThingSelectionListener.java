@@ -7,7 +7,7 @@ package com.tur0kk.thingiverse.gui.mapping;
 import com.tur0kk.thingiverse.ThingiverseManager;
 import com.tur0kk.thingiverse.model.Thing;
 import com.tur0kk.thingiverse.model.ThingFile;
-import com.tur0kk.thingiverse.uicomponents.LoadingIcon;
+import com.tur0kk.LoadingIcon;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;

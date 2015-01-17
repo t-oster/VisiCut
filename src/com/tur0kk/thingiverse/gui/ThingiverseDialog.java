@@ -13,7 +13,7 @@ import com.tur0kk.thingiverse.ThingiverseManager;
 import com.tur0kk.thingiverse.gui.mapping.ThingFileClickListener;
 import com.tur0kk.thingiverse.gui.mapping.ThingFileListRenderer;
 import com.tur0kk.thingiverse.gui.mapping.ThingSelectionListener;
-import com.tur0kk.thingiverse.uicomponents.LoadingIcon;
+import com.tur0kk.LoadingIcon;
 import java.awt.Component;
 import java.io.IOException;
 import java.net.MalformedURLException;

@@ -17,7 +17,7 @@
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package com.tur0kk.thingiverse.uicomponents;
+package com.tur0kk;
 
 import com.t_oster.visicut.misc.Helper;
 import java.awt.Toolkit;
@@ -37,7 +37,7 @@ import javax.swing.ImageIcon;
  * be returned.
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class ThingiversePlatformIcon 
+public class SocialPlatformIcon 
 {
 
   public static final String THINGIVERSE_LOGO = "thingiverse-logo";
@@ -52,7 +52,7 @@ public class ThingiversePlatformIcon
     
     try
     {
-      return new ImageIcon(ImageIO.read(ThingiversePlatformIcon.class.getResource("resources/"+type+".png")));
+      return new ImageIcon(ImageIO.read(SocialPlatformIcon.class.getResource("resources/"+type+".png")));
     }
     catch (Exception ex)
     {

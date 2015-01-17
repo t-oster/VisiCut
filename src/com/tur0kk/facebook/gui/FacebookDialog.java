@@ -13,7 +13,7 @@ package com.tur0kk.facebook.gui;
 import com.github.sarxos.webcam.Webcam;
 import com.t_oster.visicut.gui.MainView;
 import com.tur0kk.facebook.FacebookManager;
-import com.tur0kk.thingiverse.uicomponents.LoadingIcon;
+import com.tur0kk.LoadingIcon;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.WindowEvent;
