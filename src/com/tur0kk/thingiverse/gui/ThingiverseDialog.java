@@ -20,6 +20,8 @@ import java.net.MalformedURLException;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.rmi.AccessException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -46,8 +48,14 @@ public class ThingiverseDialog extends javax.swing.JFrame
     // just hide to keep state
     this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
     
+    // control window events
+    initWindowListener();
+    
     // save parent for loading files to main view
     this.mainview = (MainView) parent;
+    
+    // fake modality of JFrame
+    this.mainview.setEnabled(false);
     
     // init componentes
     initComponents(); // auto generated code
@@ -899,6 +907,40 @@ private void initFilters(){
       this.filterCheckBoxes.add((JCheckBox)comp);
     }
   }
+}
+
+private void initWindowListener(){
+  this.addWindowListener(new WindowListener(){
+
+    public void windowOpened(WindowEvent e)
+    {
+    }
+
+    public void windowClosing(WindowEvent e)
+    {
+      mainview.setEnabled(true); // fake modality
+    }
+
+    public void windowClosed(WindowEvent e)
+    {
+    }
+
+    public void windowIconified(WindowEvent e)
+    {
+    }
+
+    public void windowDeiconified(WindowEvent e)
+    {
+    }
+
+    public void windowActivated(WindowEvent e)
+    {
+    }
+
+    public void windowDeactivated(WindowEvent e)
+    {
+    }
+  });
 }
 
 
