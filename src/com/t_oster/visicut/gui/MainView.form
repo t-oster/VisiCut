@@ -372,9 +372,7 @@
                               <Component id="bt1to1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="captureImageButton" min="-2" pref="155" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="54" max="-2" attributes="0"/>
-                              <Component id="btThingiverse" min="-2" pref="35" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="95" max="-2" attributes="0"/>
                               <Component id="btFacebook" min="-2" pref="35" max="-2" attributes="0"/>
                               <EmptySpace pref="152" max="32767" attributes="0"/>
                               <Component id="progressBar" min="-2" max="-2" attributes="0"/>
@@ -403,7 +401,6 @@
                               <Component id="bt1to1" alignment="0" max="32767" attributes="1"/>
                               <Component id="progressBar" alignment="0" max="32767" attributes="1"/>
                               <Component id="captureImageButton" alignment="0" max="32767" attributes="1"/>
-                              <Component id="btThingiverse" min="-2" pref="35" max="-2" attributes="0"/>
                           </Group>
                           <Component id="btFacebook" min="-2" pref="35" max="-2" attributes="0"/>
                       </Group>
@@ -939,26 +936,10 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="btThingiverse">
-      <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="ThingiversePlatformIcon.get(ThingiversePlatformIcon.THINGIVERSE_LOGO)" type="code"/>
-        </Property>
-        <Property name="text" type="java.lang.String" resourceKey="btThingiverse.text"/>
-        <Property name="toolTipText" type="java.lang.String" resourceKey="btThingiverse.toolTipText"/>
-        <Property name="name" type="java.lang.String" value="btThingiverse" noResource="true"/>
-      </Properties>
-      <AccessibilityProperties>
-        <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" resourceKey="btThingiverse.AccessibleContext.accessibleDescription"/>
-      </AccessibilityProperties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btThingiverseActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JButton" name="btFacebook">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="ThingiversePlatformIcon.get(ThingiversePlatformIcon.FACEBOOK_LOGO)" type="code"/>
+          <Connection code="SocialPlatformIcon.get(SocialPlatformIcon.FACEBOOK_LOGO)" type="code"/>
         </Property>
         <Property name="text" type="java.lang.String" resourceKey="btFacebook.text"/>
         <Property name="toolTipText" type="java.lang.String" resourceKey="btFacebook.toolTipText"/>

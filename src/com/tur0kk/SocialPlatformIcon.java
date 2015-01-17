@@ -17,16 +17,8 @@
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package com.tur0kk.thingiverse.uicomponents;
+package com.tur0kk;
 
-import com.t_oster.visicut.misc.Helper;
-import java.awt.Toolkit;
-import java.awt.image.BufferedImage;
-import java.lang.reflect.Method;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -37,10 +29,9 @@ import javax.swing.ImageIcon;
  * be returned.
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class ThingiversePlatformIcon 
+public class SocialPlatformIcon 
 {
 
-  public static final String THINGIVERSE_LOGO = "thingiverse-logo";
   public static final String FACEBOOK_LOGO = "facebook-logo";
   
   public static Icon get(String type)
@@ -52,7 +43,7 @@ public class ThingiversePlatformIcon
     
     try
     {
-      return new ImageIcon(ImageIO.read(ThingiversePlatformIcon.class.getResource("resources/"+type+".png")));
+      return new ImageIcon(ImageIO.read(com.tur0kk.SocialPlatformIcon.class.getResource("resources/"+type+".png")));
     }
     catch (Exception ex)
     {
