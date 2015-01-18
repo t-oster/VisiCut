@@ -86,23 +86,19 @@ public class ThingiverseDialog extends javax.swing.JFrame
     actionLoadLiked();
 
   }
-
-  private void actionLoadLiked()
-  {
-
+  
+  private void loadTab(final List<Thing> thingsToLoad, final JList thingList, final AtomicInteger feedbackCounter, final JLabel feedbackLabel){
+    // load all images for a tab asynchronously
     new Thread(new Runnable()
     {
 
       public void run()
       {
         final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-
-        // get things
-        List<Thing> things = thingiverse.getLikedThings();
-
+        
         // init my things model with loading images
         DefaultListModel myThingsModel = new DefaultListModel(); // model for JList
-        Iterator<Thing> i1 = things.iterator(); // iterate over each thingiverse thing and add to model
+        Iterator<Thing> i1 = thingsToLoad.iterator(); // iterate over each thing and add to model
         int index = 0;
         while (i1.hasNext())
         {
@@ -110,7 +106,7 @@ public class ThingiverseDialog extends javax.swing.JFrame
           ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
 
           // set changing observer for loading images to update gif 
-          loadingIcon.setImageObserver(new AnimationImageObserverList(lstLiked, index));
+          loadingIcon.setImageObserver(new AnimationImageObserverList(thingList, index));
 
           // add thing to model
           Thing aThing = i1.next();
@@ -126,15 +122,15 @@ public class ThingiverseDialog extends javax.swing.JFrame
         {
           public void run()
           {
-            lstLiked.setModel(model);
+            thingList.setModel(model);
           }
         });
 
         // set an atomic counter to keep track of number of loading icons. If 0 again, disable loading header.
-        numberLoadingLiked.set(myThingsModel.size());
+        feedbackCounter.set(myThingsModel.size());
 
         // start a thread for each image to load image asynchronous
-        for (final Thing entry : things)
+        for (final Thing entry : thingsToLoad)
         {
           final String url = entry.getImageUrl();
           new Thread(new Runnable()
@@ -161,12 +157,12 @@ public class ThingiverseDialog extends javax.swing.JFrame
                 {
                   // overwrite image
                   entry.setImage(objectImage);
-                  lstLiked.updateUI();
+                  thingList.updateUI();
 
                   // image loaded, decrement loading images
-                  if (numberLoadingLiked.decrementAndGet() == 0)
+                  if (feedbackCounter.decrementAndGet() == 0)
                   {
-                    lblLoadingLiked.setVisible(false);
+                    feedbackLabel.setVisible(false);
                   }
                 }
               });
@@ -176,113 +172,80 @@ public class ThingiverseDialog extends javax.swing.JFrame
 
       }
     }).start();
+  }
+
+  private void actionLoadLiked()
+  {
+    // load liked things asynchronously
+    new Thread(new Runnable() {
+
+      public void run()
+      {
+        // enable userfeedback
+        SwingUtilities.invokeLater(new Runnable()
+        {
+          public void run()
+          {
+            lblLiked.setVisible(true);
+          }
+        });
+        
+        // get things
+        ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+        List<Thing> things = thingiverse.getLikedThings();
+        loadTab(things, lstLiked, numberLoadingLiked, lblLoadingLiked);
+      }
+    }).start();
+    
+    
+      
+   
   }
 
   private void actionLoadMyThings()
   {
-
-    new Thread(new Runnable()
-    {
+    // load mythings things asynchronously
+    new Thread(new Runnable() {
 
       public void run()
       {
-        final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-
-        // get things
-        List<Thing> things = thingiverse.getMyThings();
-
-        // init my things model with loading images
-        DefaultListModel myThingsModel = new DefaultListModel(); // model for JList
-        Iterator<Thing> i1 = things.iterator(); // iterate over each thingiverse thing and add to model
-        int index = 0;
-        while (i1.hasNext())
-        {
-          // get loading icon
-          ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
-
-          // set changing observer for loading images to update gif 
-          loadingIcon.setImageObserver(new AnimationImageObserverList(lstMyThings, index));
-
-          // add thing to model
-          Thing aThing = i1.next();
-          aThing.setImage(loadingIcon);
-          myThingsModel.addElement(aThing);
-
-          index += 1;
-        }
-
-        // display myThingsModel in my things list
-        final DefaultListModel model = myThingsModel;
+        // enable userffedback
         SwingUtilities.invokeLater(new Runnable()
         {
           public void run()
           {
-            lstMyThings.setModel(model);
+            lblLoadingMyThings.setVisible(true);
           }
         });
-
-        // set an atomic counter to keep track of number of loading icons. If 0 again, disable loading header.
-        numberLoadingMyThings.set(myThingsModel.size());
-
-        // start a thread for each image to load image asynchronous
-        for (final Thing entry : things)
-        {
-          final String url = entry.getImageUrl();
-          new Thread(new Runnable()
-          {
-            public void run()
-            {
-
-              String file = thingiverse.downloadImage(url); // download  image
-              ImageIcon imageIcon = null;
-              if ("".equals(file))
-              { // load default image if image not avaliable
-                imageIcon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
-              }
-              else
-              {
-                imageIcon = new ImageIcon(file);
-              }
-
-              // overwrite image
-              final ImageIcon objectImage = imageIcon;
-              SwingUtilities.invokeLater(new Runnable()
-              {
-                public void run()
-                {
-                  // overwrite image
-                  entry.setImage(objectImage);
-                  lstMyThings.updateUI();
-
-                  // image loaded, decrement loading images
-                  if (numberLoadingMyThings.decrementAndGet() == 0)
-                  {
-                    lblLoadingMyThings.setVisible(false);
-                  }
-                }
-              });
-            }
-          }).start();
-        }
-
+        
+        // get things
+        ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+        List<Thing> things = thingiverse.getMyThings();
+        loadTab(things, lstMyThings, numberLoadingMyThings, lblLoadingMyThings);
       }
     }).start();
+    
   }
 
   private void actionSearch()
   {
-    lblLoadingSearch.setVisible(true);
-
-    final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-
-    // display Featured
-    new Thread(new Runnable()
-    {
+    // load searched things asynchronously
+    new Thread(new Runnable() {
 
       public void run()
       {
+        // enable userfeedback
+        SwingUtilities.invokeLater(new Runnable()
+        {
+          public void run()
+          {
+            lblLoadingSearch.setVisible(true);
+          }
+        });
+        
+    
+        ThingiverseManager thingiverse = ThingiverseManager.getInstance();
         String queryString = txtSearch.getText();
-
         List<String> selectedFileTypes = new LinkedList<String>();
         for (JCheckBox filterCheckBox : filterCheckBoxes)
         {
@@ -291,88 +254,10 @@ public class ThingiverseDialog extends javax.swing.JFrame
             selectedFileTypes.add(filterCheckBox.getText());
           }
         }
-
-        // get url map
         List<Thing> things = thingiverse.search(queryString, selectedFileTypes);
-
-        // init my things model with loading images
-        DefaultListModel searchModel = new DefaultListModel(); // model for JList
-        Iterator<Thing> i1 = things.iterator(); // iterate over each thingiverse thing and add to model
-        int index = 0;
-        while (i1.hasNext())
-        {
-          // get loading icon
-          ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
-
-          // set changing observer for loading images to update gif 
-          loadingIcon.setImageObserver(new AnimationImageObserverList(lstSearch, index));
-
-          // add thing to model
-          Thing aThing = i1.next();
-          aThing.setImage(loadingIcon);
-          searchModel.addElement(aThing);
-
-          index += 1;
-        }
-
-        // display myThingsModel in my things list
-        final DefaultListModel model = searchModel;
-        SwingUtilities.invokeLater(new Runnable()
-        {
-
-          public void run()
-          {
-            lstSearch.setModel(model);
-          }
-        });
-
-        numberLoadingSearch.set(searchModel.size());
-
-        // start a thread for each image to load asynchronous
-        for (final Thing entry : things)
-        {
-          final String url = entry.getImageUrl();
-          new Thread(new Runnable()
-          {
-
-            public void run()
-            {
-
-              String file = thingiverse.downloadImage(url); // download  image
-              ImageIcon imageIcon = null;
-              if ("".equals(file))
-              { // load default image if image not avaliable
-                imageIcon = new ImageIcon(LoadingIcon.class.getResource("resources/image_not_found.png"));
-              }
-              else
-              {
-                imageIcon = new ImageIcon(file);
-              }
-
-              // overwrite image
-              final ImageIcon objectImage = imageIcon;
-              SwingUtilities.invokeLater(new Runnable()
-              {
-
-                public void run()
-                {
-                  entry.setImage(objectImage);
-                  lstSearch.updateUI();
-
-                  // image loaded, decrement loading images
-                  if (numberLoadingSearch.decrementAndGet() == 0)
-                  {
-                    lblLoadingSearch.setVisible(false);
-                  }
-                }
-              });
-            }
-          }).start();
-        }
-
+        loadTab(things, lstSearch, numberLoadingSearch, lblLoadingSearch);
       }
     }).start();
-
   }
 
   /**
