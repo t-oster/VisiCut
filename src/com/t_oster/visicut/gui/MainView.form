@@ -384,9 +384,7 @@
 
                               <EmptySpace min="-2" pref="54" max="-2" attributes="0"/>
                               <Component id="btThingiverse" min="-2" pref="35" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="btFacebook" min="-2" pref="35" max="-2" attributes="0"/>
-                              <EmptySpace pref="152" max="32767" attributes="0"/>
+                              <EmptySpace pref="193" max="32767" attributes="0"/>
                               <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -405,17 +403,14 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jScrollPane1" alignment="0" pref="738" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="jButton1" alignment="0" max="32767" attributes="1"/>
-                              <Component id="jButton2" alignment="0" max="32767" attributes="1"/>
-                              <Component id="btFitScreen" alignment="0" max="32767" attributes="1"/>
-                              <Component id="bt1to1" alignment="0" max="32767" attributes="1"/>
-                              <Component id="progressBar" alignment="0" max="32767" attributes="1"/>
-                              <Component id="captureImageButton" alignment="0" max="32767" attributes="1"/>
-                              <Component id="btThingiverse" min="-2" pref="35" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="btFacebook" min="-2" pref="35" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="jButton1" alignment="0" max="32767" attributes="1"/>
+                          <Component id="jButton2" alignment="0" max="32767" attributes="1"/>
+                          <Component id="btFitScreen" alignment="0" max="32767" attributes="1"/>
+                          <Component id="bt1to1" alignment="0" max="32767" attributes="1"/>
+                          <Component id="progressBar" alignment="0" max="32767" attributes="1"/>
+                          <Component id="captureImageButton" alignment="0" max="32767" attributes="1"/>
+                          <Component id="btThingiverse" min="-2" pref="35" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane2" pref="577" max="32767" attributes="0"/>
@@ -963,22 +958,6 @@
       </AccessibilityProperties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btThingiverseActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="btFacebook">
-      <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="com.tur0kk.SocialPlatformIcon.get(com.tur0kk.SocialPlatformIcon.FACEBOOK_LOGO)" type="code"/>
-        </Property>
-        <Property name="text" type="java.lang.String" resourceKey="btFacebook.text"/>
-        <Property name="toolTipText" type="java.lang.String" resourceKey="btFacebook.toolTipText"/>
-        <Property name="name" type="java.lang.String" value="btFacebook" noResource="true"/>
-      </Properties>
-      <AccessibilityProperties>
-        <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" resourceKey="btFacebook.AccessibleContext.accessibleDescription"/>
-      </AccessibilityProperties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btFacebookActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
