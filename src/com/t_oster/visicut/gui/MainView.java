@@ -59,8 +59,6 @@ import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import com.t_oster.visicut.model.mapping.MappingSet;
-import com.tur0kk.facebook.FacebookManager;
-import com.tur0kk.facebook.gui.FacebookDialog;
 import com.tur0kk.thingiverse.ThingiverseManager;
 import com.tur0kk.SocialPlatformIcon;
 import java.awt.Desktop;
@@ -119,7 +117,6 @@ public class MainView extends javax.swing.JFrame
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView");
   private ThingiverseDialog thingiverseDialog = null;
-  private FacebookDialog facebookDialog = null;
   private ParameterPanel parameterPanel = new ParameterPanel();
   
   public static MainView getInstance()
@@ -625,7 +622,6 @@ public class MainView extends javax.swing.JFrame
         btAddObject = new javax.swing.JButton();
         warningPanel = new com.t_oster.uicomponents.warnings.WarningPanel();
         btThingiverse = new javax.swing.JButton();
-        btFacebook = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -996,23 +992,13 @@ public class MainView extends javax.swing.JFrame
         warningPanel.setName("warningPanel"); // NOI18N
         warningPanel.setPreferredSize(new java.awt.Dimension(276, 123));
 
-        btThingiverse.setIcon(SocialPlatformIcon.get(SocialPlatformIcon.THINGIVERSE_LOGO));
+        btThingiverse.setIcon(com.tur0kk.SocialPlatformIcon.get(com.tur0kk.SocialPlatformIcon.THINGIVERSE_LOGO));
         btThingiverse.setText(resourceMap.getString("btThingiverse.text")); // NOI18N
         btThingiverse.setToolTipText(resourceMap.getString("btThingiverse.toolTipText")); // NOI18N
         btThingiverse.setName("btThingiverse"); // NOI18N
         btThingiverse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btThingiverseActionPerformed(evt);
-            }
-        });
-
-        btFacebook.setIcon(SocialPlatformIcon.get(SocialPlatformIcon.FACEBOOK_LOGO));
-        btFacebook.setText(resourceMap.getString("btFacebook.text")); // NOI18N
-        btFacebook.setToolTipText(resourceMap.getString("btFacebook.toolTipText")); // NOI18N
-        btFacebook.setName("btFacebook"); // NOI18N
-        btFacebook.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btFacebookActionPerformed(evt);
             }
         });
 
@@ -1284,9 +1270,7 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(54, 54, 54)
                                 .addComponent(btThingiverse, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btFacebook, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 152, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 193, Short.MAX_VALUE)
                                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(8, 8, 8)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1299,16 +1283,14 @@ public class MainView extends javax.swing.JFrame
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 738, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btFitScreen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(bt1to1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(captureImageButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btThingiverse, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(btFacebook, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btFitScreen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(bt1to1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(captureImageButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btThingiverse, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 577, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -1317,7 +1299,6 @@ public class MainView extends javax.swing.JFrame
         );
 
         btThingiverse.getAccessibleContext().setAccessibleDescription(resourceMap.getString("btThingiverse.AccessibleContext.accessibleDescription")); // NOI18N
-        btFacebook.getAccessibleContext().setAccessibleDescription(resourceMap.getString("btFacebook.AccessibleContext.accessibleDescription")); // NOI18N
 
         bindingGroup.bind();
 
@@ -2503,58 +2484,7 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       thingiverseDialog.setVisible(true);
     }
   }//GEN-LAST:event_btThingiverseActionPerformed
-  
-  private void btFacebookActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btFacebookActionPerformed
-  {//GEN-HEADEREND:event_btFacebookActionPerformed
-    /*
-     * just hide facebookDialog on close to keep state.
-     * if logged out, create new instance of dialog
-     */
-    if(!FacebookManager.getInstance().isLoggedIn() || facebookDialog == null){
-      FacebookManager facebook = FacebookManager.getInstance();
-
-      try
-      {
-        // Try login with persistent access token.
-        boolean loginSuccess = facebook.logIn();
-
-        if (!loginSuccess)
-        {
-          String loginUrl = facebook.initiateAuthentication();
-          String browserCode;
-
-          if (isJavaFxAvailable())
-          {
-            browserCode = browserLoginDialog("Facebook Login", loginUrl, facebook.getRedirectUrlPrefix());
-          }
-          else
-          {
-            // JavaFX not available...
-            System.out.println("JavaFX is not available. Using fallback behavior.");
-            browserCode = systemBrowserLogin("Facebook", loginUrl);
-          }
-
-          facebook.logIn(browserCode);
-        }
-
-        if (facebook.isLoggedIn())
-        {
-          facebookDialog = new FacebookDialog(this, true);
-          facebookDialog.setVisible(true);
-        }
-      }
-      catch (Exception ex)
-      {
-        ex.printStackTrace();
-        this.dialog.showErrorMessage("Unable to load FacebookDialog");
-      }
-    }
-    else // instance available, show thingiverseDialog
-    {
-      facebookDialog.setVisible(true);
-    }
-  }//GEN-LAST:event_btFacebookActionPerformed
-  
+    
   private String browserLoginDialog(String title, String loginUrl, String redirectUrlPrefix) throws Exception
   {
     // JavaFX available, load BrowserLoginDialog dynamically (depends on JavaFX)
@@ -2643,7 +2573,6 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     private javax.swing.JButton btAddMaterial;
     private javax.swing.JButton btAddMaterialThickness;
     private javax.swing.JButton btAddObject;
-    private javax.swing.JButton btFacebook;
     private javax.swing.JButton btFitScreen;
     private javax.swing.JButton btRemoveObject;
     private javax.swing.JButton btThingiverse;
