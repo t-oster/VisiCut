@@ -7,9 +7,15 @@ import com.tur0kk.thingiverse.model.ThingFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -162,9 +168,9 @@ public class ThingiverseManager
     }
   }
   
-  public LinkedList<Thing> getMyThings()
+  public List<Thing> getMyThings()
   {
-    LinkedList<Thing> things = new LinkedList<Thing>();
+    List<Thing> things = new LinkedList<Thing>();
     
     try
     {
@@ -189,9 +195,9 @@ public class ThingiverseManager
     return things;
   }
   
-  public LinkedList<Thing> getLikedThings()
+  public List<Thing> getLikedThings()
   {
-    LinkedList<Thing> things = new LinkedList<Thing>();
+    List<Thing> things = new LinkedList<Thing>();
     
     try
     {
@@ -216,9 +222,9 @@ public class ThingiverseManager
     return things;
   }
   
-  public LinkedList<ThingCollection> getMyCollections()
+  public List<ThingCollection> getMyCollections()
   {
-    LinkedList<ThingCollection> collections = new LinkedList<ThingCollection>();
+    List<ThingCollection> collections = new LinkedList<ThingCollection>();
     
     try
     {
@@ -243,9 +249,9 @@ public class ThingiverseManager
     return collections;
   }
   
-  public LinkedList<Thing> getThingsByCollection(ThingCollection collection)
+  public List<Thing> getThingsByCollection(ThingCollection collection)
   {
-    LinkedList<Thing> things = new LinkedList<Thing>();
+    List<Thing> things = new LinkedList<Thing>();
     
     try
     {
@@ -270,14 +276,14 @@ public class ThingiverseManager
     return things;
   }
   
-  public LinkedList<Thing> search(String query)
+  public List<Thing> search(String query)
   {
     return search(query, new LinkedList<String>());
   }
   
-  public LinkedList<Thing> search(String query, List<String> allowedFileExtensions)
+  public List<Thing> search(String query, List<String> allowedFileExtensions)
   {
-    LinkedList<Thing> things = new LinkedList<Thing>();
+    List<Thing> things = new LinkedList<Thing>();
     
     try
     {
@@ -293,16 +299,10 @@ public class ThingiverseManager
         String imageUrl = item.get("thumbnail").toString();
         Thing thing = new Thing(itemId, itemName, imageUrl);
         
-        // Get all files and check if at least one extension matches our filter.
-        // This is a workaround because filtering by extension is not (yet)
-        // supported by the thingierse api
-        List<ThingFile> files = getFiles(thing, allowedFileExtensions);
-        
-        if (!files.isEmpty())
-        {
-          things.add(thing);
-        }
+        things.add(thing);
       }
+      
+      things = filterFileExtensions(things, allowedFileExtensions);
     }
     catch(Exception ex)
     {
@@ -312,7 +312,7 @@ public class ThingiverseManager
     return things;
   }
   
-  public LinkedList<ThingFile> getFiles(Thing thing)
+  public List<ThingFile> getFiles(Thing thing)
   {
     return getFiles(thing, new LinkedList<String>());
   }
@@ -325,13 +325,13 @@ public class ThingiverseManager
    * specified extensions. If the filter list is empty, all files are returned.
    * @return 
    */
-  public LinkedList<ThingFile> getFiles(Thing thing, List<String> allowedFileExtensions)
+  public List<ThingFile> getFiles(Thing thing, List<String> allowedFileExtensions)
   {
-    LinkedList<ThingFile> files = new LinkedList<ThingFile>();
+    List<ThingFile> files = new LinkedList<ThingFile>();
     
     try
     {
-      String json = client.filesByThing(thing.getId());
+        String json = client.filesByThing(thing.getId());
 
       JSONParser parser = new JSONParser();
       JSONArray array = (JSONArray)parser.parse(json);
@@ -357,8 +357,67 @@ public class ThingiverseManager
     return files;
   }
   
+  private List<Thing> filterFileExtensions(List<Thing> things, List<String> allowedFileExtensions) throws InterruptedException, ExecutionException
+  {
+    if (allowedFileExtensions.isEmpty())
+    {
+      return things;
+    }
+    
+    List<Thing> thingsFiltered = new LinkedList<Thing>();
+    
+    // Get all files and check if at least one extension matches our filter.
+    // This is a workaround because filtering by extension is not (yet)
+    // supported by the thingierse api.
+    // Do file requests in parallel.
+    
+    // Callable that gets all filenames from the thingiverse api and
+    // checks them for matching extensions:
+    class CheckFileExtensions implements Callable<Boolean> {
+      public Thing thing;
+      public List<String> allowedFileExtensions;
+      //public hingiverseManager thingiverse;
+      public Boolean call() throws Exception
+      {
+        List<ThingFile> files = getFiles(this.thing, this.allowedFileExtensions);
+        return !files.isEmpty();
+      }
+    }
+    
+    // Create a job for each thing
+    List<Callable<Boolean>> jobs = new LinkedList<Callable<Boolean>>();
+    for (Thing thing : things)
+    {
+      CheckFileExtensions job = new CheckFileExtensions();
+      job.thing = thing;
+      job.allowedFileExtensions = allowedFileExtensions;
+      jobs.add(job);
+    }
+   
+    // Execute jobs and wait until all of them are finished.
+    ExecutorService executor = Executors.newFixedThreadPool(30);
+    List<Future<Boolean>> results = executor.invokeAll(jobs);
+
+    // Create filtered result list.
+    Iterator<Thing> thingIter = things.iterator();
+    Iterator<Future<Boolean>> resultIter = results.iterator();
+    
+    while (thingIter.hasNext() && resultIter.hasNext())
+    {
+      Thing thing = thingIter.next();
+      Future<Boolean> result = resultIter.next();
+      
+      if (result.get() == true)
+      {
+        thingsFiltered.add(thing);
+      }
+    }
+
+    executor.shutdown();
+    return thingsFiltered;
+  }
+  
   /**
-   * 
    * @param fileName
    * @param fileExtensions
    * @return True if the file name ends with on of the given file extensions

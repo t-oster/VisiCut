@@ -8,8 +8,6 @@ import com.tur0kk.thingiverse.ThingiverseManager;
 import com.tur0kk.thingiverse.model.Thing;
 import com.tur0kk.thingiverse.model.ThingFile;
 import com.tur0kk.LoadingIcon;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,7 +58,7 @@ public class ThingSelectionListener implements ListSelectionListener
               final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
               
               // get things
-              LinkedList<ThingFile> things = thingiverse.getFiles(selectionValue, selectedFileTypes);
+              List<ThingFile> things = thingiverse.getFiles(selectionValue, selectedFileTypes);
                             
               // init my things model with loading images
               DefaultListModel fileModel = new DefaultListModel(); // model for JList
