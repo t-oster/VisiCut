@@ -42,13 +42,12 @@ public abstract class SVGObject implements GraphicObject
 
   public enum Attribute
   {
-
-    Stroke_Width,
     Stroke_Color,
     Fill_Color,
+    Group,
+    Stroke_Width,
     Color,
     Type,
-    Group,
     Id,
   }
 
