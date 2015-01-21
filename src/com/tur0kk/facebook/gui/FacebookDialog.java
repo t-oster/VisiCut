@@ -20,11 +20,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.net.URL;
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -59,6 +56,7 @@ public class FacebookDialog extends javax.swing.JDialog
       public void stateChanged(ChangeEvent e)
       {
         if(!slCam.getValueIsAdjusting()){
+          closeCamera();
           setupCamera();
         }
         
@@ -574,18 +572,11 @@ private void closeCamera(){
     livecamThread = null;
   }
     
-  if(isCameraDetected()){ // camera is in use
-    if(slCam.getValue() == 1){ // webcam
-      Webcam webcam = Webcam.getDefault();
-      if(webcam.isOpen()){
-        webcam.close();
-      }
-    }
-    else{
-      //visicam
-      // nothing to close, just request no further images
-    }
+  Webcam webcam = Webcam.getDefault();
+  if(webcam.isOpen()){
+    webcam.close();
   }
+  
 }
 
 /*
