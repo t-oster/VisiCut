@@ -33,13 +33,15 @@ import javax.swing.event.ChangeListener;
  *
  * @author Sven
  */
-public class FacebookDialog extends javax.swing.JFrame
+public class FacebookDialog extends javax.swing.JDialog
 {
   private Thread livecamThread;
   final private MainView mainview;
   
   /** Creates new form FacebookDialog */
   public FacebookDialog(java.awt.Frame parent, boolean modal){
+    super(parent, modal);
+    
     initComponents();
     
     // just hide to keep state
@@ -50,9 +52,6 @@ public class FacebookDialog extends javax.swing.JFrame
     
     // save parent for modality faking
     this.mainview = (MainView) parent;
-    
-    // fake modality of JFrame
-    this.mainview.setEnabled(false);
     
     // change cam 
     slCam.addChangeListener(new ChangeListener() {
@@ -392,7 +391,6 @@ private void initWindowListener(){
       public void windowClosing(WindowEvent e)
       {
          closeCamera();
-         mainview.setEnabled(true);
       }
 
       public void windowClosed(WindowEvent e)
