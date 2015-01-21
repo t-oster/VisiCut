@@ -35,12 +35,9 @@
                           <Group type="102" attributes="0">
                               <EmptySpace min="-2" pref="399" max="-2" attributes="0"/>
                               <Component id="lblOpeningFile" min="-2" pref="88" max="-2" attributes="0"/>
-                              <EmptySpace pref="221" max="32767" attributes="0"/>
+                              <EmptySpace pref="225" max="32767" attributes="0"/>
                           </Group>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="lblFilter" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="lblFilter" alignment="1" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="pnlFilter" min="-2" max="-2" attributes="0"/>
@@ -540,7 +537,6 @@
       <SubComponents>
         <Component class="javax.swing.JCheckBox" name="cbExtensions">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" resourceKey="cbExtensions.text"/>
             <Property name="horizontalAlignment" type="int" value="2"/>
             <Property name="name" type="java.lang.String" value="cbExtensions" noResource="true"/>
@@ -548,7 +544,6 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="cbTags">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" resourceKey="cbTags.text"/>
             <Property name="toolTipText" type="java.lang.String" resourceKey="cbTags.toolTipText"/>
             <Property name="horizontalAlignment" type="int" value="2"/>

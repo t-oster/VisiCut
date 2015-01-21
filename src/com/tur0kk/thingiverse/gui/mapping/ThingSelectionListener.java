@@ -26,10 +26,8 @@ import javax.swing.event.ListSelectionListener;
 public class ThingSelectionListener implements ListSelectionListener
 {
   private JList displayResult;
-  private List<JCheckBox> filterCheckBoxes;
   
-  public ThingSelectionListener(JList displayResult, List filterCheckBoxes){
-    this.filterCheckBoxes = filterCheckBoxes;
+  public ThingSelectionListener(JList displayResult){
     this.displayResult = displayResult;
   }
 
@@ -48,13 +46,6 @@ public class ThingSelectionListener implements ListSelectionListener
 
             public void run()
             {        
-              List selectedFileTypes = new LinkedList();
-              for(JCheckBox filterCheckBox: filterCheckBoxes){
-                if(filterCheckBox.isSelected()){
-                  selectedFileTypes.add(filterCheckBox.getText());
-                }
-              }
-              
               final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
               
               // get things
