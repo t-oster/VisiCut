@@ -1,11 +1,11 @@
 package com.tur0kk.thingiverse;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import org.scribe.exceptions.OAuthException;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
@@ -79,7 +79,8 @@ public class ThingiverseClient {
    * @return accesToken
    */
   @ThingMethod(params = {"code"})
-  public String loginWithBrowserCode(String code) {
+  public String loginWithBrowserCode(String code) throws OAuthException
+  {
     Verifier v = new Verifier(code);
     Token accessToken = service.getAccessToken(null, v);
     accesTokenString = accessToken.getToken();
