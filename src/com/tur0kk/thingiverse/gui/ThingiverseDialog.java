@@ -38,7 +38,7 @@ import javax.swing.*;
  *
  * @author Sven
  */
-public class ThingiverseDialog extends javax.swing.JFrame
+public class ThingiverseDialog extends javax.swing.JDialog
 {
 
   private AtomicInteger numberLoadingLiked = new AtomicInteger();
@@ -53,6 +53,8 @@ public class ThingiverseDialog extends javax.swing.JFrame
    */
   public ThingiverseDialog(java.awt.Frame parent, boolean modal) throws AccessException, MalformedURLException, IOException
   {
+    super(parent, modal);
+    
     // just hide to keep state
     this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 
@@ -61,9 +63,6 @@ public class ThingiverseDialog extends javax.swing.JFrame
 
     // save parent for loading files to main view
     this.mainview = (MainView) parent;
-
-    // fake modality of JFrame
-    this.mainview.setEnabled(false);
 
     // init componentes
     initComponents(); // auto generated code
@@ -1012,7 +1011,6 @@ public class ThingiverseDialog extends javax.swing.JFrame
 
       public void windowClosing(WindowEvent e)
       {
-        mainview.setEnabled(true); // fake modality
       }
 
       public void windowClosed(WindowEvent e)
