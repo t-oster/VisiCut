@@ -18,13 +18,21 @@ import com.tur0kk.thingiverse.gui.mapping.ThingCollectionComboboxModel;
 import com.tur0kk.thingiverse.gui.mapping.ThingCollectionComboboxRenderer;
 import com.tur0kk.thingiverse.model.ThingCollection;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentListener;
+import java.awt.event.FocusListener;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.rmi.AccessException;
@@ -38,7 +46,7 @@ import javax.swing.*;
  *
  * @author Sven
  */
-public class ThingiverseDialog extends javax.swing.JFrame
+public class ThingiverseDialog extends javax.swing.JDialog
 {
 
   private AtomicInteger numberLoadingLiked = new AtomicInteger();
@@ -53,6 +61,8 @@ public class ThingiverseDialog extends javax.swing.JFrame
    */
   public ThingiverseDialog(java.awt.Frame parent, boolean modal) throws AccessException, MalformedURLException, IOException
   {
+    super(parent, modal);
+    
     // just hide to keep state
     this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 
@@ -61,9 +71,6 @@ public class ThingiverseDialog extends javax.swing.JFrame
 
     // save parent for loading files to main view
     this.mainview = (MainView) parent;
-
-    // fake modality of JFrame
-    this.mainview.setEnabled(false);
 
     // init componentes
     initComponents(); // auto generated code
@@ -452,6 +459,7 @@ public class ThingiverseDialog extends javax.swing.JFrame
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
         List<ThingCollection> collections = thingiverse.getMyCollections();
         
+        // init combobox by hand, because it also is added to the header by hand
         // fill combobox with names of collections
         ThingCollectionComboboxModel comboboxModel = new ThingCollectionComboboxModel(collections);
         cbCollection.setModel(comboboxModel);
@@ -465,6 +473,32 @@ public class ThingiverseDialog extends javax.swing.JFrame
             }
           }
         }); // end listener
+        
+        cbCollection.addMouseListener(new MouseListener() {
+
+          public void mouseClicked(MouseEvent e)
+          {
+            tpLists.setSelectedIndex(2);
+          }
+
+          public void mousePressed(MouseEvent e)
+          {
+          }
+
+          public void mouseReleased(MouseEvent e)
+          {
+          }
+
+          public void mouseEntered(MouseEvent e)
+          {
+          }
+
+          public void mouseExited(MouseEvent e)
+          {
+          }
+        });
+        
+       
         
         // finished initialization, just init with currently selected collection
         actionCollection();
@@ -1012,7 +1046,6 @@ public class ThingiverseDialog extends javax.swing.JFrame
 
       public void windowClosing(WindowEvent e)
       {
-        mainview.setEnabled(true); // fake modality
       }
 
       public void windowClosed(WindowEvent e)
