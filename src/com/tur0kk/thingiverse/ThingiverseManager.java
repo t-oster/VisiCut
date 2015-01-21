@@ -39,7 +39,7 @@ public class ThingiverseManager
     "svg", "plf", "dxf", "eps", "gcode");
   
   private static final List<String> tagFilter = Arrays.asList(
-    "lasercutter", "laser cut", "lasercutter");
+    "lasercutter", "lasercut", "laser cutter", "laser cut");
   
   private static ThingiverseManager instance = null;
   
