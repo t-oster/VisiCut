@@ -35,13 +35,14 @@
                           <Group type="102" attributes="0">
                               <EmptySpace min="-2" pref="399" max="-2" attributes="0"/>
                               <Component id="lblOpeningFile" min="-2" pref="88" max="-2" attributes="0"/>
-                              <EmptySpace pref="261" max="32767" attributes="0"/>
+                              <EmptySpace pref="221" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="lblFilter" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="pnlFilter" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
@@ -58,10 +59,6 @@
           <Group type="102" attributes="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="lblOpeningFile" alignment="1" min="-2" max="-2" attributes="1"/>
-                  <Group type="103" alignment="1" groupAlignment="0" attributes="0">
-                      <Component id="lblFilter" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="pnlFilter" alignment="0" min="-2" max="-2" attributes="1"/>
-                  </Group>
                   <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
                       <Group type="102" alignment="1" attributes="1">
                           <Component id="lUserName" min="-2" pref="30" max="-2" attributes="0"/>
@@ -69,6 +66,13 @@
                           <Component id="btnLogout" min="-2" max="-2" attributes="1"/>
                       </Group>
                       <Component id="lProfilePicture" alignment="1" min="-2" pref="112" max="-2" attributes="1"/>
+                  </Group>
+                  <Group type="103" alignment="1" groupAlignment="0" attributes="0">
+                      <Component id="pnlFilter" alignment="0" min="-2" pref="71" max="-2" attributes="1"/>
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="lblFilter" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="57" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -519,10 +523,14 @@
             </LineBorder>
           </Border>
         </Property>
+        <Property name="toolTipText" type="java.lang.String" resourceKey="pnlFilter.toolTipText"/>
         <Property name="alignmentX" type="float" value="0.0"/>
         <Property name="alignmentY" type="float" value="0.0"/>
         <Property name="name" type="java.lang.String" value="pnlFilter" noResource="true"/>
       </Properties>
+      <AccessibilityProperties>
+        <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" resourceKey="pnlFilter.AccessibleContext.accessibleDescription"/>
+      </AccessibilityProperties>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
         <Property name="columns" type="int" value="3"/>
@@ -530,44 +538,21 @@
         <Property name="rows" type="int" value="3"/>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JCheckBox" name="cbSVG">
+        <Component class="javax.swing.JCheckBox" name="cbExtensions">
           <Properties>
             <Property name="selected" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" resourceKey="cbSVG.text"/>
+            <Property name="text" type="java.lang.String" resourceKey="cbExtensions.text"/>
             <Property name="horizontalAlignment" type="int" value="2"/>
-            <Property name="name" type="java.lang.String" value="cbSVG" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="cbExtensions" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="cbDXF">
+        <Component class="javax.swing.JCheckBox" name="cbTags">
           <Properties>
             <Property name="selected" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" resourceKey="cbDXF.text"/>
+            <Property name="text" type="java.lang.String" resourceKey="cbTags.text"/>
+            <Property name="toolTipText" type="java.lang.String" resourceKey="cbTags.toolTipText"/>
             <Property name="horizontalAlignment" type="int" value="2"/>
-            <Property name="name" type="java.lang.String" value="cbDXF" noResource="true"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JCheckBox" name="cbPLF">
-          <Properties>
-            <Property name="selected" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" resourceKey="cbPLF.text"/>
-            <Property name="horizontalAlignment" type="int" value="2"/>
-            <Property name="name" type="java.lang.String" value="cbPLF" noResource="true"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JCheckBox" name="cbGCODE">
-          <Properties>
-            <Property name="selected" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" resourceKey="cbGCODE.text"/>
-            <Property name="horizontalAlignment" type="int" value="2"/>
-            <Property name="name" type="java.lang.String" value="cbGCODE" noResource="true"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JCheckBox" name="cbEPS">
-          <Properties>
-            <Property name="selected" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" resourceKey="cbEPS.text"/>
-            <Property name="horizontalAlignment" type="int" value="2"/>
-            <Property name="name" type="java.lang.String" value="cbEPS" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="cbTags" noResource="true"/>
           </Properties>
         </Component>
       </SubComponents>

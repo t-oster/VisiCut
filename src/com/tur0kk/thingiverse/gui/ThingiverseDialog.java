@@ -99,7 +99,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
     // set profile picture
     initProfilePicture();
-
   }
   
   private void loadTab(final List<Thing> thingsToLoad, final JList thingList, final AtomicInteger feedbackCounter, final JLabel feedbackLabel){
@@ -608,11 +607,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
         lstSearchThing = new javax.swing.JList();
         btnLogout = new javax.swing.JButton();
         pnlFilter = new javax.swing.JPanel();
-        cbSVG = new javax.swing.JCheckBox();
-        cbDXF = new javax.swing.JCheckBox();
-        cbPLF = new javax.swing.JCheckBox();
-        cbGCODE = new javax.swing.JCheckBox();
-        cbEPS = new javax.swing.JCheckBox();
+        cbExtensions = new javax.swing.JCheckBox();
+        cbTags = new javax.swing.JCheckBox();
         lblOpeningFile = new javax.swing.JLabel();
         lblFilter = new javax.swing.JLabel();
 
@@ -782,40 +778,24 @@ public class ThingiverseDialog extends javax.swing.JDialog
         });
 
         pnlFilter.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("pnlFilter.border.lineColor"))); // NOI18N
+        pnlFilter.setToolTipText(resourceMap.getString("pnlFilter.toolTipText")); // NOI18N
         pnlFilter.setAlignmentX(0.0F);
         pnlFilter.setAlignmentY(0.0F);
         pnlFilter.setName("pnlFilter"); // NOI18N
         pnlFilter.setLayout(new java.awt.GridLayout(3, 3, 1, 0));
 
-        cbSVG.setSelected(true);
-        cbSVG.setText(resourceMap.getString("cbSVG.text")); // NOI18N
-        cbSVG.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        cbSVG.setName("cbSVG"); // NOI18N
-        pnlFilter.add(cbSVG);
+        cbExtensions.setSelected(true);
+        cbExtensions.setText(resourceMap.getString("cbExtensions.text")); // NOI18N
+        cbExtensions.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        cbExtensions.setName("cbExtensions"); // NOI18N
+        pnlFilter.add(cbExtensions);
 
-        cbDXF.setSelected(true);
-        cbDXF.setText(resourceMap.getString("cbDXF.text")); // NOI18N
-        cbDXF.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        cbDXF.setName("cbDXF"); // NOI18N
-        pnlFilter.add(cbDXF);
-
-        cbPLF.setSelected(true);
-        cbPLF.setText(resourceMap.getString("cbPLF.text")); // NOI18N
-        cbPLF.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        cbPLF.setName("cbPLF"); // NOI18N
-        pnlFilter.add(cbPLF);
-
-        cbGCODE.setSelected(true);
-        cbGCODE.setText(resourceMap.getString("cbGCODE.text")); // NOI18N
-        cbGCODE.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        cbGCODE.setName("cbGCODE"); // NOI18N
-        pnlFilter.add(cbGCODE);
-
-        cbEPS.setSelected(true);
-        cbEPS.setText(resourceMap.getString("cbEPS.text")); // NOI18N
-        cbEPS.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        cbEPS.setName("cbEPS"); // NOI18N
-        pnlFilter.add(cbEPS);
+        cbTags.setSelected(true);
+        cbTags.setText(resourceMap.getString("cbTags.text")); // NOI18N
+        cbTags.setToolTipText(resourceMap.getString("cbTags.toolTipText")); // NOI18N
+        cbTags.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        cbTags.setName("cbTags"); // NOI18N
+        pnlFilter.add(cbTags);
 
         lblOpeningFile.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblOpeningFile.setIcon(LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL));
@@ -840,10 +820,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(399, 399, 399)
                                 .addComponent(lblOpeningFile, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 261, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 221, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(lblFilter)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -855,18 +836,22 @@ public class ThingiverseDialog extends javax.swing.JDialog
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblOpeningFile, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(lblFilter)
-                        .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnLogout))
-                        .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addComponent(lblFilter)
+                            .addGap(57, 57, 57))))
                 .addGap(18, 18, 18)
                 .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE))
         );
+
+        pnlFilter.getAccessibleContext().setAccessibleDescription(resourceMap.getString("pnlFilter.AccessibleContext.accessibleDescription")); // NOI18N
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -1074,11 +1059,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnSearch;
-    private javax.swing.JCheckBox cbDXF;
-    private javax.swing.JCheckBox cbEPS;
-    private javax.swing.JCheckBox cbGCODE;
-    private javax.swing.JCheckBox cbPLF;
-    private javax.swing.JCheckBox cbSVG;
+    private javax.swing.JCheckBox cbExtensions;
+    private javax.swing.JCheckBox cbTags;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lProfilePicture;
     private javax.swing.JLabel lUserName;
