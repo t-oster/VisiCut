@@ -563,7 +563,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
             selectedFileTypes.add(filterCheckBox.getText());
           }
         }
-        List<Thing> things = thingiverse.search(queryString, selectedFileTypes);
+        List<Thing> things = thingiverse.search(queryString);
         loadTab(things, lstSearch, numberLoadingSearch, lblLoadingSearch);
       }
     }).start();
