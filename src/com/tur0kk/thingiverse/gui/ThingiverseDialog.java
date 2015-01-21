@@ -53,7 +53,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
   private AtomicInteger numberLoadingMyThings = new AtomicInteger();
   private AtomicInteger numberLoadingSearch = new AtomicInteger();
   private AtomicInteger numberLoadingCollection = new AtomicInteger();
-  private List<JCheckBox> filterCheckBoxes = new LinkedList<JCheckBox>(); // holds the filter checkboxes for passing to non gui class
   final private MainView mainview;
 
   /**
@@ -84,9 +83,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
     initSearchTab();
     
     initCollectionTab();
-
-    // init filter checkboxes list to be passed to non gui class 
-    initFilters();
 
     // list cell renderer for images + name of things
     initListCellRenderers();
@@ -251,7 +247,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         
         // get things
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-        List<Thing> things = thingiverse.getLikedThings();
+        List<Thing> things = thingiverse.getLikedThings(cbExtensions.isSelected(), cbTags.isSelected());
         loadTab(things, lstLiked, numberLoadingLiked, lblLoadingLiked);
       }
     }).start();
@@ -320,7 +316,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         
         // get things
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-        List<Thing> things = thingiverse.getMyThings();
+        List<Thing> things = thingiverse.getMyThings(cbExtensions.isSelected(), cbTags.isSelected());
         loadTab(things, lstMyThings, numberLoadingMyThings, lblLoadingMyThings);
       }
     }).start();
@@ -529,7 +525,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         });
         
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-        List<Thing> things = thingiverse.getThingsByCollection(collection);
+        List<Thing> things = thingiverse.getThingsByCollection(collection, cbExtensions.isSelected(), cbTags.isSelected());
         loadTab(things, lstCollection, numberLoadingCollection, lblLoadingCollection);
       }
     }).start();
@@ -555,15 +551,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
     
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
         String queryString = txtSearch.getText();
-        List<String> selectedFileTypes = new LinkedList<String>();
-        for (JCheckBox filterCheckBox : filterCheckBoxes)
-        {
-          if (filterCheckBox.isSelected())
-          {
-            selectedFileTypes.add(filterCheckBox.getText());
-          }
-        }
-        List<Thing> things = thingiverse.search(queryString);
+        List<Thing> things = thingiverse.search(queryString, cbExtensions.isSelected(), cbTags.isSelected());
         loadTab(things, lstSearch, numberLoadingSearch, lblLoadingSearch);
       }
     }).start();
@@ -784,13 +772,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
         pnlFilter.setName("pnlFilter"); // NOI18N
         pnlFilter.setLayout(new java.awt.GridLayout(3, 3, 1, 0));
 
-        cbExtensions.setSelected(true);
         cbExtensions.setText(resourceMap.getString("cbExtensions.text")); // NOI18N
         cbExtensions.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         cbExtensions.setName("cbExtensions"); // NOI18N
         pnlFilter.add(cbExtensions);
 
-        cbTags.setSelected(true);
         cbTags.setText(resourceMap.getString("cbTags.text")); // NOI18N
         cbTags.setToolTipText(resourceMap.getString("cbTags.toolTipText")); // NOI18N
         cbTags.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -820,10 +806,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(399, 399, 399)
                                 .addComponent(lblOpeningFile, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 221, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblFilter)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 225, Short.MAX_VALUE))
+                            .addComponent(lblFilter))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
@@ -910,10 +894,10 @@ public class ThingiverseDialog extends javax.swing.JDialog
   private void initListClickListeners()
   {
     // click listener loads files of selected thing  
-    lstMyThings.addListSelectionListener(new ThingSelectionListener(lstMyThingsThing, filterCheckBoxes));
-    lstSearch.addListSelectionListener(new ThingSelectionListener(lstSearchThing, filterCheckBoxes));
-    lstLiked.addListSelectionListener(new ThingSelectionListener(lstLikedThing, filterCheckBoxes));
-    lstCollection.addListSelectionListener(new ThingSelectionListener(lstCollectionThing, filterCheckBoxes));
+    lstMyThings.addListSelectionListener(new ThingSelectionListener(lstMyThingsThing));
+    lstSearch.addListSelectionListener(new ThingSelectionListener(lstSearchThing));
+    lstLiked.addListSelectionListener(new ThingSelectionListener(lstLikedThing));
+    lstCollection.addListSelectionListener(new ThingSelectionListener(lstCollectionThing));
     
     // set adapter for ThingFile-lists to listen for double clicks -> load selected file    
     lstSearchThing.addMouseListener(new ThingFileClickListener(mainview, lblOpeningFile));
@@ -1005,19 +989,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
         }
       }
     }).start();
-  }
-
-  private void initFilters()
-  {
-    // initializes the filter list with all filter checkboxes
-    Component[] components = pnlFilter.getComponents();
-    for (Component comp : components)
-    {
-      if (comp instanceof JCheckBox)
-      {
-        this.filterCheckBoxes.add((JCheckBox) comp);
-      }
-    }
   }
 
   private void initWindowListener()
