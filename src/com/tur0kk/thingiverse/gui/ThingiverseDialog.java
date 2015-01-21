@@ -17,10 +17,6 @@ import com.tur0kk.LoadingIcon;
 import com.tur0kk.thingiverse.gui.mapping.ThingCollectionComboboxModel;
 import com.tur0kk.thingiverse.gui.mapping.ThingCollectionComboboxRenderer;
 import com.tur0kk.thingiverse.model.ThingCollection;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ComponentEvent;
-import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -28,16 +24,12 @@ import java.net.MalformedURLException;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentListener;
-import java.awt.event.FocusListener;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.rmi.AccessException;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
@@ -83,7 +75,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
     initSearchTab();
     
     initCollectionTab();
-
+    
     // list cell renderer for images + name of things
     initListCellRenderers();
 
@@ -179,6 +171,13 @@ public class ThingiverseDialog extends javax.swing.JDialog
             }
           }).start();
         }
+        
+        
+        // if list empty disable feedback
+        if(thingsToLoad.isEmpty()){
+          feedbackLabel.setVisible(false);
+        }
+        // do for other tabs
 
       }
     }).start();
@@ -187,11 +186,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
   // called once when dialog is set up
   private void initLikedTab()
   {
-    // load liked things asynchronously
-    new Thread(new Runnable() {
-
-      public void run()
-      {
+    
         // enable userfeedback 
         SwingUtilities.invokeLater(new Runnable()
         {
@@ -241,11 +236,29 @@ public class ThingiverseDialog extends javax.swing.JDialog
             lblLoadingLiked.setIcon((Icon) loadingIcon);
             tpLists.setTabComponentAt(1, pnlLiked);
             
-            lblLiked.setVisible(true);
+            lblLoadingLiked.setVisible(false);
+            actionLiked(); // starts own non gui thread, needed here to ensure that gui set up is ready
           }
         });
         
-        // get things
+
+  }
+  
+  private void actionLiked(){
+
+    // load liked things asynchronously
+    new Thread(new Runnable() {
+
+      public void run()
+      {
+        SwingUtilities.invokeLater(new Runnable() {
+
+          public void run()
+          {
+            lblLoadingLiked.setVisible(true);
+          }
+        });
+        
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
         List<Thing> things = thingiverse.getLikedThings(cbExtensions.isSelected(), cbTags.isSelected());
         loadTab(things, lstLiked, numberLoadingLiked, lblLoadingLiked);
@@ -256,71 +269,81 @@ public class ThingiverseDialog extends javax.swing.JDialog
   // called once when dialog is set up
   private void initMyThingsTab()
   {
+      // enable userfeedback
+      SwingUtilities.invokeLater(new Runnable()
+      {
+        public void run()
+        {
+          // header for MyThings
+          pnlMyThings = new JPanel();
+          lblMyThings = new JLabel();
+          lblLoadingMyThings = new JLabel();
+          pnlMyThings.setAlignmentX(0.0F);
+          pnlMyThings.setAlignmentY(0.0F);
+          pnlMyThings.setName("pnlMyThings");
+          pnlMyThings.setOpaque(false);
+
+          lblMyThings.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+          lblMyThings.setText("MyThings");
+          lblMyThings.setAlignmentY(0.0F);
+          lblMyThings.setName("lblMyThings");
+          lblMyThings.setFont(new Font(lblMyThings.getFont().getName(), lblMyThings.getFont().getStyle(), 14));
+
+          lblLoadingMyThings.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+          lblLoadingMyThings.setText("");
+          lblLoadingMyThings.setAlignmentY(0.0F);
+          lblLoadingMyThings.setName("lblLoadingMyThings");
+
+          javax.swing.GroupLayout pnlMyThingsLayout = new javax.swing.GroupLayout(pnlMyThings);
+          pnlMyThings.setLayout(pnlMyThingsLayout);
+          pnlMyThingsLayout.setHorizontalGroup(
+            pnlMyThingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlMyThingsLayout.createSequentialGroup()
+              .addComponent(lblMyThings)
+              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+              .addComponent(lblLoadingMyThings, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
+          );
+          pnlMyThingsLayout.setVerticalGroup(
+            pnlMyThingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlMyThingsLayout.createSequentialGroup()
+              .addContainerGap()
+              .addGroup(pnlMyThingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(lblLoadingMyThings, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblMyThings))
+              .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          );
+
+          // set loading headers
+          ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL);
+          lblLoadingMyThings.setIcon((Icon) loadingIcon);
+          tpLists.setTabComponentAt(0, pnlMyThings);
+          lblLoadingMyThings.setVisible(false);
+          actionMyThings(); // starts own non gui thread, needed here to ensure that gui set up is ready
+        }
+      });
+
+  }
+  
+  private void actionMyThings(){
     // load mythings things asynchronously
     new Thread(new Runnable() {
 
       public void run()
       {
-        // enable userfeedback
-        SwingUtilities.invokeLater(new Runnable()
-        {
+        SwingUtilities.invokeLater(new Runnable() {
+
           public void run()
           {
-            // header for MyThings
-            pnlMyThings = new JPanel();
-            lblMyThings = new JLabel();
-            lblLoadingMyThings = new JLabel();
-            pnlMyThings.setAlignmentX(0.0F);
-            pnlMyThings.setAlignmentY(0.0F);
-            pnlMyThings.setName("pnlMyThings");
-            pnlMyThings.setOpaque(false);
-
-            lblMyThings.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-            lblMyThings.setText("MyThings");
-            lblMyThings.setAlignmentY(0.0F);
-            lblMyThings.setName("lblMyThings");
-            lblMyThings.setFont(new Font(lblMyThings.getFont().getName(), lblMyThings.getFont().getStyle(), 14));
-
-            lblLoadingMyThings.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-            lblLoadingMyThings.setText("");
-            lblLoadingMyThings.setAlignmentY(0.0F);
-            lblLoadingMyThings.setName("lblLoadingMyThings");
-
-            javax.swing.GroupLayout pnlMyThingsLayout = new javax.swing.GroupLayout(pnlMyThings);
-            pnlMyThings.setLayout(pnlMyThingsLayout);
-            pnlMyThingsLayout.setHorizontalGroup(
-              pnlMyThingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(pnlMyThingsLayout.createSequentialGroup()
-                .addComponent(lblMyThings)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblLoadingMyThings, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
-            );
-            pnlMyThingsLayout.setVerticalGroup(
-              pnlMyThingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(pnlMyThingsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlMyThingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                  .addComponent(lblLoadingMyThings, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addComponent(lblMyThings))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            );
-            
-            // set loading headers
-            ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL);
-            lblLoadingMyThings.setIcon((Icon) loadingIcon);
-            tpLists.setTabComponentAt(0, pnlMyThings);
-            
             lblLoadingMyThings.setVisible(true);
           }
         });
-        
         // get things
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
         List<Thing> things = thingiverse.getMyThings(cbExtensions.isSelected(), cbTags.isSelected());
         loadTab(things, lstMyThings, numberLoadingMyThings, lblLoadingMyThings);
       }
     }).start();
-    
+      
   }
   
   // init search tab, the other tabs are initialized by their action, but because the search tab is called everytime the user wants to search for something, the initialization has to be done somewhere else
@@ -446,7 +469,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
             lblLoadingCollection.setIcon((Icon) loadingIcon);
             tpLists.setTabComponentAt(2, pnlCollection);
             
-            lblLoadingCollection.setVisible(true);
+            lblLoadingCollection.setVisible(false);
+            
           }
         });
         
@@ -464,7 +488,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
           {
             if (e.getStateChange() == ItemEvent.SELECTED) {
               actionCollection();
-              
             }
           }
         }); // end listener
@@ -493,10 +516,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
           }
         });
         
-       
-        
-        // finished initialization, just init with currently selected collection
-        actionCollection();
+        actionCollection(); // starts own non gui thread, needed here to ensure that gui set up is ready        
       }
     }).start();
   }

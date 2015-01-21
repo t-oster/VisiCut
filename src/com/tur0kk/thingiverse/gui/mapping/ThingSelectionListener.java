@@ -41,6 +41,10 @@ public class ThingSelectionListener implements ListSelectionListener
           int selection = list.getSelectedIndex();
           final Thing selectionValue = (Thing) list.getSelectedValue();
           
+          if(selectionValue == null){ // break, no valid thing selected
+            return;
+          }
+          
           // display files of selected thing
           new Thread(new Runnable() {
 
