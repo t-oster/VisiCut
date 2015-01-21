@@ -16,15 +16,18 @@ import com.tur0kk.facebook.FacebookManager;
 import com.tur0kk.LoadingIcon;
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.net.URL;
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
+import javax.swing.AbstractButton;
+import javax.swing.ButtonModel;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -54,16 +57,20 @@ public class FacebookDialog extends javax.swing.JDialog
     this.mainview = (MainView) parent;
     
     // change cam 
-    slCam.addChangeListener(new ChangeListener() {
+    ItemListener selectChangeListener = new ItemListener() {
 
-      public void stateChanged(ChangeEvent e)
+      public void itemStateChanged(ItemEvent e)
       {
-        if(!slCam.getValueIsAdjusting()){
+        boolean selected = (e.getStateChange( ) == ItemEvent.SELECTED);
+        if(selected == true){ // only if selected
+          closeCamera();
           setupCamera();
         }
-        
+      
       }
-    });
+    };
+    rdbtnWebcam.addItemListener(selectChangeListener);
+    rdbtnVisicam.addItemListener(selectChangeListener);
     
     // enable picture taking
     setupCamera();
@@ -84,6 +91,7 @@ public class FacebookDialog extends javax.swing.JDialog
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        grpCams = new javax.swing.ButtonGroup();
         btnLogout = new javax.swing.JButton();
         lUserName = new javax.swing.JLabel();
         lProfilePicture = new javax.swing.JLabel();
@@ -99,9 +107,8 @@ public class FacebookDialog extends javax.swing.JDialog
         jScrollPane1 = new javax.swing.JScrollPane();
         txtaPublish = new javax.swing.JTextArea();
         lblLoading = new javax.swing.JLabel();
-        slCam = new javax.swing.JSlider();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        rdbtnWebcam = new javax.swing.JRadioButton();
+        rdbtnVisicam = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
@@ -247,15 +254,14 @@ public class FacebookDialog extends javax.swing.JDialog
                 .addContainerGap())
         );
 
-        slCam.setMaximum(1);
-        slCam.setFocusable(false);
-        slCam.setName("slCam"); // NOI18N
+        grpCams.add(rdbtnWebcam);
+        rdbtnWebcam.setSelected(true);
+        rdbtnWebcam.setText(resourceMap.getString("rdbtnWebcam.text")); // NOI18N
+        rdbtnWebcam.setName("rdbtnWebcam"); // NOI18N
 
-        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
-        jLabel1.setName("jLabel1"); // NOI18N
-
-        jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
-        jLabel2.setName("jLabel2"); // NOI18N
+        grpCams.add(rdbtnVisicam);
+        rdbtnVisicam.setText(resourceMap.getString("rdbtnVisicam.text")); // NOI18N
+        rdbtnVisicam.setName("rdbtnVisicam"); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -274,12 +280,10 @@ public class FacebookDialog extends javax.swing.JDialog
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 228, Short.MAX_VALUE)
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(slCam, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(10, 10, 10)
-                                .addComponent(jLabel2))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 285, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(rdbtnVisicam)
+                                    .addComponent(rdbtnWebcam)))
                             .addComponent(btnLogout))))
                 .addContainerGap())
         );
@@ -293,10 +297,10 @@ public class FacebookDialog extends javax.swing.JDialog
                         .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
                         .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(slCam, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(rdbtnWebcam)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(rdbtnVisicam)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(pnlPublish, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -494,8 +498,7 @@ private void initProfilePicture(){
     private javax.swing.JButton btnPhoto;
     private javax.swing.JButton btnPhotoRedo;
     private javax.swing.JButton btnPublish;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.ButtonGroup grpCams;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lProfilePicture;
     private javax.swing.JLabel lUserName;
@@ -506,7 +509,8 @@ private void initProfilePicture(){
     private javax.swing.JLabel lblPublishSuccessStatus;
     private javax.swing.JPanel pnlFoto;
     private javax.swing.JPanel pnlPublish;
-    private javax.swing.JSlider slCam;
+    private javax.swing.JRadioButton rdbtnVisicam;
+    private javax.swing.JRadioButton rdbtnWebcam;
     private javax.swing.JTextArea txtaPublish;
     // End of variables declaration//GEN-END:variables
 
@@ -574,18 +578,11 @@ private void closeCamera(){
     livecamThread = null;
   }
     
-  if(isCameraDetected()){ // camera is in use
-    if(slCam.getValue() == 1){ // webcam
-      Webcam webcam = Webcam.getDefault();
-      if(webcam.isOpen()){
-        webcam.close();
-      }
-    }
-    else{
-      //visicam
-      // nothing to close, just request no further images
-    }
+  Webcam webcam = Webcam.getDefault();
+  if(webcam.isOpen()){
+    webcam.close();
   }
+  
 }
 
 /*
@@ -611,7 +608,7 @@ private ImageIcon takePicture(){
   if(isCameraDetected()){
     
     ImageIcon imageIcon = null;
-    if(slCam.getValue() == 1){ // webcam
+    if(rdbtnWebcam.isSelected()){ // webcam
         // get webcam
         Webcam webcam = Webcam.getDefault();
         webcam.open();
@@ -648,7 +645,7 @@ private ImageIcon takePicture(){
  * returns wether a camera is plugged in
  */
 private boolean isCameraDetected(){
-  if(slCam.getValue() == 1){ // webcam
+  if(rdbtnWebcam.isSelected()){ // webcam
     Webcam webcam = Webcam.getDefault();
     if (webcam != null) { 
       return true;
