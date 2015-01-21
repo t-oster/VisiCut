@@ -7,6 +7,8 @@ import com.tur0kk.thingiverse.model.ThingFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +34,12 @@ public class ThingiverseManager
   private static final String clientSecret = "a0b5368a3d58ddb3b1ade12f4f8f14e7";
   private static final String clientCallback = "http://www.thingiverse.com";
   private static final String redirectUrlPrefix = "http://hci.rwth-aachen.de/visicut?code=";
+  
+  private static final List<String> fileExtensionFilter = Arrays.asList(
+    "svg", "plf", "dxf", "eps", "gcode");
+  
+  private static final List<String> tagFilter = Arrays.asList(
+    "lasercutter", "laser cut", "lasercutter");
   
   private static ThingiverseManager instance = null;
   
@@ -170,6 +178,11 @@ public class ThingiverseManager
   
   public List<Thing> getMyThings()
   {
+    return getMyThings(false, false);
+  }
+  
+  public List<Thing> getMyThings(boolean filterExtensions, boolean filterTags)
+  {
     List<Thing> things = new LinkedList<Thing>();
     
     try
@@ -186,6 +199,8 @@ public class ThingiverseManager
         String imageUrl = item.get("thumbnail").toString();
         things.add(new Thing(itemId, itemName, imageUrl));
       }
+      
+      things = filterThings(things, filterExtensions, filterTags);
     }
     catch(Exception ex)
     {
@@ -196,6 +211,11 @@ public class ThingiverseManager
   }
   
   public List<Thing> getLikedThings()
+  {
+    return getLikedThings(false, false);
+  }
+  
+  public List<Thing> getLikedThings(boolean filterExtensions, boolean filterTags)
   {
     List<Thing> things = new LinkedList<Thing>();
     
@@ -213,6 +233,8 @@ public class ThingiverseManager
         String imageUrl = item.get("thumbnail").toString();
         things.add(new Thing(itemId, itemName, imageUrl));
       }
+      
+      things = filterThings(things, filterExtensions, filterTags);
     }
     catch(Exception ex)
     {
@@ -251,6 +273,11 @@ public class ThingiverseManager
   
   public List<Thing> getThingsByCollection(ThingCollection collection)
   {
+    return getThingsByCollection(collection, false, false);
+  }
+  
+  public List<Thing> getThingsByCollection(ThingCollection collection, boolean filterExtensions, boolean filterTags)
+  {
     List<Thing> things = new LinkedList<Thing>();
     
     try
@@ -267,6 +294,8 @@ public class ThingiverseManager
         String imageUrl = jsonThing.get("thumbnail").toString();
         things.add(new Thing(thingId, thingName, imageUrl));
       }
+      
+      things = filterThings(things, filterExtensions, filterTags);
     }
     catch(Exception ex)
     {
@@ -278,10 +307,10 @@ public class ThingiverseManager
   
   public List<Thing> search(String query)
   {
-    return search(query, new LinkedList<String>());
+    return search(query, false, false);
   }
   
-  public List<Thing> search(String query, List<String> allowedFileExtensions)
+  public List<Thing> search(String query, boolean filterExtensions, boolean filterTags)
   {
     List<Thing> things = new LinkedList<Thing>();
     
@@ -302,7 +331,7 @@ public class ThingiverseManager
         things.add(thing);
       }
       
-      things = filterFileExtensions(things, allowedFileExtensions);
+      things = filterThings(things, filterExtensions, filterTags);
     }
     catch(Exception ex)
     {
@@ -314,7 +343,12 @@ public class ThingiverseManager
   
   public List<ThingFile> getFiles(Thing thing)
   {
-    return getFiles(thing, new LinkedList<String>());
+    return getFiles(thing, false);
+  }
+  
+  public List<ThingFile> getFiles(Thing thing, boolean filterExtensions)
+  {
+    return getFiles(thing, fileExtensionFilter);
   }
   
   /**
@@ -325,13 +359,13 @@ public class ThingiverseManager
    * specified extensions. If the filter list is empty, all files are returned.
    * @return 
    */
-  public List<ThingFile> getFiles(Thing thing, List<String> allowedFileExtensions)
+  private List<ThingFile> getFiles(Thing thing, List<String> allowedFileExtensions)
   {
     List<ThingFile> files = new LinkedList<ThingFile>();
     
     try
     {
-        String json = client.filesByThing(thing.getId());
+      String json = client.filesByThing(thing.getId());
 
       JSONParser parser = new JSONParser();
       JSONArray array = (JSONArray)parser.parse(json);
@@ -357,30 +391,76 @@ public class ThingiverseManager
     return files;
   }
   
-  private List<Thing> filterFileExtensions(List<Thing> things, List<String> allowedFileExtensions) throws InterruptedException, ExecutionException
+  public List<String> getTags(Thing thing)
   {
-    if (allowedFileExtensions.isEmpty())
+    List<String> tags = new LinkedList<String>();
+    
+    try
+    {
+      String json = client.tagsByThing(thing.getId());
+
+      JSONParser parser = new JSONParser();
+      JSONArray array = (JSONArray)parser.parse(json);
+      for (Object obj : array)
+      {
+        JSONObject jsonTag = (JSONObject)obj;
+        String tag = jsonTag.get("name").toString();
+        tags.add(tag);
+      }
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+    }
+    
+    return tags;
+  }
+  
+  private List<Thing> filterThings(List<Thing> things, boolean filterExtensions, boolean filterTags) throws InterruptedException, ExecutionException
+  {
+    // Return quickly if no filter is set.
+    if (!filterExtensions && !filterTags)
     {
       return things;
     }
     
     List<Thing> thingsFiltered = new LinkedList<Thing>();
     
-    // Get all files and check if at least one extension matches our filter.
-    // This is a workaround because filtering by extension is not (yet)
-    // supported by the thingierse api.
-    // Do file requests in parallel.
-    
-    // Callable that gets all filenames from the thingiverse api and
-    // checks them for matching extensions:
-    class CheckFileExtensions implements Callable<Boolean> {
+    // Create a filter job that does api calls for each thing and process them
+    // in parallel.
+    class FilterJob implements Callable<Boolean>
+    {
       public Thing thing;
-      public List<String> allowedFileExtensions;
-      //public hingiverseManager thingiverse;
+      public boolean filterExtensions;
+      public boolean filterTags;
+      public List<String> fileExtensionFilter;
+      public List<String> tagFilter;
+      
       public Boolean call() throws Exception
       {
-        List<ThingFile> files = getFiles(this.thing, this.allowedFileExtensions);
-        return !files.isEmpty();
+        // Filter by file extensions
+        if (filterExtensions && !this.fileExtensionFilter.isEmpty())
+        {
+          List<ThingFile> files = getFiles(this.thing, this.fileExtensionFilter);
+          if (files.isEmpty())
+          {
+            // No files with matching extension found
+            return false;
+          }
+        }
+        
+        // Filter by tags
+        if (filterTags && !this.tagFilter.isEmpty())
+        {
+          List<String> tags = getTags(this.thing);
+          if (Collections.disjoint(tags, tagFilter))
+          {
+            // No matching tags
+            return false;
+          }
+        }
+        
+        return true;
       }
     }
     
@@ -388,12 +468,15 @@ public class ThingiverseManager
     List<Callable<Boolean>> jobs = new LinkedList<Callable<Boolean>>();
     for (Thing thing : things)
     {
-      CheckFileExtensions job = new CheckFileExtensions();
+      FilterJob job = new FilterJob();
       job.thing = thing;
-      job.allowedFileExtensions = allowedFileExtensions;
+      job.filterExtensions = filterExtensions;
+      job.filterTags = filterTags;
+      job.fileExtensionFilter = this.fileExtensionFilter;
+      job.tagFilter = this.tagFilter;
       jobs.add(job);
     }
-   
+
     // Execute jobs and wait until all of them are finished.
     ExecutorService executor = Executors.newFixedThreadPool(30);
     List<Future<Boolean>> results = executor.invokeAll(jobs);

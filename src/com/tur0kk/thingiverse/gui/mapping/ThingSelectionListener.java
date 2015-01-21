@@ -58,7 +58,7 @@ public class ThingSelectionListener implements ListSelectionListener
               final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
               
               // get things
-              List<ThingFile> things = thingiverse.getFiles(selectionValue, selectedFileTypes);
+              List<ThingFile> things = thingiverse.getFiles(selectionValue);
                             
               // init my things model with loading images
               DefaultListModel fileModel = new DefaultListModel(); // model for JList
