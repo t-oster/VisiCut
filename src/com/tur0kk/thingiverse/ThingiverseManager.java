@@ -22,6 +22,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.scribe.exceptions.OAuthException;
 
 /**
  * Singleton class managing all the communication with the Thingiverse API.
@@ -101,25 +102,28 @@ public class ThingiverseManager
       client = new ThingiverseClient(clientId, clientSecret, clientCallback);
     }
     
-    if (browserCode == null || browserCode.isEmpty())
+    try
+    {
+      if (browserCode == null || browserCode.isEmpty())
+      {
+        throw new Exception("Invalid browser code");
+      }
+      
+      String accessToken = client.loginWithBrowserCode(browserCode);
+      if (accessToken == null || accessToken.isEmpty())
+      {
+        throw new Exception("Invalid access token");
+      }
+      
+      saveAccessToken(accessToken);
+    }
+    catch (Exception ex)
     {
       logOut();
       
-      System.out.println("Login failed!");
+      System.out.println("Login failed! " + ex.getMessage());
       return;
     }
-    
-    String accessToken = client.loginWithBrowserCode(browserCode);
-
-    if (accessToken == null || accessToken.isEmpty())
-    {
-      logOut();
-      
-      System.out.println("Login failed!");
-      return;
-    }
-    
-    saveAccessToken(accessToken);
   }
   
   public void logOut()
