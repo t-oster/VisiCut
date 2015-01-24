@@ -1993,7 +1993,7 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
   public boolean isVisiCamDetected(){
     try{
       String url = MainView.this.visicutModel1.getSelectedLaserDevice().getCameraURL();
-      return !"".equals(url);
+      return url != null && !"".equals(url);
     }catch(Exception e){
       return false;
     }
