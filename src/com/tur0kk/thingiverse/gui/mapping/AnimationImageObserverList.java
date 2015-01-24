@@ -27,6 +27,9 @@ public class AnimationImageObserverList implements ImageObserver
     if ((infoflags & (FRAMEBITS|ALLBITS)) != 0) {
       if(this.list.isShowing()){
         Rectangle rect = this.list.getCellBounds(index, index);
+        if(rect == null){
+          return false;
+        }
         this.list.repaint(rect);
       }
     }

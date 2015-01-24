@@ -17,6 +17,7 @@ import com.tur0kk.LoadingIcon;
 import com.tur0kk.thingiverse.gui.mapping.ThingCollectionComboboxModel;
 import com.tur0kk.thingiverse.gui.mapping.ThingCollectionComboboxRenderer;
 import com.tur0kk.thingiverse.model.ThingCollection;
+import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import java.net.MalformedURLException;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
@@ -87,6 +89,17 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
     // set profile picture
     initProfilePicture();
+  }
+  
+  private void refreshAll(){
+    lstMyThingsThing.setModel(new DefaultListModel());
+    lstLikedThing.setModel(new DefaultListModel());
+    lstCollectionThing.setModel(new DefaultListModel());
+    lstSearchThing.setModel(new DefaultListModel());
+    actionMyThings();
+    actionLiked();
+    actionCollection();
+    actionSearch();
   }
   
   private void loadTab(final List<Thing> thingsToLoad, final JList thingList, final AtomicInteger feedbackCounter, final JLabel feedbackLabel){
@@ -559,6 +572,12 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
       public void run()
       {
+        
+        String queryString = txtSearch.getText();
+        if("".equals(queryString)){ // just do a search for valid search strings
+          return;
+        }
+        
         // enable userfeedback
         SwingUtilities.invokeLater(new Runnable()
         {
@@ -570,7 +589,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
         
     
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-        String queryString = txtSearch.getText();
         List<Thing> things = thingiverse.search(queryString, cbExtensions.isSelected(), cbTags.isSelected());
         loadTab(things, lstSearch, numberLoadingSearch, lblLoadingSearch);
       }
@@ -619,6 +637,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         cbTags = new javax.swing.JCheckBox();
         lblOpeningFile = new javax.swing.JLabel();
         lblFilter = new javax.swing.JLabel();
+        btnRefresh = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setLocationByPlatform(true);
@@ -790,7 +809,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         pnlFilter.setAlignmentX(0.0F);
         pnlFilter.setAlignmentY(0.0F);
         pnlFilter.setName("pnlFilter"); // NOI18N
-        pnlFilter.setLayout(new java.awt.GridLayout(3, 3, 1, 0));
+        pnlFilter.setLayout(new java.awt.GridLayout(2, 1, 1, 0));
 
         cbExtensions.setText(resourceMap.getString("cbExtensions.text")); // NOI18N
         cbExtensions.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -811,6 +830,14 @@ public class ThingiverseDialog extends javax.swing.JDialog
         lblFilter.setText(resourceMap.getString("lblFilter.text")); // NOI18N
         lblFilter.setName("lblFilter"); // NOI18N
 
+        btnRefresh.setText(resourceMap.getString("btnRefresh.text")); // NOI18N
+        btnRefresh.setName("btnRefresh"); // NOI18N
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -819,39 +846,39 @@ public class ThingiverseDialog extends javax.swing.JDialog
                 .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnLogout)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(399, 399, 399)
-                                .addComponent(lblOpeningFile, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 225, Short.MAX_VALUE))
-                            .addComponent(lblFilter))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnLogout)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblOpeningFile, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 412, Short.MAX_VALUE)
+                .addComponent(lblFilter)
+                .addGap(4, 4, 4)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnRefresh)
+                    .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addComponent(tpLists, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1044, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblOpeningFile, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnLogout))
-                        .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addComponent(lblFilter)
-                            .addGap(57, 57, 57))))
-                .addGap(18, 18, 18)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
+                                .addComponent(btnLogout))
+                            .addComponent(lProfilePicture, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblFilter)
+                        .addComponent(lblOpeningFile))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(pnlFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnRefresh)
+                        .addGap(53, 53, 53)))
                 .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE))
         );
 
@@ -895,6 +922,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
     }
   }//GEN-LAST:event_txtSearchKeyPressed
 
+  private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnRefreshActionPerformed
+  {//GEN-HEADEREND:event_btnRefreshActionPerformed
+    refreshAll();
+  }//GEN-LAST:event_btnRefreshActionPerformed
+
 
   private void initListCellRenderers()
   {
@@ -914,10 +946,10 @@ public class ThingiverseDialog extends javax.swing.JDialog
   private void initListClickListeners()
   {
     // click listener loads files of selected thing  
-    lstMyThings.addListSelectionListener(new ThingSelectionListener(lstMyThingsThing));
-    lstSearch.addListSelectionListener(new ThingSelectionListener(lstSearchThing));
-    lstLiked.addListSelectionListener(new ThingSelectionListener(lstLikedThing));
-    lstCollection.addListSelectionListener(new ThingSelectionListener(lstCollectionThing));
+    lstMyThings.addListSelectionListener(new ThingSelectionListener(lstMyThingsThing, cbExtensions));
+    lstSearch.addListSelectionListener(new ThingSelectionListener(lstSearchThing, cbExtensions));
+    lstLiked.addListSelectionListener(new ThingSelectionListener(lstLikedThing, cbExtensions));
+    lstCollection.addListSelectionListener(new ThingSelectionListener(lstCollectionThing, cbExtensions));
     
     // set adapter for ThingFile-lists to listen for double clicks -> load selected file    
     lstSearchThing.addMouseListener(new ThingFileClickListener(mainview, lblOpeningFile));
@@ -1049,6 +1081,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLogout;
+    private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnSearch;
     private javax.swing.JCheckBox cbExtensions;
     private javax.swing.JCheckBox cbTags;
