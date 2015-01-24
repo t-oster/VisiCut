@@ -10,27 +10,22 @@
  */
 package com.tur0kk.facebook.gui;
 
-import com.github.sarxos.webcam.Webcam;
 import com.t_oster.visicut.gui.MainView;
 import com.tur0kk.facebook.FacebookManager;
 import com.tur0kk.LoadingIcon;
+import com.tur0kk.TakePhotoThread;
 import java.awt.Color;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.awt.image.BufferedImage;
 import java.net.URL;
-import javax.swing.AbstractButton;
-import javax.swing.ButtonModel;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 /**
  *
@@ -39,7 +34,9 @@ import javax.swing.event.ChangeListener;
 public class FacebookDialog extends javax.swing.JDialog
 {
   private Thread livecamThread;
-  final private MainView mainview;
+  Object cameraLock = new Object();
+  Lock cameraUsageLock = new ReentrantLock();
+  
   
   /** Creates new form FacebookDialog */
   public FacebookDialog(java.awt.Frame parent, boolean modal){
@@ -52,9 +49,6 @@ public class FacebookDialog extends javax.swing.JDialog
     
     // close camera on exit
     initWindowListener();
-    
-    // save parent for modality faking
-    this.mainview = (MainView) parent;
     
     // change cam 
     ItemListener selectChangeListener = new ItemListener() {
@@ -317,7 +311,6 @@ private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
 }//GEN-LAST:event_btnLogoutActionPerformed
 
 private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPhotoActionPerformed
-  if(isCameraDetected()){
     closeCamera();
     
     // enable publishing
@@ -326,10 +319,6 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     btnPublish.setEnabled(true);
     txtaPublish.setEditable(true);
     txtaPublish.setBackground(Color.white);
-  }
-  else{
-    setupCamera(); // disabled
-  }
 }//GEN-LAST:event_btnPhotoActionPerformed
 
   private void btnPhotoRedoActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnPhotoRedoActionPerformed
@@ -521,6 +510,7 @@ private void initProfilePicture(){
     
 private void setupCamera(){
   // disable publish functions
+  lblPhoto.setIcon(null);
   lblLoading.setVisible(false);
   lblPublishSuccessStatus.setVisible(false);
   btnPhotoRedo.setEnabled(false);
@@ -529,46 +519,33 @@ private void setupCamera(){
   txtaPublish.setEditable(false);
   txtaPublish.setBackground(Color.lightGray);
   
-  if(isCameraDetected()){
+  // check selected cam mode and if corresponding hardware is available
+  boolean start = false;
+  if(rdbtnWebcam.isSelected()){
+    if(TakePhotoThread.isWebCamDetected()){
+      start = true;
+    }
+  }
+  else{// visicam
+    if(TakePhotoThread.isVisiCamDetected()){
+      start = true;
+    }
+  }
+
+  if(start){
     lblAttachMessage.setVisible(false); // webcam error message
-    
+
     // start picture taking thread to display live preview
-    livecamThread = new Thread(new Runnable() 
-    {
-        public void run()
-        {
-          try{
-            while(true){
-              if(Thread.interrupted()){
-                return;
-              }
-              else{
-
-                ImageIcon picture = takePicture();
-                if(picture == null){
-                  return;
-                }
-                displayPicture(picture);
-
-                Thread.sleep(100);
-
-              }
-            }
-          }catch(Exception ex){
-            return;
-          }
-          
-        }
-      });
+    boolean webcamMode = rdbtnWebcam.isSelected(); // if false, then visicam
+    livecamThread = new TakePhotoThread(lblPhoto, webcamMode);
     livecamThread.start();
-    
+
     btnPhoto.setEnabled(true);
   }
   else{
     // disable taking photos
     btnPhoto.setEnabled(false);
     lblAttachMessage.setVisible(true); // webcam error message
-    lblPhoto.setIcon(null);
   }
 }
 
@@ -577,87 +554,7 @@ private void closeCamera(){
     livecamThread.interrupt(); // stop live stream thread
     livecamThread = null;
   }
-    
-  Webcam webcam = Webcam.getDefault();
-  if(webcam.isOpen()){
-    webcam.close();
-  }
-  
 }
 
-/*
- * displays an image in the photo label
- */
-private void displayPicture(ImageIcon image){
-  
-  final ImageIcon picture = image;
-  
-  SwingUtilities.invokeLater(new Runnable() {
-    public void run()
-    {
-      lblPhoto.setIcon(picture);
-    }
-  });
-  
-}
-
-/*
- * uses the attached webcam to take a photo
- */
-private ImageIcon takePicture(){
-  if(isCameraDetected()){
-    
-    ImageIcon imageIcon = null;
-    if(rdbtnWebcam.isSelected()){ // webcam
-        // get webcam
-        Webcam webcam = Webcam.getDefault();
-        webcam.open();
-
-        // take picture
-        BufferedImage image = webcam.getImage();
-        imageIcon = new ImageIcon(image);
-
-    }
-    else{ // visicam
-      try{
-        URL src = new URL(mainview.getVisiCam());
-        imageIcon = new ImageIcon(src);
-      }
-      catch(Exception e){
-        return null;
-      } 
-    }
-    // scale to label
-      Image rawImage = imageIcon.getImage();
-      Image scaledImage = rawImage.getScaledInstance(
-        lblPhoto.getWidth(),
-        lblPhoto.getHeight(),
-        Image.SCALE_SMOOTH);
-      ImageIcon picture = new ImageIcon(scaledImage);
-      return picture;
-  }
-  else{
-    return null;
-  }
-}
-
-/*
- * returns wether a camera is plugged in
- */
-private boolean isCameraDetected(){
-  if(rdbtnWebcam.isSelected()){ // webcam
-    Webcam webcam = Webcam.getDefault();
-    if (webcam != null) { 
-      return true;
-    } else {
-      return false;
-    }
-  }
-  else{
-    // visicam
-    return mainview.isVisiCamDetected();
-  }
-  
-}
 
 }
