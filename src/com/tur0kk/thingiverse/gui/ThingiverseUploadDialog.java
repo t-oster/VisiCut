@@ -36,7 +36,7 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
   final private MainView mainview;
 
   /** Creates new form ThingiverseUploadDialog */
-  public ThingiverseUploadDialog(java.awt.Frame parent, boolean modal)
+  public ThingiverseUploadDialog(java.awt.Frame parent, boolean modal, MainView mainview)
   {
     super(parent, modal);
     initComponents();
@@ -47,8 +47,8 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
     // close camera on exit
     initWindowListener();
     
-    // save parent for modality faking
-    this.mainview = (MainView) parent;
+    // save parent for getting visicam url
+    this.mainview = mainview;
     
     // change cam 
     ItemListener selectChangeListener = new ItemListener() {
@@ -83,19 +83,22 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
         grpCams = new javax.swing.ButtonGroup();
         rdbtnWebcam = new javax.swing.JRadioButton();
         rdbtnVisicam = new javax.swing.JRadioButton();
+        pnlPhoto = new javax.swing.JPanel();
+        btnPhoto = new javax.swing.JButton();
+        btnPhotoRedo = new javax.swing.JButton();
+        lblAttachMessage = new javax.swing.JLabel();
         lblPhoto = new javax.swing.JLabel();
+        pnlPublish = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtaPublish = new javax.swing.JTextArea();
-        btnPhoto = new javax.swing.JButton();
         btnPublish = new javax.swing.JButton();
-        btnPhotoRedo = new javax.swing.JButton();
         lblLoading = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        lblDescription = new javax.swing.JLabel();
         lblPublishSuccessStatus = new javax.swing.JLabel();
-        lblAttachMessage = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
+        setResizable(false);
 
         grpCams.add(rdbtnWebcam);
         rdbtnWebcam.setSelected(true);
@@ -107,31 +110,14 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
         rdbtnVisicam.setText(resourceMap.getString("rdbtnVisicam.text")); // NOI18N
         rdbtnVisicam.setName("rdbtnVisicam"); // NOI18N
 
-        lblPhoto.setText(resourceMap.getString("lblPhoto.text")); // NOI18N
-        lblPhoto.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("lblPhoto.border.lineColor"))); // NOI18N
-        lblPhoto.setName("lblPhoto"); // NOI18N
-
-        jScrollPane1.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("jScrollPane1.border.lineColor"))); // NOI18N
-        jScrollPane1.setName("jScrollPane1"); // NOI18N
-
-        txtaPublish.setColumns(20);
-        txtaPublish.setRows(5);
-        txtaPublish.setName("txtaPublish"); // NOI18N
-        jScrollPane1.setViewportView(txtaPublish);
+        pnlPhoto.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("pnlPhoto.border.lineColor"))); // NOI18N
+        pnlPhoto.setName("pnlPhoto"); // NOI18N
 
         btnPhoto.setText(resourceMap.getString("btnPhoto.text")); // NOI18N
         btnPhoto.setName("btnPhoto"); // NOI18N
         btnPhoto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnPhotoActionPerformed(evt);
-            }
-        });
-
-        btnPublish.setText(resourceMap.getString("btnPublish.text")); // NOI18N
-        btnPublish.setName("btnPublish"); // NOI18N
-        btnPublish.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPublishActionPerformed(evt);
             }
         });
 
@@ -143,54 +129,125 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
             }
         });
 
+        lblAttachMessage.setText(resourceMap.getString("lblAttachMessage.text")); // NOI18N
+        lblAttachMessage.setName("lblAttachMessage"); // NOI18N
+
+        lblPhoto.setText(resourceMap.getString("lblPhoto.text")); // NOI18N
+        lblPhoto.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("lblPhoto.border.lineColor"))); // NOI18N
+        lblPhoto.setName("lblPhoto"); // NOI18N
+
+        javax.swing.GroupLayout pnlPhotoLayout = new javax.swing.GroupLayout(pnlPhoto);
+        pnlPhoto.setLayout(pnlPhotoLayout);
+        pnlPhotoLayout.setHorizontalGroup(
+            pnlPhotoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 336, Short.MAX_VALUE)
+            .addGroup(pnlPhotoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pnlPhotoLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(pnlPhotoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnlPhotoLayout.createSequentialGroup()
+                            .addComponent(btnPhoto)
+                            .addGap(18, 18, 18)
+                            .addComponent(btnPhotoRedo)
+                            .addGap(18, 18, 18)
+                            .addComponent(lblAttachMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(lblPhoto, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        );
+        pnlPhotoLayout.setVerticalGroup(
+            pnlPhotoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 270, Short.MAX_VALUE)
+            .addGroup(pnlPhotoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pnlPhotoLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(pnlPhotoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnPhoto)
+                        .addComponent(btnPhotoRedo)
+                        .addComponent(lblAttachMessage))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(lblPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        );
+
+        pnlPublish.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("pnlPublish.border.lineColor"))); // NOI18N
+        pnlPublish.setName("pnlPublish"); // NOI18N
+
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("jScrollPane1.border.lineColor"))); // NOI18N
+        jScrollPane1.setName("jScrollPane1"); // NOI18N
+
+        txtaPublish.setColumns(20);
+        txtaPublish.setRows(5);
+        txtaPublish.setName("txtaPublish"); // NOI18N
+        jScrollPane1.setViewportView(txtaPublish);
+
+        btnPublish.setText(resourceMap.getString("btnPublish.text")); // NOI18N
+        btnPublish.setName("btnPublish"); // NOI18N
+        btnPublish.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPublishActionPerformed(evt);
+            }
+        });
+
         lblLoading.setIcon(LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL));
         lblLoading.setText(resourceMap.getString("lblLoading.text")); // NOI18N
         lblLoading.setName("lblLoading"); // NOI18N
 
-        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
-        jLabel1.setName("jLabel1"); // NOI18N
+        lblDescription.setText(resourceMap.getString("lblDescription.text")); // NOI18N
+        lblDescription.setName("lblDescription"); // NOI18N
 
         lblPublishSuccessStatus.setText(resourceMap.getString("lblPublishSuccessStatus.text")); // NOI18N
         lblPublishSuccessStatus.setName("lblPublishSuccessStatus"); // NOI18N
 
-        lblAttachMessage.setText(resourceMap.getString("lblAttachMessage.text")); // NOI18N
-        lblAttachMessage.setName("lblAttachMessage"); // NOI18N
+        javax.swing.GroupLayout pnlPublishLayout = new javax.swing.GroupLayout(pnlPublish);
+        pnlPublish.setLayout(pnlPublishLayout);
+        pnlPublishLayout.setHorizontalGroup(
+            pnlPublishLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlPublishLayout.createSequentialGroup()
+                .addGap(31, 31, 31)
+                .addGroup(pnlPublishLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(pnlPublishLayout.createSequentialGroup()
+                        .addComponent(lblDescription)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblPublishSuccessStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(lblLoading, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnPublish))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 311, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(19, Short.MAX_VALUE))
+        );
+        pnlPublishLayout.setVerticalGroup(
+            pnlPublishLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlPublishLayout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(pnlPublishLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnPublish)
+                    .addComponent(lblLoading, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblPublishSuccessStatus)
+                    .addComponent(lblDescription))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(20, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(591, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(rdbtnVisicam)
-                    .addComponent(rdbtnWebcam))
-                .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(btnPhoto)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnPhotoRedo)
-                        .addGap(18, 18, 18)
-                        .addComponent(lblAttachMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(lblPhoto, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pnlPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(80, 80, 80)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(71, 71, 71)
-                        .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addComponent(lblPublishSuccessStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(lblLoading, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnPublish)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 316, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(rdbtnVisicam)
+                            .addComponent(rdbtnWebcam))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pnlPublish, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -199,20 +256,11 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
                 .addComponent(rdbtnWebcam)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(rdbtnVisicam)
-                .addGap(40, 40, 40)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnPhoto)
-                    .addComponent(btnPublish)
-                    .addComponent(btnPhotoRedo)
-                    .addComponent(lblLoading, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addComponent(lblPublishSuccessStatus)
-                    .addComponent(lblAttachMessage))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1)
-                    .addComponent(lblPhoto, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE))
-                .addContainerGap(51, Short.MAX_VALUE))
+                .addGap(52, 52, 52)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlPublish, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pnlPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         pack();
@@ -331,12 +379,14 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
     private javax.swing.JButton btnPhotoRedo;
     private javax.swing.JButton btnPublish;
     private javax.swing.ButtonGroup grpCams;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblAttachMessage;
+    private javax.swing.JLabel lblDescription;
     private javax.swing.JLabel lblLoading;
     private javax.swing.JLabel lblPhoto;
     private javax.swing.JLabel lblPublishSuccessStatus;
+    private javax.swing.JPanel pnlPhoto;
+    private javax.swing.JPanel pnlPublish;
     private javax.swing.JRadioButton rdbtnVisicam;
     private javax.swing.JRadioButton rdbtnWebcam;
     private javax.swing.JTextArea txtaPublish;

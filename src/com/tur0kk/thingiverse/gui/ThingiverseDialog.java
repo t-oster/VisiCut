@@ -947,7 +947,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
   private void btnMadeOneActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnMadeOneActionPerformed
   {//GEN-HEADEREND:event_btnMadeOneActionPerformed
-    ThingiverseUploadDialog uploadDialog = new ThingiverseUploadDialog(mainview, true);
+    ThingiverseUploadDialog uploadDialog = new ThingiverseUploadDialog(mainview, true, this.mainview);
     uploadDialog.setVisible(true);
   }//GEN-LAST:event_btnMadeOneActionPerformed
 
