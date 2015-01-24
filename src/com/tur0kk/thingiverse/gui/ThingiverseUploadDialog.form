@@ -28,12 +28,43 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="556" max="32767" attributes="0"/>
+              <EmptySpace pref="591" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="rdbtnVisicut" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="rdbtnVisicam" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="rdbtnWebcam" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
+          </Group>
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="btnPhoto" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="btnPhotoRedo" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="lblAttachMessage" min="-2" pref="118" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="lblPhoto" alignment="0" min="-2" pref="249" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="80" max="-2" attributes="0"/>
+                      <Component id="jScrollPane1" min="-2" pref="245" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
+                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="lblPublishSuccessStatus" min="-2" pref="93" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="lblLoading" min="-2" pref="16" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="btnPublish" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -43,8 +74,23 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="rdbtnWebcam" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="rdbtnVisicut" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="247" max="32767" attributes="0"/>
+              <Component id="rdbtnVisicam" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="btnPhoto" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnPublish" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnPhotoRedo" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblLoading" alignment="3" min="-2" pref="16" max="-2" attributes="0"/>
+                  <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblPublishSuccessStatus" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblAttachMessage" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="jScrollPane1" max="32767" attributes="1"/>
+                  <Component id="lblPhoto" alignment="0" pref="127" max="32767" attributes="1"/>
+              </Group>
+              <EmptySpace pref="51" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -60,10 +106,106 @@
         <Property name="name" type="java.lang.String" value="rdbtnWebcam" noResource="true"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JRadioButton" name="rdbtnVisicut">
+    <Component class="javax.swing.JRadioButton" name="rdbtnVisicam">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="rdbtnVisicut.text"/>
-        <Property name="name" type="java.lang.String" value="rdbtnVisicut" noResource="true"/>
+        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+          <ComponentRef name="grpCams"/>
+        </Property>
+        <Property name="text" type="java.lang.String" resourceKey="rdbtnVisicam.text"/>
+        <Property name="name" type="java.lang.String" value="rdbtnVisicam" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblPhoto">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="lblPhoto.text"/>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+            <LineBorder>
+              <Property name="color" resourceKey="lblPhoto.border.lineColor"/>
+            </LineBorder>
+          </Border>
+        </Property>
+        <Property name="name" type="java.lang.String" value="lblPhoto" noResource="true"/>
+      </Properties>
+    </Component>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+            <LineBorder>
+              <Property name="color" resourceKey="jScrollPane1.border.lineColor"/>
+            </LineBorder>
+          </Border>
+        </Property>
+        <Property name="name" type="java.lang.String" value="jScrollPane1" noResource="true"/>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JTextArea" name="txtaPublish">
+          <Properties>
+            <Property name="columns" type="int" value="20"/>
+            <Property name="rows" type="int" value="5"/>
+            <Property name="name" type="java.lang.String" value="txtaPublish" noResource="true"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JButton" name="btnPhoto">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="btnPhoto.text"/>
+        <Property name="name" type="java.lang.String" value="btnPhoto" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPhotoActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnPublish">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="btnPublish.text"/>
+        <Property name="name" type="java.lang.String" value="btnPublish" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPublishActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnPhotoRedo">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="btnPhotoRedo.text"/>
+        <Property name="name" type="java.lang.String" value="btnPhotoRedo" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPhotoRedoActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblLoading">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL)" type="code"/>
+        </Property>
+        <Property name="text" type="java.lang.String" resourceKey="lblLoading.text"/>
+        <Property name="name" type="java.lang.String" value="lblLoading" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="jLabel1.text"/>
+        <Property name="name" type="java.lang.String" value="jLabel1" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblPublishSuccessStatus">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="lblPublishSuccessStatus.text"/>
+        <Property name="name" type="java.lang.String" value="lblPublishSuccessStatus" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblAttachMessage">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="lblAttachMessage.text"/>
+        <Property name="name" type="java.lang.String" value="lblAttachMessage" noResource="true"/>
       </Properties>
     </Component>
   </SubComponents>
