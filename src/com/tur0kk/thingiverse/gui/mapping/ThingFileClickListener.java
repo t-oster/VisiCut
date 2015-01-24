@@ -47,19 +47,26 @@ public class ThingFileClickListener extends MouseAdapter
       
       // load file
       int index = list.locationToIndex(evt.getPoint());
-      ThingFile aFile = (ThingFile) list.getModel().getElementAt(index);
-      ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-      File svgfile = thingiverse.downloadThingFile(aFile);
-      this.mainview.loadFile(svgfile, false);
-      
-      
-      // disable user feedback
-      SwingUtilities.invokeLater(new Runnable() {
-        public void run()
-        {
-          lblOpeningFile.setVisible(false);
-        }
-      });
+      final ThingFile aFile = (ThingFile) list.getModel().getElementAt(index);
+      final MainView mainDisplay = this.mainview; // make accessable in thread 
+      new Thread(new Runnable() {
+
+            public void run()
+            {   
+              ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+              File svgfile = thingiverse.downloadThingFile(aFile);
+              mainDisplay.loadFile(svgfile, false);
+              
+              // disable user feedback
+              SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                  lblOpeningFile.setVisible(false);
+                }
+              });
+            }
+      }).start();
+
     }
   }
 }

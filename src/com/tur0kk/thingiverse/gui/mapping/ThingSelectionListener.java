@@ -26,9 +26,11 @@ import javax.swing.event.ListSelectionListener;
 public class ThingSelectionListener implements ListSelectionListener
 {
   private JList displayResult;
+  private JCheckBox cbExtensions;
   
-  public ThingSelectionListener(JList displayResult){
+  public ThingSelectionListener(JList displayResult, JCheckBox cbExtensions){
     this.displayResult = displayResult;
+    this.cbExtensions = cbExtensions;
   }
 
   public void valueChanged(ListSelectionEvent e)
@@ -53,7 +55,7 @@ public class ThingSelectionListener implements ListSelectionListener
               final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
               
               // get things
-              List<ThingFile> things = thingiverse.getFiles(selectionValue);
+              List<ThingFile> things = thingiverse.getFiles(selectionValue, cbExtensions.isSelected());
                             
               // init my things model with loading images
               DefaultListModel fileModel = new DefaultListModel(); // model for JList
