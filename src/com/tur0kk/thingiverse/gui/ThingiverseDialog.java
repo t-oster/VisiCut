@@ -33,6 +33,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  *
@@ -81,6 +83,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
     /* click listener for items to display in thing panels */
     initListClickListeners();
+    
+    initChangeListener();
 
     // display username
     initUserName();
@@ -838,6 +842,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         });
 
         btnMadeOne.setText(resourceMap.getString("btnMadeOne.text")); // NOI18N
+        btnMadeOne.setEnabled(false);
         btnMadeOne.setName("btnMadeOne"); // NOI18N
         btnMadeOne.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -970,16 +975,54 @@ public class ThingiverseDialog extends javax.swing.JDialog
   private void initListClickListeners()
   {
     // click listener loads files of selected thing  
-    lstMyThings.addListSelectionListener(new ThingSelectionListener(lstMyThingsThing, cbExtensions));
-    lstSearch.addListSelectionListener(new ThingSelectionListener(lstSearchThing, cbExtensions));
-    lstLiked.addListSelectionListener(new ThingSelectionListener(lstLikedThing, cbExtensions));
-    lstCollection.addListSelectionListener(new ThingSelectionListener(lstCollectionThing, cbExtensions));
+    lstMyThings.addListSelectionListener(new ThingSelectionListener(lstMyThingsThing, cbExtensions, btnMadeOne));
+    lstSearch.addListSelectionListener(new ThingSelectionListener(lstSearchThing, cbExtensions, btnMadeOne));
+    lstLiked.addListSelectionListener(new ThingSelectionListener(lstLikedThing, cbExtensions, btnMadeOne));
+    lstCollection.addListSelectionListener(new ThingSelectionListener(lstCollectionThing, cbExtensions, btnMadeOne));
     
     // set adapter for ThingFile-lists to listen for double clicks -> load selected file    
     lstSearchThing.addMouseListener(new ThingFileClickListener(mainview, lblOpeningFile));
     lstMyThingsThing.addMouseListener(new ThingFileClickListener(mainview, lblOpeningFile));
     lstLikedThing.addMouseListener(new ThingFileClickListener(mainview, lblOpeningFile));
     lstCollectionThing.addMouseListener(new ThingFileClickListener(mainview, lblOpeningFile));
+  }
+  
+  private void initChangeListener(){
+    
+    // add change listener for switching tabs, to check if a thing is selected, to enable or disable the "I made one" button
+    tpLists.addChangeListener(new ChangeListener() {
+        public void stateChanged(ChangeEvent e) {
+            //System.out.println("Tab: " + tpLists.getSelectedIndex());
+          
+          JList tabThingList = null;
+          switch(tpLists.getSelectedIndex()){
+            case 0:
+              tabThingList = lstMyThings;
+              break;
+            case 1:
+              tabThingList = lstLiked;
+              break;
+            case 2:
+              tabThingList = lstCollection;
+              break;
+            case 3:
+              tabThingList = lstSearch;
+              break;
+            default: 
+              break; // invalid tab
+          }
+          if(tabThingList != null){
+            if(tabThingList.getSelectedIndex() != -1){
+              // Thing is selected, allow "I made one"
+              btnMadeOne.setEnabled(true);
+            }
+            else{
+              // no thing is selected, disallow "I made one", because for that a thing is needed
+              btnMadeOne.setEnabled(false);
+            }
+          }
+        }
+    });
   }
 
   private void initUserName()
