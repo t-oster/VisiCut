@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import org.scribe.exceptions.OAuthException;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;
@@ -95,16 +97,33 @@ public class ThingiverseClient {
    */
   @ThingMethod(params = {"verb", "url"})
   private String call(Verb verb, String url) {
+    return call(verb, url, new HashMap<String, String>());
+  }
+
+  /**
+   * Call api endpoint
+   * @param verb http-method to use, like: GET, POST, PUT, DELETE, PATCH
+   * @param url the api-url to call
+   * @return the output of the api-call, can be a JSON-string
+   */
+  @ThingMethod(params = {"verb", "url"})
+  private String call(Verb verb, String url, Map<String, String> params) {
     String urlEnd = url;
     if (!url.startsWith("/")) {
       urlEnd = "/" + url;
     }
     OAuthRequest request = new OAuthRequest(verb, "http://api.thingiverse.com" + urlEnd);
     request.addHeader("Authorization", "Bearer " + accesTokenString);
+    
+    for (Map.Entry<String, String> param : params.entrySet())
+    {
+      request.addBodyParameter(param.getKey(), param.getValue());
+    }
+    
     Response response = request.send();
     return response.getBody();
   }
-
+  
   //USER//
   /**
    * Get information about user, us 'me' to get info about the currently logged in user.
@@ -267,7 +286,7 @@ public class ThingiverseClient {
 
   //COPIES//
   @ThingMethod(params = {"id"})
-  public String copy(String id) {
+  public String copies(String id) {
     return call(Verb.GET, "/copies/" + id + "/");
   }
 
@@ -281,6 +300,15 @@ public class ThingiverseClient {
     return call(Verb.DELETE, "/copies/" + id + "/");
   }
 
+  @ThingMethod(params = {"id", "imageFilename"})
+  public String newCopy(String id, String imageFilename)
+  {
+    Map<String, String> params = new HashMap<String, String>();
+    params.put("filename", imageFilename);
+
+    return call(Verb.POST, "/things/" + id + "/copies/", params);
+  }
+  
   //COLLECTIONS//
   /**
    * Update collection
