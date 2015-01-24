@@ -352,7 +352,14 @@ public class ThingiverseManager
   
   public List<ThingFile> getFiles(Thing thing, boolean filterExtensions)
   {
-    return getFiles(thing, fileExtensionFilter);
+    if (filterExtensions)
+    {
+      return getFiles(thing, fileExtensionFilter);
+    }
+    else
+    {
+      return getFiles(thing, new LinkedList<String>());
+    }
   }
   
   /**
