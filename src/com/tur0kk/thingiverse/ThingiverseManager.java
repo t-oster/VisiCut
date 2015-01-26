@@ -22,7 +22,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.scribe.exceptions.OAuthException;
 
 /**
  * Singleton class managing all the communication with the Thingiverse API.
@@ -34,7 +33,7 @@ public class ThingiverseManager
   private static final String clientId = "0d3b8166624f6d05b738";
   private static final String clientSecret = "a0b5368a3d58ddb3b1ade12f4f8f14e7";
   private static final String clientCallback = "http://www.thingiverse.com";
-  private static final String redirectUrlPrefix = "http://hci.rwth-aachen.de/visicut?code=";
+  private static final String redirectUrlPrefix = "http://hci.rwth-aachen.de/public/VisiCut/show_code.php?code=";
   
   private static final List<String> fileExtensionFilter = Arrays.asList(
     "svg", "plf", "dxf", "eps", "gcode");
