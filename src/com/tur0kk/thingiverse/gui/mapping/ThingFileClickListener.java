@@ -21,12 +21,10 @@ import javax.swing.SwingUtilities;
 public class ThingFileClickListener extends MouseAdapter
 {
   // save main view for loading files
-  MainView mainview;
   JLabel lblOpeningFile;
 
-  public ThingFileClickListener(MainView mainview, JLabel lblOpeningFile)
+  public ThingFileClickListener(JLabel lblOpeningFile)
   {
-    this.mainview = mainview;
     this.lblOpeningFile = lblOpeningFile;
   }
   
@@ -48,14 +46,13 @@ public class ThingFileClickListener extends MouseAdapter
       // load file
       int index = list.locationToIndex(evt.getPoint());
       final ThingFile aFile = (ThingFile) list.getModel().getElementAt(index);
-      final MainView mainDisplay = this.mainview; // make accessable in thread 
       new Thread(new Runnable() {
 
             public void run()
             {   
               ThingiverseManager thingiverse = ThingiverseManager.getInstance();
               File svgfile = thingiverse.downloadThingFile(aFile);
-              mainDisplay.loadFile(svgfile, false);
+              MainView.getInstance().loadFile(svgfile, false);
               
               // disable user feedback
               SwingUtilities.invokeLater(new Runnable() {
