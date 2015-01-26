@@ -47,7 +47,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
   private AtomicInteger numberLoadingMyThings = new AtomicInteger();
   private AtomicInteger numberLoadingSearch = new AtomicInteger();
   private AtomicInteger numberLoadingCollection = new AtomicInteger();
-  final private MainView mainview;
 
   /**
    * Creates new form ThingiverseDialog
@@ -61,9 +60,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
     // control window events
     initWindowListener();
-
-    // save parent for loading files to main view
-    this.mainview = (MainView) parent;
 
     // init componentes
     initComponents(); // auto generated code
@@ -952,7 +948,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
   private void btnMadeOneActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnMadeOneActionPerformed
   {//GEN-HEADEREND:event_btnMadeOneActionPerformed
-    ThingiverseUploadDialog uploadDialog = new ThingiverseUploadDialog(mainview, true, this.mainview);
+    ThingiverseUploadDialog uploadDialog = new ThingiverseUploadDialog(MainView.getInstance(), true);
     uploadDialog.setVisible(true);
   }//GEN-LAST:event_btnMadeOneActionPerformed
 
@@ -981,10 +977,10 @@ public class ThingiverseDialog extends javax.swing.JDialog
     lstCollection.addListSelectionListener(new ThingSelectionListener(lstCollectionThing, cbExtensions, btnMadeOne));
     
     // set adapter for ThingFile-lists to listen for double clicks -> load selected file    
-    lstSearchThing.addMouseListener(new ThingFileClickListener(mainview, lblOpeningFile));
-    lstMyThingsThing.addMouseListener(new ThingFileClickListener(mainview, lblOpeningFile));
-    lstLikedThing.addMouseListener(new ThingFileClickListener(mainview, lblOpeningFile));
-    lstCollectionThing.addMouseListener(new ThingFileClickListener(mainview, lblOpeningFile));
+    lstSearchThing.addMouseListener(new ThingFileClickListener(lblOpeningFile));
+    lstMyThingsThing.addMouseListener(new ThingFileClickListener(lblOpeningFile));
+    lstLikedThing.addMouseListener(new ThingFileClickListener(lblOpeningFile));
+    lstCollectionThing.addMouseListener(new ThingFileClickListener(lblOpeningFile));
   }
   
   private void initChangeListener(){

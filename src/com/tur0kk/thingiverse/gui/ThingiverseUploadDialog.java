@@ -10,21 +10,15 @@
  */
 package com.tur0kk.thingiverse.gui;
 
-import com.github.sarxos.webcam.Webcam;
 import com.t_oster.visicut.gui.MainView;
 import com.tur0kk.LoadingIcon;
+import com.tur0kk.TakePhotoThread;
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.awt.image.BufferedImage;
-import java.net.URL;
-import javax.swing.ImageIcon;
 import javax.swing.JDialog;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 
 /**
  *
@@ -33,10 +27,9 @@ import javax.swing.WindowConstants;
 public class ThingiverseUploadDialog extends javax.swing.JDialog
 {
   private Thread livecamThread;
-  final private MainView mainview;
 
   /** Creates new form ThingiverseUploadDialog */
-  public ThingiverseUploadDialog(java.awt.Frame parent, boolean modal, MainView mainview)
+  public ThingiverseUploadDialog(java.awt.Frame parent, boolean modal)
   {
     super(parent, modal);
     initComponents();
@@ -46,9 +39,6 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
     
     // close camera on exit
     initWindowListener();
-    
-    // save parent for getting visicam url
-    this.mainview = mainview;
     
     // change cam 
     ItemListener selectChangeListener = new ItemListener() {
@@ -317,19 +307,15 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
 
   private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnPhotoActionPerformed
   {//GEN-HEADEREND:event_btnPhotoActionPerformed
-    if(isCameraDetected()){
-      closeCamera();
+    closeCamera();
 
-      // enable publishing
-      btnPhoto.setEnabled(false);
-      btnPhotoRedo.setEnabled(true);
-      btnPublish.setEnabled(true);
-      txtaPublish.setEditable(true);
-      txtaPublish.setBackground(Color.white);
-    }
-    else{
-      setupCamera(); // disabled
-    }
+    // enable publishing
+    btnPhoto.setEnabled(false);
+    btnPhotoRedo.setEnabled(true);
+    btnPublish.setEnabled(true);
+    txtaPublish.setEditable(true);
+    txtaPublish.setBackground(Color.white);
+
 
   }//GEN-LAST:event_btnPhotoActionPerformed
   
@@ -398,6 +384,7 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
 
   private void setupCamera(){
     // disable publish functions
+    lblPhoto.setIcon(null);
     lblLoading.setVisible(false);
     lblPublishSuccessStatus.setVisible(false);
     btnPhotoRedo.setEnabled(false);
@@ -406,37 +393,25 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
     txtaPublish.setEditable(false);
     txtaPublish.setBackground(Color.lightGray);
 
-    if(isCameraDetected()){
+    // check selected cam mode and if corresponding hardware is available
+    boolean start = false;
+    if(rdbtnWebcam.isSelected()){
+      if(TakePhotoThread.isWebCamDetected()){
+        start = true;
+      }
+    }
+    else{// visicam
+      if(TakePhotoThread.isVisiCamDetected()){
+        start = true;
+      }
+    }
+
+    if(start){
       lblAttachMessage.setVisible(false); // webcam error message
 
       // start picture taking thread to display live preview
-      livecamThread = new Thread(new Runnable() 
-      {
-          public void run()
-          {
-            try{
-              while(true){
-                if(Thread.interrupted()){
-                  return;
-                }
-                else{
-
-                  ImageIcon picture = takePicture();
-                  if(picture == null){
-                    return;
-                  }
-                  displayPicture(picture);
-
-                  Thread.sleep(100);
-
-                }
-              }
-            }catch(Exception ex){
-              return;
-            }
-
-          }
-        });
+      boolean webcamMode = rdbtnWebcam.isSelected(); // if false, then visicam
+      livecamThread = new TakePhotoThread(lblPhoto, webcamMode);
       livecamThread.start();
 
       btnPhoto.setEnabled(true);
@@ -445,7 +420,6 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
       // disable taking photos
       btnPhoto.setEnabled(false);
       lblAttachMessage.setVisible(true); // webcam error message
-      lblPhoto.setIcon(null);
     }
   }
 
@@ -454,87 +428,7 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
       livecamThread.interrupt(); // stop live stream thread
       livecamThread = null;
     }
-
-    Webcam webcam = Webcam.getDefault();
-    if(webcam.isOpen()){
-      webcam.close();
-    }
-
   }
 
-  /*
-   * displays an image in the photo label
-   */
-  private void displayPicture(ImageIcon image){
-
-    final ImageIcon picture = image;
-
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run()
-      {
-        lblPhoto.setIcon(picture);
-      }
-    });
-
-  }
-
-  /*
-   * uses the attached webcam to take a photo
-   */
-  private ImageIcon takePicture(){
-    if(isCameraDetected()){
-
-      ImageIcon imageIcon = null;
-      if(rdbtnWebcam.isSelected()){ // webcam
-          // get webcam
-          Webcam webcam = Webcam.getDefault();
-          webcam.open();
-
-          // take picture
-          BufferedImage image = webcam.getImage();
-          imageIcon = new ImageIcon(image);
-
-      }
-      else{ // visicam
-        try{
-          URL src = new URL(mainview.getVisiCam());
-          imageIcon = new ImageIcon(src);
-        }
-        catch(Exception e){
-          return null;
-        } 
-      }
-      // scale to label
-        Image rawImage = imageIcon.getImage();
-        Image scaledImage = rawImage.getScaledInstance(
-          lblPhoto.getWidth(),
-          lblPhoto.getHeight(),
-          Image.SCALE_SMOOTH);
-        ImageIcon picture = new ImageIcon(scaledImage);
-        return picture;
-    }
-    else{
-      return null;
-    }
-  }
-
-  /*
-   * returns wether a camera is plugged in
-   */
-  private boolean isCameraDetected(){
-    if(rdbtnWebcam.isSelected()){ // webcam
-      Webcam webcam = Webcam.getDefault();
-      if (webcam != null) { 
-        return true;
-      } else {
-        return false;
-      }
-    }
-    else{
-      // visicam
-      return mainview.isVisiCamDetected();
-    }
-
-  }
   
 }
