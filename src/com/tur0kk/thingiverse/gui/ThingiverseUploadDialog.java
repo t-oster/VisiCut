@@ -13,6 +13,7 @@ package com.tur0kk.thingiverse.gui;
 import com.t_oster.visicut.gui.MainView;
 import com.tur0kk.LoadingIcon;
 import com.tur0kk.TakePhotoThread;
+import com.tur0kk.thingiverse.model.Thing;
 import java.awt.Color;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -27,12 +28,15 @@ import javax.swing.JDialog;
 public class ThingiverseUploadDialog extends javax.swing.JDialog
 {
   private Thread livecamThread;
+  private Thing thing;
 
   /** Creates new form ThingiverseUploadDialog */
-  public ThingiverseUploadDialog(java.awt.Frame parent, boolean modal)
+  public ThingiverseUploadDialog(java.awt.Frame parent, boolean modal, Thing thing)
   {
     super(parent, modal);
     initComponents();
+    
+    this.thing = thing;
     
     // no need to keep state
     this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);

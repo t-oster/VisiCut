@@ -948,7 +948,8 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
   private void btnMadeOneActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnMadeOneActionPerformed
   {//GEN-HEADEREND:event_btnMadeOneActionPerformed
-    ThingiverseUploadDialog uploadDialog = new ThingiverseUploadDialog(MainView.getInstance(), true);
+    // assume in current list a thing is selected, otherwise button is not enabled
+    ThingiverseUploadDialog uploadDialog = new ThingiverseUploadDialog(MainView.getInstance(), true, (Thing)getCurrentTabList().getSelectedValue());
     uploadDialog.setVisible(true);
   }//GEN-LAST:event_btnMadeOneActionPerformed
 
@@ -988,25 +989,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
     // add change listener for switching tabs, to check if a thing is selected, to enable or disable the "I made one" button
     tpLists.addChangeListener(new ChangeListener() {
         public void stateChanged(ChangeEvent e) {
-            //System.out.println("Tab: " + tpLists.getSelectedIndex());
-          
-          JList tabThingList = null;
-          switch(tpLists.getSelectedIndex()){
-            case 0:
-              tabThingList = lstMyThings;
-              break;
-            case 1:
-              tabThingList = lstLiked;
-              break;
-            case 2:
-              tabThingList = lstCollection;
-              break;
-            case 3:
-              tabThingList = lstSearch;
-              break;
-            default: 
-              break; // invalid tab
-          }
+          JList tabThingList = getCurrentTabList();
           if(tabThingList != null){
             if(tabThingList.getSelectedIndex() != -1){
               // Thing is selected, allow "I made one"
@@ -1019,6 +1002,27 @@ public class ThingiverseDialog extends javax.swing.JDialog
           }
         }
     });
+  }
+  
+  private JList getCurrentTabList(){
+    JList tabThingList = null;
+    switch(tpLists.getSelectedIndex()){
+      case 0:
+        tabThingList = lstMyThings;
+        break;
+      case 1:
+        tabThingList = lstLiked;
+        break;
+      case 2:
+        tabThingList = lstCollection;
+        break;
+      case 3:
+        tabThingList = lstSearch;
+        break;
+      default: 
+        break; // invalid tab
+    }
+    return tabThingList;
   }
 
   private void initUserName()
