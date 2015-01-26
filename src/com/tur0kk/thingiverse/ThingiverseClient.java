@@ -96,8 +96,9 @@ public class ThingiverseClient {
    * @return the output of the api-call, can be a JSON-string
    */
   @ThingMethod(params = {"verb", "url"})
-  private String call(Verb verb, String url) {
-    return call(verb, url, new HashMap<String, String>());
+  private String call(Verb verb, String url)
+  {
+    return call(verb, url, null);
   }
 
   /**
@@ -107,17 +108,19 @@ public class ThingiverseClient {
    * @return the output of the api-call, can be a JSON-string
    */
   @ThingMethod(params = {"verb", "url"})
-  private String call(Verb verb, String url, Map<String, String> params) {
+  private String call(Verb verb, String url, String requestBody)
+  {
     String urlEnd = url;
-    if (!url.startsWith("/")) {
+    if (!url.startsWith("/"))
+    {
       urlEnd = "/" + url;
     }
     OAuthRequest request = new OAuthRequest(verb, "http://api.thingiverse.com" + urlEnd);
     request.addHeader("Authorization", "Bearer " + accesTokenString);
-    
-    for (Map.Entry<String, String> param : params.entrySet())
+
+    if (requestBody != null && !requestBody.isEmpty())
     {
-      request.addBodyParameter(param.getKey(), param.getValue());
+      request.addPayload(requestBody);
     }
     
     Response response = request.send();
@@ -303,10 +306,8 @@ public class ThingiverseClient {
   @ThingMethod(params = {"id", "imageFilename"})
   public String newCopy(String id, String imageFilename)
   {
-    Map<String, String> params = new HashMap<String, String>();
-    params.put("filename", imageFilename);
-
-    return call(Verb.POST, "/things/" + id + "/copies/", params);
+    String body = "{\"filename\": \"" + imageFilename + "\"}";
+    return call(Verb.POST, "/things/" + id + "/copies/", body);
   }
   
   //COLLECTIONS//
