@@ -21,6 +21,7 @@ package com.t_oster.visicut.managers;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LibInfo;
 import com.t_oster.visicut.Preferences;
+import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
@@ -73,6 +74,7 @@ public final class PreferencesManager
   private void generateDefault() throws FileNotFoundException, IOException
   {
     preferences = new Preferences();
+    
     if (LaserDeviceManager.getInstance().getAll().isEmpty())
     {
       //Create a Laserdevice for each known driver
@@ -150,6 +152,9 @@ public final class PreferencesManager
       engrave3d.setName("engrave 3d");
       ProfileManager.getInstance().add(engrave3d);
     }
+    
+    preferences.setLaserCutterTags("lasercutter, lasercut, laser cutter, laser cut");
+    preferences.setSupportedExtensions("svg, plf, dxf, eps, gcode");
   }
 
   private void initializeSettingDirectory()

@@ -1,5 +1,6 @@
 package com.tur0kk.thingiverse;
 
+import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.misc.Helper;
 import com.tur0kk.thingiverse.model.Thing;
 import com.tur0kk.thingiverse.model.ThingCollection;
@@ -7,6 +8,7 @@ import com.tur0kk.thingiverse.model.ThingFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -34,12 +36,6 @@ public class ThingiverseManager
   private static final String clientSecret = "a0b5368a3d58ddb3b1ade12f4f8f14e7";
   private static final String clientCallback = "http://www.thingiverse.com";
   private static final String redirectUrlPrefix = "http://hci.rwth-aachen.de/public/VisiCut/show_code.php?code=";
-  
-  private static final List<String> fileExtensionFilter = Arrays.asList(
-    "svg", "plf", "dxf", "eps", "gcode");
-  
-  private static final List<String> tagFilter = Arrays.asList(
-    "lasercutter", "lasercut", "laser cutter", "laser cut");
   
   private static ThingiverseManager instance = null;
   
@@ -353,6 +349,7 @@ public class ThingiverseManager
   {
     if (filterExtensions)
     {
+      List<String> fileExtensionFilter = this.getCommaSeparatedList(VisicutModel.getInstance().getPreferences().getSupportedExtensions());
       return getFiles(thing, fileExtensionFilter);
     }
     else
@@ -360,6 +357,7 @@ public class ThingiverseManager
       return getFiles(thing, new LinkedList<String>());
     }
   }
+ 
   
   /**
    * 
@@ -482,8 +480,8 @@ public class ThingiverseManager
       job.thing = thing;
       job.filterExtensions = filterExtensions;
       job.filterTags = filterTags;
-      job.fileExtensionFilter = this.fileExtensionFilter;
-      job.tagFilter = this.tagFilter;
+      job.fileExtensionFilter = this.getCommaSeparatedList(VisicutModel.getInstance().getPreferences().getSupportedExtensions());
+      job.tagFilter = this.getCommaSeparatedList(VisicutModel.getInstance().getPreferences().getLaserCutterTags());
       jobs.add(job);
     }
 
@@ -699,5 +697,10 @@ public class ThingiverseManager
     {
       ex.printStackTrace();
     }
+  }
+  
+  private List<String> getCommaSeparatedList(String commaSeparatedString){
+    List<String> separatedList = new ArrayList<String>(Arrays.asList(commaSeparatedString.split("\\s*,\\s*")));
+    return separatedList;
   }
 }
