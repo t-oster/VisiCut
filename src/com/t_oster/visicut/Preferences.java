@@ -321,6 +321,29 @@ public class Preferences
   {
     this.editSettingsBeforeExecuting = editSettingsBeforeExecuting;
   }
+  
+  // location id of the facebook fablab site
+  private String fabLabLocationFacebookId = "";
+
+  /**
+   * Get the value of fabLabLocationFacebookId
+   *
+   * @return the value of fabLabLocationFacebookId
+   */
+  public String getFabLabLocationFacebookId()
+  {
+    return fabLabLocationFacebookId;
+  }
+
+  /**
+   * Set the value of fabLabLocationFacebookId
+   *
+   * @param fabLabLocationFacebookId new value of fabLabLocationFacebookId
+   */
+  public void setFabLabLocationFacebookId(String fabLabLocationFacebookId)
+  {
+    this.fabLabLocationFacebookId = fabLabLocationFacebookId;
+  }
 
   @Override
   public Preferences clone()
@@ -349,6 +372,8 @@ public class Preferences
     result.windowBounds = windowBounds;
     result.useFilenamesForJobs = useFilenamesForJobs;
     result.labName = labName;
+    result.fabLabLocationFacebookId = fabLabLocationFacebookId;
+
     return result;
   }
 }

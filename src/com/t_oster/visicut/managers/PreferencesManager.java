@@ -150,6 +150,7 @@ public final class PreferencesManager
       engrave3d.setName("engrave 3d");
       ProfileManager.getInstance().add(engrave3d);
     }
+    
   }
 
   private void initializeSettingDirectory() {
