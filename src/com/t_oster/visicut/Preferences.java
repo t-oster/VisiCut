@@ -23,6 +23,7 @@ import java.awt.Rectangle;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 public class Preferences
@@ -321,6 +322,55 @@ public class Preferences
   {
     this.editSettingsBeforeExecuting = editSettingsBeforeExecuting;
   }
+  
+  // comma separated list
+  // list containing all lasercuttertags which should be considered for filtering in the thingivserse dialog
+  private String laserCutterTags = new String();
+  
+  /**
+   * Get the value of laserCutterTags
+   *
+   * @return the value of laserCutterTags
+   */
+  public String getLaserCutterTags()
+  {
+    return this.laserCutterTags;
+  }
+
+  /**
+   * Set the value of laserCutterTags
+   *
+   * @param laserCutterTags new value of laserCutterTags
+   */
+  public void setLaserCutterTags(String tags)
+  {
+    this.laserCutterTags = tags;
+  }
+  
+  // comma separated list
+  // list containing all supported file extensions which should be considered for filtering in the thingivserse dialog
+  private String supportedExtensions = "";
+  
+  /**
+   * Get the value of supportedExtensions
+   *
+   * @return the value of supportedExtensions
+   */
+  public String getSupportedExtensions()
+  {
+    return this.supportedExtensions;
+  }
+
+  /**
+   * Set the value of supportedExtensions
+   *
+   * @param supportedExtensions new value of supportedExtensions
+   */
+  public void setSupportedExtensions(String extensions)
+  {
+    this.supportedExtensions = extensions;
+  }
+
 
   @Override
   public Preferences clone()
@@ -349,6 +399,8 @@ public class Preferences
     result.windowBounds = windowBounds;
     result.useFilenamesForJobs = useFilenamesForJobs;
     result.labName = labName;
+    result.supportedExtensions = supportedExtensions;
+    result.laserCutterTags = laserCutterTags;
     return result;
   }
 }

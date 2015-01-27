@@ -25,6 +25,7 @@ import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import org.thymeleaf.util.StringUtils;
 
 /**
  *
@@ -65,7 +66,7 @@ public class PreferencesDialog extends javax.swing.JDialog
     }
     cbDefaultMapping.setSelectedItem(preferences != null ? preferences.getDefaultMapping() : null);
   }
-
+  
   private Preferences preferences = new Preferences();
   public static final String PROP_PREFERENCES = "preferences";
 
@@ -95,16 +96,21 @@ public class PreferencesDialog extends javax.swing.JDialog
 
     generalTab = new javax.swing.JTabbedPane();
     jPanel1 = new javax.swing.JPanel();
-    jLabel1 = new javax.swing.JLabel();
-    cbDefaultMapping = new javax.swing.JComboBox();
-    jLabel2 = new javax.swing.JLabel();
-    cbSandboxLaserScript = new javax.swing.JCheckBox();
-    lbFilenamesForJobs = new javax.swing.JLabel();
-    cbSandboxLaserScript1 = new javax.swing.JCheckBox();
-    jTextFieldLabName = new javax.swing.JTextField();
-    jLabel3 = new javax.swing.JLabel();
-    btOk = new javax.swing.JButton();
-    btCancel = new javax.swing.JButton();
+	jLabel1 = new javax.swing.JLabel();
+	cbDefaultMapping = new javax.swing.JComboBox();
+	jLabel2 = new javax.swing.JLabel();
+	cbSandboxLaserScript = new javax.swing.JCheckBox();
+	lbFilenamesForJobs = new javax.swing.JLabel();
+	cbSandboxLaserScript1 = new javax.swing.JCheckBox();
+	jTextFieldLabName = new javax.swing.JTextField();
+	jLabel3 = new javax.swing.JLabel();
+	jPanel2 = new javax.swing.JPanel();
+	lblLasercutterTags = new javax.swing.JLabel();
+	txtfLasercutterTags = new javax.swing.JTextField();
+	txtfSupportedExtensions = new javax.swing.JTextField();
+	lblSupportedExtensions = new javax.swing.JLabel();
+	btOk = new javax.swing.JButton();
+	btCancel = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -198,44 +204,85 @@ public class PreferencesDialog extends javax.swing.JDialog
       }
     });
 
-    btCancel.setText("Cancel");
-    btCancel.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btCancelActionPerformed(evt);
-      }
-    });
+        lblLasercutterTags.setText("Lasercutter Tags:");
 
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-    getContentPane().setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(generalTab, javax.swing.GroupLayout.Alignment.TRAILING)
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addComponent(btCancel)
-        .addGap(18, 18, 18)
-        .addComponent(btOk)
-        .addContainerGap())
-    );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addComponent(generalTab)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(btOk)
-          .addComponent(btCancel))
-        .addContainerGap())
-    );
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.laserCutterTags}"), txtfLasercutterTags, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        bindingGroup.addBinding(binding);
 
-    generalTab.getAccessibleContext().setAccessibleName(bundle.getString("GENERAL")); // NOI18N
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.supportedExtensions}"), txtfSupportedExtensions, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        bindingGroup.addBinding(binding);
 
-    bindingGroup.bind();
+        lblSupportedExtensions.setText("Supported extensions:");
 
-    pack();
-  }// </editor-fold>//GEN-END:initComponents
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblLasercutterTags, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(lblSupportedExtensions, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(txtfLasercutterTags)
+                    .addComponent(txtfSupportedExtensions, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblLasercutterTags)
+                    .addComponent(txtfLasercutterTags, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtfSupportedExtensions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblSupportedExtensions))
+                .addContainerGap(101, Short.MAX_VALUE))
+        );
+
+        generalTab.addTab("Thingiverse", jPanel2);
+
+        btCancel.setText("Cancel");
+        btCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btCancelActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(generalTab, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(234, Short.MAX_VALUE)
+                .addComponent(btCancel)
+                .addGap(18, 18, 18)
+                .addComponent(btOk)
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(generalTab, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btOk)
+                    .addComponent(btCancel))
+                .addContainerGap())
+        );
+
+        generalTab.getAccessibleContext().setAccessibleName(bundle.getString("GENERAL")); // NOI18N
+
+        bindingGroup.bind();
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
 
   private void btCancelActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btCancelActionPerformed
   {//GEN-HEADEREND:event_btCancelActionPerformed
@@ -247,6 +294,7 @@ public class PreferencesDialog extends javax.swing.JDialog
   {//GEN-HEADEREND:event_btOkActionPerformed
     this.setVisible(false);
   }//GEN-LAST:event_btOkActionPerformed
+
 
   private void jTextFieldLabNameActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jTextFieldLabNameActionPerformed
   {//GEN-HEADEREND:event_jTextFieldLabNameActionPerformed
@@ -266,6 +314,11 @@ public class PreferencesDialog extends javax.swing.JDialog
   private javax.swing.JPanel jPanel1;
   private javax.swing.JTextField jTextFieldLabName;
   private javax.swing.JLabel lbFilenamesForJobs;
+  private javax.swing.JPanel jPanel2;
+  private javax.swing.JLabel lblLasercutterTags;
+  private javax.swing.JLabel lblSupportedExtensions;
+  private javax.swing.JTextField txtfLasercutterTags;
+  private javax.swing.JTextField txtfSupportedExtensions;
   private org.jdesktop.beansbinding.BindingGroup bindingGroup;
   // End of variables declaration//GEN-END:variables
 }
