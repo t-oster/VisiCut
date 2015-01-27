@@ -18,6 +18,8 @@
  **/
 package com.t_oster.visicut.gui;
 
+import com.kitfox.svg.SVGElement;
+import com.kitfox.svg.SVGException;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
@@ -28,12 +30,16 @@ import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.PlfFile;
 import com.t_oster.visicut.model.PlfPart;
+import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
+import com.t_oster.visicut.model.graphicelements.svgsupport.SVGShape;
 import com.t_oster.visicut.vectorize.VectorizeDialog;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -48,6 +54,9 @@ import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -57,6 +66,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
+import org.apache.batik.dom.GenericDOMImplementation;
+import org.apache.batik.svggen.SVGGraphics2D;
+import org.apache.batik.svggen.SVGGraphics2DIOException;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
 
 /**
  * This class handles the transformations to the background and the selected
@@ -85,6 +99,13 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   private JMenuItem moveToPositionMenuItem;
   
   private boolean shiftKeyDown = false;
+  
+  
+  //added for copy paste MCP WS 2014
+  private String copyOfSelectedFile = null;
+  private int shortcutKeyActivated = 0;
+  private boolean isAddingNewFile = false;
+  private File file;
   
   public PreviewPanelKeyboardMouseHandler(PreviewPanel panel)
   {
@@ -365,6 +386,40 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
         VisicutModel.getInstance().firePartUpdated(getSelectedPart());
       }
     }
+    
+    
+    //This part is added to implemnt copy pasting of SVG on the preview panel
+    if((Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() & ke.getModifiers()) != 0)
+    {
+      shortcutKeyActivated = ke.getKeyCode();
+
+    }
+
+    if(shortcutKeyActivated!=0)
+    {
+        if(ke.getKeyCode() == KeyEvent.VK_C)
+        {
+          copyOfSelectedFile = null;
+          copyOfSelectedFile = VisicutModel.getInstance().getSelectedPart().getSourceFile().getAbsolutePath();
+          System.out.println("File coped to clipboard = " + copyOfSelectedFile);
+        }
+
+        if(ke.getKeyCode() == KeyEvent.VK_V)
+        {
+
+          if(copyOfSelectedFile != null)
+          {                      
+              MainView.getInstance().loadFile(new File(copyOfSelectedFile), false);
+
+          }
+
+        } 
+       
+    }
+    if(ke.getKeyCode() == KeyEvent.VK_BACK_SPACE || ke.getKeyCode() == KeyEvent.VK_DELETE)
+    {
+        VisicutModel.getInstance().removeSelectedPart();
+    }   
   }
 
   private void applyEditRectoToSet()
@@ -390,6 +445,10 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     else if (ke.getKeyCode() == KeyEvent.VK_DELETE && this.getEditRect() != null)
     {
       VisicutModel.getInstance().removeSelectedPart();
+    }
+    else if(ke.getKeyCode()==shortcutKeyActivated)
+    {
+      shortcutKeyActivated=0;
     }
   }
 
