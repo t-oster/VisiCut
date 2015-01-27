@@ -975,6 +975,7 @@ public class VisicutModel
       this.removePlfPart(this.selectedPart);
     }
     this.setSelectedPart(this.plfFile != null && !this.plfFile.isEmpty() ? this.plfFile.get(0) : null);
+    
   }
 
   public void firePartUpdated(PlfPart p)

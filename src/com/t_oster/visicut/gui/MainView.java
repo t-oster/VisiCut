@@ -1421,6 +1421,9 @@ public class MainView extends javax.swing.JFrame
       this.fitObjectsIntoBed();
       this.progressBar.setIndeterminate(false);
       this.refreshButtonStates();
+      
+      // this line is added to reset the preview panel when new file is imported.
+      this.previewPanel.setZoom(100);
     }
     catch (Exception e)
     {
