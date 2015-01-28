@@ -29,13 +29,13 @@
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="btnLogout" min="-2" pref="158" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="87" max="-2" attributes="0"/>
                       <Component id="lblOpeningFile" min="-2" pref="88" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="btnMadeOne" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="btnLogout" min="-2" pref="158" max="-2" attributes="0"/>
+                  <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="325" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -50,22 +50,29 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                      <Component id="lblOpeningFile" alignment="3" min="-2" max="-2" attributes="1"/>
-                      <Component id="btnMadeOne" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Component id="lProfilePicture" alignment="0" min="-2" pref="112" max="-2" attributes="1"/>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="pnlFilter" min="-2" max="-2" attributes="1"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="btnRefresh" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
-                          <Component id="btnLogout" alignment="3" pref="37" max="32767" attributes="1"/>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                              <Component id="lblOpeningFile" alignment="3" min="-2" max="-2" attributes="1"/>
+                              <Component id="btnMadeOne" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="pnlFilter" min="-2" max="-2" attributes="1"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btnRefresh" min="-2" pref="37" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                              <Component id="lUserName" alignment="1" min="-2" pref="59" max="-2" attributes="1"/>
+                              <Component id="lProfilePicture" alignment="1" min="-2" pref="112" max="-2" attributes="1"/>
+                          </Group>
                       </Group>
+                      <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="lUserName" alignment="0" min="-2" pref="59" max="-2" attributes="1"/>
+                  <Group type="102" attributes="0">
+                      <Component id="btnLogout" min="-2" pref="37" max="-2" attributes="1"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
               </Group>
-              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
               <Component id="tpLists" pref="510" max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -90,7 +97,7 @@
     <Component class="javax.swing.JLabel" name="lUserName">
       <Properties>
         <Property name="font" type="java.awt.Font" resourceKey="lUserName.font"/>
-        <Property name="verticalAlignment" type="int" value="1"/>
+        <Property name="verticalAlignment" type="int" value="3"/>
         <Property name="name" type="java.lang.String" value="lUserName" noResource="true"/>
       </Properties>
     </Component>
