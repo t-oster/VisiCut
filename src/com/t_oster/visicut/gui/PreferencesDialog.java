@@ -22,6 +22,7 @@ import com.t_oster.visicut.Preferences;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Component;
+import java.awt.Dimension;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -110,6 +111,7 @@ public class PreferencesDialog extends javax.swing.JDialog
         btCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setMinimumSize(new Dimension(450,300));
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreferencesDialog"); // NOI18N
         jLabel1.setText(bundle.getString("DEFAULT_MAPPING")); // NOI18N
@@ -186,10 +188,8 @@ public class PreferencesDialog extends javax.swing.JDialog
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblLasercutterTags, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(lblSupportedExtensions, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                    .addComponent(lblLasercutterTags, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                    .addComponent(lblSupportedExtensions, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(txtfLasercutterTags)
