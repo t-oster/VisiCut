@@ -18,6 +18,7 @@ import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import com.mcp14.Provider.HoldValues;
+import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
@@ -345,10 +346,10 @@ public class ObjectArranger {
     /**
      * @param args the command line arguments
      */
-    public static void objectArrange() {
+    public static HashMap<AutoArrange.BinNumber, Set<HoldValues>> objectArrange(int width, int height) {
         positionCount = 0;
-        laserBedWidth = 600;
-        laserBedHeight = 300;
+        laserBedWidth = width;
+        laserBedHeight = height;
         IconContainerPanel = new JPanel();
         IconContainerPanel.setLayout(null);
         iconPanels = new LinkedList<IconPanel>();
@@ -356,5 +357,6 @@ public class ObjectArranger {
         frame = svgFrame;
         svgFrame.setSize(900, 700);
         svgFrame.setVisible(true);
+        return AutoArrange.allValues;
     }
 }

@@ -18,6 +18,8 @@
  **/
 package com.t_oster.visicut.gui.beans;
 
+import com.mcp14.Autoarrange.AutoArrange;
+import com.mcp14.Provider.HoldValues;
 import com.t_oster.uicomponents.ZoomablePanel;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.ProgressListener;
@@ -53,9 +55,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import sun.net.www.protocol.http.AuthCache;
 
 /**
  * This class implements the Panel which provides the Preview
@@ -68,6 +72,9 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
 
   private double bedWidth = 600;
   private double bedHeight = 300;
+  private boolean needToArrange = false;
+  private static AffineTransform arrangeTranslate;
+  private static HashMap<AutoArrange.BinNumber, Set<HoldValues>> arrangeValues;
 
   public PreviewPanel()
   {
@@ -85,6 +92,14 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       setAreaSize(new Point2D.Double(lc.getBedWidth(), lc.getBedHeight()));
       repaint();
     }
+  }
+  
+  public void setNeedToArrange(boolean value){
+    needToArrange = value;
+  }
+  
+  public void setArrangeValues(HashMap<AutoArrange.BinNumber, Set<HoldValues>> values){
+    arrangeValues = values;      
   }
 
   public void propertyChange(PropertyChangeEvent pce)
@@ -487,6 +502,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     super.paintComponent(g);
     if (g instanceof Graphics2D)
     {
+      
       Graphics2D gg = (Graphics2D) g;
       Point2D dim = this.getMmToPxTransform().transform(this.getAreaSize(), null);
       Rectangle r = this.getVisibleRect();
@@ -526,6 +542,11 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       }
       for (PlfPart part : VisicutModel.getInstance().getPlfFile())
       {
+        if(needToArrange && arrangeValues.size() > 0 ){
+          //*** plugin the code to update the transformations here ***//
+          
+          //arrangeTranslate = AffineTransform.getTranslateInstance(getTranslatedCoord(), zoom);
+        }
         boolean selected = (part.equals(VisicutModel.getInstance().getSelectedPart()));
         HashMap<Mapping,ImageProcessingThread> renderBuffer = renderBuffers.get(part);
         if (renderBuffer == null)

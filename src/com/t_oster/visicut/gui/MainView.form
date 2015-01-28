@@ -382,7 +382,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="captureImageButton" min="-2" pref="155" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jButton3" min="-2" max="-2" attributes="0"/>
+                              <Component id="arrangeButton" min="-2" max="-2" attributes="0"/>
                               <EmptySpace pref="183" max="32767" attributes="0"/>
                               <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                           </Group>
@@ -403,7 +403,7 @@
                   <Component id="jScrollPane1" alignment="0" pref="773" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="jButton3" max="32767" attributes="1"/>
+                          <Component id="arrangeButton" max="32767" attributes="1"/>
                           <Component id="jButton1" alignment="0" max="32767" attributes="1"/>
                           <Component id="jButton2" alignment="0" max="32767" attributes="1"/>
                           <Component id="btFitScreen" alignment="0" max="32767" attributes="1"/>
@@ -943,14 +943,17 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton3">
+    <Component class="javax.swing.JButton" name="arrangeButton">
       <Properties>
         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
           <action class="com.t_oster.visicut.gui.MainView" id="onArrangeClicked" methodName="onArrangeClicked"/>
         </Property>
-        <Property name="text" type="java.lang.String" resourceKey="jButton3.text"/>
-        <Property name="name" type="java.lang.String" value="jButton3" noResource="true"/>
+        <Property name="text" type="java.lang.String" resourceKey="arrangeButton.text"/>
+        <Property name="name" type="java.lang.String" value="arrangeButton" noResource="true"/>
       </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="arrangeButton.setEnabled(ifFilesLoaded());"/>
+      </AuxValues>
     </Component>
   </SubComponents>
 </Form>
