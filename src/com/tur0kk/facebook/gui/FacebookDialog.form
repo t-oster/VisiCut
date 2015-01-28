@@ -33,26 +33,23 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="pnlFoto" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="pnlPublish" pref="367" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="pnlPublish" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
+                  <Group type="102" attributes="0">
                       <Component id="lProfilePicture" min="-2" pref="112" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
-                              <EmptySpace pref="285" max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="rdbtnVisicam" min="-2" max="-2" attributes="0"/>
-                                  <Component id="rdbtnWebcam" alignment="0" min="-2" max="-2" attributes="0"/>
-                              </Group>
+                              <EmptySpace pref="245" max="32767" attributes="0"/>
+                              <Component id="pnlSelectCamera" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="btnLogout" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -61,24 +58,22 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="lProfilePicture" alignment="1" min="-2" pref="112" max="-2" attributes="0"/>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Component id="lUserName" min="-2" pref="30" max="-2" attributes="0"/>
-                      <EmptySpace pref="61" max="32767" attributes="0"/>
-                      <Component id="btnLogout" min="-2" pref="21" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                      <Group type="102" alignment="1" attributes="1">
+                          <Component id="lUserName" max="32767" attributes="1"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="btnLogout" min="-2" pref="21" max="-2" attributes="0"/>
+                      </Group>
+                      <Component id="lProfilePicture" alignment="1" min="-2" pref="112" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="rdbtnWebcam" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="rdbtnVisicam" min="-2" max="-2" attributes="0"/>
-                  </Group>
+                  <Component id="pnlSelectCamera" min="-2" max="-2" attributes="1"/>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="pnlPublish" max="32767" attributes="1"/>
-                  <Component id="pnlFoto" alignment="0" max="32767" attributes="1"/>
+                  <Component id="pnlFoto" alignment="0" min="-2" max="-2" attributes="1"/>
               </Group>
-              <EmptySpace pref="25" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -97,6 +92,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lUserName">
       <Properties>
+        <Property name="font" type="java.awt.Font" resourceKey="lUserName.font"/>
         <Property name="verticalAlignment" type="int" value="1"/>
         <Property name="name" type="java.lang.String" value="lUserName" noResource="true"/>
       </Properties>
@@ -220,19 +216,19 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Group type="102" alignment="0" attributes="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
                           <Component id="lblPublish" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="lblPublishSuccessStatus" min="-2" pref="163" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="lblLoading" min="-2" pref="16" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="btnPublish" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jScrollPane1" alignment="1" min="-2" pref="338" max="-2" attributes="1"/>
+                      <Component id="jScrollPane1" alignment="0" min="-2" pref="316" max="-2" attributes="1"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -242,12 +238,12 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="lblPublish" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                      <Component id="lblPublishSuccessStatus" alignment="3" min="-2" pref="18" max="-2" attributes="0"/>
                       <Component id="btnPublish" alignment="3" min="-2" max="-2" attributes="1"/>
                       <Component id="lblLoading" alignment="3" min="-2" pref="16" max="-2" attributes="0"/>
-                      <Component id="lblPublishSuccessStatus" alignment="3" min="-2" pref="18" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
-                  <Component id="jScrollPane1" pref="221" max="32767" attributes="1"/>
+                  <Component id="jScrollPane1" pref="219" max="32767" attributes="1"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -289,6 +285,7 @@
             <Component class="javax.swing.JTextArea" name="txtaPublish">
               <Properties>
                 <Property name="columns" type="int" value="20"/>
+                <Property name="lineWrap" type="boolean" value="true"/>
                 <Property name="rows" type="int" value="5"/>
                 <Property name="alignmentX" type="float" value="0.0"/>
                 <Property name="alignmentY" type="float" value="0.0"/>
@@ -315,24 +312,43 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JRadioButton" name="rdbtnWebcam">
+    <Container class="javax.swing.JPanel" name="pnlSelectCamera">
       <Properties>
-        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-          <ComponentRef name="grpCams"/>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder title="Camera">
+              <Property name="titleX" resourceKey="pnlSelectCamera.border.title"/>
+            </TitledBorder>
+          </Border>
         </Property>
-        <Property name="selected" type="boolean" value="true"/>
-        <Property name="text" type="java.lang.String" resourceKey="rdbtnWebcam.text"/>
-        <Property name="name" type="java.lang.String" value="rdbtnWebcam" noResource="true"/>
+        <Property name="name" type="java.lang.String" value="pnlSelectCamera" noResource="true"/>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JRadioButton" name="rdbtnVisicam">
-      <Properties>
-        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-          <ComponentRef name="grpCams"/>
-        </Property>
-        <Property name="text" type="java.lang.String" resourceKey="rdbtnVisicam.text"/>
-        <Property name="name" type="java.lang.String" value="rdbtnVisicam" noResource="true"/>
-      </Properties>
-    </Component>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+        <Property name="columns" type="int" value="1"/>
+        <Property name="rows" type="int" value="2"/>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JRadioButton" name="rdbtnWebcam">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="grpCams"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" resourceKey="rdbtnWebcam.text"/>
+            <Property name="name" type="java.lang.String" value="rdbtnWebcam" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="rdbtnVisicam">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="grpCams"/>
+            </Property>
+            <Property name="text" type="java.lang.String" resourceKey="rdbtnVisicam.text"/>
+            <Property name="name" type="java.lang.String" value="rdbtnVisicam" noResource="true"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
   </SubComponents>
 </Form>
