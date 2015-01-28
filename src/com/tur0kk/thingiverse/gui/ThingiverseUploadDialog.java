@@ -83,12 +83,12 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
         lblAttachMessage = new javax.swing.JLabel();
         lblPhoto = new javax.swing.JLabel();
         pnlPublish = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtaPublish = new javax.swing.JTextArea();
         btnPublish = new javax.swing.JButton();
         lblLoading = new javax.swing.JLabel();
         lblDescription = new javax.swing.JLabel();
         lblPublishSuccessStatus = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtaPublish = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
@@ -166,14 +166,6 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
         pnlPublish.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("pnlPublish.border.lineColor"))); // NOI18N
         pnlPublish.setName("pnlPublish"); // NOI18N
 
-        jScrollPane1.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("jScrollPane1.border.lineColor"))); // NOI18N
-        jScrollPane1.setName("jScrollPane1"); // NOI18N
-
-        txtaPublish.setColumns(20);
-        txtaPublish.setRows(5);
-        txtaPublish.setName("txtaPublish"); // NOI18N
-        jScrollPane1.setViewportView(txtaPublish);
-
         btnPublish.setText(resourceMap.getString("btnPublish.text")); // NOI18N
         btnPublish.setName("btnPublish"); // NOI18N
         btnPublish.addActionListener(new java.awt.event.ActionListener() {
@@ -192,36 +184,44 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
         lblPublishSuccessStatus.setText(resourceMap.getString("lblPublishSuccessStatus.text")); // NOI18N
         lblPublishSuccessStatus.setName("lblPublishSuccessStatus"); // NOI18N
 
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("jScrollPane1.border.lineColor"))); // NOI18N
+        jScrollPane1.setName("jScrollPane1"); // NOI18N
+
+        txtaPublish.setColumns(20);
+        txtaPublish.setRows(5);
+        txtaPublish.setName("txtaPublish"); // NOI18N
+        jScrollPane1.setViewportView(txtaPublish);
+
         javax.swing.GroupLayout pnlPublishLayout = new javax.swing.GroupLayout(pnlPublish);
         pnlPublish.setLayout(pnlPublishLayout);
         pnlPublishLayout.setHorizontalGroup(
             pnlPublishLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlPublishLayout.createSequentialGroup()
-                .addGap(31, 31, 31)
-                .addGroup(pnlPublishLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addContainerGap()
+                .addGroup(pnlPublishLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(pnlPublishLayout.createSequentialGroup()
                         .addComponent(lblDescription)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lblPublishSuccessStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
+                        .addComponent(lblPublishSuccessStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
                         .addComponent(lblLoading, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnPublish))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 311, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(19, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnPublish)))
+                .addContainerGap())
         );
         pnlPublishLayout.setVerticalGroup(
             pnlPublishLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlPublishLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
+                .addContainerGap()
                 .addGroup(pnlPublishLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnPublish)
-                    .addComponent(lblLoading, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblDescription)
                     .addComponent(lblPublishSuccessStatus)
-                    .addComponent(lblDescription))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+                    .addComponent(btnPublish)
+                    .addComponent(lblLoading, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -230,18 +230,15 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pnlPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(rdbtnWebcam)
+                        .addComponent(rdbtnVisicam))
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 316, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(rdbtnVisicam)
-                            .addComponent(rdbtnWebcam))
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pnlPublish, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addComponent(pnlPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)
+                        .addComponent(pnlPublish, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -250,11 +247,11 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
                 .addComponent(rdbtnWebcam)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(rdbtnVisicam)
-                .addGap(52, 52, 52)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pnlPublish, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pnlPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(pnlPublish, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnlPhoto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
