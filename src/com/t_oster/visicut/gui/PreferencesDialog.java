@@ -22,6 +22,7 @@ import com.t_oster.visicut.Preferences;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Component;
+import java.awt.Dimension;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -64,6 +65,9 @@ public class PreferencesDialog extends javax.swing.JDialog
       cbDefaultMapping.addItem(ms.getName());
     }
     cbDefaultMapping.setSelectedItem(preferences != null ? preferences.getDefaultMapping() : null);
+    
+    // resize everything to content
+    pack();
   }
 
   private Preferences preferences = new Preferences();
@@ -107,6 +111,7 @@ public class PreferencesDialog extends javax.swing.JDialog
         btCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setMinimumSize(new Dimension(450, 300));
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreferencesDialog"); // NOI18N
         jLabel1.setText(bundle.getString("DEFAULT_MAPPING")); // NOI18N
@@ -143,7 +148,7 @@ public class PreferencesDialog extends javax.swing.JDialog
                 .addGroup(pnlGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cbSandboxLaserScript1)
                     .addComponent(cbSandboxLaserScript)
-                    .addComponent(cbDefaultMapping, 0, 197, Short.MAX_VALUE))
+                    .addComponent(cbDefaultMapping, 0, 283, Short.MAX_VALUE))
                 .addContainerGap())
         );
         pnlGeneralLayout.setVerticalGroup(
@@ -161,7 +166,7 @@ public class PreferencesDialog extends javax.swing.JDialog
                 .addGroup(pnlGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lbFilenamesForJobs)
                     .addComponent(cbSandboxLaserScript1))
-                .addContainerGap(77, Short.MAX_VALUE))
+                .addContainerGap(86, Short.MAX_VALUE))
         );
 
         pnlFacebook.addTab("General", pnlGeneral);
@@ -179,7 +184,7 @@ public class PreferencesDialog extends javax.swing.JDialog
                 .addContainerGap()
                 .addComponent(jLabel3)
                 .addGap(18, 18, 18)
-                .addComponent(txtfFabLabLocationFacebookId, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
+                .addComponent(txtfFabLabLocationFacebookId, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -189,7 +194,7 @@ public class PreferencesDialog extends javax.swing.JDialog
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(txtfFabLabLocationFacebookId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(127, Short.MAX_VALUE))
+                .addContainerGap(136, Short.MAX_VALUE))
         );
 
         pnlFacebook.addTab("Facebook", jPanel2);
@@ -212,9 +217,9 @@ public class PreferencesDialog extends javax.swing.JDialog
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnlFacebook, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
+            .addComponent(pnlFacebook, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(234, Short.MAX_VALUE)
+                .addContainerGap(320, Short.MAX_VALUE)
                 .addComponent(btCancel)
                 .addGap(18, 18, 18)
                 .addComponent(btOk)
@@ -223,7 +228,7 @@ public class PreferencesDialog extends javax.swing.JDialog
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(pnlFacebook, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
+                .addComponent(pnlFacebook, javax.swing.GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btOk)
