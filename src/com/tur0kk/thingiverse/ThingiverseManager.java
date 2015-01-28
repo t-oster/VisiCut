@@ -201,6 +201,10 @@ public class ThingiverseManager
       
       things = filterThings(things, filterExtensions, filterTags);
     }
+    catch(ClassCastException ex)
+    {
+      // Result empty or something wrong with the json response.
+    }
     catch(Exception ex)
     {
       ex.printStackTrace();
@@ -235,6 +239,10 @@ public class ThingiverseManager
       
       things = filterThings(things, filterExtensions, filterTags);
     }
+    catch(ClassCastException ex)
+    {
+      // Result empty or something wrong with the json response.
+    }
     catch(Exception ex)
     {
       ex.printStackTrace();
@@ -261,6 +269,10 @@ public class ThingiverseManager
         String imageUrl = jsonCollection.get("thumbnail").toString();
         collections.add(new ThingCollection(collectionId, collectionName, imageUrl));
       }
+    }
+    catch(ClassCastException ex)
+    {
+      // Result empty or something wrong with the json response.
     }
     catch(Exception ex)
     {
@@ -331,6 +343,10 @@ public class ThingiverseManager
       }
       
       things = filterThings(things, filterExtensions, filterTags);
+    }
+    catch(ClassCastException ex)
+    {
+      // Search result empty or something wrong with the json response.
     }
     catch(Exception ex)
     {

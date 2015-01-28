@@ -10,6 +10,7 @@ import com.tur0kk.thingiverse.model.ThingFile;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.SwingUtilities;
@@ -35,6 +36,16 @@ public class ThingFileClickListener extends MouseAdapter
 
     if(evt.getClickCount() == 2){
       
+      int index = list.locationToIndex(evt.getPoint());
+      if(index < 0){ // nothing visible
+        return;
+      }
+      
+      final ThingFile aFile = (ThingFile) list.getModel().getElementAt(index);
+      if(aFile == null){ // nothing visible
+        return;
+      }
+      
       // user feedback
       SwingUtilities.invokeLater(new Runnable() {
         public void run()
@@ -44,8 +55,6 @@ public class ThingFileClickListener extends MouseAdapter
       });
       
       // load file
-      int index = list.locationToIndex(evt.getPoint());
-      final ThingFile aFile = (ThingFile) list.getModel().getElementAt(index);
       new Thread(new Runnable() {
 
             public void run()
