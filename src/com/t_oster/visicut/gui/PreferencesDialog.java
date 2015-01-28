@@ -66,6 +66,9 @@ public class PreferencesDialog extends javax.swing.JDialog
       cbDefaultMapping.addItem(ms.getName());
     }
     cbDefaultMapping.setSelectedItem(preferences != null ? preferences.getDefaultMapping() : null);
+    
+    // resize everything to content
+    pack();
   }
   
   private Preferences preferences = new Preferences();
