@@ -381,7 +381,9 @@
                               <Component id="bt1to1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="captureImageButton" min="-2" pref="155" max="-2" attributes="0"/>
-                              <EmptySpace pref="280" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jButton3" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace pref="183" max="32767" attributes="0"/>
                               <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -398,9 +400,10 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" alignment="0" pref="768" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" pref="773" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="jButton3" max="32767" attributes="1"/>
                           <Component id="jButton1" alignment="0" max="32767" attributes="1"/>
                           <Component id="jButton2" alignment="0" max="32767" attributes="1"/>
                           <Component id="btFitScreen" alignment="0" max="32767" attributes="1"/>
@@ -602,7 +605,7 @@
                                       <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="timeLabel" min="-2" pref="166" max="-2" attributes="0"/>
-                                      <EmptySpace pref="277" max="32767" attributes="0"/>
+                                      <EmptySpace pref="280" max="32767" attributes="0"/>
                                       <Component id="calculateTimeButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -613,7 +616,7 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="objectComboBox" pref="538" max="32767" attributes="0"/>
+                                      <Component id="objectComboBox" pref="549" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="btAddObject" min="-2" pref="31" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -637,7 +640,7 @@
                                           </Group>
                                           <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace pref="286" max="32767" attributes="0"/>
+                                      <EmptySpace pref="298" max="32767" attributes="0"/>
                                       <Component id="jCheckBox1" min="-2" pref="197" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -938,6 +941,15 @@
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[276, 123]"/>
         </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButton3">
+      <Properties>
+        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+          <action class="com.t_oster.visicut.gui.MainView" id="onArrangeClicked" methodName="onArrangeClicked"/>
+        </Property>
+        <Property name="text" type="java.lang.String" resourceKey="jButton3.text"/>
+        <Property name="name" type="java.lang.String" value="jButton3" noResource="true"/>
       </Properties>
     </Component>
   </SubComponents>

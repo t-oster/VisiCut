@@ -23,6 +23,7 @@ import com.apple.eawt.AppEvent.OpenFilesEvent;
 import com.apple.eawt.AppEvent.PreferencesEvent;
 import com.apple.eawt.AppEvent.QuitEvent;
 import com.apple.eawt.QuitResponse;
+import com.mcp14.ObjectArranger.ObjectArranger;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserProperty;
@@ -622,6 +623,7 @@ public class MainView extends javax.swing.JFrame
         btRemoveObject = new javax.swing.JButton();
         btAddObject = new javax.swing.JButton();
         warningPanel = new com.t_oster.uicomponents.warnings.WarningPanel();
+        jButton3 = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -910,7 +912,7 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 277, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 280, Short.MAX_VALUE)
                                 .addComponent(calculateTimeButton)))
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
@@ -918,7 +920,7 @@ public class MainView extends javax.swing.JFrame
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(objectComboBox, 0, 538, Short.MAX_VALUE)
+                                .addComponent(objectComboBox, 0, 549, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btAddObject, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -938,7 +940,7 @@ public class MainView extends javax.swing.JFrame
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(btAddMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jLabel5))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 286, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 298, Short.MAX_VALUE)
                                 .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(20, 20, 20))))
         );
@@ -992,6 +994,11 @@ public class MainView extends javax.swing.JFrame
 
         warningPanel.setName("warningPanel"); // NOI18N
         warningPanel.setPreferredSize(new java.awt.Dimension(276, 123));
+
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(MainView.class, this);
+        jButton3.setAction(actionMap.get("onArrangeClicked")); // NOI18N
+        jButton3.setText(resourceMap.getString("jButton3.text")); // NOI18N
+        jButton3.setName("jButton3"); // NOI18N
 
         menuBar.setName("menuBar"); // NOI18N
 
@@ -1190,7 +1197,6 @@ public class MainView extends javax.swing.JFrame
 
         viewMenu.add(jmShowPhoto);
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(MainView.class, this);
         zoomInMenuItem.setAction(actionMap.get("zoomIn")); // NOI18N
         zoomInMenuItem.setText(resourceMap.getString("zoomInMenuItem.text")); // NOI18N
         zoomInMenuItem.setName("zoomInMenuItem"); // NOI18N
@@ -1268,7 +1274,9 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(bt1to1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 280, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 183, Short.MAX_VALUE)
                                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(8, 8, 8)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1279,9 +1287,10 @@ public class MainView extends javax.swing.JFrame
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 768, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 773, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btFitScreen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1340,6 +1349,7 @@ public class MainView extends javax.swing.JFrame
       }
     }.start();
   }
+  
 
   private void fitObjectsIntoBed()
   {
@@ -2573,6 +2583,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JMenuItem importMenuItem;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -2687,6 +2698,12 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   public DialogHelper getDialog()
   {
     return this.dialog;
+  }
+
+  @Action
+  public void onArrangeClicked()
+  {
+    ObjectArranger.objectArrange();
   }
 
 }
