@@ -127,9 +127,9 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
         pnlPhotoLayout.setHorizontalGroup(
             pnlPhotoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlPhotoLayout.createSequentialGroup()
-                .addGap(101, 101, 101)
+                .addGap(104, 104, 104)
                 .addComponent(btnPhotoRedo)
-                .addContainerGap(178, Short.MAX_VALUE))
+                .addContainerGap(175, Short.MAX_VALUE))
             .addGroup(pnlPhotoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(pnlPhotoLayout.createSequentialGroup()
                     .addContainerGap()
