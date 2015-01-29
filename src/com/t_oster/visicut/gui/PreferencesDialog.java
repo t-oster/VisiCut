@@ -115,6 +115,8 @@ public class PreferencesDialog extends javax.swing.JDialog
 
         tpSettings.setToolTipText("Customize Visicut settings."); // NOI18N
 
+        pnlGeneral.setToolTipText("General settings regarding the functionality."); // NOI18N
+
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreferencesDialog"); // NOI18N
         jLabel1.setText(bundle.getString("DEFAULT_MAPPING")); // NOI18N
         jLabel1.setToolTipText(bundle.getString("DEFAULT_MAPPING_TOOLTIP")); // NOI18N
