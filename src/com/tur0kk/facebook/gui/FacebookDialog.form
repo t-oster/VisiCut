@@ -262,6 +262,7 @@
         <Component class="javax.swing.JButton" name="btnPublish">
           <Properties>
             <Property name="text" type="java.lang.String" resourceKey="btnPublish.text"/>
+            <Property name="toolTipText" type="java.lang.String" resourceKey="btnPublish.toolTipText"/>
             <Property name="name" type="java.lang.String" value="btnPublish" noResource="true"/>
           </Properties>
           <Events>
@@ -317,6 +318,7 @@
             </TitledBorder>
           </Border>
         </Property>
+        <Property name="toolTipText" type="java.lang.String" resourceKey="pnlSelectCamera.toolTipText"/>
         <Property name="name" type="java.lang.String" value="pnlSelectCamera" noResource="true"/>
       </Properties>
 

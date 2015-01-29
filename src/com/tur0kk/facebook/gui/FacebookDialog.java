@@ -197,6 +197,7 @@ public class FacebookDialog extends javax.swing.JDialog
         lblPublishSuccessStatus.setName("lblPublishSuccessStatus"); // NOI18N
 
         btnPublish.setText(resourceMap.getString("btnPublish.text")); // NOI18N
+        btnPublish.setToolTipText(resourceMap.getString("btnPublish.toolTipText")); // NOI18N
         btnPublish.setName("btnPublish"); // NOI18N
         btnPublish.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -252,6 +253,7 @@ public class FacebookDialog extends javax.swing.JDialog
         );
 
         pnlSelectCamera.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("pnlSelectCamera.border.title"))); // NOI18N
+        pnlSelectCamera.setToolTipText(resourceMap.getString("pnlSelectCamera.toolTipText")); // NOI18N
         pnlSelectCamera.setName("pnlSelectCamera"); // NOI18N
         pnlSelectCamera.setLayout(new java.awt.GridLayout(2, 1));
 
