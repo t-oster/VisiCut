@@ -644,6 +644,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(ThingiverseDialog.class);
         setTitle(resourceMap.getString("thingiverseDialog.title")); // NOI18N
         setLocationByPlatform(true);
+        setMinimumSize(new Dimension(800,600));
         setName("thingiverseDialog"); // NOI18N
 
         lProfilePicture.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);

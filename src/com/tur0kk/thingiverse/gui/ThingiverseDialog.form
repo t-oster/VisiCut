@@ -5,6 +5,9 @@
     <Property name="defaultCloseOperation" type="int" value="2"/>
     <Property name="title" type="java.lang.String" resourceKey="thingiverseDialog.title"/>
     <Property name="locationByPlatform" type="boolean" value="true"/>
+    <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+      <Connection code="new Dimension(800,600)" type="code"/>
+    </Property>
     <Property name="name" type="java.lang.String" value="thingiverseDialog" noResource="true"/>
   </Properties>
   <SyntheticProperties>
