@@ -3,6 +3,7 @@
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
+    <Property name="locationByPlatform" type="boolean" value="true"/>
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
       <Connection code="new Dimension(450, 300)" type="code"/>
     </Property>
@@ -52,7 +53,7 @@
   <SubComponents>
     <Container class="javax.swing.JTabbedPane" name="tpSettings">
       <Properties>
-        <Property name="toolTipText" type="java.lang.String" value="Customize Visicut settings." noResource="true"/>
+        <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
       </Properties>
       <AccessibilityProperties>
         <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
@@ -179,7 +180,7 @@
         </Container>
         <Container class="javax.swing.JPanel" name="pnlFacebook">
           <Properties>
-            <Property name="toolTipText" type="java.lang.String" value="Contains settings for the Facebook integration." noResource="true"/>
+            <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
@@ -222,7 +223,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="txtfFabLabLocationFacebookId">
               <Properties>
-                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Set here the id of your FabLab Facebook site to add a reference to your FabLab site in each Facebook post of the Facebook integration.&lt;br&gt;&#xa;Leave empty to disable the referenciation. The id can be found in the URL of the Facebook site, e.g.https://www.facebook.com/pages/Fablab-Aachen/191850277562397.&lt;/html&gt;" noResource="true"/>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Specify the id of your FabLab Facebook site. It will be referenced &lt;br&gt;&#xa; in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL&lt;br&gt;&#xa;of the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 &lt;br&gt;&#xa;enter 191850277562397 in this field.&lt;/html&gt;" noResource="true"/>
               </Properties>
               <BindingProperties>
                 <BindingProperty name="text" source="Form" sourcePath="${preferences.fabLabLocationFacebookId}" target="txtfFabLabLocationFacebookId" targetPath="text" updateStrategy="0" immediately="false">

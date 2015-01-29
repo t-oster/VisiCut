@@ -111,9 +111,10 @@ public class PreferencesDialog extends javax.swing.JDialog
         btCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setLocationByPlatform(true);
         setMinimumSize(new Dimension(450, 300));
 
-        tpSettings.setToolTipText("Customize Visicut settings."); // NOI18N
+        tpSettings.setToolTipText(""); // NOI18N
 
         pnlGeneral.setToolTipText("General settings regarding the functionality."); // NOI18N
 
@@ -175,11 +176,11 @@ public class PreferencesDialog extends javax.swing.JDialog
 
         tpSettings.addTab("General", pnlGeneral);
 
-        pnlFacebook.setToolTipText("Contains settings for the Facebook integration."); // NOI18N
+        pnlFacebook.setToolTipText(""); // NOI18N
 
         lblFabLabLocationFacebookId.setText("FabLab Location Facebook Id:");
 
-        txtfFabLabLocationFacebookId.setToolTipText("<html>Set here the id of your FabLab Facebook site to add a reference to your FabLab site in each Facebook post of the Facebook integration.<br>\nLeave empty to disable the referenciation. The id can be found in the URL of the Facebook site, e.g.https://www.facebook.com/pages/Fablab-Aachen/191850277562397.</html>"); // NOI18N
+        txtfFabLabLocationFacebookId.setToolTipText("<html>Specify the id of your FabLab Facebook site. It will be referenced <br>\n in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL<br>\nof the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 <br>\nenter 191850277562397 in this field.</html>"); // NOI18N
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabLabLocationFacebookId}"), txtfFabLabLocationFacebookId, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
