@@ -7,30 +7,22 @@
  
 package com.mcp14.Autoarrange;
 
-import com.mcp14.ObjectArranger.SVGFile;
 import com.mcp14.Binpacking.Bin;
 import com.mcp14.Binpacking.BinPacking;
 import com.mcp14.Canvas.MArea;
-import com.mcp14.Canvas.MPointDouble;
 
 import com.mcp14.Provider.HoldValues;
 import com.mcp14.Utilities.Utils;
+import com.t_oster.visicut.model.PlfFile;
+import com.t_oster.visicut.model.PlfPart;
 import java.awt.Dimension;
-import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.ObjectInputStream.GetField;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 
 
@@ -42,10 +34,11 @@ import java.util.Set;
  */
 public class AutoArrange {
     public static HashMap<BinNumber, Set<HoldValues>> allValues = new HashMap<BinNumber, Set<HoldValues>>();
-    public static void start(LinkedList<SVGFile> svgFiles, int width, int height) throws FileNotFoundException, UnsupportedEncodingException {
-        InputExporter exporter = new InputExporter(svgFiles.size(),new Dimension(width,height));
-        for (SVGFile s : svgFiles){
-            exporter.addInputs((float) s.width, (float) s.height);
+    
+    public static void start(PlfFile svgFiles, Dimension laserBedDimension) throws FileNotFoundException, UnsupportedEncodingException {
+        InputExporter exporter = new InputExporter(svgFiles.size(),laserBedDimension);
+        for (PlfPart s : svgFiles){
+            exporter.addInputs( s.getBoundingBox().getWidth(), s.getBoundingBox().getHeight());
         }
 	// creates the input file
         exporter.export();

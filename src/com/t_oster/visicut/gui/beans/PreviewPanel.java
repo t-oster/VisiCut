@@ -41,6 +41,7 @@ import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -53,8 +54,11 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -74,7 +78,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   private double bedHeight = 300;
   private boolean needToArrange = false;
   private static AffineTransform arrangeTranslate;
-  private static HashMap<AutoArrange.BinNumber, Set<HoldValues>> arrangeValues;
+  //private static HashMap<AutoArrange.BinNumber, Set<HoldValues>> arrangeValues;
 
   public PreviewPanel()
   {
@@ -98,10 +102,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     needToArrange = value;
   }
   
-  public void setArrangeValues(HashMap<AutoArrange.BinNumber, Set<HoldValues>> values){
-    arrangeValues = values;      
-  }
-
+  
   public void propertyChange(PropertyChangeEvent pce)
   {
     if (VisicutModel.PROP_SELECTEDLASERDEVICE.equals(pce.getPropertyName()))
@@ -495,6 +496,17 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     }
     return somethingMatched;
   }
+  private void autoArrange(int objectID) throws FileNotFoundException, UnsupportedEncodingException{
+    AutoArrange.start(VisicutModel.getInstance().getPlfFile(), new Dimension((int)bedWidth,(int)bedHeight));
+    for (Map.Entry<AutoArrange.BinNumber, Set<HoldValues>> e : AutoArrange.allValues.entrySet()){
+      System.out.println(" Bin - " + e.getKey().toString() );
+      for (HoldValues hv : e.getValue()){
+        System.out.println("Object ID: "+ hv.getObjectID()+" Xcoord : " + hv.getX() + " YCoord : " + hv.getY()
+          + " Rotation : " + hv.getObjectRotation());
+      }
+      
+    }
+  }
 
   @Override
   protected void paintComponent(Graphics g)
@@ -540,13 +552,24 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
         gg.setColor(Color.DARK_GRAY);
         drawGrid(gg);
       }
+      if(needToArrange){
+        try
+        {
+          autoArrange(VisicutModel.getInstance().getPlfFile().getIndexOf(null));
+        }
+        catch (FileNotFoundException ex)
+        {
+          Logger.getLogger(PreviewPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (UnsupportedEncodingException ex)
+        {
+          Logger.getLogger(PreviewPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+      
       for (PlfPart part : VisicutModel.getInstance().getPlfFile())
       {
-        if(needToArrange && arrangeValues.size() > 0 ){
-          //*** plugin the code to update the transformations here ***//
-          
-          //arrangeTranslate = AffineTransform.getTranslateInstance(getTranslatedCoord(), zoom);
-        }
+        
         boolean selected = (part.equals(VisicutModel.getInstance().getSelectedPart()));
         HashMap<Mapping,ImageProcessingThread> renderBuffer = renderBuffers.get(part);
         if (renderBuffer == null)

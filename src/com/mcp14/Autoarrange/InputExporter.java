@@ -48,8 +48,10 @@ public class InputExporter extends Inputs {
         System.out.println("Input written");
     }
     
-    public void addInputs(float x, float y){
-        Inputs i = new Inputs(x,y);
+    public void addInputs(double x, double y) throws UnsupportedOperationException{
+        Inputs i = new Inputs((float)x, (float)y);
         inputers.add(i);        
     }
+
+  
 }

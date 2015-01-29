@@ -114,7 +114,6 @@ import org.jdesktop.application.Action;
  */
 public class MainView extends javax.swing.JFrame
 {
-  private static HashMap<AutoArrange.BinNumber, Set<HoldValues>> arrangeValues;
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView");
 
@@ -2713,9 +2712,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     @Action
   public void onArrangeClicked()
   {
-    arrangeValues = ObjectArranger.objectArrange(previewPanel.getWidth(), previewPanel.getHeight());
     this.previewPanel.setNeedToArrange(true);
-    this.previewPanel.setArrangeValues(arrangeValues);
   }
 
 }
