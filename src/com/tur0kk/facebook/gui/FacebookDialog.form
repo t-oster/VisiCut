@@ -41,9 +41,9 @@
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="btnLogout" min="-2" pref="158" max="-2" attributes="0"/>
-                          <Component id="lUserName" min="-2" pref="239" max="-2" attributes="0"/>
+                          <Component id="lUserName" min="-2" pref="462" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="241" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="pnlSelectCamera" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
