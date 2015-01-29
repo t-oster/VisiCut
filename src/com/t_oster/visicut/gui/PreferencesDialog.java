@@ -113,7 +113,7 @@ public class PreferencesDialog extends javax.swing.JDialog
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new Dimension(450, 300));
 
-        tpSettings.setToolTipText("Customize Visicut settings"); // NOI18N
+        tpSettings.setToolTipText("Customize Visicut settings."); // NOI18N
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreferencesDialog"); // NOI18N
         jLabel1.setText(bundle.getString("DEFAULT_MAPPING")); // NOI18N

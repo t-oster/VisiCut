@@ -52,7 +52,7 @@
   <SubComponents>
     <Container class="javax.swing.JTabbedPane" name="tpSettings">
       <Properties>
-        <Property name="toolTipText" type="java.lang.String" value="Customize Visicut settings" noResource="true"/>
+        <Property name="toolTipText" type="java.lang.String" value="Customize Visicut settings." noResource="true"/>
       </Properties>
       <AccessibilityProperties>
         <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
