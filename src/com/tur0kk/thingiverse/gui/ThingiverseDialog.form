@@ -551,6 +551,7 @@
         <Component class="javax.swing.JCheckBox" name="cbExtensions">
           <Properties>
             <Property name="text" type="java.lang.String" resourceKey="cbExtensions.text"/>
+            <Property name="toolTipText" type="java.lang.String" resourceKey="cbExtensions.toolTipText"/>
             <Property name="horizontalAlignment" type="int" value="2"/>
             <Property name="name" type="java.lang.String" value="cbExtensions" noResource="true"/>
           </Properties>
@@ -578,6 +579,7 @@
     <Component class="javax.swing.JButton" name="btnRefresh">
       <Properties>
         <Property name="text" type="java.lang.String" resourceKey="btnRefresh.text"/>
+        <Property name="toolTipText" type="java.lang.String" resourceKey="btnRefresh.toolTipText"/>
         <Property name="name" type="java.lang.String" value="btnRefresh" noResource="true"/>
       </Properties>
       <Events>

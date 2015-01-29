@@ -53,7 +53,7 @@
   <SubComponents>
     <Container class="javax.swing.JTabbedPane" name="generalTab">
       <Properties>
-        <Property name="toolTipText" type="java.lang.String" value="Customize Visicut settings." noResource="true"/>
+        <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
       </Properties>
       <AccessibilityProperties>
         <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
@@ -65,7 +65,7 @@
       <SubComponents>
         <Container class="javax.swing.JPanel" name="jPanel1">
           <Properties>
-            <Property name="toolTipText" type="java.lang.String" value="General settings regarding the functionality." noResource="true"/>
+            <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
@@ -180,7 +180,7 @@
         </Container>
         <Container class="javax.swing.JPanel" name="jPanel2">
           <Properties>
-            <Property name="toolTipText" type="java.lang.String" value="Contains settings for the Thingiverse integration." noResource="true"/>
+            <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
@@ -245,7 +245,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="txtfSupportedExtensions">
               <Properties>
-                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Configure here which file extensions are considered for filtering if the filter option&lt;br&gt; &quot;Supported file extensions&quot;  is enabled in the Thingiverse dialog.&lt;br&gt;&#xa;This should match the supported file extensions of Visicut to filter out all projects with unsupported file types.&lt;/html&gt;" noResource="true"/>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Configure here which file extensions are considered for filtering if the filter option&lt;br&gt; &quot;Supported file extensions&quot;  is enabled in the Thingiverse dialog.&lt;br&gt;&#xa;This should match the supported file extensions of Visicut.&lt;/html&gt;" noResource="true"/>
                 <Property name="autoscrolls" type="boolean" value="false"/>
               </Properties>
               <BindingProperties>

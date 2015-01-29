@@ -117,9 +117,9 @@ public class PreferencesDialog extends javax.swing.JDialog
         setLocationByPlatform(true);
         setMinimumSize(new Dimension(450,300));
 
-        generalTab.setToolTipText("Customize Visicut settings."); // NOI18N
+        generalTab.setToolTipText(""); // NOI18N
 
-        jPanel1.setToolTipText("General settings regarding the functionality."); // NOI18N
+        jPanel1.setToolTipText(""); // NOI18N
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreferencesDialog"); // NOI18N
         jLabel1.setText(bundle.getString("DEFAULT_MAPPING")); // NOI18N
@@ -179,7 +179,7 @@ public class PreferencesDialog extends javax.swing.JDialog
 
         generalTab.addTab("General", jPanel1);
 
-        jPanel2.setToolTipText("Contains settings for the Thingiverse integration."); // NOI18N
+        jPanel2.setToolTipText(""); // NOI18N
 
         lblLasercutterTags.setText("Lasercutter Tags:");
 
@@ -189,7 +189,7 @@ public class PreferencesDialog extends javax.swing.JDialog
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.laserCutterTags}"), txtfLasercutterTags, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
-        txtfSupportedExtensions.setToolTipText("<html>Configure here which file extensions are considered for filtering if the filter option<br> \"Supported file extensions\"  is enabled in the Thingiverse dialog.<br>\nThis should match the supported file extensions of Visicut to filter out all projects with unsupported file types.</html>"); // NOI18N
+        txtfSupportedExtensions.setToolTipText("<html>Configure here which file extensions are considered for filtering if the filter option<br> \"Supported file extensions\"  is enabled in the Thingiverse dialog.<br>\nThis should match the supported file extensions of Visicut.</html>"); // NOI18N
         txtfSupportedExtensions.setAutoscrolls(false);
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.supportedExtensions}"), txtfSupportedExtensions, org.jdesktop.beansbinding.BeanProperty.create("text"));

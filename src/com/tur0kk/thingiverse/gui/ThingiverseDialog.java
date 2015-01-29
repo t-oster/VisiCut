@@ -816,6 +816,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         pnlFilter.setLayout(new java.awt.GridLayout(2, 1, 1, 0));
 
         cbExtensions.setText(resourceMap.getString("cbExtensions.text")); // NOI18N
+        cbExtensions.setToolTipText(resourceMap.getString("cbExtensions.toolTipText")); // NOI18N
         cbExtensions.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         cbExtensions.setName("cbExtensions"); // NOI18N
         pnlFilter.add(cbExtensions);
@@ -832,6 +833,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         lblOpeningFile.setName("lblOpeningFile"); // NOI18N
 
         btnRefresh.setText(resourceMap.getString("btnRefresh.text")); // NOI18N
+        btnRefresh.setToolTipText(resourceMap.getString("btnRefresh.toolTipText")); // NOI18N
         btnRefresh.setName("btnRefresh"); // NOI18N
         btnRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
