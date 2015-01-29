@@ -10,11 +10,11 @@
  */
 package com.tur0kk.thingiverse.gui;
 
-import com.t_oster.visicut.gui.MainView;
 import com.tur0kk.LoadingIcon;
 import com.tur0kk.TakePhotoThread;
 import com.tur0kk.thingiverse.model.Thing;
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
@@ -43,6 +43,17 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
     
     // close camera on exit
     initWindowListener();
+    
+    // display thing
+    // scale image to label size
+    Image rawImage = this.thing.getImage().getImage();
+    Image scaledImage = rawImage.getScaledInstance(
+      lblThingImage.getWidth(),
+      lblThingImage.getHeight(),
+      Image.SCALE_SMOOTH);
+    lblThingImage.setIcon(this.thing.getImage());
+    lblThingName.setText(thing.getName());
+    this.setTitle("I made one: " + this.thing.getName());
     
     // change cam 
     ItemListener selectChangeListener = new ItemListener() {
@@ -90,12 +101,16 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
         pnlSelectCamera = new javax.swing.JPanel();
         rdbtnWebcam = new javax.swing.JRadioButton();
         rdbtnVisicam = new javax.swing.JRadioButton();
+        lblThingImage = new javax.swing.JLabel();
+        lblThingName = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(ThingiverseUploadDialog.class);
+        setTitle(resourceMap.getString("Form.title")); // NOI18N
+        setLocationByPlatform(true);
         setName("Form"); // NOI18N
         setResizable(false);
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(ThingiverseUploadDialog.class);
         pnlPhoto.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("pnlPhoto.border.lineColor"))); // NOI18N
         pnlPhoto.setName("pnlPhoto"); // NOI18N
 
@@ -234,26 +249,45 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
         rdbtnVisicam.setName("rdbtnVisicam"); // NOI18N
         pnlSelectCamera.add(rdbtnVisicam);
 
+        lblThingImage.setText(resourceMap.getString("lblThingImage.text")); // NOI18N
+        lblThingImage.setName("lblThingImage"); // NOI18N
+
+        lblThingName.setFont(resourceMap.getFont("lblThingName.font")); // NOI18N
+        lblThingName.setText(resourceMap.getString("lblThingName.text")); // NOI18N
+        lblThingName.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        lblThingName.setName("lblThingName"); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pnlPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10)
-                .addComponent(pnlPublish, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(615, Short.MAX_VALUE)
-                .addComponent(pnlSelectCamera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(pnlPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                        .addComponent(pnlPublish, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(lblThingImage, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblThingName, javax.swing.GroupLayout.PREFERRED_SIZE, 478, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
+                        .addComponent(pnlSelectCamera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(pnlSelectCamera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(pnlSelectCamera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblThingName, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
+                            .addComponent(lblThingImage, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(pnlPublish, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -379,6 +413,8 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
     private javax.swing.JLabel lblLoading;
     private javax.swing.JLabel lblPhoto;
     private javax.swing.JLabel lblPublishSuccessStatus;
+    private javax.swing.JLabel lblThingImage;
+    private javax.swing.JLabel lblThingName;
     private javax.swing.JPanel pnlPhoto;
     private javax.swing.JPanel pnlPublish;
     private javax.swing.JPanel pnlSelectCamera;
