@@ -25,7 +25,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="pnlFacebook" alignment="1" pref="460" max="32767" attributes="0"/>
+          <Component id="tpSettings" alignment="1" pref="460" max="32767" attributes="0"/>
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace pref="320" max="32767" attributes="0"/>
               <Component id="btCancel" min="-2" max="-2" attributes="0"/>
@@ -38,7 +38,7 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="pnlFacebook" pref="195" max="32767" attributes="0"/>
+              <Component id="tpSettings" pref="195" max="32767" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="btOk" min="-2" max="-2" attributes="0"/>
@@ -50,7 +50,10 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Container class="javax.swing.JTabbedPane" name="pnlFacebook">
+    <Container class="javax.swing.JTabbedPane" name="tpSettings">
+      <Properties>
+        <Property name="toolTipText" type="java.lang.String" value="Customize Visicut settings" noResource="true"/>
+      </Properties>
       <AccessibilityProperties>
         <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="com/t_oster/visicut/gui/resources/PreferencesDialog.properties" key="GENERAL" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -171,7 +174,10 @@
             </Component>
           </SubComponents>
         </Container>
-        <Container class="javax.swing.JPanel" name="jPanel2">
+        <Container class="javax.swing.JPanel" name="pnlFacebook">
+          <Properties>
+            <Property name="toolTipText" type="java.lang.String" value="Contains settings for the Facebook integration." noResource="true"/>
+          </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Facebook">
@@ -185,7 +191,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                      <Component id="lblFabLabLocationFacebookId" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="txtfFabLabLocationFacebookId" pref="273" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -197,7 +203,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblFabLabLocationFacebookId" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="txtfFabLabLocationFacebookId" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace pref="136" max="32767" attributes="0"/>
@@ -206,12 +212,15 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="jLabel3">
+            <Component class="javax.swing.JLabel" name="lblFabLabLocationFacebookId">
               <Properties>
                 <Property name="text" type="java.lang.String" value="FabLab Location Facebook Id:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txtfFabLabLocationFacebookId">
+              <Properties>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Set here the id of your FabLab Facebook site to add a reference to your FabLab site in each Facebook post of the Facebook integration.&lt;br&gt;&#xa;Leave empty to disable the referenciation. The id can be found in the URL of the Facebook site, e.g.https://www.facebook.com/pages/Fablab-Aachen/191850277562397.&lt;/html&gt;" noResource="true"/>
+              </Properties>
               <BindingProperties>
                 <BindingProperty name="text" source="Form" sourcePath="${preferences.fabLabLocationFacebookId}" target="txtfFabLabLocationFacebookId" targetPath="text" updateStrategy="0" immediately="false">
                   <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>

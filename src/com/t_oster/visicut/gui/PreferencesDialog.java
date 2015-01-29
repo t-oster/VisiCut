@@ -96,7 +96,7 @@ public class PreferencesDialog extends javax.swing.JDialog
     private void initComponents() {
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
-        pnlFacebook = new javax.swing.JTabbedPane();
+        tpSettings = new javax.swing.JTabbedPane();
         pnlGeneral = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         cbDefaultMapping = new javax.swing.JComboBox();
@@ -104,14 +104,16 @@ public class PreferencesDialog extends javax.swing.JDialog
         cbSandboxLaserScript = new javax.swing.JCheckBox();
         lbFilenamesForJobs = new javax.swing.JLabel();
         cbSandboxLaserScript1 = new javax.swing.JCheckBox();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
+        pnlFacebook = new javax.swing.JPanel();
+        lblFabLabLocationFacebookId = new javax.swing.JLabel();
         txtfFabLabLocationFacebookId = new javax.swing.JTextField();
         btOk = new javax.swing.JButton();
         btCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new Dimension(450, 300));
+
+        tpSettings.setToolTipText("Customize Visicut settings"); // NOI18N
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreferencesDialog"); // NOI18N
         jLabel1.setText(bundle.getString("DEFAULT_MAPPING")); // NOI18N
@@ -169,35 +171,39 @@ public class PreferencesDialog extends javax.swing.JDialog
                 .addContainerGap(86, Short.MAX_VALUE))
         );
 
-        pnlFacebook.addTab("General", pnlGeneral);
+        tpSettings.addTab("General", pnlGeneral);
 
-        jLabel3.setText("FabLab Location Facebook Id:");
+        pnlFacebook.setToolTipText("Contains settings for the Facebook integration."); // NOI18N
+
+        lblFabLabLocationFacebookId.setText("FabLab Location Facebook Id:");
+
+        txtfFabLabLocationFacebookId.setToolTipText("<html>Set here the id of your FabLab Facebook site to add a reference to your FabLab site in each Facebook post of the Facebook integration.<br>\nLeave empty to disable the referenciation. The id can be found in the URL of the Facebook site, e.g.https://www.facebook.com/pages/Fablab-Aachen/191850277562397.</html>"); // NOI18N
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabLabLocationFacebookId}"), txtfFabLabLocationFacebookId, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout pnlFacebookLayout = new javax.swing.GroupLayout(pnlFacebook);
+        pnlFacebook.setLayout(pnlFacebookLayout);
+        pnlFacebookLayout.setHorizontalGroup(
+            pnlFacebookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlFacebookLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel3)
+                .addComponent(lblFabLabLocationFacebookId)
                 .addGap(18, 18, 18)
                 .addComponent(txtfFabLabLocationFacebookId, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
                 .addContainerGap())
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        pnlFacebookLayout.setVerticalGroup(
+            pnlFacebookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlFacebookLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
+                .addGroup(pnlFacebookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblFabLabLocationFacebookId)
                     .addComponent(txtfFabLabLocationFacebookId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(136, Short.MAX_VALUE))
         );
 
-        pnlFacebook.addTab("Facebook", jPanel2);
+        tpSettings.addTab("Facebook", pnlFacebook);
 
         btOk.setText("OK");
         btOk.addActionListener(new java.awt.event.ActionListener() {
@@ -217,7 +223,7 @@ public class PreferencesDialog extends javax.swing.JDialog
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnlFacebook, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
+            .addComponent(tpSettings, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(320, Short.MAX_VALUE)
                 .addComponent(btCancel)
@@ -228,7 +234,7 @@ public class PreferencesDialog extends javax.swing.JDialog
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(pnlFacebook, javax.swing.GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE)
+                .addComponent(tpSettings, javax.swing.GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btOk)
@@ -236,7 +242,7 @@ public class PreferencesDialog extends javax.swing.JDialog
                 .addContainerGap())
         );
 
-        pnlFacebook.getAccessibleContext().setAccessibleName(bundle.getString("GENERAL")); // NOI18N
+        tpSettings.getAccessibleContext().setAccessibleName(bundle.getString("GENERAL")); // NOI18N
 
         bindingGroup.bind();
 
@@ -262,11 +268,11 @@ public class PreferencesDialog extends javax.swing.JDialog
     private javax.swing.JCheckBox cbSandboxLaserScript1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lbFilenamesForJobs;
-    private javax.swing.JTabbedPane pnlFacebook;
+    private javax.swing.JLabel lblFabLabLocationFacebookId;
+    private javax.swing.JPanel pnlFacebook;
     private javax.swing.JPanel pnlGeneral;
+    private javax.swing.JTabbedPane tpSettings;
     private javax.swing.JTextField txtfFabLabLocationFacebookId;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
