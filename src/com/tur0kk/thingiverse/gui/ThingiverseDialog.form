@@ -31,27 +31,25 @@
           <Group type="102" alignment="1" attributes="0">
               <Component id="lProfilePicture" min="-2" pref="112" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="lUserName" pref="158" max="32767" attributes="1"/>
-                  <Component id="btnLogout" alignment="0" min="-2" pref="158" max="-2" attributes="1"/>
-              </Group>
-              <EmptySpace pref="422" max="32767" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Group type="102" attributes="0">
-                      <Component id="lblOpeningFile" min="-2" pref="88" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="88" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Component id="btnMadeOne" min="-2" pref="158" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                  </Group>
-              </Group>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="lUserName" max="32767" attributes="1"/>
+                  <Component id="btnLogout" alignment="0" pref="158" max="32767" attributes="1"/>
+              </Group>
+              <EmptySpace pref="608" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="1" max="-2" attributes="0">
                   <Component id="btnRefresh" max="32767" attributes="1"/>
-                  <Component id="pnlFilter" alignment="0" max="32767" attributes="1"/>
+                  <Component id="pnlFilter" alignment="1" max="32767" attributes="1"/>
               </Group>
           </Group>
-          <Component id="tpLists" alignment="0" pref="1045" max="32767" attributes="0"/>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace min="-2" pref="621" max="-2" attributes="0"/>
+              <Component id="lblOpeningFile" min="-2" pref="88" max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Component id="btnMadeOne1" min="-2" pref="158" max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Component id="btnMadeOne" min="-2" pref="158" max="-2" attributes="0"/>
+          </Group>
+          <Component id="tpLists" alignment="0" pref="1055" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -59,33 +57,28 @@
           <Group type="102" attributes="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
-                              <Component id="pnlFilter" min="-2" max="-2" attributes="1"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-                              <Component id="lblOpeningFile" min="-2" pref="32" max="-2" attributes="1"/>
-                          </Group>
-                      </Group>
+                      <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
+                      <Component id="pnlFilter" min="-2" max="-2" attributes="1"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="btnRefresh" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
-                          <Component id="btnMadeOne" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="btnRefresh" min="-2" pref="37" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                      <Group type="102" alignment="1" attributes="1">
-                          <Component id="lUserName" max="32767" attributes="1"/>
+                  <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="lUserName" pref="65" max="32767" attributes="1"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="btnLogout" min="-2" pref="37" max="-2" attributes="1"/>
                       </Group>
                       <Component id="lProfilePicture" alignment="1" min="-2" pref="112" max="-2" attributes="1"/>
                   </Group>
               </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="tpLists" pref="504" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
+              <Component id="tpLists" pref="489" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="btnMadeOne" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
+                  <Component id="btnMadeOne1" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
+                  <Component id="lblOpeningFile" alignment="3" min="-2" pref="32" max="-2" attributes="1"/>
+              </Group>
           </Group>
       </Group>
     </DimensionLayout>
@@ -636,6 +629,17 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnMadeOneActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnMadeOne1">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="btnMadeOne1.text"/>
+        <Property name="toolTipText" type="java.lang.String" resourceKey="btnMadeOne1.toolTipText"/>
+        <Property name="enabled" type="boolean" value="false"/>
+        <Property name="name" type="java.lang.String" value="btnMadeOne1" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnMadeOne1ActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
