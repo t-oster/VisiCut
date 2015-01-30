@@ -523,6 +523,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         tpLists.addTab(resourceMap.getString("spltpLiked.TabConstraints.tabTitle"), spltpLiked); // NOI18N
 
+        spltpCollections.setDividerLocation(35);
         spltpCollections.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         spltpCollections.setEnabled(false);
         spltpCollections.setName("spltpCollections"); // NOI18N
@@ -562,11 +563,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         tpLists.addTab(resourceMap.getString("spltpCollections.TabConstraints.tabTitle"), spltpCollections); // NOI18N
 
+        spltpSearchContainer.setDividerLocation(35);
         spltpSearchContainer.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         spltpSearchContainer.setEnabled(false);
         spltpSearchContainer.setName("spltpSearchContainer"); // NOI18N
 
-        pnlSearchField.setMinimumSize(new Dimension(300,300));
         pnlSearchField.setName("pnlSearchField"); // NOI18N
         pnlSearchField.setLayout(new java.awt.BorderLayout());
 
@@ -580,7 +581,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
         pnlSearchField.add(txtSearch, java.awt.BorderLayout.CENTER);
 
         btnSearch.setText(resourceMap.getString("btnSearch.text")); // NOI18N
-        btnSearch.setMaximumSize(new Dimension(50,30));
         btnSearch.setMinimumSize(new Dimension(50,30));
         btnSearch.setName("btnSearch"); // NOI18N
         btnSearch.setPreferredSize(new Dimension(50,30));
