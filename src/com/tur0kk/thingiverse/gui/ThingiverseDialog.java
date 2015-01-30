@@ -323,10 +323,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
         
         // init combobox by hand, because it also is added to the header by hand
         // fill combobox with names of collections
+        
         ThingCollectionComboboxModel comboboxModel = new ThingCollectionComboboxModel(collections);
-        cbCollection.setModel(comboboxModel);
-        cbCollection.setRenderer(new ThingCollectionComboboxRenderer()); // display just the name of a collection
-        cbCollection.addItemListener(new ItemListener() { // listen for item changes and display collection
+        jComboBox1.setModel(comboboxModel);
+        jComboBox1.setRenderer(new ThingCollectionComboboxRenderer()); // display just the name of a collection
+        jComboBox1.addItemListener(new ItemListener() { // listen for item changes and display collection
           public void itemStateChanged(ItemEvent e)
           {
             if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -335,7 +336,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
           }
         }); // end listener
         
-        cbCollection.addMouseListener(new MouseListener() {
+        jComboBox1.addMouseListener(new MouseListener() {
 
           public void mouseClicked(MouseEvent e)
           {
@@ -359,7 +360,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
           }
         });
         
-        actionCollection(); // starts own non gui thread, needed here to ensure that gui set up is ready        
+        actionCollection(); // starts own non gui thread, needed here to ensure that gui set up is ready       
       }
     }).start();
   }
@@ -370,7 +371,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
       public void run()
       {
-        ThingCollection collection = (ThingCollection) cbCollection.getSelectedItem();
+        ThingCollection collection = (ThingCollection) jComboBox1.getSelectedItem();
         
         if(collection == null){
           return; // break execution, because no valid collection was loaded
@@ -448,12 +449,15 @@ public class ThingiverseDialog extends javax.swing.JDialog
         sclpLikedThing = new javax.swing.JScrollPane();
         lstLikedThing = new javax.swing.JList();
         spltpCollections = new javax.swing.JSplitPane();
+        pnlCollectionChooser = new javax.swing.JPanel();
+        jComboBox1 = new javax.swing.JComboBox();
+        spltpCollection = new javax.swing.JSplitPane();
         sclpCollections = new javax.swing.JScrollPane();
         lstCollection = new javax.swing.JList();
         sclpCollectionThing = new javax.swing.JScrollPane();
         lstCollectionThing = new javax.swing.JList();
         spltpSearchContainer = new javax.swing.JSplitPane();
-        jPanel1 = new javax.swing.JPanel();
+        pnlSearchField = new javax.swing.JPanel();
         txtSearch = new javax.swing.JTextField();
         btnSearch = new javax.swing.JButton();
         spltpSearch = new javax.swing.JSplitPane();
@@ -545,7 +549,20 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         tpLists.addTab(resourceMap.getString("spltpLiked.TabConstraints.tabTitle"), spltpLiked); // NOI18N
 
+        spltpCollections.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         spltpCollections.setName("spltpCollections"); // NOI18N
+
+        pnlCollectionChooser.setMinimumSize(new Dimension(300,300));
+        pnlCollectionChooser.setName("pnlCollectionChooser"); // NOI18N
+        pnlCollectionChooser.setLayout(new java.awt.BorderLayout());
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.setName("jComboBox1"); // NOI18N
+        pnlCollectionChooser.add(jComboBox1, java.awt.BorderLayout.CENTER);
+
+        spltpCollections.setTopComponent(pnlCollectionChooser);
+
+        spltpCollection.setName("spltpCollection"); // NOI18N
 
         sclpCollections.setBorder(null);
         sclpCollections.setMinimumSize(new Dimension(200,300));
@@ -553,12 +570,10 @@ public class ThingiverseDialog extends javax.swing.JDialog
         sclpCollections.setPreferredSize(new Dimension(400,300));
 
         lstCollection.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        lstCollection.setAlignmentX(0.0F);
-        lstCollection.setAlignmentY(0.0F);
         lstCollection.setName("lstCollection"); // NOI18N
         sclpCollections.setViewportView(lstCollection);
 
-        spltpCollections.setLeftComponent(sclpCollections);
+        spltpCollection.setLeftComponent(sclpCollections);
 
         sclpCollectionThing.setMinimumSize(new Dimension(200,300));
         sclpCollectionThing.setName("sclpCollectionThing"); // NOI18N
@@ -567,16 +582,18 @@ public class ThingiverseDialog extends javax.swing.JDialog
         lstCollectionThing.setName("lstCollectionThing"); // NOI18N
         sclpCollectionThing.setViewportView(lstCollectionThing);
 
-        spltpCollections.setRightComponent(sclpCollectionThing);
+        spltpCollection.setRightComponent(sclpCollectionThing);
+
+        spltpCollections.setRightComponent(spltpCollection);
 
         tpLists.addTab(resourceMap.getString("spltpCollections.TabConstraints.tabTitle"), spltpCollections); // NOI18N
 
         spltpSearchContainer.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         spltpSearchContainer.setName("spltpSearchContainer"); // NOI18N
 
-        jPanel1.setMinimumSize(new Dimension(300,300));
-        jPanel1.setName("jPanel1"); // NOI18N
-        jPanel1.setLayout(new java.awt.BorderLayout());
+        pnlSearchField.setMinimumSize(new Dimension(300,300));
+        pnlSearchField.setName("pnlSearchField"); // NOI18N
+        pnlSearchField.setLayout(new java.awt.BorderLayout());
 
         txtSearch.setFont(resourceMap.getFont("txtSearch.font")); // NOI18N
         txtSearch.setName("txtSearch"); // NOI18N
@@ -585,7 +602,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
                 txtSearchKeyPressed(evt);
             }
         });
-        jPanel1.add(txtSearch, java.awt.BorderLayout.CENTER);
+        pnlSearchField.add(txtSearch, java.awt.BorderLayout.CENTER);
 
         btnSearch.setText(resourceMap.getString("btnSearch.text")); // NOI18N
         btnSearch.setMaximumSize(new Dimension(50,30));
@@ -597,9 +614,9 @@ public class ThingiverseDialog extends javax.swing.JDialog
                 btnSearchActionPerformed(evt);
             }
         });
-        jPanel1.add(btnSearch, java.awt.BorderLayout.EAST);
+        pnlSearchField.add(btnSearch, java.awt.BorderLayout.EAST);
 
-        spltpSearchContainer.setTopComponent(jPanel1);
+        spltpSearchContainer.setTopComponent(pnlSearchField);
 
         spltpSearch.setName("spltpSearch"); // NOI18N
 
@@ -980,7 +997,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
     private javax.swing.JButton btnSearch;
     private javax.swing.JCheckBox cbExtensions;
     private javax.swing.JCheckBox cbTags;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel lProfilePicture;
     private javax.swing.JLabel lUserName;
     private javax.swing.JLabel lblOpeningFile;
@@ -992,7 +1009,9 @@ public class ThingiverseDialog extends javax.swing.JDialog
     private javax.swing.JList lstMyThingsThing;
     private javax.swing.JList lstSearch;
     private javax.swing.JList lstSearchThing;
+    private javax.swing.JPanel pnlCollectionChooser;
     private javax.swing.JPanel pnlFilter;
+    private javax.swing.JPanel pnlSearchField;
     private javax.swing.JScrollPane sclpCollectionThing;
     private javax.swing.JScrollPane sclpCollections;
     private javax.swing.JScrollPane sclpLiked;
@@ -1001,6 +1020,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
     private javax.swing.JScrollPane sclpMyThingsThing;
     private javax.swing.JScrollPane sclpSearch;
     private javax.swing.JScrollPane sclpSearchThing;
+    private javax.swing.JSplitPane spltpCollection;
     private javax.swing.JSplitPane spltpCollections;
     private javax.swing.JSplitPane spltpLiked;
     private javax.swing.JSplitPane spltpMyThings;
@@ -1023,5 +1043,4 @@ public class ThingiverseDialog extends javax.swing.JDialog
   private javax.swing.JPanel pnlCollection;
   private javax.swing.JLabel lblCollection;
   private javax.swing.JLabel lblLoadingCollection;
-  private javax.swing.JComboBox cbCollection;
 }
