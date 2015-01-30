@@ -110,6 +110,7 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
         setLocationByPlatform(true);
         setName("Form"); // NOI18N
         setResizable(false);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         pnlPhoto.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("pnlPhoto.border.lineColor"))); // NOI18N
         pnlPhoto.setName("pnlPhoto"); // NOI18N
@@ -173,6 +174,8 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
                     .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
+        getContentPane().add(pnlPhoto, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 91, -1, -1));
+
         pnlPublish.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("pnlPublish.border.lineColor"))); // NOI18N
         pnlPublish.setName("pnlPublish"); // NOI18N
 
@@ -234,6 +237,8 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
                 .addContainerGap())
         );
 
+        getContentPane().add(pnlPublish, new org.netbeans.lib.awtextra.AbsoluteConstraints(356, 91, -1, -1));
+
         pnlSelectCamera.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("pnlSelectCamera.border.title"))); // NOI18N
         pnlSelectCamera.setName("pnlSelectCamera"); // NOI18N
         pnlSelectCamera.setLayout(new java.awt.GridLayout(2, 1));
@@ -249,48 +254,17 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
         rdbtnVisicam.setName("rdbtnVisicam"); // NOI18N
         pnlSelectCamera.add(rdbtnVisicam);
 
+        getContentPane().add(pnlSelectCamera, new org.netbeans.lib.awtextra.AbsoluteConstraints(615, 11, -1, -1));
+
         lblThingImage.setText(resourceMap.getString("lblThingImage.text")); // NOI18N
         lblThingImage.setName("lblThingImage"); // NOI18N
+        getContentPane().add(lblThingImage, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 11, 64, 64));
 
         lblThingName.setFont(resourceMap.getFont("lblThingName.font")); // NOI18N
         lblThingName.setText(resourceMap.getString("lblThingName.text")); // NOI18N
         lblThingName.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         lblThingName.setName("lblThingName"); // NOI18N
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(pnlPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pnlPublish, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(12, 12, 12))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblThingImage, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblThingName, javax.swing.GroupLayout.PREFERRED_SIZE, 478, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
-                        .addComponent(pnlSelectCamera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblThingName, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
-                    .addComponent(lblThingImage, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pnlSelectCamera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pnlPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pnlPublish, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
+        getContentPane().add(lblThingName, new org.netbeans.lib.awtextra.AbsoluteConstraints(84, 11, 478, 69));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
