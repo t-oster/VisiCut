@@ -665,6 +665,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         });
 
         btnMadeOne.setText(resourceMap.getString("btnMadeOne.text")); // NOI18N
+        btnMadeOne.setToolTipText(resourceMap.getString("btnMadeOne.toolTipText")); // NOI18N
         btnMadeOne.setEnabled(false);
         btnMadeOne.setName("btnMadeOne"); // NOI18N
         btnMadeOne.addActionListener(new java.awt.event.ActionListener() {

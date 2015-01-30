@@ -234,7 +234,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="txtfLasercutterTags">
               <Properties>
-                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Configure here which Thingiverse tags are considered for filtering if the filter option&lt;br&gt; &quot;Lasercutter tags&quot;  is enabled in the Thingiverse dialog.&lt;/html&gt;" noResource="true"/>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Configure which Thingiverse tags are considered for filtering if the filter option&lt;br&gt; &quot;Lasercutter tags&quot;  is enabled in the Thingiverse dialog.&lt;/html&gt;" noResource="true"/>
                 <Property name="autoscrolls" type="boolean" value="false"/>
               </Properties>
               <BindingProperties>
@@ -245,7 +245,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="txtfSupportedExtensions">
               <Properties>
-                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Configure here which file extensions are considered for filtering if the filter option&lt;br&gt; &quot;Supported file extensions&quot;  is enabled in the Thingiverse dialog.&lt;br&gt;&#xa;This should match the supported file extensions of Visicut.&lt;/html&gt;" noResource="true"/>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Configure which file extensions are considered for filtering if the filter option&lt;br&gt; &quot;Supported file extensions&quot;  is enabled in the Thingiverse dialog.&lt;br&gt;&#xa;This should match the supported file extensions of VisiCut.&lt;/html&gt;" noResource="true"/>
                 <Property name="autoscrolls" type="boolean" value="false"/>
               </Properties>
               <BindingProperties>

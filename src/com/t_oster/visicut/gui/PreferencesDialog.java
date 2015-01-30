@@ -184,13 +184,13 @@ public class PreferencesDialog extends javax.swing.JDialog
 
         lblLasercutterTags.setText("Lasercutter tags:");
 
-        txtfLasercutterTags.setToolTipText("<html>Configure here which Thingiverse tags are considered for filtering if the filter option<br> \"Lasercutter tags\"  is enabled in the Thingiverse dialog.</html>"); // NOI18N
+        txtfLasercutterTags.setToolTipText("<html>Configure which Thingiverse tags are considered for filtering if the filter option<br> \"Lasercutter tags\"  is enabled in the Thingiverse dialog.</html>"); // NOI18N
         txtfLasercutterTags.setAutoscrolls(false);
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.laserCutterTags}"), txtfLasercutterTags, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
-        txtfSupportedExtensions.setToolTipText("<html>Configure here which file extensions are considered for filtering if the filter option<br> \"Supported file extensions\"  is enabled in the Thingiverse dialog.<br>\nThis should match the supported file extensions of Visicut.</html>"); // NOI18N
+        txtfSupportedExtensions.setToolTipText("<html>Configure which file extensions are considered for filtering if the filter option<br> \"Supported file extensions\"  is enabled in the Thingiverse dialog.<br>\nThis should match the supported file extensions of VisiCut.</html>"); // NOI18N
         txtfSupportedExtensions.setAutoscrolls(false);
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.supportedExtensions}"), txtfSupportedExtensions, org.jdesktop.beansbinding.BeanProperty.create("text"));
