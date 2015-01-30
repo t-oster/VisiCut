@@ -34,6 +34,12 @@ public class ThingFileClickListener extends MouseAdapter
     JList list = (JList) evt.getSource();
 
     if(evt.getClickCount() == 2){
+      int index = list.locationToIndex(evt.getPoint());
+      final ThingFile aFile = (ThingFile) list.getModel().getElementAt(index);
+      
+      if(index < 0 || aFile == null){ // nothing visible
+        return;
+      }
       
       // user feedback
       SwingUtilities.invokeLater(new Runnable() {
@@ -44,8 +50,6 @@ public class ThingFileClickListener extends MouseAdapter
       });
       
       // load file
-      int index = list.locationToIndex(evt.getPoint());
-      final ThingFile aFile = (ThingFile) list.getModel().getElementAt(index);
       new Thread(new Runnable() {
 
             public void run()
