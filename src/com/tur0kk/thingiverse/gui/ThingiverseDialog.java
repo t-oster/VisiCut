@@ -178,7 +178,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
                   // image loaded, decrement loading images
                   if (feedbackCounter.decrementAndGet() == 0)
                   {
-                    feedbackLabel.setVisible(false);
+                    feedbackLabel.setIcon(null);
                   }
                 }
               });
@@ -189,7 +189,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         
         // if list empty disable feedback
         if(thingsToLoad.isEmpty()){
-          feedbackLabel.setVisible(false);
+          feedbackLabel.setIcon(null);
         }
         // do for other tabs
 
@@ -207,51 +207,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
           public void run()
           {
             // header for Liked
-            pnlLiked = new JPanel();
             lblLiked = new JLabel();
-            lblLoadingLiked = new JLabel();
-            pnlLiked.setAlignmentX(0.0F);
-            pnlLiked.setAlignmentY(0.0F);
-            pnlLiked.setName("pnlLiked");
-            pnlLiked.setOpaque(false);
-
-            lblLiked.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
             lblLiked.setText("Liked");
-            lblLiked.setAlignmentY(0.0F);
-            lblLiked.setName("lblLiked");
-            lblLiked.setFont(new Font(lblLiked.getFont().getName(), lblLiked.getFont().getStyle(), 14));
-
-            lblLoadingLiked.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-            lblLoadingLiked.setText("");
-            lblLoadingLiked.setAlignmentY(0.0F);
-            lblLoadingLiked.setName("lblLoadingLiked");
-
-            javax.swing.GroupLayout pnlLikedLayout = new javax.swing.GroupLayout(pnlLiked);
-            pnlLiked.setLayout(pnlLikedLayout);
-            pnlLikedLayout.setHorizontalGroup(
-              pnlLikedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(pnlLikedLayout.createSequentialGroup()
-                .addComponent(lblLiked)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblLoadingLiked, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
-            );
-            pnlLikedLayout.setVerticalGroup(
-              pnlLikedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(pnlLikedLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlLikedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                  .addComponent(lblLoadingLiked, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addComponent(lblLiked))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            );
-            
-            // set loading headers
-            ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL);
-            lblLoadingLiked.setIcon((Icon) loadingIcon);
-            tpLists.setTabComponentAt(1, pnlLiked);
-            
-            lblLoadingLiked.setVisible(false);
-            actionLiked(); // starts own non gui thread, needed here to ensure that gui set up is ready
+            lblLiked.setHorizontalTextPosition(JLabel.LEADING);
+            tpLists.setTabComponentAt(1, lblLiked);
+            actionLiked();
           }
         });
         
@@ -269,13 +229,13 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
           public void run()
           {
-            lblLoadingLiked.setVisible(true);
+            lblLiked.setIcon(LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL));
           }
         });
         
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
         List<Thing> things = thingiverse.getLikedThings(cbExtensions.isSelected(), cbTags.isSelected());
-        loadTab(things, lstLiked, numberLoadingLiked, lblLoadingLiked);
+        loadTab(things, lstLiked, numberLoadingLiked, lblLiked);
       }
     }).start();
   }
@@ -289,50 +249,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
         public void run()
         {
           // header for MyThings
-          pnlMyThings = new JPanel();
           lblMyThings = new JLabel();
-          lblLoadingMyThings = new JLabel();
-          pnlMyThings.setAlignmentX(0.0F);
-          pnlMyThings.setAlignmentY(0.0F);
-          pnlMyThings.setName("pnlMyThings");
-          pnlMyThings.setOpaque(false);
-
-          lblMyThings.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
           lblMyThings.setText("MyThings");
-          lblMyThings.setAlignmentY(0.0F);
-          lblMyThings.setName("lblMyThings");
-          lblMyThings.setFont(new Font(lblMyThings.getFont().getName(), lblMyThings.getFont().getStyle(), 14));
-
-          lblLoadingMyThings.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-          lblLoadingMyThings.setText("");
-          lblLoadingMyThings.setAlignmentY(0.0F);
-          lblLoadingMyThings.setName("lblLoadingMyThings");
-
-          javax.swing.GroupLayout pnlMyThingsLayout = new javax.swing.GroupLayout(pnlMyThings);
-          pnlMyThings.setLayout(pnlMyThingsLayout);
-          pnlMyThingsLayout.setHorizontalGroup(
-            pnlMyThingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlMyThingsLayout.createSequentialGroup()
-              .addComponent(lblMyThings)
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-              .addComponent(lblLoadingMyThings, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
-          );
-          pnlMyThingsLayout.setVerticalGroup(
-            pnlMyThingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlMyThingsLayout.createSequentialGroup()
-              .addContainerGap()
-              .addGroup(pnlMyThingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(lblLoadingMyThings, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(lblMyThings))
-              .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-          );
-
-          // set loading headers
-          ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL);
-          lblLoadingMyThings.setIcon((Icon) loadingIcon);
-          tpLists.setTabComponentAt(0, pnlMyThings);
-          lblLoadingMyThings.setVisible(false);
-          actionMyThings(); // starts own non gui thread, needed here to ensure that gui set up is ready
+          lblMyThings.setHorizontalTextPosition(JLabel.LEADING);
+          tpLists.setTabComponentAt(0, lblMyThings);
+          actionMyThings();
         }
       });
 
@@ -348,13 +269,13 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
           public void run()
           {
-            lblLoadingMyThings.setVisible(true);
+            lblMyThings.setIcon(LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL));
           }
         });
         // get things
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
         List<Thing> things = thingiverse.getMyThings(cbExtensions.isSelected(), cbTags.isSelected());
-        loadTab(things, lstMyThings, numberLoadingMyThings, lblLoadingMyThings);
+        loadTab(things, lstMyThings, numberLoadingMyThings, lblMyThings);
       }
     }).start();
       
@@ -367,51 +288,10 @@ public class ThingiverseDialog extends javax.swing.JDialog
       public void run()
       {
         // header for Search
-        pnlSearch = new JPanel();
         lblSearch = new JLabel();
-        lblLoadingSearch = new JLabel();
-        pnlSearch.setAlignmentX(0.0F);
-        pnlSearch.setAlignmentY(0.0F);
-        pnlSearch.setName("pnlSearch");
-        pnlSearch.setOpaque(false);
-
-        lblSearch.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblSearch.setText("Search");
-        lblSearch.setAlignmentY(0.0F);
-        lblSearch.setName("lblSearch");
-        lblSearch.setFont(new Font(lblSearch.getFont().getName(), lblSearch.getFont().getStyle(), 14));
-
-        lblLoadingSearch.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblLoadingSearch.setText("");
-        lblLoadingSearch.setAlignmentY(0.0F);
-        lblLoadingSearch.setName("lblLoadingSearch");
-
-        javax.swing.GroupLayout pnlSearchLayout = new javax.swing.GroupLayout(pnlSearch);
-        pnlSearch.setLayout(pnlSearchLayout);
-        pnlSearchLayout.setHorizontalGroup(
-          pnlSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(pnlSearchLayout.createSequentialGroup()
-            .addComponent(lblSearch)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(lblLoadingSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        pnlSearchLayout.setVerticalGroup(
-          pnlSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(pnlSearchLayout.createSequentialGroup()
-            .addContainerGap()
-            .addGroup(pnlSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(lblLoadingSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(lblSearch))
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        // set loading headers
-        ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL);
-        lblLoadingSearch.setIcon((Icon) loadingIcon);
-        tpLists.setTabComponentAt(3, pnlSearch);
-
-
-        lblLoadingSearch.setVisible(false);
+        lblSearch.setHorizontalTextPosition(JLabel.LEADING);
+        tpLists.setTabComponentAt(3, lblSearch);
       }
     });
   }
@@ -428,62 +308,11 @@ public class ThingiverseDialog extends javax.swing.JDialog
           public void run()
           {
             // header for MyThings
-            pnlCollection = new JPanel();
             lblCollection = new JLabel();
-            lblLoadingCollection = new JLabel();
-            cbCollection = new JComboBox();
-            pnlCollection.setAlignmentX(0.0F);
-            pnlCollection.setAlignmentY(0.0F);
-            pnlCollection.setName("pnlMyThings");
-            pnlCollection.setOpaque(false);
-
-            lblCollection.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-            lblCollection.setText("Collection");
-            lblCollection.setAlignmentY(0.0F);
-            lblCollection.setName("lblMCollection");
-            lblCollection.setFont(new Font(lblCollection.getFont().getName(), lblCollection.getFont().getStyle(), 14));
-
-            lblLoadingCollection.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-            lblLoadingCollection.setText("");
-            lblLoadingCollection.setAlignmentY(0.0F);
-            lblLoadingCollection.setName("lblLoadingCollection");
-            
-            cbCollection.setAlignmentX(0.0F);
-            cbCollection.setAlignmentY(0.0F);
-            cbCollection.setName("cbCollection");
-            cbCollection.setFocusable(false);
-            
-
-            javax.swing.GroupLayout pnlCollectionLayout = new javax.swing.GroupLayout(pnlCollection);
-            pnlCollection.setLayout(pnlCollectionLayout);
-            pnlCollectionLayout.setHorizontalGroup(
-              pnlCollectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(pnlCollectionLayout.createSequentialGroup()
-                .addComponent(lblCollection)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblLoadingCollection, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbCollection)
-              )
-            );
-            pnlCollectionLayout.setVerticalGroup(
-              pnlCollectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(pnlCollectionLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlCollectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                  .addComponent(lblLoadingCollection, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addComponent(lblCollection)
-                  .addComponent(cbCollection)
-                )
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            );
-            
-            // set loading headers
-            ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL);
-            lblLoadingCollection.setIcon((Icon) loadingIcon);
-            tpLists.setTabComponentAt(2, pnlCollection);
-            
-            lblLoadingCollection.setVisible(false);
+            lblCollection.setText("Collections");
+            lblCollection.setHorizontalTextPosition(JLabel.LEADING);
+            tpLists.setTabComponentAt(2, lblCollection);
+            actionCollection();
             
           }
         });
@@ -554,13 +383,13 @@ public class ThingiverseDialog extends javax.swing.JDialog
         {
           public void run()
           {   
-            lblLoadingCollection.setVisible(true);
+            lblCollection.setIcon(LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL));
           }
         });
         
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
         List<Thing> things = thingiverse.getThingsByCollection(collection, cbExtensions.isSelected(), cbTags.isSelected());
-        loadTab(things, lstCollection, numberLoadingCollection, lblLoadingCollection);
+        loadTab(things, lstCollection, numberLoadingCollection, lblCollection);
       }
     }).start();
   }
@@ -584,14 +413,14 @@ public class ThingiverseDialog extends javax.swing.JDialog
         {
           public void run()
           {   
-            lblLoadingSearch.setVisible(true);
+            lblSearch.setIcon(LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL));
           }
         });
         
     
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
         List<Thing> things = thingiverse.search(queryString, cbExtensions.isSelected(), cbTags.isSelected());
-        loadTab(things, lstSearch, numberLoadingSearch, lblLoadingSearch);
+        loadTab(things, lstSearch, numberLoadingSearch, lblSearch);
       }
     }).start();
   }
