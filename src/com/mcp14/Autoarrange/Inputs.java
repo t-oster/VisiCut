@@ -31,11 +31,11 @@ public class Inputs {
     private void createInputDimensions(){
         float[] xy_ = {0.0f, 0.0f};
         this.xy = xy_;
-        float[] xyOne = {this.y, 0.0f};
+        float[] xyOne = {this.x, 0.0f};
         this.xy1 = xyOne;
-        float[] xyTwo = {this.y,this.x};
+        float[] xyTwo = {this.x,this.y};
         this.xy2 = xyTwo;
-        float[] xyThree = {0.0f, this.x};
+        float[] xyThree = {0.0f, this.y};
         this.xy3 = xyThree;
     }
     
