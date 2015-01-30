@@ -292,6 +292,7 @@
         <Container class="javax.swing.JSplitPane" name="spltpCollections">
           <Properties>
             <Property name="orientation" type="int" value="0"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="spltpCollections" noResource="true"/>
           </Properties>
           <Constraints>
@@ -306,9 +307,6 @@
           <SubComponents>
             <Container class="javax.swing.JPanel" name="pnlCollectionChooser">
               <Properties>
-                <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="new Dimension(300,300)" type="code"/>
-                </Property>
                 <Property name="name" type="java.lang.String" value="pnlCollectionChooser" noResource="true"/>
               </Properties>
               <Constraints>
@@ -319,7 +317,7 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
               <SubComponents>
-                <Component class="javax.swing.JComboBox" name="jComboBox1">
+                <Component class="javax.swing.JComboBox" name="cbCollection">
                   <Properties>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                       <StringArray count="4">
@@ -329,7 +327,7 @@
                         <StringItem index="3" value="Item 4"/>
                       </StringArray>
                     </Property>
-                    <Property name="name" type="java.lang.String" value="jComboBox1" noResource="true"/>
+                    <Property name="name" type="java.lang.String" value="cbCollection" noResource="true"/>
                   </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
@@ -416,6 +414,7 @@
         <Container class="javax.swing.JSplitPane" name="spltpSearchContainer">
           <Properties>
             <Property name="orientation" type="int" value="0"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="spltpSearchContainer" noResource="true"/>
           </Properties>
           <Constraints>
