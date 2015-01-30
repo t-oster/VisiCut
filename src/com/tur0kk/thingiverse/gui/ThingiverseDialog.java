@@ -17,6 +17,7 @@ import com.tur0kk.LoadingIcon;
 import com.tur0kk.thingiverse.gui.mapping.ThingCollectionComboboxModel;
 import com.tur0kk.thingiverse.gui.mapping.ThingCollectionComboboxRenderer;
 import com.tur0kk.thingiverse.model.ThingCollection;
+import com.tur0kk.thingiverse.model.ThingFile;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import java.rmi.AccessException;
 import java.util.Iterator;
 import java.util.List;
@@ -447,7 +449,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         lblOpeningFile = new javax.swing.JLabel();
         btnRefresh = new javax.swing.JButton();
         btnMadeOne = new javax.swing.JButton();
-        btnMadeOne1 = new javax.swing.JButton();
+        btnOpenFile = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(ThingiverseDialog.class);
@@ -675,13 +677,12 @@ public class ThingiverseDialog extends javax.swing.JDialog
             }
         });
 
-        btnMadeOne1.setText(resourceMap.getString("btnMadeOne1.text")); // NOI18N
-        btnMadeOne1.setToolTipText(resourceMap.getString("btnMadeOne1.toolTipText")); // NOI18N
-        btnMadeOne1.setEnabled(false);
-        btnMadeOne1.setName("btnMadeOne1"); // NOI18N
-        btnMadeOne1.addActionListener(new java.awt.event.ActionListener() {
+        btnOpenFile.setText(resourceMap.getString("btnOpenFile.text")); // NOI18N
+        btnOpenFile.setToolTipText(resourceMap.getString("btnOpenFile.toolTipText")); // NOI18N
+        btnOpenFile.setName("btnOpenFile"); // NOI18N
+        btnOpenFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnMadeOne1ActionPerformed(evt);
+                btnOpenFileActionPerformed(evt);
             }
         });
 
@@ -700,13 +701,13 @@ public class ThingiverseDialog extends javax.swing.JDialog
                             .addComponent(lUserName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnLogout, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 480, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(pnlFilter, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(btnRefresh, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pnlFilter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblOpeningFile, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnMadeOne1, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnOpenFile, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnMadeOne, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -722,15 +723,15 @@ public class ThingiverseDialog extends javax.swing.JDialog
                             .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(lProfilePicture, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(tpLists, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnMadeOne, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnMadeOne1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnOpenFile, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblOpeningFile, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
@@ -783,14 +784,44 @@ public class ThingiverseDialog extends javax.swing.JDialog
   private void btnMadeOneActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnMadeOneActionPerformed
   {//GEN-HEADEREND:event_btnMadeOneActionPerformed
     // assume in current list a thing is selected, otherwise button is not enabled
-    ThingiverseUploadDialog uploadDialog = new ThingiverseUploadDialog(MainView.getInstance(), true, (Thing)getCurrentTabList().getSelectedValue());
+    ThingiverseUploadDialog uploadDialog = new ThingiverseUploadDialog(MainView.getInstance(), true, (Thing)getCurrentTabThingList().getSelectedValue());
     uploadDialog.setVisible(true);
   }//GEN-LAST:event_btnMadeOneActionPerformed
 
-  private void btnMadeOne1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnMadeOne1ActionPerformed
-  {//GEN-HEADEREND:event_btnMadeOne1ActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_btnMadeOne1ActionPerformed
+  private void btnOpenFileActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnOpenFileActionPerformed
+  {//GEN-HEADEREND:event_btnOpenFileActionPerformed
+      final ThingFile aFile = (ThingFile) getCurrentTabThingFileList().getSelectedValue();
+      if(aFile == null){ // nothing visible
+        return;
+      }
+      
+      // user feedback
+      SwingUtilities.invokeLater(new Runnable() {
+        public void run()
+        {
+          lblOpeningFile.setVisible(true);
+        }
+      });
+      
+      // load file
+      new Thread(new Runnable() {
+
+            public void run()
+            {   
+              ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+              File svgfile = thingiverse.downloadThingFile(aFile);
+              MainView.getInstance().loadFile(svgfile, false);
+              
+              // disable user feedback
+              SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                  lblOpeningFile.setVisible(false);
+                }
+              });
+            }
+      }).start();
+  }//GEN-LAST:event_btnOpenFileActionPerformed
 
 
   private void initListCellRenderers()
@@ -828,7 +859,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
     // add change listener for switching tabs, to check if a thing is selected, to enable or disable the "I made one" button
     tpLists.addChangeListener(new ChangeListener() {
         public void stateChanged(ChangeEvent e) {
-          JList tabThingList = getCurrentTabList();
+          JList tabThingList = getCurrentTabThingList();
           if(tabThingList != null){
             if(tabThingList.getSelectedIndex() != -1){
               // Thing is selected, allow "I made one"
@@ -843,7 +874,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
     });
   }
   
-  private JList getCurrentTabList(){
+  private JList getCurrentTabThingList(){
     JList tabThingList = null;
     switch(tpLists.getSelectedIndex()){
       case 0:
@@ -862,6 +893,27 @@ public class ThingiverseDialog extends javax.swing.JDialog
         break; // invalid tab
     }
     return tabThingList;
+  }
+  
+  private JList getCurrentTabThingFileList(){
+    JList tabThingFileList = null;
+    switch(tpLists.getSelectedIndex()){
+      case 0:
+        tabThingFileList = lstMyThingsThing;
+        break;
+      case 1:
+        tabThingFileList = lstLikedThing;
+        break;
+      case 2:
+        tabThingFileList = lstCollectionThing;
+        break;
+      case 3:
+        tabThingFileList = lstSearchThing;
+        break;
+      default: 
+        break; // invalid tab
+    }
+    return tabThingFileList;
   }
 
   private void initUserName()
@@ -988,7 +1040,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnMadeOne;
-    private javax.swing.JButton btnMadeOne1;
+    private javax.swing.JButton btnOpenFile;
     private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnSearch;
     private javax.swing.JComboBox cbCollection;
