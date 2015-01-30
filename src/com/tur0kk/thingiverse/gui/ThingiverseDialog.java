@@ -731,7 +731,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
   {
     // set general content padding
     JPanel content = (JPanel) this.getContentPane();
-    content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    content.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
     // disable controls
     lblOpeningFile.setVisible(false);
