@@ -54,6 +54,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
   public ThingiverseDialog(java.awt.Frame parent, boolean modal) throws AccessException, MalformedURLException, IOException
   {
     super(parent, modal);
+    super.setLocationRelativeTo(parent);
     
     // just hide to keep state
     this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);

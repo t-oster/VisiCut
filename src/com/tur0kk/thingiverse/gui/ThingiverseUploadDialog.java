@@ -34,6 +34,8 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
   public ThingiverseUploadDialog(java.awt.Frame parent, boolean modal, Thing thing)
   {
     super(parent, modal);
+    super.setLocationRelativeTo(parent);
+    
     initComponents();
     
     this.thing = thing;
