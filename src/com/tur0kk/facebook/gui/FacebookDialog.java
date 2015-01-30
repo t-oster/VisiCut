@@ -121,7 +121,7 @@ public class FacebookDialog extends javax.swing.JDialog
         });
 
         lUserName.setFont(resourceMap.getFont("lUserName.font")); // NOI18N
-        lUserName.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        lUserName.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         lUserName.setName("lUserName"); // NOI18N
 
         lProfilePicture.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -270,8 +270,8 @@ public class FacebookDialog extends javax.swing.JDialog
                     .addComponent(pnlSelectCamera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(layout.createSequentialGroup()
-                            .addComponent(lUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lUserName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                             .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addComponent(lProfilePicture, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
