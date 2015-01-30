@@ -640,6 +640,7 @@
       <Properties>
         <Property name="text" type="java.lang.String" resourceKey="btnOpenFile.text"/>
         <Property name="toolTipText" type="java.lang.String" resourceKey="btnOpenFile.toolTipText"/>
+        <Property name="enabled" type="boolean" value="false"/>
         <Property name="name" type="java.lang.String" value="btnOpenFile" noResource="true"/>
       </Properties>
       <Events>

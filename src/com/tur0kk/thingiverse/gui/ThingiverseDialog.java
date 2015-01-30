@@ -16,6 +16,7 @@ import com.tur0kk.thingiverse.gui.mapping.ThingSelectionListener;
 import com.tur0kk.LoadingIcon;
 import com.tur0kk.thingiverse.gui.mapping.ThingCollectionComboboxModel;
 import com.tur0kk.thingiverse.gui.mapping.ThingCollectionComboboxRenderer;
+import com.tur0kk.thingiverse.gui.mapping.ThingFileSelectionListener;
 import com.tur0kk.thingiverse.model.ThingCollection;
 import com.tur0kk.thingiverse.model.ThingFile;
 import java.awt.event.ItemEvent;
@@ -679,6 +680,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         btnOpenFile.setText(resourceMap.getString("btnOpenFile.text")); // NOI18N
         btnOpenFile.setToolTipText(resourceMap.getString("btnOpenFile.toolTipText")); // NOI18N
+        btnOpenFile.setEnabled(false);
         btnOpenFile.setName("btnOpenFile"); // NOI18N
         btnOpenFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -852,6 +854,12 @@ public class ThingiverseDialog extends javax.swing.JDialog
     lstMyThingsThing.addMouseListener(new ThingFileClickListener(lblOpeningFile));
     lstLikedThing.addMouseListener(new ThingFileClickListener(lblOpeningFile));
     lstCollectionThing.addMouseListener(new ThingFileClickListener(lblOpeningFile));
+    
+    // set listeners to enable open file button
+    lstSearchThing.addListSelectionListener(new ThingFileSelectionListener(btnOpenFile));
+    lstMyThingsThing.addListSelectionListener(new ThingFileSelectionListener(btnOpenFile));
+    lstLikedThing.addListSelectionListener(new ThingFileSelectionListener(btnOpenFile));
+    lstCollectionThing.addListSelectionListener(new ThingFileSelectionListener(btnOpenFile));
   }
   
   private void initChangeListener(){
@@ -859,6 +867,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
     // add change listener for switching tabs, to check if a thing is selected, to enable or disable the "I made one" button
     tpLists.addChangeListener(new ChangeListener() {
         public void stateChanged(ChangeEvent e) {
+          // allow I made one only if thing is selected
           JList tabThingList = getCurrentTabThingList();
           if(tabThingList != null){
             if(tabThingList.getSelectedIndex() != -1){
@@ -868,6 +877,19 @@ public class ThingiverseDialog extends javax.swing.JDialog
             else{
               // no thing is selected, disallow "I made one", because for that a thing is needed
               btnMadeOne.setEnabled(false);
+            }
+          }
+          
+          // allow open file only if ThingFile is selected
+          JList tabThingFileList = getCurrentTabThingFileList();
+          if(tabThingFileList != null){
+            if(tabThingFileList.getSelectedIndex() != -1){
+              // Thing is selected, allow "I made one"
+              btnOpenFile.setEnabled(true);
+            }
+            else{
+              // no thing is selected, disallow "I made one", because for that a thing is needed
+              btnOpenFile.setEnabled(false);
             }
           }
         }
