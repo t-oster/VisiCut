@@ -181,7 +181,7 @@ public class PreferencesDialog extends javax.swing.JDialog
 
         jPanel2.setToolTipText(""); // NOI18N
 
-        lblLasercutterTags.setText("Lasercutter Tags:");
+        lblLasercutterTags.setText("Lasercutter tags:");
 
         txtfLasercutterTags.setToolTipText("<html>Configure here which Thingiverse tags are considered for filtering if the filter option<br> \"Lasercutter tags\"  is enabled in the Thingiverse dialog.</html>"); // NOI18N
         txtfLasercutterTags.setAutoscrolls(false);

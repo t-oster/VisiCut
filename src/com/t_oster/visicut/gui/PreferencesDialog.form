@@ -229,7 +229,7 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="lblLasercutterTags">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Lasercutter Tags:"/>
+                <Property name="text" type="java.lang.String" value="Lasercutter tags:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txtfLasercutterTags">
