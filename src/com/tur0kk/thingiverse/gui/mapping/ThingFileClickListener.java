@@ -34,10 +34,14 @@ public class ThingFileClickListener extends MouseAdapter
     JList list = (JList) evt.getSource();
 
     if(evt.getClickCount() == 2){
-      int index = list.locationToIndex(evt.getPoint());
-      final ThingFile aFile = (ThingFile) list.getModel().getElementAt(index);
       
-      if(index < 0 || aFile == null){ // nothing visible
+      int index = list.locationToIndex(evt.getPoint());
+      if(index < 0){ // nothing visible
+        return;
+      }
+      
+      final ThingFile aFile = (ThingFile) list.getModel().getElementAt(index);
+      if(aFile == null){ // nothing visible
         return;
       }
       
