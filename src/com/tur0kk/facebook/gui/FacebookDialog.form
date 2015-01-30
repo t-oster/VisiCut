@@ -124,8 +124,6 @@
                           <Component id="btnPhoto" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="btnPhotoRedo" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="lblAttachMessage" min="-2" pref="118" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="103" groupAlignment="1" attributes="0">
@@ -155,7 +153,6 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="btnPhoto" alignment="3" max="32767" attributes="1"/>
                       <Component id="btnPhotoRedo" alignment="3" max="32767" attributes="1"/>
-                      <Component id="lblAttachMessage" alignment="3" min="-2" max="-2" attributes="1"/>
                       <Component id="lblPublish" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                       <Component id="lblPublishSuccessStatus" alignment="3" min="-2" pref="18" max="-2" attributes="0"/>
                       <Component id="btnPublish" alignment="3" min="-2" max="-2" attributes="1"/>
@@ -190,14 +187,9 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPhotoRedoActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JLabel" name="lblAttachMessage">
-          <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="lblAttachMessage.text"/>
-            <Property name="name" type="java.lang.String" value="lblAttachMessage" noResource="true"/>
-          </Properties>
-        </Component>
         <Component class="javax.swing.JLabel" name="lblPhoto">
           <Properties>
+            <Property name="horizontalAlignment" type="int" value="0"/>
             <Property name="text" type="java.lang.String" resourceKey="lblPhoto.text"/>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">

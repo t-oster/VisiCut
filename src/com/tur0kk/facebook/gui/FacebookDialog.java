@@ -25,6 +25,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 /**
@@ -93,7 +94,6 @@ public class FacebookDialog extends javax.swing.JDialog
         pnlFoto = new javax.swing.JPanel();
         btnPhoto = new javax.swing.JButton();
         btnPhotoRedo = new javax.swing.JButton();
-        lblAttachMessage = new javax.swing.JLabel();
         lblPhoto = new javax.swing.JLabel();
         lblPublish = new javax.swing.JLabel();
         lblPublishSuccessStatus = new javax.swing.JLabel();
@@ -149,9 +149,7 @@ public class FacebookDialog extends javax.swing.JDialog
             }
         });
 
-        lblAttachMessage.setText(resourceMap.getString("lblAttachMessage.text")); // NOI18N
-        lblAttachMessage.setName("lblAttachMessage"); // NOI18N
-
+        lblPhoto.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblPhoto.setText(resourceMap.getString("lblPhoto.text")); // NOI18N
         lblPhoto.setBorder(javax.swing.BorderFactory.createLineBorder(resourceMap.getColor("lProfilePicture.border.lineColor"))); // NOI18N
         lblPhoto.setName("lblPhoto"); // NOI18N
@@ -198,9 +196,7 @@ public class FacebookDialog extends javax.swing.JDialog
                     .addGroup(pnlFotoLayout.createSequentialGroup()
                         .addComponent(btnPhoto)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnPhotoRedo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblAttachMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnPhotoRedo)))
                 .addGroup(pnlFotoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(pnlFotoLayout.createSequentialGroup()
                         .addGap(19, 19, 19)
@@ -223,7 +219,6 @@ public class FacebookDialog extends javax.swing.JDialog
                 .addGroup(pnlFotoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnPhoto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnPhotoRedo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lblAttachMessage)
                     .addComponent(lblPublish, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblPublishSuccessStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnPublish)
@@ -470,7 +465,6 @@ private void initProfilePicture(){
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lProfilePicture;
     private javax.swing.JLabel lUserName;
-    private javax.swing.JLabel lblAttachMessage;
     private javax.swing.JLabel lblLoading;
     private javax.swing.JLabel lblPhoto;
     private javax.swing.JLabel lblPublish;
@@ -494,9 +488,6 @@ private void setupCamera(){
   lblPublishSuccessStatus.setVisible(false);
   btnPhotoRedo.setEnabled(false);
   btnPublish.setEnabled(false);
-  txtaPublish.setText("");
-  txtaPublish.setEditable(false);
-  txtaPublish.setBackground(Color.lightGray);
   
   // check selected cam mode and if corresponding hardware is available
   boolean start = false;
@@ -512,8 +503,6 @@ private void setupCamera(){
   }
 
   if(start){
-    lblAttachMessage.setVisible(false); // webcam error message
-
     // start picture taking thread to display live preview
     boolean webcamMode = rdbtnWebcam.isSelected(); // if false, then visicam
     livecamThread = new TakePhotoThread(lblPhoto, webcamMode);
@@ -524,7 +513,7 @@ private void setupCamera(){
   else{
     // disable taking photos
     btnPhoto.setEnabled(false);
-    lblAttachMessage.setVisible(true); // webcam error message
+    lblPhoto.setText("Please attach webcam");
   }
 }
 
