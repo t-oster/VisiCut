@@ -102,24 +102,24 @@ public class ObjectArranger {
         }
 
         public void actionPerformed(ActionEvent e) { 
-            try {
-                SVGFile largeFile = getLargestSVGFile(svgList);
-                AutoArrange.start(svgList, laserBedWidth, laserBedHeight);
-                for(Map.Entry<AutoArrange.BinNumber, Set<HoldValues>> entry : AutoArrange.allValues.entrySet()) {
-                    AutoArrange.BinNumber bn = entry.getKey();
-                    Set<HoldValues> hValues = entry.getValue();
-                    System.out.println("Printing in OBJARR Bin = " + bn.getBinNumber() + " List = ");
-                    IconPanel iconPanel = new IconPanel(laserBedWidth,laserBedHeight);
-                    iconPanels.add(iconPanel);
-                    for (HoldValues hv : hValues){
-                        System.out.println("Object ID : " + hv.getObjectID() + " CoordX : " + hv.getX() + " CoordY : " + hv.getY() + " Rotation :" + hv.getObjectRotation());
-                        SVGFile currentSVG = svgList.get(hv.getObjectID()-1);
-                        currentSVG.renderToIconPanel(iconPanel, (int) hv.getX(),(int) hv.getY());
-                    }
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(ObjectArranger.class.getName()).log(Level.SEVERE, null, ex);
-            }
+//            try {
+//                SVGFile largeFile = getLargestSVGFile(svgList);
+//                AutoArrange.start(svgList, laserBedWidth, laserBedHeight);
+//                for(Map.Entry<AutoArrange.BinNumber, Set<HoldValues>> entry : AutoArrange.allValues.entrySet()) {
+//                    AutoArrange.BinNumber bn = entry.getKey();
+//                    Set<HoldValues> hValues = entry.getValue();
+//                    System.out.println("Printing in OBJARR Bin = " + bn.getBinNumber() + " List = ");
+//                    IconPanel iconPanel = new IconPanel(laserBedWidth,laserBedHeight);
+//                    iconPanels.add(iconPanel);
+//                    for (HoldValues hv : hValues){
+//                        System.out.println("Object ID : " + hv.getObjectID() + " CoordX : " + hv.getX() + " CoordY : " + hv.getY() + " Rotation :" + hv.getObjectRotation());
+//                        SVGFile currentSVG = svgList.get(hv.getObjectID()-1);
+//                        currentSVG.renderToIconPanel(iconPanel, (int) hv.getX(),(int) hv.getY());
+//                    }
+//                }
+//            } catch (IOException ex) {
+//                Logger.getLogger(ObjectArranger.class.getName()).log(Level.SEVERE, null, ex);
+//            }
             
             showNextPanel();
             this.setEnabled(false);

@@ -70,6 +70,7 @@ import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -79,6 +80,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -2710,9 +2712,9 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   }
 
     @Action
-  public void onArrangeClicked()
+  public void onArrangeClicked() throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException
   {
-    this.previewPanel.setNeedToArrange(true);
+    this.previewPanel.autoArrange();
   }
 
 }

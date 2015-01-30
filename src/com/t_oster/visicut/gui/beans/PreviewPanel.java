@@ -64,6 +64,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import sun.net.www.protocol.http.AuthCache;
+import com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler;
+import java.awt.geom.NoninvertibleTransformException;
 
 /**
  * This class implements the Panel which provides the Preview
@@ -496,16 +498,57 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     }
     return somethingMatched;
   }
-  private void autoArrange(int objectID) throws FileNotFoundException, UnsupportedEncodingException{
+  public void autoArrange() throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException{
     AutoArrange.start(VisicutModel.getInstance().getPlfFile(), new Dimension((int)bedWidth,(int)bedHeight));
     for (Map.Entry<AutoArrange.BinNumber, Set<HoldValues>> e : AutoArrange.allValues.entrySet()){
       System.out.println(" Bin - " + e.getKey().toString() );
       for (HoldValues hv : e.getValue()){
         System.out.println("Object ID: "+ hv.getObjectID()+" Xcoord : " + hv.getX() + " YCoord : " + hv.getY()
           + " Rotation : " + hv.getObjectRotation());
+        PlfPart plfPart = VisicutModel.getInstance().getPlfFile().get(hv.getObjectID()-1);
+        GraphicSet graphicSet = plfPart.getGraphicObjects();
+        Point2D.Double positionDifference = new Point.Double(hv.getX()-graphicSet.getBoundingBox().getX(), hv.getY()-graphicSet.getBoundingBox().getY());
+        AffineTransform transformation = this.getMmToPxTransform();
+        transformation.createInverse().deltaTransform(positionDifference, positionDifference);
+        moveSet(positionDifference.x, positionDifference.y, plfPart, hv.getObjectRotation());
       }
-      
+        super.repaint();
     }
+  }
+  
+    private void moveSet(double mmDiffX, double mmDiffY, PlfPart plfPart, double rotation)
+  {
+//make sure, we're not moving the bb out of the laser-area
+    Rectangle2D bb = plfPart.getBoundingBox();
+    if (bb.getX() + mmDiffX < 0)
+    {
+      mmDiffX = -bb.getX();
+    }
+    if (bb.getY() + mmDiffY < 0)
+    {
+      mmDiffY = -bb.getY();
+    }
+    if (bb.getX() + bb.getWidth() + mmDiffX > this.getAreaSize().x)
+    {
+      mmDiffX = this.getAreaSize().x - (bb.getX() + bb.getWidth());
+    }
+    if (bb.getY() + bb.getHeight() + mmDiffY > this.getAreaSize().y)
+    {
+      mmDiffY = this.getAreaSize().y - (bb.getY() + bb.getHeight());
+    }
+    if (mmDiffX == 0 && mmDiffY == 0)
+    {
+      return;
+    }
+    AffineTransform tr = AffineTransform.getTranslateInstance(mmDiffX, mmDiffY);
+    if (plfPart.getGraphicObjects().getTransform() != null)
+    {
+      tr.concatenate(plfPart.getGraphicObjects().getTransform());
+    }
+    plfPart.getGraphicObjects().setTransform(tr);
+    plfPart.getGraphicObjects().rotateAbsolute(rotation);
+    this.editRectangle.setRotationAngle(rotation);
+    this.updateEditRectangle();
   }
 
   @Override
@@ -552,21 +595,6 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
         gg.setColor(Color.DARK_GRAY);
         drawGrid(gg);
       }
-      if(needToArrange){
-        try
-        {
-          autoArrange(VisicutModel.getInstance().getPlfFile().getIndexOf(null));
-        }
-        catch (FileNotFoundException ex)
-        {
-          Logger.getLogger(PreviewPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        catch (UnsupportedEncodingException ex)
-        {
-          Logger.getLogger(PreviewPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-      }
-      
       for (PlfPart part : VisicutModel.getInstance().getPlfFile())
       {
         
