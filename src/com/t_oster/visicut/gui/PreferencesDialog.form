@@ -197,7 +197,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lblFabLabLocationFacebookId" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="txtfFabLabLocationFacebookId" pref="273" max="32767" attributes="0"/>
+                      <Component id="txtfFabLabLocationFacebookId" pref="280" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -218,7 +218,7 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="lblFabLabLocationFacebookId">
               <Properties>
-                <Property name="text" type="java.lang.String" value="FabLab Location Facebook Id:"/>
+                <Property name="text" type="java.lang.String" value="FabLab location facebook id:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txtfFabLabLocationFacebookId">

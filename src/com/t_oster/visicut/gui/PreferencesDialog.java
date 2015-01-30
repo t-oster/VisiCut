@@ -178,7 +178,7 @@ public class PreferencesDialog extends javax.swing.JDialog
 
         pnlFacebook.setToolTipText(""); // NOI18N
 
-        lblFabLabLocationFacebookId.setText("FabLab Location Facebook Id:");
+        lblFabLabLocationFacebookId.setText("FabLab location facebook id:");
 
         txtfFabLabLocationFacebookId.setToolTipText("<html>Specify the id of your FabLab Facebook site. It will be referenced <br>\n in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL<br>\nof the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 <br>\nenter 191850277562397 in this field.</html>"); // NOI18N
 
@@ -193,7 +193,7 @@ public class PreferencesDialog extends javax.swing.JDialog
                 .addContainerGap()
                 .addComponent(lblFabLabLocationFacebookId)
                 .addGap(18, 18, 18)
-                .addComponent(txtfFabLabLocationFacebookId, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
+                .addComponent(txtfFabLabLocationFacebookId, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
                 .addContainerGap())
         );
         pnlFacebookLayout.setVerticalGroup(

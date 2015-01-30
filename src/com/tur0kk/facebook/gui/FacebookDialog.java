@@ -41,6 +41,7 @@ public class FacebookDialog extends javax.swing.JDialog
   /** Creates new form FacebookDialog */
   public FacebookDialog(java.awt.Frame parent, boolean modal){
     super(parent, modal);
+    super.setLocationRelativeTo(parent);
     
     initComponents();
     
