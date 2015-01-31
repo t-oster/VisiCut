@@ -603,10 +603,37 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       tr.concatenate(plfPart.getGraphicObjects().getTransform());
     }
     plfPart.getGraphicObjects().setTransform(tr);
-    plfPart.getGraphicObjects().rotateAbsolute(rotation);
+    plfPart.getGraphicObjects().rotateRelative(rotation);
     this.editRectangle.setRotationAngle(rotation);
     this.updateEditRectangle();
   }
+    
+  //not working (null pointer exception)
+  private void renderObjectsInRed(int binNumber){
+      int [] listNotToRender = getObjectsNotToRender(AutoArrange.allValues.get(binNumber));
+      for (int i : listNotToRender){
+        PlfPart part = VisicutModel.getInstance().getPlfFile().get(i);
+        GraphicSet gSet = part.getGraphicObjects();
+        Graphics2D g2d = null;
+          
+        for ( int j = 0; j < gSet.size(); j++){
+          part.getGraphicObjects().get(j).render(g2d);
+          g2d.setColor(Color.RED);
+        }
+      }
+      //this.repaint();
+   }
+    // not working (null pointer exception)
+    private void testRender(int i){
+      PlfPart part = VisicutModel.getInstance().getPlfFile().get(i);
+      GraphicSet gSet = part.getGraphicObjects();
+      for ( int j = 0; j < gSet.size(); j++){
+        Graphics2D g2d = null;
+        part.getGraphicObjects().get(j).render(g2d);
+        g2d.setColor(Color.RED);
+      }
+      super.repaint();
+    }
 
   @Override
   protected void paintComponent(Graphics g)
@@ -654,7 +681,6 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       }
       for (PlfPart part : VisicutModel.getInstance().getPlfFile())
       {
-        
         boolean selected = (part.equals(VisicutModel.getInstance().getSelectedPart()));
         HashMap<Mapping,ImageProcessingThread> renderBuffer = renderBuffers.get(part);
         if (renderBuffer == null)
