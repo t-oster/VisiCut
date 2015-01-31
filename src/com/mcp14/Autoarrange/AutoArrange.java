@@ -33,7 +33,7 @@ import java.util.Set;
  * 
  */
 public class AutoArrange {
-    public static HashMap<BinNumber, Set<HoldValues>> allValues = new HashMap<BinNumber, Set<HoldValues>>();
+    public static HashMap<Integer, Set<HoldValues>> allValues = new HashMap<Integer, Set<HoldValues>>();
     
     public static void start(PlfFile svgFiles, Dimension laserBedDimension) throws FileNotFoundException, UnsupportedEncodingException {
         InputExporter exporter = new InputExporter(svgFiles.size(),laserBedDimension);
@@ -101,7 +101,7 @@ public class AutoArrange {
                           holdValueses.add(new HoldValues(area.getID(), area.getRotation(), offsetX, offsetY));
                       }
                   }
-                  allValues.put(new BinNumber(i+1), holdValueses);
+                  allValues.put((i+1), holdValueses);
             System.out.println("Generated points file for bin " + String.valueOf(i + 1));
         }
     }
@@ -132,19 +132,4 @@ public class AutoArrange {
     }
 
 
-    public static class BinNumber{
-        public int number;
-        public BinNumber(int id){
-            this.number = id;
-        }
-
-        public int getBinNumber(){
-            return number;
-        }
-
-        public void changeBinNumber(int id){
-            this.number = id;
-        }
-
-    }
 }

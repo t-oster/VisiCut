@@ -81,8 +81,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   private double bedHeight = 300;
   private boolean needToArrange = false;
   private static AffineTransform arrangeTranslate;
-  //private static HashMap<AutoArrange.BinNumber, Set<HoldValues>> arrangeValues;
-
+  // variable to keep track of the arrangements.
   public PreviewPanel()
   {
     VisicutModel.getInstance().addPropertyChangeListener(this);
@@ -499,28 +498,26 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     }
     return somethingMatched;
   }
+  
+  //Function that is going to be executed when arrange is clicked.
   public void autoArrange() throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException{
     AutoArrange.start(VisicutModel.getInstance().getPlfFile(), new Dimension((int)bedWidth,(int)bedHeight));
-    for (Map.Entry<AutoArrange.BinNumber, Set<HoldValues>> e : AutoArrange.allValues.entrySet()){
-      System.out.println(" Bin - " + e.getKey().toString() );
-      for (HoldValues hv : e.getValue()){
-        System.out.println("Object ID: "+ hv.getObjectID()+" Xcoord : " + hv.getX() + " YCoord : " + hv.getY()
-          + " Rotation : " + hv.getObjectRotation());
-        PlfPart plfPart = VisicutModel.getInstance().getPlfFile().get(hv.getObjectID()-1);
-        GraphicSet graphicSet = plfPart.getGraphicObjects();
-        Point2D.Double positionDifference = new Point.Double(hv.getX()-graphicSet.getBoundingBox().getX(), hv.getY()-graphicSet.getBoundingBox().getY());
-        AffineTransform transformation = this.getMmToPxTransform();
-        transformation.createInverse().deltaTransform(positionDifference, positionDifference);
-        moveSet(positionDifference.x, positionDifference.y, plfPart, hv.getObjectRotation());
-      }
-        super.repaint();
-    }
+    navigateThroughArrangements(1);
+    super.repaint();
+    
   }
+  
+  /*
+   * This function is to get the id's of the objects
+   * that don't fit in the current arrangement.
+   * 
+   * @param values : set from the HashMap.
+   */
   
   private int[] getObjectsNotToRender(Set<HoldValues> values){
     int[] returnValue = null;
     int counter = 0;
-    for ( int i = 0; i < VisicutModel.getInstance().getPlfFile().size(); i++){
+    for ( int i = 1; i <= VisicutModel.getInstance().getPlfFile().size(); i++){
       for (HoldValues hv : values){
         if (hv.getObjectID() == i )
           continue;
@@ -533,6 +530,48 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     }
     return returnValue;
   }
+  
+  /*
+   * This is to check the size of the value with the 
+   * counter values in the MainView to enable or
+   * disable the button.
+   * 
+   * @param count : number of times the navigation
+   * button has been clicked.
+   */
+  public boolean isGreaterThanAllValues(int count){
+    if (count > AutoArrange.allValues.size())
+      return false;
+    else
+      return true;
+  }
+  
+  /*
+   * This method is used to navigate through the arrangements.
+   * If there are pieces to be placed it places them.
+   * else returns false denoting no more arrangements possible.
+   * @param binNumber : number of times the navigation button is clicked
+   */
+  private boolean navigateThroughArrangements(int binNumber) throws NoninvertibleTransformException{
+    //get value set for each bin
+    Set<HoldValues> hValues = AutoArrange.allValues.get(binNumber); 
+    
+    //check if no pieces exits in the set.
+    if(hValues.size() == 0)
+      return false;
+    //perform rearrange.
+    for (HoldValues hv : hValues){
+      PlfPart plfPart = VisicutModel.getInstance().getPlfFile().get(hv.getObjectID()-1);
+      GraphicSet graphicSet = plfPart.getGraphicObjects();
+      Point2D.Double positionDifference = new Point.Double(hv.getX()-graphicSet.getBoundingBox().getX(), hv.getY()-graphicSet.getBoundingBox().getY());
+      AffineTransform transformation = this.getMmToPxTransform();
+      transformation.createInverse().deltaTransform(positionDifference, positionDifference);
+      moveSet(positionDifference.x, positionDifference.y, plfPart, hv.getObjectRotation());
+    }
+    // else return after arrangement.
+    return true;
+  }
+  
   
     private void moveSet(double mmDiffX, double mmDiffY, PlfPart plfPart, double rotation)
   {
