@@ -66,6 +66,7 @@ import javax.swing.JOptionPane;
 import sun.net.www.protocol.http.AuthCache;
 import com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler;
 import java.awt.geom.NoninvertibleTransformException;
+import java.util.List;
 
 /**
  * This class implements the Panel which provides the Preview
@@ -514,6 +515,23 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       }
         super.repaint();
     }
+  }
+  
+  private int[] getObjectsNotToRender(Set<HoldValues> values){
+    int[] returnValue = null;
+    int counter = 0;
+    for ( int i = 0; i < VisicutModel.getInstance().getPlfFile().size(); i++){
+      for (HoldValues hv : values){
+        if (hv.getObjectID() == i )
+          continue;
+        else{
+          // this could be modified to a list as well, see which is easier for you to handle
+          returnValue[counter] = i;
+          counter++;
+        }
+      }
+    }
+    return returnValue;
   }
   
     private void moveSet(double mmDiffX, double mmDiffY, PlfPart plfPart, double rotation)
