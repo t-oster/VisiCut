@@ -24,7 +24,6 @@ import com.apple.eawt.AppEvent.PreferencesEvent;
 import com.apple.eawt.AppEvent.QuitEvent;
 import com.apple.eawt.QuitResponse;
 import com.mcp14.Autoarrange.AutoArrange;
-import com.mcp14.ObjectArranger.ObjectArranger;
 import com.mcp14.Provider.HoldValues;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserCutter;
@@ -39,6 +38,7 @@ import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.VisicutModel.Modification;
 import com.t_oster.visicut.gui.beans.CreateNewMaterialDialog;
 import com.t_oster.visicut.gui.beans.CreateNewThicknessDialog;
+import com.t_oster.visicut.gui.beans.PreviewPanel;
 import com.t_oster.visicut.gui.parameterpanel.ParameterPanel;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
@@ -116,6 +116,8 @@ import org.jdesktop.application.Action;
  */
 public class MainView extends javax.swing.JFrame
 {
+  public static int count = 0;
+  public static PreviewPanel previewStaticPanel;
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView");
 
@@ -2729,7 +2731,16 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     @Action
   public void onArrangeClicked() throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException
   {
-    this.previewPanel.autoArrange();
+    //this.previewPanel.autoArrange();
+    previewStaticPanel = this.previewPanel;
+    previewStaticPanel.autoArrange();
+    ArrangeFrame af = new ArrangeFrame();
+    af.setVisible(true);
+    af.dispose();
   }
+    
+//    public static void setCount(int count) throws NoninvertibleTransformException{
+//      previewStaticPanel.navigateThroughArrangements(count);
+//    }
 
 }

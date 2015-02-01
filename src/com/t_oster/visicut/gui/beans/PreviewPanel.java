@@ -539,7 +539,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
    * @param count : number of times the navigation
    * button has been clicked.
    */
-  public boolean isGreaterThanAllValues(int count){
+  public static boolean isGreaterThanAllValues(int count){
     if (count > AutoArrange.allValues.size())
       return false;
     else
@@ -552,7 +552,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
    * else returns false denoting no more arrangements possible.
    * @param binNumber : number of times the navigation button is clicked
    */
-  private boolean navigateThroughArrangements(int binNumber) throws NoninvertibleTransformException{
+  public boolean navigateThroughArrangements(int binNumber) throws NoninvertibleTransformException{
     //get value set for each bin
     Set<HoldValues> hValues = AutoArrange.allValues.get(binNumber); 
     
