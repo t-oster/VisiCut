@@ -24,7 +24,6 @@ import com.apple.eawt.AppEvent.PreferencesEvent;
 import com.apple.eawt.AppEvent.QuitEvent;
 import com.apple.eawt.QuitResponse;
 import com.mcp14.Autoarrange.AutoArrange;
-import com.mcp14.ObjectArranger.ObjectArranger;
 import com.mcp14.Provider.HoldValues;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserCutter;
@@ -629,6 +628,7 @@ public class MainView extends javax.swing.JFrame
         btRemoveObject = new javax.swing.JButton();
         btAddObject = new javax.swing.JButton();
         warningPanel = new com.t_oster.uicomponents.warnings.WarningPanel();
+        layeredPane = new javax.swing.JLayeredPane();
         arrangeButton = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
@@ -1019,6 +1019,10 @@ public class MainView extends javax.swing.JFrame
         arrangeButton.setText(resourceMap.getString("arrangeButton.text")); // NOI18N
         arrangeButton.setName("arrangeButton"); // NOI18N
         arrangeButton.setEnabled(ifFilesLoaded());
+        arrangeButton.setBounds(0, 0, 100, 50);
+        arrangeButton.setVisible(true);
+        layeredPane.setPreferredSize(new Dimension(100, 50));
+        layeredPane.add(arrangeButton, new Integer(1));
 
         menuBar.setName("menuBar"); // NOI18N
 
@@ -1295,7 +1299,7 @@ public class MainView extends javax.swing.JFrame
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(arrangeButton)
+                                .addComponent(layeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 183, Short.MAX_VALUE)
                                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(8, 8, 8)))
@@ -1310,7 +1314,7 @@ public class MainView extends javax.swing.JFrame
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 773, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(arrangeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(layeredPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btFitScreen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -2583,6 +2587,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton arrangeButton;
+    private javax.swing.JLayeredPane layeredPane;
     private javax.swing.JButton bt1to1;
     private javax.swing.JButton btAddMaterial;
     private javax.swing.JButton btAddMaterialThickness;
