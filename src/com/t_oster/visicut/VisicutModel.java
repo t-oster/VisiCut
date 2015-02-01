@@ -120,6 +120,12 @@ public class VisicutModel
     {
       dup.setGraphicObjects(p.getGraphicObjects().clone());
     }
+    AffineTransform tr = AffineTransform.getTranslateInstance(20, 20);
+    if (dup.getGraphicObjects().getTransform() != null)
+    {
+      tr.concatenate(dup.getGraphicObjects().getTransform());
+    }
+    dup.getGraphicObjects().setTransform(tr);
     this.plfFile.add(dup);
     this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_ADDED, null, dup);
   }

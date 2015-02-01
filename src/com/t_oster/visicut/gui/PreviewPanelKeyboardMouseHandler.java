@@ -90,7 +90,8 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   
   
   //added for copy paste MCP WS 2014
-  private String copyOfSelectedFile = null;
+  private PlfPart copyOfSelectedFile = null;
+  private VisicutModel vModel = VisicutModel.getInstance();
   private int shortcutKeyActivated = 0;
   private boolean isAddingNewFile = false;
   private File file;
@@ -388,7 +389,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
         if(ke.getKeyCode() == KeyEvent.VK_C)
         {
           copyOfSelectedFile = null;
-          copyOfSelectedFile = VisicutModel.getInstance().getSelectedPart().getSourceFile().getAbsolutePath();
+          copyOfSelectedFile = vModel.getSelectedPart();
           System.out.println("File coped to clipboard = " + copyOfSelectedFile);
         }
 
@@ -396,9 +397,8 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
         {
 
           if(copyOfSelectedFile != null)
-          {                      
-              MainView.getInstance().loadFile(new File(copyOfSelectedFile), false);
-
+          {
+             vModel.duplicate(copyOfSelectedFile);
           }
 
         } 
