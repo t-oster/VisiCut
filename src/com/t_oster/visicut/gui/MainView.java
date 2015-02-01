@@ -62,6 +62,7 @@ import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -1021,6 +1022,11 @@ public class MainView extends javax.swing.JFrame
         arrangeButton.setText(resourceMap.getString("arrangeButton.text")); // NOI18N
         arrangeButton.setName("arrangeButton"); // NOI18N
         arrangeButton.setEnabled(ifFilesLoaded());
+        arrangeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                arrangeButtonActionPerformed(evt);
+            }
+        });
 
         menuBar.setName("menuBar"); // NOI18N
 
@@ -2581,6 +2587,33 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   }
 }//GEN-LAST:event_jmDownloadSettingsActionPerformed
 
+private void arrangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_arrangeButtonActionPerformed
+    try
+    {
+      // TODO add your handling code here:
+      previewStaticPanel = this.previewPanel;
+      previewStaticPanel.autoArrange(0);
+      JFrame jFrame = new JFrame ();
+      AutoArrangePanel ap = new AutoArrangePanel();
+      jFrame.add(ap);
+      jFrame.pack();
+      jFrame.setVisible(true);
+      jFrame.setResizable(false);
+    }
+    catch (FileNotFoundException ex)
+    {
+      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    catch (UnsupportedEncodingException ex)
+    {
+      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    catch (NoninvertibleTransformException ex)
+    {
+      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+    }
+}//GEN-LAST:event_arrangeButtonActionPerformed
+
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
@@ -2725,22 +2758,8 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   }
   
   private boolean ifFilesLoaded(){
-    return true;
-  }
-
-    @Action
-  public void onArrangeClicked() throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException
-  {
-    //this.previewPanel.autoArrange();
-    previewStaticPanel = this.previewPanel;
-    previewStaticPanel.autoArrange();
-    ArrangeFrame af = new ArrangeFrame();
-    af.setVisible(true);
-    af.dispose();
-  }
     
-//    public static void setCount(int count) throws NoninvertibleTransformException{
-//      previewStaticPanel.navigateThroughArrangements(count);
-//    }
-
+      return true;
+  }
+   
 }

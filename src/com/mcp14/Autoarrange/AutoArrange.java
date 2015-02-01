@@ -35,10 +35,10 @@ import java.util.Set;
 public class AutoArrange {
     public static HashMap<Integer, Set<HoldValues>> allValues = new HashMap<Integer, Set<HoldValues>>();
     
-    public static void start(PlfFile svgFiles, Dimension laserBedDimension) throws FileNotFoundException, UnsupportedEncodingException {
+    public static void start(PlfFile svgFiles, Dimension laserBedDimension, int offset) throws FileNotFoundException, UnsupportedEncodingException {
         InputExporter exporter = new InputExporter(svgFiles.size(),laserBedDimension);
         for (PlfPart s : svgFiles){
-            exporter.addInputs( s.getBoundingBox().getWidth(), s.getBoundingBox().getHeight());
+            exporter.addInputs( s.getBoundingBox().getWidth()+(offset/2), s.getBoundingBox().getHeight()+(offset/2));
         }
 	// creates the input file
         exporter.export();

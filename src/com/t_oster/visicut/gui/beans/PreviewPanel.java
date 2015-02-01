@@ -500,8 +500,8 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   }
   
   //Function that is going to be executed when arrange is clicked.
-  public void autoArrange() throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException{
-    AutoArrange.start(VisicutModel.getInstance().getPlfFile(), new Dimension((int)bedWidth,(int)bedHeight));
+  public void autoArrange(int offset) throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException{
+    AutoArrange.start(VisicutModel.getInstance().getPlfFile(), new Dimension((int)bedWidth,(int)bedHeight), offset);
     navigateThroughArrangements(1);
     super.repaint();
     
@@ -540,7 +540,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
    * button has been clicked.
    */
   public static boolean isGreaterThanAllValues(int count){
-    if (count > AutoArrange.allValues.size())
+    if (count > AutoArrange.allValues.size() + 1)
       return false;
     else
       return true;
@@ -557,9 +557,9 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     Set<HoldValues> hValues = AutoArrange.allValues.get(binNumber); 
     
     //check if no pieces exits in the set.
-    if(hValues.size() == 0)
+    if(hValues.isEmpty())
       return false;
-    //perform rearrange.
+      //perform rearrange.
     for (HoldValues hv : hValues){
       PlfPart plfPart = VisicutModel.getInstance().getPlfFile().get(hv.getObjectID()-1);
       GraphicSet graphicSet = plfPart.getGraphicObjects();
