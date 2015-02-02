@@ -346,6 +346,7 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
             lblPublishSuccessStatus.setVisible(true);
             btnPhotoRedo.setEnabled(true);
             lblLoading.setVisible(false);
+            MainView.getInstance().getDialog().showSuccessMessage("Sucessfully published to Facebook.");
             dispose();
           }
         });
