@@ -19,7 +19,10 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JDialog;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -261,46 +264,63 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
 
   private void btnPublishActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnPublishActionPerformed
   {//GEN-HEADEREND:event_btnPublishActionPerformed
-   /*
-    // disable controls for publishing
-    lblLoading.setVisible(true);
-    btnPhotoRedo.setEnabled(false);
-    btnPublish.setEnabled(false);
-    txtaPublish.setEditable(false);
-    txtaPublish.setBackground(Color.lightGray);
-    
-    // things to publish
-    ImageIcon icon = (ImageIcon)lblPhoto.getIcon();
-    final Image image = icon.getImage();    
-    final String message = txtaPublish.getText();
-    
-    
-    new Thread(new Runnable() {
-
+   
+    // disable controls for publishing, enable feedback
+    SwingUtilities.invokeLater(new Runnable() {
       public void run()
       {
-        FacebookManager facebook = FacebookManager.getInstance();
-        boolean success = facebook.publishProject(message, image);
-        String msg = "";
-        if(success){
-          msg = "Successful upload";
-        }else{
-          msg = "Error uploading photo";
-        }
-        
-        final String message = msg;
-        SwingUtilities.invokeLater(new Runnable() {
-          public void run()
-          {
-            lblPublishSuccessStatus.setText(message);
-            lblPublishSuccessStatus.setVisible(true);
-            btnPhotoRedo.setEnabled(true);
-            lblLoading.setVisible(false);
-          }
-        });
-        
+        lblLoading.setVisible(true);
+        btnPhotoRedo.setEnabled(false);
+        btnPublish.setEnabled(false);
+        txtaPublish.setEditable(false);
+        txtaPublish.setBackground(Color.lightGray);
       }
-    }).start();*/
+    });
+    
+      // things to publish
+      //ImageIcon icon = (ImageIcon)lblPhoto.getIcon();
+      //final Image image = icon.getImage();    
+     // final String message = txtaPublish.getText();
+      
+      // do publishing
+      new Thread(new Runnable() {
+
+        public void run()
+        {
+          // fake processing
+          try
+          {
+            Thread.currentThread().sleep(2000);
+          }
+          catch (InterruptedException ex)
+          {
+
+          }
+          
+          boolean success = true;
+          String msg = "";
+          if(success){
+            msg = "Successful upload";
+          }else{
+            msg = "Error uploading photo";
+          }
+          
+          // display
+          final String message = msg;
+          SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+              lblPublishSuccessStatus.setText(message);
+              lblPublishSuccessStatus.setVisible(true);
+              btnPhotoRedo.setEnabled(true);
+              lblLoading.setVisible(false);
+              dispose();
+            }
+          });
+          
+          
+        }
+      }).start();
   }//GEN-LAST:event_btnPublishActionPerformed
 
   private void btnPhotoRedoActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnPhotoRedoActionPerformed
