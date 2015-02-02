@@ -48,7 +48,7 @@ public class AutoArrangePanel extends javax.swing.JPanel
     else {
       numberOfArrangements.setText("" + totalNumberOfArrangements + " Arrangements found");
     }
-}
+  }
 
   /** This method is called from within the constructor to
    * initialize the form.
@@ -305,6 +305,7 @@ public class AutoArrangePanel extends javax.swing.JPanel
     {
       MainView.previewStaticPanel.autoArrange(0);
       parentFrame.dispose();
+      MainView.arrangeFrame = null;
     }
     catch (FileNotFoundException ex)
     {
@@ -324,6 +325,7 @@ public class AutoArrangePanel extends javax.swing.JPanel
   public void confirm()
   {
     parentFrame.dispose();
+    MainView.arrangeFrame = null;
   }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

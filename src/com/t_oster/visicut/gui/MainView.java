@@ -123,7 +123,7 @@ public class MainView extends javax.swing.JFrame
   public static PreviewPanel previewStaticPanel;
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView");
-  private JFrame arrangeFrame = null;
+  public static JFrame arrangeFrame = null;
 
   private ParameterPanel parameterPanel = new ParameterPanel();
   
@@ -2596,6 +2596,7 @@ private void arrangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       // TODO add your handling code here:
       previewStaticPanel = this.previewPanel;
       previewStaticPanel.autoArrange(0);
+      
       if (arrangeFrame == null){
         arrangeFrame = new JFrame ();
         AutoArrangePanel arrangePanel = new AutoArrangePanel(arrangeFrame);
@@ -2605,6 +2606,7 @@ private void arrangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         arrangeFrame.setResizable(false);
         arrangeFrame.setAlwaysOnTop(true);
       }
+      
 
     }
     catch (FileNotFoundException ex)
