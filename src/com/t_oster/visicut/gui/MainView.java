@@ -116,7 +116,6 @@ public class MainView extends javax.swing.JFrame
 
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView");
-  private FacebookDialog facebookDialog = null;
   private ParameterPanel parameterPanel = new ParameterPanel();
   
   public static MainView getInstance()
@@ -2441,48 +2440,42 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
      * just hide facebookDialog on close to keep state.
      * if logged out, create new instance of dialog
      */
-    if(!FacebookManager.getInstance().isLoggedIn() || facebookDialog == null){
-      FacebookManager facebook = FacebookManager.getInstance();
+    FacebookManager facebook = FacebookManager.getInstance();
 
-      try
+    try
+    {
+      // Try login with persistent access token.
+      boolean loginSuccess = facebook.logIn();
+
+      if (!loginSuccess)
       {
-        // Try login with persistent access token.
-        boolean loginSuccess = facebook.logIn();
+        String loginUrl = facebook.initiateAuthentication();
+        String browserCode;
 
-        if (!loginSuccess)
+        if (isJavaFxAvailable())
         {
-          String loginUrl = facebook.initiateAuthentication();
-          String browserCode;
-
-          if (isJavaFxAvailable())
-          {
-            browserCode = browserLoginDialog("Facebook Login", loginUrl, facebook.getRedirectUrlPrefix());
-          }
-          else
-          {
-            // JavaFX not available...
-            System.out.println("JavaFX is not available. Using fallback behavior.");
-            browserCode = systemBrowserLogin("Facebook", loginUrl);
-          }
-
-          facebook.logIn(browserCode);
+          browserCode = browserLoginDialog("Facebook Login", loginUrl, facebook.getRedirectUrlPrefix());
+        }
+        else
+        {
+          // JavaFX not available...
+          System.out.println("JavaFX is not available. Using fallback behavior.");
+          browserCode = systemBrowserLogin("Facebook", loginUrl);
         }
 
-        if (facebook.isLoggedIn())
-        {
-          facebookDialog = new FacebookDialog(this, true);
-          facebookDialog.setVisible(true);
-        }
+        facebook.logIn(browserCode);
       }
-      catch (Exception ex)
+
+      if (facebook.isLoggedIn())
       {
-        ex.printStackTrace();
-        this.dialog.showErrorMessage("Unable to load FacebookDialog");
+        FacebookDialog facebookDialog = new FacebookDialog(this, true);
+        facebookDialog.setVisible(true);
       }
     }
-    else // instance available, show thingiverseDialog
+    catch (Exception ex)
     {
-      facebookDialog.setVisible(true);
+      ex.printStackTrace();
+      this.dialog.showErrorMessage("Unable to load FacebookDialog");
     }
   }//GEN-LAST:event_btFacebookActionPerformed
   

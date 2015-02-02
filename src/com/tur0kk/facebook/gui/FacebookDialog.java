@@ -47,7 +47,7 @@ public class FacebookDialog extends javax.swing.JDialog
     initComponents();
     
     // just hide to keep state
-    this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+    this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     
     // close camera on exit
     initWindowListener();
@@ -306,9 +306,18 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     
     
     // disable controls for publishing
-    lblLoading.setVisible(true);
-    btnPhotoRedo.setEnabled(false);
-    btnPublish.setEnabled(false);
+    SwingUtilities.invokeLater(new Runnable() {
+
+      public void run()
+      {
+        lblLoading.setVisible(true);
+        btnPhotoRedo.setEnabled(false);
+        btnPublish.setEnabled(false);
+        txtaPublish.setEditable(false);
+        txtaPublish.setBackground(Color.lightGray);
+      }
+    });
+    
     
     // things to publish
     ImageIcon icon = (ImageIcon)lblPhoto.getIcon();
@@ -337,6 +346,7 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
             lblPublishSuccessStatus.setVisible(true);
             btnPhotoRedo.setEnabled(true);
             lblLoading.setVisible(false);
+            dispose();
           }
         });
         
