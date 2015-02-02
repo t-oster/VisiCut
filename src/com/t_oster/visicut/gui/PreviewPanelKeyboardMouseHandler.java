@@ -406,7 +406,8 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     }
     if(ke.getKeyCode() == KeyEvent.VK_BACK_SPACE || ke.getKeyCode() == KeyEvent.VK_DELETE)
     {
-        VisicutModel.getInstance().removeSelectedPart();
+        vModel.removeSelectedPart();
+        
     }   
   }
 
