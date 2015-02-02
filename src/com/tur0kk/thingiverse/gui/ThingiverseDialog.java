@@ -392,6 +392,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         {
           public void run()
           {   
+            lstSearchThing.setModel(new DefaultListModel()); // clear thing file list so that list is cleared if no things were found
             lblSearch.setIcon(LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL));
           }
         });
