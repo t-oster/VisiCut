@@ -4,8 +4,8 @@
 VisiCut Connect - Thingiverse
 =======
 
-<img src="https://cloud.githubusercontent.com/assets/7680318/6001719/e210576a-aaec-11e4-866a-ce54799dea1b.png" width="400px"
- height="458" alt="" title="Visicut Connect" align="right" />
+<img src="https://cloud.githubusercontent.com/assets/7680318/6001719/e210576a-aaec-11e4-866a-ce54799dea1b.png" width="267px"
+ height="305px" alt="" title="Visicut Connect" align="right" />
 
 A userfriendly enhancement of visicut to access, filter and open your thingiverse files in visicut.
 
