@@ -126,6 +126,7 @@ public class VisicutModel
       tr.concatenate(dup.getGraphicObjects().getTransform());
     }
     dup.getGraphicObjects().setTransform(tr);
+    setSelectedPart(dup);
     this.plfFile.add(dup);
     this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_ADDED, null, dup);
   }
