@@ -2605,6 +2605,12 @@ private void arrangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         arrangeFrame.setVisible(true);
         arrangeFrame.setResizable(false);
         arrangeFrame.setAlwaysOnTop(true);
+        arrangeFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+          @Override
+          public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+              arrangeFrame = null;
+          }
+         });
       }
       
 
