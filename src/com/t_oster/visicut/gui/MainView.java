@@ -59,6 +59,7 @@ import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import com.t_oster.visicut.model.mapping.MappingSet;
+import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Image;
@@ -100,6 +101,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -121,6 +123,7 @@ public class MainView extends javax.swing.JFrame
   public static PreviewPanel previewStaticPanel;
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView");
+  private JFrame arrangeFrame = null;
 
   private ParameterPanel parameterPanel = new ParameterPanel();
   
@@ -2593,12 +2596,16 @@ private void arrangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       // TODO add your handling code here:
       previewStaticPanel = this.previewPanel;
       previewStaticPanel.autoArrange(0);
-      JFrame jFrame = new JFrame ();
-      AutoArrangePanel arrangePanel = new AutoArrangePanel(jFrame);
-      jFrame.add(arrangePanel);
-      jFrame.pack();
-      jFrame.setVisible(true);
-      jFrame.setResizable(false);
+      if (arrangeFrame == null){
+        arrangeFrame = new JFrame ();
+        AutoArrangePanel arrangePanel = new AutoArrangePanel(arrangeFrame);
+        arrangeFrame.add(arrangePanel);
+        arrangeFrame.pack();
+        arrangeFrame.setVisible(true);
+        arrangeFrame.setResizable(false);
+        arrangeFrame.setAlwaysOnTop(true);
+      }
+
     }
     catch (FileNotFoundException ex)
     {

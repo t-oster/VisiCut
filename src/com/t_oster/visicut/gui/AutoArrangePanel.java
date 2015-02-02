@@ -219,6 +219,7 @@ public class AutoArrangePanel extends javax.swing.JPanel
       boolean noPieces = MainView.previewStaticPanel.navigateThroughArrangements(count);
       if(!(noPieces)){
         System.out.println("No pieces to place!");
+        stepCount.setText(count + "/" + totalNumberOfArrangements);
       }
       stepCount.setText(count + "/" + totalNumberOfArrangements);
     }
@@ -239,7 +240,6 @@ public class AutoArrangePanel extends javax.swing.JPanel
       boolean noPieces = MainView.previewStaticPanel.navigateThroughArrangements(count);
       if(!(noPieces)){
         System.out.println("No pieces to place!");
-        totalNumberOfArrangements = count;
         stepCount.setText(count + "/" + totalNumberOfArrangements);
       }
       stepCount.setText(count + "/" + totalNumberOfArrangements);
