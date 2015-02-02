@@ -11,11 +11,11 @@ A userfriendly enhancement of Visicut to access, filter and open your thingivers
 
 It offers the following features:
 
-1. Integrated thingiverse login with a created browser window, as well as a persistent login.
-2. UI to access "My Things", your liked things and collections. In addition you can search for thingiverse projects.
+1. Integrated persistent Thingiverse login.
+2. UI to access "My Things", "liked things" and collections. In addition you can search for other Thingiverse projects besides your own ones.
 3. Use tags and extensions to filter the shown projects.
 4. Open a chosen file in the Visicut main view.
-5. "I made one" functionality which enables the user to take a photo of the created thing and upload it to thingiverse.
+5. "I made one" functionality which enables the user to take a photo of the created thing and upload it to Thingiverse.
 
 
 
@@ -32,20 +32,20 @@ Usage
 --------
 **Access your files:** 
 
-Click on the Thingiverse button and if not already logged in, enter your thingiverse user data and accept our app.
+Click on the Thingiverse button and if not already logged in, enter your Thingiverse user data and accept our app.
 
 **View thingiverse things**
 
-Use the the three tabs of our created thingiverse UI, "My Things", your liked things or collections to search for existing projects. Additionally you can use the search tab to search for a project on thingiverse. On the right top you can select or deselect to use the currently chosen filters.
+Use the the three tabs of our created Thingiverse UI, "My Things", your liked things or collections to search for existing projects. Additionally you can use the search tab to search for a project on Thingiverse. On the right top you can select or deselect to use the currently chosen filters.
 
 **Change search filter**
 
-Open the preferences and click on the thingiverse tab. There you can enter supported file extensions and tags you want to filter.
+Open the preferences and click on the Thingiverse tab. There you can enter supported file extensions and tags you want to filter.
 
 **Open file in visicut**
 
-After you searched for a project you can select it. On the right sight appear all remaining files (filter). Choose a file and click on the button "open File" to load and render it into Visicut.
+After you searched for projects you can select the one you are interest in. All remaining files (filter) of the project appear on the right side. Choose a file and click on the button "open File" to load and render it into Visicut.
 
 **I made one**
 
-Just click on the "I made one" button and a new window pops up. There you can use either the visicam or the camera of your computer to take a photo of your created thing.
+Click on the "I made one" button and a new window pops up. There you can use either the visicam or the camera of your computer to take a photo of your created thing. On the left side is a live preview of how the picture will look like, on the right side is a textfield to enter a description. By clicking on the "pubish" button the taken photo and its description is uploaded automatically to Thingiverse.
