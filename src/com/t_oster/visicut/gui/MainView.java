@@ -2469,6 +2469,7 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       if (facebook.isLoggedIn())
       {
         FacebookDialog facebookDialog = new FacebookDialog(this, true);
+        facebookDialog.setLocationRelativeTo(null);
         facebookDialog.setVisible(true);
       }
     }
