@@ -21,6 +21,8 @@ Download Visicut
 * Latest stable releases: http://download.visicut.org
 * Development builds: http://download.visicut.org/develop
 
+Usage
+--------
 
 **I made one**
 
