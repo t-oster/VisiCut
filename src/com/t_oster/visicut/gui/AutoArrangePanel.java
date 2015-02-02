@@ -34,6 +34,10 @@ public class AutoArrangePanel extends javax.swing.JPanel
     initComponents();
     totalNumberOfArrangements = AutoArrange.allValues.size();
     setStepCount();
+    previousButton.setEnabled(false);
+    if(totalNumberOfArrangements <= 1){
+      nextButton.setEnabled(false);
+    }
   }
 
   /** This method is called from within the constructor to
@@ -159,7 +163,7 @@ public class AutoArrangePanel extends javax.swing.JPanel
                 .add(stepCount)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(nextButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 56, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(56, Short.MAX_VALUE))
         );
         stepContainerLayout.setVerticalGroup(
             stepContainerLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -174,7 +178,6 @@ public class AutoArrangePanel extends javax.swing.JPanel
 
         discardConfirmContainer.setName("discardConfirmContainer"); // NOI18N
 
-        discardButton.setAction(actionMap.get("discard")); // NOI18N
         discardButton.setName("discardButton"); // NOI18N
         discardButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -223,7 +226,7 @@ public class AutoArrangePanel extends javax.swing.JPanel
                     .add(layout.createSequentialGroup()
                         .add(74, 74, 74)
                         .add(numberOfArrangements)))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(59, Short.MAX_VALUE))
             .add(layout.createSequentialGroup()
                 .add(50, 50, 50)
                 .add(stepContainer, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -233,7 +236,7 @@ public class AutoArrangePanel extends javax.swing.JPanel
                 .add(discardConfirmContainer, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .add(39, 39, 39))
             .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(seperator, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE))
+                .add(seperator, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -251,7 +254,7 @@ public class AutoArrangePanel extends javax.swing.JPanel
                 .add(layout.createSequentialGroup()
                     .add(145, 145, 145)
                     .add(seperator, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(180, Short.MAX_VALUE)))
+                    .addContainerGap(200, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -282,8 +285,11 @@ public class AutoArrangePanel extends javax.swing.JPanel
     try
     {
       // TODO add your handling code here:
-      setButtonState();
+      nextButton.setEnabled(true);
       --count;
+      if (count <= 1){
+        previousButton.setEnabled(false);
+      }
       boolean noPieces = MainView.previewStaticPanel.navigateThroughArrangements(count);
       if(!(noPieces)){
         System.out.println("No pieces to place!");
@@ -299,13 +305,16 @@ public class AutoArrangePanel extends javax.swing.JPanel
   private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
     try
     {
-      // TODO add your handling code here:
-      setButtonState();
+      previousButton.setEnabled(true);
+      ++count;
+      if (count >= totalNumberOfArrangements){
+        nextButton.setEnabled(false);
+      }
       boolean noPieces = MainView.previewStaticPanel.navigateThroughArrangements(count);
       if(!(noPieces)){
         System.out.println("No pieces to place!");
       }
-      ++count;
+      stepCount.setText(count + "/" + totalNumberOfArrangements);
     }
     catch (NoninvertibleTransformException ex)
     {

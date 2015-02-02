@@ -30,7 +30,7 @@
                       <Component id="numberOfArrangements" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace pref="59" max="32767" attributes="0"/>
           </Group>
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
@@ -43,7 +43,7 @@
               <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
           </Group>
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-              <Component id="seperator" alignment="0" pref="295" max="32767" attributes="1"/>
+              <Component id="seperator" alignment="0" pref="334" max="32767" attributes="1"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -64,7 +64,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="145" max="-2" attributes="0"/>
                   <Component id="seperator" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="180" max="32767" attributes="0"/>
+                  <EmptySpace pref="200" max="32767" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -176,7 +176,7 @@
                   <Component id="stepCount" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="nextButton" min="-2" pref="56" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="56" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -266,9 +266,6 @@
       <SubComponents>
         <Component class="javax.swing.JButton" name="discardButton">
           <Properties>
-            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-              <action class="com.t_oster.visicut.gui.ArrangeFrame" id="discard" methodName="discard"/>
-            </Property>
             <Property name="name" type="java.lang.String" value="discardButton" noResource="true"/>
           </Properties>
           <Events>
