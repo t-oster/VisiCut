@@ -31,12 +31,37 @@ import org.json.simple.parser.ParseException;
  */
 public class ThingiverseManager
 {
-  // App name: VisiCutThingiverse
+  /**
+   * Thingiverse App Client ID. Thingiverse apps are managed on the thingiverse
+   * website. The owner of the current app "VisiCut Connect" is Patrick Schmidt
+   * (patrick.schmidt1@rwth-aachen.de).
+   */
   private static final String clientId = "0d3b8166624f6d05b738";
+  
+  /**
+   * Thingiverse App Client Secret. The owner of the app "VisiCut Connect" can
+   * see this on the thingiverse website.
+   */
   private static final String clientSecret = "a0b5368a3d58ddb3b1ade12f4f8f14e7";
-  private static final String clientCallback = "http://www.thingiverse.com";
+  
+  /**
+   * After a successful login, thingiverse will redirect the user to this url.
+   * ATTENTION: Changing this string will have no effect.
+   * The app owner has to change the callback url on the thingiverse website
+   * instead.
+   */
+  private static final String clientCallback = "http://hci.rwth-aachen.de/public/VisiCut/show_code.php";
+  
+  /**
+   * The internal webbrowser (JavaFX) will automatically close if it has been
+   * redirected to a url with this prefix.
+   */
   private static final String redirectUrlPrefix = "http://hci.rwth-aachen.de/public/VisiCut/show_code.php?code=";
   
+  /**
+   * ThingiverseManager follows the singleton pattern.
+   * Use ThingiverseManager.getInstance().
+   */
   private static ThingiverseManager instance = null;
   
   /**
@@ -44,11 +69,18 @@ public class ThingiverseManager
    */
   private ThingiverseClient client = null;
   
+  /**
+   * Private constructor following the singleton pattern.
+   */
   private ThingiverseManager()
   {
    
   }
   
+  /**
+   * Use this method to get the current thingiverse manager instance.
+   * @return ThingiverseManager instance
+   */
   public static ThingiverseManager getInstance()
   {
     if (instance == null)
@@ -58,6 +90,11 @@ public class ThingiverseManager
     return instance;
   }
   
+  /**
+   * The internal webbrowser (JavaFX) will automatically close if it has been
+   * redirected to a url with this prefix.
+   * @return Url prefix
+   */
   public String getRedirectUrlPrefix()
   {
     return this.redirectUrlPrefix;
@@ -65,6 +102,7 @@ public class ThingiverseManager
   
   /**
    * Tries login with access token that has been saved to file.
+   * @return True on success.
    */
   public boolean logIn()
   {
@@ -81,6 +119,8 @@ public class ThingiverseManager
   
   /**
    * Logs out the current user and starts the authentication procedure.
+   * Use the returned url to get a browser code and call logIn(browserCode)
+   * to complete the login.
    * @return Login URL
    */
   public String initiateAuthentication()
@@ -90,6 +130,10 @@ public class ThingiverseManager
     return loginUrl;
   }
  
+  /**
+   * Complete the login procedure using a browser code.
+   * @param browserCode 
+   */
   public void logIn(String browserCode)
   {
     if (client == null)
@@ -121,12 +165,20 @@ public class ThingiverseManager
     }
   }
   
+  /**
+   * Log the current user out. This will remove the persistent session credentials
+   * from the file system.
+   */
   public void logOut()
   {
     client = null;
     deleteAccesToken();
   }
   
+  /**
+   * Check if a user is currently logged in.
+   * @return Logged in?
+   */
   public boolean isLoggedIn()
   {
     return client != null;
@@ -134,7 +186,7 @@ public class ThingiverseManager
   
   /**
    * Gets user name from thingiverse API.
-   * Returns "USER NAME" on error.
+   * @return "USER NAME" on error.
    */
   public String getUserName()
   {
@@ -155,6 +207,7 @@ public class ThingiverseManager
   
   /**
    * Gets user avatar url from thingiverse API.
+   * @return Image url
    */
   public String getUserImage()
   {
@@ -175,11 +228,25 @@ public class ThingiverseManager
     }
   }
   
+  /**
+   * Gets the list of "my things" from the thingiverse api.
+   * @return List of things
+   */
   public List<Thing> getMyThings()
   {
     return getMyThings(false, false);
   }
   
+  /**
+   * Gets a filtered list of "my things" from the thingiverse api.
+   * @param filterExtensions Set to true if you want to filter for supported
+   * file extensions. Note that this will be relatively slow. The list of file
+   * extensions can be set as application preferences.
+   * @param filterTags Set to true if you want to filter for certain tags.
+   * Note that this will be relatively slow. The list of tags can be set as
+   * application preferences.
+   * @return List of things
+   */
   public List<Thing> getMyThings(boolean filterExtensions, boolean filterTags)
   {
     List<Thing> things = new LinkedList<Thing>();
@@ -213,11 +280,25 @@ public class ThingiverseManager
     return things;
   }
   
+  /**
+   * Gets the list of liked things from the thingiverse api.
+   * @return List of things
+   */
   public List<Thing> getLikedThings()
   {
     return getLikedThings(false, false);
   }
   
+  /**
+   * Gets a filtered list of liked things from the thingiverse api.
+   * @param filterExtensions Set to true if you want to filter for supported
+   * file extensions. Note that this will be relatively slow. The list of file
+   * extensions can be set as application preferences.
+   * @param filterTags Set to true if you want to filter for certain tags.
+   * Note that this will be relatively slow. The list of tags can be set as
+   * application preferences.
+   * @return List of things
+   */
   public List<Thing> getLikedThings(boolean filterExtensions, boolean filterTags)
   {
     List<Thing> things = new LinkedList<Thing>();
@@ -251,6 +332,10 @@ public class ThingiverseManager
     return things;
   }
   
+  /**
+   * Gets the list of "my collections" from the thingiverse api.
+   * @return List of collections
+   */
   public List<ThingCollection> getMyCollections()
   {
     List<ThingCollection> collections = new LinkedList<ThingCollection>();
@@ -282,11 +367,27 @@ public class ThingiverseManager
     return collections;
   }
   
+  /**
+   * Gets the list of things belonging to a certain collection.
+   * @param collection
+   * @return List of things
+   */
   public List<Thing> getThingsByCollection(ThingCollection collection)
   {
     return getThingsByCollection(collection, false, false);
   }
   
+  /**
+   * Gets the list of things belonging to a certain collection.
+   * @param collection
+   * @param filterExtensions Set to true if you want to filter for supported
+   * file extensions. Note that this will be relatively slow. The list of file
+   * extensions can be set as application preferences.
+   * @param filterTags Set to true if you want to filter for certain tags.
+   * Note that this will be relatively slow. The list of tags can be set as
+   * application preferences.
+   * @return List of things
+   */
   public List<Thing> getThingsByCollection(ThingCollection collection, boolean filterExtensions, boolean filterTags)
   {
     List<Thing> things = new LinkedList<Thing>();
@@ -316,11 +417,27 @@ public class ThingiverseManager
     return things;
   }
   
+  /**
+   * Do a search using the thingiverse api.
+   * @param query search string
+   * @return List of things matching the search term
+   */
   public List<Thing> search(String query)
   {
     return search(query, false, false);
   }
   
+    /**
+   * Do a search using the thingiverse api.
+   * @param query search string
+   * @param filterExtensions Set to true if you want to filter for supported
+   * file extensions. Note that this will be relatively slow. The list of file
+   * extensions can be set as application preferences.
+   * @param filterTags Set to true if you want to filter for certain tags.
+   * Note that this will be relatively slow. The list of tags can be set as
+   * application preferences.
+   * @return List of things
+   */
   public List<Thing> search(String query, boolean filterExtensions, boolean filterTags)
   {
     List<Thing> things = new LinkedList<Thing>();
@@ -356,16 +473,33 @@ public class ThingiverseManager
     return things;
   }
   
+  /**
+   * Get all files belonging to a certain thing. This does not download the
+   * actual files but returns ThingFile objects which contain all the information
+   * to do the actual download. (see downloadThingFile)
+   * @param thing
+   * @return List of thing files
+   */
   public List<ThingFile> getFiles(Thing thing)
   {
     return getFiles(thing, false);
   }
   
+  /**
+   * Get all files belonging to a certain thing. This does not download the
+   * actual files but returns ThingFile objects which contain all the information
+   * to do the actual download. (see downloadThingFile)
+   * @param thing
+   * @param filterExtensions Set to true if you want to filter for supported
+   * file extensions. The list of file extensions can be set as application
+   * preferences.
+   * @return List of thing files
+   */
   public List<ThingFile> getFiles(Thing thing, boolean filterExtensions)
   {
     if (filterExtensions)
     {
-      List<String> fileExtensionFilter = this.getCommaSeparatedList(VisicutModel.getInstance().getPreferences().getSupportedExtensions());
+      List<String> fileExtensionFilter = this.splitCommaSeparatedString(VisicutModel.getInstance().getPreferences().getSupportedExtensions());
       return getFiles(thing, fileExtensionFilter);
     }
     else
@@ -373,15 +507,16 @@ public class ThingiverseManager
       return getFiles(thing, new LinkedList<String>());
     }
   }
- 
   
   /**
-   * 
+   * Get all files belonging to a certain thing. This does not download the
+   * actual files but returns ThingFile objects which contain all the information
+   * to do the actual download. (see downloadThingFile)
    * @param thing
-   * @param allowedFileExtensions Use this to filter the result for specific file
-   * extensions like svg or plf. A file is returned if it matches one of the
-   * specified extensions. If the filter list is empty, all files are returned.
-   * @return 
+   * @param filterExtensions Filter using a specific list of allowed file
+   * extensions. A file will be part of the result if it matches one of the
+   * given extensions. If the list is empty, all files will be returned.
+   * @return List of thing files
    */
   private List<ThingFile> getFiles(Thing thing, List<String> allowedFileExtensions)
   {
@@ -415,6 +550,11 @@ public class ThingiverseManager
     return files;
   }
   
+  /**
+   * Gets the list of tags that are attached to a thing.
+   * @param thing
+   * @return List of tags (strings)
+   */
   public List<String> getTags(Thing thing)
   {
     List<String> tags = new LinkedList<String>();
@@ -440,6 +580,21 @@ public class ThingiverseManager
     return tags;
   }
   
+  /**
+   * Takes a list of strings and returns the sublist of things that match all
+   * given filter rules. Note that this method is relatively slow. It does
+   * a thingiverse api call for each thing in the input list. Requests are done
+   * in parallel using a thread pool.
+   * @param things Input list of things
+   * @param filterExtensions Set to true if you want to filter for supported
+   * file extensions. The list of file extensions can be set as application
+   * preferences.
+   * @param filterTags Set to true if you want to filter for certain tags.
+   * The list of tags can be set as application preferences.
+   * @return Subset of the input list.
+   * @throws InterruptedException
+   * @throws ExecutionException 
+   */
   private List<Thing> filterThings(List<Thing> things, boolean filterExtensions, boolean filterTags) throws InterruptedException, ExecutionException
   {
     // Return quickly if no filter is set.
@@ -496,8 +651,8 @@ public class ThingiverseManager
       job.thing = thing;
       job.filterExtensions = filterExtensions;
       job.filterTags = filterTags;
-      job.fileExtensionFilter = this.getCommaSeparatedList(VisicutModel.getInstance().getPreferences().getSupportedExtensions());
-      job.tagFilter = this.getCommaSeparatedList(VisicutModel.getInstance().getPreferences().getLaserCutterTags());
+      job.fileExtensionFilter = this.splitCommaSeparatedString(VisicutModel.getInstance().getPreferences().getSupportedExtensions());
+      job.tagFilter = this.splitCommaSeparatedString(VisicutModel.getInstance().getPreferences().getLaserCutterTags());
       jobs.add(job);
     }
 
@@ -525,10 +680,11 @@ public class ThingiverseManager
   }
   
   /**
-   * @param fileName
-   * @param fileExtensions
-   * @return True if the file name ends with on of the given file extensions
-   * (ignoring case) or the list of extensions is empty. 
+   * Checks if a filename has one of the given file extensions.
+   * @param fileName File name as string
+   * @param fileExtensions List of file extensions without dot. E.g. "svg"
+   * @return True if the file name ends with one of the given file extensions
+   * (ignoring case) or the list of extensions is empty.
    */
   private boolean hasMatchingExtension(String fileName, List<String> fileExtensions)
   {
@@ -552,6 +708,8 @@ public class ThingiverseManager
   /**
    * Downloads a file from thingiverse,
    * saves it to disk and returns a File object or null.
+   * @param thingFile
+   * @return Java.io.File that has been saved to disk.
    */
   public File downloadThingFile(ThingFile thingFile)
   {
@@ -586,7 +744,9 @@ public class ThingiverseManager
   
   /**
    * Downloads an image from thingiverse,
-   * saves it to disk and returns a File object or null.
+   * saves it to disk and returns its location in the file system.
+   * @url Web url of the image
+   * @return Absolute path to the image on the local file system
    */
   public String downloadImage(String url)
   {
@@ -715,7 +875,13 @@ public class ThingiverseManager
     }
   }
   
-  private List<String> getCommaSeparatedList(String commaSeparatedString){
+  /**
+   * Splits a string with comma separated values list of strings.
+   * @param commaSeparatedString
+   * @return 
+   */
+  private List<String> splitCommaSeparatedString(String commaSeparatedString)
+  {
     List<String> separatedList = new ArrayList<String>(Arrays.asList(commaSeparatedString.split("\\s*,\\s*")));
     return separatedList;
   }
