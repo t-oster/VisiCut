@@ -12,7 +12,7 @@ A userfriendly enhancement of Visicut to access, filter and open your thingivers
 It offers the following features:
 
 1. Integrated thingiverse login with a created browser window, as well as a persistent login.
-2. UI to access sets of "My Things", your liked things and collections. In addition you can search for thingiverse projects.
+2. UI to access "My Things", your liked things and collections. In addition you can search for thingiverse projects.
 3. Use tags and extensions to filter the shown projects.
 4. Open a chosen file in the Visicut main view.
 5. "I made one" functionality which enables the user to take a photo of the created thing and upload it to thingiverse.
