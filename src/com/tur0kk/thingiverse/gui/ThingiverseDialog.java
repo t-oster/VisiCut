@@ -506,7 +506,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
         spltpMyThings.setRightComponent(sclpMyThingsThing);
 
-        tpLists.addTab("MyThings", spltpMyThings);
+        tpLists.addTab(resourceMap.getString("spltpMyThings.TabConstraints.tabTitle"), spltpMyThings); // NOI18N
 
         spltpLiked.setName("spltpLiked"); // NOI18N
 
