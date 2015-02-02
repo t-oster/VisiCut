@@ -1,8 +1,8 @@
 VisiCut Connect - Facebook
 =======
 
-<img src="https://cloud.githubusercontent.com/assets/7680318/6001719/e210576a-aaec-11e4-866a-ce54799dea1b.png" width="400px"
- height="458" alt="" title="Visicut Connect" align="right" />
+<img src="https://cloud.githubusercontent.com/assets/7680318/6001719/e210576a-aaec-11e4-866a-ce54799dea1b.png" width="320px"
+ height="366px" alt="" title="Visicut Connect" align="right" />
 
 A userfriendly enhancement of visicut to upload and post an image of your created thing to facebook.
 
