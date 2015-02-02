@@ -135,6 +135,7 @@ public class ThingSelectionListener implements ListSelectionListener
           else{
             // nothing is selected
             this.btnMadeOne.setEnabled(false); // to upload "I made one" a thing must be selected
+            this.displayResult.setModel(new DefaultListModel());
           }
         }
       }
