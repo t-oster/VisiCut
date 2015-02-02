@@ -510,6 +510,34 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     
   }
   
+  public HashMap<Integer,Double> getBinOfLeastArea(){
+    HashMap<Integer,Double> binAndLeastArea = new HashMap<Integer, Double> ();
+    double areaOfBins = 0;
+    double leastArea = 0;
+      
+    for (int i = 1; i <= AutoArrange.allValues.size(); i++){
+      List<Integer> notToRender = new LinkedList<Integer>(getObjectsNotToRender(AutoArrange.allValues.get(i)));
+      for (int j : notToRender){
+        PlfPart part = VisicutModel.getInstance().getPlfFile().get(j);
+        areaOfBins += part.getGraphicObjects().getBoundingBox().getWidth() * part.getGraphicObjects().getBoundingBox().getHeight();        
+      }
+      if ( i  == 1 ){
+        leastArea = areaOfBins;
+      }
+      if ( areaOfBins < leastArea){
+        leastArea = areaOfBins;
+      }
+      areaOfBins = 0;
+    }
+    return null;
+  }
+  
+  /*
+   * The method that will call getObjectsNotToRender and get
+   * the set of values that cannot be renedered after arrangement.
+   * @param binNumber : give the bin number of the arrangement.
+   */
+  
   private void notToBeRendered(int binNumber){
     Set<Integer> notToRender = getObjectsNotToRender(AutoArrange.allValues.get(binNumber));
     for ( int i : notToRender){
@@ -535,7 +563,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     
     for (int i = 1; i <= VisicutModel.getInstance().getPlfFile().size(); i++){
       if (!(holdValueSet.contains(i))){
-        returnValue.add(i);
+        returnValue.add(i-1);
       }
     }
     return returnValue;
