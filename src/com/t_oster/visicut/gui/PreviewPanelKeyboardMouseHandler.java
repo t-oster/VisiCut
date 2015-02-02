@@ -18,8 +18,6 @@
  **/
 package com.t_oster.visicut.gui;
 
-import com.kitfox.svg.SVGElement;
-import com.kitfox.svg.SVGException;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.beans.EditRectangle;
 import com.t_oster.visicut.gui.beans.EditRectangle.Button;
@@ -30,10 +28,8 @@ import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.PlfFile;
 import com.t_oster.visicut.model.PlfPart;
-import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
-import com.t_oster.visicut.model.graphicelements.svgsupport.SVGShape;
 import com.t_oster.visicut.vectorize.VectorizeDialog;
 import java.awt.Cursor;
 import java.awt.Point;
@@ -54,9 +50,6 @@ import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -66,11 +59,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
-import org.apache.batik.dom.GenericDOMImplementation;
-import org.apache.batik.svggen.SVGGraphics2D;
-import org.apache.batik.svggen.SVGGraphics2DIOException;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
 
 /**
  * This class handles the transformations to the background and the selected
