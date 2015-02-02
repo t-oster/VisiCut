@@ -1,9 +1,20 @@
-VisiCut
+
+
+
+VisiCut Connect
 =======
 
-a userfriendy, platform-independent tool for preparing, saving and sending jobs to Lasercutters.
+a userfriendly enhancement of visicut to access, filter and open your thingiverse files in visicut.
 
-For more information please look at the project page at:
+It offers the following features:
+
+1. Integrated thingiverse login with a created browser window.
+2. UI to access sets of "My Things", your liked things and collections. In addition you can search for thingiverse projects.
+3. Use tags and extensions to filter the shown projects.
+4. "I made one" functionality which enables the user to take a photo of the created thing and upload it to thingiverse.
+5. Integrated facebook login with a created browser window. You can make a picture of the thing you created, which is then automatically posted on facebook.
+
+For more information about Visicut look at the project page at:
 
 www.visicut.org
 
@@ -12,13 +23,4 @@ Download
 * Latest stable releases: http://download.visicut.org
 * Development builds: http://download.visicut.org/develop
 
-Compiling and Hacking
----------------------
-https://github.com/t-oster/VisiCut/wiki/Development:-Getting-started
 
-LibLaserCut
-===========
-
-For controlling Lasercutters, VisiCut uses the LibLaserCut. The sources can be found here: https://github.com/t-oster/LibLaserCut
-
-Feel free to create your own, personal Lasercutter Applications
