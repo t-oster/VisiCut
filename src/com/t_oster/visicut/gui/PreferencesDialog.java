@@ -41,7 +41,6 @@ public class PreferencesDialog extends javax.swing.JDialog
   public PreferencesDialog(java.awt.Frame parent, boolean modal)
   {
     super(parent, modal);
-    super.setLocationRelativeTo(parent);
     initComponents();
     final String NONE =  java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/PredefinedMappingBox").getString("NONE");
     cbDefaultMapping.setRenderer(new DefaultListCellRenderer(){
