@@ -29,4 +29,4 @@ Download Visicut
 
 Usage
 --------
-
+**Access your files:** Click on the Thingiverse button, enter your thingiverse user data and accept our app.
