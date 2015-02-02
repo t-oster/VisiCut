@@ -1919,7 +1919,8 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
   }
   
   public String getVisiCam(){
-    return MainView.this.visicutModel1.getSelectedLaserDevice().getCameraURL();
+    LaserDevice dev = MainView.this.visicutModel1.getSelectedLaserDevice();
+    return  dev != null ? dev.getCameraURL() : "";
   }
 
   @Action
