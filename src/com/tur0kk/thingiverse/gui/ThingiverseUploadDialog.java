@@ -10,6 +10,7 @@
  */
 package com.tur0kk.thingiverse.gui;
 
+import com.t_oster.visicut.gui.MainView;
 import com.tur0kk.LoadingIcon;
 import com.tur0kk.TakePhotoThread;
 import com.tur0kk.thingiverse.model.Thing;
@@ -314,6 +315,7 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
               lblPublishSuccessStatus.setVisible(true);
               btnPhotoRedo.setEnabled(true);
               lblLoading.setVisible(false);
+              MainView.getInstance().getDialog().showSuccessMessage("Sucessfully published \"" + thing.getName() + "\" as I made one");
               dispose();
             }
           });
