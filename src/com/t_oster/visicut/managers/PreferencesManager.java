@@ -153,6 +153,10 @@ public final class PreferencesManager
       ProfileManager.getInstance().add(engrave3d);
     }
     
+    this.generateThingiverseDefault();
+  }
+  
+  private void generateThingiverseDefault(){
     preferences.setLaserCutterTags("lasercutter, lasercut, laser cutter, laser cut");
     preferences.setSupportedExtensions("svg, plf, dxf, eps, gcode");
   }
@@ -262,6 +266,11 @@ public final class PreferencesManager
       try
       {
         preferences = this.loadPreferences(this.getPreferencesPath());
+        
+        // check if thingiverse defailts are set, if not upgrade old settings file
+        if(preferences.getLaserCutterTags() == null || preferences.getSupportedExtensions() == null){
+          this.generateThingiverseDefault();
+        }
       }
       catch (Exception ex)
       {
