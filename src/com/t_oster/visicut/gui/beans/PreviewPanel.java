@@ -510,11 +510,10 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     
   }
   
-  public HashMap<Integer,Double> getBinOfLeastArea(){
-    HashMap<Integer,Double> binAndLeastArea = new HashMap<Integer, Double> ();
+  public int getBinOfLeastArea(){
     double areaOfBins = 0;
     double leastArea = 0;
-      
+    int leastAreaBin = 0;  
     for (int i = 1; i <= AutoArrange.allValues.size(); i++){
       List<Integer> notToRender = new LinkedList<Integer>(getObjectsNotToRender(AutoArrange.allValues.get(i)));
       for (int j : notToRender){
@@ -526,10 +525,11 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       }
       if ( areaOfBins < leastArea){
         leastArea = areaOfBins;
+        leastAreaBin = i;
       }
       areaOfBins = 0;
     }
-    return null;
+    return leastAreaBin;
   }
   
   /*
