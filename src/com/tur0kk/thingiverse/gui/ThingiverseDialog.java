@@ -20,14 +20,11 @@ import com.tur0kk.thingiverse.gui.mapping.ThingFileSelectionListener;
 import com.tur0kk.thingiverse.model.ThingCollection;
 import com.tur0kk.thingiverse.model.ThingFile;
 import java.awt.event.ItemEvent;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
@@ -57,7 +54,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
   public ThingiverseDialog(java.awt.Frame parent, boolean modal) throws AccessException, MalformedURLException, IOException
   {
     super(parent, modal);
-    super.setLocationRelativeTo(parent);
     
     // just hide to keep state
     this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
@@ -792,6 +788,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
   {//GEN-HEADEREND:event_btnMadeOneActionPerformed
     // assume in current list a thing is selected, otherwise button is not enabled
     ThingiverseUploadDialog uploadDialog = new ThingiverseUploadDialog(MainView.getInstance(), true, (Thing)getCurrentTabThingList().getSelectedValue());
+    uploadDialog.setLocationRelativeTo(null);
     uploadDialog.setVisible(true);
   }//GEN-LAST:event_btnMadeOneActionPerformed
 

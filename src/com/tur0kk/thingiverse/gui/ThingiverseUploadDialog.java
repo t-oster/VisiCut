@@ -20,8 +20,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
 
@@ -38,7 +36,6 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
   public ThingiverseUploadDialog(java.awt.Frame parent, boolean modal, Thing thing)
   {
     super(parent, modal);
-    super.setLocationRelativeTo(parent);
     
     initComponents();
     

@@ -2509,6 +2509,7 @@ private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FI
 
 private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmPreferencesActionPerformed
   PreferencesDialog pd = new PreferencesDialog(this, true);
+  pd.setLocationRelativeTo(null);
   pd.setPreferences(this.visicutModel1.getPreferences().clone());
   pd.setVisible(true);
   if (pd.getPreferences() != null)
@@ -2628,6 +2629,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
         if (thingiverse.isLoggedIn())
         {
           thingiverseDialog = new ThingiverseDialog(this, true);
+          thingiverseDialog.setLocationRelativeTo(null);
           thingiverseDialog.setVisible(true);
         }
       }
