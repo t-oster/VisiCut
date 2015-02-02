@@ -134,7 +134,7 @@ public class FacebookClient
       MultipartEntityBuilder builder = MultipartEntityBuilder.create();
       builder.addTextBody("message", msg);
       
-      if(placeId != ""){
+      if(placeId != null && placeId != ""){
         builder.addTextBody("place", placeId);
       }
       

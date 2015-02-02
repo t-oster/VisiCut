@@ -5,6 +5,7 @@
 package com.tur0kk.facebook;
 
 import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.misc.Helper;
 import java.awt.Image;
 import java.io.File;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -188,7 +190,13 @@ public class FacebookManager
       // evaluate success
       JSONParser parser = new JSONParser();
       JSONObject dataObj = (JSONObject)parser.parse(json);
-      String id = dataObj.get("id") .toString();
+      String id = (String) dataObj.get("id");
+      
+      if(id == null){
+        MainView.getInstance().getDialog().showErrorMessage("Facebook has not enough permissions");
+        return false;
+      }
+      
       return true;
     }
     catch(Exception ex)

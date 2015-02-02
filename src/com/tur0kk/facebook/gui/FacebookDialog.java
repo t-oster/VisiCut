@@ -319,40 +319,69 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     });
     
     
+    boolean validInformation = true;
+    String errorMessage = "";
     // things to publish
     ImageIcon icon = (ImageIcon)lblPhoto.getIcon();
-    final Image image = icon.getImage();    
+    Image img = null;
+    if(icon == null){
+      errorMessage = "Please take a proper picture";
+      MainView.getInstance().getDialog().showErrorMessage(errorMessage);
+      validInformation = false;
+    }
+    else{
+         img = icon.getImage();
+    }
+    final Image image = img; 
     final String message = txtaPublish.getText();
     
     
-    new Thread(new Runnable() {
+    if(validInformation){
+      new Thread(new Runnable() {
 
-      public void run()
-      {
-        FacebookManager facebook = FacebookManager.getInstance();
-        boolean success = facebook.publishProject(message, image);
-        String msg = "";
-        if(success){
-          msg = "Successful upload";
-        }else{
-          msg = "Error uploading photo";
+        public void run()
+        {
+          FacebookManager facebook = FacebookManager.getInstance();
+          final boolean success = facebook.publishProject(message, image);
+          String msg = "";
+          if(success){
+            msg = "Successful upload";
+          }else{
+            msg = "Error uploading photo";
+          }
+
+          final String message = msg;
+          SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+              lblPublishSuccessStatus.setText(message);
+              lblPublishSuccessStatus.setVisible(true);
+              btnPhotoRedo.setEnabled(true);
+              lblLoading.setVisible(false);
+              if(success){
+                MainView.getInstance().getDialog().showSuccessMessage("Sucessfully published to Facebook.");
+              }
+              dispose();
+            }
+          });
+
         }
-        
-        final String message = msg;
-        SwingUtilities.invokeLater(new Runnable() {
+      }).start();
+    }
+    else{
+      final String msg = errorMessage;
+      SwingUtilities.invokeLater(new Runnable() {
           public void run()
           {
-            lblPublishSuccessStatus.setText(message);
+            lblPublishSuccessStatus.setText(msg); // show error message
             lblPublishSuccessStatus.setVisible(true);
             btnPhotoRedo.setEnabled(true);
             lblLoading.setVisible(false);
-            MainView.getInstance().getDialog().showSuccessMessage("Sucessfully published to Facebook.");
-            dispose();
+            txtaPublish.setEditable(true);
+            txtaPublish.setBackground(Color.white);
           }
         });
-        
-      }
-    }).start();
+    }
     
     
   }//GEN-LAST:event_btnPublishActionPerformed
