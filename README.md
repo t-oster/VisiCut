@@ -21,3 +21,8 @@ Download Visicut
 * Latest stable releases: http://download.visicut.org
 * Development builds: http://download.visicut.org/develop
 
+
+**I made one**
+
+Click on the Thingiverse button and if not already logged in, enter your Thingiverse user data and accept our app.
+Afterwards a window is created where you can use either the visicam or the camera of your computer to take a photo of your created thing. On the left side is a live preview of how the picture will look like, on the right side is a textfield to enter a description. By clicking on the "pubish" button the taken photo and its description is uploaded automatically to Facebook.
