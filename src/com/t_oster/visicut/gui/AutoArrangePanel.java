@@ -30,6 +30,7 @@ public class AutoArrangePanel extends javax.swing.JPanel
   private int totalNumberOfArrangements;
   public JFrame parentFrame;
   private int sliderValue;
+  
 
   /** Creates new form AutoArrangePanel */
   public AutoArrangePanel(JFrame parent)
@@ -238,6 +239,8 @@ public class AutoArrangePanel extends javax.swing.JPanel
       boolean noPieces = MainView.previewStaticPanel.navigateThroughArrangements(count);
       if(!(noPieces)){
         System.out.println("No pieces to place!");
+        totalNumberOfArrangements = count;
+        stepCount.setText(count + "/" + totalNumberOfArrangements);
       }
       stepCount.setText(count + "/" + totalNumberOfArrangements);
     }
@@ -250,7 +253,6 @@ public class AutoArrangePanel extends javax.swing.JPanel
   private void distanceSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_distanceSliderStateChanged
     // TODO add your handling code here:
     sliderValue = distanceSlider.getValue();
-    //distanceValueLabel.setText("" + sliderValue);
   }//GEN-LAST:event_distanceSliderStateChanged
 
   private void distanceSliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_distanceSliderMouseReleased
@@ -290,21 +292,6 @@ public class AutoArrangePanel extends javax.swing.JPanel
     
   }//GEN-LAST:event_distanceSliderMouseReleased
 
-  private void setButtonState(){
-    if ( count == 1 ){
-      previousButton.setEnabled(false);
-    }
-    else{
-      previousButton.setEnabled(true);
-    }
-    
-    if ( PreviewPanel.isGreaterThanAllValues(count) ){
-      nextButton.setEnabled(false);
-    }
-    else{
-      nextButton.setEnabled(true);
-    }
-  }
   
   // to set the step count value
   private void setStepCount(){
@@ -314,7 +301,23 @@ public class AutoArrangePanel extends javax.swing.JPanel
   @Action
   public void discard()
   {
-    parentFrame.dispose();
+    try
+    {
+      MainView.previewStaticPanel.autoArrange(0);
+      parentFrame.dispose();
+    }
+    catch (FileNotFoundException ex)
+    {
+      Logger.getLogger(AutoArrangePanel.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    catch (UnsupportedEncodingException ex)
+    {
+      Logger.getLogger(AutoArrangePanel.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    catch (NoninvertibleTransformException ex)
+    {
+      Logger.getLogger(AutoArrangePanel.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
   @Action

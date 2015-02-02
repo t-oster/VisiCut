@@ -66,6 +66,8 @@ import javax.swing.JOptionPane;
 import sun.net.www.protocol.http.AuthCache;
 import com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler;
 import java.awt.geom.NoninvertibleTransformException;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -503,8 +505,18 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   public void autoArrange(int offset) throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException{
     AutoArrange.start(VisicutModel.getInstance().getPlfFile(), new Dimension((int)bedWidth,(int)bedHeight), offset);
     navigateThroughArrangements(1);
+    notToBeRendered(1);
     super.repaint();
     
+  }
+  
+  private void notToBeRendered(int binNumber){
+    Set<Integer> notToRender = getObjectsNotToRender(AutoArrange.allValues.get(binNumber));
+    for ( int i : notToRender){
+      PlfPart part = VisicutModel.getInstance().getPlfFile().get(i);
+      setFastPreview(true);
+      VisicutModel.getInstance().firePartUpdated(part);
+    }
   }
   
   /*
@@ -514,37 +526,21 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
    * @param values : set from the HashMap.
    */
   
-  private int[] getObjectsNotToRender(Set<HoldValues> values){
-    int[] returnValue = null;
-    int counter = 0;
-    for ( int i = 1; i <= VisicutModel.getInstance().getPlfFile().size(); i++){
-      for (HoldValues hv : values){
-        if (hv.getObjectID() == i )
-          continue;
-        else{
-          // this could be modified to a list as well, see which is easier for you to handle
-          returnValue[counter] = i;
-          counter++;
-        }
+  private Set<Integer> getObjectsNotToRender(Set<HoldValues> values) throws NullPointerException{
+    Set<Integer> holdValueSet = new HashSet<Integer>();
+    Set<Integer> returnValue = new HashSet<Integer>();
+    for(HoldValues hv : values){
+      holdValueSet.add(hv.getObjectID());
+    }
+    
+    for (int i = 1; i <= VisicutModel.getInstance().getPlfFile().size(); i++){
+      if (!(holdValueSet.contains(i))){
+        returnValue.add(i);
       }
     }
     return returnValue;
   }
   
-  /*
-   * This is to check the size of the value with the 
-   * counter values in the MainView to enable or
-   * disable the button.
-   * 
-   * @param count : number of times the navigation
-   * button has been clicked.
-   */
-  public static boolean isGreaterThanAllValues(int count){
-    if (count > AutoArrange.allValues.size() + 1)
-      return false;
-    else
-      return true;
-  }
   
   /*
    * This method is used to navigate through the arrangements.
@@ -559,7 +555,8 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     //check if no pieces exits in the set.
     if(hValues.isEmpty())
       return false;
-      //perform rearrange.
+    //check for non renderable objects
+    //perform rearrange.
     for (HoldValues hv : hValues){
       PlfPart plfPart = VisicutModel.getInstance().getPlfFile().get(hv.getObjectID()-1);
       GraphicSet graphicSet = plfPart.getGraphicObjects();
@@ -568,6 +565,8 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       transformation.createInverse().deltaTransform(positionDifference, positionDifference);
       moveSet(positionDifference.x, positionDifference.y, plfPart, hv.getObjectRotation());
     }
+    notToBeRendered(binNumber);
+    this.repaint();
     // else return after arrangement.
     return true;
   }
@@ -608,33 +607,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     this.updateEditRectangle();
   }
     
-  //not working (null pointer exception)
-  private void renderObjectsInRed(int binNumber){
-      int [] listNotToRender = getObjectsNotToRender(AutoArrange.allValues.get(binNumber));
-      for (int i : listNotToRender){
-        PlfPart part = VisicutModel.getInstance().getPlfFile().get(i);
-        GraphicSet gSet = part.getGraphicObjects();
-        Graphics2D g2d = null;
-          
-        for ( int j = 0; j < gSet.size(); j++){
-          part.getGraphicObjects().get(j).render(g2d);
-          g2d.setColor(Color.RED);
-        }
-      }
-      //this.repaint();
-   }
-    // not working (null pointer exception)
-    private void testRender(int i){
-      PlfPart part = VisicutModel.getInstance().getPlfFile().get(i);
-      GraphicSet gSet = part.getGraphicObjects();
-      for ( int j = 0; j < gSet.size(); j++){
-        Graphics2D g2d = null;
-        part.getGraphicObjects().get(j).render(g2d);
-        g2d.setColor(Color.RED);
-      }
-      super.repaint();
-    }
-
+  
   @Override
   protected void paintComponent(Graphics g)
   {

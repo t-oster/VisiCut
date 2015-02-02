@@ -2594,8 +2594,8 @@ private void arrangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       previewStaticPanel = this.previewPanel;
       previewStaticPanel.autoArrange(0);
       JFrame jFrame = new JFrame ();
-      AutoArrangePanel ap = new AutoArrangePanel(jFrame);
-      jFrame.add(ap);
+      AutoArrangePanel arrangePanel = new AutoArrangePanel(jFrame);
+      jFrame.add(arrangePanel);
       jFrame.pack();
       jFrame.setVisible(true);
       jFrame.setResizable(false);
