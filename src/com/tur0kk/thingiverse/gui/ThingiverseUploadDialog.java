@@ -315,7 +315,7 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
               lblPublishSuccessStatus.setVisible(true);
               btnPhotoRedo.setEnabled(true);
               lblLoading.setVisible(false);
-              MainView.getInstance().getDialog().showSuccessMessage("Sucessfully published \"" + thing.getName() + "\" as I made one");
+              MainView.getInstance().getDialog().showSuccessMessage("Sucessfully published \"" + thing.getName() + "\" as I made one.");
               dispose();
             }
           });
