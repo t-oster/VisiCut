@@ -1,24 +1,23 @@
-VisiCut
+VisiCut Connect - Facebook
 =======
 
-a userfriendy, platform-independent tool for preparing, saving and sending jobs to Lasercutters.
+<img src="https://cloud.githubusercontent.com/assets/7680318/6001719/e210576a-aaec-11e4-866a-ce54799dea1b.png" width="400px"
+ height="458" alt="" title="Visicut Connect" align="right" />
 
-For more information please look at the project page at:
+A userfriendly enhancement of visicut to upload and post an image of your created thing to facebook.
+
+It offers the following feature:
+
+Integrated facebook login with a created browser window. You can make a picture of the thing you created, which is then automatically posted on facebook.
+
+
+
+For more information about Visicut look at the project page at:
 
 www.visicut.org
 
-Download
+Download Visicut
 --------
 * Latest stable releases: http://download.visicut.org
 * Development builds: http://download.visicut.org/develop
 
-Compiling and Hacking
----------------------
-https://github.com/t-oster/VisiCut/wiki/Development:-Getting-started
-
-LibLaserCut
-===========
-
-For controlling Lasercutters, VisiCut uses the LibLaserCut. The sources can be found here: https://github.com/t-oster/LibLaserCut
-
-Feel free to create your own, personal Lasercutter Applications
