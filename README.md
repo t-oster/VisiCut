@@ -1,51 +1,77 @@
+VisiCut
+=======
 
+a userfriendy, platform-independent tool for preparing, saving and sending jobs to Lasercutters.
 
+For more information please look at the project page at:
+
+www.visicut.org
+
+Download
+--------
+* Latest stable releases: http://download.visicut.org
+* Development builds: http://download.visicut.org/develop
+
+Compiling and Hacking
+---------------------
+https://github.com/t-oster/VisiCut/wiki/Development:-Getting-started
+
+LibLaserCut
+===========
+
+For controlling Lasercutters, VisiCut uses the LibLaserCut. The sources can be found here: https://github.com/t-oster/LibLaserCut
+
+Feel free to create your own, personal Lasercutter Applications
 
 VisiCut Connect - Thingiverse
 =======
 
 <img src="https://cloud.githubusercontent.com/assets/7680318/6001719/e210576a-aaec-11e4-866a-ce54799dea1b.png" width="267px"
- height="305px" alt="" title="Visicut Connect" align="right" />
+ height="305px" alt="" title="VisiCut Connect" align="right" />
 
-A userfriendly enhancement of Visicut to access, filter and open your thingiverse files in Visicut.
+A user-friendly enhancement of VisiCut to browse, filter and open your Thingiverse files in VisiCut.
 
 It offers the following features:
 
 1. Integrated persistent Thingiverse login.
-2. UI to access "My Things", "liked things" and collections. In addition you can search for other Thingiverse projects besides your own ones.
-3. Use tags and extensions to filter the shown projects.
-4. Open a chosen file in the Visicut main view.
-5. "I made one" functionality which enables the user to take a photo of the created thing and upload it to Thingiverse.
-
-
-
-For more information about Visicut look at the project page at:
-
-www.visicut.org
-
-Download Visicut
---------
-* Latest stable releases: http://download.visicut.org
-* Development builds: http://download.visicut.org/develop
+2. Interface to access "My Things", "liked things" and collections. In addition, you can search for other Thingiverse projects besides your own.
+3. Use Thingiverse tags and file extensions to filter things.
+4. Open files in the VisiCut main view.
+5. Easily take a picture of your thing and submit an "I made one" post to Thingiverse
 
 Usage
 --------
-**Access your files:** 
+**Login to Thingiverse:** 
 
-Click on the Thingiverse button and if not already logged in, enter your Thingiverse user data and accept our app.
+Click on the Thingiverse button and enter your user data. You will also be asked to grant the app some permissions.
 
-**View thingiverse things**
+**Browse your things and collections**
 
-Use the the three tabs of our created Thingiverse UI, "My Things", your liked things or collections to search for existing projects. Additionally you can use the search tab to search for a project on Thingiverse. On the right top you can select or deselect to use the currently chosen filters.
+Use the three tabs of the Thingiverse window - "My Things", "Liked" and "Collections" - to browse and access the respective things.
 
-**Change search filter**
+**Open a file**
 
-Open the preferences and click on the Thingiverse tab. There you can enter supported file extensions and tags you want to filter.
+Selecting a thing in the left pane will display all its associated files that match your current filter settings in the right pane. To open a file, simply double click it or select it and press the "Open File" button.
 
-**Open file in visicut**
+**Search for things**
 
-After you searched for projects you can select the one you are interest in. All remaining files (filter) of the project appear on the right side. Choose a file and click on the button "open File" to load and render it into Visicut.
+Use the search tab in the Thingiverse window to search for a project on Thingiverse.
+
+**Use filters**
+
+At the top right of the Thingiverse window, you can select filters to only display things that match certain criteria.
+You can choose to only display things that include at least one file with a supported file extension or to only display things that have a tag related to laser cutters. Supported file extensions and tags can be customized in the preferences.
+
+Note: The filters are added to each other, i.e. if you select both, only things will be displayed that match *both* criteria.
+
+**Change search filter settings**
+
+Open the preferences and click on the Thingiverse tab. There you can enter supported file extensions and tags you want to filter for.
 
 **I made one**
 
-Click on the "I made one" button and a new window pops up. There you can use either the visicam or the camera of your computer to take a photo of your created thing. On the left side is a live preview of how the picture will look like, on the right side is a textfield to enter a description. By clicking on the "pubish" button the taken photo and its description is uploaded automatically to Thingiverse.
+Select a thing and click the "I made one" button to open the "I made one"-window. You can use either the VisiCam or the camera of your computer to take a photo of the thing you made. On the left, there is a live preview, on the right side is a textfield to enter a description. Clicking the "publish" button will publish an "I made one" post with the current picture and description to Thingiverse.
+
+Video Tutorial
+--------
+You can find a video tutorial displaying all of the features <a href="https://www.youtube.com/watch?v=-YspZ8w3ZM0">here</a>.
