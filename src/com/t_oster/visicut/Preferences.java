@@ -322,7 +322,7 @@ public class Preferences
     this.editSettingsBeforeExecuting = editSettingsBeforeExecuting;
   }
   
-  // location id of the facebook fablab site
+  // location id of the facebook fablab site, to add a link in each facebook post
   private String fabLabLocationFacebookId = "";
 
   /**

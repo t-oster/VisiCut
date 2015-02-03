@@ -19,11 +19,12 @@ import org.scribe.model.Verb;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 
-/**
+/**Handles native REST communication with facebook api, using scribe library
  * @author Sven
  */
 public class FacebookClient
 {
+  // web app specific properties for identification, set by FacebookManager
   private String clientId = "";
   private String clientSecret = "";
   private String clientCallback = "";
@@ -31,7 +32,7 @@ public class FacebookClient
   OAuthService service;
   
   /**
-   * Get instance of ThingClient
+   * Get instance of Facebook
    * @param clientId the id of your app
    * @param clientSecret the secret of your app
    * @param clientCallback the callback-url of your app
@@ -47,7 +48,7 @@ public class FacebookClient
             .apiKey(clientId)
             .apiSecret(clientSecret)
             .callback(clientCallback)
-      .scope("publish_actions")
+      .scope("publish_actions") // request publish rights
             .build();
   }
   
@@ -126,18 +127,20 @@ public class FacebookClient
    * @return the new image id if successful
    */
   public String publishPicture(String msg, Image image, String placeId) throws IOException {
-    OAuthRequest request = new OAuthRequest(Verb.POST, "https://graph.facebook.com/v2.2/me/photos");
-    request.addHeader("Authorization", "Bearer " + accesTokenString);
+    OAuthRequest request = new OAuthRequest(Verb.POST, "https://graph.facebook.com/v2.2/me/photos"); // request node
+    request.addHeader("Authorization", "Bearer " + accesTokenString); // authentificate
     
+    // check input to avoid error responses
     if(msg != null && image != null){      
-      // multipart post structure
+      // facebook requires multipart post structure
       MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-      builder.addTextBody("message", msg);
+      builder.addTextBody("message", msg); // description
       
-      if(placeId != null && placeId != ""){
-        builder.addTextBody("place", placeId);
+      if(placeId != null && !"".equals(placeId)){
+        builder.addTextBody("place", placeId); // add link to FabLab site if property is set in preferences
       }
       
+      // convert image to bytearray and append to multipart
       BufferedImage bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
       Graphics2D bGr = bimage.createGraphics();
       bGr.drawImage(image, 0, 0, null);
@@ -145,15 +148,18 @@ public class FacebookClient
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       ImageIO.write(bimage, "png", baos);
       builder.addBinaryBody(msg, baos.toByteArray(), ContentType.MULTIPART_FORM_DATA, "test.png");
-      HttpEntity multipart = builder.build();
       
+      // generate multipart byte stream and add to payload of post package
+      HttpEntity multipart = builder.build();
       ByteArrayOutputStream multipartOutStream = new ByteArrayOutputStream((int)multipart.getContentLength());
       multipart.writeTo(multipartOutStream);
       request.addPayload(multipartOutStream.toByteArray());
       
+      // set header of post package
       Header contentType = multipart.getContentType();
       request.addHeader(contentType.getName(), contentType.getValue());
       
+      // send and response answer
       Response response = request.send();
       return response.getBody();
     }else{

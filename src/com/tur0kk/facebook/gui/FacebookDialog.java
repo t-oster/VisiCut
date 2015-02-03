@@ -1,13 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * FacebookDialog.java
- *
- * Created on 06.01.2015, 13:45:50
- */
 package com.tur0kk.facebook.gui;
 
 import com.t_oster.visicut.gui.MainView;
@@ -21,45 +11,40 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.net.URL;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 /**
- *
+ * FacebookDialog.java, displays user information and provides an workflow to take a picture, add a description and publish it to the facebook wall.
  * @author Sven
  */
 public class FacebookDialog extends javax.swing.JDialog
 {
-  private Thread livecamThread;
-  Object cameraLock = new Object();
-  Lock cameraUsageLock = new ReentrantLock();
-  
+  private Thread livecamThread; // thread used to frequently take pictures and disyplay them as live preview  
   
   /** Creates new form FacebookDialog */
   public FacebookDialog(java.awt.Frame parent, boolean modal){
     super(parent, modal);
     
+    // auto generated code
     initComponents();
     
-    // just hide to keep state
+    // delete state at close
     this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     
     // close camera on exit
     initWindowListener();
     
-    // change cam 
+    // change cam source listener (switch radio buttons)
     ItemListener selectChangeListener = new ItemListener() {
 
       public void itemStateChanged(ItemEvent e)
       {
         boolean selected = (e.getStateChange( ) == ItemEvent.SELECTED);
-        if(selected == true){ // only if selected
+        if(selected == true){ // only if selected, otherwise fired twice because other is deselected
           closeCamera();
-          setupCamera();
+          setupCamera(); // start camera with new settings
         }
       
       }
@@ -67,13 +52,13 @@ public class FacebookDialog extends javax.swing.JDialog
     rdbtnWebcam.addItemListener(selectChangeListener);
     rdbtnVisicam.addItemListener(selectChangeListener);
     
-    // enable picture taking
+    // start picture taking, handles selected source by itself
     setupCamera();
     
-    // user name
+    // display user name
     initUsername();
     
-    // profile picture
+    // display profile picture
     initProfilePicture();
   }
 
@@ -282,14 +267,14 @@ public class FacebookDialog extends javax.swing.JDialog
     }// </editor-fold>//GEN-END:initComponents
 
 private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
-    FacebookManager.getInstance().logOut();
+    FacebookManager.getInstance().logOut(); // delete access token
     dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)); // closing event closes the camera
 }//GEN-LAST:event_btnLogoutActionPerformed
 
 private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPhotoActionPerformed
     closeCamera();
     
-    // enable publishing
+    // enable publishing elements
     btnPhoto.setEnabled(false);
     btnPhotoRedo.setEnabled(true);
     btnPublish.setEnabled(true);
@@ -297,7 +282,7 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
   private void btnPhotoRedoActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnPhotoRedoActionPerformed
   {//GEN-HEADEREND:event_btnPhotoRedoActionPerformed
-    setupCamera();
+    setupCamera(); // clean set up take new pictures
   }//GEN-LAST:event_btnPhotoRedoActionPerformed
 
   private void btnPublishActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnPublishActionPerformed
@@ -320,10 +305,11 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     
     boolean validInformation = true;
     String errorMessage = "";
-    // things to publish
+    
+    // collect things to publish
     ImageIcon icon = (ImageIcon)lblPhoto.getIcon();
     Image img = null;
-    if(icon == null){
+    if(icon == null){ // verify proper picture
       errorMessage = "Please take a proper picture";
       MainView.getInstance().getDialog().showErrorMessage(errorMessage);
       validInformation = false;
@@ -350,6 +336,8 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
           }
 
           final String message = msg;
+          
+          // enable user feedback
           SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
@@ -367,8 +355,10 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
         }
       }).start();
     }
-    else{
+    else{ // no valid information
       final String msg = errorMessage;
+      
+      // enable user feedback, enable publish options to try again
       SwingUtilities.invokeLater(new Runnable() {
           public void run()
           {
@@ -385,6 +375,8 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     
   }//GEN-LAST:event_btnPublishActionPerformed
 
+  
+// close camera on close
 private void initWindowListener(){
   this.addWindowListener(new WindowListener() {
 
@@ -425,6 +417,7 @@ private void initWindowListener(){
     });
 }
 
+// request username and  display
 private void initUsername(){
     
   // display username
@@ -432,7 +425,7 @@ private void initUsername(){
     String username = null;
     public void run()
     {
-      // display loading icon
+      // user feedback, display loading icon
       final ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
       // display loading icon in label
       SwingUtilities.invokeLater(new Runnable() {
@@ -442,10 +435,9 @@ private void initUsername(){
         }
       });
         
-      // get profile picture
       FacebookManager facebook = FacebookManager.getInstance();
       
-      username = facebook.getUserName();
+      username = facebook.getUserName(); 
       SwingUtilities.invokeLater(new Runnable() {
         public void run()
         {
@@ -456,6 +448,7 @@ private void initUsername(){
   }).start();
 }
 
+// request user picture and  display
 private void initProfilePicture(){
     
   // set profile picture
@@ -479,6 +472,8 @@ private void initProfilePicture(){
           lProfilePicture.getHeight(),
           Image.SCALE_SMOOTH);
         final ImageIcon profilePicture = new ImageIcon(scaledImage);
+        
+        // show in profile picture label
         SwingUtilities.invokeLater(new Runnable() {
           public void run()
           {
@@ -519,6 +514,7 @@ private void initProfilePicture(){
  * Camera functions
  */
     
+// starts a thread to take frequently pictures depending on the selected source. Handles also that the right UI elements are enabled at startup.
 private void setupCamera(){
   // disable publish functions
   lblPhoto.setIcon(null);
@@ -555,6 +551,7 @@ private void setupCamera(){
   }
 }
 
+// just interupt live cam thread, the thread handles cleaning up the camera
 private void closeCamera(){
   if(livecamThread != null){
     livecamThread.interrupt(); // stop live stream thread
