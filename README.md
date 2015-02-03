@@ -56,3 +56,7 @@ Open the preferences and click on the Thingiverse tab. There you can enter suppo
 **I made one**
 
 Select a thing and click the "I made one" button to open the "I made one"-window. You can use either the VisiCam or the camera of your computer to take a photo of the thing you made. On the left, there is a live preview, on the right side is a textfield to enter a description. Clicking the "publish" button will publish an "I made one" post with the current picture and description to Thingiverse.
+
+Video Tutorial
+--------
+You can find a video tutorial displaying all of the features <a href="https://www.youtube.com/watch?v=v9Hz-9Z8Uwk">here</a>.
