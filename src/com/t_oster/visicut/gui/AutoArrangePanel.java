@@ -11,7 +11,6 @@
 package com.t_oster.visicut.gui;
 
 import com.mcp14.Autoarrange.AutoArrange;
-import com.t_oster.visicut.gui.beans.PreviewPanel;
 import java.awt.geom.NoninvertibleTransformException;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
@@ -155,27 +154,11 @@ public class AutoArrangePanel extends javax.swing.JPanel
   // to set the step count value
 
   @Action
-  public void discard()
+  public void discard() throws NoninvertibleTransformException
   {
-    try
-    {
-      MainView.previewStaticPanel.autoArrange(0);
       parentFrame.dispose();
       MainView.arrangeFrame = null;
       MainView.undoArrange();
-    }
-    catch (FileNotFoundException ex)
-    {
-      Logger.getLogger(AutoArrangePanel.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    catch (UnsupportedEncodingException ex)
-    {
-      Logger.getLogger(AutoArrangePanel.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    catch (NoninvertibleTransformException ex)
-    {
-      Logger.getLogger(AutoArrangePanel.class.getName()).log(Level.SEVERE, null, ex);
-    }
   }
 
   @Action
@@ -183,6 +166,7 @@ public class AutoArrangePanel extends javax.swing.JPanel
   {
     parentFrame.dispose();
     MainView.arrangeFrame = null;
+    MainView.clearPreviousPositions();
   }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
- 
+
 package com.mcp14.Autoarrange;
 
 import com.mcp14.Binpacking.Bin;
@@ -32,13 +32,13 @@ import java.util.Set;
 
 /**
  * Application client. Contains the input processing and the output generation.
- * 
+ *
  * @author Sughosh Kumar
- * 
+ *
  */
 public class AutoArrange {
     public static HashMap<Integer, Set<HoldValues>> allValues = new HashMap<Integer, Set<HoldValues>>();
-    
+
     public static void start(PlfFile svgFiles, Dimension laserBedDimension, int offset, AffineTransform mm2Px) throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException {
         allValues.clear();
         double pxLaserBedWidth = mm2Px.getScaleX() * laserBedDimension.width;
@@ -71,7 +71,7 @@ public class AutoArrange {
         }
         System.out.println("Offset in Arrange is: "+offset);
     }
-    
+
 
     private static void launch(String fileName) throws IOException {
         Object[] result = Utils.loadPieces(fileName);
