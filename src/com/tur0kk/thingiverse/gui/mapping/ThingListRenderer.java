@@ -2,12 +2,8 @@ package com.tur0kk.thingiverse.gui.mapping;
 
 import com.tur0kk.thingiverse.model.Thing;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.util.LinkedList;
-import java.util.Map;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
@@ -31,8 +27,10 @@ public class ThingListRenderer extends DefaultListCellRenderer {
           JList list, Object value, int index,
           boolean isSelected, boolean cellHasFocus) {
 
-      Thing aThing = (Thing) value;
-      JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+      Thing aThing = (Thing) value; // list of listmodel to render in this list item
+      JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus); // label of list item
+      
+      // design list item
       label.setText(aThing.getName());
       label.setIcon(aThing.getImage());
       label.setHorizontalAlignment(JLabel.LEFT);

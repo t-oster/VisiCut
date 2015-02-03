@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tur0kk.thingiverse.gui.mapping;
 
 import com.tur0kk.thingiverse.ThingiverseManager;
@@ -9,7 +5,6 @@ import com.tur0kk.thingiverse.model.Thing;
 import com.tur0kk.thingiverse.model.ThingFile;
 import com.tur0kk.LoadingIcon;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -21,14 +16,15 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 /**
- *
+ * This class listens for clicks in a thing list (left panel) to load the corresponding thing files.
+ * This listener disables or enables the I made one button dependent if a thing file is selected (I made one can only be published if a thing is selected)
  * @author Sven
  */
 public class ThingSelectionListener implements ListSelectionListener
 {
-  private JList displayResult;
-  private JCheckBox cbExtensions;
-  private JButton btnMadeOne;
+  private JList displayResult; // thing file list where the files to display
+  private JCheckBox cbExtensions; // check if filter for extensions is enabled to filter files
+  private JButton btnMadeOne; // to disable or enable depending on selection
   
   public ThingSelectionListener(JList displayResult, JCheckBox cbExtensions, JButton btnMadeOne){
     this.displayResult = displayResult;
@@ -61,7 +57,7 @@ public class ThingSelectionListener implements ListSelectionListener
               {        
                 final ThingiverseManager thingiverse = ThingiverseManager.getInstance();
 
-                // get things
+                // get things grom thingiverse
                 List<ThingFile> things = thingiverse.getFiles(selectionValue, cbExtensions.isSelected());
 
                 // init my things model with loading images
@@ -85,7 +81,7 @@ public class ThingSelectionListener implements ListSelectionListener
                 }
 
                 // display message if no files were found
-                if(things.size() == 0){
+                if(things.isEmpty()){
                   fileModel.addElement("No lasercutterfiles found.");
                 }
 
@@ -135,7 +131,7 @@ public class ThingSelectionListener implements ListSelectionListener
           else{
             // nothing is selected
             this.btnMadeOne.setEnabled(false); // to upload "I made one" a thing must be selected
-            this.displayResult.setModel(new DefaultListModel());
+            this.displayResult.setModel(new DefaultListModel()); // clear list
           }
         }
       }

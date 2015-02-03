@@ -43,6 +43,7 @@ import javax.swing.event.ChangeListener;
 public class ThingiverseDialog extends javax.swing.JDialog
 {
 
+  // counter for keeping track of current running image loading threads. If == 0, user feedback for loading is disabled
   private AtomicInteger numberLoadingLiked = new AtomicInteger();
   private AtomicInteger numberLoadingMyThings = new AtomicInteger();
   private AtomicInteger numberLoadingSearch = new AtomicInteger();
@@ -58,28 +59,23 @@ public class ThingiverseDialog extends javax.swing.JDialog
     // just hide to keep state
     this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 
-    // control window events
-    initWindowListener();
-
     // init componentes
     initComponents(); // auto generated code
-    initComponentsByHand();
+    initComponentsByHand(); // custom initializations
     
-    // display things
+    // initialize the tabbed pane, create swing design by hand and fill with content from thingiverse-manager
     initMyThingsTab();
-
     initLikedTab();
-    
-    initSearchTab();
-    
+    initSearchTab();   
     initCollectionTab();
     
-    // list cell renderer for images + name of things
+    // list cell renderer to render images + name of things in thinglists
     initListCellRenderers();
 
-    /* click listener for items to display in thing panels */
+    /* initialize click listeners for thing lists */
     initListClickListeners();
     
+    /* initialize change listener for thing lists */
     initChangeListener();
 
     // display username
@@ -92,6 +88,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
     pack();
   }
   
+  // function reloads the content of each tab with the current selected filter options
   private void refreshAll(){
     lstMyThingsThing.setModel(new DefaultListModel());
     lstLikedThing.setModel(new DefaultListModel());
@@ -104,6 +101,10 @@ public class ThingiverseDialog extends javax.swing.JDialog
     actionSearch();
   }
   
+  /* This functions takes a list of things ti display and loads them into a given list.
+   * This includes showing a loading icon and starting a thread for each image to load it.
+   * User feedback is enabled until each image of this tab is ready.
+   */
   private void loadTab(final List<Thing> thingsToLoad, final JList thingList, final AtomicInteger feedbackCounter, final JLabel feedbackLabel){
     // load all images for a tab asynchronously
     new Thread(new Runnable()
@@ -219,6 +220,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
   }
   
+  // requests and displays the content of the liked tab
   private void actionLiked(){
 
     // load liked things asynchronously
@@ -226,6 +228,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
       public void run()
       {
+        // enable user feedback for loading content
         SwingUtilities.invokeLater(new Runnable() {
 
           public void run()
@@ -234,9 +237,10 @@ public class ThingiverseDialog extends javax.swing.JDialog
           }
         });
         
+        // request content from thingiverse
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
         List<Thing> things = thingiverse.getLikedThings(cbExtensions.isSelected(), cbTags.isSelected());
-        loadTab(things, lstLiked, numberLoadingLiked, lblLiked);
+        loadTab(things, lstLiked, numberLoadingLiked, lblLiked); // display result in tab list
       }
     }).start();
   }
@@ -260,12 +264,14 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
   }
   
+  // requests and displays the content of the My Things tab
   private void actionMyThings(){
     // load mythings things asynchronously
     new Thread(new Runnable() {
 
       public void run()
       {
+        // enable user feedback during loading
         SwingUtilities.invokeLater(new Runnable() {
 
           public void run()
@@ -273,16 +279,16 @@ public class ThingiverseDialog extends javax.swing.JDialog
             lblMyThings.setIcon(LoadingIcon.get(LoadingIcon.CIRCLEBALL_SMALL));
           }
         });
-        // get things
+        // get things from thingiverse
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
         List<Thing> things = thingiverse.getMyThings(cbExtensions.isSelected(), cbTags.isSelected());
-        loadTab(things, lstMyThings, numberLoadingMyThings, lblMyThings);
+        loadTab(things, lstMyThings, numberLoadingMyThings, lblMyThings); // display result
       }
     }).start();
       
   }
   
-  // init search tab, the other tabs are initialized by their action, but because the search tab is called everytime the user wants to search for something, the initialization has to be done somewhere else
+  // init search tab, called once during set up of dialog
   private void initSearchTab(){
     SwingUtilities.invokeLater(new Runnable()
     {
@@ -297,17 +303,18 @@ public class ThingiverseDialog extends javax.swing.JDialog
     });
   }
   
+  // requests and displays the content of the collection dropdown bar
   private void initCollectionDropdown(){
     // get collections
     ThingiverseManager thingiverse = ThingiverseManager.getInstance();
     List<ThingCollection> collections = thingiverse.getMyCollections();
 
-    // init combobox by hand, because it also is added to the header by hand
+    // init combobox by hand, because it also is added to the tab by hand
     // fill combobox with names of collections
     ThingCollectionComboboxModel comboboxModel = new ThingCollectionComboboxModel(collections);
     cbCollection.setModel(comboboxModel);
     cbCollection.setRenderer(new ThingCollectionComboboxRenderer()); // display just the name of a collection
-    cbCollection.addItemListener(new ItemListener() { // listen for item changes and display collection
+    cbCollection.addItemListener(new ItemListener() { // listen for item changes and display corresponding collection
       public void itemStateChanged(ItemEvent e)
       {
         if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -317,6 +324,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
     }); // end listener
   }
   
+  // called once at dialog set up
   private void initCollectionTab(){
     // load things asynchronously
     new Thread(new Runnable() {
@@ -366,6 +374,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
           }
         });
         
+        // request current selected collection content
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
         List<Thing> things = thingiverse.getThingsByCollection(collection, cbExtensions.isSelected(), cbTags.isSelected());
         loadTab(things, lstCollection, numberLoadingCollection, lblCollection);
@@ -746,10 +755,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
   private void initComponentsByHand()
   {
-    // set general content padding
-    //JPanel content = (JPanel) this.getContentPane();
-   // content.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-
     // disable controls
     lblOpeningFile.setVisible(false);
   }
@@ -786,6 +791,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
   private void btnMadeOneActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnMadeOneActionPerformed
   {//GEN-HEADEREND:event_btnMadeOneActionPerformed
+    // start I made one dialog
     // assume in current list a thing is selected, otherwise button is not enabled
     ThingiverseUploadDialog uploadDialog = new ThingiverseUploadDialog(MainView.getInstance(), true, (Thing)getCurrentTabThingList().getSelectedValue());
     uploadDialog.setLocationRelativeTo(null);
@@ -794,6 +800,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
   private void btnOpenFileActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnOpenFileActionPerformed
   {//GEN-HEADEREND:event_btnOpenFileActionPerformed
+      // get curent selected thing
       final ThingFile aFile = (ThingFile) getCurrentTabThingFileList().getSelectedValue();
       if(aFile == null){ // nothing visible
         return;
@@ -812,6 +819,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
             public void run()
             {   
+              // get file from thingivserse
               ThingiverseManager thingiverse = ThingiverseManager.getInstance();
               File svgfile = thingiverse.downloadThingFile(aFile);
               MainView.getInstance().loadFile(svgfile, false);
@@ -830,13 +838,15 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
   private void initListCellRenderers()
   {
-    // thing list renderer
+    // this renderer display the image on the left and the name on the right of each list item
+    
+    // thing list renderer, show things in the left panels
     lstMyThings.setCellRenderer(new ThingListRenderer());
     lstSearch.setCellRenderer(new ThingListRenderer());
     lstLiked.setCellRenderer(new ThingListRenderer());
     lstCollection.setCellRenderer(new ThingListRenderer());
     
-    // thing file list renderer
+    // thing file list renderer, show thingfiles
     lstSearchThing.setCellRenderer(new ThingFileListRenderer());
     lstMyThingsThing.setCellRenderer(new ThingFileListRenderer());
     lstLikedThing.setCellRenderer(new ThingFileListRenderer());
@@ -845,7 +855,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
   private void initListClickListeners()
   {
-    // click listener loads files of selected thing  
+    // click listener loads thing files of selected thing and displays in the right panel
     lstMyThings.addListSelectionListener(new ThingSelectionListener(lstMyThingsThing, cbExtensions, btnMadeOne));
     lstSearch.addListSelectionListener(new ThingSelectionListener(lstSearchThing, cbExtensions, btnMadeOne));
     lstLiked.addListSelectionListener(new ThingSelectionListener(lstLikedThing, cbExtensions, btnMadeOne));
@@ -898,6 +908,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
     });
   }
   
+  // returns the thing list of the current visible tab
   private JList getCurrentTabThingList(){
     JList tabThingList = null;
     switch(tpLists.getSelectedIndex()){
@@ -919,6 +930,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
     return tabThingList;
   }
   
+  // returns the thing file list of the current visible tab
   private JList getCurrentTabThingFileList(){
     JList tabThingFileList = null;
     switch(tpLists.getSelectedIndex()){
@@ -940,6 +952,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
     return tabThingFileList;
   }
 
+  // load the username and display it
   private void initUserName()
   {
     new Thread(new Runnable()
@@ -949,6 +962,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
       public void run()
       {
+        // get username from thingiverse
         ThingiverseManager thingiverse = ThingiverseManager.getInstance();
 
         username = thingiverse.getUserName();
@@ -956,13 +970,14 @@ public class ThingiverseDialog extends javax.swing.JDialog
         {
           public void run()
           {
-            lUserName.setText("Hello " + username);
+            lUserName.setText("Hello " + username); // display
           }
         });
       }
     }).start();
   }
 
+  // load profile picture from thingiverse and display it
   private void initProfilePicture()
   {
 
@@ -976,6 +991,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         // profile picture, resized to label
         try
         {
+          // provide user feedback during loading
           // get loading icon
           final ImageIcon loadingIcon = LoadingIcon.get(LoadingIcon.CIRCLEBALL_MEDIUM);
           // display loading icon in label
@@ -991,7 +1007,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
           String path = thingiverse.getUserImage();
           String file = thingiverse.downloadImage(path); // download user image
           ImageIcon imageIcon = null;
-          if (file == "")
+          if ("".equals(file))
           { // load default image if image not avaliable
             imageIcon = new ImageIcon(LoadingIcon.class.getResource("resources/avatar_default.jpg"));
           }
@@ -1023,41 +1039,6 @@ public class ThingiverseDialog extends javax.swing.JDialog
         }
       }
     }).start();
-  }
-
-  private void initWindowListener()
-  {
-    this.addWindowListener(new WindowListener()
-    {
-
-      public void windowOpened(WindowEvent e)
-      {
-      }
-
-      public void windowClosing(WindowEvent e)
-      {
-      }
-
-      public void windowClosed(WindowEvent e)
-      {
-      }
-
-      public void windowIconified(WindowEvent e)
-      {
-      }
-
-      public void windowDeiconified(WindowEvent e)
-      {
-      }
-
-      public void windowActivated(WindowEvent e)
-      {
-      }
-
-      public void windowDeactivated(WindowEvent e)
-      {
-      }
-    });
   }
 
 

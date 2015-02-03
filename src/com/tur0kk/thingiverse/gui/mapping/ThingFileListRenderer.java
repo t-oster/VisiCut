@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tur0kk.thingiverse.gui.mapping;
 
 import com.tur0kk.thingiverse.model.ThingFile;
@@ -12,7 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 
 /**
- *
+ * This file defines how the ThingFileLists look like (right panel), image + thing file name
  * @author Sven
  */
 public class ThingFileListRenderer extends DefaultListCellRenderer
@@ -28,7 +24,7 @@ public class ThingFileListRenderer extends DefaultListCellRenderer
           JList list, Object value, int index,
           boolean isSelected, boolean cellHasFocus) {
       
-      JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+      JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus); // get the label of the item in list
       
       // in case of error message (no SVGs found)
       if(value instanceof String){

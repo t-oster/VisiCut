@@ -1,13 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * ThingiverseUploadDialog.java
- *
- * Created on 24.01.2015, 18:04:13
- */
 package com.tur0kk.thingiverse.gui;
 
 import com.t_oster.visicut.gui.MainView;
@@ -24,19 +14,20 @@ import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
 
 /**
- *
+ * This class handles the upload of a thing as I made one. It provides UI to take a picture and add a description. Then both are published to thingiverse.
  * @author Sven
  */
 public class ThingiverseUploadDialog extends javax.swing.JDialog
 {
-  private Thread livecamThread;
-  private Thing thing;
+  private Thread livecamThread; // thread for live preview of the cam
+  private Thing thing; // thing to tag as I made one
 
   /** Creates new form ThingiverseUploadDialog */
   public ThingiverseUploadDialog(java.awt.Frame parent, boolean modal, Thing thing)
   {
     super(parent, modal);
     
+    // auto generated code
     initComponents();
     
     this.thing = thing;
@@ -58,13 +49,13 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
     lblThingName.setText(thing.getName());
     this.setTitle("I made one: " + this.thing.getName());
     
-    // change cam 
+    // change cam source listener
     ItemListener selectChangeListener = new ItemListener() {
 
       public void itemStateChanged(ItemEvent e)
       {
         boolean selected = (e.getStateChange( ) == ItemEvent.SELECTED);
-        if(selected == true){ // only if selected
+        if(selected == true){ // only if selected, otherwise fired twice, for the deselected also
           closeCamera();
           setupCamera();
         }
@@ -285,7 +276,7 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
 
         public void run()
         {
-          // fake processing
+          // fake processing !!! to be changed later
           try
           {
             Thread.currentThread().sleep(2000);
@@ -295,6 +286,7 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
 
           }
           
+          // create user feedback message
           boolean success = true;
           String msg = "";
           if(success){
@@ -303,17 +295,19 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
             msg = "Error uploading photo";
           }
           
-          // display
+          // display success state
           final String message = msg;
           SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
+              // enable upload dialog feedback
               lblPublishSuccessStatus.setText(message);
               lblPublishSuccessStatus.setVisible(true);
               btnPhotoRedo.setEnabled(true);
               lblLoading.setVisible(false);
-              MainView.getInstance().getDialog().showSuccessMessage("Sucessfully published \"" + thing.getName() + "\" as I made one.");
-              dispose();
+              
+              MainView.getInstance().getDialog().showSuccessMessage("Sucessfully published \"" + thing.getName() + "\" as I made one."); // main view feedback
+              dispose(); // close on success
             }
           });
           
@@ -324,7 +318,7 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
 
   private void btnPhotoRedoActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnPhotoRedoActionPerformed
   {//GEN-HEADEREND:event_btnPhotoRedoActionPerformed
-    setupCamera();
+    setupCamera(); // set up a clean camera to try again
   }//GEN-LAST:event_btnPhotoRedoActionPerformed
 
   private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnPhotoActionPerformed
@@ -339,6 +333,7 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
 
   }//GEN-LAST:event_btnPhotoActionPerformed
   
+  // close camera on window close
   private void initWindowListener(){
     this.addWindowListener(new WindowListener() {
 
@@ -403,6 +398,10 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
    * Camera functions
    */
 
+  /*
+     * Function starts the live preview thread depending on the selected source or displays error message.
+     * This function ensures that the correct UI elements are enabled for the corresponding state (Disable publishing functionality at startup).
+     */
   private void setupCamera(){
     // disable publish functions
     lblPhoto.setIcon(null);
@@ -424,7 +423,7 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
       }
     }
 
-    if(start){
+    if(start){ // everything was correct, start preview thread
       // start picture taking thread to display live preview
       boolean webcamMode = rdbtnWebcam.isSelected(); // if false, then visicam
       livecamThread = new TakePhotoThread(lblPhoto, webcamMode);
@@ -432,13 +431,14 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
 
       btnPhoto.setEnabled(true);
     }
-    else{
+    else{ // no correct set up found, enable error message
       // disable taking photos
       btnPhoto.setEnabled(false);
       lblPhoto.setText("Please attach webcam");
     }
   }
 
+  // just interrupt live preview, closing camera is handled by thread itself.
   private void closeCamera(){
     if(livecamThread != null){
       livecamThread.interrupt(); // stop live stream thread

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tur0kk.thingiverse.gui.mapping;
 
 import com.tur0kk.thingiverse.model.ThingCollection;
@@ -10,13 +6,13 @@ import javax.swing.ComboBoxModel;
 import javax.swing.event.ListDataListener;
 
 /**
- *
+ * This list is a model for the collection combobox to map our internal CollectionList to items in a dropdown list.
  * @author Sven
  */
 public class ThingCollectionComboboxModel implements ComboBoxModel<ThingCollection>
 {
   private List<ThingCollection> model;
-  private ThingCollection selected;
+  private ThingCollection selected; // currently selected collection
   
   public ThingCollectionComboboxModel(List<ThingCollection> model){
     this.model = model;
@@ -28,16 +24,19 @@ public class ThingCollectionComboboxModel implements ComboBoxModel<ThingCollecti
     }
   }
 
+  // set currently selected item stored in this model
   public void setSelectedItem(Object anItem)
   {
     this.selected = (ThingCollection) anItem;
   }
 
+  // returns currently selected item stored in this model
   public Object getSelectedItem()
   {
     return this.selected;
   }
 
+  // get number of elements in this model
   public int getSize()
   {
     return this.model.size();
@@ -51,6 +50,7 @@ public class ThingCollectionComboboxModel implements ComboBoxModel<ThingCollecti
   {
   }
 
+  // return specific element at certain index to be rendered in list
   public ThingCollection getElementAt(int index)
   {
     return this.model.get(index);
