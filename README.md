@@ -4,7 +4,7 @@ VisiCut Connect - Thingiverse
 <img src="https://cloud.githubusercontent.com/assets/7680318/6001719/e210576a-aaec-11e4-866a-ce54799dea1b.png" width="267px"
  height="305px" alt="" title="VisiCut Connect" align="right" />
 
-A userfriendly enhancement of VisiCut to access, filter and open your thingiverse files in VisiCut.
+A user-friendly enhancement of VisiCut to browse, filter and open your Thingiverse files in VisiCut.
 
 It offers the following features:
 
