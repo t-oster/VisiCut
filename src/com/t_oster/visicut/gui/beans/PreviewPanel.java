@@ -522,6 +522,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       }
       if ( i  == 1 ){
         leastArea = areaOfBins;
+        leastAreaBin = i;
       }
       if ( areaOfBins < leastArea){
         leastArea = areaOfBins;

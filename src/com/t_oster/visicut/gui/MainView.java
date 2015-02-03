@@ -2597,7 +2597,7 @@ private void arrangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       previewStaticPanel = this.previewPanel;
       previewStaticPanel.autoArrange(0);
       
-      if (arrangeFrame == null){
+      if (arrangeFrame == null && (AutoArrange.allValues.size() == 1)){
         arrangeFrame = new JFrame ();
         AutoArrangePanel arrangePanel = new AutoArrangePanel(arrangeFrame);
         arrangeFrame.add(arrangePanel);
@@ -2608,9 +2608,13 @@ private void arrangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         arrangeFrame.addWindowListener(new java.awt.event.WindowAdapter() {
           @Override
           public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-              arrangeFrame = null;
+            arrangeFrame = null;
           }
          });
+      } 
+      else{
+        System.out.println("Bin with least Area " + previewStaticPanel.getBinOfLeastArea());
+        System.out.println("All Values Size " + AutoArrange.allValues.size());
       }
       
 
