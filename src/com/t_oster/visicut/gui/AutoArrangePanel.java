@@ -27,7 +27,7 @@ import org.jdesktop.application.Action;
 public class AutoArrangePanel extends javax.swing.JPanel
 {
   private int count;
-  private int totalNumberOfArrangements;
+  private static int totalNumberOfArrangements;
   public JFrame parentFrame;
   private int sliderValue;
   
@@ -39,14 +39,8 @@ public class AutoArrangePanel extends javax.swing.JPanel
     count = 1;
     initComponents();
     totalNumberOfArrangements = AutoArrange.allValues.size();
-    setStepCount();
-    previousButton.setEnabled(false);
-    if(totalNumberOfArrangements <= 1){
-      nextButton.setEnabled(false);
-      numberOfArrangements.setText("" + totalNumberOfArrangements + " Arrangement found");
-    }
-    else {
-      numberOfArrangements.setText("" + totalNumberOfArrangements + " Arrangements found");
+    if(totalNumberOfArrangements > 1){
+      
     }
   }
 
@@ -60,11 +54,6 @@ public class AutoArrangePanel extends javax.swing.JPanel
     private void initComponents() {
 
         distanceSlider = new javax.swing.JSlider();
-        stepContainer = new javax.swing.JPanel();
-        previousButton = new javax.swing.JButton();
-        nextButton = new javax.swing.JButton();
-        stepCount = new javax.swing.JLabel();
-        numberOfArrangements = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         confirmButton = new javax.swing.JButton();
         discardButton = new javax.swing.JButton();
@@ -89,75 +78,11 @@ public class AutoArrangePanel extends javax.swing.JPanel
             }
         });
 
-        stepContainer.setName("stepContainer"); // NOI18N
-
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(AutoArrangePanel.class, this);
-        previousButton.setAction(actionMap.get("previousArrangement")); // NOI18N
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(AutoArrangePanel.class);
-        previousButton.setText(resourceMap.getString("previousButton.text")); // NOI18N
-        previousButton.setFocusable(false);
-        previousButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        previousButton.setName("previousButton"); // NOI18N
-        previousButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        previousButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                previousButtonActionPerformed(evt);
-            }
-        });
-
-        nextButton.setAction(actionMap.get("nextArrangement")); // NOI18N
-        nextButton.setText(resourceMap.getString("nextButton.text")); // NOI18N
-        nextButton.setFocusable(false);
-        nextButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        nextButton.setName("nextButton"); // NOI18N
-        nextButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        nextButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nextButtonActionPerformed(evt);
-            }
-        });
-
-        stepCount.setText(resourceMap.getString("stepCount.text")); // NOI18N
-        stepCount.setName("stepCount"); // NOI18N
-
-        numberOfArrangements.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        numberOfArrangements.setText(resourceMap.getString("numberOfArrangements.text")); // NOI18N
-        numberOfArrangements.setName("numberOfArrangements"); // NOI18N
-
-        org.jdesktop.layout.GroupLayout stepContainerLayout = new org.jdesktop.layout.GroupLayout(stepContainer);
-        stepContainer.setLayout(stepContainerLayout);
-        stepContainerLayout.setHorizontalGroup(
-            stepContainerLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(stepContainerLayout.createSequentialGroup()
-                .add(stepContainerLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(stepContainerLayout.createSequentialGroup()
-                        .add(17, 17, 17)
-                        .add(previousButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 58, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(stepCount)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(nextButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 56, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(stepContainerLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(numberOfArrangements)))
-                .addContainerGap(33, Short.MAX_VALUE))
-        );
-        stepContainerLayout.setVerticalGroup(
-            stepContainerLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(stepContainerLayout.createSequentialGroup()
-                .add(8, 8, 8)
-                .add(numberOfArrangements)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(stepContainerLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.CENTER)
-                    .add(previousButton)
-                    .add(stepCount)
-                    .add(nextButton))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
         jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
         jLabel1.setName("jLabel1"); // NOI18N
 
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(AutoArrangePanel.class, this);
         confirmButton.setAction(actionMap.get("confirm")); // NOI18N
         confirmButton.setText(resourceMap.getString("confirmButton.text")); // NOI18N
         confirmButton.setName("confirmButton"); // NOI18N
@@ -171,23 +96,16 @@ public class AutoArrangePanel extends javax.swing.JPanel
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .add(stepContainer, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(200, Short.MAX_VALUE))
-            .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(jLabel1)
-                        .addContainerGap(223, Short.MAX_VALUE))
-                    .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                            .add(confirmButton)
-                            .add(distanceSlider, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 356, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap())))
-            .add(layout.createSequentialGroup()
-                .add(23, 23, 23)
-                .add(discardButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(347, Short.MAX_VALUE))
+                    .add(jLabel1)
+                    .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                        .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
+                            .add(discardButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(confirmButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .add(org.jdesktop.layout.GroupLayout.LEADING, distanceSlider, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 356, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -196,59 +114,13 @@ public class AutoArrangePanel extends javax.swing.JPanel
                 .add(jLabel1)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(distanceSlider, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(29, 29, 29)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(layout.createSequentialGroup()
-                        .add(stepContainer, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(18, 18, 18)
-                        .add(discardButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 34, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(18, 18, 18)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(discardButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 34, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(confirmButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 34, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-  private void previousButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_previousButtonActionPerformed
-    try
-    {
-      // TODO add your handling code here:
-      nextButton.setEnabled(true);
-      --count;
-      if (count <= 1){
-        previousButton.setEnabled(false);
-      }
-      boolean noPieces = MainView.previewStaticPanel.navigateThroughArrangements(count);
-      if(!(noPieces)){
-        System.out.println("No pieces to place!");
-        stepCount.setText(count + "/" + totalNumberOfArrangements);
-      }
-      stepCount.setText(count + "/" + totalNumberOfArrangements);
-    }
-    catch (NoninvertibleTransformException ex)
-    {
-      Logger.getLogger(AutoArrangePanel.class.getName()).log(Level.SEVERE, null, ex);
-    }
-  }//GEN-LAST:event_previousButtonActionPerformed
-
-  private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
-    try
-    {
-      previousButton.setEnabled(true);
-      ++count;
-      if (count >= totalNumberOfArrangements){
-        nextButton.setEnabled(false);
-      }
-      boolean noPieces = MainView.previewStaticPanel.navigateThroughArrangements(count);
-      if(!(noPieces)){
-        System.out.println("No pieces to place!");
-        stepCount.setText(count + "/" + totalNumberOfArrangements);
-      }
-      stepCount.setText(count + "/" + totalNumberOfArrangements);
-    }
-    catch (NoninvertibleTransformException ex)
-    {
-      Logger.getLogger(AutoArrangePanel.class.getName()).log(Level.SEVERE, null, ex);
-    }
-  }//GEN-LAST:event_nextButtonActionPerformed
 
   private void distanceSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_distanceSliderStateChanged
     // TODO add your handling code here:
@@ -263,19 +135,6 @@ public class AutoArrangePanel extends javax.swing.JPanel
       MainView.previewStaticPanel.autoArrange(distanceSlider.getValue());
       totalNumberOfArrangements = AutoArrange.allValues.size();
       count = 1;
-      setStepCount();
-      previousButton.setEnabled(false);
-      nextButton.setEnabled(true);
-      if(totalNumberOfArrangements <= 1){
-        nextButton.setEnabled(false);
-        numberOfArrangements.setText("" + totalNumberOfArrangements + " Arrangement found");
-      }
-      else {
-        numberOfArrangements.setText("" + totalNumberOfArrangements + " Arrangements found");
-      }
-      
-      
-      setStepCount();
     }
     catch (FileNotFoundException ex)
     {
@@ -294,9 +153,6 @@ public class AutoArrangePanel extends javax.swing.JPanel
 
   
   // to set the step count value
-  private void setStepCount(){
-    stepCount.setText(count + "/" + totalNumberOfArrangements);
-  }
 
   @Action
   public void discard()
@@ -333,10 +189,5 @@ public class AutoArrangePanel extends javax.swing.JPanel
     private javax.swing.JButton discardButton;
     private javax.swing.JSlider distanceSlider;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JButton nextButton;
-    private javax.swing.JLabel numberOfArrangements;
-    private javax.swing.JButton previousButton;
-    private javax.swing.JPanel stepContainer;
-    private javax.swing.JLabel stepCount;
     // End of variables declaration//GEN-END:variables
 }
