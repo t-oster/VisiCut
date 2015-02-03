@@ -57,6 +57,7 @@ import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Dialog.ModalityType;
@@ -73,6 +74,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -2597,7 +2599,7 @@ private void arrangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       previewStaticPanel = this.previewPanel;
       previewStaticPanel.autoArrange(0);
       
-      if (arrangeFrame == null && (AutoArrange.allValues.size() == 1)){
+      if (arrangeFrame == null){
         arrangeFrame = new JFrame ();
         AutoArrangePanel arrangePanel = new AutoArrangePanel(arrangeFrame);
         arrangeFrame.add(arrangePanel);
@@ -2611,13 +2613,7 @@ private void arrangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             arrangeFrame = null;
           }
          });
-      } 
-      else{
-        System.out.println("Bin with least Area " + previewStaticPanel.getBinOfLeastArea());
-        System.out.println("All Values Size " + AutoArrange.allValues.size());
       }
-      
-
     }
     catch (FileNotFoundException ex)
     {
@@ -2633,6 +2629,18 @@ private void arrangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     }
 }//GEN-LAST:event_arrangeButtonActionPerformed
 
+public static void undoArrange() throws NoninvertibleTransformException{
+  int count = 0;
+  for (PlfPart plfPart : VisicutModel.getInstance().getPlfFile()){
+    GraphicSet graphicSet = plfPart.getGraphicObjects();
+    GraphicSet prevGraphicSet = previewStaticPanel.PreviousPositions.get(count).getGraphicObjects();
+    Point2D.Double positionDifference = new Point2D.Double(prevGraphicSet.getBoundingBox().getX()-graphicSet.getBoundingBox().getX(), prevGraphicSet.getBoundingBox().getY()-graphicSet.getBoundingBox().getY());
+    AffineTransform transformation = previewStaticPanel.getMmToPxTransform();
+    transformation.createInverse().deltaTransform(positionDifference, positionDifference);
+    graphicSet.setTransform(prevGraphicSet.getBasicTransform());
+    previewStaticPanel.moveSet(positionDifference.x, positionDifference.y, plfPart,0);  
+  }
+}
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;

@@ -162,6 +162,7 @@ public class AutoArrangePanel extends javax.swing.JPanel
       MainView.previewStaticPanel.autoArrange(0);
       parentFrame.dispose();
       MainView.arrangeFrame = null;
+      MainView.undoArrange();
     }
     catch (FileNotFoundException ex)
     {

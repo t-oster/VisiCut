@@ -65,6 +65,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import sun.net.www.protocol.http.AuthCache;
 import com.t_oster.visicut.gui.PreviewPanelKeyboardMouseHandler;
+import com.t_oster.visicut.model.PlfFile;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -83,6 +84,9 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   private double bedHeight = 300;
   private boolean needToArrange = false;
   private static AffineTransform arrangeTranslate;
+  private static boolean nonArrangedPartsExist = false;
+  private static int BinOfLeastArea;
+  public static LinkedList<PlfPart> PreviousPositions = null;
   // variable to keep track of the arrangements.
   public PreviewPanel()
   {
@@ -503,9 +507,25 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   
   //Function that is going to be executed when arrange is clicked.
   public void autoArrange(int offset) throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException{
+    if (PreviousPositions == null)
+      PreviousPositions = new LinkedList();
+    for (PlfPart part : VisicutModel.getInstance().getPlfFile()){
+      PreviousPositions.add(part);
+    }
+    
     AutoArrange.start(VisicutModel.getInstance().getPlfFile(), new Dimension((int)bedWidth,(int)bedHeight), offset);
-    navigateThroughArrangements(1);
-    notToBeRendered(1);
+    if (AutoArrange.allValues.size() == 1){
+      navigateThroughArrangements(1);
+      notToBeRendered(1);
+      nonArrangedPartsExist = false;
+    }
+    else {
+      BinOfLeastArea = getBinOfLeastArea();
+      System.out.println("Bin with least Area " + BinOfLeastArea);
+      navigateThroughArrangements(BinOfLeastArea);
+      notToBeRendered(BinOfLeastArea);
+      nonArrangedPartsExist = true;
+    }
     super.repaint();
     
   }
@@ -543,8 +563,8 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     Set<Integer> notToRender = getObjectsNotToRender(AutoArrange.allValues.get(binNumber));
     for ( int i : notToRender){
       PlfPart part = VisicutModel.getInstance().getPlfFile().get(i);
-      setFastPreview(true);
-      VisicutModel.getInstance().firePartUpdated(part);
+      //setFastPreview(true);
+      //VisicutModel.getInstance().firePartUpdated(part);
     }
   }
   
@@ -589,7 +609,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     for (HoldValues hv : hValues){
       PlfPart plfPart = VisicutModel.getInstance().getPlfFile().get(hv.getObjectID()-1);
       GraphicSet graphicSet = plfPart.getGraphicObjects();
-      Point2D.Double positionDifference = new Point.Double(hv.getX()-graphicSet.getBoundingBox().getX(), hv.getY()-graphicSet.getBoundingBox().getY());
+      Point2D.Double positionDifference = new Point2D.Double(hv.getX()-graphicSet.getBoundingBox().getX(), hv.getY()-graphicSet.getBoundingBox().getY());
       AffineTransform transformation = this.getMmToPxTransform();
       transformation.createInverse().deltaTransform(positionDifference, positionDifference);
       moveSet(positionDifference.x, positionDifference.y, plfPart, hv.getObjectRotation());
@@ -601,7 +621,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   }
   
   
-    private void moveSet(double mmDiffX, double mmDiffY, PlfPart plfPart, double rotation)
+    public void moveSet(double mmDiffX, double mmDiffY, PlfPart plfPart, double rotation)
   {
 //make sure, we're not moving the bb out of the laser-area
     Rectangle2D bb = plfPart.getBoundingBox();
@@ -782,6 +802,41 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
             if (!somethingMatched)
             {//Nothing drawn because of no Matching mapping
               gg.drawString(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("NO MATCHING PARTS FOR THE CURRENT MAPPING FOUND."), 10, this.getHeight() / 2);
+            }
+          }
+        }
+        if(nonArrangedPartsExist){
+          Set<Integer> notToRender = getObjectsNotToRender(AutoArrange.allValues.get(getBinOfLeastArea()));  
+          for (int i : notToRender){  
+            if(part.equals(VisicutModel.getInstance().getPlfFile().get(i))){
+              
+//                    PlfPart plfPart = VisicutModel.getInstance().getPlfFile().get(hv.getObjectID()-1);
+//      GraphicSet graphicSet = plfPart.getGraphicObjects();
+//      Point2D.Double positionDifference = new Point2D.Double(hv.getX()-graphicSet.getBoundingBox().getX(), hv.getY()-graphicSet.getBoundingBox().getY());
+//      AffineTransform transformation = this.getMmToPxTransform();
+//      transformation.createInverse().deltaTransform(positionDifference, positionDifference);
+//      moveSet(positionDifference.x, positionDifference.y, plfPart, hv.getObjectRotation());
+              
+              
+              Rectangle rect = Helper.toRect(Helper.transform(part.getBoundingBox(), this.getMmToPxTransform()));
+              double x1 = 0;
+              double y1 = part.getBoundingBox().getY();
+              double x2 = part.getGraphicObjects().getBoundingBox().getX() + part.getGraphicObjects().getBoundingBox().getWidth();
+              double y2 = part.getGraphicObjects().getBoundingBox().getY() + part.getGraphicObjects().getBoundingBox().getHeight();
+              double xc = part.getGraphicObjects().getBoundingBox().getCenterX();
+              double yc = part.getGraphicObjects().getBoundingBox().getCenterY();
+              double width = part.getBoundingBox().getWidth();
+              double height = part.getBoundingBox().getHeight();
+              double smallestSize = 0;
+              if (width > height){
+                smallestSize = height;
+              }
+              else {
+                smallestSize = width;
+              }
+              
+              gg.setColor(Color.RED);
+              gg.drawRect(rect.x, rect.y, rect.width, rect.height);
             }
           }
         }
