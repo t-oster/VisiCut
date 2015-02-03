@@ -13,9 +13,12 @@ import com.mcp14.Canvas.MArea;
 
 import com.mcp14.Provider.HoldValues;
 import com.mcp14.Utilities.Utils;
+import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.PlfFile;
 import com.t_oster.visicut.model.PlfPart;
 import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,11 +38,12 @@ import java.util.Set;
 public class AutoArrange {
     public static HashMap<Integer, Set<HoldValues>> allValues = new HashMap<Integer, Set<HoldValues>>();
     
-    public static void start(PlfFile svgFiles, Dimension laserBedDimension, int offset) throws FileNotFoundException, UnsupportedEncodingException {
+    public static void start(PlfFile svgFiles, Dimension laserBedDimension, int offset, AffineTransform mm2Px) throws FileNotFoundException, UnsupportedEncodingException {
         allValues.clear();
         InputExporter exporter = new InputExporter(svgFiles.size(),laserBedDimension);
         for (PlfPart s : svgFiles){
-            exporter.addInputs( s.getBoundingBox().getWidth()+(offset/2), s.getBoundingBox().getHeight()+(offset/2));
+            Rectangle objectRect = Helper.toRect(Helper.transform(s.getBoundingBox(),mm2Px));
+            exporter.addInputs( objectRect.getWidth()+(offset/2), objectRect.getHeight()+(offset/2));
         }
 	// creates the input file
         exporter.export();

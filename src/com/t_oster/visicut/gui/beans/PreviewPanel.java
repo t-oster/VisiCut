@@ -511,13 +511,14 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   
   //Function that is going to be executed when arrange is clicked.
   public void autoArrange(int offset) throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException{
+    clearRotation();
     if (PreviousPositions == null)
       PreviousPositions = new LinkedList();
     for (PlfPart part : VisicutModel.getInstance().getPlfFile()){
       PreviousPositions.add(part);
     }
     
-    AutoArrange.start(VisicutModel.getInstance().getPlfFile(), new Dimension((int)bedWidth,(int)bedHeight), offset);
+    AutoArrange.start(VisicutModel.getInstance().getPlfFile(), new Dimension((int)bedWidth,(int)bedHeight), offset, this.getMmToPxTransform());
     if (AutoArrange.allValues.size() == 1){
       navigateThroughArrangements(1);
       notToBeRendered(1);
@@ -539,6 +540,15 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     }
     super.repaint();
     
+  }
+  private void clearRotation(){
+    for (PlfPart part : VisicutModel.getInstance().getPlfFile()){
+      AffineTransform rotateTransform = AffineTransform.getRotateInstance(0);
+      if (part.getGraphicObjects().getTransform() != null)
+      {
+        rotateTransform.concatenate(part.getGraphicObjects().getTransform());
+      }
+    }
   }
   
   public void partGotDeleted(PlfPart part) throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException{
@@ -674,8 +684,8 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       tr.concatenate(plfPart.getGraphicObjects().getTransform());
     }
     plfPart.getGraphicObjects().setTransform(tr);
-    plfPart.getGraphicObjects().rotateRelative(rotation);
-    this.editRectangle.setRotationAngle(rotation);
+    //plfPart.getGraphicObjects().rotateAbsolute(rotation);
+    //this.editRectangle.setRotationAngle(rotation);
     this.updateEditRectangle();
   }
     
