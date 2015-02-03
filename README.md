@@ -59,4 +59,4 @@ Select a thing and click the "I made one" button to open the "I made one"-window
 
 Video Tutorial
 --------
-You can find a video tutorial displaying all of the features <a href="https://www.youtube.com/watch?v=v9Hz-9Z8Uwk">here</a>.
+You can find a video tutorial displaying all of the features <a href="https://www.youtube.com/watch?v=-YspZ8w3ZM0">here</a>.
