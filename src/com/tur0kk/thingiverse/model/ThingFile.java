@@ -3,6 +3,8 @@ package com.tur0kk.thingiverse.model;
 import javax.swing.ImageIcon;
 
 /**
+ * Represents information about a file which belongs to a particular thing.
+ * This class does not download the file on its own.
  * @author Patrick Schmidt
  */
 public class ThingFile
@@ -43,6 +45,11 @@ public class ThingFile
     return thumbnailUrl;
   }
 
+  /**
+   * File thumbnail as ImaceIcon. This is not available by default! Check if null!
+   * You can attach an image icon to a Thing using setImage.
+   * @return 
+   */
   public ImageIcon getThumbnail()
   {
     return thumbnail;

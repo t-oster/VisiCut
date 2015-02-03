@@ -3,6 +3,7 @@ package com.tur0kk.thingiverse.model;
 import javax.swing.ImageIcon;
 
 /**
+ * Represents a collection of things as done in the thingiverse api.
  * @author Sven, Patrick Schmidt
  */
 public class ThingCollection
@@ -34,6 +35,11 @@ public class ThingCollection
     return this.imageUrl;
   }
   
+  /**
+   * Collection thumbnail as ImaceIcon. This is not available by default! Check if null!
+   * You can attach an image icon to a Thing using setImage.
+   * @return 
+   */
   public ImageIcon getImage()
   {
     return this.image;

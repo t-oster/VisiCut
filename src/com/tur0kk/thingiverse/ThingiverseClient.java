@@ -5,8 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
 import org.scribe.exceptions.OAuthException;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;
@@ -17,7 +15,10 @@ import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuthService;
 
 /**
- * @author frankkie, Patrick Schmidt
+ * The original class is taken from https://github.com/frankkienl/FrankkieNL_ThingiverseLib.
+ * We extended it by several methods.
+ * 
+ * @author Patrick Schmidt, frankkie
  */
 public class ThingiverseClient {
 
@@ -48,7 +49,6 @@ public class ThingiverseClient {
             .build();
   }
 
-  
    /**
    * Use this when the user has logged in already, and you have the accestoken.
    * The accesToken is used to use further API-calls.
@@ -479,7 +479,15 @@ public class ThingiverseClient {
     
     return response.getBody();
   }
-  
+  /**
+   * Download a binary file.
+   * @param url
+   * @param outFile
+   * @param authorizationRequired Set to true to send the OAuth access token
+   * with each request.
+   * @return Success?
+   * @throws IOException 
+   */
   public boolean downloadBinaryFile(String url, File outFile, boolean authorizationRequired) throws IOException
   {
     // Perform http request
