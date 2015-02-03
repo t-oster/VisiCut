@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tur0kk.facebook;
 
 import com.t_oster.visicut.VisicutModel;
@@ -11,27 +7,24 @@ import java.awt.Image;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
- * Singleton class managing all the communication with the Facebook API.
+ * Singleton class managing all the communication with the Facebook API, using native functions of FacebookClient
  * @author Sven
  */
 public class FacebookManager
 {
-  // App name: VisiCut
+  // App name: VisiCut, properties for identification
   private static final String clientId = "521766611285565";
   private static final String clientSecret = "8188c6a387ceaf7aa7919112190e22d8";
   private static final String clientCallback = "http://hci.rwth-aachen.de/public/VisiCut/show_code.php";
   private static final String redirectUrlPrefix = "http://hci.rwth-aachen.de/public/VisiCut/show_code.php?code=";
   
+  // singleton pattern
   private static FacebookManager instance = null;
   
   /**
@@ -40,9 +33,10 @@ public class FacebookManager
   private FacebookClient client = null;
   
   public FacebookManager(){
-    //fablabFacebookPageId = PreferencesManager.getInstance().getPreferences().getFabLabFacebookLocationID();
+   
   }
   
+  // singleton pattern
   public static FacebookManager getInstance()
   {
     if (instance == null)
@@ -84,6 +78,7 @@ public class FacebookManager
     return loginUrl;
   }
   
+  // login with browser code (answer after login procedure), set up of communication with API (creating native scribe client)
   public void logIn(String browserCode)
   {
     if (client == null)
@@ -109,9 +104,11 @@ public class FacebookManager
       return;
     }
     
+    // persistancy
     saveAccessToken(accessToken);
   }
   
+  // delete access token to log out
   public void logOut()
   {
     client = null;
