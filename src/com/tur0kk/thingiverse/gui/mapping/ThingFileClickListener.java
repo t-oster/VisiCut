@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tur0kk.thingiverse.gui.mapping;
 
 import com.t_oster.visicut.gui.MainView;
@@ -10,13 +6,12 @@ import com.tur0kk.thingiverse.model.ThingFile;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.SwingUtilities;
 
 /**
- *
+ * This class listens for double clicks on a thing file (right panel) to load it into thingiverse
  * @author Sven
  */
 public class ThingFileClickListener extends MouseAdapter
@@ -32,9 +27,9 @@ public class ThingFileClickListener extends MouseAdapter
   
   @Override
   public void mouseClicked(MouseEvent evt) {
-    JList list = (JList) evt.getSource();
+    JList list = (JList) evt.getSource(); // clieckt list
 
-    if(evt.getClickCount() == 2){
+    if(evt.getClickCount() == 2){ // double click
       
       int index = list.locationToIndex(evt.getPoint());
       if(index < 0){ // nothing visible
@@ -46,7 +41,7 @@ public class ThingFileClickListener extends MouseAdapter
         return;
       }
       
-      // user feedback
+      // enable user feedback
       SwingUtilities.invokeLater(new Runnable() {
         public void run()
         {
@@ -54,13 +49,16 @@ public class ThingFileClickListener extends MouseAdapter
         }
       });
       
-      // load file
+      // load file into thingiverse
       new Thread(new Runnable() {
 
             public void run()
             {   
+              // request file from thingivserse
               ThingiverseManager thingiverse = ThingiverseManager.getInstance();
               File svgfile = thingiverse.downloadThingFile(aFile);
+              
+              // display file
               MainView.getInstance().loadFile(svgfile, false);
               
               // disable user feedback

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tur0kk.thingiverse.gui.mapping;
 
 import javax.swing.JButton;
@@ -10,7 +6,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 /**
- *
+ * This file listen on ThingFileLists to enable the I made one button iff a thing file is selected
  * @author Sven
  */
 public class ThingFileSelectionListener implements ListSelectionListener

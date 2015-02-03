@@ -13,8 +13,8 @@ import javax.swing.JList;
  */
 public class AnimationImageObserverList implements ImageObserver
 {
-  JList list;
-  int index;
+  JList list; // list to observe
+  int index; // index of the item to observe in the list
 
   public AnimationImageObserverList(JList componentToUpdate, int index)
   {
@@ -22,15 +22,16 @@ public class AnimationImageObserverList implements ImageObserver
     this.index = index;
   }
   
+  // this function redraws the UI if the image changed
   public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height)
   {
     if ((infoflags & (FRAMEBITS|ALLBITS)) != 0) {
       if(this.list.isShowing()){
-        Rectangle rect = this.list.getCellBounds(index, index);
+        Rectangle rect = this.list.getCellBounds(index, index); // item bounds in list
         if(rect == null){
           return false;
         }
-        this.list.repaint(rect);
+        this.list.repaint(rect); // repaint UI
       }
     }
     return (infoflags & (ALLBITS|ABORT)) == 0;

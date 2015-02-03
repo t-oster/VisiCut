@@ -2595,30 +2595,38 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
 
   private void btThingiverseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btThingiverseActionPerformed
   {//GEN-HEADEREND:event_btThingiverseActionPerformed
+    ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+
     /*
-     * just hide thingiverseDialog on close to keep state.
+     * Just hide thingiverseDialog on close to keep state.
      * if logged out, create new instance of ThingiverseDialog
      */
-    if(!ThingiverseManager.getInstance().isLoggedIn() || thingiverseDialog == null){
-      ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-
+    if (!thingiverse.isLoggedIn() || thingiverseDialog == null)
+    {
       try
       {
-        // Try login with persistent access token.
+        // Try login with persistent access token from disk.
         boolean loginSuccess = thingiverse.logIn();
 
         if (!loginSuccess)
         {
+          // Login with persitent token failed.
+          // Start new authentication procedure.
           String loginUrl = thingiverse.initiateAuthentication();
           String browserCode = "";
 
           if (isJavaFxAvailable())
           {
+            // If java fx is available we open a browser dialog and let the user
+            // enter his credentials. This method blocks until the dialog
+            // closes itself and returns a code from thingiverse.
             browserCode = browserLoginDialog("Thingiverse Login", loginUrl, thingiverse.getRedirectUrlPrefix());
           }
           else
           {
             // JavaFX not available...
+            // Open system default browser and let the user copy/paste the
+            // browser code.
             System.out.println("JavaFX is not available. Using fallback behavior.");
             browserCode = systemBrowserLogin("Thingiverse", loginUrl);
           }
@@ -2647,7 +2655,11 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     
   private String browserLoginDialog(String title, String loginUrl, String redirectUrlPrefix) throws Exception
   {
-    // JavaFX available, load BrowserLoginDialog dynamically (depends on JavaFX)
+    // JavaFX available.
+    // We have to load the BrowserLoginDialog jar and class dynamically.
+    // The source of BrowserLoginDialog.jar is available at
+    // https://github.com/tur0kk/JavaFXBrowserDialog
+    
     String browserCode = null;
     
     URL jarUrl = MainView.class.getResource("lib/BrowserLoginDialog.jar");
@@ -2704,7 +2716,8 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   
   private String systemBrowserLogin(String name, String loginUrl) throws Exception
   {
-    // if JavaFX is not available use system browser to show thingiverse website. Necessary to copy auth code by hand.
+    // If JavaFX is not available use system browser to show thingiverse website.
+    // Necessary to copy auth code by hand.
     String browserCode;
   
     Desktop.getDesktop().browse(URI.create(loginUrl));
@@ -2712,7 +2725,11 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
 
     return browserCode;
   }
-  
+
+  /**
+   * Detect at runtime if JavaFX is supported..
+   * @return True if JavaFX is available.
+   */
   private boolean isJavaFxAvailable()
   {
     try

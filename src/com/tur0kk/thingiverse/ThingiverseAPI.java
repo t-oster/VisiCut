@@ -3,6 +3,10 @@ package com.tur0kk.thingiverse;
 import org.scribe.model.OAuthConfig;
 import org.scribe.model.Verb;
 
+/**
+ * https://github.com/frankkienl/FrankkieNL_ThingiverseLib
+ * @author frankkie
+ */
 public class ThingiverseAPI extends org.scribe.builder.api.DefaultApi20 {
 
   private static final String AUTHORIZE_URL = "http://www.thingiverse.com/login/oauth/authorize?client_id=%s";

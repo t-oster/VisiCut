@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tur0kk.thingiverse;
 
 import java.lang.annotation.Annotation;
@@ -11,6 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 
 
 /**
+ * Adapted from https://github.com/frankkienl/FrankkieNL_ThingiverseLib
+ * 
  * This annotation is useful when using reflection, to see the parameter-names
  * @author frankkie
  */

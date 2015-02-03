@@ -21,7 +21,6 @@ package com.t_oster.visicut.managers;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LibInfo;
 import com.t_oster.visicut.Preferences;
-import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
@@ -156,6 +155,7 @@ public final class PreferencesManager
     this.generateThingiverseDefault();
   }
   
+  // generates the default settings for the thingiverse integration
   private void generateThingiverseDefault(){
     preferences.setLaserCutterTags("lasercutter, lasercut, laser cutter, laser cut");
     preferences.setSupportedExtensions("svg, plf, dxf, eps, gcode");

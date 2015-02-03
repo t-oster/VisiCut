@@ -26,7 +26,6 @@ import java.awt.Dimension;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import org.thymeleaf.util.StringUtils;
 
 /**
  *
