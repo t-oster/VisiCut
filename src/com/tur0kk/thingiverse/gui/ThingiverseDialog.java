@@ -255,7 +255,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         {
           // header for MyThings
           lblMyThings = new JLabel();
-          lblMyThings.setText("MyThings");
+          lblMyThings.setText("My Things");
           lblMyThings.setHorizontalTextPosition(JLabel.LEADING);
           tpLists.setTabComponentAt(0, lblMyThings);
           actionMyThings();
