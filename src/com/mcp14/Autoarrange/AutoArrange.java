@@ -44,6 +44,7 @@ public class AutoArrange {
         for (PlfPart s : svgFiles){
             Rectangle objectRect = Helper.toRect(Helper.transform(s.getBoundingBox(),mm2Px));
             exporter.addInputs( objectRect.getWidth()+(offset/2), objectRect.getHeight()+(offset/2));
+        System.out.println("Part Width: " + (objectRect.getWidth()+(offset/2)) + " and Height: " + (objectRect.getHeight()+(offset/2)));
         }
 	// creates the input file
         exporter.export();
@@ -62,6 +63,7 @@ public class AutoArrange {
                 printFileSpecifications();
             }
         }
+        System.out.println("Offset in Arrange is: "+offset);
     }
     
 

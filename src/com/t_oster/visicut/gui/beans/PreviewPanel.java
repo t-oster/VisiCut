@@ -511,6 +511,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   
   //Function that is going to be executed when arrange is clicked.
   public void autoArrange(int offset) throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException{
+    System.out.println("Offset is: " + offset);
     clearRotation();
     if (PreviousPositions == null)
       PreviousPositions = new LinkedList();
@@ -531,11 +532,9 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       notToBeRendered(BinOfLeastArea);
       nonArrangedPartsExist = true;
       notToRender = getObjectsNotToRender(AutoArrange.allValues.get(getBinOfLeastArea()));
-      if(nonArrangedPartsExist){
-        notToBeRenderedParts = new PlfFile();
-        for (int i : notToRender){
-          notToBeRenderedParts.add(VisicutModel.getInstance().getPlfFile().get(i));
-        }
+      notToBeRenderedParts = new PlfFile();
+      for (int i : notToRender){
+        notToBeRenderedParts.add(VisicutModel.getInstance().getPlfFile().get(i));
       }
     }
     super.repaint();
@@ -552,6 +551,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   }
   
   public void partGotDeleted(PlfPart part) throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException{
+    System.out.println("Something got deleted");
     if (nonArrangedPartsExist){
       for (PlfPart plfPart : notToBeRenderedParts){
         if (plfPart == part){
@@ -642,10 +642,12 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     for (HoldValues hv : hValues){
       PlfPart plfPart = VisicutModel.getInstance().getPlfFile().get(hv.getObjectID()-1);
       GraphicSet graphicSet = plfPart.getGraphicObjects();
-      Point2D.Double positionDifference = new Point2D.Double(hv.getX()-graphicSet.getBoundingBox().getX(), hv.getY()-graphicSet.getBoundingBox().getY());
+      Rectangle objectRect = Helper.toRect(Helper.transform(plfPart.getBoundingBox(), this.getMmToPxTransform()));
+      Point2D.Double positionDifference = new Point2D.Double(hv.getX()-objectRect.getX(), hv.getY()-objectRect.getY());
       AffineTransform transformation = this.getMmToPxTransform();
       transformation.createInverse().deltaTransform(positionDifference, positionDifference);
       moveSet(positionDifference.x, positionDifference.y, plfPart, hv.getObjectRotation());
+      System.out.println("Part x: "+ (hv.getX()-graphicSet.getBoundingBox().getX()) +" and y: " + (hv.getY()-graphicSet.getBoundingBox().getX()));
     }
     notToBeRendered(binNumber);
     this.repaint();
