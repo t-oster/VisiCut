@@ -4,7 +4,7 @@ VisiCut Connect - Facebook
 <img src="https://cloud.githubusercontent.com/assets/7680318/6001719/e210576a-aaec-11e4-866a-ce54799dea1b.png" width="267px"
  height="305px" alt="" title="VisiCut Connect" align="right" />
 
-A user-friendly enhancement of VisiCut to upload and post a picture of a thing you made to facebook from within VisiCut.
+A user-friendly enhancement of VisiCut to upload and post a picture of a thing you made to Facebook from within VisiCut.
 
 For more information about VisiCut, take a look at the project page:
 
