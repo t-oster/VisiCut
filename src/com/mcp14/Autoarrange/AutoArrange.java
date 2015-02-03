@@ -19,6 +19,7 @@ import com.t_oster.visicut.model.PlfPart;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -38,9 +39,14 @@ import java.util.Set;
 public class AutoArrange {
     public static HashMap<Integer, Set<HoldValues>> allValues = new HashMap<Integer, Set<HoldValues>>();
     
-    public static void start(PlfFile svgFiles, Dimension laserBedDimension, int offset, AffineTransform mm2Px) throws FileNotFoundException, UnsupportedEncodingException {
+    public static void start(PlfFile svgFiles, Dimension laserBedDimension, int offset, AffineTransform mm2Px) throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException {
         allValues.clear();
-        InputExporter exporter = new InputExporter(svgFiles.size(),laserBedDimension);
+        double pxLaserBedWidth = mm2Px.getScaleX() * laserBedDimension.width;
+        double pxLaserBedHeight = mm2Px.getScaleY() * laserBedDimension.height;
+        System.out.println("LaserBedWidth: " +  pxLaserBedWidth);
+        System.out.println("LaserBedHeight: " +  pxLaserBedHeight);
+        Dimension pxDimension = new Dimension((int)pxLaserBedWidth,(int)pxLaserBedHeight);
+        InputExporter exporter = new InputExporter(svgFiles.size(),pxDimension);
         for (PlfPart s : svgFiles){
             Rectangle objectRect = Helper.toRect(Helper.transform(s.getBoundingBox(),mm2Px));
             exporter.addInputs( objectRect.getWidth()+(offset/2), objectRect.getHeight()+(offset/2));
