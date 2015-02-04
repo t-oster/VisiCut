@@ -1527,6 +1527,7 @@ public class MainView extends javax.swing.JFrame
     }
     this.calculateTimeButton.setEnabled(execute);
     this.executeJobButton.setEnabled(execute);
+    this.arrangeButton.setEnabled(ifFilesLoaded());
     this.executeJobMenuItem.setEnabled(execute);
   }
   private File lastDirectory = null;
@@ -2801,7 +2802,13 @@ public static void clearPreviousPositions() {
 
   private boolean ifFilesLoaded(){
 
-      return true;
+      if(visicutModel1.getPlfFile().size() > 1)
+      { return true;
+      }
+      else{
+        return false;
+      }
   }
+
 
 }
