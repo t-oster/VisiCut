@@ -173,6 +173,8 @@ public class AutoArrangePanel extends javax.swing.JPanel
       parentFrame.dispose();
       MainView.arrangeFrame = null;
       MainView.undoArrange();
+      MainView.previewStaticPanel.nonArrangedPartsExist = false;
+      MainView.previewStaticPanel.repaint();
   }
 
   @Action
@@ -181,6 +183,8 @@ public class AutoArrangePanel extends javax.swing.JPanel
     parentFrame.dispose();
     MainView.arrangeFrame = null;
     MainView.clearPreviousPositions();
+    MainView.previewStaticPanel.nonArrangedPartsExist = false;
+    MainView.previewStaticPanel.repaint();
   }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

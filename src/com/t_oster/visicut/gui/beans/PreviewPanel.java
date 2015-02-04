@@ -83,7 +83,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   private double bedHeight = 300;
   private boolean needToArrange = false;
   private static AffineTransform arrangeTranslate;
-  private static boolean nonArrangedPartsExist = false;
+  public static boolean nonArrangedPartsExist = false;
   private static int BinOfLeastArea;
   public static LinkedList<PreviousPosition> PreviousPositions = null;
   private static Set<Integer> notToRender;
@@ -544,11 +544,11 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       notToBeRenderedParts = new PlfFile();
       for (int i : notToRender){
         notToBeRenderedParts.add(VisicutModel.getInstance().getPlfFile().get(i));
+      }
       DialogHelper dialogHelper = MainView.getInstance().getDialog();
       dialogHelper.showWarningMessage("Not all of your objects do fit into the canvas. Visicut marked the objects that you can remove to achieve the maximum usage of space.");
-      }
     }
-    super.repaint();
+    this.repaint();
   }
 
   private void clearRotation(){

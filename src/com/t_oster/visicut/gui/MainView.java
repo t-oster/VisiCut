@@ -2608,6 +2608,8 @@ private void arrangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             {
               arrangeFrame = null;
               undoArrange();
+              previewStaticPanel.nonArrangedPartsExist = false;
+              previewStaticPanel.repaint();
             }
             catch (NoninvertibleTransformException ex)
             {
@@ -2637,7 +2639,8 @@ public static void undoArrange() throws NoninvertibleTransformException{
       if (plfPart.hashCode() == prevPosition.hashcode){
        //System.out.println("before X: " + previousPart.getGraphicObjects().getBoundingBox().getX() + " before Y: " + previousPart.getGraphicObjects().getBoundingBox().getY() + " after X: " + plfPart.getGraphicObjects().getBoundingBox().getX() + " after Y: " + plfPart.getGraphicObjects().getBoundingBox().getY());
        plfPart.getGraphicObjects().setTransform(prevPosition.transform);
-       previewStaticPanel.repaint(); 
+       previewStaticPanel.updateEditRectangle();
+       previewStaticPanel.repaint();
 //      GraphicSet graphicSet = plfPart.getGraphicObjects();
 //      GraphicSet prevGraphicSet = previousPart.getGraphicObjects();
 //      Rectangle objectRect = Helper.toRect(Helper.transform(plfPart.getBoundingBox(), previewStaticPanel.getMmToPxTransform()));
