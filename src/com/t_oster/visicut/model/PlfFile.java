@@ -80,5 +80,9 @@ public class PlfFile implements Iterable<PlfPart> {
   {
     return parts.remove(o);
   }
+  
+  public int getIndexOf(PlfPart o){
+    return parts.indexOf(o);
+  }
 
 }

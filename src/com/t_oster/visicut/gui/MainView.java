@@ -36,6 +36,7 @@ import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.VisicutModel.Modification;
 import com.t_oster.visicut.gui.beans.CreateNewMaterialDialog;
 import com.t_oster.visicut.gui.beans.CreateNewThicknessDialog;
+import com.t_oster.visicut.gui.beans.PreviewPanel;
 import com.t_oster.visicut.gui.parameterpanel.ParameterPanel;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
@@ -54,6 +55,7 @@ import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
+import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Dimension;
@@ -67,6 +69,8 @@ import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -76,6 +80,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -109,12 +114,13 @@ import org.jdesktop.application.Action;
  */
 public class MainView extends javax.swing.JFrame
 {
-
+  public static int count = 0;
+  public static PreviewPanel previewStaticPanel;
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView");
-
+  public static JFrame arrangeFrame = null;
   private ParameterPanel parameterPanel = new ParameterPanel();
-  
+
   public static MainView getInstance()
   {
     return instance;
@@ -179,7 +185,7 @@ public class MainView extends javax.swing.JFrame
    * laser-profile and returns the altered clone of the profile if ok
    * was pressed, and null else. The given LaserProfile is not touched
    * @param lp
-   * @return 
+   * @return
    */
   public LaserProfile editLaserProfile(LaserProfile profile)
   {
@@ -209,7 +215,7 @@ public class MainView extends javax.swing.JFrame
     }
     return profile;
   }
-  
+
   /** Creates new form MainView */
   public MainView()
   {
@@ -251,8 +257,8 @@ public class MainView extends javax.swing.JFrame
       zoomInMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ADD, java.awt.event.InputEvent.META_MASK));
       zoomOutMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SUBTRACT, java.awt.event.InputEvent.META_MASK));
     }
-    
-    fixMaterialThicknesses();    
+
+    fixMaterialThicknesses();
     fillComboBoxes();
     refreshMaterialThicknessesComboBox();
 
@@ -359,7 +365,7 @@ public class MainView extends javax.swing.JFrame
       this.setPreferredSize(new Dimension(lastBounds.width, lastBounds.height));
       this.setBounds(lastBounds);
     }
-    
+
     // all GUI parts are now initialised.
     if (LaserDeviceManager.getInstance().getAll().isEmpty()) {
       this.jmDownloadSettingsActionPerformed(null);
@@ -395,7 +401,7 @@ public class MainView extends javax.swing.JFrame
       }
     }
   }
-  
+
   private JMenuItem openExamples;
   private void refreshExampleMenu()
   {
@@ -471,7 +477,7 @@ public class MainView extends javax.swing.JFrame
     this.jLabel1.setVisible(materialUiVisible);
     this.jLabel5.setVisible(materialUiVisible);
   }
-  
+
   // add a "0.0mm" material thickness if the material has an empty list of thicknesses
   private void fixMaterialThicknesses() {
     List<MaterialProfile> materials = MaterialManager.getInstance().getAll();
@@ -486,7 +492,7 @@ public class MainView extends javax.swing.JFrame
         } catch(IOException e) {
           System.err.println("Failed to fix because of exception " + e);
         }
-        
+
       }
     }
   }
@@ -500,7 +506,7 @@ public class MainView extends javax.swing.JFrame
     this.refreshMaterialComboBox();
     this.refreshObjectComboBox();
   }
-  
+
   private void refreshLaserDeviceComboBox()
   {
     String sld = this.visicutModel1.getSelectedLaserDevice() != null ? this.visicutModel1.getSelectedLaserDevice().getName() : null;
@@ -533,7 +539,7 @@ public class MainView extends javax.swing.JFrame
    * @param forceUpdate even update if the list of PlfParts has not changed
    * @throws RuntimeException if forceUpdate==false and PlfParts have not changed
    */
-  public void refreshObjectComboBox() {        
+  public void refreshObjectComboBox() {
     this.ignoreObjectComboBoxEvents = true;
     // fill new list of PlfItems
     this.objectComboBox.removeAllItems();
@@ -542,13 +548,13 @@ public class MainView extends javax.swing.JFrame
       this.objectComboBox.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("(nothing selected)"));
     }
     for (PlfPart p: VisicutModel.getInstance().getPlfFile()) {
-      if (p == null || p.getSourceFile() == null) { // necessary? 
+      if (p == null || p.getSourceFile() == null) { // necessary?
         continue;
       }
       // add regular item
       this.objectComboBox.addItem(p);
     }
-    
+
     // now set the correct selection
     if (VisicutModel.getInstance().getSelectedPart() != null) {
       // something is selected, also select this in the combobox
@@ -568,12 +574,12 @@ public class MainView extends javax.swing.JFrame
     {
       this.jLabel2.setText(this.bundle.getString("jLabel2.text") + (files == 1 && !selected ? " "+this.bundle.getString("(nothing selected)") : ""));
     }
-    
+
     this.objectComboBox.setVisible(files > 1);
     this.btRemoveObject.setVisible(files > 0 && selected);
     this.ignoreObjectComboBoxEvents = false;
   }
-  
+
   /** This method is called from within the constructor to
    * initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is
@@ -588,6 +594,7 @@ public class MainView extends javax.swing.JFrame
         filesDropSupport1 = new com.t_oster.uicomponents.FilesDropSupport();
         saveFileChooser = new javax.swing.JFileChooser();
         buttonGroup1 = new javax.swing.ButtonGroup();
+        jDialog1 = new javax.swing.JDialog();
         captureImageButton = new javax.swing.JButton();
         progressBar = new javax.swing.JProgressBar();
         jButton1 = new javax.swing.JButton();
@@ -622,6 +629,7 @@ public class MainView extends javax.swing.JFrame
         btRemoveObject = new javax.swing.JButton();
         btAddObject = new javax.swing.JButton();
         warningPanel = new com.t_oster.uicomponents.warnings.WarningPanel();
+        arrangeButton = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -672,6 +680,19 @@ public class MainView extends javax.swing.JFrame
         saveFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
         saveFileChooser.setFileFilter(new ExtensionFilter(".plf", java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("VISICUT PORTABLE LASER FILE")));
         saveFileChooser.setName("saveFileChooser"); // NOI18N
+
+        jDialog1.setName("jDialog1"); // NOI18N
+
+        javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
+        jDialog1.getContentPane().setLayout(jDialog1Layout);
+        jDialog1Layout.setHorizontalGroup(
+            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        jDialog1Layout.setVerticalGroup(
+            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(MainView.class);
@@ -910,7 +931,7 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 277, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 280, Short.MAX_VALUE)
                                 .addComponent(calculateTimeButton)))
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
@@ -918,7 +939,7 @@ public class MainView extends javax.swing.JFrame
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(objectComboBox, 0, 538, Short.MAX_VALUE)
+                                .addComponent(objectComboBox, 0, 549, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btAddObject, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -938,7 +959,7 @@ public class MainView extends javax.swing.JFrame
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(btAddMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jLabel5))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 286, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 298, Short.MAX_VALUE)
                                 .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(20, 20, 20))))
         );
@@ -992,6 +1013,17 @@ public class MainView extends javax.swing.JFrame
 
         warningPanel.setName("warningPanel"); // NOI18N
         warningPanel.setPreferredSize(new java.awt.Dimension(276, 123));
+
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(MainView.class, this);
+        arrangeButton.setAction(actionMap.get("onArrangeClicked")); // NOI18N
+        arrangeButton.setText(resourceMap.getString("arrangeButton.text")); // NOI18N
+        arrangeButton.setName("arrangeButton"); // NOI18N
+        arrangeButton.setEnabled(ifFilesLoaded());
+        arrangeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                arrangeButtonActionPerformed(evt);
+            }
+        });
 
         menuBar.setName("menuBar"); // NOI18N
 
@@ -1190,7 +1222,6 @@ public class MainView extends javax.swing.JFrame
 
         viewMenu.add(jmShowPhoto);
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(MainView.class, this);
         zoomInMenuItem.setAction(actionMap.get("zoomIn")); // NOI18N
         zoomInMenuItem.setText(resourceMap.getString("zoomInMenuItem.text")); // NOI18N
         zoomInMenuItem.setName("zoomInMenuItem"); // NOI18N
@@ -1268,7 +1299,9 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(bt1to1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 280, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(arrangeButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 183, Short.MAX_VALUE)
                                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(8, 8, 8)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1279,9 +1312,10 @@ public class MainView extends javax.swing.JFrame
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 768, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 773, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(arrangeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btFitScreen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1341,6 +1375,7 @@ public class MainView extends javax.swing.JFrame
     }.start();
   }
 
+
   private void fitObjectsIntoBed()
   {
     final Map<PlfPart, AffineTransform> backup = new LinkedHashMap<PlfPart, AffineTransform>();
@@ -1372,21 +1407,21 @@ public class MainView extends javax.swing.JFrame
         return;
       }
     }
-    
+
     if( (modification.oldX != modification.newX) || (modification.oldY != modification.newY) )
     {
       text += "\n"+bundle.getString("OLDXY")+": (" + modification.oldX+","+ modification.oldY +")";
       text += "\n"+bundle.getString("CHANGED_TO")+": (" + modification.newX+","+ modification.newY +")";
-    }    
-    
+    }
+
     if( (modification.oldWidth != modification.newWidth) || (modification.oldHeight != modification.newHeight) )
     {
       text += "\n"+bundle.getString("OLDWH")+": (" +  modification.oldWidth+","+modification.oldHeight+")";
       text += "\n"+bundle.getString("CHANGED_TO")+": (" + modification.newWidth+","+modification.newHeight+")";
       text += "\n scaling factor: "+modification.factor;
     }
-    
-    
+
+
     warningPanel.addMessage(new Message("Info", text, Message.Type.INFO, new com.t_oster.uicomponents.warnings.Action[]
     {
       new com.t_oster.uicomponents.warnings.Action(bundle.getString("UNDO"))
@@ -1400,12 +1435,12 @@ public class MainView extends javax.swing.JFrame
             VisicutModel.getInstance().firePartUpdated(e.getKey());
           }
           return true;
-        } 
+        }
       }
     }
     ));
   }
-  
+
   private void loadFileReal(File file, boolean discardCurrent)
   {
     try
@@ -1470,7 +1505,7 @@ public class MainView extends javax.swing.JFrame
       this.jCheckBox1.setVisible(true);
       this.jSeparator1.setVisible(true);
     }
-    
+
     boolean execute = this.visicutModel1.getMaterial() != null
       && this.visicutModel1.getSelectedLaserDevice() != null
       && this.visicutModel1.getPlfFile().size() > 0;
@@ -1492,6 +1527,7 @@ public class MainView extends javax.swing.JFrame
     }
     this.calculateTimeButton.setEnabled(execute);
     this.executeJobButton.setEnabled(execute);
+    this.arrangeButton.setEnabled(ifFilesLoaded());
     this.executeJobMenuItem.setEnabled(execute);
   }
   private File lastDirectory = null;
@@ -1759,7 +1795,7 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
     // regenerate list of parts, update selection in ComboBox
     this.refreshObjectComboBox();
   }
-    
+
   if (evt.getPropertyName().equals(VisicutModel.PROP_PLF_FILE_CHANGED))
   {
     MainView.this.timeLabel.setText("");
@@ -2023,7 +2059,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       {
         dialog.showErrorMessage(ex);
       }
-      
+
     }
   }//GEN-LAST:event_materialMenuItemActionPerformed
 
@@ -2175,7 +2211,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   /**
    * load settings from file and update the GUI
    * @param file : File or null for loading the default example settings
-   * @throws Exception 
+   * @throws Exception
    */
   private void importSettingsFromFile(File file) throws Exception {
     PreferencesManager.getInstance().importSettings(file);
@@ -2184,7 +2220,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     this.refreshExampleMenu();
     dialog.showSuccessMessage(bundle.getString("SETTINGS SUCCESSFULLY IMPORTED"));
   }
-  
+
   private void jmImportSettingsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmImportSettingsActionPerformed
   {//GEN-HEADEREND:event_jmImportSettingsActionPerformed
     if (!askForOverwriteSettings()) {
@@ -2246,7 +2282,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       dialog.showErrorMessage(e);
     }
   }
-  
+
   private void jmManageLaserprofilesActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmManageLaserprofilesActionPerformed
   {//GEN-HEADEREND:event_jmManageLaserprofilesActionPerformed
     EditProfilesDialog d = new EditProfilesDialog(this, true);
@@ -2484,7 +2520,7 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 }//GEN-LAST:event_jmPreferencesActionPerformed
 
 private boolean askForOverwriteSettings() {
-    if (LaserDeviceManager.getInstance().getAll().isEmpty() && 
+    if (LaserDeviceManager.getInstance().getAll().isEmpty() &&
       MaterialManager.getInstance().getAll().isEmpty() &&
       ProfileManager.getInstance().getAll().isEmpty() &&
       MappingManager.getInstance().getAll().isEmpty()) {
@@ -2550,8 +2586,85 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   }
 }//GEN-LAST:event_jmDownloadSettingsActionPerformed
 
+private void arrangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_arrangeButtonActionPerformed
+    try
+    {
+      // TODO add your handling code here:
+      previewStaticPanel = this.previewPanel;
+      previewStaticPanel.autoArrange(0);
+
+      if (arrangeFrame == null){
+        arrangeFrame = new JFrame ();
+        AutoArrangePanel arrangePanel = new AutoArrangePanel(arrangeFrame);
+        arrangeFrame.add(arrangePanel);
+        arrangeFrame.pack();
+        arrangeFrame.setLocationRelativeTo(jPanel2);
+        arrangeFrame.setVisible(true);
+        arrangeFrame.setResizable(false);
+        arrangeFrame.setAlwaysOnTop(true);
+        arrangeFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+          @Override
+          public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+            try
+            {
+              arrangeFrame = null;
+              undoArrange();
+              previewStaticPanel.nonArrangedPartsExist = false;
+              previewStaticPanel.repaint();
+            }
+            catch (NoninvertibleTransformException ex)
+            {
+              Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+          }
+         });
+      }
+    }
+    catch (FileNotFoundException ex)
+    {
+      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    catch (UnsupportedEncodingException ex)
+    {
+      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    catch (NoninvertibleTransformException ex)
+    {
+      Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+    }
+}//GEN-LAST:event_arrangeButtonActionPerformed
+
+public static void undoArrange() throws NoninvertibleTransformException{
+  for (PlfPart plfPart : VisicutModel.getInstance().getPlfFile()){
+    for (PreviewPanel.PreviousPosition prevPosition: previewStaticPanel.PreviousPositions){
+      if (plfPart.hashCode() == prevPosition.hashcode){
+       //System.out.println("before X: " + previousPart.getGraphicObjects().getBoundingBox().getX() + " before Y: " + previousPart.getGraphicObjects().getBoundingBox().getY() + " after X: " + plfPart.getGraphicObjects().getBoundingBox().getX() + " after Y: " + plfPart.getGraphicObjects().getBoundingBox().getY());
+       plfPart.getGraphicObjects().setTransform(prevPosition.transform);
+       previewStaticPanel.updateEditRectangle();
+       previewStaticPanel.repaint();
+//      GraphicSet graphicSet = plfPart.getGraphicObjects();
+//      GraphicSet prevGraphicSet = previousPart.getGraphicObjects();
+//      Rectangle objectRect = Helper.toRect(Helper.transform(plfPart.getBoundingBox(), previewStaticPanel.getMmToPxTransform()));
+//      Rectangle previousObjectRect = Helper.toRect(Helper.transform(previousPart.getBoundingBox(), previewStaticPanel.getMmToPxTransform()));
+//      Point2D.Double positionDifference = new Point2D.Double(previousObjectRect.getX() - objectRect.getX(),previousObjectRect.getY() - objectRect.getY());
+//      System.out.println("prevPosDiff X: " + positionDifference.x + " Y: " + positionDifference.y);
+//      AffineTransform transformation = previewStaticPanel.getMmToPxTransform();
+//      transformation.createInverse().deltaTransform(positionDifference, positionDifference);
+//      graphicSet.setTransform(prevGraphicSet.getTransform());
+//      previewStaticPanel.moveSet(positionDifference.x, positionDifference.y, plfPart,0);
+      }
+    }
+  }
+  previewStaticPanel.PreviousPositions = null;
+}
+
+public static void clearPreviousPositions() {
+  previewStaticPanel.PreviousPositions = null;
+}
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JButton arrangeButton;
     private javax.swing.JButton bt1to1;
     private javax.swing.JButton btAddMaterial;
     private javax.swing.JButton btAddMaterialThickness;
@@ -2575,6 +2688,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JDialog jDialog1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -2689,5 +2803,16 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   {
     return this.dialog;
   }
+
+  private boolean ifFilesLoaded(){
+
+      if(visicutModel1.getPlfFile().size() > 1)
+      { return true;
+      }
+      else{
+        return false;
+      }
+  }
+
 
 }

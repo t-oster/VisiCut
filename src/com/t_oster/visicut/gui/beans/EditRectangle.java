@@ -35,6 +35,7 @@ import java.awt.geom.Rectangle2D;
 public class EditRectangle extends Rectangle2D.Double
 {
 
+  public static Rectangle objectRect;
   private double rotationAngle = 0;
 
   /**
@@ -217,6 +218,7 @@ public class EditRectangle extends Rectangle2D.Double
         10, 10
       }, 0));
     Rectangle tr = Helper.toRect(Helper.transform(this, mm2px));
+    objectRect = tr;
     if (this.rotateMode)
     {
       double diagonal = Math.sqrt(tr.width*tr.width+tr.height*tr.height);
@@ -302,6 +304,9 @@ public class EditRectangle extends Rectangle2D.Double
       }
       this.parameterFieldBounds[1].setBounds(tr.x+tr.width/2+5, tr.y-h-ascend, w, h);
     }
+  }
+  public Rectangle getPlfRect(){
+    return objectRect;
   }
   
   @Override

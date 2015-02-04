@@ -48,6 +48,8 @@ import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -389,7 +391,24 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     }
     else if (ke.getKeyCode() == KeyEvent.VK_DELETE && this.getEditRect() != null)
     {
+      PlfPart part = VisicutModel.getInstance().getSelectedPart();
       VisicutModel.getInstance().removeSelectedPart();
+      try
+      {
+        previewPanel.partGotDeleted(part);
+      }
+      catch (FileNotFoundException ex)
+      {
+        Logger.getLogger(PreviewPanelKeyboardMouseHandler.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      catch (UnsupportedEncodingException ex)
+      {
+        Logger.getLogger(PreviewPanelKeyboardMouseHandler.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      catch (NoninvertibleTransformException ex)
+      {
+        Logger.getLogger(PreviewPanelKeyboardMouseHandler.class.getName()).log(Level.SEVERE, null, ex);
+      }
     }
   }
 

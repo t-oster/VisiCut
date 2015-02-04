@@ -18,11 +18,14 @@
  **/
 package com.t_oster.visicut.gui.beans;
 
+import com.mcp14.Autoarrange.AutoArrange;
+import com.mcp14.Provider.HoldValues;
 import com.t_oster.uicomponents.ZoomablePanel;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.ProgressListener;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
@@ -33,12 +36,12 @@ import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
-import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -51,11 +54,21 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import com.t_oster.visicut.misc.DialogHelper;
+import com.t_oster.visicut.model.PlfFile;
+import java.awt.geom.NoninvertibleTransformException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class implements the Panel which provides the Preview
@@ -68,7 +81,16 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
 
   private double bedWidth = 600;
   private double bedHeight = 300;
+  private boolean needToArrange = false;
+  private static AffineTransform arrangeTranslate;
+  public static boolean nonArrangedPartsExist = false;
+  private static int BinOfLeastArea;
+  public static LinkedList<PreviousPosition> PreviousPositions = null;
+  private static Set<Integer> notToRender;
+  private static PlfFile notToBeRenderedParts;
+  private static int interObjectDistance = 0;
 
+  // variable to keep track of the arrangements.
   public PreviewPanel()
   {
     VisicutModel.getInstance().addPropertyChangeListener(this);
@@ -86,6 +108,11 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       repaint();
     }
   }
+
+  public void setNeedToArrange(boolean value){
+    needToArrange = value;
+  }
+
 
   public void propertyChange(PropertyChangeEvent pce)
   {
@@ -388,7 +415,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   {
     this.highlightSelection = highlightSelection;
   }
-  
+
   protected EditRectangle editRectangle = null;
 
   /**
@@ -480,6 +507,199 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     }
     return somethingMatched;
   }
+  
+  public class PreviousPosition{
+    public int hashcode;
+    public AffineTransform transform;
+    PreviousPosition(int hashkey, AffineTransform transformation){
+      hashcode = hashkey;
+      transform = transformation;
+    }
+  }
+
+  //Function that is going to be executed when arrange is clicked.
+  public void autoArrange(int offset) throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException{
+    interObjectDistance = (int)(this.getMmToPxTransform().getScaleX() * offset);
+    System.out.println("Offset is: " + interObjectDistance);
+    clearRotation();
+    if (PreviousPositions == null)
+      PreviousPositions = new LinkedList();
+    for (PlfPart part : VisicutModel.getInstance().getPlfFile()){
+      PreviousPositions.add(new PreviousPosition(part.hashCode(), part.getGraphicObjects().getTransform()));
+    }
+
+    AutoArrange.start(VisicutModel.getInstance().getPlfFile(), new Dimension((int)bedWidth,(int)bedHeight), interObjectDistance, this.getMmToPxTransform());
+    if (AutoArrange.allValues.size() == 1){
+      navigateThroughArrangements(1);
+      notToBeRendered(1);
+      nonArrangedPartsExist = false;
+    }
+    else {
+      BinOfLeastArea = getBinOfLeastArea();
+      System.out.println("Bin with least Area " + BinOfLeastArea);
+      navigateThroughArrangements(BinOfLeastArea);
+      notToBeRendered(BinOfLeastArea);
+      nonArrangedPartsExist = true;
+      notToRender = getObjectsNotToRender(AutoArrange.allValues.get(getBinOfLeastArea()));
+      notToBeRenderedParts = new PlfFile();
+      for (int i : notToRender){
+        notToBeRenderedParts.add(VisicutModel.getInstance().getPlfFile().get(i));
+      }
+      DialogHelper dialogHelper = MainView.getInstance().getDialog();
+      dialogHelper.showWarningMessage("Not all of your objects do fit into the canvas. Visicut marked the objects that you can remove to achieve the maximum usage of space.");
+    }
+    this.repaint();
+  }
+
+  private void clearRotation(){
+    for (PlfPart part : VisicutModel.getInstance().getPlfFile()){
+      AffineTransform rotateTransform = AffineTransform.getRotateInstance(0);
+      if (part.getGraphicObjects().getTransform() != null)
+      {
+        rotateTransform.concatenate(part.getGraphicObjects().getTransform());
+      }
+    }
+  }
+
+  public void partGotDeleted(PlfPart part) throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException{
+    System.out.println("Something got deleted");
+    if (nonArrangedPartsExist){
+      for (PlfPart plfPart : notToBeRenderedParts){
+        if (plfPart == part){
+          return;
+        }
+      autoArrange(interObjectDistance);
+      }
+    }
+
+  }
+
+  public int getBinOfLeastArea(){
+    double areaOfBins = 0;
+    double leastArea = 0;
+    int leastAreaBin = 0;
+    for (int i = 1; i <= AutoArrange.allValues.size(); i++){
+      List<Integer> notToRender = new LinkedList<Integer>(getObjectsNotToRender(AutoArrange.allValues.get(i)));
+      for (int j : notToRender){
+        PlfPart part = VisicutModel.getInstance().getPlfFile().get(j);
+        areaOfBins += part.getGraphicObjects().getBoundingBox().getWidth() * part.getGraphicObjects().getBoundingBox().getHeight();
+      }
+      if ( i  == 1 ){
+        leastArea = areaOfBins;
+        leastAreaBin = i;
+      }
+      if ( areaOfBins < leastArea){
+        leastArea = areaOfBins;
+        leastAreaBin = i;
+      }
+      areaOfBins = 0;
+    }
+    return leastAreaBin;
+  }
+
+  /*
+   * The method that will call getObjectsNotToRender and get
+   * the set of values that cannot be renedered after arrangement.
+   * @param binNumber : give the bin number of the arrangement.
+   */
+
+  private void notToBeRendered(int binNumber){
+    Set<Integer> notToRender = getObjectsNotToRender(AutoArrange.allValues.get(binNumber));
+    for ( int i : notToRender){
+      PlfPart part = VisicutModel.getInstance().getPlfFile().get(i);
+      //setFastPreview(true);
+      //VisicutModel.getInstance().firePartUpdated(part);
+    }
+  }
+
+  /*
+   * This function is to get the id's of the objects
+   * that don't fit in the current arrangement.
+   *
+   * @param values : set from the HashMap.
+   */
+
+  private Set<Integer> getObjectsNotToRender(Set<HoldValues> values) throws NullPointerException{
+    Set<Integer> holdValueSet = new HashSet<Integer>();
+    Set<Integer> returnValue = new HashSet<Integer>();
+    for(HoldValues hv : values){
+      holdValueSet.add(hv.getObjectID());
+    }
+
+    for (int i = 1; i <= VisicutModel.getInstance().getPlfFile().size(); i++){
+      if (!(holdValueSet.contains(i))){
+        returnValue.add(i-1);
+      }
+    }
+    return returnValue;
+  }
+
+
+  /*
+   * This method is used to navigate through the arrangements.
+   * If there are pieces to be placed it places them.
+   * else returns false denoting no more arrangements possible.
+   * @param binNumber : number of times the navigation button is clicked
+   */
+  public boolean navigateThroughArrangements(int binNumber) throws NoninvertibleTransformException{
+    //get value set for each bin
+    Set<HoldValues> hValues = AutoArrange.allValues.get(binNumber);
+
+    //check if no pieces exits in the set.
+    if(hValues.isEmpty())
+      return false;
+    //check for non renderable objects
+    //perform rearrange.
+    for (HoldValues hv : hValues){
+      PlfPart plfPart = VisicutModel.getInstance().getPlfFile().get(hv.getObjectID()-1);
+      GraphicSet graphicSet = plfPart.getGraphicObjects();
+      Rectangle objectRect = Helper.toRect(Helper.transform(plfPart.getBoundingBox(), this.getMmToPxTransform()));
+      Point2D.Double positionDifference = new Point2D.Double(hv.getX()-objectRect.getX(), hv.getY()-objectRect.getY());
+      AffineTransform transformation = this.getMmToPxTransform();
+      transformation.createInverse().deltaTransform(positionDifference, positionDifference);
+      moveSet(positionDifference.x, positionDifference.y, plfPart, hv.getObjectRotation());
+      System.out.println("Part x: "+ (hv.getX()-graphicSet.getBoundingBox().getX()) +" and y: " + (hv.getY()-graphicSet.getBoundingBox().getX()));
+    }
+    notToBeRendered(binNumber);
+    this.repaint();
+    // else return after arrangement.
+    return true;
+  }
+
+
+    public void moveSet(double mmDiffX, double mmDiffY, PlfPart plfPart, double rotation)
+  {
+//make sure, we're not moving the bb out of the laser-area
+    Rectangle2D bb = plfPart.getBoundingBox();
+    if (bb.getX() + mmDiffX < 0)
+    {
+      mmDiffX = -bb.getX();
+    }
+    if (bb.getY() + mmDiffY < 0)
+    {
+      mmDiffY = -bb.getY();
+    }
+    if (bb.getX() + bb.getWidth() + mmDiffX > this.getAreaSize().x)
+    {
+      mmDiffX = this.getAreaSize().x - (bb.getX() + bb.getWidth());
+    }
+    if (bb.getY() + bb.getHeight() + mmDiffY > this.getAreaSize().y)
+    {
+      mmDiffY = this.getAreaSize().y - (bb.getY() + bb.getHeight());
+    }
+    if (mmDiffX == 0 && mmDiffY == 0)
+    {
+      return;
+    }
+    AffineTransform tr = AffineTransform.getTranslateInstance(mmDiffX, mmDiffY);
+    if (plfPart.getGraphicObjects().getTransform() != null)
+    {
+      tr.concatenate(plfPart.getGraphicObjects().getTransform());
+    }
+    plfPart.getGraphicObjects().setTransform(tr);
+    this.updateEditRectangle();
+  }
+
 
   @Override
   protected void paintComponent(Graphics g)
@@ -487,6 +707,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     super.paintComponent(g);
     if (g instanceof Graphics2D)
     {
+
       Graphics2D gg = (Graphics2D) g;
       Point2D dim = this.getMmToPxTransform().transform(this.getAreaSize(), null);
       Rectangle r = this.getVisibleRect();
@@ -603,7 +824,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
                         laserPxToPreviewPx.translate(procThread.getBoundingBox().x, procThread.getBoundingBox().y);
                         gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                         gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-      
+
                         gg.drawRenderedImage(procThread.getImage(), laserPxToPreviewPx);
                       }
                     }
@@ -625,6 +846,31 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
             if (!somethingMatched)
             {//Nothing drawn because of no Matching mapping
               gg.drawString(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("NO MATCHING PARTS FOR THE CURRENT MAPPING FOUND."), 10, this.getHeight() / 2);
+            }
+          }
+        }
+        if(nonArrangedPartsExist){
+          for (PlfPart plfPart : notToBeRenderedParts){
+            if(plfPart == part){
+              Rectangle rect = Helper.toRect(Helper.transform(part.getGraphicObjects().getBoundingBox(), this.getMmToPxTransform()));
+              double x1 = 0;
+              double y1 = part.getBoundingBox().getY();
+              double x2 = part.getGraphicObjects().getBoundingBox().getX() + part.getGraphicObjects().getBoundingBox().getWidth();
+              double y2 = part.getGraphicObjects().getBoundingBox().getY() + part.getGraphicObjects().getBoundingBox().getHeight();
+              double xc = part.getGraphicObjects().getBoundingBox().getCenterX();
+              double yc = part.getGraphicObjects().getBoundingBox().getCenterY();
+              double width = part.getBoundingBox().getWidth();
+              double height = part.getBoundingBox().getHeight();
+              double smallestSize = 0;
+              if (width > height){
+                smallestSize = height;
+              }
+              else {
+                smallestSize = width;
+              }
+
+              gg.setColor(Color.RED);
+              gg.drawRect(rect.x, rect.y, rect.width, rect.height);
             }
           }
         }
