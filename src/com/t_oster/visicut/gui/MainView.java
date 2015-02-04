@@ -2596,6 +2596,7 @@ private void arrangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         AutoArrangePanel arrangePanel = new AutoArrangePanel(arrangeFrame);
         arrangeFrame.add(arrangePanel);
         arrangeFrame.pack();
+        arrangeFrame.setLocationRelativeTo(jPanel2);
         arrangeFrame.setVisible(true);
         arrangeFrame.setResizable(false);
         arrangeFrame.setAlwaysOnTop(true);
