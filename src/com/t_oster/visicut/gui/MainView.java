@@ -2631,18 +2631,21 @@ private void arrangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
 public static void undoArrange() throws NoninvertibleTransformException{
   for (PlfPart plfPart : VisicutModel.getInstance().getPlfFile()){
-    for (PlfPart previousPart : previewStaticPanel.PreviousPositions){
-      if (plfPart == previousPart){
-      GraphicSet graphicSet = plfPart.getGraphicObjects();
-      GraphicSet prevGraphicSet = previousPart.getGraphicObjects();
-      Rectangle objectRect = Helper.toRect(Helper.transform(plfPart.getBoundingBox(), previewStaticPanel.getMmToPxTransform()));
-      Rectangle previousObjectRect = Helper.toRect(Helper.transform(previousPart.getBoundingBox(), previewStaticPanel.getMmToPxTransform()));
-      Point2D.Double positionDifference = new Point2D.Double(previousObjectRect.getX() - objectRect.getX(),previousObjectRect.getY() - objectRect.getY());
-      System.out.println("prevPosDiff X: " + positionDifference.x + " Y: " + positionDifference.y);
-      AffineTransform transformation = previewStaticPanel.getMmToPxTransform();
-      transformation.createInverse().deltaTransform(positionDifference, positionDifference);
-      graphicSet.setTransform(prevGraphicSet.getTransform());
-      previewStaticPanel.moveSet(positionDifference.x, positionDifference.y, plfPart,0);
+    for (PreviewPanel.PreviousPosition prevPosition: previewStaticPanel.PreviousPositions){
+      if (plfPart.hashCode() == prevPosition.hashcode){
+       //System.out.println("before X: " + previousPart.getGraphicObjects().getBoundingBox().getX() + " before Y: " + previousPart.getGraphicObjects().getBoundingBox().getY() + " after X: " + plfPart.getGraphicObjects().getBoundingBox().getX() + " after Y: " + plfPart.getGraphicObjects().getBoundingBox().getY());
+       plfPart.getGraphicObjects().setTransform(prevPosition.transform);
+       previewStaticPanel.repaint(); 
+//      GraphicSet graphicSet = plfPart.getGraphicObjects();
+//      GraphicSet prevGraphicSet = previousPart.getGraphicObjects();
+//      Rectangle objectRect = Helper.toRect(Helper.transform(plfPart.getBoundingBox(), previewStaticPanel.getMmToPxTransform()));
+//      Rectangle previousObjectRect = Helper.toRect(Helper.transform(previousPart.getBoundingBox(), previewStaticPanel.getMmToPxTransform()));
+//      Point2D.Double positionDifference = new Point2D.Double(previousObjectRect.getX() - objectRect.getX(),previousObjectRect.getY() - objectRect.getY());
+//      System.out.println("prevPosDiff X: " + positionDifference.x + " Y: " + positionDifference.y);
+//      AffineTransform transformation = previewStaticPanel.getMmToPxTransform();
+//      transformation.createInverse().deltaTransform(positionDifference, positionDifference);
+//      graphicSet.setTransform(prevGraphicSet.getTransform());
+//      previewStaticPanel.moveSet(positionDifference.x, positionDifference.y, plfPart,0);
       }
     }
   }

@@ -65,6 +65,7 @@ import javax.swing.JOptionPane;
 import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.model.PlfFile;
 import java.awt.geom.NoninvertibleTransformException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -84,7 +85,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   private static AffineTransform arrangeTranslate;
   private static boolean nonArrangedPartsExist = false;
   private static int BinOfLeastArea;
-  public static PlfFile PreviousPositions = null;
+  public static LinkedList<PreviousPosition> PreviousPositions = null;
   private static Set<Integer> notToRender;
   private static PlfFile notToBeRenderedParts;
   private static int interObjectDistance = 0;
@@ -506,6 +507,15 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     }
     return somethingMatched;
   }
+  
+  public class PreviousPosition{
+    public int hashcode;
+    public AffineTransform transform;
+    PreviousPosition(int hashkey, AffineTransform transformation){
+      hashcode = hashkey;
+      transform = transformation;
+    }
+  }
 
   //Function that is going to be executed when arrange is clicked.
   public void autoArrange(int offset) throws FileNotFoundException, UnsupportedEncodingException, NoninvertibleTransformException{
@@ -513,9 +523,9 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     System.out.println("Offset is: " + interObjectDistance);
     clearRotation();
     if (PreviousPositions == null)
-      PreviousPositions = new PlfFile();
+      PreviousPositions = new LinkedList();
     for (PlfPart part : VisicutModel.getInstance().getPlfFile()){
-      PreviousPositions.add(part);
+      PreviousPositions.add(new PreviousPosition(part.hashCode(), part.getGraphicObjects().getTransform()));
     }
 
     AutoArrange.start(VisicutModel.getInstance().getPlfFile(), new Dimension((int)bedWidth,(int)bedHeight), interObjectDistance, this.getMmToPxTransform());
