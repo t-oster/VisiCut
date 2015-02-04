@@ -909,7 +909,7 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 277, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 280, Short.MAX_VALUE)
                                 .addComponent(calculateTimeButton)))
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
@@ -917,7 +917,7 @@ public class MainView extends javax.swing.JFrame
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(objectComboBox, 0, 538, Short.MAX_VALUE)
+                                .addComponent(objectComboBox, 0, 549, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btAddObject, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -937,7 +937,7 @@ public class MainView extends javax.swing.JFrame
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(btAddMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jLabel5))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 286, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 298, Short.MAX_VALUE)
                                 .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(20, 20, 20))))
         );
@@ -1267,7 +1267,7 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(bt1to1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 280, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 282, Short.MAX_VALUE)
                                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(8, 8, 8)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1278,7 +1278,7 @@ public class MainView extends javax.swing.JFrame
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 768, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 773, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -2608,6 +2608,122 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
+  
+    /*
+     * This method needs to be called if a button specifically for the 
+     * SVG export is integrated into the design.
+     */
+    
+  private void exportAsSVG(){
+    try
+    {
+      final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob();
+      if (cuttingSettings == null)
+      {
+        return;
+      }
+      if (VisicutModel.getInstance().getStartPoint() != null)
+      {
+        if (!dialog.showYesNoQuestion(bundle.getString("STARTPOINTWARNING")))
+        {
+          return;
+        }
+      }
+      new Thread()
+      {
+        @Override
+        public void run()
+        {
+          ProgressListener pl = new ProgressListener()
+          {
+            public void progressChanged(Object o, int i)
+            {
+              MainView.this.progressBar.setValue(i);
+              MainView.this.progressBar.repaint();
+            }
+            public void taskChanged(Object o, String string)
+            {
+              MainView.this.progressBar.setString(string);
+            }
+          };
+          MainView.this.progressBar.setMinimum(0);
+          MainView.this.progressBar.setMaximum(100);
+          MainView.this.progressBar.setValue(1);
+          MainView.this.progressBar.setStringPainted(true);
+          MainView.this.executeJobButton.setEnabled(false);
+          MainView.this.executeJobMenuItem.setEnabled(false);
+          try
+          {
+            MainView.this.warningPanel.removeAllWarnings();
+            jobnumber++;
+            String prefix = MainView.this.visicutModel1.getSelectedLaserDevice().getJobPrefix();
+            String jobname = prefix+jobnumber;
+            if (PreferencesManager.getInstance().getPreferences().isUseFilenamesForJobs())
+            {
+              //use filename of the PLF file or any part with a filename as job name
+              PlfFile plf = MainView.this.visicutModel1.getPlfFile();
+              File f = plf.getFile();
+              if (f == null)
+              {
+                for (PlfPart p : plf)
+                {
+                  if (p.getSourceFile() != null)
+                  {
+                    f = p.getSourceFile();
+                    break;
+                  }
+                }
+              }
+              if (f != null)
+              {
+                jobname = f.getName();
+              }
+            }
+            List<String> warnings = new LinkedList<String>();
+            MainView.this.visicutModel1.sendJobToExportAsSVG(jobname, pl, cuttingSettings, warnings);
+            for (String w : warnings)
+            {
+              dialog.showWarningMessage(w);
+            }
+            MainView.this.progressBar.setValue(0);
+            MainView.this.progressBar.setString("");
+            MainView.this.progressBar.setStringPainted(false);
+            String txt = MainView.this.visicutModel1.getSelectedLaserDevice().getJobSentText();
+            txt = txt.replace("$jobname", jobname).replace("$name", MainView.this.visicutModel1.getSelectedLaserDevice().getName());
+            dialog.showSuccessMessage(txt);
+          }
+          catch (Exception ex)
+          {
+            if (ex instanceof IllegalJobException && ex.getMessage().startsWith("Illegal Focus value"))
+            {
+              dialog.showWarningMessage(bundle.getString("YOU MATERIAL IS TOO HIGH FOR AUTOMATIC FOCUSSING.PLEASE FOCUS MANUALLY AND SET THE TOTAL HEIGHT TO 0."));
+            }
+            else if (ex instanceof java.net.SocketTimeoutException)
+            {
+              dialog.showErrorMessage(ex, bundle.getString("SOCKETTIMEOUT")+" "+bundle.getString("CHECKSWITCHEDON"));
+            }
+            else if (ex instanceof java.net.UnknownHostException)
+            {
+              dialog.showErrorMessage(ex, bundle.getString("UNKNOWNHOST")+" "+bundle.getString("CHECKSWITCHEDON"));
+            }
+            else
+            {
+              dialog.showErrorMessage(ex);
+            }
+          }
+          MainView.this.progressBar.setString("");
+          MainView.this.progressBar.setValue(0);
+          MainView.this.executeJobButton.setEnabled(true);
+          MainView.this.executeJobMenuItem.setEnabled(true);
+        }
+      }.start();
+    }
+    catch (Exception ex)
+    {
+      dialog.showErrorMessage(ex);
+    }
+  }
+    
   private void refreshMaterialThicknessesComboBox()
   {
     if (VisicutModel.getInstance().getMaterial() != null)
