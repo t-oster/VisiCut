@@ -34,6 +34,8 @@ import com.t_oster.visicut.vectorize.VectorizeDialog;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -85,6 +87,14 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   private JMenuItem moveToPositionMenuItem;
   
   private boolean shiftKeyDown = false;
+  
+  
+  //added for copy paste MCP WS 2014
+  private PlfPart copyOfSelectedFile = null;
+  private VisicutModel vModel = VisicutModel.getInstance();
+  private int shortcutKeyActivated = 0;
+  private boolean isAddingNewFile = false;
+  private File file;
   
   public PreviewPanelKeyboardMouseHandler(PreviewPanel panel)
   {
@@ -365,6 +375,40 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
         VisicutModel.getInstance().firePartUpdated(getSelectedPart());
       }
     }
+    
+    
+    //This part is added to implemnt copy pasting of SVG on the preview panel
+    if((Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() & ke.getModifiers()) != 0)
+    {
+      shortcutKeyActivated = ke.getKeyCode();
+
+    }
+
+    if(shortcutKeyActivated!=0)
+    {
+        if(ke.getKeyCode() == KeyEvent.VK_C)
+        {
+          copyOfSelectedFile = null;
+          copyOfSelectedFile = vModel.getSelectedPart();
+          System.out.println("File coped to clipboard = " + copyOfSelectedFile);
+        }
+
+        if(ke.getKeyCode() == KeyEvent.VK_V)
+        {
+
+          if(copyOfSelectedFile != null)
+          {
+             vModel.duplicate(copyOfSelectedFile);
+          }
+
+        } 
+       
+    }
+    if(ke.getKeyCode() == KeyEvent.VK_BACK_SPACE || ke.getKeyCode() == KeyEvent.VK_DELETE)
+    {
+        vModel.removeSelectedPart();
+        
+    }   
   }
 
   private void applyEditRectoToSet()
@@ -390,6 +434,10 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     else if (ke.getKeyCode() == KeyEvent.VK_DELETE && this.getEditRect() != null)
     {
       VisicutModel.getInstance().removeSelectedPart();
+    }
+    else if(ke.getKeyCode()==shortcutKeyActivated)
+    {
+      shortcutKeyActivated=0;
     }
   }
 

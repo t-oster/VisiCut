@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut;
 
+import com.kitfox.svg.SVGElement;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
@@ -38,10 +39,13 @@ import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.PlfFile;
 import com.t_oster.visicut.model.PlfPart;
+import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
+import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
+import com.t_oster.visicut.model.graphicelements.svgsupport.SVGShape;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Rectangle;
@@ -116,6 +120,13 @@ public class VisicutModel
     {
       dup.setGraphicObjects(p.getGraphicObjects().clone());
     }
+    AffineTransform tr = AffineTransform.getTranslateInstance(20, 20);
+    if (dup.getGraphicObjects().getTransform() != null)
+    {
+      tr.concatenate(dup.getGraphicObjects().getTransform());
+    }
+    dup.getGraphicObjects().setTransform(tr);
+    setSelectedPart(dup);
     this.plfFile.add(dup);
     this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_ADDED, null, dup);
   }
@@ -551,8 +562,14 @@ public class VisicutModel
   public void saveToFile(MaterialManager pm, MappingManager mm, File f) throws FileNotFoundException, IOException
   {
     PlfFile plf = this.getPlfFile();
+    GraphicSet test7 = plf.get(0).getGraphicObjects();
+    SVGShape test8 = (SVGShape) test7.get(0);
+
+    List<SVGElement> juhu = test8.getPathToRoot();
+    plf.get(0).getGraphicObjects().get(1);
     FileInputStream in;
     byte[] buf = new byte[1024];
+    int testSize = plf.size();
     int len;
     // Create the ZIP file
     ZipOutputStream out = new ZipOutputStream(new FileOutputStream(f));
@@ -717,6 +734,68 @@ public class VisicutModel
       pl.taskChanged(this, "preparing job");
     }
     LaserJob job = this.prepareJob(name, props);
+    if (pl != null)
+    {
+      pl.taskChanged(this, "sending job");
+      lasercutter.sendJob(job, pl, warnings);
+    }
+    else
+    {
+      lasercutter.sendJob(job, warnings);
+    }
+  }
+    private LaserJob prepareJobToExportAsSVG(String name, Map<LaserProfile, List<LaserProperty>> propmap) throws FileNotFoundException, IOException
+  {
+    LaserJob job = new LaserJob(name, name, "visicut");
+    if (this.startPoint != null)
+    {
+      job.setStartPoint(this.startPoint.x, this.startPoint.y);
+    }
+    float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() || !this.useThicknessAsFocusOffset ? 0 : this.materialThickness;
+
+    for (PlfPart p : this.getPlfFile())
+    {
+      if (p.getMapping() == null)
+      {
+        continue;
+      }
+      for (Mapping m : p.getMapping())
+      {
+
+        GraphicSet set = m.getFilterSet() != null ? m.getFilterSet().getMatchingObjects(p.getGraphicObjects()) : p.getUnmatchedObjects();
+
+        LaserProfile pr = m.getProfile();
+        //LaserProfile pr = new VectorProfile();
+        if (pr == null)//ignore-profile
+        {
+          continue;
+        }
+        List<LaserProperty> props = propmap.get(pr);
+        pr.addToLaserJob(job, set, this.addFocusOffset(props, focusOffset));
+      }
+    }
+    return job;
+  }
+    public void sendJobToExportAsSVG(String name, ProgressListener pl, Map<LaserProfile, List<LaserProperty>> props, List<String> warnings) throws IllegalJobException, SocketTimeoutException, Exception
+  {
+      List<LaserDevice> devices = LaserDeviceManager.getInstance().getAll();
+      LaserCutter lasercutter = null;
+      if (this.preferences.lastLaserDevice != null)
+      {
+        for (LaserDevice ld : devices)
+        {
+          if ("ExportSVG".equals(ld.getName()))
+          {
+            lasercutter = ld.getLaserCutter();
+            break;
+          }
+        }
+      }
+    if (pl != null)
+    {
+      pl.taskChanged(this, "preparing job");
+    }
+    LaserJob job = this.prepareJobToExportAsSVG(name, props);
     if (pl != null)
     {
       pl.taskChanged(this, "sending job");
