@@ -258,6 +258,83 @@
             </Component>
           </SubComponents>
         </Container>
+        <Container class="javax.swing.JPanel" name="pnlThingiverse">
+          <Properties>
+            <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Thingiverse">
+                <Property name="tabTitle" type="java.lang.String" value="Thingiverse"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="lblSupportedExtensions" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblLasercutterTags" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="txtfLasercutterTags" alignment="0" pref="308" max="32767" attributes="0"/>
+                          <Component id="txtfSupportedExtensions" alignment="0" pref="308" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="lblLasercutterTags" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtfLasercutterTags" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="lblSupportedExtensions" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtfSupportedExtensions" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace pref="110" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JLabel" name="lblLasercutterTags">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Lasercutter tags:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtfLasercutterTags">
+              <Properties>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Specify the id of your FabLab Facebook site. It will be referenced &lt;br&gt;&#xa; in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL&lt;br&gt;&#xa;of the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 &lt;br&gt;&#xa;enter 191850277562397 in this field.&lt;/html&gt;" noResource="true"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="text" source="Form" sourcePath="${preferences.laserCutterTags}" target="txtfLasercutterTags" targetPath="text" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblSupportedExtensions">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Supported extensions:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtfSupportedExtensions">
+              <Properties>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Specify the id of your FabLab Facebook site. It will be referenced &lt;br&gt;&#xa; in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL&lt;br&gt;&#xa;of the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 &lt;br&gt;&#xa;enter 191850277562397 in this field.&lt;/html&gt;" noResource="true"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="text" source="Form" sourcePath="${preferences.supportedExtensions}" target="txtfSupportedExtensions" targetPath="text" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
+          </SubComponents>
+        </Container>
       </SubComponents>
     </Container>
     <Component class="javax.swing.JButton" name="btOk">

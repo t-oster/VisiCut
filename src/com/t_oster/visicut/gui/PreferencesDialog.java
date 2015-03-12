@@ -109,6 +109,11 @@ public class PreferencesDialog extends javax.swing.JDialog
         pnlFacebook = new javax.swing.JPanel();
         lblFabLabLocationFacebookId = new javax.swing.JLabel();
         txtfFabLabLocationFacebookId = new javax.swing.JTextField();
+        pnlThingiverse = new javax.swing.JPanel();
+        lblLasercutterTags = new javax.swing.JLabel();
+        txtfLasercutterTags = new javax.swing.JTextField();
+        lblSupportedExtensions = new javax.swing.JLabel();
+        txtfSupportedExtensions = new javax.swing.JTextField();
         btOk = new javax.swing.JButton();
         btCancel = new javax.swing.JButton();
 
@@ -230,6 +235,53 @@ public class PreferencesDialog extends javax.swing.JDialog
 
         tpSettings.addTab("Facebook", pnlFacebook);
 
+        pnlThingiverse.setToolTipText(""); // NOI18N
+
+        lblLasercutterTags.setText("Lasercutter tags:");
+
+        txtfLasercutterTags.setToolTipText("<html>Specify the id of your FabLab Facebook site. It will be referenced <br>\n in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL<br>\nof the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 <br>\nenter 191850277562397 in this field.</html>"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.laserCutterTags}"), txtfLasercutterTags, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        bindingGroup.addBinding(binding);
+
+        lblSupportedExtensions.setText("Supported extensions:");
+
+        txtfSupportedExtensions.setToolTipText("<html>Specify the id of your FabLab Facebook site. It will be referenced <br>\n in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL<br>\nof the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 <br>\nenter 191850277562397 in this field.</html>"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.supportedExtensions}"), txtfSupportedExtensions, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        bindingGroup.addBinding(binding);
+
+        javax.swing.GroupLayout pnlThingiverseLayout = new javax.swing.GroupLayout(pnlThingiverse);
+        pnlThingiverse.setLayout(pnlThingiverseLayout);
+        pnlThingiverseLayout.setHorizontalGroup(
+            pnlThingiverseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlThingiverseLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlThingiverseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblSupportedExtensions)
+                    .addComponent(lblLasercutterTags))
+                .addGap(18, 18, 18)
+                .addGroup(pnlThingiverseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtfLasercutterTags, javax.swing.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
+                    .addComponent(txtfSupportedExtensions, javax.swing.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        pnlThingiverseLayout.setVerticalGroup(
+            pnlThingiverseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlThingiverseLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlThingiverseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblLasercutterTags)
+                    .addComponent(txtfLasercutterTags, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlThingiverseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblSupportedExtensions)
+                    .addComponent(txtfSupportedExtensions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(110, Short.MAX_VALUE))
+        );
+
+        tpSettings.addTab("Thingiverse", pnlThingiverse);
+
         btOk.setText("OK");
         btOk.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -303,10 +355,15 @@ public class PreferencesDialog extends javax.swing.JDialog
     private javax.swing.JTextField jTextFieldLabName;
     private javax.swing.JLabel lbFilenamesForJobs;
     private javax.swing.JLabel lblFabLabLocationFacebookId;
+    private javax.swing.JLabel lblLasercutterTags;
+    private javax.swing.JLabel lblSupportedExtensions;
     private javax.swing.JPanel pnlFacebook;
     private javax.swing.JPanel pnlGeneral;
+    private javax.swing.JPanel pnlThingiverse;
     private javax.swing.JTabbedPane tpSettings;
     private javax.swing.JTextField txtfFabLabLocationFacebookId;
+    private javax.swing.JTextField txtfLasercutterTags;
+    private javax.swing.JTextField txtfSupportedExtensions;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 }
