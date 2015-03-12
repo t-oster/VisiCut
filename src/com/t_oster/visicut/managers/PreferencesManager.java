@@ -40,7 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipException;
 
 /**
  *
@@ -73,6 +72,7 @@ public final class PreferencesManager
   private void generateDefault() throws FileNotFoundException, IOException
   {
     preferences = new Preferences();
+    
     if (LaserDeviceManager.getInstance().getAll().isEmpty())
     {
       //Create a Laserdevice for each known driver
@@ -150,7 +150,13 @@ public final class PreferencesManager
       engrave3d.setName("engrave 3d");
       ProfileManager.getInstance().add(engrave3d);
     }
-    
+    this.generateThingiverseDefault();
+  }
+  
+  // generates the default settings for the thingiverse integration
+  private void generateThingiverseDefault(){
+    preferences.setLaserCutterTags("lasercutter, lasercut, laser cutter, laser cut");
+    preferences.setSupportedExtensions("svg, plf, dxf, eps, gcode");
   }
 
   private void initializeSettingDirectory() {
@@ -280,6 +286,11 @@ public final class PreferencesManager
       try
       {
         preferences = this.loadPreferences(this.getPreferencesPath());
+        
+        // check if thingiverse defailts are set, if not upgrade old settings file
+        if(preferences.getLaserCutterTags() == null || preferences.getSupportedExtensions() == null){
+          this.generateThingiverseDefault();
+        }
       }
       catch (Exception ex)
       {

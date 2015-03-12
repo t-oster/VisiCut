@@ -344,6 +344,53 @@ public class Preferences
   {
     this.fabLabLocationFacebookId = fabLabLocationFacebookId;
   }
+  // comma separated list
+  // list containing all lasercuttertags which should be considered for filtering in the thingivserse dialog
+  private String laserCutterTags = new String();
+  
+  /**
+   * Get the value of laserCutterTags
+   *
+   * @return the value of laserCutterTags
+   */
+  public String getLaserCutterTags()
+  {
+    return this.laserCutterTags;
+  }
+
+  /**
+   * Set the value of laserCutterTags
+   *
+   * @param laserCutterTags new value of laserCutterTags
+   */
+  public void setLaserCutterTags(String tags)
+  {
+    this.laserCutterTags = tags;
+  }
+  
+  // comma separated list
+  // list containing all supported file extensions which should be considered for filtering in the thingivserse dialog
+  private String supportedExtensions = "";
+  
+  /**
+   * Get the value of supportedExtensions
+   *
+   * @return the value of supportedExtensions
+   */
+  public String getSupportedExtensions()
+  {
+    return this.supportedExtensions;
+  }
+
+  /**
+   * Set the value of supportedExtensions
+   *
+   * @param supportedExtensions new value of supportedExtensions
+   */
+  public void setSupportedExtensions(String extensions)
+  {
+    this.supportedExtensions = extensions;
+  }
 
   @Override
   public Preferences clone()
@@ -373,7 +420,8 @@ public class Preferences
     result.useFilenamesForJobs = useFilenamesForJobs;
     result.labName = labName;
     result.fabLabLocationFacebookId = fabLabLocationFacebookId;
-
+    result.supportedExtensions = supportedExtensions;
+    result.laserCutterTags = laserCutterTags;
     return result;
   }
 }

@@ -22,6 +22,7 @@ package com.t_oster.visicut.gui;
 // It is loaded dynamically iff JavaFX is available:
 // import com.tur0kk.thingiverse.gui.ThingiverseLoginDialog;
 
+import com.tur0kk.thingiverse.gui.ThingiverseDialog;
 import com.apple.eawt.AppEvent.AboutEvent;
 import com.apple.eawt.AppEvent.OpenFilesEvent;
 import com.apple.eawt.AppEvent.PreferencesEvent;
@@ -63,6 +64,7 @@ import com.t_oster.visicut.model.mapping.MappingSet;
 import com.tur0kk.SocialPlatformIcon;
 import com.tur0kk.facebook.FacebookManager;
 import com.tur0kk.facebook.gui.FacebookDialog;
+import com.tur0kk.thingiverse.ThingiverseManager;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
@@ -90,6 +92,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collections;
@@ -124,6 +127,7 @@ public class MainView extends javax.swing.JFrame
 
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView");
+  private ThingiverseDialog thingiverseDialog = null;
   private ParameterPanel parameterPanel = new ParameterPanel();
   
   public static MainView getInstance()
@@ -634,6 +638,7 @@ public class MainView extends javax.swing.JFrame
         btAddObject = new javax.swing.JButton();
         warningPanel = new com.t_oster.uicomponents.warnings.WarningPanel();
         btFacebook = new javax.swing.JButton();
+        btThingiverse = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -767,7 +772,7 @@ public class MainView extends javax.swing.JFrame
         previewPanel.setLayout(previewPanelLayout);
         previewPanelLayout.setHorizontalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 735, Short.MAX_VALUE)
+            .addGap(0, 1000, Short.MAX_VALUE)
         );
         previewPanelLayout.setVerticalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -922,7 +927,7 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 303, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 339, Short.MAX_VALUE)
                                 .addComponent(calculateTimeButton)))
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
@@ -930,7 +935,7 @@ public class MainView extends javax.swing.JFrame
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(objectComboBox, 0, 520, Short.MAX_VALUE)
+                                .addComponent(objectComboBox, 0, 556, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btAddObject, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -950,7 +955,7 @@ public class MainView extends javax.swing.JFrame
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(btAddMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jLabel5))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 286, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 298, Short.MAX_VALUE)
                                 .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(20, 20, 20))))
         );
@@ -1012,6 +1017,16 @@ public class MainView extends javax.swing.JFrame
         btFacebook.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btFacebookActionPerformed(evt);
+            }
+        });
+
+        btThingiverse.setIcon(com.tur0kk.SocialPlatformIcon.get(com.tur0kk.SocialPlatformIcon.THINGIVERSE_LOGO));
+        btThingiverse.setText(resourceMap.getString("btThingiverse.text")); // NOI18N
+        btThingiverse.setToolTipText(resourceMap.getString("btThingiverse.toolTipText")); // NOI18N
+        btThingiverse.setName("btThingiverse"); // NOI18N
+        btThingiverse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btThingiverseActionPerformed(evt);
             }
         });
 
@@ -1279,7 +1294,7 @@ public class MainView extends javax.swing.JFrame
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(2, 2, 2)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 1029, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1292,7 +1307,9 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(captureImageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(95, 95, 95)
                                 .addComponent(btFacebook, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 152, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btThingiverse, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 393, Short.MAX_VALUE)
                                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(8, 8, 8)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1313,7 +1330,8 @@ public class MainView extends javax.swing.JFrame
                                 .addComponent(bt1to1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(captureImageButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(btFacebook, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btFacebook, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btThingiverse, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 577, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -1322,6 +1340,7 @@ public class MainView extends javax.swing.JFrame
         );
 
         btFacebook.getAccessibleContext().setAccessibleDescription(resourceMap.getString("btFacebook.AccessibleContext.accessibleDescription")); // NOI18N
+        btThingiverse.getAccessibleContext().setAccessibleDescription(resourceMap.getString("btThingiverse.AccessibleContext.accessibleDescription")); // NOI18N
 
         bindingGroup.bind();
 
@@ -2000,7 +2019,8 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
   }
   
   public String getVisiCam(){
-    return MainView.this.visicutModel1.getSelectedLaserDevice().getCameraURL();
+    LaserDevice dev = MainView.this.visicutModel1.getSelectedLaserDevice();
+    return  dev != null ? dev.getCameraURL() : "";
   }
 
   @Action
@@ -2719,6 +2739,66 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   }
 }//GEN-LAST:event_jmDownloadSettingsActionPerformed
 
+  private void btThingiverseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btThingiverseActionPerformed
+  {//GEN-HEADEREND:event_btThingiverseActionPerformed
+    ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+
+    /*
+     * Just hide thingiverseDialog on close to keep state.
+     * if logged out, create new instance of ThingiverseDialog
+     */
+    if (!thingiverse.isLoggedIn() || thingiverseDialog == null)
+    {
+      try
+      {
+        // Try login with persistent access token from disk.
+        boolean loginSuccess = thingiverse.logIn();
+
+        if (!loginSuccess)
+        {
+          // Login with persitent token failed.
+          // Start new authentication procedure.
+          String loginUrl = thingiverse.initiateAuthentication();
+          String browserCode = "";
+
+          if (isJavaFxAvailable())
+          {
+            // If java fx is available we open a browser dialog and let the user
+            // enter his credentials. This method blocks until the dialog
+            // closes itself and returns a code from thingiverse.
+            browserCode = browserLoginDialog("Thingiverse Login", loginUrl, thingiverse.getRedirectUrlPrefix());
+          }
+          else
+          {
+            // JavaFX not available...
+            // Open system default browser and let the user copy/paste the
+            // browser code.
+            System.out.println("JavaFX is not available. Using fallback behavior.");
+            browserCode = systemBrowserLogin("Thingiverse", loginUrl);
+          }
+
+          thingiverse.logIn(browserCode);
+        }
+
+        if (thingiverse.isLoggedIn())
+        {
+          thingiverseDialog = new ThingiverseDialog(this, true);
+          thingiverseDialog.setLocationRelativeTo(null);
+          thingiverseDialog.setVisible(true);
+        }
+      }
+      catch (Exception ex)
+      {
+        ex.printStackTrace();
+        this.dialog.showErrorMessage("Unable to load ThingiverseDialog");
+      }
+    }
+    else // instance available, show thingiverseDialog
+    {
+      thingiverseDialog.setVisible(true);
+    }
+  }//GEN-LAST:event_btThingiverseActionPerformed
+  
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton bt1to1;
@@ -2728,6 +2808,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JButton btFacebook;
     private javax.swing.JButton btFitScreen;
     private javax.swing.JButton btRemoveObject;
+    private javax.swing.JButton btThingiverse;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton calculateTimeButton;
     private javax.swing.JMenuItem calibrateCameraMenuItem;

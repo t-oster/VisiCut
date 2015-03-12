@@ -32,6 +32,7 @@ public class SocialPlatformIcon
 {
 
   // available loading gif resources which can be requested
+  public static final String THINGIVERSE_LOGO = "thingiverse-logo";
   public static final String FACEBOOK_LOGO = "facebook-logo";
   
   // global function to load an Imageicon with an loading symbol. Use available global resource variables of this class as parameter.
