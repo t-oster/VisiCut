@@ -259,7 +259,7 @@ public class Helper
     }
     else if (isWindows())
     {
-        trg = new File(new File(new File(FileUtils.getUserDirectory(), "Application Data"), "inkscape"), "extensions");
+        trg = new File(new File(new File(System.getenv("AppData")), "inkscape"), "extensions");
     }
     else
     {

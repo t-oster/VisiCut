@@ -6,7 +6,7 @@
 !define AppName "VisiCut"
 !define AppVersion "VISICUTVERSION"
 !define ShortName "VisiCut"
-!define JRE_VERSION "1.6.0"
+!define JRE_VERSION "1.8"
 !define Vendor "RWTH Aachen University"
  
 !include "MUI.nsh"
@@ -105,12 +105,13 @@ Section -installjre jre
   DetailPrint "Starting the JRE installation"
 InstallJRE:
   File /oname=$TEMP\jre_setup.exe j2re-setup.exe
-  MessageBox MB_OK "Installing JRE"
+;  MessageBox MB_OK "Installing JRE"
   DetailPrint "Launching JRE setup"
-  ;ExecWait "$TEMP\jre_setup.exe /S" $0
-  ; The silent install /S does not work for installing the JRE, sun has documentation on the 
-  ; parameters needed.  I spent about 2 hours hammering my head against the table until it worked
-  ExecWait '"$TEMP\jre_setup.exe" /s /v\"/qn REBOOT=Suppress JAVAUPDATE=0 WEBSTARTICON=0\"' $0
+  ; commandline switches see https://www.java.com/de/download/help/silent_install.xml
+  ; we leave out the silent-install switch /s for now to find problems easier
+  ; there could be problems with closing browser windows etc.
+  ; SPONSORS=0 disables the silly "Ask toolbar" crapware bundled with Java
+  ExecWait '"$TEMP\jre_setup.exe" SPONSORS=0' $0
   DetailPrint "Setup finished"
   Delete "$TEMP\jre_setup.exe"
   StrCmp $0 "0" InstallVerif 0
@@ -168,8 +169,25 @@ File /r "stream\"
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ShortName}" "NoRepair" "1"
 
   ; instert visicut to path
+  Push $0
+  Push $1
+  ; string length check taken from CMake/Modules/NSIS.template.in
+  ; if the path is too long for a NSIS variable NSIS will return a 0
+  ; length string.  If we find that, then warn and skip any path
+  ; modification as it will trash the existing path.
+  ReadEnvStr $0 PATH
+  StrLen $1 $0
+  IntCmp $1 0 CheckPathLength_ShowPathWarning CheckPathLength_Done CheckPathLength_Done
+    CheckPathLength_ShowPathWarning:
+    Messagebox MB_OK|MB_ICONEXCLAMATION "Warning! PATH too long, installer unable to modify PATH!"
+    Goto AddToPath_done
+  CheckPathLength_Done:
+  ; update path if it is safe:
   ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR" 
-
+  AddToPath_done:
+  Pop $1
+  Pop $0
+  
   ; register file extensions
   ${registerExtension} "$INSTDIR\VisiCut.exe" ".ls" "VisiCut LaserScript File"
   ${registerExtension} "$INSTDIR\VisiCut.exe" ".plf" "VisiCut Portable Laser File"
@@ -234,7 +252,7 @@ FoundOld:
  
 NoFound:
 ;  MessageBox MB_OK "JRE not found"
-  !insertmacro MUI_INSTALLOPTIONS_WRITE "jre.ini" "Field 1" "Text" "No Java Runtime Environment could be found on your computer. The installation of JRE v${JRE_VERSION} will start."
+  !insertmacro MUI_INSTALLOPTIONS_WRITE "jre.ini" "Field 1" "Text" "No Java Runtime Environment could be found. JRE v${JRE_VERSION} will be installed."
   !insertmacro MUI_HEADER_TEXT "$(TEXT_JRE_TITLE)" "$(TEXT_JRE_SUBTITLE)"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY_RETURN "jre.ini"
   Goto MustInstallJRE
@@ -300,7 +318,7 @@ GetJRE:
   IntCmp $4 $3 FoundNew FoundOld FoundNew
  
 NoFound:
-  MessageBox MB_OK "JRE not found"
+;  MessageBox MB_OK "JRE not found"
   Push "0"
   Goto DetectJREEnd
  
@@ -349,7 +367,25 @@ FunctionEnd
 Section "Uninstall"
 
   ; remove visicut from path
+  Push $0
+  Push $1
+  ; string length check taken from CMake/Modules/NSIS.template.in
+  ; if the path is too long for a NSIS variable NSIS will return a 0
+  ; length string.  If we find that, then warn and skip any path
+  ; modification as it will trash the existing path.
+  ReadEnvStr $0 PATH
+  StrLen $1 $0
+  IntCmp $1 0 CheckPathLength_ShowPathWarning CheckPathLength_Done CheckPathLength_Done
+    CheckPathLength_ShowPathWarning:
+    Messagebox MB_OK|MB_ICONEXCLAMATION "Warning! PATH too long, installer unable to modify PATH!"
+    Goto AddToPath_done
+  CheckPathLength_Done:
+  ; update path if it is safe:
   ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR"
+  AddToPath_done:
+  Pop $1
+  Pop $0
+  
 
   ; remove file associations
   ${unregisterExtension} ".plf" "VisiCut Portable Laser File"
