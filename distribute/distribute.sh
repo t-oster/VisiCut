@@ -96,15 +96,16 @@ echo "Build Ubuntu Version (Y/n)?"
 read answer
 if [ "$answer" != "n" ]
 then
+  pushd .
   cp linux/description-pak ../
   cd ..
   # hide doc directory from checkinstall
   # mv doc doctmp
-  sudo checkinstall --fstrans --type debian --install=no -y --pkgname visicut --pkgversion $VERSION --arch all --pkglicense LGPL --pkggroup other --pkgsource "http://visicut.org" --pkgaltsource "https://github.com/t-oster/VisiCut" --pakdir distribute/ --maintainer "'Thomas Oster <thomas.oster@rwth-aachen.de>'" --requires "java-runtime,potrace" make install -e PREFIX=/usr > /dev/null || exit 1
+  fakeroot checkinstall --fstrans --reset-uid --type debian --install=no -y --pkgname visicut --pkgversion $VERSION --arch all --pkglicense LGPL --pkggroup other --pkgsource "http://visicut.org" --pkgaltsource "https://github.com/t-oster/VisiCut" --pakdir distribute/ --maintainer "'Thomas Oster <thomas.oster@rwth-aachen.de>'" --requires "java-runtime,potrace" make install -e PREFIX=/usr > /dev/null || {echo "error"; exit 1;}
   rm description-pak
-  sudo rm -rf doc-pak
+  rm -rf doc-pak
   # mv doctmp doc
-  cd distribute
+  popd
 fi
 
 echo "Dir: $(pwd)"
