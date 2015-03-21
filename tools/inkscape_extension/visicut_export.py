@@ -52,9 +52,26 @@ if (sys.platform == "win32"):
         # the relevant line looks like:
         #  >rdp-tcp#0         Fablab                   12  Aktiv   rdpwd               
         # where "12" is the ID.
-        query=Popen(["query", "session"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        query_output=query.communicate()[0]
-        
+		
+        def querySession():
+            query=Popen(["query", "session"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            return query.communicate()[0]
+        try:
+            query_output=querySession()
+        except WindowsError:
+            # as if this is not easy enough, we have to invoke some black magic to make this work with 32bit python on 64bit windows
+            # (query.exe lives in Windows/System32 folder, but access to this is redirected to the Syswow64 folder for 32bit applications, where no query.exe exists!)
+            # https://mail.python.org/pipermail/python-win32/2009-June/009263.html
+            import ctypes
+            k32 = ctypes.windll.kernel32
+            wow64 = ctypes.c_long( 0 )
+            # disable system32 redirection
+            k32.Wow64DisableWow64FsRedirection( ctypes.byref(wow64) )
+            # do what we want
+            query_output=querySession()
+            # re-enable system32 redirection
+            k32.Wow64EnableWow64FsRedirection( wow64 )
+          
         id=None
         for line in query_output.splitlines():
             if line.startswith(">"): # current session
@@ -154,7 +171,7 @@ def stripSVG_inkscape(src,dest,elements):
  # currently this only works with gui  because of a bug in inkscape: https://bugs.launchpad.net/inkscape/+bug/843260
  hidegui=[]
  
- command = [INKSCAPEBIN]+hidegui+[dest,"--verb=UnlockAllInAllLayers","--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers","--verb=EditUnlinkClone","--verb=ObjectToPath","--verb=FileSave","--verb=FileClose"]
+ command = [INKSCAPEBIN]+hidegui+[dest,"--verb=UnlockAllInAllLayers","--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers","--verb=EditUnlinkClone","--verb=ObjectToPath","--verb=FileSave","--verb=FileQuit"]
  inkscape_output="(not yet run)"
  try:
   # run inkscape, buffer output
