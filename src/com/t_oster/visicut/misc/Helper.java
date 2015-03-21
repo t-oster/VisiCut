@@ -317,8 +317,10 @@ public class Helper
       new File("/Applications/Adobe Illustrator CS3/Presets"),
       new File("/Applications/Adobe Illustrator CS4/Presets"),
       new File("/Applications/Adobe Illustrator CS5/Presets"),
+      new File("/Applications/Adobe Illustrator CS6/Presets"),      
       new File("/Applications/Adobe Illustrator CS4/Presets.localized"),
-      new File("/Applications/Adobe Illustrator CS5/Presets.localized")
+      new File("/Applications/Adobe Illustrator CS5/Presets.localized"),
+      new File("/Applications/Adobe Illustrator CS6/Presets.localized")
     })
     {
       if (dir.exists() && dir.isDirectory())
