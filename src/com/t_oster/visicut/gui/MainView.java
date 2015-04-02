@@ -61,10 +61,10 @@ import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import com.t_oster.visicut.model.mapping.MappingSet;
-import com.tur0kk.SocialPlatformIcon;
 import com.tur0kk.facebook.FacebookManager;
 import com.tur0kk.facebook.gui.FacebookDialog;
 import com.tur0kk.thingiverse.ThingiverseManager;
+import com.frochr123.pluginicon.PluginIconLoader;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
@@ -1010,7 +1010,7 @@ public class MainView extends javax.swing.JFrame
         warningPanel.setName("warningPanel"); // NOI18N
         warningPanel.setPreferredSize(new java.awt.Dimension(276, 123));
 
-        btFacebook.setIcon(SocialPlatformIcon.get(SocialPlatformIcon.FACEBOOK_LOGO));
+        btFacebook.setIcon(PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_FACEBOOK));
         btFacebook.setText(resourceMap.getString("btFacebook.text")); // NOI18N
         btFacebook.setToolTipText(resourceMap.getString("btFacebook.toolTipText")); // NOI18N
         btFacebook.setName("btFacebook"); // NOI18N
@@ -1020,7 +1020,7 @@ public class MainView extends javax.swing.JFrame
             }
         });
 
-        btThingiverse.setIcon(com.tur0kk.SocialPlatformIcon.get(com.tur0kk.SocialPlatformIcon.THINGIVERSE_LOGO));
+        btThingiverse.setIcon(PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_THINGIVERSE));
         btThingiverse.setText(resourceMap.getString("btThingiverse.text")); // NOI18N
         btThingiverse.setToolTipText(resourceMap.getString("btThingiverse.toolTipText")); // NOI18N
         btThingiverse.setName("btThingiverse"); // NOI18N
