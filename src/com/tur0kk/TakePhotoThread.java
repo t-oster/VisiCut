@@ -20,6 +20,7 @@ package com.tur0kk;
 
 import com.github.sarxos.webcam.Webcam;
 import com.t_oster.visicut.gui.MainView;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -34,17 +35,26 @@ import javax.swing.SwingUtilities;
  */
 public class TakePhotoThread extends Thread
 {
+  // Static variables
+  public static final int PHOTO_RESOLUTION_SMALL = 1;  // 176 x 144
+  public static final int PHOTO_RESOLUTION_MEDIUM = 2; // 320 x 240
+  public static final int PHOTO_RESOLUTION_HIGH = 3;   // 640 x 480
 
-  JLabel lblPhoto; // display target
-  boolean webcam; // true = use detected webcam, false = use visicamUrl
-  String visicamUrl; // URL of VisiCam in network
-  
-  boolean running = true; // internal flat to know when to stop
-  
-  public TakePhotoThread(JLabel lblPhoto, boolean webcam){
+  // Object variables
+  private JLabel lblPhoto; // display target
+  private boolean webcam; // true = use detected webcam, false = use visicamUrl
+  private String visicamUrl; // URL of VisiCam in network
+  private int photoResolution; // Identifier from static variables to set resolution of images
+  private int framerateMs; // Integer value for the update interval of the camera in milliseconds
+
+  private boolean running = true; // internal flat to know when to stop
+
+  public TakePhotoThread(JLabel lblPhoto, boolean webcam, int photoResolution){
     this.lblPhoto = lblPhoto;
     this.webcam = webcam;
     this.visicamUrl = MainView.getInstance().getVisiCam();
+    this.photoResolution = photoResolution;
+    this.framerateMs = 20;
   }
   
   @Override
@@ -60,6 +70,34 @@ public class TakePhotoThread extends Thread
       // open attached webcam
       if(this.webcam){
         Webcam cam = Webcam.getDefault();
+        
+        // Set resolution of image
+        int width = 0;
+        int height = 0;
+
+        switch (getPhotoResolution())
+        {
+          case PHOTO_RESOLUTION_SMALL:
+            width = 176;
+            height = 144;
+            break;
+          case PHOTO_RESOLUTION_MEDIUM:
+            width = 320;
+            height = 240;
+            break;
+          case PHOTO_RESOLUTION_HIGH:
+          default:
+            width = 640;
+            height = 480;
+            break;
+        }
+
+        if (width > 0 && height > 0)
+        {
+          cam.setViewSize(new Dimension(width, height));
+        }
+
+        // Open camera
         cam.open();
       }
       
@@ -69,7 +107,7 @@ public class TakePhotoThread extends Thread
 
         displayPicture(picture);
 
-        Thread.currentThread().sleep(100);     
+        Thread.currentThread().sleep(getFramerateMs());     
       }
     }
     catch(Exception ex){
@@ -149,5 +187,21 @@ public class TakePhotoThread extends Thread
   public static boolean isVisiCamDetected(){
     return MainView.getInstance().isVisiCamDetected();
   }
-  
+
+  // Getters and setters
+  // Disallow setting of resolution, needs to be set before camera starts => Constructor
+  public int getPhotoResolution()
+  {
+    return photoResolution;
+  }
+
+  public int getFramerateMs()
+  {
+    return framerateMs;
+  }
+
+  public void setFramerateMs(int framerateMs)
+  {
+    this.framerateMs = framerateMs;
+  }
 }

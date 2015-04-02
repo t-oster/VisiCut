@@ -444,7 +444,7 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
     if(start){ // everything was correct, start preview thread
       // start picture taking thread to display live preview
       boolean webcamMode = rdbtnWebcam.isSelected(); // if false, then visicam
-      livecamThread = new TakePhotoThread(lblPhoto, webcamMode);
+      livecamThread = new TakePhotoThread(lblPhoto, webcamMode, TakePhotoThread.PHOTO_RESOLUTION_HIGH);
       livecamThread.start();
 
       btnPhoto.setEnabled(true);
