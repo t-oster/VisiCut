@@ -144,6 +144,12 @@ public class MainView extends javax.swing.JFrame
       MainView.this.warningPanel.addMessage(new Message("Warning", text, Message.Type.WARNING, null));
     }
 
+    public void showWarningMessage(Exception cause, String text)
+    {
+      cause.printStackTrace();
+      MainView.this.warningPanel.addMessage(new Message("Warning", text+": "+cause.getLocalizedMessage(), Message.Type.WARNING, null));
+    }
+
     @Override
     public void showSuccessMessage(String text)
     {
@@ -1455,6 +1461,9 @@ public class MainView extends javax.swing.JFrame
   
   private void loadFileReal(File file, boolean discardCurrent)
   {
+    // remove old error messages, they are no longer relevant (or for multiple files it is too confusing which one refers to which file)
+    warningPanel.removeAllWarnings();
+    captureImage(); // update camera image
     try
     {
       this.progressBar.setIndeterminate(true);
@@ -1988,14 +1997,22 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
                     msg=buffer.toString();
                   }
                 } else {
-                  // server seht HTTP OK, so the exception is not a HTTP problem
+                  // server sent HTTP OK, so the exception is not a HTTP problem
                   msg=ex.toString();
                 }
               } catch(Exception e) {
                 e.printStackTrace();
-                msg="(could not get error message)";
+                if (e instanceof java.net.SocketException) {
+                    // Network error like "port not found"
+                    msg=e.getLocalizedMessage();
+                } else {
+                  msg=" (could not get error message)";
+                }
               }
-              MainView.this.dialog.showErrorMessage(bundle.getString("ERROR CAPTURING PHOTO") +" (" + responseCode + ")\n " + msg);
+              if (responseCode != 0) {
+                msg = msg + "\n(HTTP " + responseCode + ")";
+              }
+              MainView.this.dialog.showWarningMessage(bundle.getString("ERROR CAPTURING PHOTO") + ": "+ msg);
             } else {
               MainView.this.dialog.showErrorMessage(ex, bundle.getString("ERROR CAPTURING PHOTO"));
             }
@@ -2036,7 +2053,9 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
   }
 
 private void captureImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_captureImageButtonActionPerformed
-  this.warningPanel.removeAllWarnings(); // remove all messages like "cannot get image"
+  // First, remove all old messages like "cannot get image"
+  // TODO: this also removes all other, probably important, messages! Only remove the specific ones.
+  this.warningPanel.removeAllWarnings();
   captureImage();
 }//GEN-LAST:event_captureImageButtonActionPerformed
 
