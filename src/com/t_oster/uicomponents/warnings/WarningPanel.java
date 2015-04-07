@@ -42,8 +42,10 @@ public class WarningPanel extends javax.swing.JPanel
       m.setCloseListener(null);  
     }
     messages.clear();
+    // repaint + revalidate is always needed after removing components, see http://stackoverflow.com/questions/1097366/java-swing-revalidate-vs-repaint
     revalidate();
-    setVisible(true);
+    repaint();
+    setVisible(false);
   }
   
   public void addMessage(final Message m)
