@@ -280,20 +280,9 @@ public class Helper
         String line = r.readLine();
         while (line != null)
         {
-          if ("VISICUTBIN=\"visicut\"".equals(line))
+          if ("VISICUTDIR=\"\"".equals(line))
           {
-            if (isMacOS())
-            {
-              line = "VISICUTBIN=\""+new File(getVisiCutFolder(), "VisiCut.MacOS").getAbsolutePath()+"\"";
-            }
-            else if (isWindows())
-            {
-              line = "VISICUTBIN=\""+new File(getVisiCutFolder(), "VisiCut.exe").getAbsolutePath()+"\"";
-            }
-            else
-            {
-              line = "VISICUTBIN=\""+new File(getVisiCutFolder(), "VisiCut.Linux").getAbsolutePath()+"\"";
-            }
+            line = "VISICUTDIR=r\""+getVisiCutFolder().getAbsolutePath()+"\"";
           }
           w.write(line);
           w.newLine();
