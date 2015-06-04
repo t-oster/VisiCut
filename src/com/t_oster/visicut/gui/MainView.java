@@ -644,9 +644,10 @@ public class MainView extends javax.swing.JFrame
         btFitScreen = new javax.swing.JButton();
         bt1to1 = new javax.swing.JButton();
         captureImageButton = new javax.swing.JButton();
-        filler2 = new javax.swing.Box.Filler(null, new java.awt.Dimension(50, 35), new java.awt.Dimension(50, 35));
+        filler2 = new javax.swing.Box.Filler(null, new java.awt.Dimension(35, 35), new java.awt.Dimension(35, 35));
         btFacebook = new javax.swing.JButton();
         btThingiverse = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
         progressBar = new javax.swing.JProgressBar();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
@@ -655,11 +656,26 @@ public class MainView extends javax.swing.JFrame
         importMenuItem = new javax.swing.JMenuItem();
         recentFilesMenu = new javax.swing.JMenu();
         jmExamples = new javax.swing.JMenu();
+        jSeparator5 = new javax.swing.JPopupMenu.Separator();
         saveMenuItem = new javax.swing.JMenuItem();
         saveAsMenuItem = new javax.swing.JMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
         executeJobMenuItem = new javax.swing.JMenuItem();
+        jSeparator6 = new javax.swing.JPopupMenu.Separator();
         exitMenuItem = new javax.swing.JMenuItem();
-        editMenu = new javax.swing.JMenu();
+        viewMenu = new javax.swing.JMenu();
+        zoomOutMenuItem = new javax.swing.JMenuItem();
+        zoomInMenuItem = new javax.swing.JMenuItem();
+        zoomWindowMenuItem = new javax.swing.JMenuItem();
+        zoomRealMenuItem = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        jmShowPhoto = new javax.swing.JCheckBoxMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        facebookMenuItem = new javax.swing.JMenuItem();
+        thingiverseMenuItem = new javax.swing.JMenuItem();
+        optionsMenu = new javax.swing.JMenu();
         calibrateCameraMenuItem = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
         jmImportSettings = new javax.swing.JMenuItem();
@@ -670,11 +686,6 @@ public class MainView extends javax.swing.JFrame
         jMenuItem2 = new javax.swing.JMenuItem();
         materialMenuItem = new javax.swing.JMenuItem();
         jmPreferences = new javax.swing.JMenuItem();
-        viewMenu = new javax.swing.JMenu();
-        showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
-        jmShowPhoto = new javax.swing.JCheckBoxMenuItem();
-        zoomInMenuItem = new javax.swing.JMenuItem();
-        zoomOutMenuItem = new javax.swing.JMenuItem();
         jmExtras = new javax.swing.JMenu();
         jmInstallInkscape = new javax.swing.JMenuItem();
         jmInstallIllustrator = new javax.swing.JMenuItem();
@@ -715,11 +726,11 @@ public class MainView extends javax.swing.JFrame
         previewPanel.setLayout(previewPanelLayout);
         previewPanelLayout.setHorizontalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1004, Short.MAX_VALUE)
+            .addGap(0, 924, Short.MAX_VALUE)
         );
         previewPanelLayout.setVerticalGroup(
             previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 746, Short.MAX_VALUE)
+            .addGap(0, 681, Short.MAX_VALUE)
         );
 
         jScrollPane2.setViewportView(previewPanel);
@@ -1064,6 +1075,21 @@ public class MainView extends javax.swing.JFrame
 
         jToolBar1.add(jPanel1);
 
+        jPanel3.setName("jPanel3"); // NOI18N
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 14, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 45, Short.MAX_VALUE)
+        );
+
+        jToolBar1.add(jPanel3);
+
         progressBar.setAlignmentY(0.52F);
         progressBar.setMaximumSize(new java.awt.Dimension(125, 33));
         progressBar.setMinimumSize(new java.awt.Dimension(125, 33));
@@ -1112,6 +1138,9 @@ public class MainView extends javax.swing.JFrame
         jmExamples.setName("jmExamples"); // NOI18N
         fileMenu.add(jmExamples);
 
+        jSeparator5.setName("jSeparator5"); // NOI18N
+        fileMenu.add(jSeparator5);
+
         saveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
         saveMenuItem.setMnemonic('s');
         saveMenuItem.setText(resourceMap.getString("saveMenuItem.text")); // NOI18N
@@ -1133,6 +1162,9 @@ public class MainView extends javax.swing.JFrame
         });
         fileMenu.add(saveAsMenuItem);
 
+        jSeparator4.setName("jSeparator4"); // NOI18N
+        fileMenu.add(jSeparator4);
+
         executeJobMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
         executeJobMenuItem.setText(resourceMap.getString("executeJobMenuItem.text")); // NOI18N
         executeJobMenuItem.setName("executeJobMenuItem"); // NOI18N
@@ -1142,6 +1174,9 @@ public class MainView extends javax.swing.JFrame
             }
         });
         fileMenu.add(executeJobMenuItem);
+
+        jSeparator6.setName("jSeparator6"); // NOI18N
+        fileMenu.add(jSeparator6);
 
         exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
         exitMenuItem.setMnemonic('x');
@@ -1156,9 +1191,94 @@ public class MainView extends javax.swing.JFrame
 
         menuBar.add(fileMenu);
 
-        editMenu.setMnemonic('e');
-        editMenu.setText(resourceMap.getString("editMenu.text")); // NOI18N
-        editMenu.setName("editMenu"); // NOI18N
+        viewMenu.setText(resourceMap.getString("viewMenu.text")); // NOI18N
+        viewMenu.setName("viewMenu"); // NOI18N
+
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(MainView.class, this);
+        zoomOutMenuItem.setAction(actionMap.get("zoomOut")); // NOI18N
+        zoomOutMenuItem.setText(resourceMap.getString("zoomOutMenuItem.text")); // NOI18N
+        zoomOutMenuItem.setToolTipText(resourceMap.getString("zoomOutMenuItem.toolTipText")); // NOI18N
+        zoomOutMenuItem.setName("zoomOutMenuItem"); // NOI18N
+        viewMenu.add(zoomOutMenuItem);
+
+        zoomInMenuItem.setAction(actionMap.get("zoomIn")); // NOI18N
+        zoomInMenuItem.setText(resourceMap.getString("zoomInMenuItem.text")); // NOI18N
+        zoomInMenuItem.setToolTipText(resourceMap.getString("zoomInMenuItem.toolTipText")); // NOI18N
+        zoomInMenuItem.setName("zoomInMenuItem"); // NOI18N
+        viewMenu.add(zoomInMenuItem);
+
+        zoomWindowMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_0, java.awt.event.InputEvent.CTRL_MASK));
+        zoomWindowMenuItem.setText(resourceMap.getString("zoomWindowMenuItem.text")); // NOI18N
+        zoomWindowMenuItem.setToolTipText(resourceMap.getString("zoomWindowMenuItem.toolTipText")); // NOI18N
+        zoomWindowMenuItem.setName("zoomWindowMenuItem"); // NOI18N
+        zoomWindowMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zoomWindowMenuItemActionPerformed(evt);
+            }
+        });
+        viewMenu.add(zoomWindowMenuItem);
+
+        zoomRealMenuItem.setText(resourceMap.getString("zoomRealMenuItem.text")); // NOI18N
+        zoomRealMenuItem.setToolTipText(resourceMap.getString("zoomRealMenuItem.toolTipText")); // NOI18N
+        zoomRealMenuItem.setName("zoomRealMenuItem"); // NOI18N
+        zoomRealMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zoomRealMenuItemActionPerformed(evt);
+            }
+        });
+        viewMenu.add(zoomRealMenuItem);
+
+        jSeparator2.setName("jSeparator2"); // NOI18N
+        viewMenu.add(jSeparator2);
+
+        jmShowPhoto.setText(resourceMap.getString("jmShowPhoto.text")); // NOI18N
+        jmShowPhoto.setName("jmShowPhoto"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${showBackgroundImage}"), jmShowPhoto, org.jdesktop.beansbinding.BeanProperty.create("selected"), "jmShowBackground");
+        bindingGroup.addBinding(binding);
+
+        viewMenu.add(jmShowPhoto);
+
+        jSeparator3.setName("jSeparator3"); // NOI18N
+        viewMenu.add(jSeparator3);
+
+        showGridMenuItem.setText(resourceMap.getString("showGridMenuItem.text")); // NOI18N
+        showGridMenuItem.setName("showGridMenuItem"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${showGrid}"), showGridMenuItem, org.jdesktop.beansbinding.BeanProperty.create("selected"), "ShowGrid");
+        bindingGroup.addBinding(binding);
+
+        viewMenu.add(showGridMenuItem);
+
+        menuBar.add(viewMenu);
+
+        jMenu2.setMnemonic('p');
+        jMenu2.setText(resourceMap.getString("pluginsMenu.text")); // NOI18N
+        jMenu2.setName("pluginsMenu"); // NOI18N
+
+        facebookMenuItem.setText(resourceMap.getString("facebookMenuItem.text")); // NOI18N
+        facebookMenuItem.setName("facebookMenuItem"); // NOI18N
+        facebookMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                facebookMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu2.add(facebookMenuItem);
+
+        thingiverseMenuItem.setText(resourceMap.getString("thingiverseMenuItem.text")); // NOI18N
+        thingiverseMenuItem.setName("thingiverseMenuItem"); // NOI18N
+        thingiverseMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                thingiverseMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu2.add(thingiverseMenuItem);
+
+        menuBar.add(jMenu2);
+
+        optionsMenu.setMnemonic('o');
+        optionsMenu.setText(resourceMap.getString("optionsMenu.text")); // NOI18N
+        optionsMenu.setName("optionsMenu"); // NOI18N
 
         calibrateCameraMenuItem.setText(resourceMap.getString("calibrateCameraMenuItem.text")); // NOI18N
         calibrateCameraMenuItem.setName("calibrateCameraMenuItem"); // NOI18N
@@ -1167,7 +1287,7 @@ public class MainView extends javax.swing.JFrame
                 calibrateCameraMenuItemActionPerformed(evt);
             }
         });
-        editMenu.add(calibrateCameraMenuItem);
+        optionsMenu.add(calibrateCameraMenuItem);
 
         jMenu1.setText(resourceMap.getString("jMenu1.text")); // NOI18N
         jMenu1.setName("jMenu1"); // NOI18N
@@ -1235,7 +1355,7 @@ public class MainView extends javax.swing.JFrame
         });
         jMenu1.add(materialMenuItem);
 
-        editMenu.add(jMenu1);
+        optionsMenu.add(jMenu1);
 
         jmPreferences.setText(bundle1.getString("PREFERENCES")); // NOI18N
         jmPreferences.setName("jmPreferences"); // NOI18N
@@ -1244,41 +1364,9 @@ public class MainView extends javax.swing.JFrame
                 jmPreferencesActionPerformed(evt);
             }
         });
-        editMenu.add(jmPreferences);
+        optionsMenu.add(jmPreferences);
 
-        menuBar.add(editMenu);
-
-        viewMenu.setText(resourceMap.getString("viewMenu.text")); // NOI18N
-        viewMenu.setName("viewMenu"); // NOI18N
-
-        showGridMenuItem.setText(resourceMap.getString("showGridMenuItem.text")); // NOI18N
-        showGridMenuItem.setName("showGridMenuItem"); // NOI18N
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${showGrid}"), showGridMenuItem, org.jdesktop.beansbinding.BeanProperty.create("selected"), "ShowGrid");
-        bindingGroup.addBinding(binding);
-
-        viewMenu.add(showGridMenuItem);
-
-        jmShowPhoto.setText(resourceMap.getString("jmShowPhoto.text")); // NOI18N
-        jmShowPhoto.setName("jmShowPhoto"); // NOI18N
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${showBackgroundImage}"), jmShowPhoto, org.jdesktop.beansbinding.BeanProperty.create("selected"), "jmShowBackground");
-        bindingGroup.addBinding(binding);
-
-        viewMenu.add(jmShowPhoto);
-
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.t_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(MainView.class, this);
-        zoomInMenuItem.setAction(actionMap.get("zoomIn")); // NOI18N
-        zoomInMenuItem.setText(resourceMap.getString("zoomInMenuItem.text")); // NOI18N
-        zoomInMenuItem.setName("zoomInMenuItem"); // NOI18N
-        viewMenu.add(zoomInMenuItem);
-
-        zoomOutMenuItem.setAction(actionMap.get("zoomOut")); // NOI18N
-        zoomOutMenuItem.setText(resourceMap.getString("zoomOutMenuItem.text")); // NOI18N
-        zoomOutMenuItem.setName("zoomOutMenuItem"); // NOI18N
-        viewMenu.add(zoomOutMenuItem);
-
-        menuBar.add(viewMenu);
+        menuBar.add(optionsMenu);
 
         jmExtras.setText(resourceMap.getString("jmExtras.text")); // NOI18N
         jmExtras.setName("jmExtras"); // NOI18N
@@ -1304,6 +1392,7 @@ public class MainView extends javax.swing.JFrame
         menuBar.add(jmExtras);
 
         helpMenu.setAction(actionMap.get("showAboutDialog")); // NOI18N
+        helpMenu.setMnemonic('h');
         helpMenu.setText(resourceMap.getString("helpMenu.text")); // NOI18N
         helpMenu.setName("helpMenu"); // NOI18N
 
@@ -2569,49 +2658,8 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 }//GEN-LAST:event_jmPreferencesActionPerformed
   
   private void btFacebookActionPerformed(java.awt.event.ActionEvent evt)                                           
-  {                                               
-    /*
-     * just hide facebookDialog on close to keep state.
-     * if logged out, create new instance of dialog
-     */
-    FacebookManager facebook = FacebookManager.getInstance();
-
-    try
-    {
-      // Try login with persistent access token.
-      boolean loginSuccess = facebook.logIn();
-
-      if (!loginSuccess)
-      {
-        String loginUrl = facebook.initiateAuthentication();
-        String browserCode;
-
-        if (isJavaFxAvailable())
-        {
-          browserCode = browserLoginDialog("Facebook Login", loginUrl, facebook.getRedirectUrlPrefix());
-        }
-        else
-        {
-          // JavaFX not available...
-          System.out.println("JavaFX is not available. Using fallback behavior.");
-          browserCode = systemBrowserLogin("Facebook", loginUrl);
-        }
-
-        facebook.logIn(browserCode);
-      }
-
-      if (facebook.isLoggedIn())
-      {
-        FacebookDialog facebookDialog = new FacebookDialog(this, true);
-        facebookDialog.setLocationRelativeTo(null);
-        facebookDialog.setVisible(true);
-      }
-    }
-    catch (Exception ex)
-    {
-      ex.printStackTrace();
-      this.dialog.showErrorMessage("Unable to load FacebookDialog");
-    }
+  {
+    startFacebook();
   }                                          
   
   private String browserLoginDialog(String title, String loginUrl, String redirectUrlPrefix) throws Exception
@@ -2707,6 +2755,112 @@ private boolean askForOverwriteSettings() {
     return answer==JOptionPane.OK_OPTION;
 }
 
+private void startFacebook()
+{
+  /*
+   * just hide facebookDialog on close to keep state.
+   * if logged out, create new instance of dialog
+   */
+  FacebookManager facebook = FacebookManager.getInstance();
+
+  try
+  {
+    // Try login with persistent access token.
+    boolean loginSuccess = facebook.logIn();
+
+    if (!loginSuccess)
+    {
+      String loginUrl = facebook.initiateAuthentication();
+      String browserCode;
+
+      if (isJavaFxAvailable())
+      {
+        browserCode = browserLoginDialog("Facebook Login", loginUrl, facebook.getRedirectUrlPrefix());
+      }
+      else
+      {
+        // JavaFX not available...
+        System.out.println("JavaFX is not available. Using fallback behavior.");
+        browserCode = systemBrowserLogin("Facebook", loginUrl);
+      }
+
+      facebook.logIn(browserCode);
+    }
+
+    if (facebook.isLoggedIn())
+    {
+      FacebookDialog facebookDialog = new FacebookDialog(this, true);
+      facebookDialog.setLocationRelativeTo(null);
+      facebookDialog.setVisible(true);
+    }
+  }
+  catch (Exception ex)
+  {
+    ex.printStackTrace();
+    this.dialog.showErrorMessage("Unable to load FacebookDialog");
+  }
+}
+
+private void startThingiverse()
+{
+  ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+
+  /*
+   * Just hide thingiverseDialog on close to keep state.
+   * if logged out, create new instance of ThingiverseDialog
+   */
+  if (!thingiverse.isLoggedIn() || thingiverseDialog == null)
+  {
+    try
+    {
+      // Try login with persistent access token from disk.
+      boolean loginSuccess = thingiverse.logIn();
+
+      if (!loginSuccess)
+      {
+        // Login with persitent token failed.
+        // Start new authentication procedure.
+        String loginUrl = thingiverse.initiateAuthentication();
+        String browserCode = "";
+
+        if (isJavaFxAvailable())
+        {
+          // If java fx is available we open a browser dialog and let the user
+          // enter his credentials. This method blocks until the dialog
+          // closes itself and returns a code from thingiverse.
+          browserCode = browserLoginDialog("Thingiverse Login", loginUrl, thingiverse.getRedirectUrlPrefix());
+        }
+        else
+        {
+          // JavaFX not available...
+          // Open system default browser and let the user copy/paste the
+          // browser code.
+          System.out.println("JavaFX is not available. Using fallback behavior.");
+          browserCode = systemBrowserLogin("Thingiverse", loginUrl);
+        }
+
+        thingiverse.logIn(browserCode);
+      }
+
+      if (thingiverse.isLoggedIn())
+      {
+        thingiverseDialog = new ThingiverseDialog(this, true);
+        thingiverseDialog.setLocationRelativeTo(null);
+        thingiverseDialog.setVisible(true);
+      }
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+      this.dialog.showErrorMessage("Unable to load ThingiverseDialog");
+    }
+  }
+  else // instance available, show thingiverseDialog
+  {
+    thingiverseDialog.setVisible(true);
+  }
+}
+
 private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmDownloadSettingsActionPerformed
   warningPanel.removeAllWarnings();
   Map<String,String> choices = new LinkedHashMap<String, String>();
@@ -2766,63 +2920,24 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
 
   private void btThingiverseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btThingiverseActionPerformed
   {//GEN-HEADEREND:event_btThingiverseActionPerformed
-    ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-
-    /*
-     * Just hide thingiverseDialog on close to keep state.
-     * if logged out, create new instance of ThingiverseDialog
-     */
-    if (!thingiverse.isLoggedIn() || thingiverseDialog == null)
-    {
-      try
-      {
-        // Try login with persistent access token from disk.
-        boolean loginSuccess = thingiverse.logIn();
-
-        if (!loginSuccess)
-        {
-          // Login with persitent token failed.
-          // Start new authentication procedure.
-          String loginUrl = thingiverse.initiateAuthentication();
-          String browserCode = "";
-
-          if (isJavaFxAvailable())
-          {
-            // If java fx is available we open a browser dialog and let the user
-            // enter his credentials. This method blocks until the dialog
-            // closes itself and returns a code from thingiverse.
-            browserCode = browserLoginDialog("Thingiverse Login", loginUrl, thingiverse.getRedirectUrlPrefix());
-          }
-          else
-          {
-            // JavaFX not available...
-            // Open system default browser and let the user copy/paste the
-            // browser code.
-            System.out.println("JavaFX is not available. Using fallback behavior.");
-            browserCode = systemBrowserLogin("Thingiverse", loginUrl);
-          }
-
-          thingiverse.logIn(browserCode);
-        }
-
-        if (thingiverse.isLoggedIn())
-        {
-          thingiverseDialog = new ThingiverseDialog(this, true);
-          thingiverseDialog.setLocationRelativeTo(null);
-          thingiverseDialog.setVisible(true);
-        }
-      }
-      catch (Exception ex)
-      {
-        ex.printStackTrace();
-        this.dialog.showErrorMessage("Unable to load ThingiverseDialog");
-      }
-    }
-    else // instance available, show thingiverseDialog
-    {
-      thingiverseDialog.setVisible(true);
-    }
+    startThingiverse();
   }//GEN-LAST:event_btThingiverseActionPerformed
+
+private void zoomWindowMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomWindowMenuItemActionPerformed
+  this.previewPanel.setZoom(100d);
+}//GEN-LAST:event_zoomWindowMenuItemActionPerformed
+
+private void zoomRealMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomRealMenuItemActionPerformed
+  this.previewPanel.setOneToOneZoom();
+}//GEN-LAST:event_zoomRealMenuItemActionPerformed
+
+private void thingiverseMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_thingiverseMenuItemActionPerformed
+  startThingiverse();
+}//GEN-LAST:event_thingiverseMenuItemActionPerformed
+
+private void facebookMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_facebookMenuItemActionPerformed
+  startFacebook();
+}//GEN-LAST:event_facebookMenuItemActionPerformed
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
@@ -2840,10 +2955,10 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JButton captureImageButton;
     private javax.swing.JComboBox cbMaterialThickness;
     private javax.swing.JMenuItem editMappingMenuItem;
-    private javax.swing.JMenu editMenu;
     private javax.swing.JButton executeJobButton;
     private javax.swing.JMenuItem executeJobMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
+    private javax.swing.JMenuItem facebookMenuItem;
     private javax.swing.JMenu fileMenu;
     private com.t_oster.uicomponents.FilesDropSupport filesDropSupport1;
     private javax.swing.Box.Filler filler2;
@@ -2858,13 +2973,20 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
+    private javax.swing.JPopupMenu.Separator jSeparator5;
+    private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JMenu jmExamples;
     private javax.swing.JMenuItem jmExportSettings;
@@ -2884,6 +3006,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JMenuItem newMenuItem;
     private javax.swing.JComboBox objectComboBox;
     private javax.swing.JMenuItem openMenuItem;
+    private javax.swing.JMenu optionsMenu;
     private com.t_oster.uicomponents.PositionPanel positionPanel;
     private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
     private javax.swing.JProgressBar progressBar;
@@ -2894,12 +3017,15 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JFileChooser saveFileChooser;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JCheckBoxMenuItem showGridMenuItem;
+    private javax.swing.JMenuItem thingiverseMenuItem;
     private javax.swing.JLabel timeLabel;
     private javax.swing.JMenu viewMenu;
     private com.t_oster.visicut.VisicutModel visicutModel1;
     private com.t_oster.uicomponents.warnings.WarningPanel warningPanel;
     private javax.swing.JMenuItem zoomInMenuItem;
     private javax.swing.JMenuItem zoomOutMenuItem;
+    private javax.swing.JMenuItem zoomRealMenuItem;
+    private javax.swing.JMenuItem zoomWindowMenuItem;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
