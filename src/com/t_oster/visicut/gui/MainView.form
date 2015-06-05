@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.1" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
@@ -86,6 +86,11 @@
                 <Property name="name" type="java.lang.String" value="jmExamples" noResource="true"/>
               </Properties>
             </Menu>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator5">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jSeparator5" noResource="true"/>
+              </Properties>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="saveMenuItem">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
@@ -109,6 +114,11 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveAsMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator4">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jSeparator4" noResource="true"/>
+              </Properties>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="executeJobMenuItem">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
@@ -120,6 +130,11 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="executeJobMenuItemActionPerformed"/>
               </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator6">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jSeparator6" noResource="true"/>
+              </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="exitMenuItem">
               <Properties>
@@ -136,11 +151,121 @@
             </MenuItem>
           </SubComponents>
         </Menu>
-        <Menu class="javax.swing.JMenu" name="editMenu">
+        <Menu class="javax.swing.JMenu" name="viewMenu">
           <Properties>
-            <Property name="mnemonic" type="int" value="101"/>
-            <Property name="text" type="java.lang.String" resourceKey="editMenu.text"/>
-            <Property name="name" type="java.lang.String" value="editMenu" noResource="true"/>
+            <Property name="text" type="java.lang.String" resourceKey="viewMenu.text"/>
+            <Property name="name" type="java.lang.String" value="viewMenu" noResource="true"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="zoomOutMenuItem">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="com.t_oster.visicut.gui.MainView" id="zoomOut" methodName="zoomOut"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="zoomOutMenuItem.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="zoomOutMenuItem.toolTipText"/>
+                <Property name="name" type="java.lang.String" value="zoomOutMenuItem" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="zoomInMenuItem">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="com.t_oster.visicut.gui.MainView" id="zoomIn" methodName="zoomIn"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="zoomInMenuItem.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="zoomInMenuItem.toolTipText"/>
+                <Property name="name" type="java.lang.String" value="zoomInMenuItem" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="zoomWindowMenuItem">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Ctrl+0"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="zoomWindowMenuItem.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="zoomWindowMenuItem.toolTipText"/>
+                <Property name="name" type="java.lang.String" value="zoomWindowMenuItem" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="zoomWindowMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="zoomRealMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="zoomRealMenuItem.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="zoomRealMenuItem.toolTipText"/>
+                <Property name="name" type="java.lang.String" value="zoomRealMenuItem" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="zoomRealMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator2">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jSeparator2" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="jmShowPhoto">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="jmShowPhoto.text"/>
+                <Property name="name" type="java.lang.String" value="jmShowPhoto" noResource="true"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="selected" source="previewPanel" sourcePath="${showBackgroundImage}" target="jmShowPhoto" targetPath="selected" updateStrategy="0" immediately="false">
+                  <Property name="name" type="java.lang.String" value="jmShowBackground"/>
+                </BindingProperty>
+              </BindingProperties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator3">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jSeparator3" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="showGridMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="showGridMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="showGridMenuItem" noResource="true"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="selected" source="previewPanel" sourcePath="${showGrid}" target="showGridMenuItem" targetPath="selected" updateStrategy="0" immediately="false">
+                  <Property name="name" type="java.lang.String" value="ShowGrid"/>
+                </BindingProperty>
+              </BindingProperties>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="jMenu2">
+          <Properties>
+            <Property name="mnemonic" type="int" value="112"/>
+            <Property name="text" type="java.lang.String" resourceKey="pluginsMenu.text"/>
+            <Property name="name" type="java.lang.String" value="pluginsMenu" noResource="true"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="facebookMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="facebookMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="facebookMenuItem" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="facebookMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="thingiverseMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="thingiverseMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="thingiverseMenuItem" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="thingiverseMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="optionsMenu">
+          <Properties>
+            <Property name="mnemonic" type="int" value="111"/>
+            <Property name="text" type="java.lang.String" resourceKey="optionsMenu.text"/>
+            <Property name="name" type="java.lang.String" value="optionsMenu" noResource="true"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="calibrateCameraMenuItem">
@@ -236,54 +361,6 @@
             </MenuItem>
           </SubComponents>
         </Menu>
-        <Menu class="javax.swing.JMenu" name="viewMenu">
-          <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="viewMenu.text"/>
-            <Property name="name" type="java.lang.String" value="viewMenu" noResource="true"/>
-          </Properties>
-          <SubComponents>
-            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="showGridMenuItem">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="showGridMenuItem.text"/>
-                <Property name="name" type="java.lang.String" value="showGridMenuItem" noResource="true"/>
-              </Properties>
-              <BindingProperties>
-                <BindingProperty name="selected" source="previewPanel" sourcePath="${showGrid}" target="showGridMenuItem" targetPath="selected" updateStrategy="0" immediately="false">
-                  <Property name="name" type="java.lang.String" value="ShowGrid"/>
-                </BindingProperty>
-              </BindingProperties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="jmShowPhoto">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="jmShowPhoto.text"/>
-                <Property name="name" type="java.lang.String" value="jmShowPhoto" noResource="true"/>
-              </Properties>
-              <BindingProperties>
-                <BindingProperty name="selected" source="previewPanel" sourcePath="${showBackgroundImage}" target="jmShowPhoto" targetPath="selected" updateStrategy="0" immediately="false">
-                  <Property name="name" type="java.lang.String" value="jmShowBackground"/>
-                </BindingProperty>
-              </BindingProperties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="zoomInMenuItem">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="com.t_oster.visicut.gui.MainView" id="zoomIn" methodName="zoomIn"/>
-                </Property>
-                <Property name="text" type="java.lang.String" resourceKey="zoomInMenuItem.text"/>
-                <Property name="name" type="java.lang.String" value="zoomInMenuItem" noResource="true"/>
-              </Properties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="zoomOutMenuItem">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="com.t_oster.visicut.gui.MainView" id="zoomOut" methodName="zoomOut"/>
-                </Property>
-                <Property name="text" type="java.lang.String" resourceKey="zoomOutMenuItem.text"/>
-                <Property name="name" type="java.lang.String" value="zoomOutMenuItem" noResource="true"/>
-              </Properties>
-            </MenuItem>
-          </SubComponents>
-        </Menu>
         <Menu class="javax.swing.JMenu" name="jmExtras">
           <Properties>
             <Property name="text" type="java.lang.String" resourceKey="jmExtras.text"/>
@@ -315,6 +392,7 @@
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
               <action class="com.t_oster.visicut.gui.MainView" id="showAboutDialog" methodName="showAboutDialog"/>
             </Property>
+            <Property name="mnemonic" type="int" value="104"/>
             <Property name="text" type="java.lang.String" resourceKey="helpMenu.text"/>
             <Property name="name" type="java.lang.String" value="helpMenu" noResource="true"/>
           </Properties>
@@ -344,7 +422,6 @@
   <SyntheticProperties>
     <SyntheticProperty name="menuBar" type="java.lang.String" value="menuBar"/>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
-    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="2"/>
@@ -364,16 +441,12 @@
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="warningPanel" max="32767" attributes="0"/>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Component id="jToolBar1" pref="400" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="progressBar" max="32767" attributes="0"/>
-                  </Group>
+                  <Component id="warningPanel" pref="556" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                       <Component id="jScrollPane2" pref="0" max="32767" attributes="0"/>
                   </Group>
+                  <Component id="jToolBar1" alignment="0" pref="556" max="32767" attributes="0"/>
               </Group>
               <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
               <Component id="jScrollPane1" pref="563" max="32767" attributes="0"/>
@@ -388,11 +461,8 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jScrollPane1" pref="0" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="progressBar" max="32767" attributes="0"/>
-                          <Component id="jToolBar1" max="32767" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="jToolBar1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane2" pref="497" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="warningPanel" pref="185" max="32767" attributes="0"/>
@@ -430,12 +500,12 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="1004" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="924" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="746" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="681" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
@@ -468,7 +538,7 @@
                                       <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="timeLabel" min="-2" pref="166" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
+                                      <EmptySpace pref="199" max="32767" attributes="0"/>
                                       <Component id="calculateTimeButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -476,20 +546,20 @@
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="mappingTabbedPane" alignment="0" max="32767" attributes="1"/>
+                                  <Component id="mappingTabbedPane" alignment="0" pref="514" max="32767" attributes="1"/>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="objectComboBox" max="32767" attributes="0"/>
+                                      <Component id="objectComboBox" pref="416" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="btAddObject" min="-2" pref="31" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="btRemoveObject" min="-2" pref="31" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="jSeparator1" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="laserCutterComboBox" alignment="0" max="32767" attributes="1"/>
+                                  <Component id="jSeparator1" alignment="0" pref="514" max="32767" attributes="0"/>
+                                  <Component id="laserCutterComboBox" alignment="0" pref="514" max="32767" attributes="1"/>
                                   <Group type="102" alignment="1" attributes="0">
-                                      <Component id="materialComboBox" max="32767" attributes="1"/>
+                                      <Component id="materialComboBox" pref="477" max="32767" attributes="1"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="btAddMaterial" min="-2" pref="31" max="-2" attributes="0"/>
                                   </Group>
@@ -502,7 +572,7 @@
                                           </Group>
                                           <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace max="32767" attributes="0"/>
+                                      <EmptySpace pref="158" max="32767" attributes="0"/>
                                       <Component id="jCheckBox1" min="-2" pref="197" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
@@ -510,7 +580,7 @@
                                           <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="454" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
@@ -812,17 +882,6 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JProgressBar" name="progressBar">
-      <Properties>
-        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[300, 14]"/>
-        </Property>
-        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[100, 14]"/>
-        </Property>
-        <Property name="name" type="java.lang.String" value="progressBar" noResource="true"/>
-      </Properties>
-    </Component>
     <Container class="javax.swing.JToolBar" name="jToolBar1">
       <Properties>
         <Property name="floatable" type="boolean" value="false"/>
@@ -950,10 +1009,10 @@
             <Component class="javax.swing.Box$Filler" name="filler2">
               <Properties>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[50, 35]"/>
+                  <Dimension value="[35, 35]"/>
                 </Property>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[50, 35]"/>
+                  <Dimension value="[35, 35]"/>
                 </Property>
                 <Property name="name" type="java.lang.String" value="filler2" noResource="true"/>
               </Properties>
@@ -1013,6 +1072,36 @@
             </Component>
           </SubComponents>
         </Container>
+        <Container class="javax.swing.JPanel" name="jPanel3">
+          <Properties>
+            <Property name="name" type="java.lang.String" value="jPanel3" noResource="true"/>
+          </Properties>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="14" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="45" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+        </Container>
+        <Component class="javax.swing.JProgressBar" name="progressBar">
+          <Properties>
+            <Property name="alignmentY" type="float" value="0.52"/>
+            <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[125, 33]"/>
+            </Property>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[125, 33]"/>
+            </Property>
+            <Property name="name" type="java.lang.String" value="progressBar" noResource="true"/>
+          </Properties>
+        </Component>
       </SubComponents>
     </Container>
   </SubComponents>
