@@ -65,6 +65,8 @@ import com.tur0kk.facebook.FacebookManager;
 import com.tur0kk.facebook.gui.FacebookDialog;
 import com.tur0kk.thingiverse.ThingiverseManager;
 import com.frochr123.pluginicon.PluginIconLoader;
+import com.frochr123.periodicthreads.RefreshCameraThread;
+import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
@@ -129,6 +131,11 @@ public class MainView extends javax.swing.JFrame
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView");
   private ThingiverseDialog thingiverseDialog = null;
   private ParameterPanel parameterPanel = new ParameterPanel();
+  private boolean cameraActive = true;
+  private boolean cameraCapturing = false;
+  private String cameraCapturingError = "";
+  Color darkGreen = new Color(0, 160, 0);
+  private RefreshCameraThread cameraThread = null;
   
   public static MainView getInstance()
   {
@@ -277,10 +284,6 @@ public class MainView extends javax.swing.JFrame
     fillComboBoxes();
     refreshMaterialThicknessesComboBox();
 
-    if (this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null)
-    {
-      this.captureImage();
-    }
     if (Helper.isMacOS())
     {
       com.apple.eawt.Application macApplication = com.apple.eawt.Application.getApplication();
@@ -642,7 +645,7 @@ public class MainView extends javax.swing.JFrame
         jButton1 = new javax.swing.JButton();
         btFitScreen = new javax.swing.JButton();
         bt1to1 = new javax.swing.JButton();
-        captureImageButton = new javax.swing.JButton();
+        cameraStateButton = new javax.swing.JButton();
         filler2 = new javax.swing.Box.Filler(null, new java.awt.Dimension(35, 35), new java.awt.Dimension(35, 35));
         btFacebook = new javax.swing.JButton();
         btThingiverse = new javax.swing.JButton();
@@ -668,7 +671,8 @@ public class MainView extends javax.swing.JFrame
         zoomWindowMenuItem = new javax.swing.JMenuItem();
         zoomRealMenuItem = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
-        jmShowPhoto = new javax.swing.JCheckBoxMenuItem();
+        cameraActiveMenuItem = new javax.swing.JCheckBoxMenuItem();
+        cameraIgnoreMenuItem = new javax.swing.JCheckBoxMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
         jMenu2 = new javax.swing.JMenu();
@@ -1024,16 +1028,19 @@ public class MainView extends javax.swing.JFrame
         });
         jPanel1.add(bt1to1);
 
-        captureImageButton.setIcon(PlatformIcon.get(PlatformIcon.CAMERA));
-        captureImageButton.setText(resourceMap.getString("captureImageButton.text")); // NOI18N
-        captureImageButton.setName("captureImageButton"); // NOI18N
-        captureImageButton.setPreferredSize(new java.awt.Dimension(170, 35));
-        captureImageButton.addActionListener(new java.awt.event.ActionListener() {
+        cameraStateButton.setFont(resourceMap.getFont("cameraStateButton.font")); // NOI18N
+        cameraStateButton.setForeground(resourceMap.getColor("cameraStateButton.foreground")); // NOI18N
+        cameraStateButton.setIcon(PlatformIcon.get(PlatformIcon.CAMERA));
+        cameraStateButton.setText(resourceMap.getString("cameraStateButton.text")); // NOI18N
+        cameraStateButton.setToolTipText(resourceMap.getString("cameraStateButton.toolTipText")); // NOI18N
+        cameraStateButton.setName("cameraStateButton"); // NOI18N
+        cameraStateButton.setPreferredSize(new java.awt.Dimension(85, 35));
+        cameraStateButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                captureImageButtonActionPerformed(evt);
+                cameraStateButtonActionPerformed(evt);
             }
         });
-        jPanel1.add(captureImageButton);
+        jPanel1.add(cameraStateButton);
 
         filler2.setName("filler2"); // NOI18N
         jPanel1.add(filler2);
@@ -1068,7 +1075,6 @@ public class MainView extends javax.swing.JFrame
         jPanel1.add(btThingiverse);
         btThingiverse.getAccessibleContext().setAccessibleDescription(resourceMap.getString("btThingiverse.AccessibleContext.accessibleDescription")); // NOI18N
 
-        jPanel3.setAlignmentY(0.5F);
         jPanel3.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jPanel3.setName("jPanel3"); // NOI18N
         jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.LINE_AXIS));
@@ -1214,13 +1220,25 @@ public class MainView extends javax.swing.JFrame
         jSeparator2.setName("jSeparator2"); // NOI18N
         viewMenu.add(jSeparator2);
 
-        jmShowPhoto.setText(resourceMap.getString("jmShowPhoto.text")); // NOI18N
-        jmShowPhoto.setName("jmShowPhoto"); // NOI18N
+        cameraActiveMenuItem.setText(resourceMap.getString("cameraActiveMenuItem.text")); // NOI18N
+        cameraActiveMenuItem.setToolTipText(resourceMap.getString("cameraActiveMenuItem.toolTipText")); // NOI18N
+        cameraActiveMenuItem.setName("cameraActiveMenuItem"); // NOI18N
+        cameraActiveMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cameraActiveMenuItemActionPerformed(evt);
+            }
+        });
+        viewMenu.add(cameraActiveMenuItem);
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, previewPanel, org.jdesktop.beansbinding.ELProperty.create("${showBackgroundImage}"), jmShowPhoto, org.jdesktop.beansbinding.BeanProperty.create("selected"), "jmShowBackground");
-        bindingGroup.addBinding(binding);
-
-        viewMenu.add(jmShowPhoto);
+        cameraIgnoreMenuItem.setText(resourceMap.getString("cameraIgnoreMenuItem.text")); // NOI18N
+        cameraIgnoreMenuItem.setToolTipText(resourceMap.getString("cameraIgnoreMenuItem.toolTipText")); // NOI18N
+        cameraIgnoreMenuItem.setName("cameraIgnoreMenuItem"); // NOI18N
+        cameraIgnoreMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cameraIgnoreMenuItemActionPerformed(evt);
+            }
+        });
+        viewMenu.add(cameraIgnoreMenuItem);
 
         jSeparator3.setName("jSeparator3"); // NOI18N
         viewMenu.add(jSeparator3);
@@ -1375,7 +1393,6 @@ public class MainView extends javax.swing.JFrame
         menuBar.add(jmExtras);
 
         helpMenu.setAction(actionMap.get("showAboutDialog")); // NOI18N
-        helpMenu.setMnemonic('h');
         helpMenu.setText(resourceMap.getString("helpMenu.text")); // NOI18N
         helpMenu.setName("helpMenu"); // NOI18N
 
@@ -1545,7 +1562,7 @@ public class MainView extends javax.swing.JFrame
   {
     // remove old error messages, they are no longer relevant (or for multiple files it is too confusing which one refers to which file)
     warningPanel.removeAllWarnings();
-    captureImage(); // update camera image
+
     try
     {
       this.progressBar.setIndeterminate(true);
@@ -1574,8 +1591,9 @@ public class MainView extends javax.swing.JFrame
   {
     boolean cam = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null;
     this.calibrateCameraMenuItem.setEnabled(cam);
-    this.captureImageButton.setVisible(cam);
-    this.jmShowPhoto.setEnabled(cam);
+    this.cameraStateButton.setVisible(cam);
+    this.cameraActiveMenuItem.setEnabled(cam);
+    setCameraActive(cam);
     boolean estimateSupported = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getLaserCutter().canEstimateJobDuration();
     this.calculateTimeButton.setVisible(estimateSupported);
     this.timeLabel.setVisible(estimateSupported);
@@ -2011,25 +2029,20 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
 private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobMenuItemActionPerformed
   this.executeJob();
 }//GEN-LAST:event_executeJobMenuItemActionPerformed
-  private boolean capturing = false;
 
-  private void captureImage()
+  public void captureImage()
   {
-    if (!capturing)
+    if (!cameraCapturing)
     {
-      capturing = true;
+      cameraCapturing = true;
+
       new Thread()
       {
-
         @Override
         public void run()
         {
-          MainView.this.captureImageButton.setEnabled(false);
-          MainView.this.progressBar.setStringPainted(true);
-          MainView.this.progressBar.setString(bundle.getString("CAPTURING PHOTO..."));
-          MainView.this.progressBar.setIndeterminate(true);
-          MainView.this.progressBar.repaint();
           URLConnection conn=null;
+
           try
           {
             URL src = new URL(MainView.this.visicutModel1.getSelectedLaserDevice().getCameraURL());
@@ -2040,17 +2053,16 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
             {//First Time Image is Captured => resize View
               MainView.this.previewPanel.setZoom(100d);
             }
-            MainView.this.visicutModel1.setBackgroundImage(back);
-            MainView.this.jmShowPhoto.setSelected(true);
-            MainView.this.progressBar.setString("");
-            MainView.this.progressBar.setStringPainted(false);
-            MainView.this.progressBar.setIndeterminate(false);
-            MainView.this.progressBar.repaint();
+            
+            // Check again if camera is active, might have changed in the meantime, because of threading
+            if (back != null && isCameraActive())
+            {
+              MainView.this.visicutModel1.setBackgroundImage(back);
+            }
           }
           catch (Exception ex)
           {
             MainView.this.visicutModel1.setBackgroundImage(null);
-            MainView.this.progressBar.setString("");
             ex.printStackTrace();
             if (ex instanceof IOException && conn instanceof HttpURLConnection) {
               // possible HTTP error - if the server sent a message, display it
@@ -2094,15 +2106,13 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
               if (responseCode != 0) {
                 msg = msg + "\n(HTTP " + responseCode + ")";
               }
-              MainView.this.dialog.showWarningMessage(bundle.getString("ERROR CAPTURING PHOTO") + ": "+ msg);
+              cameraCapturingError = bundle.getString("ERROR CAPTURING PHOTO") + ": "+ msg;
             } else {
-              MainView.this.dialog.showErrorMessage(ex, bundle.getString("ERROR CAPTURING PHOTO"));
+              cameraCapturingError = bundle.getString("ERROR CAPTURING PHOTO") + "\nError (" + ex.getClass().getSimpleName() + "): " + ex.getLocalizedMessage();
             }
-            MainView.this.progressBar.setIndeterminate(false);
-            MainView.this.progressBar.repaint();
           }
-          MainView.this.captureImageButton.setEnabled(true);
-          MainView.this.capturing = false;
+
+          MainView.this.cameraCapturing = false;
         }
       }.start();
     }
@@ -2134,12 +2144,9 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
     previewPanel.setZoom(previewPanel.getZoom() - (2 * previewPanel.getZoom() / 32));
   }
 
-private void captureImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_captureImageButtonActionPerformed
-  // First, remove all old messages like "cannot get image"
-  // TODO: this also removes all other, probably important, messages! Only remove the specific ones.
-  this.warningPanel.removeAllWarnings();
-  captureImage();
-}//GEN-LAST:event_captureImageButtonActionPerformed
+private void cameraStateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cameraStateButtonActionPerformed
+  setCameraActive(!isCameraActive());
+}//GEN-LAST:event_cameraStateButtonActionPerformed
 
 private void editMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMappingMenuItemActionPerformed
     try
@@ -2203,10 +2210,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       {
         this.visicutModel1.setBackgroundImage(null);
       }
-      else
-      {
-        this.captureImage();
-      }
+
       this.refreshButtonStates();
       //if the image is too big, fit it and notify the user
       this.fitObjectsIntoBed();
@@ -2927,6 +2931,14 @@ private void thingiverseMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
 private void facebookMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_facebookMenuItemActionPerformed
   startFacebook();
 }//GEN-LAST:event_facebookMenuItemActionPerformed
+
+private void cameraActiveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cameraActiveMenuItemActionPerformed
+  setCameraActive(!isCameraActive());
+}//GEN-LAST:event_cameraActiveMenuItemActionPerformed
+
+private void cameraIgnoreMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cameraIgnoreMenuItemActionPerformed
+  previewPanel.setShowBackgroundImage(!previewPanel.isShowBackgroundImage());
+}//GEN-LAST:event_cameraIgnoreMenuItemActionPerformed
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
@@ -2941,7 +2953,9 @@ private void facebookMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton calculateTimeButton;
     private javax.swing.JMenuItem calibrateCameraMenuItem;
-    private javax.swing.JButton captureImageButton;
+    private javax.swing.JCheckBoxMenuItem cameraActiveMenuItem;
+    private javax.swing.JCheckBoxMenuItem cameraIgnoreMenuItem;
+    private javax.swing.JButton cameraStateButton;
     private javax.swing.JComboBox cbMaterialThickness;
     private javax.swing.JMenuItem editMappingMenuItem;
     private javax.swing.JButton executeJobButton;
@@ -2984,7 +2998,6 @@ private void facebookMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//
     private javax.swing.JMenuItem jmInstallInkscape;
     private javax.swing.JMenuItem jmManageLaserprofiles;
     private javax.swing.JMenuItem jmPreferences;
-    private javax.swing.JCheckBoxMenuItem jmShowPhoto;
     private com.t_oster.uicomponents.ImageComboBox laserCutterComboBox;
     private com.t_oster.visicut.gui.mapping.MappingPanel mappingPanel;
     private javax.swing.JTabbedPane mappingTabbedPane;
@@ -3083,4 +3096,44 @@ private void facebookMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//
     return this.dialog;
   }
 
+  public boolean isCameraActive()
+  {
+    return cameraActive;
+  }
+
+  public void setCameraActive(boolean cameraActive)
+  {
+    this.cameraActive = cameraActive;
+
+    // Set correct states on UI elements
+    // Visibility and enabled are already handled in other code places
+    if (cameraActive)
+    {
+        if (cameraThread == null)
+        {
+          cameraThread = new RefreshCameraThread();
+          cameraThread.start();
+        }
+
+        cameraStateButton.setText(bundle.getString("STATUS_ON"));
+        cameraStateButton.setForeground(darkGreen);
+        cameraActiveMenuItem.setSelected(true);
+    }
+    else
+    {
+        cameraStateButton.setText(bundle.getString("STATUS_OFF"));
+        cameraStateButton.setForeground(Color.RED);
+        cameraActiveMenuItem.setSelected(false);
+    }
+  }
+  
+  public String getCameraCapturingError()
+  {
+    return cameraCapturingError;
+  }
+  
+  public void resetCameraCapturingError()
+  {
+    cameraCapturingError = "";
+  }
 }

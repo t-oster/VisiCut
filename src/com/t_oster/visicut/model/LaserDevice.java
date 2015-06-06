@@ -136,6 +136,29 @@ public class LaserDevice implements ImageListable
   {
     this.cameraURL = cameraURL;
   }
+
+  protected int cameraTiming = 0;
+  
+  /**
+   * Get the value of camera timing
+   *
+   * @return the value of camera timing
+   */
+  public int getCameraTiming()
+  {
+    return cameraTiming;
+  }
+
+  /**
+   * Set the value of camera timing
+   *
+   * @param cameraTiming new value of camera timing
+   */
+  public void setCameraTiming(int cameraTiming)
+  {
+    this.cameraTiming = cameraTiming;
+  }
+
   protected String thumbnailPath = null;
 
   /**
@@ -206,6 +229,7 @@ public class LaserDevice implements ImageListable
     LaserDevice result = new LaserDevice();
     result.cameraCalibration = cameraCalibration;
     result.cameraURL = cameraURL;
+    result.cameraTiming = cameraTiming;
     result.description = description;
     result.name = name;
     result.laserCutter = laserCutter.clone();
