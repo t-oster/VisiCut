@@ -22,7 +22,7 @@ import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.VisicutModel;
 
 /**
- * RefreshVisicamThread.java: Thread to refresh the image of VisiCam frequently
+ * RefreshCameraThread.java: Thread to refresh the image of camera frequently
  * @author Christian
  */
 public class RefreshCameraThread extends Thread
@@ -84,7 +84,7 @@ public class RefreshCameraThread extends Thread
         }
         
         // Call capture new image if everyhing is fine
-        if (VisicutModel.getInstance().getSelectedLaserDevice() != null && VisicutModel.getInstance().getSelectedLaserDevice().getCameraURL() != null)
+        if (!MainView.getInstance().getVisiCam().isEmpty())
         {
           MainView.getInstance().captureImage();
         }

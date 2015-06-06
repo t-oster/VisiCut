@@ -66,6 +66,7 @@ import com.tur0kk.facebook.gui.FacebookDialog;
 import com.tur0kk.thingiverse.ThingiverseManager;
 import com.frochr123.pluginicon.PluginIconLoader;
 import com.frochr123.periodicthreads.RefreshCameraThread;
+import com.frochr123.periodicthreads.RefreshProjectorThread;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
@@ -136,6 +137,8 @@ public class MainView extends javax.swing.JFrame
   private String cameraCapturingError = "";
   Color darkGreen = new Color(0, 160, 0);
   private RefreshCameraThread cameraThread = null;
+  private boolean projectorActive = true;
+  private RefreshProjectorThread projectorThread = null;
   
   public static MainView getInstance()
   {
@@ -646,6 +649,7 @@ public class MainView extends javax.swing.JFrame
         btFitScreen = new javax.swing.JButton();
         bt1to1 = new javax.swing.JButton();
         cameraStateButton = new javax.swing.JButton();
+        projectorStateButton = new javax.swing.JButton();
         filler2 = new javax.swing.Box.Filler(null, new java.awt.Dimension(35, 35), new java.awt.Dimension(35, 35));
         btFacebook = new javax.swing.JButton();
         btThingiverse = new javax.swing.JButton();
@@ -674,6 +678,8 @@ public class MainView extends javax.swing.JFrame
         cameraActiveMenuItem = new javax.swing.JCheckBoxMenuItem();
         cameraIgnoreMenuItem = new javax.swing.JCheckBoxMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        projectorActiveMenuItem = new javax.swing.JCheckBoxMenuItem();
+        jSeparator7 = new javax.swing.JPopupMenu.Separator();
         showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
         jMenu2 = new javax.swing.JMenu();
         facebookMenuItem = new javax.swing.JMenuItem();
@@ -1042,6 +1048,20 @@ public class MainView extends javax.swing.JFrame
         });
         jPanel1.add(cameraStateButton);
 
+        projectorStateButton.setFont(resourceMap.getFont("projectorStateButton.font")); // NOI18N
+        projectorStateButton.setForeground(resourceMap.getColor("projectorStateButton.foreground")); // NOI18N
+        projectorStateButton.setIcon(PlatformIcon.get(PlatformIcon.PROJECTOR));
+        projectorStateButton.setText(resourceMap.getString("projectorStateButton.text")); // NOI18N
+        projectorStateButton.setToolTipText(resourceMap.getString("projectorStateButton.toolTipText")); // NOI18N
+        projectorStateButton.setName("projectorStateButton"); // NOI18N
+        projectorStateButton.setPreferredSize(new java.awt.Dimension(85, 35));
+        projectorStateButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                projectorStateButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(projectorStateButton);
+
         filler2.setName("filler2"); // NOI18N
         jPanel1.add(filler2);
 
@@ -1242,6 +1262,19 @@ public class MainView extends javax.swing.JFrame
 
         jSeparator3.setName("jSeparator3"); // NOI18N
         viewMenu.add(jSeparator3);
+
+        projectorActiveMenuItem.setText(resourceMap.getString("projectorActiveMenuItem.text")); // NOI18N
+        projectorActiveMenuItem.setToolTipText(resourceMap.getString("projectorActiveMenuItem.toolTipText")); // NOI18N
+        projectorActiveMenuItem.setName("projectorActiveMenuItem"); // NOI18N
+        projectorActiveMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                projectorActiveMenuItemActionPerformed(evt);
+            }
+        });
+        viewMenu.add(projectorActiveMenuItem);
+
+        jSeparator7.setName("jSeparator7"); // NOI18N
+        viewMenu.add(jSeparator7);
 
         showGridMenuItem.setText(resourceMap.getString("showGridMenuItem.text")); // NOI18N
         showGridMenuItem.setName("showGridMenuItem"); // NOI18N
@@ -1575,7 +1608,7 @@ public class MainView extends javax.swing.JFrame
       //if the image is too big, fit it a nd notify the user
       this.fitObjectsIntoBed();
       this.progressBar.setIndeterminate(false);
-      this.refreshButtonStates();
+      this.refreshButtonStates(VisicutModel.PROP_PLF_PART_ADDED);
     }
     catch (Exception e)
     {
@@ -1587,13 +1620,23 @@ public class MainView extends javax.swing.JFrame
   /**
    * Sets all Buttons to their correct state (disabled/enabled)
    */
-  private void refreshButtonStates()
+  private void refreshButtonStates(String action)
   {
-    boolean cam = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getCameraURL() != null;
-    this.calibrateCameraMenuItem.setEnabled(cam);
-    this.cameraStateButton.setVisible(cam);
-    this.cameraActiveMenuItem.setEnabled(cam);
-    setCameraActive(cam);
+    if (action != null && action.equals(VisicutModel.PROP_SELECTEDLASERDEVICE))
+    {
+      boolean cam = (!getVisiCam().isEmpty());
+      boolean projector = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getProjectorURL() != null;
+
+      this.calibrateCameraMenuItem.setEnabled(cam);
+      this.cameraStateButton.setVisible(cam);
+      this.cameraActiveMenuItem.setEnabled(cam);
+      setCameraActive(cam);
+
+      this.projectorStateButton.setVisible(projector);
+      this.projectorActiveMenuItem.setEnabled(projector);
+      setProjectorActive(projector);
+    }
+
     boolean estimateSupported = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getLaserCutter().canEstimateJobDuration();
     this.calculateTimeButton.setVisible(estimateSupported);
     this.timeLabel.setVisible(estimateSupported);
@@ -1927,14 +1970,14 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
     {
       this.setTitle("VisiCut - Unnamed PLF");
     }
-    this.refreshButtonStates();
+    this.refreshButtonStates(evt.getPropertyName());
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDLASERDEVICE)
     ||evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_UPDATED)
     ||evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_REMOVED))
   {
     MainView.this.timeLabel.setText("");
-    this.refreshButtonStates();
+    this.refreshButtonStates(evt.getPropertyName());
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART))
   {
@@ -1962,7 +2005,7 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
   {
     MainView.this.timeLabel.setText("");
     this.refreshMaterialThicknessesComboBox();
-    this.refreshButtonStates();
+    this.refreshButtonStates(evt.getPropertyName());
   }
 }//GEN-LAST:event_visicutModel1PropertyChange
 
@@ -2011,7 +2054,7 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
   CamCalibrationDialog ccd = new CamCalibrationDialog(this, true);
   ccd.setVectorProfile(p);
   ccd.setBackgroundImage(this.visicutModel1.getBackgroundImage());
-  ccd.setImageURL(this.visicutModel1.getSelectedLaserDevice().getCameraURL());
+  ccd.setImageURL(getVisiCam());
   ccd.setResultingTransformation(this.visicutModel1.getSelectedLaserDevice().getCameraCalibration());
   ccd.setVisible(true);
   this.visicutModel1.getSelectedLaserDevice().setCameraCalibration(ccd.getResultingTransformation());
@@ -2045,8 +2088,19 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
 
           try
           {
-            URL src = new URL(MainView.this.visicutModel1.getSelectedLaserDevice().getCameraURL());
-            conn=src.openConnection();
+            URL src = new URL(getVisiCam());
+            conn = src.openConnection();
+
+            // HTTP authentication
+            if (VisicutModel.getInstance() != null && VisicutModel.getInstance().getSelectedLaserDevice() != null)
+            {
+              String encodedCredentials = Helper.getEncodedCredentials(VisicutModel.getInstance().getSelectedLaserDevice().getURLUser(), VisicutModel.getInstance().getSelectedLaserDevice().getURLPassword());
+              if (!encodedCredentials.isEmpty())
+              {
+                conn.setRequestProperty("Authorization", "Basic " + encodedCredentials);
+              }
+            }
+
             ImageInputStream stream=new MemoryCacheImageInputStream(conn.getInputStream());
             BufferedImage back = ImageIO.read(stream);
             if (back != null && MainView.this.visicutModel1.getBackgroundImage() == null)
@@ -2127,9 +2181,10 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
     }
   }
   
-  public String getVisiCam(){
+  public String getVisiCam()
+  {
     LaserDevice dev = MainView.this.visicutModel1.getSelectedLaserDevice();
-    return  dev != null ? dev.getCameraURL() : "";
+    return (dev != null && dev.getCameraURL() != null) ? dev.getCameraURL() : "";
   }
 
   @Action
@@ -2211,7 +2266,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         this.visicutModel1.setBackgroundImage(null);
       }
 
-      this.refreshButtonStates();
+      this.refreshButtonStates(VisicutModel.PROP_SELECTEDLASERDEVICE);
       //if the image is too big, fit it and notify the user
       this.fitObjectsIntoBed();
     }
@@ -2253,7 +2308,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         dialog.showErrorMessage(ex, bundle.getString("ERROR SAVING PREFERENCES"));
       }
       this.fillComboBoxes();
-      this.refreshButtonStates();
+      this.refreshButtonStates(VisicutModel.PROP_SELECTEDLASERDEVICE);
     }
   }//GEN-LAST:event_jMenuItem2ActionPerformed
 
@@ -2939,6 +2994,14 @@ private void cameraActiveMenuItemActionPerformed(java.awt.event.ActionEvent evt)
 private void cameraIgnoreMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cameraIgnoreMenuItemActionPerformed
   previewPanel.setShowBackgroundImage(!previewPanel.isShowBackgroundImage());
 }//GEN-LAST:event_cameraIgnoreMenuItemActionPerformed
+
+private void projectorStateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_projectorStateButtonActionPerformed
+  setProjectorActive(!isProjectorActive());
+}//GEN-LAST:event_projectorStateButtonActionPerformed
+
+private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_projectorActiveMenuItemActionPerformed
+  setProjectorActive(!isProjectorActive());
+}//GEN-LAST:event_projectorActiveMenuItemActionPerformed
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
@@ -2990,6 +3053,7 @@ private void cameraIgnoreMenuItemActionPerformed(java.awt.event.ActionEvent evt)
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JPopupMenu.Separator jSeparator6;
+    private javax.swing.JPopupMenu.Separator jSeparator7;
     private javax.swing.JMenu jmExamples;
     private javax.swing.JMenuItem jmExportSettings;
     private javax.swing.JMenu jmExtras;
@@ -3011,6 +3075,8 @@ private void cameraIgnoreMenuItemActionPerformed(java.awt.event.ActionEvent evt)
     private com.t_oster.uicomponents.PositionPanel positionPanel;
     private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
     private javax.swing.JProgressBar progressBar;
+    private javax.swing.JCheckBoxMenuItem projectorActiveMenuItem;
+    private javax.swing.JButton projectorStateButton;
     private com.t_oster.visicut.gui.propertypanel.PropertiesPanel propertiesPanel;
     private javax.swing.JScrollPane propertyPanelContainer;
     private javax.swing.JMenu recentFilesMenu;
@@ -3135,5 +3201,41 @@ private void cameraIgnoreMenuItemActionPerformed(java.awt.event.ActionEvent evt)
   public void resetCameraCapturingError()
   {
     cameraCapturingError = "";
+  }
+  
+  public boolean isProjectorActive()
+  {
+    return projectorActive;
+  }
+
+  public void setProjectorActive(boolean projectorActive)
+  {
+    this.projectorActive = projectorActive;
+
+    // Set correct states on UI elements
+    // Visibility and enabled are already handled in other code places
+    if (projectorActive)
+    {
+        if (projectorThread == null)
+        {
+          projectorThread = new RefreshProjectorThread();
+          projectorThread.start();
+        }
+
+        projectorStateButton.setText(bundle.getString("STATUS_ON"));
+        projectorStateButton.setForeground(darkGreen);
+        projectorActiveMenuItem.setSelected(true);
+    }
+    else
+    {
+        if (projectorThread != null)
+        {
+          projectorThread.startShutdown();
+        }
+
+        projectorStateButton.setText(bundle.getString("STATUS_OFF"));
+        projectorStateButton.setForeground(Color.RED);
+        projectorActiveMenuItem.setSelected(false);
+    }
   }
 }
