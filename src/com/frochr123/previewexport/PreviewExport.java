@@ -165,6 +165,7 @@ public class PreviewExport
       }
     }
 
+    g.dispose();
     setLatestGeneratedImage(resultImage);
     return resultImage;
   }

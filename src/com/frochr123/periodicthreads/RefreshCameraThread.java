@@ -51,10 +51,10 @@ public class RefreshCameraThread extends Thread
     return DEFAULT_CAMERA_TIME;
   }
 
-  // Check MainView if camera is set to active
+  // Check MainView if camera and background are set to active
   protected boolean isActive()
   {
-    return MainView.getInstance().isCameraActive();
+    return MainView.getInstance().isCameraActive() && MainView.getInstance().isPreviewPanelShowBackgroundImage();
   }
  
   // Run method

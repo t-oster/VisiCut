@@ -1625,7 +1625,7 @@ public class MainView extends javax.swing.JFrame
     if (action != null && action.equals(VisicutModel.PROP_SELECTEDLASERDEVICE))
     {
       boolean cam = (!getVisiCam().isEmpty());
-      boolean projector = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getProjectorURL() != null;
+      boolean projector = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getProjectorURL() != null && !this.visicutModel1.getSelectedLaserDevice().getProjectorURL().isEmpty();
 
       this.calibrateCameraMenuItem.setEnabled(cam);
       this.cameraStateButton.setVisible(cam);
@@ -2108,8 +2108,8 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
               MainView.this.previewPanel.setZoom(100d);
             }
             
-            // Check again if camera is active, might have changed in the meantime, because of threading
-            if (back != null && isCameraActive())
+            // Check again if camera and background are active, might have changed in the meantime, because of threading
+            if (back != null && isCameraActive() && isPreviewPanelShowBackgroundImage())
             {
               MainView.this.visicutModel1.setBackgroundImage(back);
             }
@@ -3162,6 +3162,11 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     return this.dialog;
   }
 
+  public boolean isPreviewPanelShowBackgroundImage()
+  {
+    return previewPanel.isShowBackgroundImage();
+  }
+  
   public boolean isCameraActive()
   {
     return cameraActive;

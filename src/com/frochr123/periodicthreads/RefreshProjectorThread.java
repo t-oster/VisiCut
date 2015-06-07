@@ -167,7 +167,7 @@ public class RefreshProjectorThread extends Thread
         {
           try
           {
-            if (VisicutModel.getInstance() != null && VisicutModel.getInstance().getSelectedLaserDevice() != null && VisicutModel.getInstance().getSelectedLaserDevice().getProjectorURL() != null)
+            if (VisicutModel.getInstance() != null && VisicutModel.getInstance().getSelectedLaserDevice() != null && VisicutModel.getInstance().getSelectedLaserDevice().getProjectorURL() != null && !VisicutModel.getInstance().getSelectedLaserDevice().getProjectorURL().isEmpty())
             {
               BufferedImage img = PreviewExport.generateImage(getProjectorWidth(), getProjectorHeight(), !isShutdownInProgress());
 
@@ -198,6 +198,7 @@ public class RefreshProjectorThread extends Thread
 
               // Send request
               CloseableHttpResponse res = httpClient.execute(httpPost);
+              res.close();
               httpClient.close();
             }
           }
