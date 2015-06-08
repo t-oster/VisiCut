@@ -50,6 +50,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import org.apache.commons.net.util.Base64;
 
 /**
  * This class contains frequently used conversion methods
@@ -725,6 +726,31 @@ public class Helper
         }
       }
     }
+    return result;
+  }
+  
+  public static String getEncodedCredentials(String user, String password)
+  {
+    String result = "";
+
+    if (user != null && !user.isEmpty() && password != null && !password.isEmpty())
+    {
+      String credentials = user + ":" + password;
+
+      try
+      {
+        result = Base64.encodeBase64String(credentials.getBytes("UTF-8"));
+      }
+      catch (UnsupportedEncodingException e)
+      {
+        result = Base64.encodeBase64String(credentials.getBytes());
+      }
+
+      // Remove line breaks in result, old versions of Base64.encodeBase64String add wrong line breaks
+      result = result.replace("\n", "");
+      result = result.replace("\r", "");
+    }
+
     return result;
   }
 }

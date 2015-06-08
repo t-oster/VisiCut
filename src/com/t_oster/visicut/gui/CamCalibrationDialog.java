@@ -42,9 +42,12 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.swing.JOptionPane;
 
 /**
@@ -423,7 +426,20 @@ new Thread()
           URL src = new URL(imageURL);
           if (src != null)
           {
-            BufferedImage back = ImageIO.read(src);
+            URLConnection conn = src.openConnection();
+
+            // HTTP authentication
+            if (VisicutModel.getInstance() != null && VisicutModel.getInstance().getSelectedLaserDevice() != null)
+            {
+              String encodedCredentials = Helper.getEncodedCredentials(VisicutModel.getInstance().getSelectedLaserDevice().getURLUser(), VisicutModel.getInstance().getSelectedLaserDevice().getURLPassword());
+              if (!encodedCredentials.isEmpty())
+              {
+                conn.setRequestProperty("Authorization", "Basic " + encodedCredentials);
+              }
+            }
+
+            ImageInputStream stream=new MemoryCacheImageInputStream(conn.getInputStream());
+            BufferedImage back = ImageIO.read(stream);
             CamCalibrationDialog.this.setBackgroundImage(back);
           }
         }

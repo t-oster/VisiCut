@@ -49,6 +49,7 @@ public class PlatformIcon
   //public static final String NEW = "new";
   //public static final String NEXT = "next";
   public static final String NO_IMAGE = "no-image";
+  public static final String PROJECTOR = "projector";
   //public static final String PREV = "prev";
   public static final String REMOVE = "remove";
   public static final String REMOVE_FILE = "remove-file";
