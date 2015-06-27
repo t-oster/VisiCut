@@ -35,17 +35,18 @@ import javax.swing.SwingUtilities;
  */
 public class TakePhotoThread extends Thread
 {
-  // Static variables
+  // Constants
   public static final int PHOTO_RESOLUTION_SMALL = 1;  // 176 x 144
   public static final int PHOTO_RESOLUTION_MEDIUM = 2; // 320 x 240
   public static final int PHOTO_RESOLUTION_HIGH = 3;   // 640 x 480
 
-  // Object variables
+  // Variables
   private JLabel lblPhoto; // display target
   private boolean webcam; // true = use detected webcam, false = use visicamUrl
   private String visicamUrl; // URL of VisiCam in network
   private int photoResolution; // Identifier from static variables to set resolution of images
   private int framerateMs; // Integer value for the update interval of the camera in milliseconds
+  private Image latestRawImage = null; // Store latest raw image for access by calling code
 
   private boolean running = true; // internal flat to know when to stop
 
@@ -55,6 +56,7 @@ public class TakePhotoThread extends Thread
     this.visicamUrl = MainView.getInstance().getVisiCam();
     this.photoResolution = photoResolution;
     this.framerateMs = 20;
+    this.latestRawImage = null;
   }
   
   @Override
@@ -163,12 +165,18 @@ public class TakePhotoThread extends Thread
         return null;
       } 
     }
-    // scale to label
+
+    // Store raw image
     Image rawImage = imageIcon.getImage();
-    Image scaledImage = rawImage.getScaledInstance(
-      lblPhoto.getWidth(),
-      lblPhoto.getHeight(),
-      Image.SCALE_SMOOTH);
+    latestRawImage = rawImage;
+    
+    // Compute correct width / height relations
+    float scaleFactor = Math.min((float)(lblPhoto.getWidth()) / (float)(rawImage.getWidth(null)), (float)(lblPhoto.getHeight()) / (float)(rawImage.getHeight(null)));
+    int width = (int)(rawImage.getWidth(null) * scaleFactor);
+    int height = (int)(rawImage.getHeight(null) * scaleFactor);
+
+    // Scale image to fit label
+    Image scaledImage = rawImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
     ImageIcon picture = new ImageIcon(scaledImage);
     return picture;
   }
@@ -203,5 +211,10 @@ public class TakePhotoThread extends Thread
   public void setFramerateMs(int framerateMs)
   {
     this.framerateMs = framerateMs;
+  }
+
+  public Image getLatestRawImage()
+  {
+    return latestRawImage;
   }
 }

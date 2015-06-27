@@ -212,7 +212,7 @@ public class RefreshProjectorThread extends Thread
           catch (Exception e)
           {
             // Set flag for exception handling, sleep and message
-            lastExceptionMessage = "Projector thread exception: " + e.getMessage();
+            lastExceptionMessage = "Projector thread exception (2): " + e.getMessage();
           }
           
           updateInProgress = false;
@@ -263,7 +263,7 @@ public class RefreshProjectorThread extends Thread
       catch (Exception e)
       {
         // Set flag for exception handling, sleep and message
-        lastExceptionMessage = "Projector thread exception: " + e.getMessage();
+        lastExceptionMessage = "Projector thread exception (1): " + e.getMessage();
       }
     }
   }

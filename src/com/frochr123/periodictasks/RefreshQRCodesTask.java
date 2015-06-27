@@ -47,7 +47,7 @@ public class RefreshQRCodesTask implements Observer
 {
   // Constant values
   public static final int DEFAULT_QRCODE_TIME = 50;
-  public static final int DEFAULT_QRCODE_GRAPHICS_CACHE_ITEMS = 50;
+  public static final int DEFAULT_QRCODE_GRAPHICS_CACHE_ITEMS = 25;
 
   // Variables
   // Store: Key: String filename, Value: Rectangle2D maximum original bounding box for all plf parts
@@ -103,10 +103,11 @@ public class RefreshQRCodesTask implements Observer
           && VisicutModel.getInstance() != null && VisicutModel.getInstance().getPlfFile() != null)
       {
         // Prepare variables
-        ArrayList<PlfPart> deletePartsList = new ArrayList<PlfPart>();
+        ArrayList<PlfPart> removePlfParts = new ArrayList<PlfPart>();
         AffineTransform qrCodePixelPosition2mm = null;
         double laserbedWidthMm = 0.0;
         double laserbedHeightMm = 0.0;
+        int addedPartsCount = 0;
 
         // Get calibration values for correct computation of position
         // Use copy constructor
@@ -127,15 +128,12 @@ public class RefreshQRCodesTask implements Observer
         // Iterate over all parts, detect parts which were added with QR codes, remove them later on
         for (PlfPart part : VisicutModel.getInstance().getPlfFile().getPartsCopy())
         {
-          // Check if this part was loaded by QR code scanning
-          if (part.isQRCodeSource())
+          // Check if this part was loaded by preview QR code scanning
+          if (part.isPreviewQRCodeSource())
           {
-            deletePartsList.add(part);
+            removePlfParts.add(part);
           }
         }
-        
-        // Clear selected part and edit rectangle
-        VisicutModel.getInstance().setSelectedPart(null, false);
 
         // Iterate over list of QR codes, download files, load files, add them on correct position with correct angle from QR code
         for (QRCodeScannerResult qrCode : qrResults)
@@ -226,7 +224,7 @@ public class RefreshQRCodesTask implements Observer
             {
               // Prepare variables
               Rectangle2D maxOriginalBoundingBox = null;
-              LinkedList<PlfPart> plfParts = new LinkedList<PlfPart>();
+              LinkedList<PlfPart> addPlfParts = new LinkedList<PlfPart>();
               
               // Check if filename is already stored in cache map, if yes return cache hit for max bound box
               if (cacheMap.containsKey(file.getName()))
@@ -282,7 +280,7 @@ public class RefreshQRCodesTask implements Observer
                       {
                         // Remove mapping, might cause too long loading times
                         p.setMapping(null);
-                        plfParts.add(p);
+                        addPlfParts.add(p);
                       }
                     }
                   }
@@ -296,14 +294,14 @@ public class RefreshQRCodesTask implements Observer
                 LinkedList<String> warnings = new LinkedList<String>();
                 PlfPart p = VisicutModel.getInstance().loadGraphicFile(file, warnings);
                 p.setMapping(null);
-                plfParts.add(p);
+                addPlfParts.add(p);
               }
 
               // Iterate over all plf parts and compute maximum original bounding box
               // Needed for transformations of multiple plf parts as in plf files
               if (maxOriginalBoundingBox == null)
               {
-                for (PlfPart plfPart : plfParts)
+                for (PlfPart plfPart : addPlfParts)
                 {
                   if (plfPart != null)
                   {
@@ -328,12 +326,12 @@ public class RefreshQRCodesTask implements Observer
               }
 
               // Add plf parts to current used plf file and preview and apply transformations
-              if (plfParts != null && !plfParts.isEmpty() && maxOriginalBoundingBox != null)
+              if (addPlfParts != null && !addPlfParts.isEmpty() && maxOriginalBoundingBox != null)
               {
                 double centerBoxX = maxOriginalBoundingBox.getCenterX();
                 double centerBoxY = maxOriginalBoundingBox.getCenterY();
                 
-                for (PlfPart plfPart : plfParts)
+                for (PlfPart plfPart : addPlfParts)
                 {
                   if (plfPart != null)
                   {
@@ -393,13 +391,23 @@ public class RefreshQRCodesTask implements Observer
                         plfPart.getGraphicObjects().setTransform(transformFitLaserBed);
                       }
                     }
-                    
-                    plfPart.setIsQRCodeSource(true);
-                    VisicutModel.getInstance().getPlfFile().add(plfPart);
-                    
-                    if (VisicutModel.getInstance().getPropertyChangeSupport() != null)
+
+                    if (MainView.getInstance() != null && !MainView.getInstance().isLaserJobInProgress())
                     {
-                      VisicutModel.getInstance().getPropertyChangeSupport().firePropertyChange(VisicutModel.PROP_PLF_PART_ADDED, null, plfPart);
+                      addedPartsCount++;
+                      plfPart.setIsPreviewQRCodeSource(true);
+                      plfPart.setQrCodeSourceURL(qrCode.getText());
+                      VisicutModel.getInstance().getPlfFile().add(plfPart);
+
+                      if (VisicutModel.getInstance().getPropertyChangeSupport() != null)
+                      {
+                        VisicutModel.getInstance().getPropertyChangeSupport().firePropertyChange(VisicutModel.PROP_PLF_PART_ADDED, null, plfPart);
+                      }
+                    }
+                    else
+                    {
+                      addedPartsCount = 0;
+                      break;
                     }
                   }
                 }
@@ -420,17 +428,47 @@ public class RefreshQRCodesTask implements Observer
           }
         }
         
+        int removedPartsCount = 0;
+        
         // Iterate over all old parts which need to be deleted
-        for (PlfPart part : deletePartsList)
+        if (MainView.getInstance() != null && !MainView.getInstance().isLaserJobInProgress())
         {
-          VisicutModel.getInstance().removePlfPart(part);
+          for (PlfPart part : removePlfParts)
+          {
+            VisicutModel.getInstance().removePlfPart(part);
+          }
+
+          removedPartsCount = removePlfParts.size();
         }
-        
-        // Clear selected part and edit rectangle
-        VisicutModel.getInstance().setSelectedPart(null, false);
-        
-        // Refresh buttons
-        MainView.getInstance().refreshButtonStates(VisicutModel.PROP_PLF_PART_ADDED);
+
+        // Check added / removed counts to control some GUI behaviour
+        // QR code parts removed, but no new ones added
+        // Unlock GUI because QR code editing ended
+        if (addedPartsCount == 0 && removedPartsCount > 0)
+        {
+          if (MainView.getInstance() != null && MainView.getInstance().isEditGuiForQRCodesDisabled())
+          {
+            MainView.getInstance().disableEditGuiForQRCodes(false);
+          }
+          
+          // Refresh buttons
+          MainView.getInstance().refreshButtonStates(VisicutModel.PROP_PLF_PART_REMOVED);
+        }
+        // QR code parts added
+        // Lock GUI because QR code editing started
+        else if (addedPartsCount > 0)
+        {
+          if (MainView.getInstance() != null && !MainView.getInstance().isEditGuiForQRCodesDisabled())
+          {
+            MainView.getInstance().disableEditGuiForQRCodes(true);
+            
+            // Clear selected part and edit rectangle
+            VisicutModel.getInstance().setSelectedPart(null, false);
+          }
+          
+          // Refresh buttons
+          MainView.getInstance().refreshButtonStates(VisicutModel.PROP_PLF_PART_ADDED);
+        }
       }
     }
     catch (Exception e)
@@ -447,19 +485,10 @@ public class RefreshQRCodesTask implements Observer
   // Response from QR code scanner
   public synchronized void update(Observable obj, Object arg)
   {
-    // Variable to determine if correct 
-    boolean validResult = false;
-
     // Check for valid input from QR code scanner, never null, empty list is allowed to happen
     if (obj != null && arg != null && obj.equals(qrCodeScanner) && arg instanceof List)
     {
       qrResults = (List<QRCodeScannerResult>)(arg);
-      validResult = true;
-    }
-    
-    // Call update projector image with filled image
-    if (validResult)
-    {
       updateQRCodes();
     }
   }
