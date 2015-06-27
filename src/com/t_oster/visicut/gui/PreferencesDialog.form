@@ -422,7 +422,7 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="lblFabqrUrl">
               <Properties>
-                <Property name="text" type="java.lang.String" value="FabQR URL, with ending slash:"/>
+                <Property name="text" type="java.lang.String" value="FabQR private API upload project URL:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txtFabqrUrl">
@@ -430,7 +430,7 @@
                 <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Specify the id of your FabLab Facebook site. It will be referenced &lt;br&gt;&#xa; in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL&lt;br&gt;&#xa;of the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 &lt;br&gt;&#xa;enter 191850277562397 in this field.&lt;/html&gt;" noResource="true"/>
               </Properties>
               <BindingProperties>
-                <BindingProperty name="text" source="Form" sourcePath="${preferences.fabqrURL}" target="txtFabqrUrl" targetPath="text" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="text" source="Form" sourcePath="${preferences.fabqrPrivateURL}" target="txtFabqrUrl" targetPath="text" updateStrategy="0" immediately="false"/>
               </BindingProperties>
             </Component>
             <Component class="javax.swing.JCheckBox" name="cbFabqrActive">

@@ -317,11 +317,11 @@ public class PreferencesDialog extends javax.swing.JDialog
 
         pnlFabqr.setToolTipText(""); // NOI18N
 
-        lblFabqrUrl.setText("FabQR URL, with ending slash:");
+        lblFabqrUrl.setText("FabQR private API upload project URL:");
 
         txtFabqrUrl.setToolTipText("<html>Specify the id of your FabLab Facebook site. It will be referenced <br>\n in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL<br>\nof the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 <br>\nenter 191850277562397 in this field.</html>"); // NOI18N
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabqrURL}"), txtFabqrUrl, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabqrPrivateURL}"), txtFabqrUrl, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
         cbFabqrActive.setText("FabQR active");

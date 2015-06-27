@@ -134,7 +134,7 @@ public class RefreshProjectorThread extends Thread
             {
               if (updateInProgress)
               {
-                Thread.sleep(DEFAULT_PROJECTOR_SHUTDOWN_THREAD_TIME);
+                Thread.currentThread().sleep(DEFAULT_PROJECTOR_SHUTDOWN_THREAD_TIME);
                 continue;
               }
 

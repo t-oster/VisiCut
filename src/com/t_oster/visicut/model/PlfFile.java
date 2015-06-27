@@ -137,20 +137,4 @@ public class PlfFile implements Iterable<PlfPart> {
       return new LinkedList<PlfPart>(parts);
     }
   }
-
-  // Check if any part is loaded from preview QR codes
-  public boolean containsPreviewQRCodeParts()
-  {
-    List<PlfPart> plfparts = getPartsCopy();
-
-    for (PlfPart p : plfparts)
-    {
-      if (p.isPreviewQRCodeSource())
-      {
-        return true;
-      }
-    }
-
-    return false;
-  }
 }

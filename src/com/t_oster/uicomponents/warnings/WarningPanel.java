@@ -75,7 +75,7 @@ public class WarningPanel extends javax.swing.JPanel
     setVisible(true);
   }
   
-  public void addMessageWithId(final Message m, final int messageId)
+  public void addMessageWithId(final Message m, final int messageId, boolean closeButtonVisible)
   {
     if (m == null)
     {
@@ -86,21 +86,20 @@ public class WarningPanel extends javax.swing.JPanel
     
     switch (messageId)
     {
+      // Message is automatically removed and closed
       case MESSAGE_ID_QR_CODE_EDIT_MESSAGE:
       {
         message_qr_code = m;
         defaultCloseListener = false;
+        m.setCloseButtonVisible(closeButtonVisible);
+
+        // Empty close listener
         m.setCloseListener(new ActionListener(){
           public void actionPerformed(ActionEvent ae)
           {
-            if (MainView.getInstance() != null)
-            {
-              MainView.getInstance().setCameraActive(false);
-            }
-
-            removeMessageWithId(messageId);
           }
         });
+
         break;
       }
       default:

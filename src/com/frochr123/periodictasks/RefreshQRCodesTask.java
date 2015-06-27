@@ -19,11 +19,13 @@
 package com.frochr123.periodictasks;
 
 import com.frochr123.helper.CachedFileDownloader;
+import com.frochr123.helper.QRCodeInfo;
 import com.frochr123.qrcodescan.QRCodeScanner;
 import com.frochr123.qrcodescan.QRCodeScannerResult;
 import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.managers.MappingManager;
+import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.model.PlfFile;
 import com.t_oster.visicut.model.PlfPart;
 import java.awt.geom.AffineTransform;
@@ -48,6 +50,7 @@ public class RefreshQRCodesTask implements Observer
   // Constant values
   public static final int DEFAULT_QRCODE_TIME = 50;
   public static final int DEFAULT_QRCODE_GRAPHICS_CACHE_ITEMS = 25;
+  public static final int DEFAULT_QRCODE_DUPLICATE_DETECTION_PIXEL_DIFFERENCE = 15;
 
   // Variables
   // Store: Key: String filename, Value: Rectangle2D maximum original bounding box for all plf parts
@@ -55,12 +58,14 @@ public class RefreshQRCodesTask implements Observer
   private LinkedHashMap<String, Rectangle2D> cacheMap = new LinkedHashMap<String, Rectangle2D>();
   private List<QRCodeScannerResult> qrResults = null;
   private QRCodeScanner qrCodeScanner = null;
+  private boolean storePositions = false;
   
   // Constructor
   public RefreshQRCodesTask()
   {
     super();
     qrResults = null;
+    storePositions = false;
     qrCodeScanner = new QRCodeScanner(null, true, true, getUpdateTimerMs());
     qrCodeScanner.addObserver(this);
   }
@@ -94,13 +99,28 @@ public class RefreshQRCodesTask implements Observer
     return DEFAULT_QRCODE_TIME;
   }
 
+  // Functions for store positions flag
+  public synchronized boolean isStorePositions()
+  {
+    return storePositions;
+  }
+
+  public synchronized void setStorePositions(boolean storePositions)
+  {
+    this.storePositions = storePositions;
+  }
+  
   // Function to update QR codes
   public synchronized void updateQRCodes()
   {
     try
     {
-      if (MainView.getInstance() != null && MainView.getInstance().isCameraActive() && MainView.getInstance().isPreviewPanelShowBackgroundImage()
-          && VisicutModel.getInstance() != null && VisicutModel.getInstance().getPlfFile() != null)
+      if (MainView.getInstance() != null && MappingManager.getInstance() != null && PreferencesManager.getInstance() != null && VisicutModel.getInstance() != null
+          && PreferencesManager.getInstance().getPreferences() != null && VisicutModel.getInstance().getSelectedLaserDevice() != null
+          && VisicutModel.getInstance().getSelectedLaserDevice().getLaserCutter() != null
+          && VisicutModel.getInstance().getPlfFile() != null && VisicutModel.getInstance().getPropertyChangeSupport() != null
+          && MainView.getInstance().isCameraActive() && MainView.getInstance().isPreviewPanelShowBackgroundImage()
+          && !MainView.getInstance().isFabqrUploadDialogOpened() && !MainView.getInstance().isLaserJobInProgress())
       {
         // Prepare variables
         ArrayList<PlfPart> removePlfParts = new ArrayList<PlfPart>();
@@ -108,30 +128,48 @@ public class RefreshQRCodesTask implements Observer
         double laserbedWidthMm = 0.0;
         double laserbedHeightMm = 0.0;
         int addedPartsCount = 0;
+        boolean storePos = isStorePositions();
 
-        // Get calibration values for correct computation of position
+        // Reset store position variable
+        if (storePos)
+        {
+          setStorePositions(false);
+        }
+        
+        // Get calibration values for correct computation of position, is actually allowed to be null
         // Use copy constructor
-        if (VisicutModel.getInstance().getSelectedLaserDevice() != null
-            && VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration() != null)
+        if (VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration() != null)
         {
           qrCodePixelPosition2mm = new AffineTransform(VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration());
         }
 
         // Find laser bed width and height
-        if (VisicutModel.getInstance().getSelectedLaserDevice() != null
-            && VisicutModel.getInstance().getSelectedLaserDevice().getLaserCutter() != null)
-        {
-          laserbedWidthMm = VisicutModel.getInstance().getSelectedLaserDevice().getLaserCutter().getBedWidth();
-          laserbedHeightMm = VisicutModel.getInstance().getSelectedLaserDevice().getLaserCutter().getBedHeight();
-        }
+        laserbedWidthMm = VisicutModel.getInstance().getSelectedLaserDevice().getLaserCutter().getBedWidth();
+        laserbedHeightMm = VisicutModel.getInstance().getSelectedLaserDevice().getLaserCutter().getBedHeight();
         
         // Iterate over all parts, detect parts which were added with QR codes, remove them later on
         for (PlfPart part : VisicutModel.getInstance().getPlfFile().getPartsCopy())
         {
-          // Check if this part was loaded by preview QR code scanning
-          if (part.isPreviewQRCodeSource())
+          QRCodeInfo qrCodePartInfo = part.getQRCodeInfo();
+          
+          if (qrCodePartInfo != null)
           {
-            removePlfParts.add(part);
+            // Check if this part was loaded by preview QR code scanning and is not position stored
+            if (qrCodePartInfo.isPreviewQRCodeSource() && !qrCodePartInfo.isPreviewPositionQRStored())
+            {
+              // If positions from last iteration should be stored, store them and redraw them
+              if (storePos)
+              {
+                qrCodePartInfo.setPreviewPositionQRStored(true);
+                part.setIsMappingEnabled(true);
+                VisicutModel.getInstance().firePartUpdated(part);
+              }
+              // Otherwise add old preview parts to remove list
+              else
+              {
+                removePlfParts.add(part);
+              }
+            }
           }
         }
 
@@ -149,10 +187,41 @@ public class RefreshQRCodesTask implements Observer
             // Variables
             double centerPixelX = qrCode.getCenterX();
             double centerPixelY = qrCode.getCenterY();
+            String qrCodeText = qrCode.getText();
             double centerMmX = 0.0;
             double centerMmY = 0.0;
             double rotationFinalRad = 0.0;
             File file = null;
+
+            // Check if this QR code should be processed at all, might be a copy of a QR code which was just stored at same position
+            // Iterate over all parts, detect parts which have same URL and similar position
+            boolean qrCodeDuplicateAtSamePosition = false;
+
+            for (PlfPart part : VisicutModel.getInstance().getPlfFile().getPartsCopy())
+            {
+              QRCodeInfo qrCodePartInfo = part.getQRCodeInfo();
+
+              if (qrCodePartInfo != null)
+              {
+                // Check for duplicate, correct properties and same URL
+                if (qrCodePartInfo.isPreviewQRCodeSource() && qrCodePartInfo.isPreviewPositionQRStored() && qrCodeText.equals(qrCodePartInfo.getQRCodeSourceURL()))
+                {
+                  // Check for similar positions, use distance of 2 cm for x and y center pixel coordinates
+                  if (Math.abs(centerPixelX - qrCodePartInfo.getPreviewOriginalQRCodePositionPixelX()) < DEFAULT_QRCODE_DUPLICATE_DETECTION_PIXEL_DIFFERENCE && Math.abs(centerPixelY - qrCodePartInfo.getPreviewOriginalQRCodePositionPixelY()) < DEFAULT_QRCODE_DUPLICATE_DETECTION_PIXEL_DIFFERENCE)
+                  {
+                    // Duplicate detected, ignore everything
+                    qrCodeDuplicateAtSamePosition = true;
+                    break;
+                  }
+                }
+              }
+            }
+            
+            // If duplicate detected, silently continue with next QR code
+            if (qrCodeDuplicateAtSamePosition)
+            {
+              continue;
+            }
 
             // Compute position of qr code in pixel and millimeters
             // Use default coordinate 0.0 for millimeters if no information for correct computation is available (= uncalibrated camera)
@@ -200,7 +269,7 @@ public class RefreshQRCodesTask implements Observer
             // QR code seems to be fine, begin downloading
             try
             {
-              SimpleEntry<String, SimpleEntry<String, File>> fileDownload = CachedFileDownloader.downloadFile(qrCode.getText(), CachedFileDownloader.CACHE_DOWNLOADER_DEFAULT_FILETYPES);
+              SimpleEntry<String, SimpleEntry<String, File>> fileDownload = CachedFileDownloader.downloadFile(qrCodeText, CachedFileDownloader.CACHE_DOWNLOADER_DEFAULT_FILETYPES);
               
               if (fileDownload != null && fileDownload.getValue() != null && fileDownload.getValue().getValue() != null)
               {
@@ -278,8 +347,6 @@ public class RefreshQRCodesTask implements Observer
                     {
                       if (p != null)
                       {
-                        // Remove mapping, might cause too long loading times
-                        p.setMapping(null);
                         addPlfParts.add(p);
                       }
                     }
@@ -290,10 +357,14 @@ public class RefreshQRCodesTask implements Observer
               else
               {
                 // Not interested in warnings, but null pointers are not supported here
-                // Remove mapping, might cause too long loading times
                 LinkedList<String> warnings = new LinkedList<String>();
                 PlfPart p = VisicutModel.getInstance().loadGraphicFile(file, warnings);
-                p.setMapping(null);
+
+                if (PreferencesManager.getInstance().getPreferences().getDefaultMapping() != null)
+                {
+                  p.setMapping(MappingManager.getInstance().getItemByName(PreferencesManager.getInstance().getPreferences().getDefaultMapping()));
+                }
+                
                 addPlfParts.add(p);
               }
 
@@ -392,23 +463,24 @@ public class RefreshQRCodesTask implements Observer
                       }
                     }
 
-                    if (MainView.getInstance() != null && !MainView.getInstance().isLaserJobInProgress())
-                    {
-                      addedPartsCount++;
-                      plfPart.setIsPreviewQRCodeSource(true);
-                      plfPart.setQrCodeSourceURL(qrCode.getText());
-                      VisicutModel.getInstance().getPlfFile().add(plfPart);
+                    // Increase counter
+                    addedPartsCount++;
 
-                      if (VisicutModel.getInstance().getPropertyChangeSupport() != null)
-                      {
-                        VisicutModel.getInstance().getPropertyChangeSupport().firePropertyChange(VisicutModel.PROP_PLF_PART_ADDED, null, plfPart);
-                      }
-                    }
-                    else
-                    {
-                      addedPartsCount = 0;
-                      break;
-                    }
+                    // Set QRCodeInfo to PlfPart
+                    QRCodeInfo qrCodeInfo = new QRCodeInfo();
+                    qrCodeInfo.setQRCodeSourceURL(qrCodeText);
+                    qrCodeInfo.setPreviewQRCodeSource(true);
+                    qrCodeInfo.setPreviewPositionQRStored(false);
+                    qrCodeInfo.setPreviewOriginalQRCodePositionPixelX(centerPixelX);
+                    qrCodeInfo.setPreviewOriginalQRCodePositionPixelY(centerPixelY);
+                    plfPart.setQRCodeInfo(qrCodeInfo);
+
+                    // Disable mapping, might cause too long loading times for preview, enable on store positions
+                    plfPart.setIsMappingEnabled(false);
+
+                    // Add part to current plf file
+                    VisicutModel.getInstance().getPlfFile().add(plfPart);
+                    VisicutModel.getInstance().getPropertyChangeSupport().firePropertyChange(VisicutModel.PROP_PLF_PART_ADDED, null, plfPart);
                   }
                 }
               }
@@ -421,32 +493,24 @@ public class RefreshQRCodesTask implements Observer
           }
           catch (Exception e)
           {
-            if (MainView.getInstance() != null && MainView.getInstance().getDialog() != null)
+            if (MainView.getInstance().getDialog() != null)
             {
               MainView.getInstance().getDialog().showWarningMessage("Exception in deep QR code detection task: " + e.getMessage());
             }
           }
         }
         
-        int removedPartsCount = 0;
-        
         // Iterate over all old parts which need to be deleted
-        if (MainView.getInstance() != null && !MainView.getInstance().isLaserJobInProgress())
+        for (PlfPart part : removePlfParts)
         {
-          for (PlfPart part : removePlfParts)
-          {
-            VisicutModel.getInstance().removePlfPart(part);
-          }
-
-          removedPartsCount = removePlfParts.size();
+          VisicutModel.getInstance().removePlfPart(part);
         }
 
-        // Check added / removed counts to control some GUI behaviour
-        // QR code parts removed, but no new ones added
-        // Unlock GUI because QR code editing ended
-        if (addedPartsCount == 0 && removedPartsCount > 0)
+        // Check added counts to control some GUI behaviour
+        // No new ones added, unlock GUI because QR code editing ended
+        if (addedPartsCount == 0)
         {
-          if (MainView.getInstance() != null && MainView.getInstance().isEditGuiForQRCodesDisabled())
+          if (MainView.getInstance().isEditGuiForQRCodesDisabled())
           {
             MainView.getInstance().disableEditGuiForQRCodes(false);
           }
@@ -458,7 +522,7 @@ public class RefreshQRCodesTask implements Observer
         // Lock GUI because QR code editing started
         else if (addedPartsCount > 0)
         {
-          if (MainView.getInstance() != null && !MainView.getInstance().isEditGuiForQRCodesDisabled())
+          if (!MainView.getInstance().isEditGuiForQRCodesDisabled())
           {
             MainView.getInstance().disableEditGuiForQRCodes(true);
             

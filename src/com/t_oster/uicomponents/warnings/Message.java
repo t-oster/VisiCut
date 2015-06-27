@@ -289,6 +289,16 @@ public class Message extends javax.swing.JPanel
       closeListener.actionPerformed(new ActionEvent(this, 0, "close"));
     }
   }
+
+  public boolean isCloseButtonVisible()
+  {
+    return btClose.isVisible();
+  }
+  
+  public void setCloseButtonVisible(boolean visible)
+  {
+    btClose.setVisible(visible);
+  }
   
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton btAction1;

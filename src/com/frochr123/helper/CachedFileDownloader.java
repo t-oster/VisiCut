@@ -47,6 +47,7 @@ public class CachedFileDownloader
   // Constants
   public static final int CACHE_DOWNLOADER_MAX_ENTRIES = 25;
   public static final int CACHE_DOWNLOADER_DEFAULT_TIMEOUT = 5000;
+  public static final int CACHE_DOWNLOADER_MAX_FILESIZE_BYTES = 10000000;
   public static final String CACHE_DOWNLOADER_DEFAULT_FILETYPES = "plf,svg";
 
   // Variables
@@ -235,6 +236,12 @@ public class CachedFileDownloader
     else
     {
       finalUrl = url;
+    }
+    
+    // Check response valid and max file size
+    if (response.getEntity() == null || response.getEntity().getContentLength() > CACHE_DOWNLOADER_MAX_FILESIZE_BYTES)
+    {
+      return null;
     }
     
     // Get data

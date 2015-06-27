@@ -28,6 +28,7 @@ import com.apple.eawt.AppEvent.OpenFilesEvent;
 import com.apple.eawt.AppEvent.PreferencesEvent;
 import com.apple.eawt.AppEvent.QuitEvent;
 import com.apple.eawt.QuitResponse;
+import com.frochr123.fabqr.gui.FabQRUploadDialog;
 import com.frochr123.gui.QRWebcamScanDialog;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserCutter;
@@ -142,6 +143,7 @@ public class MainView extends javax.swing.JFrame
   private RefreshQRCodesTask qrCodesTask = null;
   private boolean editGuiForQRCodesDisabled = false;
   private boolean laserJobInProgress = false;
+  private boolean isFabqrUploadDialogOpened = false;
   
   public static MainView getInstance()
   {
@@ -3191,6 +3193,11 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   {
     return previewPanel.isShowBackgroundImage();
   }
+
+  public void setPreviewPanelShowBackgroundImage(boolean showBackgroundImage)
+  {
+    previewPanel.setShowBackgroundImage(showBackgroundImage);
+  }
   
   public boolean isCameraActive()
   {
@@ -3280,7 +3287,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
       return;
     }
 
-    // Avoid adding the message multiple times on QR code detection fails
+    // Avoid adding the message multiple times on QR code detection fails or remove if not needed anymore
     warningPanel.removeMessageWithId(WarningPanel.MESSAGE_ID_QR_CODE_EDIT_MESSAGE);
 
     if (disable)
@@ -3291,6 +3298,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
       executeJobMenuItem.setEnabled(!disable);
       calculateTimeButton.setEnabled(!disable);
 
+      // Message is automatically removed and closed
       warningPanel.addMessageWithId(new Message("Info", bundle.getString("QR_CODE_DETECTION_GUI_DISABLE_TEXT"), Message.Type.INFO, new com.t_oster.uicomponents.warnings.Action[]
       {
         new com.t_oster.uicomponents.warnings.Action(bundle.getString("QR_CODE_DETECTION_GUI_DISABLE_BUTTON"))
@@ -3298,12 +3306,18 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
           @Override
           public boolean clicked()
           {
-            MainView.getInstance().setCameraActive(false);
+            if (qrCodesTask != null)
+            {
+              if (!qrCodesTask.isStorePositions())
+              {
+                qrCodesTask.setStorePositions(true);
+              }
+            }
             return true;
           }
         }
       }
-      ), WarningPanel.MESSAGE_ID_QR_CODE_EDIT_MESSAGE);
+      ), WarningPanel.MESSAGE_ID_QR_CODE_EDIT_MESSAGE, false);
     }
     else
     {
@@ -3352,6 +3366,28 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     {
       return;
     }
+    
+    // Ask user for FabQR upload, if FabQR is enabled and available
+    if (MainView.getInstance() != null && PreferencesManager.getInstance() != null && PreferencesManager.getInstance().getPreferences() != null
+        && PreferencesManager.getInstance().getPreferences().isFabqrActive() && PreferencesManager.getInstance().getPreferences().getFabqrPrivateURL() != null
+        && !PreferencesManager.getInstance().getPreferences().getFabqrPrivateURL().isEmpty() && !isFabqrUploadDialogOpened())
+    {
+      if (dialog.showYesNoQuestion(bundle.getString("DIALOG_QUESTION_FABQR_UPLOAD")))
+      {
+        setFabqrUploadDialogOpened(true);
+        
+        new Thread()
+        {
+          @Override
+          public void run()
+          {
+            FabQRUploadDialog fabqrUploadDialg = new FabQRUploadDialog(MainView.getInstance(), true);
+            fabqrUploadDialg.setLocationRelativeTo(null);
+            fabqrUploadDialg.setVisible(true);
+          }
+        }.start();
+      }
+    }
   }
   
   private void laserJobStopped()
@@ -3361,18 +3397,15 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     {
       return;
     }
+  }
 
-    // On laser job stop, ask to enable camera again automatically if available
-    boolean cam = (!getVisiCam().isEmpty());
-    
-    if (cam && VisicutModel.getInstance() != null && VisicutModel.getInstance().getPlfFile() != null
-        && VisicutModel.getInstance().getPlfFile().containsPreviewQRCodeParts())
-    {
-      if (dialog.showYesNoQuestion(bundle.getString("LASER_JOB_FINISHED_ASK_CAMERA_QR_CODE_DIALOG")))
-      {
-        previewPanel.setShowBackgroundImage(true);
-        setCameraActive(true);        
-      }
-    }
+  public boolean isFabqrUploadDialogOpened()
+  {
+    return isFabqrUploadDialogOpened;
+  }
+
+  public void setFabqrUploadDialogOpened(boolean isFabqrUploadDialogOpened)
+  {
+    this.isFabqrUploadDialogOpened = isFabqrUploadDialogOpened;
   }
 }

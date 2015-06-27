@@ -19,6 +19,7 @@
 package com.frochr123.gui;
 
 import com.frochr123.helper.CachedFileDownloader;
+import com.frochr123.helper.QRCodeInfo;
 import com.t_oster.visicut.gui.MainView;
 import com.tur0kk.TakePhotoThread;
 import com.frochr123.qrcodescan.QRCodeScanner;
@@ -54,8 +55,8 @@ public class QRWebcamScanDialog extends JDialog implements Observer
     // End of variables declaration//GEN-END:variables
 
   // Variables
-  private TakePhotoThread cameraThread;
-  private QRCodeScanner qrCodeScanner;
+  private TakePhotoThread cameraThread = null;
+  private QRCodeScanner qrCodeScanner = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/frochr123/gui/resources/QRWebcamScanDialog");
 
   // Constructor
@@ -149,7 +150,6 @@ public class QRWebcamScanDialog extends JDialog implements Observer
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-  // On Publish button click
   // Window listener to close camera thread on window close
   private void initWindowListener()
   {
@@ -296,10 +296,11 @@ public class QRWebcamScanDialog extends JDialog implements Observer
         
         // QR code seems to be fine, begin downloading
         File file = null;
+        String qrCodeText = qrCode.getText();
 
         try
         {
-          SimpleEntry<String, SimpleEntry<String, File>> fileDownload = CachedFileDownloader.downloadFile(qrCode.getText(), CachedFileDownloader.CACHE_DOWNLOADER_DEFAULT_FILETYPES);
+          SimpleEntry<String, SimpleEntry<String, File>> fileDownload = CachedFileDownloader.downloadFile(qrCodeText, CachedFileDownloader.CACHE_DOWNLOADER_DEFAULT_FILETYPES);
 
           if (fileDownload != null && fileDownload.getValue() != null && fileDownload.getValue().getValue() != null)
           {
@@ -311,7 +312,7 @@ public class QRWebcamScanDialog extends JDialog implements Observer
           // On exception show error dialog and continue with next QR code
           if (MainView.getInstance() != null && MainView.getInstance().getDialog() != null)
           {
-            MainView.getInstance().getDialog().showOkCancelDialog(bundle.getString("ERROR_FILE_DOWNLOAD") + " (URL: " + qrCode.getText() + ")");
+            MainView.getInstance().getDialog().showOkCancelDialog(bundle.getString("ERROR_FILE_DOWNLOAD") + " (URL: " + qrCodeText + ")");
           }
 
           continue;
@@ -322,7 +323,7 @@ public class QRWebcamScanDialog extends JDialog implements Observer
           // On file null show error dialog and continue with next QR code
           if (MainView.getInstance() != null && MainView.getInstance().getDialog() != null)
           {
-            MainView.getInstance().getDialog().showOkCancelDialog(bundle.getString("ERROR_FILE_DOWNLOAD") + " (URL: " + qrCode.getText() + ")");
+            MainView.getInstance().getDialog().showOkCancelDialog(bundle.getString("ERROR_FILE_DOWNLOAD") + " (URL: " + qrCodeText + ")");
           }
 
           continue;
@@ -399,9 +400,16 @@ public class QRWebcamScanDialog extends JDialog implements Observer
               {
                 if (MainView.getInstance() != null && !MainView.getInstance().isLaserJobInProgress())
                 {
+                  // Increase counter
                   addedPartsCount++;
-                  plfPart.setIsWebcamQRCodeSource(true);
-                  plfPart.setQrCodeSourceURL(qrCode.getText());
+                  
+                  // Set QRCodeInfo to PlfPart
+                  QRCodeInfo qrCodeInfo = new QRCodeInfo();
+                  qrCodeInfo.setWebcamQRCodeSource(true);
+                  qrCodeInfo.setQRCodeSourceURL(qrCodeText);
+                  plfPart.setQRCodeInfo(qrCodeInfo);
+
+                  // Add part to current Plf file
                   VisicutModel.getInstance().getPlfFile().add(plfPart);
 
                   if (VisicutModel.getInstance().getPropertyChangeSupport() != null)

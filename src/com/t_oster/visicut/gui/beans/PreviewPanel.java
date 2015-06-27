@@ -544,7 +544,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
           MappingSet mappingsToDraw = part.getMapping();
           if (VisicutModel.getInstance().getMaterial() == null || mappingsToDraw == null || mappingsToDraw.isEmpty())
           {
-            if (part.isPreviewQRCodeSource() && part.getGraphicObjects() != null)
+            if (part.getQRCodeInfo() != null && part.getQRCodeInfo().isPreviewQRCodeSource() && !part.getQRCodeInfo().isPreviewPositionQRStored() && part.getGraphicObjects() != null)
             {
               GraphicSet graphicSet = part.getGraphicObjects();
               Stroke originalStroke = gg.getStroke();
