@@ -98,6 +98,11 @@ public class LaserDevice implements ImageListable
 
   /**
    * Get the value of cameraCalibration
+   * 
+   * Computation for scale: Millimeters per one Pixel
+   * Millimeters are real millimeters
+   * Pixels are pixels of the original unmodified camera image
+   * Seperate values for width and height scale
    *
    * @return the value of cameraCalibration
    */

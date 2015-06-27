@@ -28,7 +28,7 @@ import java.util.List;
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class PlfFile implements Iterable<PlfPart> {
-  List<PlfPart> parts = new LinkedList<PlfPart>();
+  private List<PlfPart> parts = new LinkedList<PlfPart>();
   private File file = null;
 
   public File getFile()
@@ -56,29 +56,52 @@ public class PlfFile implements Iterable<PlfPart> {
     return parts.contains(o);
   }
 
-  public Iterator<PlfPart> iterator()
-  {
-    return parts.iterator();
-  }
-
-  public boolean add(PlfPart e)
-  {
-    return parts.add(e);
-  }
-
-  public void clear()
-  {
-    parts.clear();
-  }
-
   public PlfPart get(int i)
   {
     return parts.get(i);
   }
 
-  public boolean remove(PlfPart o)
+  // Needs to be implemented because of interface Iterable
+  // Can not avoid external writes here
+  // As it seems it is not used to modify the list references
+  // directly (e.g. with iterator().remove())
+  public Iterator<PlfPart> iterator()
   {
-    return parts.remove(o);
+    return parts.iterator();
+  }
+  
+  public boolean add(PlfPart e)
+  {
+    synchronized (this)
+    {
+      return parts.add(e);
+    }
   }
 
+  public void clear()
+  {
+    synchronized (this)
+    {
+      parts.clear();
+    }
+  }
+
+  public boolean remove(PlfPart o)
+  {
+    synchronized (this)
+    {
+      return parts.remove(o);
+    }
+  }
+
+  // Use copy constructor to create a copy of the original list
+  // Just interested in a consistent state of references in the list
+  // Do not need a copy of the contained elements
+  public List<PlfPart> getPartsCopy()
+  {
+    synchronized (this)
+    {
+      return new LinkedList<PlfPart>(parts);
+    }
+  }
 }

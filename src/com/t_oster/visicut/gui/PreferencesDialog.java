@@ -106,6 +106,10 @@ public class PreferencesDialog extends javax.swing.JDialog
         cbSandboxLaserScript1 = new javax.swing.JCheckBox();
         jTextFieldLabName = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
+        lbEnableQRCodes = new javax.swing.JLabel();
+        lbFastQRCodes = new javax.swing.JLabel();
+        cbEnableQRCodes = new javax.swing.JCheckBox();
+        cbFastQRCodes = new javax.swing.JCheckBox();
         pnlFacebook = new javax.swing.JPanel();
         lblFabLabLocationFacebookId = new javax.swing.JLabel();
         txtfFabLabLocationFacebookId = new javax.swing.JTextField();
@@ -160,6 +164,18 @@ public class PreferencesDialog extends javax.swing.JDialog
 
         jLabel3.setToolTipText(bundle.getString("LAB_NAME_TOOLTIP")); // NOI18N
 
+        lbEnableQRCodes.setText(bundle.getString("ENABLE_QR_CODES_TEXT")); // NOI18N
+        lbEnableQRCodes.setToolTipText(bundle.getString("ENABLE_QR_CODES_TOOLTIP")); // NOI18N
+
+        lbFastQRCodes.setText(bundle.getString("FAST_QR_CODES_TEXT")); // NOI18N
+        lbFastQRCodes.setToolTipText(bundle.getString("FAST_QR_CODES_TOOLTIP")); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.enableQRCodes}"), cbEnableQRCodes, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+        bindingGroup.addBinding(binding);
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fastQRCodes}"), cbFastQRCodes, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+        bindingGroup.addBinding(binding);
+
         javax.swing.GroupLayout pnlGeneralLayout = new javax.swing.GroupLayout(pnlGeneral);
         pnlGeneral.setLayout(pnlGeneralLayout);
         pnlGeneralLayout.setHorizontalGroup(
@@ -170,13 +186,17 @@ public class PreferencesDialog extends javax.swing.JDialog
                     .addComponent(jLabel2)
                     .addComponent(jLabel1)
                     .addComponent(lbFilenamesForJobs)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbEnableQRCodes)
+                    .addComponent(lbFastQRCodes))
                 .addGap(47, 47, 47)
                 .addGroup(pnlGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cbSandboxLaserScript1)
                     .addComponent(cbSandboxLaserScript)
                     .addComponent(jTextFieldLabName, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
-                    .addComponent(cbDefaultMapping, 0, 258, Short.MAX_VALUE))
+                    .addComponent(cbDefaultMapping, 0, 258, Short.MAX_VALUE)
+                    .addComponent(cbEnableQRCodes)
+                    .addComponent(cbFastQRCodes))
                 .addContainerGap())
         );
         pnlGeneralLayout.setVerticalGroup(
@@ -198,7 +218,15 @@ public class PreferencesDialog extends javax.swing.JDialog
                 .addGroup(pnlGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldLabName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
-                .addContainerGap(59, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(pnlGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lbEnableQRCodes)
+                    .addComponent(cbEnableQRCodes))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(pnlGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cbFastQRCodes)
+                    .addComponent(lbFastQRCodes))
+                .addGap(15, 15, 15))
         );
 
         tpSettings.addTab("General", pnlGeneral);
@@ -230,7 +258,7 @@ public class PreferencesDialog extends javax.swing.JDialog
                 .addGroup(pnlFacebookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblFabLabLocationFacebookId)
                     .addComponent(txtfFabLabLocationFacebookId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(136, Short.MAX_VALUE))
+                .addContainerGap(152, Short.MAX_VALUE))
         );
 
         tpSettings.addTab("Facebook", pnlFacebook);
@@ -277,7 +305,7 @@ public class PreferencesDialog extends javax.swing.JDialog
                 .addGroup(pnlThingiverseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblSupportedExtensions)
                     .addComponent(txtfSupportedExtensions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(110, Short.MAX_VALUE))
+                .addContainerGap(126, Short.MAX_VALUE))
         );
 
         tpSettings.addTab("Thingiverse", pnlThingiverse);
@@ -311,7 +339,7 @@ public class PreferencesDialog extends javax.swing.JDialog
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(tpSettings, javax.swing.GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE)
+                .addComponent(tpSettings)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btOk)
@@ -347,12 +375,16 @@ public class PreferencesDialog extends javax.swing.JDialog
     private javax.swing.JButton btCancel;
     private javax.swing.JButton btOk;
     private javax.swing.JComboBox cbDefaultMapping;
+    private javax.swing.JCheckBox cbEnableQRCodes;
+    private javax.swing.JCheckBox cbFastQRCodes;
     private javax.swing.JCheckBox cbSandboxLaserScript;
     private javax.swing.JCheckBox cbSandboxLaserScript1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JTextField jTextFieldLabName;
+    private javax.swing.JLabel lbEnableQRCodes;
+    private javax.swing.JLabel lbFastQRCodes;
     private javax.swing.JLabel lbFilenamesForJobs;
     private javax.swing.JLabel lblFabLabLocationFacebookId;
     private javax.swing.JLabel lblLasercutterTags;

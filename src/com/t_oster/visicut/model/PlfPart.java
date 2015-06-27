@@ -35,7 +35,18 @@ public class PlfPart {
   private File sourceFile;
   private GraphicSet graphicObjects;
   private MappingSet mapping;
+  private boolean isQRCodeSource = false;
 
+  public boolean isQRCodeSource()
+  {
+    return isQRCodeSource;
+  }
+  
+  public void setIsQRCodeSource(boolean isQRCodeSource)
+  {
+    this.isQRCodeSource = isQRCodeSource;
+  }
+  
   public File getSourceFile()
   {
     return sourceFile;

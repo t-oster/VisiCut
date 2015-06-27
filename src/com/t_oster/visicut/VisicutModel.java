@@ -163,9 +163,20 @@ public class VisicutModel
    */
   public void setSelectedPart(PlfPart selectedPart)
   {
+    setSelectedPart(selectedPart, true);
+  }
+  
+  /**
+   * Set the value of selectedPart
+   *
+   * @param selectedPart new value of selectedPart
+   * @param autoSelect automatically select new available selected part
+   */
+  public void setSelectedPart(PlfPart selectedPart, boolean autoSelect)
+  {
     PlfPart oldSelectedPart = this.selectedPart;
     this.selectedPart = selectedPart;
-    if (selectedPart == null && this.plfFile != null && !this.plfFile.isEmpty())
+    if (autoSelect && selectedPart == null && this.plfFile != null && !this.plfFile.isEmpty())
     {
       this.selectedPart = this.plfFile.get(0);
     }
@@ -387,6 +398,15 @@ public class VisicutModel
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
   /**
+   * Get PropertyChangeSupport.
+   * 
+   */
+  public PropertyChangeSupport getPropertyChangeSupport()
+  {
+    return propertyChangeSupport;
+  }
+
+  /**
    * Add PropertyChangeListener.
    *
    * @param listener
@@ -457,7 +477,7 @@ public class VisicutModel
     }
   }
   
-  private PlfFile loadPlfFile(MappingManager mm, File f, List<String> warnings) throws FileNotFoundException, IOException, ImportException
+  public PlfFile loadPlfFile(MappingManager mm, File f, List<String> warnings) throws FileNotFoundException, IOException, ImportException
   {
     ZipFile zip = new ZipFile(f);
     PlfFile resultingFile = new PlfFile();
@@ -650,7 +670,7 @@ public class VisicutModel
     return graphicFileImporter;
   }
 
-  private PlfPart loadGraphicFile(File f, List<String> warnings) throws ImportException
+  public PlfPart loadGraphicFile(File f, List<String> warnings) throws ImportException
   {
     return this.getGraphicFileImporter().importFile(f, warnings);
   }
