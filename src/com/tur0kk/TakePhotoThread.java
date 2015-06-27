@@ -19,11 +19,17 @@
 package com.tur0kk;
 
 import com.github.sarxos.webcam.Webcam;
+import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.gui.MainView;
+import com.t_oster.visicut.misc.Helper;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.net.URLConnection;
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
@@ -165,7 +171,25 @@ public class TakePhotoThread extends Thread
       try{
         // read out image from VisiCam
         URL src = new URL(this.visicamUrl);
-        imageIcon = new ImageIcon(src);
+
+        if (src != null)
+        {
+          URLConnection conn = src.openConnection();
+        
+          // HTTP authentication
+          if (VisicutModel.getInstance() != null && VisicutModel.getInstance().getSelectedLaserDevice() != null)
+          {
+            String encodedCredentials = Helper.getEncodedCredentials(VisicutModel.getInstance().getSelectedLaserDevice().getURLUser(), VisicutModel.getInstance().getSelectedLaserDevice().getURLPassword());
+            if (!encodedCredentials.isEmpty())
+            {
+              conn.setRequestProperty("Authorization", "Basic " + encodedCredentials);
+            }
+          }
+
+          ImageInputStream stream = new MemoryCacheImageInputStream(conn.getInputStream());
+          BufferedImage img = ImageIO.read(stream);
+          imageIcon = new ImageIcon(img);
+        }
       }
       catch(Exception e){
         return null;

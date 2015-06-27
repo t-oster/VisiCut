@@ -120,9 +120,17 @@ public class PreferencesDialog extends javax.swing.JDialog
         lblSupportedExtensions = new javax.swing.JLabel();
         txtfSupportedExtensions = new javax.swing.JTextField();
         pnlFabqr = new javax.swing.JPanel();
-        lblFabqrUrl = new javax.swing.JLabel();
-        txtFabqrUrl = new javax.swing.JTextField();
         cbFabqrActive = new javax.swing.JCheckBox();
+        lblFabqrHint = new javax.swing.JLabel();
+        lblFabqrExample = new javax.swing.JLabel();
+        lblFabqrPublicURL = new javax.swing.JLabel();
+        txtFabqrPublicURL = new javax.swing.JTextField();
+        lblFabqrPrivateURL = new javax.swing.JLabel();
+        txtFabqrPrivateURL = new javax.swing.JTextField();
+        lblFabqrPrivateUser = new javax.swing.JLabel();
+        txtFabqrPrivateUser = new javax.swing.JTextField();
+        lblFabqrPrivatePassword = new javax.swing.JLabel();
+        passFabqrPrivatePassword = new javax.swing.JPasswordField();
         btOk = new javax.swing.JButton();
         btCancel = new javax.swing.JButton();
 
@@ -198,8 +206,8 @@ public class PreferencesDialog extends javax.swing.JDialog
                 .addGroup(pnlGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cbSandboxLaserScript1)
                     .addComponent(cbSandboxLaserScript)
-                    .addComponent(jTextFieldLabName, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
-                    .addComponent(cbDefaultMapping, 0, 258, Short.MAX_VALUE)
+                    .addComponent(jTextFieldLabName, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
+                    .addComponent(cbDefaultMapping, 0, 267, Short.MAX_VALUE)
                     .addComponent(cbEnableQRCodes)
                     .addComponent(cbFastQRCodes))
                 .addContainerGap())
@@ -253,7 +261,7 @@ public class PreferencesDialog extends javax.swing.JDialog
                 .addContainerGap()
                 .addComponent(lblFabLabLocationFacebookId)
                 .addGap(18, 18, 18)
-                .addComponent(txtfFabLabLocationFacebookId, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
+                .addComponent(txtfFabLabLocationFacebookId, javax.swing.GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE)
                 .addContainerGap())
         );
         pnlFacebookLayout.setVerticalGroup(
@@ -295,8 +303,8 @@ public class PreferencesDialog extends javax.swing.JDialog
                     .addComponent(lblLasercutterTags))
                 .addGap(18, 18, 18)
                 .addGroup(pnlThingiverseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtfLasercutterTags, javax.swing.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
-                    .addComponent(txtfSupportedExtensions, javax.swing.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE))
+                    .addComponent(txtfLasercutterTags, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)
+                    .addComponent(txtfSupportedExtensions, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE))
                 .addContainerGap())
         );
         pnlThingiverseLayout.setVerticalGroup(
@@ -317,16 +325,39 @@ public class PreferencesDialog extends javax.swing.JDialog
 
         pnlFabqr.setToolTipText(""); // NOI18N
 
-        lblFabqrUrl.setText("FabQR private API upload project URL:");
-
-        txtFabqrUrl.setToolTipText("<html>Specify the id of your FabLab Facebook site. It will be referenced <br>\n in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL<br>\nof the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 <br>\nenter 191850277562397 in this field.</html>"); // NOI18N
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabqrPrivateURL}"), txtFabqrUrl, org.jdesktop.beansbinding.BeanProperty.create("text"));
-        bindingGroup.addBinding(binding);
-
         cbFabqrActive.setText("FabQR active");
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabqrActive}"), cbFabqrActive, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+        bindingGroup.addBinding(binding);
+
+        lblFabqrHint.setText("Insert full URLs to the public and private part of the FabQR system, must end with slash.");
+
+        lblFabqrExample.setText("Example: http://my-public-fabqr.net:8090/");
+
+        lblFabqrPublicURL.setText("FabQR Public URL:");
+
+        txtFabqrPublicURL.setToolTipText(""); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabqrPublicURL}"), txtFabqrPublicURL, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        bindingGroup.addBinding(binding);
+
+        lblFabqrPrivateURL.setText("FabQR Private URL:");
+
+        txtFabqrPrivateURL.setToolTipText(""); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabqrPrivateURL}"), txtFabqrPrivateURL, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        bindingGroup.addBinding(binding);
+
+        lblFabqrPrivateUser.setText("FabQR Private User:");
+
+        txtFabqrPrivateUser.setToolTipText(""); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabqrPrivateUser}"), txtFabqrPrivateUser, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        bindingGroup.addBinding(binding);
+
+        lblFabqrPrivatePassword.setText("FabQR Private Password:");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabqrPrivatePassword}"), passFabqrPrivatePassword, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
         javax.swing.GroupLayout pnlFabqrLayout = new javax.swing.GroupLayout(pnlFabqr);
@@ -336,21 +367,54 @@ public class PreferencesDialog extends javax.swing.JDialog
             .addGroup(pnlFabqrLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblFabqrUrl)
-                    .addComponent(txtFabqrUrl, javax.swing.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE)
-                    .addComponent(cbFabqrActive))
-                .addContainerGap())
+                    .addGroup(pnlFabqrLayout.createSequentialGroup()
+                        .addComponent(cbFabqrActive)
+                        .addGap(363, 363, 363))
+                    .addGroup(pnlFabqrLayout.createSequentialGroup()
+                        .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblFabqrHint)
+                            .addComponent(lblFabqrExample, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(28, Short.MAX_VALUE))
+                    .addGroup(pnlFabqrLayout.createSequentialGroup()
+                        .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblFabqrPublicURL)
+                            .addComponent(lblFabqrPrivateUser)
+                            .addComponent(lblFabqrPrivatePassword)
+                            .addComponent(lblFabqrPrivateURL))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+                        .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtFabqrPrivateURL, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
+                            .addComponent(txtFabqrPrivateUser, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(passFabqrPrivatePassword, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtFabqrPublicURL, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap())))
         );
         pnlFabqrLayout.setVerticalGroup(
             pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlFabqrLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblFabqrUrl)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtFabqrUrl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
                 .addComponent(cbFabqrActive)
-                .addContainerGap(99, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblFabqrHint)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblFabqrExample)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtFabqrPublicURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblFabqrPublicURL))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtFabqrPrivateURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblFabqrPrivateURL))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblFabqrPrivateUser)
+                    .addComponent(txtFabqrPrivateUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblFabqrPrivatePassword)
+                    .addComponent(passFabqrPrivatePassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         tpSettings.addTab("FabQR", pnlFabqr);
@@ -373,9 +437,9 @@ public class PreferencesDialog extends javax.swing.JDialog
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(tpSettings, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
+            .addComponent(tpSettings, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(320, Short.MAX_VALUE)
+                .addContainerGap(329, Short.MAX_VALUE)
                 .addComponent(btCancel)
                 .addGap(18, 18, 18)
                 .addComponent(btOk)
@@ -433,15 +497,23 @@ public class PreferencesDialog extends javax.swing.JDialog
     private javax.swing.JLabel lbFastQRCodes;
     private javax.swing.JLabel lbFilenamesForJobs;
     private javax.swing.JLabel lblFabLabLocationFacebookId;
-    private javax.swing.JLabel lblFabqrUrl;
+    private javax.swing.JLabel lblFabqrExample;
+    private javax.swing.JLabel lblFabqrHint;
+    private javax.swing.JLabel lblFabqrPrivatePassword;
+    private javax.swing.JLabel lblFabqrPrivateURL;
+    private javax.swing.JLabel lblFabqrPrivateUser;
+    private javax.swing.JLabel lblFabqrPublicURL;
     private javax.swing.JLabel lblLasercutterTags;
     private javax.swing.JLabel lblSupportedExtensions;
+    private javax.swing.JPasswordField passFabqrPrivatePassword;
     private javax.swing.JPanel pnlFabqr;
     private javax.swing.JPanel pnlFacebook;
     private javax.swing.JPanel pnlGeneral;
     private javax.swing.JPanel pnlThingiverse;
     private javax.swing.JTabbedPane tpSettings;
-    private javax.swing.JTextField txtFabqrUrl;
+    private javax.swing.JTextField txtFabqrPrivateURL;
+    private javax.swing.JTextField txtFabqrPrivateUser;
+    private javax.swing.JTextField txtFabqrPublicURL;
     private javax.swing.JTextField txtfFabLabLocationFacebookId;
     private javax.swing.JTextField txtfLasercutterTags;
     private javax.swing.JTextField txtfSupportedExtensions;

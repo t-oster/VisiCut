@@ -25,6 +25,7 @@ import com.t_oster.visicut.misc.Helper;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -198,6 +199,14 @@ public class RefreshProjectorThread extends Thread
 
               // Send request
               CloseableHttpResponse res = httpClient.execute(httpPost);
+              
+              // React to possible server side errors
+              if (res.getStatusLine() == null || res.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
+              {
+                throw new Exception("Server sent wrong HTTP status code: " + new Integer(res.getStatusLine().getStatusCode()).toString());
+              }
+
+              // Close everything correctly
               res.close();
               httpClient.close();
             }

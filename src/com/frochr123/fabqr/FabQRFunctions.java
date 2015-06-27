@@ -28,11 +28,15 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.PlfFile;
 import com.t_oster.visicut.model.PlfPart;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
+import javax.imageio.ImageIO;
+import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -47,15 +51,70 @@ import org.apache.http.impl.client.HttpClients;
  */
 public class FabQRFunctions
 {
-  public static final int DEFAULT_FABQR_UPLOAD_TIMEOUT = 15000;
+  public static final int FABQR_UPLOAD_TIMEOUT = 15000;
+  public static final String FABQR_API_UPLOAD_PROJECT = "api_uploadproject.php";
+  public static final String FABQR_DOWNLOAD_MARKER = "d";
+  public static final String FABQR_TEMPORARY_MARKER = "t";
 
-  public static void uploadFabQRProject(String name, String email, String projectName, int licenseIndex, String tools, String description, BufferedImage imageReal, BufferedImage imageScheme, PlfFile plfFile, String lasercutterName, String materialString) throws Exception
+  public static String getFabqrPrivateURL()
+  {
+    if (PreferencesManager.getInstance() != null
+        && PreferencesManager.getInstance().getPreferences() != null
+        && PreferencesManager.getInstance().getPreferences().getFabqrPrivateURL() != null)
+    {
+      return PreferencesManager.getInstance().getPreferences().getFabqrPrivateURL();
+    }
+    
+    return "";
+  }
+  
+  public static String getFabqrPublicURL()
+  {
+    if (PreferencesManager.getInstance() != null
+        && PreferencesManager.getInstance().getPreferences() != null
+        && PreferencesManager.getInstance().getPreferences().getFabqrPublicURL() != null)
+    {
+      return PreferencesManager.getInstance().getPreferences().getFabqrPublicURL();
+    }
+    
+    return "";
+  }
+  
+  public static boolean isFabqrActive()
+  {
+    if (PreferencesManager.getInstance() != null && PreferencesManager.getInstance().getPreferences() != null)
+    {
+      return PreferencesManager.getInstance().getPreferences().isFabqrActive();
+    }
+
+    return false;
+  }
+  
+  public static String getFabqrPrivateUser()
+  {
+    if (PreferencesManager.getInstance() != null && PreferencesManager.getInstance().getPreferences() != null)
+    {
+      return PreferencesManager.getInstance().getPreferences().getFabqrPrivateUser();
+    }
+    
+    return "";
+  }
+  
+  public static String getFabqrPrivatePassword()
+  {
+    if (PreferencesManager.getInstance() != null && PreferencesManager.getInstance().getPreferences() != null)
+    {
+      return PreferencesManager.getInstance().getPreferences().getFabqrPrivatePassword();
+    }
+    
+    return "";
+  }
+  
+  public static void uploadFabQRProject(String name, String email, String projectName, int licenseIndex, String tools, String description, String location, BufferedImage imageReal, BufferedImage imageScheme, PlfFile plfFile, String lasercutterName, String lasercutterMaterial) throws Exception
   {
     // Check for valid situation, otherwise abort
     if (MainView.getInstance() == null || VisicutModel.getInstance() == null || VisicutModel.getInstance().getPlfFile() == null
-        || PreferencesManager.getInstance() == null || PreferencesManager.getInstance().getPreferences() == null
-        || !PreferencesManager.getInstance().getPreferences().isFabqrActive() || PreferencesManager.getInstance().getPreferences().getFabqrPrivateURL() == null
-        || PreferencesManager.getInstance().getPreferences().getFabqrPrivateURL().isEmpty()
+        || !isFabqrActive() || getFabqrPrivateURL() == null || getFabqrPrivateURL().isEmpty()
         || MaterialManager.getInstance() == null || MappingManager.getInstance() == null
         || VisicutModel.getInstance().getSelectedLaserDevice() == null)
     {
@@ -64,9 +123,9 @@ public class FabQRFunctions
 
     // Check valid data
     if (name == null || email == null || projectName == null || projectName.length() < 3 || licenseIndex < 0
-        || tools == null || tools.isEmpty() || description == null || description.isEmpty()
+        || tools == null || tools.isEmpty() || description == null || description.isEmpty() || location == null || location.isEmpty()
         || imageScheme == null || plfFile == null
-        || lasercutterName == null || lasercutterName.isEmpty() || materialString == null || materialString.isEmpty())
+        || lasercutterName == null || lasercutterName.isEmpty() || lasercutterMaterial == null || lasercutterMaterial.isEmpty())
     {
       throw new Exception("FabQR upload exception: Invalid input data");
     }
@@ -86,13 +145,18 @@ public class FabQRFunctions
 
     if (imageReal != null)
     {
+      // Need to convert image, ImageIO.write messes up the color space of the original input image
+      BufferedImage convertedImage = new BufferedImage(imageReal.getWidth(), imageReal.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+      ColorConvertOp op = new ColorConvertOp(null);
+      op.filter(imageReal, convertedImage);
+
       ByteArrayOutputStream imageRealOutputStream = new ByteArrayOutputStream();
-      PreviewImageExport.writePngToOutputStream(imageRealOutputStream, imageReal);
+      ImageIO.write(convertedImage, "jpg", imageRealOutputStream);
       imageRealBytes = imageRealOutputStream.toByteArray();    
     }
 
     // Extract all URLs from used QR codes
-    List<String> urlList = new LinkedList<String>();
+    List<String> referencesList = new LinkedList<String>();
     List<PlfPart> plfParts = plfFile.getPartsCopy();
     
     for (PlfPart plfPart : plfParts)
@@ -103,33 +167,43 @@ public class FabQRFunctions
         // Use regex to check for FabQR system URL structure
         String qrCodeUrl = plfPart.getQRCodeInfo().getQRCodeSourceURL().trim();
 
-        // Simple and inaccurate check for URL structure of FabQR system
-        Pattern fabQRUrlPattern = Pattern.compile("^https{0,1}://.{0,20}/d/([a-z]|[0-9]){7,7}$");
+        // Check for temporary URL structure of FabQR system
+        Pattern fabQRUrlTemporaryPattern = Pattern.compile("^https{0,1}://.*?" + "/" + FABQR_TEMPORARY_MARKER + "/" + "([a-z]|[0-9]){7,7}$");
 
-        if (fabQRUrlPattern.matcher(email).find())
+        // Do not include link if it is just temporary
+        if (fabQRUrlTemporaryPattern.matcher(qrCodeUrl).find())
         {
-          qrCodeUrl = qrCodeUrl.replace("/d/", "/");
+          continue;
+        }
+        
+        // Check for download URL structure of FabQR system
+        // Change URL to point to project page instead
+        Pattern fabQRUrlDownloadPattern = Pattern.compile("^https{0,1}://.*?" + "/" + FABQR_DOWNLOAD_MARKER + "/" + "([a-z]|[0-9]){7,7}$");
+
+        if (fabQRUrlDownloadPattern.matcher(qrCodeUrl).find())
+        {
+          qrCodeUrl = qrCodeUrl.replace("/" + FABQR_DOWNLOAD_MARKER + "/", "/");
         }
 
         // Add URL if it is not yet in list
-        if (!urlList.contains(qrCodeUrl))
+        if (!referencesList.contains(qrCodeUrl))
         {
-          urlList.add(qrCodeUrl);
+          referencesList.add(qrCodeUrl);
         }
       }
     }
     
-    String usedURLs = "";
+    String references = "";
     
-    for (String url : urlList)
+    for (String ref : referencesList)
     {
       // Add comma for non first entries
-      if (!usedURLs.isEmpty())
+      if (!references.isEmpty())
       {
-        usedURLs = usedURLs + ", ";
+        references = references + ",";
       }
       
-      usedURLs = usedURLs + url;
+      references = references + ref;
     }
 
     // Get bytes for PLF file
@@ -144,11 +218,11 @@ public class FabQRFunctions
     }
 
     // Begin uploading data
-    String uploadUrl = PreferencesManager.getInstance().getPreferences().getFabqrPrivateURL();
+    String uploadUrl = getFabqrPrivateURL() + FABQR_API_UPLOAD_PROJECT;
 
     // Create HTTP client and cusomized config for timeouts
     CloseableHttpClient httpClient = HttpClients.createDefault();
-    RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(DEFAULT_FABQR_UPLOAD_TIMEOUT).setConnectTimeout(DEFAULT_FABQR_UPLOAD_TIMEOUT).setConnectionRequestTimeout(DEFAULT_FABQR_UPLOAD_TIMEOUT).build();
+    RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(FABQR_UPLOAD_TIMEOUT).setConnectTimeout(FABQR_UPLOAD_TIMEOUT).setConnectionRequestTimeout(FABQR_UPLOAD_TIMEOUT).build();
 
     // Create HTTP Post request and entity builder
     HttpPost httpPost = new HttpPost(uploadUrl);
@@ -157,30 +231,35 @@ public class FabQRFunctions
     
     // Insert file uploads
     multipartEntityBuilder.addBinaryBody("imageScheme", imageSchemeBytes, ContentType.APPLICATION_OCTET_STREAM, "imageScheme.png");
-    multipartEntityBuilder.addBinaryBody("plfFile", plfFileBytes, ContentType.APPLICATION_OCTET_STREAM, "plfFile.plf");
+    multipartEntityBuilder.addBinaryBody("inputFile", plfFileBytes, ContentType.APPLICATION_OCTET_STREAM, "inputFile.plf");
 
     // Image real is allowed to be null, if it is not, send it
     if (imageRealBytes != null)
     {
-      multipartEntityBuilder.addBinaryBody("imageReal", plfFileBytes, ContentType.APPLICATION_OCTET_STREAM, "imageReal.png");
+      multipartEntityBuilder.addBinaryBody("imageReal", imageRealBytes, ContentType.APPLICATION_OCTET_STREAM, "imageReal.png");
     }
 
+    // Prepare content type for text data, especially needed for correct UTF8 encoding
+    ContentType contentType = ContentType.create("text/plain", Consts.UTF_8);
+    
     // Insert text data
-    multipartEntityBuilder.addTextBody("name", name);
-    multipartEntityBuilder.addTextBody("email", email);
-    multipartEntityBuilder.addTextBody("licenseIndex", new Integer(licenseIndex).toString());
-    multipartEntityBuilder.addTextBody("tools", tools);
-    multipartEntityBuilder.addTextBody("description", description);
-    multipartEntityBuilder.addTextBody("lasercutterName", lasercutterName);
-    multipartEntityBuilder.addTextBody("materialString", materialString);
-    multipartEntityBuilder.addTextBody("usedURLs", usedURLs);
+    multipartEntityBuilder.addTextBody("name", name, contentType);
+    multipartEntityBuilder.addTextBody("email", email, contentType);
+    multipartEntityBuilder.addTextBody("projectName", projectName, contentType);
+    multipartEntityBuilder.addTextBody("licenseIndex", new Integer(licenseIndex).toString(), contentType);
+    multipartEntityBuilder.addTextBody("tools", tools, contentType);
+    multipartEntityBuilder.addTextBody("description", description, contentType);
+    multipartEntityBuilder.addTextBody("location", location, contentType);
+    multipartEntityBuilder.addTextBody("lasercutterName", lasercutterName, contentType);
+    multipartEntityBuilder.addTextBody("lasercutterMaterial", lasercutterMaterial, contentType);
+    multipartEntityBuilder.addTextBody("references", references, contentType);
 
     // Assign entity to this post request
     HttpEntity httpEntity = multipartEntityBuilder.build();
     httpPost.setEntity(httpEntity);
 
     // Set authentication information
-    String encodedCredentials = Helper.getEncodedCredentials(VisicutModel.getInstance().getSelectedLaserDevice().getURLUser(), VisicutModel.getInstance().getSelectedLaserDevice().getURLPassword());
+    String encodedCredentials = Helper.getEncodedCredentials(FabQRFunctions.getFabqrPrivateUser(), FabQRFunctions.getFabqrPrivatePassword());
     if (!encodedCredentials.isEmpty())
     {
       httpPost.addHeader("Authorization", "Basic " + encodedCredentials);
@@ -188,6 +267,14 @@ public class FabQRFunctions
 
     // Send request
     CloseableHttpResponse res = httpClient.execute(httpPost);
+
+    // React to possible server side errors
+    if (res.getStatusLine() == null || res.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
+    {
+      throw new Exception("FabQR upload exception: Server sent wrong HTTP status code: " + new Integer(res.getStatusLine().getStatusCode()).toString());
+    }
+
+    // Close everything correctly
     res.close();
     httpClient.close();
   }

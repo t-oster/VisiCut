@@ -28,8 +28,10 @@ import com.apple.eawt.AppEvent.OpenFilesEvent;
 import com.apple.eawt.AppEvent.PreferencesEvent;
 import com.apple.eawt.AppEvent.QuitEvent;
 import com.apple.eawt.QuitResponse;
+import com.frochr123.fabqr.FabQRFunctions;
 import com.frochr123.fabqr.gui.FabQRUploadDialog;
 import com.frochr123.gui.QRWebcamScanDialog;
+import com.frochr123.helper.QRCodeInfo;
 import com.t_oster.liblasercut.IllegalJobException;
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserProperty;
@@ -2371,6 +2373,22 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   private void jmExportSettingsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmExportSettingsActionPerformed
   {//GEN-HEADEREND:event_jmExportSettingsActionPerformed
     File file = null;
+    
+    // Show warning if passwords are exported
+    boolean fabqrPrivatePasswordSet = (PreferencesManager.getInstance() != null && PreferencesManager.getInstance().getPreferences() != null
+                                      && PreferencesManager.getInstance().getPreferences().getFabqrPrivatePassword() != null && !PreferencesManager.getInstance().getPreferences().getFabqrPrivatePassword().isEmpty());
+    
+    boolean urlPasswordSet = (VisicutModel.getInstance() != null && VisicutModel.getInstance().getSelectedLaserDevice() != null
+                                  && VisicutModel.getInstance().getSelectedLaserDevice().getURLPassword() != null && !VisicutModel.getInstance().getSelectedLaserDevice().getURLPassword().isEmpty());
+
+    if (fabqrPrivatePasswordSet || urlPasswordSet)
+    {
+      if (!dialog.showYesNoQuestion(bundle.getString("DIALOG_QUESTION_EXPORT_PASSWORD")))
+      {
+        return;
+      }
+    }
+    
     //On Mac os, awt.FileDialog looks more native
     if (Helper.isMacOS())
     {
@@ -3323,11 +3341,28 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     {
       if (visicutModel1 != null && visicutModel1.getPlfFile() != null)
       {
-        List<PlfPart> plfPartsCopy = visicutModel1.getPlfFile().getPartsCopy();
-
-        if (plfPartsCopy != null)
+        objectComboBox.setVisible(visicutModel1.getPlfFile().size() > 1);
+        LinkedList<PlfPart> removePlfParts = new LinkedList<PlfPart>();
+        
+        // Iterate over elements in PLF file, remove preview loaded QR code objects, which were not stored yet
+        for (PlfPart part : visicutModel1.getPlfFile())
         {
-          objectComboBox.setVisible(plfPartsCopy.size() > 1);
+          QRCodeInfo qrCodePartInfo = part.getQRCodeInfo();
+          
+          if (qrCodePartInfo != null)
+          {
+            // Check if this part was loaded by preview QR code scanning and is not position stored
+            if (qrCodePartInfo.isPreviewQRCodeSource() && !qrCodePartInfo.isPreviewPositionQRStored())
+            {
+                removePlfParts.add(part);
+            }
+          }
+        }
+        
+        // Delete stored elements
+        for (PlfPart part : removePlfParts)
+        {
+          visicutModel1.removePlfPart(part);
         }
       }
       
@@ -3368,9 +3403,8 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     }
     
     // Ask user for FabQR upload, if FabQR is enabled and available
-    if (MainView.getInstance() != null && PreferencesManager.getInstance() != null && PreferencesManager.getInstance().getPreferences() != null
-        && PreferencesManager.getInstance().getPreferences().isFabqrActive() && PreferencesManager.getInstance().getPreferences().getFabqrPrivateURL() != null
-        && !PreferencesManager.getInstance().getPreferences().getFabqrPrivateURL().isEmpty() && !isFabqrUploadDialogOpened())
+    if (MainView.getInstance() != null && FabQRFunctions.isFabqrActive()
+        && FabQRFunctions.getFabqrPrivateURL() != null && !FabQRFunctions.getFabqrPrivateURL().isEmpty() && !isFabqrUploadDialogOpened())
     {
       if (dialog.showYesNoQuestion(bundle.getString("DIALOG_QUESTION_FABQR_UPLOAD")))
       {

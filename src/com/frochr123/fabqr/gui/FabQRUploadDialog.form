@@ -82,7 +82,7 @@
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Group type="102" attributes="0">
-                          <Component id="btnCancel" min="-2" pref="120" max="-2" attributes="1"/>
+                          <Component id="btnClose" min="-2" pref="120" max="-2" attributes="1"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="btnPublish" min="-2" pref="120" max="-2" attributes="1"/>
                       </Group>
@@ -107,7 +107,7 @@
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="btnPublish" alignment="3" min="-2" max="-2" attributes="1"/>
-                              <Component id="btnCancel" alignment="3" min="-2" max="-2" attributes="1"/>
+                              <Component id="btnClose" alignment="3" min="-2" max="-2" attributes="1"/>
                           </Group>
                       </Group>
                   </Group>
@@ -211,8 +211,8 @@
                                   <Component id="btnPhotoRedo" max="32767" attributes="1"/>
                                   <Component id="btnPhoto" alignment="0" pref="120" max="32767" attributes="1"/>
                               </Group>
-                              <EmptySpace pref="26" max="32767" attributes="0"/>
-                              <Component id="pnlSelectCamera" min="-2" pref="174" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="pnlSelectCamera" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -507,14 +507,14 @@
             </Container>
           </SubComponents>
         </Container>
-        <Component class="javax.swing.JButton" name="btnCancel">
+        <Component class="javax.swing.JButton" name="btnClose">
           <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="btnCancel.text"/>
-            <Property name="toolTipText" type="java.lang.String" resourceKey="btnCancel.toolTipText"/>
-            <Property name="name" type="java.lang.String" value="btnCancel" noResource="true"/>
+            <Property name="text" type="java.lang.String" resourceKey="btnClose.text"/>
+            <Property name="toolTipText" type="java.lang.String" resourceKey="btnClose.toolTipText"/>
+            <Property name="name" type="java.lang.String" value="btnClose" noResource="true"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCancelActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCloseActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnPublish">
