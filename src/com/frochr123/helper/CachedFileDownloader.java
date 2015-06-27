@@ -18,7 +18,10 @@
  **/
 package com.frochr123.helper;
 
+import com.frochr123.fabqr.FabQRFunctions;
+import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.misc.FileUtils;
+import com.t_oster.visicut.misc.Helper;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -223,6 +226,19 @@ public class CachedFileDownloader
 
     // Create context
     HttpContext context = new BasicHttpContext();
+
+    // Check for temporary FabQR download of own configured private FabQR instance
+    // In that case Authorization needs to be added
+    if (FabQRFunctions.getFabqrPrivateURL() != null && !FabQRFunctions.getFabqrPrivateURL().isEmpty()
+        && url.startsWith(FabQRFunctions.getFabqrPrivateURL()) && url.contains("/" + FabQRFunctions.FABQR_TEMPORARY_MARKER + "/"))
+    {
+      // Set authentication information
+      String encodedCredentials = Helper.getEncodedCredentials(FabQRFunctions.getFabqrPrivateUser(), FabQRFunctions.getFabqrPrivatePassword());
+      if (!encodedCredentials.isEmpty())
+      {
+        httpGet.addHeader("Authorization", "Basic " + encodedCredentials);
+      }
+    }
     
     // Send request
     CloseableHttpResponse response = httpClient.execute(httpGet, context);

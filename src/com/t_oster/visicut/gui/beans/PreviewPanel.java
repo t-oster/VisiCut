@@ -123,6 +123,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     {
       PlfPart p = (PlfPart) pce.getOldValue();
       this.clearCache(p);
+      repaint();
     }
     else if (VisicutModel.PROP_MATERIAL.equals(pce.getPropertyName())
       || VisicutModel.PROP_PLF_FILE_CHANGED.equals(pce.getPropertyName()))

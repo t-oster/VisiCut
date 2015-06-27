@@ -26,9 +26,9 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="tpSettings" alignment="1" pref="460" max="32767" attributes="0"/>
+          <Component id="tpSettings" alignment="1" pref="469" max="32767" attributes="0"/>
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="320" max="32767" attributes="0"/>
+              <EmptySpace pref="329" max="32767" attributes="0"/>
               <Component id="btCancel" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="btOk" min="-2" max="-2" attributes="0"/>
@@ -92,8 +92,8 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="cbSandboxLaserScript1" min="-2" max="-2" attributes="0"/>
                           <Component id="cbSandboxLaserScript" min="-2" max="-2" attributes="0"/>
-                          <Component id="jTextFieldLabName" alignment="0" pref="258" max="32767" attributes="0"/>
-                          <Component id="cbDefaultMapping" alignment="0" pref="258" max="32767" attributes="0"/>
+                          <Component id="jTextFieldLabName" alignment="0" pref="267" max="32767" attributes="0"/>
+                          <Component id="cbDefaultMapping" alignment="0" pref="267" max="32767" attributes="0"/>
                           <Component id="cbEnableQRCodes" min="-2" max="-2" attributes="0"/>
                           <Component id="cbFastQRCodes" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -266,7 +266,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lblFabLabLocationFacebookId" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="txtfFabLabLocationFacebookId" pref="280" max="32767" attributes="0"/>
+                      <Component id="txtfFabLabLocationFacebookId" pref="289" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -325,8 +325,8 @@
                       </Group>
                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="txtfLasercutterTags" alignment="0" pref="308" max="32767" attributes="0"/>
-                          <Component id="txtfSupportedExtensions" alignment="0" pref="308" max="32767" attributes="0"/>
+                          <Component id="txtfLasercutterTags" alignment="0" pref="317" max="32767" attributes="0"/>
+                          <Component id="txtfSupportedExtensions" alignment="0" pref="317" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -397,11 +397,34 @@
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lblFabqrUrl" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtFabqrUrl" alignment="0" pref="435" max="32767" attributes="0"/>
-                          <Component id="cbFabqrActive" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="cbFabqrActive" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="363" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="lblFabqrHint" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblFabqrExample" alignment="0" min="-2" pref="346" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace pref="28" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="lblFabqrPublicURL" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblFabqrPrivateUser" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblFabqrPrivatePassword" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblFabqrPrivateURL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace pref="16" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="txtFabqrPrivateURL" alignment="1" pref="276" max="32767" attributes="1"/>
+                                  <Component id="txtFabqrPrivateUser" alignment="1" max="32767" attributes="1"/>
+                                  <Component id="passFabqrPrivatePassword" alignment="1" max="32767" attributes="1"/>
+                                  <Component id="txtFabqrPublicURL" alignment="1" min="-2" pref="305" max="-2" attributes="1"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -409,36 +432,102 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="lblFabqrUrl" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="txtFabqrUrl" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="cbFabqrActive" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="99" max="32767" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="lblFabqrHint" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="lblFabqrExample" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="txtFabqrPublicURL" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblFabqrPublicURL" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="txtFabqrPrivateURL" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblFabqrPrivateURL" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="lblFabqrPrivateUser" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtFabqrPrivateUser" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="lblFabqrPrivatePassword" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="passFabqrPrivatePassword" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="lblFabqrUrl">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="FabQR private API upload project URL:"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JTextField" name="txtFabqrUrl">
-              <Properties>
-                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Specify the id of your FabLab Facebook site. It will be referenced &lt;br&gt;&#xa; in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL&lt;br&gt;&#xa;of the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 &lt;br&gt;&#xa;enter 191850277562397 in this field.&lt;/html&gt;" noResource="true"/>
-              </Properties>
-              <BindingProperties>
-                <BindingProperty name="text" source="Form" sourcePath="${preferences.fabqrPrivateURL}" target="txtFabqrUrl" targetPath="text" updateStrategy="0" immediately="false"/>
-              </BindingProperties>
-            </Component>
             <Component class="javax.swing.JCheckBox" name="cbFabqrActive">
               <Properties>
                 <Property name="text" type="java.lang.String" value="FabQR active"/>
               </Properties>
               <BindingProperties>
                 <BindingProperty name="selected" source="Form" sourcePath="${preferences.fabqrActive}" target="cbFabqrActive" targetPath="selected" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblFabqrHint">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Insert full URLs to the public and private part of the FabQR system, must end with slash."/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblFabqrExample">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Example: http://my-public-fabqr.net:8090/"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblFabqrPublicURL">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="FabQR Public URL:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtFabqrPublicURL">
+              <Properties>
+                <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="text" source="Form" sourcePath="${preferences.fabqrPublicURL}" target="txtFabqrPublicURL" targetPath="text" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblFabqrPrivateURL">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="FabQR Private URL:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtFabqrPrivateURL">
+              <Properties>
+                <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="text" source="Form" sourcePath="${preferences.fabqrPrivateURL}" target="txtFabqrPrivateURL" targetPath="text" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblFabqrPrivateUser">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="FabQR Private User:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtFabqrPrivateUser">
+              <Properties>
+                <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="text" source="Form" sourcePath="${preferences.fabqrPrivateUser}" target="txtFabqrPrivateUser" targetPath="text" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblFabqrPrivatePassword">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="FabQR Private Password:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JPasswordField" name="passFabqrPrivatePassword">
+              <BindingProperties>
+                <BindingProperty name="text" source="Form" sourcePath="${preferences.fabqrPrivatePassword}" target="passFabqrPrivatePassword" targetPath="text" updateStrategy="0" immediately="false"/>
               </BindingProperties>
             </Component>
           </SubComponents>

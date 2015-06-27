@@ -20,6 +20,7 @@ package com.frochr123.fabqr.gui;
 
 import com.frochr123.fabqr.FabQRFunctions;
 import com.frochr123.helper.PreviewImageExport;
+import com.frochr123.icons.IconLoader;
 import com.t_oster.visicut.gui.MainView;
 import com.tur0kk.TakePhotoThread;
 import com.frochr123.periodictasks.RefreshProjectorThread;
@@ -48,7 +49,7 @@ import org.apache.http.client.ClientProtocolException;
 public class FabQRUploadDialog extends javax.swing.JDialog
 {
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCancel;
+    private javax.swing.JButton btnClose;
     private javax.swing.JButton btnPhoto;
     private javax.swing.JButton btnPhotoRedo;
     private javax.swing.JButton btnPublish;
@@ -233,43 +234,42 @@ public class FabQRUploadDialog extends javax.swing.JDialog
 
   private void handleGUIElements(final boolean enabled, final boolean disablePhotoButton)
   {
-    // Use Swing event dispatcher for this because following calls might
-    // block the execution for some time
-    SwingUtilities.invokeLater
-    (
-      new Runnable()
-      {
-        public void run()
-        {
-          txtName.setEnabled(enabled);
-          txtEmail.setEnabled(enabled);
-          txtProjectName.setEnabled(enabled);
-          cmbbxLicense.setEnabled(enabled);
-          cbPCBSoldering.setEnabled(enabled);
-          cbArduino.setEnabled(enabled);
-          cb3DPrinter.setEnabled(enabled);
-          cbCNCRouter.setEnabled(enabled);
-          cbRaspberryPi.setEnabled(enabled);
-          txtDescription.setEnabled(enabled);
-          btnCancel.setEnabled(enabled);
-          btnPublish.setEnabled(enabled);
+    if (enabled)
+    {
+      lblStatus.setIcon(null);
+    }
+    else
+    {
+      showStatus(bundle.getString("UPLOADING_MESSAGE"));
+      lblStatus.setIcon(IconLoader.loadIcon(IconLoader.ICON_LOADING_CIRCLE_SMALL));
+    }
 
-          rdbtnVisicam.setEnabled(enabled);
-          rdbtnWebcam.setEnabled(enabled);
-          btnPhotoRedo.setEnabled(enabled);
-          btnPhoto.setEnabled(disablePhotoButton ? false : enabled);
+    txtName.setEnabled(enabled);
+    txtEmail.setEnabled(enabled);
+    txtProjectName.setEnabled(enabled);
+    cmbbxLicense.setEnabled(enabled);
+    cbPCBSoldering.setEnabled(enabled);
+    cbArduino.setEnabled(enabled);
+    cb3DPrinter.setEnabled(enabled);
+    cbCNCRouter.setEnabled(enabled);
+    cbRaspberryPi.setEnabled(enabled);
+    txtDescription.setEnabled(enabled);
+    btnClose.setEnabled(enabled);
+    btnPublish.setEnabled(enabled);
 
-          txtName.setEditable(enabled);
-          txtName.setBackground(enabled ? Color.white : Color.lightGray);
-          txtEmail.setEditable(enabled);
-          txtEmail.setBackground(enabled ? Color.white : Color.lightGray);
-          txtProjectName.setEditable(enabled);
-          txtProjectName.setBackground(enabled ? Color.white : Color.lightGray);
-          txtDescription.setEditable(enabled);
-          txtDescription.setBackground(enabled ? Color.white : Color.lightGray);
-        }
-      }
-    );
+    rdbtnVisicam.setEnabled(enabled);
+    rdbtnWebcam.setEnabled(enabled);
+    btnPhotoRedo.setEnabled(enabled);
+    btnPhoto.setEnabled(disablePhotoButton ? false : enabled);
+
+    txtName.setEditable(enabled);
+    txtName.setBackground(enabled ? Color.white : Color.lightGray);
+    txtEmail.setEditable(enabled);
+    txtEmail.setBackground(enabled ? Color.white : Color.lightGray);
+    txtProjectName.setEditable(enabled);
+    txtProjectName.setBackground(enabled ? Color.white : Color.lightGray);
+    txtDescription.setEditable(enabled);
+    txtDescription.setBackground(enabled ? Color.white : Color.lightGray);
   }
   
   // Function for drawing dialog elements
@@ -308,7 +308,7 @@ public class FabQRUploadDialog extends javax.swing.JDialog
         lblDescription = new javax.swing.JLabel();
         scrlDescription = new javax.swing.JScrollPane();
         txtDescription = new javax.swing.JTextArea();
-        btnCancel = new javax.swing.JButton();
+        btnClose = new javax.swing.JButton();
         btnPublish = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -419,8 +419,8 @@ public class FabQRUploadDialog extends javax.swing.JDialog
                         .addGroup(pnlPhotoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btnPhotoRedo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnPhoto, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
-                        .addComponent(pnlSelectCamera, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pnlSelectCamera, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         pnlPhotoLayout.setVerticalGroup(
@@ -553,12 +553,12 @@ public class FabQRUploadDialog extends javax.swing.JDialog
                 .addContainerGap())
         );
 
-        btnCancel.setText(resourceMap.getString("btnCancel.text")); // NOI18N
-        btnCancel.setToolTipText(resourceMap.getString("btnCancel.toolTipText")); // NOI18N
-        btnCancel.setName("btnCancel"); // NOI18N
-        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+        btnClose.setText(resourceMap.getString("btnClose.text")); // NOI18N
+        btnClose.setToolTipText(resourceMap.getString("btnClose.toolTipText")); // NOI18N
+        btnClose.setName("btnClose"); // NOI18N
+        btnClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelActionPerformed(evt);
+                btnCloseActionPerformed(evt);
             }
         });
 
@@ -583,7 +583,7 @@ public class FabQRUploadDialog extends javax.swing.JDialog
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(pnlMainLayout.createSequentialGroup()
-                        .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnPublish, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(pnlRight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -603,7 +603,7 @@ public class FabQRUploadDialog extends javax.swing.JDialog
                         .addGap(18, 18, 18)
                         .addGroup(pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnPublish)
-                            .addComponent(btnCancel))))
+                            .addComponent(btnClose))))
                 .addContainerGap())
         );
 
@@ -670,7 +670,7 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
   private void btnPublishActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnPublishActionPerformed
   {//GEN-HEADEREND:event_btnPublishActionPerformed
-    // Disable all GUI elements
+    // Disable all GUI elements and set loading status
     handleGUIElements(false, true);
 
     // Start new thread to prepare and upload data
@@ -683,8 +683,8 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
           // Check for valid situation, otherwise abort
           if (MainView.getInstance() == null || VisicutModel.getInstance() == null || VisicutModel.getInstance().getPlfFile() == null
               || PreferencesManager.getInstance() == null || PreferencesManager.getInstance().getPreferences() == null
-              || !PreferencesManager.getInstance().getPreferences().isFabqrActive() || PreferencesManager.getInstance().getPreferences().getFabqrPrivateURL() == null
-              || PreferencesManager.getInstance().getPreferences().getFabqrPrivateURL().isEmpty())
+              || !FabQRFunctions.isFabqrActive() || FabQRFunctions.getFabqrPrivateURL() == null
+              || FabQRFunctions.getFabqrPrivateURL().isEmpty())
           {
             throw new Exception(bundle.getString("ERROR_CRITICAL"));
           }
@@ -728,7 +728,11 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
             {
               throw new Exception(bundle.getString("ERROR_LICENSE_NEEDS_EMAIL"));
             }
+          }
 
+          // For these cases email must be checked
+          if (licenseIndex > 0 || !email.isEmpty())
+          {
             // Simple and inaccurate check for valid email with regex
             Pattern emailPattern = Pattern.compile("^.+@.+\\..+$");
 
@@ -739,31 +743,31 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
           }
 
           // Build string for selected tools
-          String tools = "Lasercutter";
+          String tools = "Laser cutter";
           
           if (cbPCBSoldering.isSelected())
           {
-            tools = tools + ", PCB / Soldering";
+            tools = tools + ",PCB / Soldering";
           }
           
           if (cb3DPrinter.isSelected())
           {
-            tools = tools + ", 3D Printer";
+            tools = tools + ",3D printer";
           }
           
           if (cbCNCRouter.isSelected())
           {
-            tools = tools + ", CNC Router";
+            tools = tools + ",CNC router";
           }
           
           if (cbArduino.isSelected())
           {
-            tools = tools + ", Arduino";
+            tools = tools + ",Arduino";
           }
           
           if (cbRaspberryPi.isSelected())
           {
-            tools = tools + ", Raspberry Pi";
+            tools = tools + ",Raspberry Pi";
           }
 
           // Check valid description
@@ -810,35 +814,44 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
           }
 
           // Get internal data: lasercutter material string
-          String materialString = "";
+          String lasercutterMaterial = "";
 
           if (VisicutModel.getInstance().getMaterial() != null)
           {
-            String materialName = VisicutModel.getInstance().getMaterial().getName();
-            materialName = ((materialName == null) ? "" : materialName.trim());
+            String lasercutterMaterialName = VisicutModel.getInstance().getMaterial().getName();
+            lasercutterMaterialName = ((lasercutterMaterialName == null) ? "" : lasercutterMaterialName.trim());
             
             // Check material name
-            if (materialName.isEmpty())
+            if (lasercutterMaterialName.isEmpty())
             {
               throw new Exception(bundle.getString("ERROR_EMPTY_MATERIAL_NAME"));
             }
             
-            float materialThickness = VisicutModel.getInstance().getMaterialThickness();
-            materialString = materialName + ", " + new Float(materialThickness).toString();
+            float lasercutterMaterialThickness = VisicutModel.getInstance().getMaterialThickness();
+            lasercutterMaterial = lasercutterMaterialName + ", " + new Float(lasercutterMaterialThickness).toString() + " mm";
           }
+          
+          // Get internal data: Location, FabLab name
+          String location = PreferencesManager.getInstance().getPreferences().getLabName();
 
+          if (location == null || location.isEmpty())
+          {
+            throw new Exception(bundle.getString("ERROR_INVALID_FABLAB_NAME"));
+          }
+          
           // Upload data
-          FabQRFunctions.uploadFabQRProject(name, email, projectName, licenseIndex, tools, description, imageReal, imageScheme, plfFile, lasercutterName, materialString);
+          FabQRFunctions.uploadFabQRProject(name, email, projectName, licenseIndex, tools, description, location, imageReal, imageScheme, plfFile, lasercutterName, lasercutterMaterial);
 
-          // On success show suscess message
+          // On success show suscess message and disable loading icon
           showStatus(bundle.getString("SUCCESS_MESSAGE"));
+          lblStatus.setIcon(null);
 
           // On success enable cancel button again to close dialog
-          btnCancel.setEnabled(true);
+          btnClose.setEnabled(true);
         }
         catch (ClientProtocolException e)
         {
-          // Enable all GUI elements
+          // Enable all GUI elements and disable loading status
           handleGUIElements(true, true);
           
           // Show error message
@@ -853,7 +866,7 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
         }
         catch (Exception e)
         {
-          // Enable all GUI elements
+          // Enable all GUI elements and disable loading status
           handleGUIElements(true, true);
           
           // Show error message
@@ -863,10 +876,10 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     }).start();
   }//GEN-LAST:event_btnPublishActionPerformed
 
-  private void btnCancelActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnCancelActionPerformed
-  {//GEN-HEADEREND:event_btnCancelActionPerformed
+  private void btnCloseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnCloseActionPerformed
+  {//GEN-HEADEREND:event_btnCloseActionPerformed
     // Just close dialog
     closeDialogCleanup();
     dispose();
-  }//GEN-LAST:event_btnCancelActionPerformed
+  }//GEN-LAST:event_btnCloseActionPerformed
 }

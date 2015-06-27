@@ -108,18 +108,6 @@ public class Preferences
     this.fastQRCodes = fastQRCodes;
   }
   
-  private String fabqrPrivateURL = "";
-
-  public String getFabqrPrivateURL()
-  {
-    return fabqrPrivateURL;
-  }
-
-  public void setFabqrPrivateURL(String fabqrPrivateURL)
-  {
-    this.fabqrPrivateURL = fabqrPrivateURL;
-  }
-  
   private boolean fabqrActive = false;
 
   public boolean isFabqrActive()
@@ -130,6 +118,54 @@ public class Preferences
   public void setFabqrActive(boolean fabqrActive)
   {
     this.fabqrActive = fabqrActive;
+  }
+  
+  private String fabqrPrivateURL = "";
+  
+  public String getFabqrPrivateURL()
+  {
+    return fabqrPrivateURL;
+  }
+
+  public void setFabqrPrivateURL(String fabqrPrivateURL)
+  {
+    this.fabqrPrivateURL = fabqrPrivateURL;
+  }
+  
+  private String fabqrPublicURL = "";
+  
+  public String getFabqrPublicURL()
+  {
+    return fabqrPublicURL;
+  }
+
+  public void setFabqrPublicURL(String fabqrPublicURL)
+  {
+    this.fabqrPublicURL = fabqrPublicURL;
+  }
+  
+  private String fabqrPrivateUser = "";
+  
+  public String getFabqrPrivateUser()
+  {
+    return fabqrPrivateUser;
+  }
+
+  public void setFabqrPrivateUser(String fabqrPrivateUser)
+  {
+    this.fabqrPrivateUser = fabqrPrivateUser;
+  }
+  
+  private String fabqrPrivatePassword = "";
+  
+  public String getFabqrPrivatePassword()
+  {
+    return fabqrPrivatePassword;
+  }
+
+  public void setFabqrPrivatePassword(String fabqrPrivatePassword)
+  {
+    this.fabqrPrivatePassword = fabqrPrivatePassword;
   }
   
   private String potracePath = null;
@@ -469,8 +505,11 @@ public class Preferences
     result.labName = labName;
     result.enableQRCodes = enableQRCodes;
     result.fastQRCodes = fastQRCodes;
-    result.fabqrPrivateURL = fabqrPrivateURL;
     result.fabqrActive = fabqrActive;
+    result.fabqrPrivateURL = fabqrPrivateURL;
+    result.fabqrPublicURL = fabqrPublicURL;
+    result.fabqrPrivateUser = fabqrPrivateUser;
+    result.fabqrPrivatePassword = fabqrPrivatePassword;
     result.fabLabLocationFacebookId = fabLabLocationFacebookId;
     result.supportedExtensions = supportedExtensions;
     result.laserCutterTags = laserCutterTags;
