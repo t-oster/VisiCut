@@ -35,16 +35,49 @@ public class PlfPart {
   private File sourceFile;
   private GraphicSet graphicObjects;
   private MappingSet mapping;
-  private boolean isQRCodeSource = false;
+  private boolean isPreviewQRCodeSource = false;
+  private boolean isWebcamQRCodeSource = false;
+  private String qrCodeSourceURL = "";
+  private boolean isFileSourcePLF = false;
 
-  public boolean isQRCodeSource()
+  public boolean isPreviewQRCodeSource()
   {
-    return isQRCodeSource;
+    return isPreviewQRCodeSource;
   }
   
-  public void setIsQRCodeSource(boolean isQRCodeSource)
+  public void setIsPreviewQRCodeSource(boolean isPreviewQRCodeSource)
   {
-    this.isQRCodeSource = isQRCodeSource;
+    this.isPreviewQRCodeSource = isPreviewQRCodeSource;
+  }
+
+  public boolean isWebcamQRCodeSource()
+  {
+    return isWebcamQRCodeSource;
+  }
+
+  public void setIsWebcamQRCodeSource(boolean isWebcamQRCodeSource)
+  {
+    this.isWebcamQRCodeSource = isWebcamQRCodeSource;
+  }
+
+  public String getQrCodeSourceURL()
+  {
+    return qrCodeSourceURL;
+  }
+
+  public void setQrCodeSourceURL(String qrCodeSourceURL)
+  {
+    this.qrCodeSourceURL = qrCodeSourceURL;
+  }
+  
+  public boolean isFileSourcePLF()
+  {
+    return isFileSourcePLF;
+  }
+
+  public void setIsFileSourcePLF(boolean isFileSourcePLF)
+  {
+    this.isFileSourcePLF = isFileSourcePLF;
   }
   
   public File getSourceFile()

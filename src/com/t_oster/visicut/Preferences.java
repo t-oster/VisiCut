@@ -108,6 +108,30 @@ public class Preferences
     this.fastQRCodes = fastQRCodes;
   }
   
+  private String fabqrURL = "";
+
+  public String getFabqrURL()
+  {
+    return fabqrURL;
+  }
+
+  public void setFabqrURL(String fabqrURL)
+  {
+    this.fabqrURL = fabqrURL;
+  }
+  
+  private boolean fabqrActive = false;
+
+  public boolean isFabqrActive()
+  {
+    return fabqrActive;
+  }
+
+  public void setFabqrActive(boolean fabqrActive)
+  {
+    this.fabqrActive = fabqrActive;
+  }
+  
   private String potracePath = null;
 
   public String getPotracePath()
@@ -445,6 +469,8 @@ public class Preferences
     result.labName = labName;
     result.enableQRCodes = enableQRCodes;
     result.fastQRCodes = fastQRCodes;
+    result.fabqrURL = fabqrURL;
+    result.fabqrActive = fabqrActive;
     result.fabLabLocationFacebookId = fabLabLocationFacebookId;
     result.supportedExtensions = supportedExtensions;
     result.laserCutterTags = laserCutterTags;

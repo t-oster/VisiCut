@@ -99,6 +99,24 @@ public class QRCodeScannerThread extends Thread
         // Sleep to give other threads computation time
         Thread.currentThread().sleep(scanner.getUpdateTimer());
 
+        // Prepare variables
+        boolean cameraActive = true;
+        boolean previewActive = true;
+        boolean guiLockedForQRCodeEdit = false;
+
+        // Check if GUI needs to be unlocked
+        if (MainView.getInstance() != null)
+        {
+          cameraActive = MainView.getInstance().isCameraActive();
+          previewActive = MainView.getInstance().isPreviewPanelShowBackgroundImage();
+          guiLockedForQRCodeEdit = MainView.getInstance().isEditGuiForQRCodesDisabled();
+          
+          if ((VisicutModel.getInstance() == null || !cameraActive || !previewActive) && guiLockedForQRCodeEdit)
+          {
+            MainView.getInstance().disableEditGuiForQRCodes(false);
+          }
+        }
+        
         // Check if thread is active and QR codes enabled
         if (!isActive())
         {
@@ -111,7 +129,7 @@ public class QRCodeScannerThread extends Thread
         // Preview panel mode
         if (scanner.isUsePreviewPanel())
         {
-          if (VisicutModel.getInstance() != null && MainView.getInstance() != null && MainView.getInstance().isCameraActive() && MainView.getInstance().isPreviewPanelShowBackgroundImage())
+          if (VisicutModel.getInstance() != null && cameraActive && previewActive)
           {
             img = VisicutModel.getInstance().getBackgroundImage();
           }

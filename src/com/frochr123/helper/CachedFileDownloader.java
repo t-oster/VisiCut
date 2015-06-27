@@ -18,6 +18,7 @@
  **/
 package com.frochr123.helper;
 
+import com.t_oster.visicut.misc.FileUtils;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,7 +27,6 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -45,9 +45,8 @@ import org.apache.http.protocol.HttpContext;
 public class CachedFileDownloader
 {
   // Constants
-  public static final int CACHE_DOWNLOADER_MAX_ENTRIES = 50;
+  public static final int CACHE_DOWNLOADER_MAX_ENTRIES = 25;
   public static final int CACHE_DOWNLOADER_DEFAULT_TIMEOUT = 5000;
-  public static final String CACHE_DOWNLOADER_FILE_MARKER = "-tempVisiCut";
   public static final String CACHE_DOWNLOADER_DEFAULT_FILETYPES = "plf,svg";
 
   // Variables
@@ -182,7 +181,7 @@ public class CachedFileDownloader
       
       // Write result to file, it is allowed file type
       fileBaseName = FilenameUtils.getBaseName(finalUrl);
-      file = File.createTempFile(fileBaseName + CACHE_DOWNLOADER_FILE_MARKER, "." + fileExtension);
+      file = FileUtils.getNonexistingWritableFile(fileBaseName + "." + fileExtension);
       file.deleteOnExit();
       FileOutputStream filestream = new FileOutputStream(file);
       download.getValue().writeTo(filestream);
@@ -245,33 +244,5 @@ public class CachedFileDownloader
     // Return result
     result = new SimpleEntry<String, ByteArrayOutputStream>(finalUrl, outputStream);
     return result;
-  }
-  
-  // Called at startup to remove possible old temporary files
-  public static synchronized int cleanupOldTempFilesAtStartup()
-  {
-    int deletedFiles = 0;
-
-    File tempDirectory = FileUtils.getTempDirectory();
-    File[] tempFileList = tempDirectory.listFiles();
-
-    for (File tempFile : tempFileList)
-    {
-      if (tempFile.getName().contains(CACHE_DOWNLOADER_FILE_MARKER))
-      {
-        deletedFiles++;
-
-        try
-        {
-          tempFile.delete();
-        }
-        catch (Exception e)
-        {
-          // Just continue running, not a big issue for the program
-        }
-      }
-    }
-
-    return deletedFiles;
   }
 }

@@ -19,6 +19,7 @@
 package com.t_oster.visicut.gui;
 
 import com.t_oster.visicut.Preferences;
+import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.Component;
@@ -82,7 +83,7 @@ public class PreferencesDialog extends javax.swing.JDialog
   {
     Preferences oldPreferences = this.preferences;
     this.preferences = preferences;
-    firePropertyChange(PROP_PREFERENCES, oldPreferences, preferences);
+    firePropertyChange(VisicutModel.PROP_PREFERENCES, oldPreferences, preferences);
   }
 
   
@@ -118,6 +119,10 @@ public class PreferencesDialog extends javax.swing.JDialog
         txtfLasercutterTags = new javax.swing.JTextField();
         lblSupportedExtensions = new javax.swing.JLabel();
         txtfSupportedExtensions = new javax.swing.JTextField();
+        pnlFabqr = new javax.swing.JPanel();
+        lblFabqrUrl = new javax.swing.JLabel();
+        txtFabqrUrl = new javax.swing.JTextField();
+        cbFabqrActive = new javax.swing.JCheckBox();
         btOk = new javax.swing.JButton();
         btCancel = new javax.swing.JButton();
 
@@ -226,7 +231,7 @@ public class PreferencesDialog extends javax.swing.JDialog
                 .addGroup(pnlGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cbFastQRCodes)
                     .addComponent(lbFastQRCodes))
-                .addGap(15, 15, 15))
+                .addGap(23, 23, 23))
         );
 
         tpSettings.addTab("General", pnlGeneral);
@@ -258,7 +263,7 @@ public class PreferencesDialog extends javax.swing.JDialog
                 .addGroup(pnlFacebookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblFabLabLocationFacebookId)
                     .addComponent(txtfFabLabLocationFacebookId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(152, Short.MAX_VALUE))
+                .addContainerGap(160, Short.MAX_VALUE))
         );
 
         tpSettings.addTab("Facebook", pnlFacebook);
@@ -305,10 +310,50 @@ public class PreferencesDialog extends javax.swing.JDialog
                 .addGroup(pnlThingiverseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblSupportedExtensions)
                     .addComponent(txtfSupportedExtensions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(126, Short.MAX_VALUE))
+                .addContainerGap(134, Short.MAX_VALUE))
         );
 
         tpSettings.addTab("Thingiverse", pnlThingiverse);
+
+        pnlFabqr.setToolTipText(""); // NOI18N
+
+        lblFabqrUrl.setText("FabQR URL, with ending slash:");
+
+        txtFabqrUrl.setToolTipText("<html>Specify the id of your FabLab Facebook site. It will be referenced <br>\n in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL<br>\nof the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 <br>\nenter 191850277562397 in this field.</html>"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabqrURL}"), txtFabqrUrl, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        bindingGroup.addBinding(binding);
+
+        cbFabqrActive.setText("FabQR active");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabqrActive}"), cbFabqrActive, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+        bindingGroup.addBinding(binding);
+
+        javax.swing.GroupLayout pnlFabqrLayout = new javax.swing.GroupLayout(pnlFabqr);
+        pnlFabqr.setLayout(pnlFabqrLayout);
+        pnlFabqrLayout.setHorizontalGroup(
+            pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlFabqrLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblFabqrUrl)
+                    .addComponent(txtFabqrUrl, javax.swing.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE)
+                    .addComponent(cbFabqrActive))
+                .addContainerGap())
+        );
+        pnlFabqrLayout.setVerticalGroup(
+            pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlFabqrLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblFabqrUrl)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtFabqrUrl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(cbFabqrActive)
+                .addContainerGap(99, Short.MAX_VALUE))
+        );
+
+        tpSettings.addTab("FabQR", pnlFabqr);
 
         btOk.setText("OK");
         btOk.addActionListener(new java.awt.event.ActionListener() {
@@ -339,7 +384,7 @@ public class PreferencesDialog extends javax.swing.JDialog
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(tpSettings)
+                .addComponent(tpSettings, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btOk)
@@ -376,6 +421,7 @@ public class PreferencesDialog extends javax.swing.JDialog
     private javax.swing.JButton btOk;
     private javax.swing.JComboBox cbDefaultMapping;
     private javax.swing.JCheckBox cbEnableQRCodes;
+    private javax.swing.JCheckBox cbFabqrActive;
     private javax.swing.JCheckBox cbFastQRCodes;
     private javax.swing.JCheckBox cbSandboxLaserScript;
     private javax.swing.JCheckBox cbSandboxLaserScript1;
@@ -387,12 +433,15 @@ public class PreferencesDialog extends javax.swing.JDialog
     private javax.swing.JLabel lbFastQRCodes;
     private javax.swing.JLabel lbFilenamesForJobs;
     private javax.swing.JLabel lblFabLabLocationFacebookId;
+    private javax.swing.JLabel lblFabqrUrl;
     private javax.swing.JLabel lblLasercutterTags;
     private javax.swing.JLabel lblSupportedExtensions;
+    private javax.swing.JPanel pnlFabqr;
     private javax.swing.JPanel pnlFacebook;
     private javax.swing.JPanel pnlGeneral;
     private javax.swing.JPanel pnlThingiverse;
     private javax.swing.JTabbedPane tpSettings;
+    private javax.swing.JTextField txtFabqrUrl;
     private javax.swing.JTextField txtfFabLabLocationFacebookId;
     private javax.swing.JTextField txtfLasercutterTags;
     private javax.swing.JTextField txtfSupportedExtensions;

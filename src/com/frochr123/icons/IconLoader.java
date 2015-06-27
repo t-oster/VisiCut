@@ -41,8 +41,8 @@ public class IconLoader
   // Facebook
   public static final String ICON_FACEBOOK = "icon-facebook.png";
   
-  // FabQR
-  public static final String ICON_FABQR = "icon-fabqr.png";
+  // QR codes
+  public static final String ICON_QRCODE = "icon-qrcode.png";
 
 
   // Function to load image as Icon

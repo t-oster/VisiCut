@@ -340,7 +340,7 @@ public class VisicutModel
   {
     Preferences oldPreferences = this.preferences;
     this.preferences = preferences;
-    propertyChangeSupport.firePropertyChange(PROP_PREFERENCES, oldPreferences, preferences);
+    propertyChangeSupport.firePropertyChange(VisicutModel.PROP_PREFERENCES, oldPreferences, preferences);
     if (this.preferences != null)
     {
       this.graphicFileImporter = null;
@@ -557,6 +557,8 @@ public class VisicutModel
           {
             p.setMapping(mappings.get(i));
           }
+
+          p.setIsFileSourcePLF(true);
           resultingFile.add(p);
         }
       }
@@ -570,7 +572,7 @@ public class VisicutModel
 
   public void saveToFile(MaterialManager pm, MappingManager mm, File f) throws FileNotFoundException, IOException
   {
-    PlfFile plf = this.getPlfFile();
+    List<PlfPart> plf = this.getPlfFile().getPartsCopy();
     FileInputStream in;
     byte[] buf = new byte[1024];
     int len;
@@ -708,7 +710,7 @@ public class VisicutModel
     }
     float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() || !this.useThicknessAsFocusOffset ? 0 : this.materialThickness;
 
-    for (PlfPart p : this.getPlfFile())
+    for (PlfPart p : this.getPlfFile().getPartsCopy())
     {
       if (p.getMapping() == null)
       {
@@ -862,6 +864,12 @@ public class VisicutModel
     
     for(PlfPart p : this.plfFile)
     {
+      // Do not apply to preview QR loaded parts
+      if (p.isPreviewQRCodeSource())
+      {
+        continue;
+      }
+
       boolean modified = false;
       Rectangle2D bb = p.getGraphicObjects().getBoundingBox();
       

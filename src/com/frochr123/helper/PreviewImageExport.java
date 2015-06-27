@@ -100,7 +100,7 @@ public class PreviewImageExport
     double mm2pxScaleFactor = Math.min((double)(imageWidth)/bedWidth, (double)(imageHeight)/bedHeight);
     AffineTransform scaleTransform = AffineTransform.getScaleInstance(mm2pxScaleFactor, mm2pxScaleFactor);
 
-    // TODO Add support for different mappings, currently only Cut, Mark supported, performance issue?
+    // TODO Add support for different mappings, currently only simple lines (as in cut, mark) supported, performance issue?
     for (PlfPart part : VisicutModel.getInstance().getPlfFile().getPartsCopy())
     {
       if (part == null)
