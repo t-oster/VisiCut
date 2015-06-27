@@ -84,6 +84,30 @@ public class Preferences
     this.labName = labName;
   }
   
+  private boolean enableQRCodes = false;
+
+  public boolean isEnableQRCodes()
+  {
+    return enableQRCodes;
+  }
+
+  public void setEnableQRCodes(boolean enableQRCodes)
+  {
+    this.enableQRCodes = enableQRCodes;
+  }
+  
+  private boolean fastQRCodes = false;
+
+  public boolean isFastQRCodes()
+  {
+    return fastQRCodes;
+  }
+
+  public void setFastQRCodes(boolean fastQRCodes)
+  {
+    this.fastQRCodes = fastQRCodes;
+  }
+  
   private String potracePath = null;
 
   public String getPotracePath()
@@ -419,6 +443,8 @@ public class Preferences
     result.windowBounds = windowBounds;
     result.useFilenamesForJobs = useFilenamesForJobs;
     result.labName = labName;
+    result.enableQRCodes = enableQRCodes;
+    result.fastQRCodes = fastQRCodes;
     result.fabLabLocationFacebookId = fabLabLocationFacebookId;
     result.supportedExtensions = supportedExtensions;
     result.laserCutterTags = laserCutterTags;

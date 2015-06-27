@@ -21,7 +21,7 @@ package com.tur0kk.thingiverse.gui.mapping;
 import com.tur0kk.thingiverse.ThingiverseManager;
 import com.tur0kk.thingiverse.model.Thing;
 import com.tur0kk.thingiverse.model.ThingFile;
-import com.frochr123.pluginicon.PluginIconLoader;
+import com.frochr123.icons.IconLoader;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.DefaultListModel;
@@ -85,7 +85,7 @@ public class ThingSelectionListener implements ListSelectionListener
                 while (i1.hasNext()) 
                 {
                   // get loading icon
-                  ImageIcon loadingIcon = PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_LOADING_CIRCLE_MEDIUM);
+                  ImageIcon loadingIcon = IconLoader.loadIcon(IconLoader.ICON_LOADING_CIRCLE_MEDIUM);
 
                   // set changing observer for loading images to update gif 
                   loadingIcon.setImageObserver(new AnimationImageObserverList(displayResult, index));
@@ -123,7 +123,7 @@ public class ThingSelectionListener implements ListSelectionListener
                         String file = thingiverse.downloadImage(url); // download  image
                         ImageIcon imageIcon = null;
                         if("".equals(file)){ // load default image if image not avaliable
-                          imageIcon = PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_THINGIVERSE_NO_IMG);
+                          imageIcon = IconLoader.loadIcon(IconLoader.ICON_THINGIVERSE_NO_IMG);
                         }
                         else{
                           imageIcon = new ImageIcon(file);

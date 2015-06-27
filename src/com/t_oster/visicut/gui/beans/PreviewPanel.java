@@ -524,7 +524,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
         gg.setColor(Color.DARK_GRAY);
         drawGrid(gg);
       }
-      for (PlfPart part : VisicutModel.getInstance().getPlfFile())
+      for (PlfPart part : VisicutModel.getInstance().getPlfFile().getPartsCopy())
       {
         boolean selected = (part.equals(VisicutModel.getInstance().getSelectedPart()));
         HashMap<Mapping,ImageProcessingThread> renderBuffer = renderBuffers.get(part);

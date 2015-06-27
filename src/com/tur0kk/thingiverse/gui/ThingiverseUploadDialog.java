@@ -21,7 +21,7 @@ package com.tur0kk.thingiverse.gui;
 import com.t_oster.visicut.gui.MainView;
 import com.tur0kk.TakePhotoThread;
 import com.tur0kk.thingiverse.model.Thing;
-import com.frochr123.pluginicon.PluginIconLoader;
+import com.frochr123.icons.IconLoader;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.ItemEvent;
@@ -153,7 +153,7 @@ public class ThingiverseUploadDialog extends javax.swing.JDialog
             }
         });
 
-        lblLoading.setIcon(PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_LOADING_CIRCLE_SMALL));
+        lblLoading.setIcon(IconLoader.loadIcon(IconLoader.ICON_LOADING_CIRCLE_SMALL));
         lblLoading.setText(resourceMap.getString("lblLoading.text")); // NOI18N
         lblLoading.setName("lblLoading"); // NOI18N
 

@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.frochr123.periodicthreads;
+package com.frochr123.periodictasks;
 
 import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.VisicutModel;
@@ -38,7 +38,7 @@ public class RefreshCameraThread extends Thread
   }
 
   // Compute update timer, ensure valid data
-  public int getUpdateTimerMs()
+  public static int getUpdateTimerMs()
   {
     if (VisicutModel.getInstance().getSelectedLaserDevice() != null)
     {
@@ -52,7 +52,7 @@ public class RefreshCameraThread extends Thread
   }
 
   // Check MainView if camera and background are set to active
-  protected boolean isActive()
+  public static boolean isActive()
   {
     return MainView.getInstance().isCameraActive() && MainView.getInstance().isPreviewPanelShowBackgroundImage();
   }

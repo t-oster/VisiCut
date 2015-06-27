@@ -64,9 +64,11 @@ import com.t_oster.visicut.model.mapping.MappingSet;
 import com.tur0kk.facebook.FacebookManager;
 import com.tur0kk.facebook.gui.FacebookDialog;
 import com.tur0kk.thingiverse.ThingiverseManager;
-import com.frochr123.pluginicon.PluginIconLoader;
-import com.frochr123.periodicthreads.RefreshCameraThread;
-import com.frochr123.periodicthreads.RefreshProjectorThread;
+import com.frochr123.helper.CachedFileDownloader;
+import com.frochr123.icons.IconLoader;
+import com.frochr123.periodictasks.RefreshCameraThread;
+import com.frochr123.periodictasks.RefreshProjectorThread;
+import com.frochr123.periodictasks.RefreshQRCodesTask;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
@@ -139,6 +141,7 @@ public class MainView extends javax.swing.JFrame
   private RefreshCameraThread cameraThread = null;
   private boolean projectorActive = true;
   private RefreshProjectorThread projectorThread = null;
+  private RefreshQRCodesTask qrCodesTask = null;
   
   public static MainView getInstance()
   {
@@ -391,6 +394,9 @@ public class MainView extends javax.swing.JFrame
     if (LaserDeviceManager.getInstance().getAll().isEmpty()) {
       this.jmDownloadSettingsActionPerformed(null);
     }
+    
+    // Cleanup old downloaded temporary files, which might not have been deleted correctly
+    CachedFileDownloader.cleanupOldTempFilesAtStartup();
   }
 
   private ActionListener exampleItemClicked = new ActionListener(){
@@ -681,7 +687,7 @@ public class MainView extends javax.swing.JFrame
         projectorActiveMenuItem = new javax.swing.JCheckBoxMenuItem();
         jSeparator7 = new javax.swing.JPopupMenu.Separator();
         showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        shareMenu = new javax.swing.JMenu();
         facebookMenuItem = new javax.swing.JMenuItem();
         thingiverseMenuItem = new javax.swing.JMenuItem();
         optionsMenu = new javax.swing.JMenu();
@@ -1065,7 +1071,7 @@ public class MainView extends javax.swing.JFrame
         filler2.setName("filler2"); // NOI18N
         jPanel1.add(filler2);
 
-        btFacebook.setIcon(PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_FACEBOOK));
+        btFacebook.setIcon(com.frochr123.icons.IconLoader.loadIcon(com.frochr123.icons.IconLoader.ICON_FACEBOOK));
         btFacebook.setText(resourceMap.getString("btFacebook.text")); // NOI18N
         btFacebook.setToolTipText(resourceMap.getString("btFacebook.toolTipText")); // NOI18N
         btFacebook.setMaximumSize(new java.awt.Dimension(35, 35));
@@ -1080,7 +1086,7 @@ public class MainView extends javax.swing.JFrame
         jPanel1.add(btFacebook);
         btFacebook.getAccessibleContext().setAccessibleDescription(resourceMap.getString("btFacebook.AccessibleContext.accessibleDescription")); // NOI18N
 
-        btThingiverse.setIcon(PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_THINGIVERSE));
+        btThingiverse.setIcon(com.frochr123.icons.IconLoader.loadIcon(com.frochr123.icons.IconLoader.ICON_THINGIVERSE));
         btThingiverse.setText(resourceMap.getString("btThingiverse.text")); // NOI18N
         btThingiverse.setToolTipText(resourceMap.getString("btThingiverse.toolTipText")); // NOI18N
         btThingiverse.setMaximumSize(new java.awt.Dimension(35, 35));
@@ -1286,9 +1292,9 @@ public class MainView extends javax.swing.JFrame
 
         menuBar.add(viewMenu);
 
-        jMenu2.setMnemonic('p');
-        jMenu2.setText(resourceMap.getString("pluginsMenu.text")); // NOI18N
-        jMenu2.setName("pluginsMenu"); // NOI18N
+        shareMenu.setMnemonic('p');
+        shareMenu.setText(resourceMap.getString("pluginsMenu.text")); // NOI18N
+        shareMenu.setName("pluginsMenu"); // NOI18N
 
         facebookMenuItem.setText(resourceMap.getString("facebookMenuItem.text")); // NOI18N
         facebookMenuItem.setName("facebookMenuItem"); // NOI18N
@@ -1297,7 +1303,7 @@ public class MainView extends javax.swing.JFrame
                 facebookMenuItemActionPerformed(evt);
             }
         });
-        jMenu2.add(facebookMenuItem);
+        shareMenu.add(facebookMenuItem);
 
         thingiverseMenuItem.setText(resourceMap.getString("thingiverseMenuItem.text")); // NOI18N
         thingiverseMenuItem.setName("thingiverseMenuItem"); // NOI18N
@@ -1306,9 +1312,9 @@ public class MainView extends javax.swing.JFrame
                 thingiverseMenuItemActionPerformed(evt);
             }
         });
-        jMenu2.add(thingiverseMenuItem);
+        shareMenu.add(thingiverseMenuItem);
 
-        menuBar.add(jMenu2);
+        menuBar.add(shareMenu);
 
         optionsMenu.setMnemonic('o');
         optionsMenu.setText(resourceMap.getString("optionsMenu.text")); // NOI18N
@@ -1620,7 +1626,7 @@ public class MainView extends javax.swing.JFrame
   /**
    * Sets all Buttons to their correct state (disabled/enabled)
    */
-  private void refreshButtonStates(String action)
+  public void refreshButtonStates(String action)
   {
     if (action != null && action.equals(VisicutModel.PROP_SELECTEDLASERDEVICE))
     {
@@ -2073,7 +2079,7 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
   this.executeJob();
 }//GEN-LAST:event_executeJobMenuItemActionPerformed
 
-  public void captureImage()
+  public synchronized void captureImage()
   {
     if (!cameraCapturing)
     {
@@ -3039,7 +3045,6 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
@@ -3083,6 +3088,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JFileChooser saveFileChooser;
     private javax.swing.JMenuItem saveMenuItem;
+    private javax.swing.JMenu shareMenu;
     private javax.swing.JCheckBoxMenuItem showGridMenuItem;
     private javax.swing.JMenuItem thingiverseMenuItem;
     private javax.swing.JLabel timeLabel;
@@ -3176,7 +3182,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   {
     this.cameraActive = cameraActive;
 
-    // Set correct states on UI elements
+    // Set correct states on UI elements and manage threads
     // Visibility and enabled are already handled in other code places
     if (cameraActive)
     {
@@ -3184,6 +3190,12 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
         {
           cameraThread = new RefreshCameraThread();
           cameraThread.start();
+        }
+
+        if (qrCodesTask == null)
+        {
+          qrCodesTask = new RefreshQRCodesTask();
+          qrCodesTask.startOrContinueScan();
         }
 
         cameraStateButton.setText(bundle.getString("STATUS_ON"));
@@ -3217,7 +3229,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   {
     this.projectorActive = projectorActive;
 
-    // Set correct states on UI elements
+    // Set correct states on UI elements and manage threads
     // Visibility and enabled are already handled in other code places
     if (projectorActive)
     {
