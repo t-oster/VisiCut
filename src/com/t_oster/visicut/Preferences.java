@@ -108,16 +108,16 @@ public class Preferences
     this.fastQRCodes = fastQRCodes;
   }
   
-  private String fabqrURL = "";
+  private String fabqrPrivateURL = "";
 
-  public String getFabqrURL()
+  public String getFabqrPrivateURL()
   {
-    return fabqrURL;
+    return fabqrPrivateURL;
   }
 
-  public void setFabqrURL(String fabqrURL)
+  public void setFabqrPrivateURL(String fabqrPrivateURL)
   {
-    this.fabqrURL = fabqrURL;
+    this.fabqrPrivateURL = fabqrPrivateURL;
   }
   
   private boolean fabqrActive = false;
@@ -469,7 +469,7 @@ public class Preferences
     result.labName = labName;
     result.enableQRCodes = enableQRCodes;
     result.fastQRCodes = fastQRCodes;
-    result.fabqrURL = fabqrURL;
+    result.fabqrPrivateURL = fabqrPrivateURL;
     result.fabqrActive = fabqrActive;
     result.fabLabLocationFacebookId = fabLabLocationFacebookId;
     result.supportedExtensions = supportedExtensions;

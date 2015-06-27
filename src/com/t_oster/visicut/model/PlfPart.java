@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut.model;
 
+import com.frochr123.helper.QRCodeInfo;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.Mapping;
@@ -35,39 +36,28 @@ public class PlfPart {
   private File sourceFile;
   private GraphicSet graphicObjects;
   private MappingSet mapping;
-  private boolean isPreviewQRCodeSource = false;
-  private boolean isWebcamQRCodeSource = false;
-  private String qrCodeSourceURL = "";
+  private QRCodeInfo qrCodeInfo = null;
   private boolean isFileSourcePLF = false;
+  private boolean isMappingEnabled = true;
 
-  public boolean isPreviewQRCodeSource()
+  public QRCodeInfo getQRCodeInfo()
   {
-    return isPreviewQRCodeSource;
+    return qrCodeInfo;
+  }
+
+  public void setQRCodeInfo(QRCodeInfo qrCodeInfo)
+  {
+    this.qrCodeInfo = qrCodeInfo;
   }
   
-  public void setIsPreviewQRCodeSource(boolean isPreviewQRCodeSource)
+  public boolean isMappingEnabled()
   {
-    this.isPreviewQRCodeSource = isPreviewQRCodeSource;
+    return isMappingEnabled;
   }
 
-  public boolean isWebcamQRCodeSource()
+  public void setIsMappingEnabled(boolean isMappingEnabled)
   {
-    return isWebcamQRCodeSource;
-  }
-
-  public void setIsWebcamQRCodeSource(boolean isWebcamQRCodeSource)
-  {
-    this.isWebcamQRCodeSource = isWebcamQRCodeSource;
-  }
-
-  public String getQrCodeSourceURL()
-  {
-    return qrCodeSourceURL;
-  }
-
-  public void setQrCodeSourceURL(String qrCodeSourceURL)
-  {
-    this.qrCodeSourceURL = qrCodeSourceURL;
+    this.isMappingEnabled = isMappingEnabled;
   }
   
   public boolean isFileSourcePLF()
@@ -121,7 +111,12 @@ public class PlfPart {
 
   public MappingSet getMapping()
   {
-    return mapping;
+    if (isMappingEnabled())
+    {
+      return mapping;
+    }
+    
+    return null;
   }
 
   public void setMapping(MappingSet mapping)

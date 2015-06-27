@@ -62,6 +62,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -572,12 +573,18 @@ public class VisicutModel
 
   public void saveToFile(MaterialManager pm, MappingManager mm, File f) throws FileNotFoundException, IOException
   {
+    FileOutputStream outputStream = new FileOutputStream(f);
+    savePlfToStream(pm, mm, outputStream);
+  }
+
+  public void savePlfToStream(MaterialManager pm, MappingManager mm, OutputStream outputStream) throws FileNotFoundException, IOException
+  {
     List<PlfPart> plf = this.getPlfFile().getPartsCopy();
     FileInputStream in;
     byte[] buf = new byte[1024];
     int len;
     // Create the ZIP file
-    ZipOutputStream out = new ZipOutputStream(new FileOutputStream(f));
+    ZipOutputStream out = new ZipOutputStream(outputStream);
     //find temporary file for xml
     int k = 0;
     File tmp = null;
@@ -865,7 +872,7 @@ public class VisicutModel
     for(PlfPart p : this.plfFile)
     {
       // Do not apply to preview QR loaded parts
-      if (p.isPreviewQRCodeSource())
+      if (p.getQRCodeInfo() != null && p.getQRCodeInfo().isPreviewQRCodeSource())
       {
         continue;
       }

@@ -135,9 +135,15 @@ public class TakePhotoThread extends Thread
   }
   
   private void closeCamera(){
-    Webcam cam = Webcam.getDefault();
-    if(cam.isOpen()){
-      cam.close();      
+    // Only close camera if camera was activated by this thread
+    // Causes issues on fast switch between Visicam / Webcam capturing
+    // because of arbitrary execution order: Webcam start, Visicam close
+    if (this.webcam)
+    {
+      Webcam cam = Webcam.getDefault();
+      if(cam != null && cam.isOpen()){
+        cam.close();
+      }
     }
   }
   
