@@ -310,7 +310,8 @@ public class Helper
       new File("/Applications/Adobe Illustrator CS6/Presets"),      
       new File("/Applications/Adobe Illustrator CS4/Presets.localized"),
       new File("/Applications/Adobe Illustrator CS5/Presets.localized"),
-      new File("/Applications/Adobe Illustrator CS6/Presets.localized")
+      new File("/Applications/Adobe Illustrator CS6/Presets.localized"),
+      new File("C:/Program Files/Adobe/Adobe Illustrator CC 2015/Presets.localized"),
     })
     {
       if (dir.exists() && dir.isDirectory())
@@ -658,12 +659,12 @@ public class Helper
 
   private static File getIllustratorScript()
   {
-    return new File(new File(getVisiCutFolder(), "illustrator_script"), "OpenWithVisiCut.scpt");
+    return new File(new File(getVisiCutFolder(), "illustrator_script"), isWindows() ? "OpenWithVisiCut.vbs" : "OpenWithVisiCut.scpt");
   }
 
   public static boolean isIllustratorScriptInstallable()
   {
-    return isMacOS() && getIllustratorScript().exists();
+    return (isMacOS() || isWindows()) && getIllustratorScript().exists();
   }
 
   public static String allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-";

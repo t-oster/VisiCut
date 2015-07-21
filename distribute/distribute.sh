@@ -37,6 +37,7 @@ cp ../tools/inkscape_extension/*.py visicut/inkscape_extension/
 cp ../tools/inkscape_extension/*.inx visicut/inkscape_extension/
 mkdir -p visicut/illustrator_script
 cp ../tools/illustrator_script/*.scpt visicut/illustrator_script/
+cp ../tools/illustrator_script/*.vbs visicut/illustrator_script/
 echo "Compressing content..."
 [ -f VisiCut-$VERSION.zip ] && rm VisiCut-$VERSION.zip
 zip -r VisiCut-$VERSION.zip visicut/  > /dev/null || exit 1
