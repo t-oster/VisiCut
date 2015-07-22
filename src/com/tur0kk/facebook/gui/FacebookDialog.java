@@ -21,7 +21,7 @@ package com.tur0kk.facebook.gui;
 import com.t_oster.visicut.gui.MainView;
 import com.tur0kk.facebook.FacebookManager;
 import com.tur0kk.TakePhotoThread;
-import com.frochr123.pluginicon.PluginIconLoader;
+import com.frochr123.icons.IconLoader;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.ItemEvent;
@@ -183,7 +183,7 @@ public class FacebookDialog extends javax.swing.JDialog
         txtaPublish.setName("txtaPublish"); // NOI18N
         jScrollPane1.setViewportView(txtaPublish);
 
-        lblLoading.setIcon(PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_LOADING_CIRCLE_SMALL));
+        lblLoading.setIcon(IconLoader.loadIcon(IconLoader.ICON_LOADING_CIRCLE_SMALL));
         lblLoading.setText(resourceMap.getString("lblLoading.text")); // NOI18N
         lblLoading.setName("lblLoading"); // NOI18N
 
@@ -444,7 +444,7 @@ private void initUsername(){
     public void run()
     {
       // user feedback, display loading icon
-      final ImageIcon loadingIcon = PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_LOADING_CIRCLE_MEDIUM);
+      final ImageIcon loadingIcon = IconLoader.loadIcon(IconLoader.ICON_LOADING_CIRCLE_MEDIUM);
       // display loading icon in label
       SwingUtilities.invokeLater(new Runnable() {
         public void run()

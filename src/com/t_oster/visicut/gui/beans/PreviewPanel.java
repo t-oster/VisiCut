@@ -33,10 +33,12 @@ import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics;
@@ -44,7 +46,10 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -118,6 +123,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     {
       PlfPart p = (PlfPart) pce.getOldValue();
       this.clearCache(p);
+      repaint();
     }
     else if (VisicutModel.PROP_MATERIAL.equals(pce.getPropertyName())
       || VisicutModel.PROP_PLF_FILE_CHANGED.equals(pce.getPropertyName()))
@@ -524,7 +530,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
         gg.setColor(Color.DARK_GRAY);
         drawGrid(gg);
       }
-      for (PlfPart part : VisicutModel.getInstance().getPlfFile())
+      for (PlfPart part : VisicutModel.getInstance().getPlfFile().getPartsCopy())
       {
         boolean selected = (part.equals(VisicutModel.getInstance().getSelectedPart()));
         HashMap<Mapping,ImageProcessingThread> renderBuffer = renderBuffers.get(part);
@@ -533,12 +539,81 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
           renderBuffer = new LinkedHashMap<Mapping,ImageProcessingThread>();
           renderBuffers.put(part,renderBuffer);
         }
+
         if (part.getGraphicObjects() != null)
         {
           MappingSet mappingsToDraw = part.getMapping();
           if (VisicutModel.getInstance().getMaterial() == null || mappingsToDraw == null || mappingsToDraw.isEmpty())
-          {//Just draw the original Image
-            this.renderOriginalImage(gg, null, part, this.fastPreview && selected);
+          {
+            if (part.getQRCodeInfo() != null && part.getQRCodeInfo().isPreviewQRCodeSource() && !part.getQRCodeInfo().isPreviewPositionQRStored() && part.getGraphicObjects() != null)
+            {
+              GraphicSet graphicSet = part.getGraphicObjects();
+              Stroke originalStroke = gg.getStroke();
+              Color originalColor = gg.getColor();
+
+              float strokeWidth = 1.1f;
+              Color strokeColor = Color.GREEN;
+              Stroke stroke = new BasicStroke(strokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+              gg.setColor(strokeColor);
+              gg.setStroke(stroke);
+
+              for (GraphicObject graphicObject : graphicSet)
+              {
+                // Shape measured in mm
+                Shape shape = (graphicObject instanceof ShapeObject) ? ((ShapeObject)graphicObject).getShape() : graphicObject.getBoundingBox();
+
+                if (graphicSet.getTransform() != null)
+                {
+                  shape = graphicSet.getTransform().createTransformedShape(shape);
+                }
+
+                // Transform shape from mm to pixel
+                shape = this.getMmToPxTransform().createTransformedShape(shape);
+
+                if (shape != null)
+                {
+                  PathIterator iter = shape.getPathIterator(null, 1);
+                  int startx = 0;
+                  int starty = 0;
+                  int lastx = 0;
+                  int lasty = 0;
+
+                  while (!iter.isDone())
+                  {
+                    double[] test = new double[8];
+                    int result = iter.currentSegment(test);
+                    //transform coordinates to preview-coordinates
+                    //laserPx2PreviewPx.transform(test, 0, test, 0, 1);
+                    if (result == PathIterator.SEG_MOVETO)
+                    {
+                      startx = (int) test[0];
+                      starty = (int) test[1];
+                      lastx = (int) test[0];
+                      lasty = (int) test[1];
+                    }
+                    else if (result == PathIterator.SEG_LINETO)
+                    {
+                      gg.drawLine(lastx, lasty, (int)test[0], (int)test[1]);
+                      lastx = (int) test[0];
+                      lasty = (int) test[1];
+                    }
+                    else if (result == PathIterator.SEG_CLOSE)
+                    {
+                      gg.drawLine(lastx, lasty, startx, starty);
+                    }
+                    iter.next();
+                  }
+                }
+              }
+              
+              gg.setColor(originalColor);
+              gg.setStroke(originalStroke);
+            }
+            else
+            {
+              //Just draw the original Image
+              this.renderOriginalImage(gg, null, part, this.fastPreview && selected);
+            }
           }
           else
           {

@@ -16,15 +16,16 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.frochr123.periodicthreads;
+package com.frochr123.periodictasks;
 
-import com.frochr123.previewexport.PreviewExport;
+import com.frochr123.helper.PreviewImageExport;
 import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.misc.Helper;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -40,8 +41,8 @@ import org.apache.http.impl.client.HttpClients;
 public class RefreshProjectorThread extends Thread
 {
   // Constant values
-  public static final int DEFAULT_PROJECTOR_TIME = 25;
-  public static final int DEFAULT_PROJECTOR_SHUTDOWN_THREAD_TIME = 10;
+  public static final int DEFAULT_PROJECTOR_TIME = 50;
+  public static final int DEFAULT_PROJECTOR_SHUTDOWN_THREAD_TIME = 25;
   public static final int DEFAULT_PROJECTOR_LONG_WAIT_TIME = 15000;
   public static final int DEFAULT_PROJECTOR_TIMEOUT = 10000;
   public static final int DEFAULT_PROJECTOR_WIDTH = 1280;
@@ -63,7 +64,7 @@ public class RefreshProjectorThread extends Thread
   }
 
   // Compute update timer, ensure valid data
-  public int getUpdateTimerMs()
+  public static int getUpdateTimerMs()
   {
     if (VisicutModel.getInstance().getSelectedLaserDevice() != null)
     {
@@ -77,7 +78,7 @@ public class RefreshProjectorThread extends Thread
   }
   
   // Compute width, ensure valid data
-  public int getProjectorWidth()
+  public static int getProjectorWidth()
   {
     if (VisicutModel.getInstance().getSelectedLaserDevice() != null)
     {
@@ -91,7 +92,7 @@ public class RefreshProjectorThread extends Thread
   }
   
   // Compute height, ensure valid data
-  public int getProjectorHeight()
+  public static int getProjectorHeight()
   {
     if (VisicutModel.getInstance().getSelectedLaserDevice() != null)
     {
@@ -105,7 +106,7 @@ public class RefreshProjectorThread extends Thread
   }
 
   // Check MainView if camera is set to active
-  protected boolean isActive()
+  public boolean isActive()
   {
     return MainView.getInstance().isProjectorActive() || isShutdownInProgress();
   }
@@ -134,7 +135,7 @@ public class RefreshProjectorThread extends Thread
             {
               if (updateInProgress)
               {
-                Thread.sleep(DEFAULT_PROJECTOR_SHUTDOWN_THREAD_TIME);
+                Thread.currentThread().sleep(DEFAULT_PROJECTOR_SHUTDOWN_THREAD_TIME);
                 continue;
               }
 
@@ -169,10 +170,10 @@ public class RefreshProjectorThread extends Thread
           {
             if (VisicutModel.getInstance() != null && VisicutModel.getInstance().getSelectedLaserDevice() != null && VisicutModel.getInstance().getSelectedLaserDevice().getProjectorURL() != null && !VisicutModel.getInstance().getSelectedLaserDevice().getProjectorURL().isEmpty())
             {
-              BufferedImage img = PreviewExport.generateImage(getProjectorWidth(), getProjectorHeight(), !isShutdownInProgress());
+              BufferedImage img = PreviewImageExport.generateImage(getProjectorWidth(), getProjectorHeight(), !isShutdownInProgress());
 
               ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-              PreviewExport.writePngToOutputStream(outputStream, img);
+              PreviewImageExport.writePngToOutputStream(outputStream, img);
               byte[] imagePostDataByte = outputStream.toByteArray();
 
               // Create HTTP client and cusomized config for timeouts
@@ -198,6 +199,14 @@ public class RefreshProjectorThread extends Thread
 
               // Send request
               CloseableHttpResponse res = httpClient.execute(httpPost);
+              
+              // React to possible server side errors
+              if (res.getStatusLine() == null || res.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
+              {
+                throw new Exception("Server sent wrong HTTP status code: " + new Integer(res.getStatusLine().getStatusCode()).toString());
+              }
+
+              // Close everything correctly
               res.close();
               httpClient.close();
             }
@@ -212,7 +221,7 @@ public class RefreshProjectorThread extends Thread
           catch (Exception e)
           {
             // Set flag for exception handling, sleep and message
-            lastExceptionMessage = "Projector thread exception: " + e.getMessage();
+            lastExceptionMessage = "Projector thread exception (2): " + e.getMessage();
           }
           
           updateInProgress = false;
@@ -263,7 +272,7 @@ public class RefreshProjectorThread extends Thread
       catch (Exception e)
       {
         // Set flag for exception handling, sleep and message
-        lastExceptionMessage = "Projector thread exception: " + e.getMessage();
+        lastExceptionMessage = "Projector thread exception (1): " + e.getMessage();
       }
     }
   }

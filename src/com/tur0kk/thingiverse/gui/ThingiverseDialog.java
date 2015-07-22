@@ -36,7 +36,7 @@ import com.tur0kk.thingiverse.gui.mapping.ThingCollectionComboboxRenderer;
 import com.tur0kk.thingiverse.gui.mapping.ThingFileSelectionListener;
 import com.tur0kk.thingiverse.model.ThingCollection;
 import com.tur0kk.thingiverse.model.ThingFile;
-import com.frochr123.pluginicon.PluginIconLoader;
+import com.frochr123.icons.IconLoader;
 import java.awt.event.ItemEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -139,7 +139,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         while (i1.hasNext())
         {
           // get loading icon
-          ImageIcon loadingIcon = PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_LOADING_CIRCLE_MEDIUM);
+          ImageIcon loadingIcon = IconLoader.loadIcon(IconLoader.ICON_LOADING_CIRCLE_MEDIUM);
 
           // set changing observer for loading images to update gif 
           loadingIcon.setImageObserver(new AnimationImageObserverList(thingList, index));
@@ -178,7 +178,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
               ImageIcon imageIcon = null;
               if ("".equals(file))
               { // load default image if image not avaliable
-                imageIcon = PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_THINGIVERSE_NO_IMG);
+                imageIcon = IconLoader.loadIcon(IconLoader.ICON_THINGIVERSE_NO_IMG);
               }
               else
               {
@@ -251,7 +251,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
           public void run()
           {
-            lblLiked.setIcon(PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_LOADING_CIRCLE_SMALL));
+            lblLiked.setIcon(IconLoader.loadIcon(IconLoader.ICON_LOADING_CIRCLE_SMALL));
           }
         });
         
@@ -294,7 +294,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
 
           public void run()
           {
-            lblMyThings.setIcon(PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_LOADING_CIRCLE_SMALL));
+            lblMyThings.setIcon(IconLoader.loadIcon(IconLoader.ICON_LOADING_CIRCLE_SMALL));
           }
         });
         // get things from thingiverse
@@ -388,7 +388,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         {
           public void run()
           {   
-            lblCollection.setIcon(PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_LOADING_CIRCLE_SMALL));
+            lblCollection.setIcon(IconLoader.loadIcon(IconLoader.ICON_LOADING_CIRCLE_SMALL));
           }
         });
         
@@ -420,7 +420,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
           public void run()
           {   
             lstSearchThing.setModel(new DefaultListModel()); // clear thing file list so that list is cleared if no things were found
-            lblSearch.setIcon(PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_LOADING_CIRCLE_SMALL));
+            lblSearch.setIcon(IconLoader.loadIcon(IconLoader.ICON_LOADING_CIRCLE_SMALL));
           }
         });
         
@@ -683,7 +683,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         pnlFilter.add(cbTags);
 
         lblOpeningFile.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblOpeningFile.setIcon(PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_LOADING_CIRCLE_SMALL));
+        lblOpeningFile.setIcon(IconLoader.loadIcon(IconLoader.ICON_LOADING_CIRCLE_SMALL));
         lblOpeningFile.setText(resourceMap.getString("lblOpeningFile.text")); // NOI18N
         lblOpeningFile.setName("lblOpeningFile"); // NOI18N
 
@@ -1011,7 +1011,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
         {
           // provide user feedback during loading
           // get loading icon
-          final ImageIcon loadingIcon = PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_LOADING_CIRCLE_MEDIUM);
+          final ImageIcon loadingIcon = IconLoader.loadIcon(IconLoader.ICON_LOADING_CIRCLE_MEDIUM);
           // display loading icon in label
           SwingUtilities.invokeLater(new Runnable()
           {
@@ -1027,7 +1027,7 @@ public class ThingiverseDialog extends javax.swing.JDialog
           ImageIcon imageIcon = null;
           if ("".equals(file))
           { // load default image if image not avaliable
-            imageIcon = PluginIconLoader.loadIcon(PluginIconLoader.PLUGIN_THINGIVERSE_NO_AVATAR);
+            imageIcon = IconLoader.loadIcon(IconLoader.ICON_THINGIVERSE_NO_AVATAR);
           }
           else
           {

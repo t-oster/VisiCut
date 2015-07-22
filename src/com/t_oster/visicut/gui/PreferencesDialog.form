@@ -26,9 +26,9 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="tpSettings" alignment="1" pref="460" max="32767" attributes="0"/>
+          <Component id="tpSettings" alignment="1" pref="469" max="32767" attributes="0"/>
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="320" max="32767" attributes="0"/>
+              <EmptySpace pref="329" max="32767" attributes="0"/>
               <Component id="btCancel" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="btOk" min="-2" max="-2" attributes="0"/>
@@ -39,7 +39,7 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="tpSettings" pref="195" max="32767" attributes="0"/>
+              <Component id="tpSettings" pref="219" max="32767" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="btOk" min="-2" max="-2" attributes="0"/>
@@ -85,13 +85,17 @@
                           <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="lbFilenamesForJobs" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel3" alignment="0" min="-2" pref="130" max="-2" attributes="0"/>
+                          <Component id="lbEnableQRCodes" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbFastQRCodes" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="47" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="cbSandboxLaserScript1" min="-2" max="-2" attributes="0"/>
                           <Component id="cbSandboxLaserScript" min="-2" max="-2" attributes="0"/>
-                          <Component id="jTextFieldLabName" alignment="0" pref="258" max="32767" attributes="0"/>
-                          <Component id="cbDefaultMapping" alignment="0" pref="258" max="32767" attributes="0"/>
+                          <Component id="jTextFieldLabName" alignment="0" pref="267" max="32767" attributes="0"/>
+                          <Component id="cbDefaultMapping" alignment="0" pref="267" max="32767" attributes="0"/>
+                          <Component id="cbEnableQRCodes" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbFastQRCodes" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -120,7 +124,17 @@
                           <Component id="jTextFieldLabName" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="59" max="32767" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="lbEnableQRCodes" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbEnableQRCodes" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="cbFastQRCodes" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbFastQRCodes" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -201,6 +215,36 @@
                 <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="jLabel3.setText(bundle.getString(&quot;LAB_NAME&quot;)); // NOI18N&#xa;&#xa;jLabel3.setToolTipText(bundle.getString(&quot;LAB_NAME_TOOLTIP&quot;)); // NOI18N"/>
               </AuxValues>
             </Component>
+            <Component class="javax.swing.JLabel" name="lbEnableQRCodes">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="com/t_oster/visicut/gui/resources/PreferencesDialog.properties" key="ENABLE_QR_CODES_TEXT" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="com/t_oster/visicut/gui/resources/PreferencesDialog.properties" key="ENABLE_QR_CODES_TOOLTIP" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lbFastQRCodes">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="com/t_oster/visicut/gui/resources/PreferencesDialog.properties" key="FAST_QR_CODES_TEXT" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="com/t_oster/visicut/gui/resources/PreferencesDialog.properties" key="FAST_QR_CODES_TOOLTIP" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="cbEnableQRCodes">
+              <BindingProperties>
+                <BindingProperty name="selected" source="Form" sourcePath="${preferences.enableQRCodes}" target="cbEnableQRCodes" targetPath="selected" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="cbFastQRCodes">
+              <BindingProperties>
+                <BindingProperty name="selected" source="Form" sourcePath="${preferences.fastQRCodes}" target="cbFastQRCodes" targetPath="selected" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="pnlFacebook">
@@ -222,7 +266,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lblFabLabLocationFacebookId" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="txtfFabLabLocationFacebookId" pref="280" max="32767" attributes="0"/>
+                      <Component id="txtfFabLabLocationFacebookId" pref="289" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -235,7 +279,7 @@
                           <Component id="lblFabLabLocationFacebookId" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="txtfFabLabLocationFacebookId" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="136" max="32767" attributes="0"/>
+                      <EmptySpace pref="160" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -281,8 +325,8 @@
                       </Group>
                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="txtfLasercutterTags" alignment="0" pref="308" max="32767" attributes="0"/>
-                          <Component id="txtfSupportedExtensions" alignment="0" pref="308" max="32767" attributes="0"/>
+                          <Component id="txtfLasercutterTags" alignment="0" pref="317" max="32767" attributes="0"/>
+                          <Component id="txtfSupportedExtensions" alignment="0" pref="317" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -301,7 +345,7 @@
                           <Component id="lblSupportedExtensions" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="txtfSupportedExtensions" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="110" max="32767" attributes="0"/>
+                      <EmptySpace pref="134" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -331,6 +375,159 @@
               </Properties>
               <BindingProperties>
                 <BindingProperty name="text" source="Form" sourcePath="${preferences.supportedExtensions}" target="txtfSupportedExtensions" targetPath="text" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="pnlFabqr">
+          <Properties>
+            <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="FabQR">
+                <Property name="tabTitle" type="java.lang.String" value="FabQR"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="cbFabqrActive" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="363" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="lblFabqrHint" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblFabqrExample" alignment="0" min="-2" pref="346" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace pref="28" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="lblFabqrPublicURL" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblFabqrPrivateUser" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblFabqrPrivatePassword" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblFabqrPrivateURL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace pref="16" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="txtFabqrPrivateURL" alignment="1" pref="276" max="32767" attributes="1"/>
+                                  <Component id="txtFabqrPrivateUser" alignment="1" max="32767" attributes="1"/>
+                                  <Component id="passFabqrPrivatePassword" alignment="1" max="32767" attributes="1"/>
+                                  <Component id="txtFabqrPublicURL" alignment="1" min="-2" pref="305" max="-2" attributes="1"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="cbFabqrActive" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="lblFabqrHint" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="lblFabqrExample" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="txtFabqrPublicURL" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblFabqrPublicURL" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="txtFabqrPrivateURL" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblFabqrPrivateURL" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="lblFabqrPrivateUser" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtFabqrPrivateUser" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="lblFabqrPrivatePassword" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="passFabqrPrivatePassword" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JCheckBox" name="cbFabqrActive">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="FabQR active"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="selected" source="Form" sourcePath="${preferences.fabqrActive}" target="cbFabqrActive" targetPath="selected" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblFabqrHint">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Insert full URLs to the public and private part of the FabQR system, must end with slash."/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblFabqrExample">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Example: http://my-public-fabqr.net:8090/"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblFabqrPublicURL">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="FabQR Public URL:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtFabqrPublicURL">
+              <Properties>
+                <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="text" source="Form" sourcePath="${preferences.fabqrPublicURL}" target="txtFabqrPublicURL" targetPath="text" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblFabqrPrivateURL">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="FabQR Private URL:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtFabqrPrivateURL">
+              <Properties>
+                <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="text" source="Form" sourcePath="${preferences.fabqrPrivateURL}" target="txtFabqrPrivateURL" targetPath="text" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblFabqrPrivateUser">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="FabQR Private User:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtFabqrPrivateUser">
+              <Properties>
+                <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="text" source="Form" sourcePath="${preferences.fabqrPrivateUser}" target="txtFabqrPrivateUser" targetPath="text" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblFabqrPrivatePassword">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="FabQR Private Password:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JPasswordField" name="passFabqrPrivatePassword">
+              <BindingProperties>
+                <BindingProperty name="text" source="Form" sourcePath="${preferences.fabqrPrivatePassword}" target="passFabqrPrivatePassword" targetPath="text" updateStrategy="0" immediately="false"/>
               </BindingProperties>
             </Component>
           </SubComponents>

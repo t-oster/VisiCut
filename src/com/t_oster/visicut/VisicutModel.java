@@ -62,6 +62,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -163,9 +164,20 @@ public class VisicutModel
    */
   public void setSelectedPart(PlfPart selectedPart)
   {
+    setSelectedPart(selectedPart, true);
+  }
+  
+  /**
+   * Set the value of selectedPart
+   *
+   * @param selectedPart new value of selectedPart
+   * @param autoSelect automatically select new available selected part
+   */
+  public void setSelectedPart(PlfPart selectedPart, boolean autoSelect)
+  {
     PlfPart oldSelectedPart = this.selectedPart;
     this.selectedPart = selectedPart;
-    if (selectedPart == null && this.plfFile != null && !this.plfFile.isEmpty())
+    if (autoSelect && selectedPart == null && this.plfFile != null && !this.plfFile.isEmpty())
     {
       this.selectedPart = this.plfFile.get(0);
     }
@@ -329,7 +341,7 @@ public class VisicutModel
   {
     Preferences oldPreferences = this.preferences;
     this.preferences = preferences;
-    propertyChangeSupport.firePropertyChange(PROP_PREFERENCES, oldPreferences, preferences);
+    propertyChangeSupport.firePropertyChange(VisicutModel.PROP_PREFERENCES, oldPreferences, preferences);
     if (this.preferences != null)
     {
       this.graphicFileImporter = null;
@@ -385,6 +397,15 @@ public class VisicutModel
   }
 
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+  /**
+   * Get PropertyChangeSupport.
+   * 
+   */
+  public PropertyChangeSupport getPropertyChangeSupport()
+  {
+    return propertyChangeSupport;
+  }
 
   /**
    * Add PropertyChangeListener.
@@ -457,7 +478,7 @@ public class VisicutModel
     }
   }
   
-  private PlfFile loadPlfFile(MappingManager mm, File f, List<String> warnings) throws FileNotFoundException, IOException, ImportException
+  public PlfFile loadPlfFile(MappingManager mm, File f, List<String> warnings) throws FileNotFoundException, IOException, ImportException
   {
     ZipFile zip = new ZipFile(f);
     PlfFile resultingFile = new PlfFile();
@@ -537,6 +558,8 @@ public class VisicutModel
           {
             p.setMapping(mappings.get(i));
           }
+
+          p.setIsFileSourcePLF(true);
           resultingFile.add(p);
         }
       }
@@ -550,12 +573,18 @@ public class VisicutModel
 
   public void saveToFile(MaterialManager pm, MappingManager mm, File f) throws FileNotFoundException, IOException
   {
-    PlfFile plf = this.getPlfFile();
+    FileOutputStream outputStream = new FileOutputStream(f);
+    savePlfToStream(pm, mm, outputStream);
+  }
+
+  public void savePlfToStream(MaterialManager pm, MappingManager mm, OutputStream outputStream) throws FileNotFoundException, IOException
+  {
+    List<PlfPart> plf = this.getPlfFile().getPartsCopy();
     FileInputStream in;
     byte[] buf = new byte[1024];
     int len;
     // Create the ZIP file
-    ZipOutputStream out = new ZipOutputStream(new FileOutputStream(f));
+    ZipOutputStream out = new ZipOutputStream(outputStream);
     //find temporary file for xml
     int k = 0;
     File tmp = null;
@@ -650,7 +679,7 @@ public class VisicutModel
     return graphicFileImporter;
   }
 
-  private PlfPart loadGraphicFile(File f, List<String> warnings) throws ImportException
+  public PlfPart loadGraphicFile(File f, List<String> warnings) throws ImportException
   {
     return this.getGraphicFileImporter().importFile(f, warnings);
   }
@@ -688,7 +717,7 @@ public class VisicutModel
     }
     float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() || !this.useThicknessAsFocusOffset ? 0 : this.materialThickness;
 
-    for (PlfPart p : this.getPlfFile())
+    for (PlfPart p : this.getPlfFile().getPartsCopy())
     {
       if (p.getMapping() == null)
       {
@@ -842,6 +871,12 @@ public class VisicutModel
     
     for(PlfPart p : this.plfFile)
     {
+      // Do not apply to preview QR loaded parts
+      if (p.getQRCodeInfo() != null && p.getQRCodeInfo().isPreviewQRCodeSource())
+      {
+        continue;
+      }
+
       boolean modified = false;
       Rectangle2D bb = p.getGraphicObjects().getBoundingBox();
       

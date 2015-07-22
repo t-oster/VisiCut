@@ -12,3 +12,4 @@ However, it contains some 3rd Party files, which are listed below.
 - DXF Support: Kabeja (kabeja.sourceforge.net) is licensed under (Apache Software License 2.0), see http://www.apache.org/licenses/LICENSE-2.0
 - EPS Support: Freehep PS Viewer (http://java.freehep.org/freehep1.x/psviewer/index.html) is licensed under LGPL
 - PNG Encoder: PngEncoder by ObjectPlanet, Inc. (http://objectplanet.com/pngencoder/), licensed according to http://objectplanet.com/pngencoder/licenseagreement.html, includes permission for binary redistribution, explicitly confirmed via email
+- QR code reader: ZXing by ZXing authors (https://github.com/zxing/) is licensed under (Apache Software License 2.0), see http://www.apache.org/licenses/LICENSE-2.0

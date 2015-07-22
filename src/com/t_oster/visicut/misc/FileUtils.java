@@ -45,22 +45,49 @@ public class FileUtils
 {
 
   private static int FILE_COPY_BUFFER_SIZE = 1024 * 1024 * 30;
+  public static final String FILE_VISICUT_TEMP_MARKER = "VisiCutTmp_";
 
   /**
    * Returns a file, which does not exist yet, should be writable
-   * and ends with nameSuffix.
+   * and ends with nameSuffix, by default treated as temporary file
    * @param nameSuffix
-   * @param deleteOnExit 
    */
   public static File getNonexistingWritableFile(String nameSuffix)
   {
+    return getNonexistingWritableFile(nameSuffix, true);
+  }
+  
+  /**
+   * Returns a file, which does not exist yet, should be writable
+   * and ends with nameSuffix, customizable if file is treated as temporary
+   * @param nameSuffix
+   * @param temporary
+   */
+  public static File getNonexistingWritableFile(String nameSuffix, boolean temporary)
+  {
+    String temporaryString = "";
+    String cleanNameSuffix = nameSuffix;
+    
+    if (temporary)
+    {
+      temporaryString = FILE_VISICUT_TEMP_MARKER;
+      
+      // Avoid adding the temp marker to a file multiple times (e.g. loading + saving plf files)
+      if (cleanNameSuffix != null && !cleanNameSuffix.isEmpty())
+      {
+        cleanNameSuffix = cleanNameSuffix.replace(FILE_VISICUT_TEMP_MARKER, "");
+      }
+    }
+
     File b = Helper.getBasePath();
-    File f = new File(b, nameSuffix);
-    int i=1;
+    File f = new File(b, temporaryString + cleanNameSuffix);
+    int i = 1;
+
     while(f.exists())
     {
-      f = new File(b, (i++) + nameSuffix);
+      f = new File(b, temporaryString + (i++) + cleanNameSuffix);
     }
+
     return f;
   }
   
@@ -319,5 +346,35 @@ public class FileUtils
     ReadableByteChannel rbc = Channels.newChannel(new URL(url).openStream());
     FileOutputStream fos = new FileOutputStream(file);
     fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+  }
+  
+  /**
+   * Called at startup to cleanup old temporary files
+   */
+  public static synchronized int cleanupOldTempFilesAtStartup()
+  {
+    int deletedFiles = 0;
+
+    File directory = Helper.getBasePath();
+    File[] fileList = directory.listFiles();
+
+    for (File tempFile : fileList)
+    {
+      if (tempFile.getName().contains(FILE_VISICUT_TEMP_MARKER))
+      {
+        deletedFiles++;
+
+        try
+        {
+          tempFile.delete();
+        }
+        catch (Exception e)
+        {
+          // Just continue running, not a big issue for the program
+        }
+      }
+    }
+
+    return deletedFiles;
   }
 }

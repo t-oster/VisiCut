@@ -18,6 +18,7 @@
  **/
 package com.t_oster.uicomponents.warnings;
 
+import com.t_oster.visicut.gui.MainView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
@@ -31,8 +32,13 @@ import javax.swing.JButton;
  */
 public class WarningPanel extends javax.swing.JPanel
 {
+  // Constants
+  public static final int MESSAGE_ID_DEFAULT = 0;
+  public static final int MESSAGE_ID_QR_CODE_EDIT_MESSAGE = 1;
 
+  // Variables
   private List<Message> messages = new LinkedList<Message>();
+  Message message_qr_code = null;
   
   public void removeAllWarnings()
   {
@@ -67,6 +73,91 @@ public class WarningPanel extends javax.swing.JPanel
     this.warningContainer.add(m);
     revalidate();
     setVisible(true);
+  }
+  
+  public void addMessageWithId(final Message m, final int messageId, boolean closeButtonVisible)
+  {
+    if (m == null)
+    {
+      return;
+    }
+
+    boolean defaultCloseListener = true;
+    
+    switch (messageId)
+    {
+      // Message is automatically removed and closed
+      case MESSAGE_ID_QR_CODE_EDIT_MESSAGE:
+      {
+        message_qr_code = m;
+        defaultCloseListener = false;
+        m.setCloseButtonVisible(closeButtonVisible);
+
+        // Empty close listener
+        m.setCloseListener(new ActionListener(){
+          public void actionPerformed(ActionEvent ae)
+          {
+          }
+        });
+
+        break;
+      }
+      default:
+      {
+        return;
+      }
+    }
+    
+    messages.add(m);
+    
+    if (defaultCloseListener)
+    {
+      m.setCloseListener(new ActionListener(){
+        public void actionPerformed(ActionEvent ae)
+        {
+          removeMessageWithId(messageId);
+        }
+      });
+    }
+    
+    this.warningContainer.add(m);
+    revalidate();
+    setVisible(true);
+  }
+  
+  public void removeMessageWithId(final int messageId)
+  {
+    Message m = null;
+    
+    switch (messageId)
+    {
+      case MESSAGE_ID_QR_CODE_EDIT_MESSAGE:
+      {
+        m = message_qr_code;
+        message_qr_code = null;
+        break;
+      }
+      default:
+      {
+        return;
+      }
+    }
+
+    if (m == null)
+    {
+      return;
+    }
+    
+    messages.remove(m);
+    warningContainer.remove(m);
+    m.setCloseListener(null);
+    revalidate();
+    repaint();
+
+    if (messages.isEmpty())
+    {
+      setVisible(false);
+    }
   }
   
   /**
