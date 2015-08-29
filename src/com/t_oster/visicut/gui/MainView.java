@@ -1591,6 +1591,10 @@ public class MainView extends javax.swing.JFrame
   
   private void loadFileReal(File file, boolean discardCurrent)
   {
+    // bring window to front - needed when VisiCut was called from a plugin
+    this.toFront();
+    this.requestFocus();
+    
     // remove old error messages, they are no longer relevant (or for multiple files it is too confusing which one refers to which file)
     warningPanel.removeAllWarnings();
 
