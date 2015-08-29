@@ -95,7 +95,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URLConnection;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -161,10 +160,11 @@ public class MainView extends javax.swing.JFrame
       MainView.this.warningPanel.addMessage(new Message("Warning", text, Message.Type.WARNING, null));
     }
 
-    public void showWarningMessage(Exception cause, String text)
+    @Override
+    public void showWarningMessageOnce(String text, String messageId, int timeout)
     {
-      cause.printStackTrace();
-      MainView.this.warningPanel.addMessage(new Message("Warning", text+": "+cause.getLocalizedMessage(), Message.Type.WARNING, null));
+      // use timeout=-1 to disable timeout
+      MainView.this.warningPanel.addMessageOnce(new Message("Warning", text, Message.Type.WARNING, null, timeout), messageId);
     }
 
     @Override
@@ -202,6 +202,11 @@ public class MainView extends javax.swing.JFrame
     public void showErrorMessage(String text)
     {
       MainView.this.warningPanel.addMessage(new Message("Error", text, Message.Type.ERROR, null));
+    }
+    
+    @Override
+    public void removeMessageWithId(String messageId) {
+      MainView.this.warningPanel.removeMessageWithId(messageId);
     }
   };
   private boolean ignoreLaserCutterComboBoxUpdates;
@@ -2112,11 +2117,12 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         public void run()
         {
           URLConnection conn=null;
-
           try
           {
             URL src = new URL(getVisiCam());
             conn = src.openConnection();
+            conn.setConnectTimeout(5*1000); // 5s connect timeout
+            conn.setReadTimeout(30*1000); // 30s read timeout after connecting
 
             // HTTP authentication
             if (VisicutModel.getInstance() != null && VisicutModel.getInstance().getSelectedLaserDevice() != null)
@@ -2178,10 +2184,12 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
               } catch(Exception e) {
                 e.printStackTrace();
                 if (e instanceof java.net.SocketException) {
-                    // Network error like "port not found"
+                    // Network errors like "port not found" have meaningful error messages
                     msg=e.getLocalizedMessage();
                 } else {
-                  msg=" (could not get error message)";
+                  // Most other exceptions are not easy to understand without the class name
+                  // (e.g. 'java.net.UnknownHostException: foo.example.com')
+                  msg = ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage();
                 }
               }
               if (responseCode != 0) {
@@ -3030,6 +3038,7 @@ private void facebookMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//
 private void cameraActiveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cameraActiveMenuItemActionPerformed
   boolean cam = (!getVisiCam().isEmpty()) && cameraActiveMenuItem.isSelected();
   previewPanel.setShowBackgroundImage(cam);
+  getDialog().removeMessageWithId("camera error");
   setCameraActive(cam);
 }//GEN-LAST:event_cameraActiveMenuItemActionPerformed
 
@@ -3251,6 +3260,12 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     }
   }
   
+  /**
+   * Get camera error message
+   * @return  - last error message from camera capture
+   *          - null if no image has yet been taken after resetCameraCapturingError()
+   *          - "" if no error
+   */
   public String getCameraCapturingError()
   {
     return cameraCapturingError;
@@ -3258,7 +3273,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   
   public void resetCameraCapturingError()
   {
-    cameraCapturingError = "";
+    cameraCapturingError = null;
   }
   
   public boolean isProjectorActive()
@@ -3307,7 +3322,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     }
 
     // Avoid adding the message multiple times on QR code detection fails or remove if not needed anymore
-    warningPanel.removeMessageWithId(WarningPanel.MESSAGE_ID_QR_CODE_EDIT_MESSAGE);
+    warningPanel.removeMessageWithId("QR_CODE_DETECTION_GUI_DISABLE");
 
     if (disable)
     {
@@ -3317,26 +3332,33 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
       executeJobMenuItem.setEnabled(!disable);
       calculateTimeButton.setEnabled(!disable);
 
-      // Message is automatically removed and closed
-      warningPanel.addMessageWithId(new Message("Info", bundle.getString("QR_CODE_DETECTION_GUI_DISABLE_TEXT"), Message.Type.INFO, new com.t_oster.uicomponents.warnings.Action[]
-      {
-        new com.t_oster.uicomponents.warnings.Action(bundle.getString("QR_CODE_DETECTION_GUI_DISABLE_BUTTON"))
+      // Message is automatically removed and closed, therefore no close button
+      Message m = new Message("Info", bundle.getString("QR_CODE_DETECTION_GUI_DISABLE_TEXT"), Message.Type.INFO, new com.t_oster.uicomponents.warnings.Action[]
         {
-          @Override
-          public boolean clicked()
+          new com.t_oster.uicomponents.warnings.Action(bundle.getString("QR_CODE_DETECTION_GUI_DISABLE_BUTTON"))
           {
-            if (qrCodesTask != null)
+            @Override
+            public boolean clicked()
             {
-              if (!qrCodesTask.isStorePositions())
+              if (qrCodesTask != null)
               {
-                qrCodesTask.setStorePositions(true);
+                if (!qrCodesTask.isStorePositions())
+                {
+                  qrCodesTask.setStorePositions(true);
+                }
               }
+              return true;
             }
-            return true;
           }
         }
-      }
-      ), WarningPanel.MESSAGE_ID_QR_CODE_EDIT_MESSAGE, false);
+      );
+      m.setCloseButtonVisible(false);
+      m.setCloseListener(new ActionListener(){
+        public void actionPerformed(ActionEvent ae)
+        {
+        }
+      });
+      warningPanel.addMessageOnce(m, "QR_CODE_DETECTION_GUI_DISABLE");
     }
     else
     {
