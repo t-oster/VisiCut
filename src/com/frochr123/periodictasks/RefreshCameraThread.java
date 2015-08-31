@@ -29,8 +29,8 @@ public class RefreshCameraThread extends Thread
 {
   // Constant values
   public static final int DEFAULT_CAMERA_TIME = 50;
-  public static final int DEFAULT_CAMERA_LONG_WAIT_TIME = 15000;
-  
+  public static final int DEFAULT_CAMERA_LONG_WAIT_TIME = 6000;
+
   // Constructor
   public RefreshCameraThread()
   {
@@ -56,7 +56,7 @@ public class RefreshCameraThread extends Thread
   {
     return MainView.getInstance().isCameraActive() && MainView.getInstance().isPreviewPanelShowBackgroundImage();
   }
- 
+
   // Run method
   @Override
   public void run()
@@ -65,16 +65,23 @@ public class RefreshCameraThread extends Thread
     {
       try
       {
-        // Check if last run caused exception
-        if (!MainView.getInstance().getCameraCapturingError().isEmpty())
+        // Check if last image capture has finished
+        String error = MainView.getInstance().getCameraCapturingError();
+        if (error != null)
         {
-          // Sleep extra long time, avoid spamming of warnings
-          MainView.getInstance().getDialog().showWarningMessage(MainView.getInstance().getCameraCapturingError());
           MainView.getInstance().resetCameraCapturingError();
-          Thread.currentThread().sleep(DEFAULT_CAMERA_LONG_WAIT_TIME);
-          continue;
+          if (error.isEmpty()) {
+            // successfully captured
+            MainView.getInstance().getDialog().removeMessageWithId("camera error");
+          } else {
+            // error has occured
+            MainView.getInstance().getDialog().showWarningMessageOnce(error, "camera error", 2 * DEFAULT_CAMERA_LONG_WAIT_TIME);
+            // sleep some extra time, so that VisiCam isn't overloaded
+            Thread.sleep(DEFAULT_CAMERA_LONG_WAIT_TIME);
+            continue;
+          }
         }
-
+        
         // Check if thread should be working
         if (!isActive())
         {
@@ -82,7 +89,7 @@ public class RefreshCameraThread extends Thread
           Thread.currentThread().sleep(getUpdateTimerMs() * 5);
           continue;
         }
-        
+
         // Call capture new image if everyhing is fine
         if (!MainView.getInstance().getVisiCam().isEmpty())
         {
