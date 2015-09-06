@@ -84,6 +84,90 @@ public class Preferences
     this.labName = labName;
   }
   
+  private boolean enableQRCodes = false;
+
+  public boolean isEnableQRCodes()
+  {
+    return enableQRCodes;
+  }
+
+  public void setEnableQRCodes(boolean enableQRCodes)
+  {
+    this.enableQRCodes = enableQRCodes;
+  }
+  
+  private boolean fastQRCodes = false;
+
+  public boolean isFastQRCodes()
+  {
+    return fastQRCodes;
+  }
+
+  public void setFastQRCodes(boolean fastQRCodes)
+  {
+    this.fastQRCodes = fastQRCodes;
+  }
+  
+  private boolean fabqrActive = false;
+
+  public boolean isFabqrActive()
+  {
+    return fabqrActive;
+  }
+
+  public void setFabqrActive(boolean fabqrActive)
+  {
+    this.fabqrActive = fabqrActive;
+  }
+  
+  private String fabqrPrivateURL = "";
+  
+  public String getFabqrPrivateURL()
+  {
+    return fabqrPrivateURL;
+  }
+
+  public void setFabqrPrivateURL(String fabqrPrivateURL)
+  {
+    this.fabqrPrivateURL = fabqrPrivateURL;
+  }
+  
+  private String fabqrPublicURL = "";
+  
+  public String getFabqrPublicURL()
+  {
+    return fabqrPublicURL;
+  }
+
+  public void setFabqrPublicURL(String fabqrPublicURL)
+  {
+    this.fabqrPublicURL = fabqrPublicURL;
+  }
+  
+  private String fabqrPrivateUser = "";
+  
+  public String getFabqrPrivateUser()
+  {
+    return fabqrPrivateUser;
+  }
+
+  public void setFabqrPrivateUser(String fabqrPrivateUser)
+  {
+    this.fabqrPrivateUser = fabqrPrivateUser;
+  }
+  
+  private String fabqrPrivatePassword = "";
+  
+  public String getFabqrPrivatePassword()
+  {
+    return fabqrPrivatePassword;
+  }
+
+  public void setFabqrPrivatePassword(String fabqrPrivatePassword)
+  {
+    this.fabqrPrivatePassword = fabqrPrivatePassword;
+  }
+  
   private String potracePath = null;
 
   public String getPotracePath()
@@ -419,6 +503,13 @@ public class Preferences
     result.windowBounds = windowBounds;
     result.useFilenamesForJobs = useFilenamesForJobs;
     result.labName = labName;
+    result.enableQRCodes = enableQRCodes;
+    result.fastQRCodes = fastQRCodes;
+    result.fabqrActive = fabqrActive;
+    result.fabqrPrivateURL = fabqrPrivateURL;
+    result.fabqrPublicURL = fabqrPublicURL;
+    result.fabqrPrivateUser = fabqrPrivateUser;
+    result.fabqrPrivatePassword = fabqrPrivatePassword;
     result.fabLabLocationFacebookId = fabLabLocationFacebookId;
     result.supportedExtensions = supportedExtensions;
     result.laserCutterTags = laserCutterTags;

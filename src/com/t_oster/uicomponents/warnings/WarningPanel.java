@@ -18,12 +18,13 @@
  **/
 package com.t_oster.uicomponents.warnings;
 
+import com.t_oster.visicut.gui.MainView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.Box;
-import javax.swing.JButton;
+import java.util.Map;
 
 /**
  *
@@ -31,21 +32,31 @@ import javax.swing.JButton;
  */
 public class WarningPanel extends javax.swing.JPanel
 {
+  // Constants
 
+  // Variables
   private List<Message> messages = new LinkedList<Message>();
+  private Map<String, Message> messagesById = new HashMap<String, Message>();
   
   public void removeAllWarnings()
   {
     for (Message m: messages)
     {
-      warningContainer.remove(m);
-      m.setCloseListener(null);  
+      removeMessage(m);
     }
-    messages.clear();
-    // repaint + revalidate is always needed after removing components, see http://stackoverflow.com/questions/1097366/java-swing-revalidate-vs-repaint
-    revalidate();
-    repaint();
-    setVisible(false);
+  }
+  
+  /**
+   * Add a warning/info message and remove an old one of the same messageId if it exists
+   * @param newMessage object for new message
+   * @param messageId unique message identifier like 'camera error'. If null, no old message will be removed.
+   */
+  public void addMessageOnce(final Message newMessage, String messageId) {
+    addMessage(newMessage);
+    if (messageId != null) {
+      removeMessageWithId(messageId, false);
+      messagesById.put(messageId, newMessage);
+    }
   }
   
   public void addMessage(final Message m)
@@ -54,19 +65,42 @@ public class WarningPanel extends javax.swing.JPanel
     m.setCloseListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae)
       {
-        messages.remove(m);
-        warningContainer.remove(m);
-        m.setCloseListener(null);
-        revalidate();
-        if (messages.isEmpty())
-        {
-          setVisible(false);
-        }
+        removeMessage(m);
       }
     });
     this.warningContainer.add(m);
     revalidate();
+    repaint();
     setVisible(true);
+  }
+  
+  public void removeMessage(final Message m) {
+    removeMessage(m, true);
+  }
+  
+  public void removeMessage(final Message m, boolean hidePanelIfEmpty) {
+    messagesById.values().remove(m);
+    messages.remove(m);
+    warningContainer.remove(m);
+    m.setCloseListener(null);
+    
+    revalidate();
+    repaint();
+
+    if (messages.isEmpty() && hidePanelIfEmpty)
+    {
+      setVisible(false);
+    }
+  }
+  
+  public void removeMessageWithId(String messageId, boolean hidePanelIfEmpty) {
+    if (messagesById.containsKey(messageId)) {
+      removeMessage(messagesById.get(messageId), hidePanelIfEmpty);
+    }
+  }
+  
+  public void removeMessageWithId(String messageId) {
+    removeMessageWithId(messageId, true);
   }
   
   /**

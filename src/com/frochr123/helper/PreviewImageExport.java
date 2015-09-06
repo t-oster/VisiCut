@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.frochr123.previewexport;
+package com.frochr123.helper;
 
 import com.objectplanet.image.PngEncoder;
 import com.t_oster.visicut.gui.MainView;
@@ -41,10 +41,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * PreviewExport.java: Generate the current preview as image and export / send it to other locations
+ * PreviewImageExport.java: Generate the current preview as image and export / send it to other locations
  * @author Christian
  */
-public class PreviewExport
+public class PreviewImageExport
 {
   private static BufferedImage latestGeneratedImage = null;
 
@@ -55,7 +55,7 @@ public class PreviewExport
 
   private static void setLatestGeneratedImage(BufferedImage latestGeneratedImage)
   {
-    PreviewExport.latestGeneratedImage = latestGeneratedImage;
+    PreviewImageExport.latestGeneratedImage = latestGeneratedImage;
   }
 
   public static BufferedImage generateImage(int imageWidth, int imageHeight, boolean filledImage)
@@ -100,8 +100,8 @@ public class PreviewExport
     double mm2pxScaleFactor = Math.min((double)(imageWidth)/bedWidth, (double)(imageHeight)/bedHeight);
     AffineTransform scaleTransform = AffineTransform.getScaleInstance(mm2pxScaleFactor, mm2pxScaleFactor);
 
-    // TODO Add support for different mappings, currently only Cut, Mark supported, performance issue?
-    for (PlfPart part : VisicutModel.getInstance().getPlfFile())
+    // TODO Add support for different mappings, currently only simple lines (as in cut, mark) supported, performance issue?
+    for (PlfPart part : VisicutModel.getInstance().getPlfFile().getPartsCopy())
     {
       if (part == null)
       {
