@@ -61,6 +61,7 @@ then
   makensis installer.nsi > /dev/null || exit 1
   popd
   mv wintmp/setup.exe VisiCut-$VERSION-Windows-Installer.exe || exit 1
+  zip VisiCut-$VERSION-Windows-Installer.zip VisiCut-$VERSION-Windows-Installer.exe	# for github upload
   rm -rf wintmp
 fi
 
