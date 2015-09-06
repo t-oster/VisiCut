@@ -29,7 +29,7 @@ public class RefreshCameraThread extends Thread
 {
   // Constant values
   public static final int DEFAULT_CAMERA_TIME = 50;
-  public static final int DEFAULT_CAMERA_LONG_WAIT_TIME = 6000;
+  public static final int DEFAULT_CAMERA_ERROR_WAIT_TIME = 10000;
 
   // Constructor
   public RefreshCameraThread()
@@ -61,6 +61,7 @@ public class RefreshCameraThread extends Thread
   @Override
   public void run()
   {
+    int errorCounter = 0; // how many errors since last successful capture?
     while (true)
     {
       try
@@ -72,12 +73,21 @@ public class RefreshCameraThread extends Thread
           MainView.getInstance().resetCameraCapturingError();
           if (error.isEmpty()) {
             // successfully captured
+            errorCounter = 0;
             MainView.getInstance().getDialog().removeMessageWithId("camera error");
           } else {
             // error has occured
-            MainView.getInstance().getDialog().showWarningMessageOnce(error, "camera error", 2 * DEFAULT_CAMERA_LONG_WAIT_TIME);
-            // sleep some extra time, so that VisiCam isn't overloaded
-            Thread.sleep(DEFAULT_CAMERA_LONG_WAIT_TIME);
+            errorCounter++;
+            MainView.getInstance().getDialog().showWarningMessageOnce(error, "camera error", 0);
+            // no timeout for this message, to prevent flickering when fetching an image takes very long.
+            // The message will be cleared anyway,
+            // either when disabling the camera via MainView.cameraActiveMenuItemActionPerformed
+            // or after a successful capture (removeMessageWithId few lines above this comment)
+            
+            // sleep some extra time, so that VisiCam isn't overloaded            
+            // increase waiting time after each error
+            // quick retry after the first error, it could have been a network glitch
+            Thread.sleep(Math.max(errorCounter, 2) * DEFAULT_CAMERA_ERROR_WAIT_TIME / 2 + getUpdateTimerMs());
             continue;
           }
         }
