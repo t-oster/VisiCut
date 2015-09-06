@@ -19,9 +19,10 @@ else
 fi
 
 mkdir -p $TARGET
-cp visicut_export.inx $TARGET
-cp visicut_export_replace.inx $TARGET
-cp visicut_export.py $TARGET
-cp daemonize.py $TARGET
+d=$(dirname $0)
+cp $d/visicut_export.inx $TARGET
+cp $d/visicut_export_replace.inx $TARGET
+cp $d/visicut_export.py $TARGET
+cp $d/daemonize.py $TARGET
 
 echo "installation done."
