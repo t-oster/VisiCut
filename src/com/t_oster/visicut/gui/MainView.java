@@ -2138,7 +2138,8 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
             BufferedImage back = ImageIO.read(stream);
             if (back != null && MainView.this.visicutModel1.getBackgroundImage() == null)
             {//First Time Image is Captured => resize View
-              MainView.this.previewPanel.setZoom(100d);
+              // TODO also called when image reappears after error, while the user is moving some object around -- not so good. Put this call somewhere else.
+              // MainView.this.previewPanel.setZoom(100d);
             }
             
             // Check again if camera and background are active, might have changed in the meantime, because of threading
@@ -2146,6 +2147,7 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
             {
               MainView.this.visicutModel1.setBackgroundImage(back);
             }
+            cameraCapturingError = "";
           }
           catch (Exception ex)
           {
@@ -2153,7 +2155,7 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
             ex.printStackTrace();
             if (ex instanceof IOException && conn instanceof HttpURLConnection) {
               // possible HTTP error - if the server sent a message, display it
-              // This can be used by VisiCam to show an error message like "marker not found"
+              // This can be used by VisiCam to show an error message like "error capturing image"
               String msg="";
               int responseCode=0;
               try {
@@ -2195,7 +2197,15 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
               if (responseCode != 0) {
                 msg = msg + "\n(HTTP " + responseCode + ")";
               }
-              cameraCapturingError = bundle.getString("ERROR CAPTURING PHOTO") + ": "+ msg;
+              if (responseCode == 503 && conn.getHeaderFields().containsKey("Retry-After")) {
+                    // For temporary errors like 'marker not found' that should not cause an error message,
+                    // the VisiCam server can send status 503 with a Retry-After header.
+                    // Then we don't show an error message.
+                    cameraCapturingError = "";
+                    System.err.println("ignoring camera error (as signaled by HTTP 503 + Retry-After).");
+              } else  {
+                cameraCapturingError = bundle.getString("ERROR CAPTURING PHOTO") + ": "+ msg;
+              }
             } else {
               cameraCapturingError = bundle.getString("ERROR CAPTURING PHOTO") + "\nError (" + ex.getClass().getSimpleName() + "): " + ex.getLocalizedMessage();
             }
