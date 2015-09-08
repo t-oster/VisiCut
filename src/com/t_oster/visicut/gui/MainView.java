@@ -2987,7 +2987,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   choices.put("Germany, Paderborn: FabLab Paderborn e.V.", "https://github.com/fablab-paderborn/visicut-settings/archive/master.zip");
   choices.put("Netherlands, Amersfoort: FabLab", "https://github.com/Fablab-Amersfoort/visicut-settings/archive/master.zip");
   choices.put("United Kingdom, Manchester: Hackspace", "https://github.com/hacmanchester/visicut-settings/archive/master.zip");
-  choices.put("United Kingdom, Leeds: Hackspace", "https://github.com/pbrook/visicut-settings/archive/master.zip");
+  choices.put("United Kingdom, Leeds: Hackspace", "https://github.com/leedshackspace/visicut-settings/archive/master.zip");
   choices.put(bundle.getString("DOWNLOAD_NOT_IN_LIST"),"__HELP__");
   String s = (String)JOptionPane.showInputDialog(this, bundle.getString("DOWNLOAD_SETTINGS_INFO"), null, JOptionPane.PLAIN_MESSAGE, null, choices.keySet().toArray(), choices.keySet().toArray()[0]);
   if ((s==null) || (s.length() == 0)) {
