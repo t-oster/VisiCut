@@ -77,6 +77,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   private JMenuItem deleteMenuItem;
   private JMenuItem flipHorizMenuItem;
   private JMenuItem flipVertMenuItem;
+  private JMenuItem rot90CwMenuItem;
   private JMenuItem openMenuItem;
   private JPopupMenu backgroundMenu;
   private JMenuItem startPointSetMenuItem;
@@ -107,6 +108,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     deleteMenuItem = new JMenuItem(bundle.getString("REMOVE"));
     flipHorizMenuItem = new JMenuItem(bundle.getString("FLIP_HORIZONTALLY"));
     flipVertMenuItem = new JMenuItem(bundle.getString("FLIP_VERTICALLY"));
+    rot90CwMenuItem = new JMenuItem(bundle.getString("ROTATE_90_CW"));
     openMenuItem = new JMenuItem(bundle.getString("OPEN"));
     backgroundMenu = new JPopupMenu();
     startPointSetMenuItem = new JMenuItem(bundle.getString("ADD_STARTPOINT"));
@@ -202,6 +204,13 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       }
     });
     objectmenu.add(flipVertMenuItem);
+    rot90CwMenuItem.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae)
+      {
+        rotateBy(90.0);
+      }
+    });
+    objectmenu.add(rot90CwMenuItem);
     duplicateMenuItem.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae)
       {
@@ -310,6 +319,20 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     flipX.translate(-mx, -my);
     AffineTransform cur = getSelectedSet().getTransform();
     cur.preConcatenate(flipX);
+    getSelectedSet().setTransform(cur);
+    previewPanel.updateEditRectangle();
+    previewPanel.clearCache(getSelectedPart());
+    previewPanel.repaint();
+  }
+
+  private void rotateBy(double angle)
+  {
+    Rectangle2D bb = getSelectedPart().getBoundingBox();
+    double mx = bb.getX()+bb.getWidth()/2;
+    double my = bb.getY()+bb.getHeight()/2;
+    AffineTransform rot = AffineTransform.getRotateInstance(Math.toRadians(angle), mx, my);
+    AffineTransform cur = getSelectedSet().getTransform();
+    cur.preConcatenate(rot);
     getSelectedSet().setTransform(cur);
     previewPanel.updateEditRectangle();
     previewPanel.clearCache(getSelectedPart());
@@ -889,6 +912,12 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
             Point2D.Double d = new Point2D.Double(diff.x, diff.y);
             tr.createInverse().deltaTransform(d, d);
             this.moveSet(d.x, d.y);
+
+	    /* make sure the objects are visible */
+            Rectangle2D bb = getSelectedPart().getBoundingBox();
+            Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
+            this.previewPanel.scrollRectToVisible(
+	      new Rectangle((int)e.getX(),(int)e.getY(),(int)e.getWidth(),(int)e.getHeight()));
             this.previewPanel.repaint();
             break;
           }
