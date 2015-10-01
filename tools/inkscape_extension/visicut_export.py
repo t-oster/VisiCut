@@ -57,6 +57,7 @@ if (sys.platform == "win32"):
             query=Popen(["query", "session"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             return query.communicate()[0]
         try:
+            query_output = None
             query_output=querySession()
         except WindowsError:
             # as if this is not easy enough, we have to invoke some black magic to make this work with 32bit python on 64bit windows
@@ -68,19 +69,25 @@ if (sys.platform == "win32"):
             # disable system32 redirection
             k32.Wow64DisableWow64FsRedirection( ctypes.byref(wow64) )
             # do what we want
-            query_output=querySession()
-            # re-enable system32 redirection
-            k32.Wow64EnableWow64FsRedirection( wow64 )
-          
-        id=None
-        for line in query_output.splitlines():
-            if line.startswith(">"): # current session
-                numbers=re.findall("[0-9]+", line)
-                id=int(numbers[-1]) # ID is the last number on the line
-                break
-        assert id,  "could not parse TS session ID"
-        assert 0 < id < 1000
-        SINGLEINSTANCEPORT += 2 + id
+            try:
+                query_output=querySession()
+            except WindowsError:
+                #in some cases query doesn't exist on windows 7 if terminal services isn't installed
+                pass
+            finally:
+                # re-enable system32 redirection
+                k32.Wow64EnableWow64FsRedirection( wow64 )
+        
+        if query_output is not None:
+            id=None
+            for line in query_output.splitlines():
+                if line.startswith(">"): # current session
+                    numbers=re.findall("[0-9]+", line)
+                    id=int(numbers[-1]) # ID is the last number on the line
+                    break
+            assert id,  "could not parse TS session ID"
+            assert 0 < id < 1000
+            SINGLEINSTANCEPORT += 2 + id
 
 # if Visicut or Inkscape cannot be found, change these lines here to VISICUTDIR="C:/Programs/Visicut" or wherever you installed it.
 # please use forward slashes (/), not backslashes (\).
