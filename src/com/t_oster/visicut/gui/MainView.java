@@ -1658,7 +1658,6 @@ public class MainView extends javax.swing.JFrame
     this.calculateTimeButton.setVisible(estimateSupported);
     this.timeLabel.setVisible(estimateSupported);
     this.jLabel10.setVisible(estimateSupported);
-    this.jLabelJobName.setVisible(estimateSupported);
     //check for focus-property in at least one profile type
     boolean focusSupported = false;
     if (this.visicutModel1.getSelectedLaserDevice() != null)
