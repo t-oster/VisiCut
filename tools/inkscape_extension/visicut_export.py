@@ -210,7 +210,7 @@ if platform.system() == 'Darwin':
 elif "nt" in os.name: # Windows
     VISICUTBIN=which("VisiCut.exe",[VISICUTDIR])
 else:
-    VISICUTBIN=which("VisiCut.Linux",[VISICUTDIR])
+    VISICUTBIN=which("VisiCut.Linux",[VISICUTDIR, "/usr/share/visicut"])
 INKSCAPEBIN=which("inkscape",[INKSCAPEDIR])
 
 # remove all non-selected elements and convert inkscape-specific elements (text-to-path etc.)
