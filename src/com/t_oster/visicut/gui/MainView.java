@@ -648,6 +648,8 @@ public class MainView extends javax.swing.JFrame
         jLabel9 = new javax.swing.JLabel();
         laserCutterComboBox = new com.t_oster.uicomponents.ImageComboBox();
         jLabel10 = new javax.swing.JLabel();
+        jLabelJobName = new javax.swing.JLabel();
+        jTextFieldJobName = new javax.swing.JTextField();
         calculateTimeButton = new javax.swing.JButton();
         timeLabel = new javax.swing.JLabel();
         mappingTabbedPane = new javax.swing.JTabbedPane();
@@ -797,6 +799,8 @@ public class MainView extends javax.swing.JFrame
 
         jLabel10.setText(resourceMap.getString("jLabel10.text")); // NOI18N
         jLabel10.setName("jLabel10"); // NOI18N
+        jLabelJobName.setText(resourceMap.getString("jLabelJobName.text")); // NOI18N
+        jLabelJobName.setName("jLabelJobName"); // NOI18N
 
         calculateTimeButton.setText(resourceMap.getString("calculateTimeButton.text")); // NOI18N
         calculateTimeButton.setEnabled(false);
@@ -902,7 +906,13 @@ public class MainView extends javax.swing.JFrame
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(executeJobButton, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabelJobName)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldJobName, javax.swing.GroupLayout.DEFAULT_SIZE, 10, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 199, Short.MAX_VALUE)
+				.addComponent(executeJobButton))
+
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -981,8 +991,13 @@ public class MainView extends javax.swing.JFrame
                     .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10)
                     .addComponent(calculateTimeButton))
+
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(executeJobButton)
+
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                  .addComponent(jLabelJobName)
+                  .addComponent(jTextFieldJobName)
+                  .addComponent(executeJobButton))
                 .addContainerGap())
         );
 
@@ -1697,6 +1712,7 @@ public class MainView extends javax.swing.JFrame
         execute = false;
       }
     }
+    this.jTextFieldJobName.setText( "" );
     this.calculateTimeButton.setEnabled(execute);
     this.executeJobButton.setEnabled(execute);
     this.executeJobMenuItem.setEnabled(execute);
@@ -1825,12 +1841,21 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
           MainView.this.progressBar.setStringPainted(true);
           MainView.this.executeJobButton.setEnabled(false);
           MainView.this.executeJobMenuItem.setEnabled(false);
+          String jobname = "(unnamed job)";
           try
           {
             MainView.this.warningPanel.removeAllWarnings();
             jobnumber++;
+            String nameprefix = MainView.this.jTextFieldJobName.getText();
+	    //
+	    // Most simplistic implementation of user editable job names:
+	    //  - we just add a prefix, if any. (This is okay for Zing lasers that only display 16 chars.)
+	    // Todo: Better compute the next proposed job name in e.g. refreshExecuteButtons() ahead of time 
+	    // and show it in jTextFieldJobName near the Execute button. When we come here, just retrieve the 
+	    // (possibly edited) name from there.
+	    //
             String prefix = MainView.this.visicutModel1.getSelectedLaserDevice().getJobPrefix();
-            String jobname = prefix+jobnumber;
+            jobname = nameprefix+prefix+jobnumber;
             if (PreferencesManager.getInstance().getPreferences().isUseFilenamesForJobs())
             {
               //use filename of the PLF file or any part with a filename as job name
@@ -1850,7 +1875,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
               }
               if (f != null)
               {
-                jobname = f.getName();
+                jobname = nameprefix + f.getName();
               }
             }
             List<String> warnings = new LinkedList<String>();
@@ -3106,6 +3131,8 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabelJobName;
+    private javax.swing.JTextField jTextFieldJobName;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel9;
@@ -3345,6 +3372,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
       executeJobButton.setEnabled(!disable);
       executeJobMenuItem.setEnabled(!disable);
       calculateTimeButton.setEnabled(!disable);
+      jTextFieldJobName.setText( "" );
 
       // Message is automatically removed and closed, therefore no close button
       Message m = new Message("Info", bundle.getString("QR_CODE_DETECTION_GUI_DISABLE_TEXT"), Message.Type.INFO, new com.t_oster.uicomponents.warnings.Action[]

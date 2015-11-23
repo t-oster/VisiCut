@@ -21,7 +21,7 @@ install:
 	mkdir -p $(DESTDIR)$(PREFIX)/share/visicut/illustrator_script
 	cp tools/illustrator_script/*.scpt $(DESTDIR)$(PREFIX)/share/visicut/illustrator_script/
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
-	ln -s $(PREFIX)/share/visicut/VisiCut.Linux $(DESTDIR)$(PREFIX)/bin/visicut
+	ln -s ../share/visicut/VisiCut.Linux $(DESTDIR)$(PREFIX)/bin/visicut
 	mkdir -p $(DESTDIR)$(PREFIX)/share/applications
 	cat distribute/linux/VisiCut.desktop | sed s#PREFIX#$(PREFIX)#g# > $(DESTDIR)$(PREFIX)/share/applications/VisiCut.desktop
 

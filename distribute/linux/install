@@ -1,3 +1,7 @@
+## CAUTION: keep in sync with postinstall-pak preremove-pak
+## checkinstall picks up these scripts:
+##  preinstall-pak postinstall-pak preremove-pak postremove-pak description-pak doc-pac
+
 post_install() {
 	[[ -x /usr/bin/xdg-icon-resource ]] && xdg-icon-resource install --context mimetypes --size 32 /usr/share/pixmaps/visicut-32.png application-x-plf
 	[[ -x /usr/bin/xdg-icon-resource ]] && xdg-icon-resource install --context mimetypes --size 32 /usr/share/pixmaps/visicut-32.png application-x-ls
@@ -7,11 +11,13 @@ post_install() {
 	[[ -x /usr/bin/xdg-mime ]] && xdg-mime install /usr/share/visicut/ls-mime.xml || true
 	[[ -x /usr/bin/update-desktop-database ]] && update-desktop-database -q || true
 	[[ -x /usr/bin/gtk-update-icon-cache ]] && gtk-update-icon-cache -q -t -f usr/share/icons/hicolor || true
+	[[ -d /usr/share/inkscape/extensions ]] && ln -sf /usr/share/visicut/inkscape-extension/* /usr/share/inkscape/extensions/
 }
 
 post_upgrade() {
 	[[ -x /usr/bin/update-desktop-database ]] && update-desktop-database -q || true
 	[[ -x /usr/bin/gtk-update-icon-cache ]] && gtk-update-icon-cache -q -t -f usr/share/icons/hicolor || true
+	[[ -d /usr/share/inkscape/extensions ]] && ln -sf /usr/share/visicut/inkscape-extension/* /usr/share/inkscape/extensions/
 }
 
 
@@ -24,4 +30,5 @@ pre_remove() {
 	[[ -x /usr/bin/xdg-mime ]] && xdg-mime uninstall /usr/share/visicut/ls-mime.xml || true
 	[[ -x /usr/bin/update-desktop-database ]] && update-desktop-database -q || true
 	[[ -x /usr/bin/gtk-update-icon-cache ]] && gtk-update-icon-cache -q -t -f usr/share/icons/hicolor || true
+	[[ -d /usr/share/inkscape/extensions ]] && rm -f /usr/share/inkscape/extensions/visicut*
 }
