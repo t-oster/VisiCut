@@ -1799,7 +1799,6 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   }
 
 	private void generateGcodeMenuItemActionPerformed( java.awt.event.ActionEvent evg ) {
-		System.out.println("triggered.");
 		String jobname = getJobName();
 		List<String> warnings = new LinkedList<String>();
 		final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob();
