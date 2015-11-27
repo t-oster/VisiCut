@@ -1820,8 +1820,16 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 			}
 		};
 		try {
-			MainView.this.visicutModel1
-					.saveJob(jobname, pl, cuttingSettings, warnings);
+			JFileChooser fileChooser = new JFileChooser();
+			int userreturn = fileChooser.showOpenDialog(this);
+			if( userreturn == JFileChooser.APPROVE_OPTION) {
+				File selectedFile = fileChooser.getSelectedFile();
+				System.out.println( "selected " + selectedFile.getAbsolutePath() );
+
+				MainView.this.visicutModel1
+						.saveJob(jobname, selectedFile, pl, cuttingSettings, warnings);
+			}
+
 		} catch  (IllegalJobException e1) {
 
 

@@ -56,6 +56,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
+import java.io.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -63,6 +64,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -757,21 +759,25 @@ public class VisicutModel
     }
   }
 
-  public void saveJob( String name, ProgressListener pl, Map<LaserProfile, List<LaserProperty>> props, List<String> warnings ) throws IllegalJobException, SocketTimeoutException, Exception{
+  public void saveJob( String name, File saveFile, ProgressListener pl, Map<LaserProfile, List<LaserProperty>> props, List<String> warnings ) throws IllegalJobException, SocketTimeoutException, Exception{
 	  LaserCutter lasercutter = this.getSelectedLaserDevice().getLaserCutter();
+
+
 	  if (pl != null)
 	  {
 		  pl.taskChanged(this, "preparing job");
 	  }
+
+	  java.io.PrintStream fileOutputStream = new PrintStream(saveFile);
 	  LaserJob job = this.prepareJob(name, props);
 	  if (pl != null)
 	  {
 		  pl.taskChanged(this, "sending job");
-		  lasercutter.saveJob(job);
+		  lasercutter.saveJob(fileOutputStream, job);
 	  }
 	  else
 	  {
-		  lasercutter.saveJob(job);
+		  lasercutter.saveJob(fileOutputStream, job);
 	  }
   }
 
