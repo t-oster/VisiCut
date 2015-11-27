@@ -1150,14 +1150,7 @@ public class MainView extends javax.swing.JFrame
         });
         fileMenu.add(openMenuItem);
 
-	  	exportGcodeMenuItem.setText("Export GCode");
-	    exportGcodeMenuItem.setName("exportGcodeMenuItem");
-	    exportGcodeMenuItem.addActionListener( new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				generateGcodeMenuItemActionPerformed(evt);
-			}
-		});
-	  fileMenu.add(exportGcodeMenuItem);
+
         importMenuItem.setText(resourceMap.getString("importMenuItem.text")); // NOI18N
         importMenuItem.setName("importMenuItem"); // NOI18N
         importMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1198,6 +1191,15 @@ public class MainView extends javax.swing.JFrame
             }
         });
         fileMenu.add(saveAsMenuItem);
+
+	  exportGcodeMenuItem.setText("Export GCode ...");
+	  exportGcodeMenuItem.setName("exportGcodeMenuItem");
+	  exportGcodeMenuItem.addActionListener( new java.awt.event.ActionListener() {
+		  public void actionPerformed(java.awt.event.ActionEvent evt) {
+			  generateGcodeMenuItemActionPerformed(evt);
+		  }
+	  });
+	  fileMenu.add(exportGcodeMenuItem);
 
         jSeparator4.setName("jSeparator4"); // NOI18N
         fileMenu.add(jSeparator4);
