@@ -682,6 +682,7 @@ public class MainView extends javax.swing.JFrame
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
         openMenuItem = new javax.swing.JMenuItem();
+	    exportGcodeMenuItem = new javax.swing.JMenuItem();
         importMenuItem = new javax.swing.JMenuItem();
         recentFilesMenu = new javax.swing.JMenu();
         jmExamples = new javax.swing.JMenu();
@@ -1149,6 +1150,7 @@ public class MainView extends javax.swing.JFrame
         });
         fileMenu.add(openMenuItem);
 
+
         importMenuItem.setText(resourceMap.getString("importMenuItem.text")); // NOI18N
         importMenuItem.setName("importMenuItem"); // NOI18N
         importMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1189,6 +1191,15 @@ public class MainView extends javax.swing.JFrame
             }
         });
         fileMenu.add(saveAsMenuItem);
+
+	  exportGcodeMenuItem.setText("Export GCode ...");
+	  exportGcodeMenuItem.setName("exportGcodeMenuItem");
+	  exportGcodeMenuItem.addActionListener( new java.awt.event.ActionListener() {
+		  public void actionPerformed(java.awt.event.ActionEvent evt) {
+			  generateGcodeMenuItemActionPerformed(evt);
+		  }
+	  });
+	  fileMenu.add(exportGcodeMenuItem);
 
         jSeparator4.setName("jSeparator4"); // NOI18N
         fileMenu.add(jSeparator4);
@@ -1789,7 +1800,104 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     }
   }
 
+	private void generateGcodeMenuItemActionPerformed( java.awt.event.ActionEvent evg ) {
+		String jobname = getJobName();
+		List<String> warnings = new LinkedList<String>();
+		final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob();
+		if (cuttingSettings == null)
+		{
+			return;
+		}
 
+		ProgressListener pl = new ProgressListener()
+		{
+			public void progressChanged(Object o, int i)
+			{
+				MainView.this.progressBar.setValue(i);
+				MainView.this.progressBar.repaint();
+			}
+			public void taskChanged(Object o, String string)
+			{
+				MainView.this.progressBar.setString(string);
+			}
+		};
+		try {
+			JFileChooser fileChooser = new JFileChooser();
+			int userreturn = fileChooser.showOpenDialog(this);
+			if( userreturn == JFileChooser.APPROVE_OPTION) {
+				File selectedFile = fileChooser.getSelectedFile();
+				System.out.println( "selected " + selectedFile.getAbsolutePath() );
+
+				MainView.this.visicutModel1
+						.saveJob(jobname, selectedFile, pl, cuttingSettings, warnings);
+			}
+
+		} catch  (IllegalJobException e1) {
+
+
+		} catch( Exception e3 ) {
+
+		}
+	}
+
+	private synchronized void exportJob() {
+
+	}
+
+	private String getJobName() {
+		String jobname = "(unnamed job)";
+		try {
+			MainView.this.warningPanel.removeAllWarnings();
+			jobnumber++;
+			String nameprefix = MainView.this.jTextFieldJobName.getText();
+			//
+			// Most simplistic implementation of user editable job names:
+			//  - we just add a prefix, if any. (This is okay for Zing lasers that only display 16 chars.)
+			// Todo: Better compute the next proposed job name in e.g. refreshExecuteButtons() ahead of time
+			// and show it in jTextFieldJobName near the Execute button. When we come here, just retrieve the
+			// (possibly edited) name from there.
+			//
+			String prefix = MainView.this.visicutModel1.getSelectedLaserDevice()
+					.getJobPrefix();
+			jobname = nameprefix + prefix + jobnumber;
+			if (PreferencesManager.getInstance().getPreferences()
+					.isUseFilenamesForJobs()) {
+				//use filename of the PLF file or any part with a filename as job name
+				PlfFile plf = MainView.this.visicutModel1.getPlfFile();
+				List< PlfPart > plfParts = MainView.this.visicutModel1
+						.getPlfFile().getPartsCopy();
+				File f = plf.getFile();
+				if (f == null) {
+					for (PlfPart p : plfParts) {
+						if (p.getSourceFile() != null) {
+							f = p.getSourceFile();
+							break;
+						}
+					}
+				}
+				if (f != null) {
+					jobname = nameprefix + f.getName();
+				}
+			}
+		} catch (Exception ex) {
+			if (ex instanceof IllegalJobException && ex.getMessage()
+					.startsWith("Illegal Focus value")) {
+				dialog.showWarningMessage(bundle.getString(
+						"YOU MATERIAL IS TOO HIGH FOR AUTOMATIC FOCUSSING.PLEASE FOCUS MANUALLY AND SET THE TOTAL HEIGHT TO 0."));
+			} else if (ex instanceof java.net.SocketTimeoutException) {
+				dialog.showErrorMessage(ex,
+						bundle.getString("SOCKETTIMEOUT") + " " + bundle
+								.getString("CHECKSWITCHEDON"));
+			} else if (ex instanceof java.net.UnknownHostException) {
+				dialog.showErrorMessage(ex,
+						bundle.getString("UNKNOWNHOST") + " " + bundle
+								.getString("CHECKSWITCHEDON"));
+			} else {
+				dialog.showErrorMessage(ex);
+			}
+		}
+		return jobname;
+	}
 
 private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
   VisicutAboutBox box = new VisicutAboutBox(this);
@@ -3167,6 +3275,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     private javax.swing.JMenuItem newMenuItem;
     private javax.swing.JComboBox objectComboBox;
     private javax.swing.JMenuItem openMenuItem;
+	private javax.swing.JMenuItem exportGcodeMenuItem;
     private javax.swing.JMenu optionsMenu;
     private com.t_oster.uicomponents.PositionPanel positionPanel;
     private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
@@ -3438,6 +3547,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     // No need to deactivate those actions strictly, but they could cause some exceptions
     newMenuItem.setEnabled(!disable);
     openMenuItem.setEnabled(!disable);
+	exportGcodeMenuItem.setEnabled(!disable);
     importMenuItem.setEnabled(!disable);
     recentFilesMenu.setEnabled(!disable);
     jmExamples.setEnabled(!disable);    
