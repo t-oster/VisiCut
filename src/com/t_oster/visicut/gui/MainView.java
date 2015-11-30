@@ -1192,7 +1192,7 @@ public class MainView extends javax.swing.JFrame
         });
         fileMenu.add(saveAsMenuItem);
 
-	  exportGcodeMenuItem.setText("Export GCode ...");
+	  exportGcodeMenuItem.setText("Export Laser Code..."); // NOI18N
 	  exportGcodeMenuItem.setName("exportGcodeMenuItem");
 	  exportGcodeMenuItem.addActionListener( new java.awt.event.ActionListener() {
 		  public void actionPerformed(java.awt.event.ActionEvent evt) {
