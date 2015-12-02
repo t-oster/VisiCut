@@ -178,6 +178,8 @@ public class SVGImporter extends AbstractImporter
   {
     BufferedReader in = null;;
     double result = 90;
+    boolean AdobeIllustratorSeen = false;
+    boolean WwwInkscapeComSeen = false;
     boolean usesFlowRoot = false;
     try
     {
@@ -189,7 +191,11 @@ public class SVGImporter extends AbstractImporter
         {
           if (line.startsWith("<!-- Generator: Adobe Illustrator"))
           {
-            result = 72;
+            AdobeIllustratorSeen = true;
+          }
+          if (line.contains("www.inkscape.org/namespaces"))
+          {
+            WwwInkscapeComSeen = true;
           }
           if (line.contains("</flowRoot>"))
           {
@@ -225,6 +231,20 @@ public class SVGImporter extends AbstractImporter
     if (usesFlowRoot)
     {
       warnings.add(java.util.ResourceBundle.getBundle("com/t_oster/visicut/model/graphicelements/svgsupport/resources/SVGImporter").getString("FLOWROOT_WARNING"));
+    }
+
+    // SVG files saved with Illustrator are 72 DPI,
+    // SVG files loaded in inkscape retain the Illustrator comment, but are saved with 90 DPI.
+    if (AdobeIllustratorSeen) { result = 72; }
+    if (WwwInkscapeComSeen) { result = 90; }	// inkscape wins over Illustrator
+    if (result != 90)
+    {
+       if (AdobeIllustratorSeen)
+         {
+           warnings.add("Adobe Illustrator comment seen in SVG.");
+	 }
+       warnings.add("Switching to DPI from 90 to " + result + " - Please check object size!");
+
     }
     return result;
   }
