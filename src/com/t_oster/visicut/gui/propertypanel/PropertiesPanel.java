@@ -146,6 +146,10 @@ public class PropertiesPanel extends javax.swing.JPanel implements PropertyChang
   private void updatePanels()
   {
     this.removeAll();
+    for (Entry<LaserProfile, PropertyPanel> e : panels.entrySet())
+    {
+      e.getValue().resetPanel();
+    }
     LaserDevice ld = VisicutModel.getInstance().getSelectedLaserDevice();
     MaterialProfile mp = VisicutModel.getInstance().getMaterial();
     float thickness = VisicutModel.getInstance().getMaterialThickness();
