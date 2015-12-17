@@ -1823,7 +1823,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 		};
 		try {
 			JFileChooser fileChooser = new JFileChooser();
-			int userreturn = fileChooser.showOpenDialog(this);
+			int userreturn = fileChooser.showSaveDialog(this);
 			if( userreturn == JFileChooser.APPROVE_OPTION) {
 				File selectedFile = fileChooser.getSelectedFile();
 				System.out.println( "selected " + selectedFile.getAbsolutePath() );
@@ -1831,17 +1831,9 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 				MainView.this.visicutModel1
 						.saveJob(jobname, selectedFile, pl, cuttingSettings, warnings);
 			}
-
-		} catch  (IllegalJobException e1) {
-
-
 		} catch( Exception e3 ) {
-
+      dialog.showErrorMessage(e3);
 		}
-	}
-
-	private synchronized void exportJob() {
-
 	}
 
 	private String getJobName() {
