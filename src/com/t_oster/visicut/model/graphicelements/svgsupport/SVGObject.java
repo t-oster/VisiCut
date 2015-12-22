@@ -120,7 +120,7 @@ public abstract class SVGObject implements GraphicObject
       g.setTransform(trans);
       this.getDecoratee().render(g);
     }
-    catch (SVGException ex)
+    catch (Exception ex)
     {
       Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
     }
