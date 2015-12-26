@@ -1,7 +1,5 @@
-
-this is jre-8u40-windows-i586-iftw.exe downloaded from:
+j2re-setup.exe is jre-8u66-windows-i586-iftw.exe downloaded from:
 java.com -> Download -> Windows online
-http://sdlc-esd.sun.com/ESD6/JSCDL/jdk/8u40-b26/jre-8u40-windows-i586-iftw.exe?GroupName=JSC&FilePath=/ESD6/JSCDL/jdk/8u40-b26/jre-8u40-windows-i586-iftw.exe&BHost=javadl.sun.com&File=jre-8u40-windows-i586-iftw.exe&AuthParam=1426961208_a8427a0949466e3263362cd8508f836e&ext=.exe
 
 License:
 Oracle Binary Code License Agreement for the Java SE Platform Products and JavaFX
