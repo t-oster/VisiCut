@@ -124,11 +124,13 @@ InstallVerif:
   Push "${JRE_VERSION}"
   Call DetectJRE  
   Pop $0	  ; DetectJRE's return value
+  Push "JRE cannot be found after running setup. Please report this error. (bundled setup may be outdated)"
   StrCmp $0 "0" ExitInstallJRE 0
   StrCmp $0 "-1" ExitInstallJRE 0
+  Pop $9 ; if the code didn't jump to ExitInstallJRE, remove the message from the stack. $9 is never used
   Goto JavaExeVerif
-  Push "The JRE setup failed"
-  Goto ExitInstallJRE
+  Push "The JRE setup failed"; never executed??
+  Goto ExitInstallJRE ; never executed??
  
 JavaExeVerif:
   IfFileExists $0 JREPathStorage 0
@@ -144,6 +146,7 @@ JREPathStorage:
 ExitInstallJRE:
   Pop $1
   MessageBox MB_OK "The setup is about to be interrupted for the following reason : $1"
+  MessageBox MB_OK "Please try installing Java 8 (JRE) from java.com yourself. Make sure to uncheck 'Ask Toolbar' and any other offers in the setup."
   Pop $1 	; Restore $1
   Pop $0 	; Restore $0
   Abort
@@ -179,7 +182,7 @@ File /r "stream\"
   StrLen $1 $0
   IntCmp $1 0 CheckPathLength_ShowPathWarning CheckPathLength_Done CheckPathLength_Done
     CheckPathLength_ShowPathWarning:
-    Messagebox MB_OK|MB_ICONEXCLAMATION "Warning! PATH too long, installer unable to modify PATH!"
+    Messagebox MB_OK|MB_ICONEXCLAMATION "Warning: The PATH envirnoment variable is too long, the installer is unable to modify it! If you install VisiCut to the default directory, everything will still work."
     Goto AddToPath_done
   CheckPathLength_Done:
   ; update path if it is safe:
@@ -319,6 +322,7 @@ GetJRE:
  
 NoFound:
 ;  MessageBox MB_OK "JRE not found"
+  DetailPrint "JRE not found"
   Push "0"
   Goto DetectJREEnd
  

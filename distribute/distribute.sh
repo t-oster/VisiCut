@@ -49,19 +49,26 @@ read answer
 if [ "$answer" != "n" ]
 then
   echo "Creating Windows installer"
+  # Copy files to wintmp/
   [ -d wintmp ] && rm -rf wintmp
   mkdir wintmp
   cp -r windows/* wintmp/
   [ -d wintmp/stream ] || mkdir wintmp/stream
   cp -r visicut/* wintmp/stream/
-  cat windows/installer.nsi|sed s#VISICUTVERSION#"$VERSION"#g > wintmp/installer.nsi
   cp ../tools/inkscape_extension/* wintmp/
-  cat ../tools/inkscape_extension/visicut_export.py|sed 's#"visicut"#"visicut.exe"#g' > wintmp/visicut_export.py
+  
+  # build setup.exe installer
+  # and VisiCut.exe launcher executable
+  cat windows/installer.nsi|sed s#VISICUTVERSION#"$VERSION"#g > wintmp/installer.nsi
   pushd wintmp
-  makensis installer.nsi > /dev/null || exit 1
+  makensis launcher.nsi > /dev/null || exit 1 # build VisiCut.exe
+  mv VisiCut.exe ./stream/
+  makensis installer.nsi > /dev/null || exit 1 # build setup.exe
   popd
   mv wintmp/setup.exe VisiCut-$VERSION-Windows-Installer.exe || exit 1
   zip VisiCut-$VERSION-Windows-Installer.zip VisiCut-$VERSION-Windows-Installer.exe	# for github upload
+  
+  # cleanup
   rm -rf wintmp
 fi
 
