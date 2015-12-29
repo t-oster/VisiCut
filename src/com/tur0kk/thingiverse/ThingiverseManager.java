@@ -54,13 +54,13 @@ public class ThingiverseManager
    * website. The owner of the current app "VisiCut Connect" is Patrick Schmidt
    * (patrick.schmidt1@rwth-aachen.de).
    */
-  private static final String clientId = "0d3b8166624f6d05b738";
+  private static final String clientId = "a91afd847a7c6f2dda2f";
   
   /**
    * Thingiverse App Client Secret. The owner of the app "VisiCut Connect" can
    * see this on the thingiverse website.
    */
-  private static final String clientSecret = "a0b5368a3d58ddb3b1ade12f4f8f14e7";
+  private static final String clientSecret = "00d763afa30cda6248fc203aa997eee2";
   
   /**
    * After a successful login, thingiverse will redirect the user to this url.

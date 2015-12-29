@@ -133,7 +133,7 @@ public class ThingiverseClient {
     {
       urlEnd = "/" + url;
     }
-    OAuthRequest request = new OAuthRequest(verb, "http://api.thingiverse.com" + urlEnd);
+    OAuthRequest request = new OAuthRequest(verb, "https://api.thingiverse.com" + urlEnd);
     request.addHeader("Authorization", "Bearer " + accesTokenString);
 
     if (requestBody != null && !requestBody.isEmpty())
