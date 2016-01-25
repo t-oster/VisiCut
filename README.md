@@ -11,6 +11,7 @@ Download
 --------
 * Latest stable releases: http://download.visicut.org
 * Development builds: http://download.visicut.org/develop
+* If those don't work: https://github.com/t-oster/VisiCut/releases
 
 Compiling and Hacking
 ---------------------
