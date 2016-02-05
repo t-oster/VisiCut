@@ -194,7 +194,7 @@ public class FacebookManager
   public boolean publishProject(String message, Image icon){
     try{
       // add fixed text
-      message = "Look what I made with VisiCut:\n" + message;
+      message = message;
       
       // get Fablab ID
       String fablabId = this.getFabLabLocationFacebookId();
