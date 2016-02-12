@@ -1799,7 +1799,8 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
       this.previewPanel.repaint();
     }
   }
-
+  
+  private JFileChooser fileChooser = new JFileChooser();
 	private void generateGcodeMenuItemActionPerformed( java.awt.event.ActionEvent evg ) {
 		String jobname = getJobName();
 		List<String> warnings = new LinkedList<String>();
@@ -1822,10 +1823,9 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 			}
 		};
 		try {
-			JFileChooser fileChooser = new JFileChooser();
-			int userreturn = fileChooser.showSaveDialog(this);
+			int userreturn = this.fileChooser.showSaveDialog(this);
 			if( userreturn == JFileChooser.APPROVE_OPTION) {
-				File selectedFile = fileChooser.getSelectedFile();
+				File selectedFile = this.fileChooser.getSelectedFile();
 				System.out.println( "selected " + selectedFile.getAbsolutePath() );
 
 				MainView.this.visicutModel1
