@@ -113,6 +113,15 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveAsMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="exportGcodeMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Export Laser Code..." noResource="true"/>
+                <Property name="name" type="java.lang.String" value="exportGcodeMenuItem" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportGcodeMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator4">
               <Properties>
                 <Property name="name" type="java.lang.String" value="jSeparator4" noResource="true"/>
@@ -556,7 +565,13 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="executeJobButton" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jLabelJobName" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                                      <Component id="jTextFieldJobName" pref="168" max="32767" attributes="0"/>
+                                      <EmptySpace min="-2" pref="199" max="-2" attributes="0"/>
+                                      <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -658,7 +673,11 @@
                           <Component id="calculateTimeButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jLabelJobName" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextFieldJobName" alignment="3" attributes="0"/>
+                          <Component id="executeJobButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -709,6 +728,17 @@
               <Properties>
                 <Property name="text" type="java.lang.String" resourceKey="jLabel10.text"/>
                 <Property name="name" type="java.lang.String" value="jLabel10" noResource="true"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="jLabelJobName">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="jLabelJobName.text"/>
+                <Property name="name" type="java.lang.String" value="jLabelJobName" noResource="true"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="jTextFieldJobName">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jTextFieldJobName" noResource="true"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="calculateTimeButton">
@@ -1095,7 +1125,7 @@
     <Container class="javax.swing.JPanel" name="jPanel3">
       <Properties>
         <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
-          <Color id="Standardcursor"/>
+          <Color id="Default Cursor"/>
         </Property>
         <Property name="name" type="java.lang.String" value="jPanel3" noResource="true"/>
       </Properties>

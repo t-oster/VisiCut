@@ -672,7 +672,7 @@ public class MainView extends javax.swing.JFrame
         jButton1 = new javax.swing.JButton();
         btFitScreen = new javax.swing.JButton();
         bt1to1 = new javax.swing.JButton();
-        filler2 = new javax.swing.Box.Filler(null, new java.awt.Dimension(35, 35), new java.awt.Dimension(35, 35));
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(35, 35), new java.awt.Dimension(35, 35));
         btFacebook = new javax.swing.JButton();
         btThingiverse = new javax.swing.JButton();
         btQRWebcamScan = new javax.swing.JButton();
@@ -682,13 +682,13 @@ public class MainView extends javax.swing.JFrame
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
         openMenuItem = new javax.swing.JMenuItem();
-	    exportGcodeMenuItem = new javax.swing.JMenuItem();
         importMenuItem = new javax.swing.JMenuItem();
         recentFilesMenu = new javax.swing.JMenu();
         jmExamples = new javax.swing.JMenu();
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
         saveMenuItem = new javax.swing.JMenuItem();
         saveAsMenuItem = new javax.swing.JMenuItem();
+        exportGcodeMenuItem = new javax.swing.JMenuItem();
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
         executeJobMenuItem = new javax.swing.JMenuItem();
         jSeparator6 = new javax.swing.JPopupMenu.Separator();
@@ -800,8 +800,11 @@ public class MainView extends javax.swing.JFrame
 
         jLabel10.setText(resourceMap.getString("jLabel10.text")); // NOI18N
         jLabel10.setName("jLabel10"); // NOI18N
+
         jLabelJobName.setText(resourceMap.getString("jLabelJobName.text")); // NOI18N
         jLabelJobName.setName("jLabelJobName"); // NOI18N
+
+        jTextFieldJobName.setName("jTextFieldJobName"); // NOI18N
 
         calculateTimeButton.setText(resourceMap.getString("calculateTimeButton.text")); // NOI18N
         calculateTimeButton.setEnabled(false);
@@ -910,10 +913,9 @@ public class MainView extends javax.swing.JFrame
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabelJobName)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextFieldJobName, javax.swing.GroupLayout.DEFAULT_SIZE, 10, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 199, Short.MAX_VALUE)
-				.addComponent(executeJobButton))
-
+                                .addComponent(jTextFieldJobName, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+                                .addGap(199, 199, 199)
+                                .addComponent(executeJobButton))
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -992,13 +994,11 @@ public class MainView extends javax.swing.JFrame
                     .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10)
                     .addComponent(calculateTimeButton))
-
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                  .addComponent(jLabelJobName)
-                  .addComponent(jTextFieldJobName)
-                  .addComponent(executeJobButton))
+                    .addComponent(jLabelJobName)
+                    .addComponent(jTextFieldJobName)
+                    .addComponent(executeJobButton))
                 .addContainerGap())
         );
 
@@ -1012,7 +1012,7 @@ public class MainView extends javax.swing.JFrame
 
         jPanel1.setMinimumSize(new java.awt.Dimension(0, 0));
         jPanel1.setName("jPanel1"); // NOI18N
-        jPanel1.setLayout(new java.awt.FlowLayout(0));
+        jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         jButton2.setIcon(PlatformIcon.get(PlatformIcon.ZOOM_OUT));
         jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
@@ -1150,7 +1150,6 @@ public class MainView extends javax.swing.JFrame
         });
         fileMenu.add(openMenuItem);
 
-
         importMenuItem.setText(resourceMap.getString("importMenuItem.text")); // NOI18N
         importMenuItem.setName("importMenuItem"); // NOI18N
         importMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1192,14 +1191,14 @@ public class MainView extends javax.swing.JFrame
         });
         fileMenu.add(saveAsMenuItem);
 
-	  exportGcodeMenuItem.setText("Export Laser Code..."); // NOI18N
-	  exportGcodeMenuItem.setName("exportGcodeMenuItem");
-	  exportGcodeMenuItem.addActionListener( new java.awt.event.ActionListener() {
-		  public void actionPerformed(java.awt.event.ActionEvent evt) {
-			  generateGcodeMenuItemActionPerformed(evt);
-		  }
-	  });
-	  fileMenu.add(exportGcodeMenuItem);
+        exportGcodeMenuItem.setText("Export Laser Code..."); // NOI18N
+        exportGcodeMenuItem.setName("exportGcodeMenuItem"); // NOI18N
+        exportGcodeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportGcodeMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(exportGcodeMenuItem);
 
         jSeparator4.setName("jSeparator4"); // NOI18N
         fileMenu.add(jSeparator4);
@@ -1801,7 +1800,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   }
   
   private JFileChooser fileChooser = new JFileChooser();
-	private void generateGcodeMenuItemActionPerformed( java.awt.event.ActionEvent evg ) {
+	private void exportGcodeMenuItemActionPerformed( java.awt.event.ActionEvent evg ) {
 		String jobname = getJobName();
 		List<String> warnings = new LinkedList<String>();
 		final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob();
@@ -3220,6 +3219,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     private javax.swing.JButton executeJobButton;
     private javax.swing.JMenuItem executeJobMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
+    private javax.swing.JMenuItem exportGcodeMenuItem;
     private javax.swing.JMenuItem facebookMenuItem;
     private javax.swing.JMenu fileMenu;
     private com.t_oster.uicomponents.FilesDropSupport filesDropSupport1;
@@ -3231,11 +3231,10 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabelJobName;
-    private javax.swing.JTextField jTextFieldJobName;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabelJobName;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
@@ -3250,6 +3249,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JPopupMenu.Separator jSeparator7;
+    private javax.swing.JTextField jTextFieldJobName;
     private javax.swing.JMenu jmExamples;
     private javax.swing.JMenuItem jmExportSettings;
     private javax.swing.JMenu jmExtras;
@@ -3267,7 +3267,6 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     private javax.swing.JMenuItem newMenuItem;
     private javax.swing.JComboBox objectComboBox;
     private javax.swing.JMenuItem openMenuItem;
-	private javax.swing.JMenuItem exportGcodeMenuItem;
     private javax.swing.JMenu optionsMenu;
     private com.t_oster.uicomponents.PositionPanel positionPanel;
     private com.t_oster.visicut.gui.beans.PreviewPanel previewPanel;
