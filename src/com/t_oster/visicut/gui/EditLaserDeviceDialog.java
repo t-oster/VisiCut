@@ -46,12 +46,12 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
   {
     super(parent, modal);
     initComponents();
-    this.jComboBox1.removeAllItems();
+    this.driverComboBox.removeAllItems();
     for (String s : PreferencesManager.getInstance().getPreferences().getAvailableLasercutterDrivers())
     {
-      jComboBox1.addItem(s);
+      driverComboBox.addItem(s);
     }
-    this.jTable1.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+    this.settingsTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
   }
   protected LaserDevice laserDevice = null;
   public static final String PROP_LASERDEVICE = "laserDevice";
@@ -104,8 +104,8 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     LaserDevice oldCurrentLaserDevice = this.currentLaserDevice;
     this.currentLaserDevice = currentLaserDevice;
     firePropertyChange(PROP_CURRENTLASERDEVICE, oldCurrentLaserDevice, currentLaserDevice);
-    this.jComboBox1.setSelectedItem(currentLaserDevice.getLaserCutter().getClass().toString().substring(6));
-    this.jTable1.setModel(new CustomizableTableModel(currentLaserDevice.getLaserCutter()));
+    this.driverComboBox.setSelectedItem(currentLaserDevice.getLaserCutter().getClass().toString().substring(6));
+    this.settingsTable.setModel(new CustomizableTableModel(currentLaserDevice.getLaserCutter()));
   }
 
   /** This method is called from within the constructor to
@@ -128,20 +128,20 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     jButton2 = new javax.swing.JButton();
     jTabbedPane1 = new javax.swing.JTabbedPane();
     driverPanel = new javax.swing.JPanel();
-    jLabel4 = new javax.swing.JLabel();
-    jComboBox1 = new javax.swing.JComboBox();
-    jLabel15 = new javax.swing.JLabel();
-    jTextField5 = new javax.swing.JTextField();
-    jLabel16 = new javax.swing.JLabel();
-    jPasswordField1 = new javax.swing.JPasswordField();
+    driverLabel = new javax.swing.JLabel();
+    driverComboBox = new javax.swing.JComboBox();
     jScrollPane1 = new javax.swing.JScrollPane();
-    jTable1 = new BetterJTable();
+    settingsTable = new BetterJTable();
     cameraPanel = new javax.swing.JPanel();
-    jLabel3 = new javax.swing.JLabel();
-    jTextField3 = new javax.swing.JTextField();
-    seachCameraButton = new javax.swing.JButton();
-    jLabel11 = new javax.swing.JLabel();
-    jTextField4 = new javax.swing.JTextField();
+    cameraUrlLabel = new javax.swing.JLabel();
+    cameraUrlTextField = new javax.swing.JTextField();
+    searchCameraButton = new javax.swing.JButton();
+    urlUserLabel = new javax.swing.JLabel();
+    urlUserTextField = new javax.swing.JTextField();
+    urlPasswordLabel = new javax.swing.JLabel();
+    urlPasswordField = new javax.swing.JPasswordField();
+    projectorUrlLabel = new javax.swing.JLabel();
+    projectorUrlTextField = new javax.swing.JTextField();
     jLabel12 = new javax.swing.JLabel();
     jSpinner3 = new javax.swing.JSpinner();
     jLabel13 = new javax.swing.JLabel();
@@ -210,36 +210,16 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
 
     driverPanel.setName("driverPanel"); // NOI18N
 
-    jLabel4.setText(resourceMap.getString("jLabel4.text")); // NOI18N
-    jLabel4.setName("jLabel4"); // NOI18N
+    driverLabel.setText(resourceMap.getString("driverLabel.text")); // NOI18N
+    driverLabel.setName("driverLabel"); // NOI18N
 
-    jComboBox1.setEditable(true);
-    jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-    jComboBox1.setName("jComboBox1"); // NOI18N
-
-    jLabel15.setText(resourceMap.getString("jLabel15.text")); // NOI18N
-    jLabel15.setToolTipText(resourceMap.getString("jLabel15.toolTipText")); // NOI18N
-    jLabel15.setName("jLabel15"); // NOI18N
-
-    jTextField5.setToolTipText(resourceMap.getString("jTextField5.toolTipText")); // NOI18N
-    jTextField5.setName("jTextField5"); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.URLUser}"), jTextField5, org.jdesktop.beansbinding.BeanProperty.create("text"));
-    bindingGroup.addBinding(binding);
-
-    jLabel16.setText(resourceMap.getString("jLabel16.text")); // NOI18N
-    jLabel16.setToolTipText(resourceMap.getString("jLabel16.toolTipText")); // NOI18N
-    jLabel16.setName("jLabel16"); // NOI18N
-
-    jPasswordField1.setToolTipText(resourceMap.getString("jPasswordField1.toolTipText")); // NOI18N
-    jPasswordField1.setName("jPasswordField1"); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.URLPassword}"), jPasswordField1, org.jdesktop.beansbinding.BeanProperty.create("text"));
-    bindingGroup.addBinding(binding);
+    driverComboBox.setEditable(true);
+    driverComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    driverComboBox.setName("driverComboBox"); // NOI18N
 
     jScrollPane1.setName("jScrollPane1"); // NOI18N
 
-    jTable1.setModel(new javax.swing.table.DefaultTableModel(
+    settingsTable.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][]
       {
         {null, null, null, null},
@@ -252,94 +232,92 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
         "Title 1", "Title 2", "Title 3", "Title 4"
       }
     ));
-    jTable1.setName("jTable1"); // NOI18N
-    jScrollPane1.setViewportView(jTable1);
-    if (jTable1.getColumnModel().getColumnCount() > 0)
+    settingsTable.setName("settingsTable"); // NOI18N
+    jScrollPane1.setViewportView(settingsTable);
+    if (settingsTable.getColumnModel().getColumnCount() > 0)
     {
-      jTable1.getColumnModel().getColumn(0).setHeaderValue(resourceMap.getString("jTable1.columnModel.title0")); // NOI18N
-      jTable1.getColumnModel().getColumn(1).setHeaderValue(resourceMap.getString("jTable1.columnModel.title1")); // NOI18N
-      jTable1.getColumnModel().getColumn(2).setHeaderValue(resourceMap.getString("jTable1.columnModel.title2")); // NOI18N
-      jTable1.getColumnModel().getColumn(3).setHeaderValue(resourceMap.getString("jTable1.columnModel.title3")); // NOI18N
+      settingsTable.getColumnModel().getColumn(0).setHeaderValue(resourceMap.getString("settingsTable.columnModel.title0")); // NOI18N
+      settingsTable.getColumnModel().getColumn(1).setHeaderValue(resourceMap.getString("settingsTable.columnModel.title1")); // NOI18N
+      settingsTable.getColumnModel().getColumn(2).setHeaderValue(resourceMap.getString("settingsTable.columnModel.title2")); // NOI18N
+      settingsTable.getColumnModel().getColumn(3).setHeaderValue(resourceMap.getString("settingsTable.columnModel.title3")); // NOI18N
     }
 
     javax.swing.GroupLayout driverPanelLayout = new javax.swing.GroupLayout(driverPanel);
     driverPanel.setLayout(driverPanelLayout);
     driverPanelLayout.setHorizontalGroup(
       driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 453, Short.MAX_VALUE)
-      .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(driverPanelLayout.createSequentialGroup()
-          .addContainerGap()
-          .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel15)
-            .addComponent(jLabel4)
-            .addComponent(jLabel16))
-          .addGap(22, 22, 22)
-          .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jComboBox1, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jTextField5)
-            .addComponent(jPasswordField1))
-          .addContainerGap()))
-      .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(driverPanelLayout.createSequentialGroup()
-          .addContainerGap()
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE)
-          .addContainerGap()))
+      .addGroup(driverPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(driverPanelLayout.createSequentialGroup()
+            .addComponent(driverLabel)
+            .addGap(61, 61, 61)
+            .addComponent(driverComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE))
+        .addContainerGap())
     );
     driverPanelLayout.setVerticalGroup(
       driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 265, Short.MAX_VALUE)
-      .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(driverPanelLayout.createSequentialGroup()
-          .addContainerGap()
-          .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(jLabel4)
-            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-          .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(jLabel15)
-            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-          .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(jLabel16)
-            .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addContainerGap()))
-      .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGap(0, 265, Short.MAX_VALUE))
+      .addGroup(driverPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(driverLabel)
+          .addComponent(driverComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
+        .addGap(14, 14, 14))
     );
 
     jTabbedPane1.addTab(resourceMap.getString("driverPanel.TabConstraints.tabTitle"), driverPanel); // NOI18N
 
     cameraPanel.setName("cameraPanel"); // NOI18N
 
-    jLabel3.setText(resourceMap.getString("jLabel3.text")); // NOI18N
-    jLabel3.setName("jLabel3"); // NOI18N
+    cameraUrlLabel.setText(resourceMap.getString("cameraUrlLabel.text")); // NOI18N
+    cameraUrlLabel.setName("cameraUrlLabel"); // NOI18N
 
-    jTextField3.setToolTipText(resourceMap.getString("jTextField3.toolTipText")); // NOI18N
-    jTextField3.setName("jTextField3"); // NOI18N
+    cameraUrlTextField.setToolTipText(resourceMap.getString("cameraUrlTextField.toolTipText")); // NOI18N
+    cameraUrlTextField.setName("cameraUrlTextField"); // NOI18N
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.cameraURL}"), jTextField3, org.jdesktop.beansbinding.BeanProperty.create("text"), "urls");
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.cameraURL}"), cameraUrlTextField, org.jdesktop.beansbinding.BeanProperty.create("text"), "urls");
     bindingGroup.addBinding(binding);
 
-    seachCameraButton.setText(resourceMap.getString("seachCameraButton.text")); // NOI18N
-    seachCameraButton.setName("seachCameraButton"); // NOI18N
-    seachCameraButton.addActionListener(new java.awt.event.ActionListener()
+    searchCameraButton.setText(resourceMap.getString("searchCameraButton.text")); // NOI18N
+    searchCameraButton.setName("searchCameraButton"); // NOI18N
+    searchCameraButton.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
       {
-        seachCameraButtonActionPerformed(evt);
+        searchCameraButtonActionPerformed(evt);
       }
     });
 
-    jLabel11.setText(resourceMap.getString("jLabel11.text")); // NOI18N
-    jLabel11.setName("jLabel11"); // NOI18N
+    urlUserLabel.setText(resourceMap.getString("urlUserLabel.text")); // NOI18N
+    urlUserLabel.setToolTipText(resourceMap.getString("urlUserLabel.toolTipText")); // NOI18N
+    urlUserLabel.setName("urlUserLabel"); // NOI18N
 
-    jTextField4.setToolTipText(resourceMap.getString("jTextField4.toolTipText")); // NOI18N
-    jTextField4.setName("jTextField4"); // NOI18N
+    urlUserTextField.setToolTipText(resourceMap.getString("urlUserTextField.toolTipText")); // NOI18N
+    urlUserTextField.setName("urlUserTextField"); // NOI18N
 
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.projectorURL}"), jTextField4, org.jdesktop.beansbinding.BeanProperty.create("text"));
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.URLUser}"), urlUserTextField, org.jdesktop.beansbinding.BeanProperty.create("text"));
+    bindingGroup.addBinding(binding);
+
+    urlPasswordLabel.setText(resourceMap.getString("urlPasswordLabel.text")); // NOI18N
+    urlPasswordLabel.setToolTipText(resourceMap.getString("urlPasswordLabel.toolTipText")); // NOI18N
+    urlPasswordLabel.setName("urlPasswordLabel"); // NOI18N
+
+    urlPasswordField.setToolTipText(resourceMap.getString("urlPasswordField.toolTipText")); // NOI18N
+    urlPasswordField.setName("urlPasswordField"); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.URLPassword}"), urlPasswordField, org.jdesktop.beansbinding.BeanProperty.create("text"));
+    bindingGroup.addBinding(binding);
+
+    projectorUrlLabel.setText(resourceMap.getString("projectorUrlLabel.text")); // NOI18N
+    projectorUrlLabel.setName("projectorUrlLabel"); // NOI18N
+
+    projectorUrlTextField.setToolTipText(resourceMap.getString("projectorUrlTextField.toolTipText")); // NOI18N
+    projectorUrlTextField.setName("projectorUrlTextField"); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.projectorURL}"), projectorUrlTextField, org.jdesktop.beansbinding.BeanProperty.create("text"));
     bindingGroup.addBinding(binding);
 
     jLabel12.setText(resourceMap.getString("jLabel12.text")); // NOI18N
@@ -397,15 +375,19 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
             .addComponent(jLabel8)
             .addGroup(cameraPanelLayout.createSequentialGroup()
               .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jLabel3)
-                .addComponent(jLabel11))
+                .addComponent(cameraUrlLabel)
+                .addComponent(urlUserLabel)
+                .addComponent(urlPasswordLabel)
+                .addComponent(projectorUrlLabel))
               .addGap(22, 22, 22)
               .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, cameraPanelLayout.createSequentialGroup()
-                  .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addComponent(cameraUrlTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(seachCameraButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addComponent(jTextField4)
+                  .addComponent(searchCameraButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(urlUserTextField)
+                .addComponent(urlPasswordField)
+                .addComponent(projectorUrlTextField)
                 .addGroup(cameraPanelLayout.createSequentialGroup()
                   .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jSpinner5, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -433,13 +415,21 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
         .addGroup(cameraPanelLayout.createSequentialGroup()
           .addContainerGap()
           .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(jLabel3)
-            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(seachCameraButton))
+            .addComponent(cameraUrlLabel)
+            .addComponent(cameraUrlTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(searchCameraButton))
           .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
           .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(jLabel11)
-            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(urlUserLabel)
+            .addComponent(urlUserTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+          .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addComponent(urlPasswordLabel)
+            .addComponent(urlPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+          .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addComponent(projectorUrlLabel)
+            .addComponent(projectorUrlTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
           .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
             .addComponent(jLabel12)
@@ -542,13 +532,10 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
                   .addComponent(jLabel2))
                 .addGap(0, 0, Short.MAX_VALUE))))
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addGap(0, 0, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1))
-              .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 458, javax.swing.GroupLayout.PREFERRED_SIZE))))
+            .addComponent(jButton2)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(jButton1))
+          .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -566,8 +553,8 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jDescriptionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addGap(18, 18, 18)
-        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jTabbedPane1)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jButton1)
           .addComponent(jButton2))
@@ -587,7 +574,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
 
   private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
   {//GEN-HEADEREND:event_jButton1ActionPerformed
-    String driver = (String) this.jComboBox1.getSelectedItem();
+    String driver = (String) this.driverComboBox.getSelectedItem();
     try
     {
       LaserCutter cutter;
@@ -641,8 +628,8 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     }
   }//GEN-LAST:event_jButton1ActionPerformed
 
-private void seachCameraButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_seachCameraButtonActionPerformed
-  this.seachCameraButton.setEnabled(false);
+private void searchCameraButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchCameraButtonActionPerformed
+  this.searchCameraButton.setEnabled(false);
   new Thread(){
       @Override
     public void run()
@@ -658,39 +645,36 @@ private void seachCameraButtonActionPerformed(java.awt.event.ActionEvent evt) {/
         String url = camUrls.size() == 1 ? camUrls.get(0) : dialog.askElement(camUrls, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/EditLaserDeviceDialog").getString("SELECT_CAMERA"));
         if (url != null)
         {
-          EditLaserDeviceDialog.this.jTextField3.setText(url);
+          EditLaserDeviceDialog.this.cameraUrlTextField.setText(url);
           EditLaserDeviceDialog.this.currentLaserDevice.setCameraURL(url);
         }
       }
-      EditLaserDeviceDialog.this.seachCameraButton.setEnabled(true);
+      EditLaserDeviceDialog.this.searchCameraButton.setEnabled(true);
     }
   }.start();
-}//GEN-LAST:event_seachCameraButtonActionPerformed
+}//GEN-LAST:event_searchCameraButtonActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JPanel cameraPanel;
+  private javax.swing.JLabel cameraUrlLabel;
+  private javax.swing.JTextField cameraUrlTextField;
+  private javax.swing.JComboBox driverComboBox;
+  private javax.swing.JLabel driverLabel;
   private javax.swing.JPanel driverPanel;
   private javax.swing.JButton jButton1;
   private javax.swing.JButton jButton2;
-  private javax.swing.JComboBox jComboBox1;
   private javax.swing.JTextField jDescriptionTextField;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel10;
-  private javax.swing.JLabel jLabel11;
   private javax.swing.JLabel jLabel12;
   private javax.swing.JLabel jLabel13;
   private javax.swing.JLabel jLabel14;
-  private javax.swing.JLabel jLabel15;
-  private javax.swing.JLabel jLabel16;
   private javax.swing.JLabel jLabel2;
-  private javax.swing.JLabel jLabel3;
-  private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel6;
   private javax.swing.JLabel jLabel7;
   private javax.swing.JLabel jLabel8;
   private javax.swing.JLabel jLabel9;
   private javax.swing.JTextField jNameField;
-  private javax.swing.JPasswordField jPasswordField1;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JSpinner jSpinner2;
@@ -698,15 +682,18 @@ private void seachCameraButtonActionPerformed(java.awt.event.ActionEvent evt) {/
   private javax.swing.JSpinner jSpinner4;
   private javax.swing.JSpinner jSpinner5;
   private javax.swing.JTabbedPane jTabbedPane1;
-  private javax.swing.JTable jTable1;
   private javax.swing.JTextArea jTextArea1;
-  private javax.swing.JTextField jTextField3;
-  private javax.swing.JTextField jTextField4;
-  private javax.swing.JTextField jTextField5;
   private javax.swing.JPanel jobPanel;
-  private javax.swing.JButton seachCameraButton;
+  private javax.swing.JLabel projectorUrlLabel;
+  private javax.swing.JTextField projectorUrlTextField;
+  private javax.swing.JButton searchCameraButton;
   private com.t_oster.uicomponents.SelectThumbnailButton selectThumbnailButton1;
+  private javax.swing.JTable settingsTable;
   private javax.swing.JTextField tfJobPrefix;
+  private javax.swing.JPasswordField urlPasswordField;
+  private javax.swing.JLabel urlPasswordLabel;
+  private javax.swing.JLabel urlUserLabel;
+  private javax.swing.JTextField urlUserTextField;
   private org.jdesktop.beansbinding.BindingGroup bindingGroup;
   // End of variables declaration//GEN-END:variables
 }
