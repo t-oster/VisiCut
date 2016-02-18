@@ -21,7 +21,6 @@ package com.t_oster.visicut.gui;
 // Do not add this import!
 // It is loaded dynamically iff JavaFX is available:
 // import com.tur0kk.thingiverse.gui.ThingiverseLoginDialog;
-
 import com.tur0kk.thingiverse.gui.ThingiverseDialog;
 import com.apple.eawt.AppEvent.AboutEvent;
 import com.apple.eawt.AppEvent.OpenFilesEvent;
@@ -131,6 +130,7 @@ import org.jdesktop.application.Action;
  */
 public class MainView extends javax.swing.JFrame
 {
+
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView");
   private ThingiverseDialog thingiverseDialog = null;
@@ -145,12 +145,11 @@ public class MainView extends javax.swing.JFrame
   private boolean editGuiForQRCodesDisabled = false;
   private boolean laserJobInProgress = false;
   private boolean isFabqrUploadDialogOpened = false;
-  
+
   public static MainView getInstance()
   {
     return instance;
   }
-
   final protected DialogHelper dialog = new DialogHelper(this, this.getTitle())
   {
 
@@ -188,14 +187,14 @@ public class MainView extends javax.swing.JFrame
         cause = cause.getCause();
       }
       cause.printStackTrace();
-      MainView.this.warningPanel.addMessage(new Message("Error", "Exception: "+cause.getLocalizedMessage(), Message.Type.ERROR, null));
+      MainView.this.warningPanel.addMessage(new Message("Error", "Exception: " + cause.getLocalizedMessage(), Message.Type.ERROR, null));
     }
 
     @Override
     public void showErrorMessage(Exception cause, String text)
     {
       cause.printStackTrace();
-      MainView.this.warningPanel.addMessage(new Message("Error", text+": "+cause.getLocalizedMessage(), Message.Type.ERROR, null));
+      MainView.this.warningPanel.addMessage(new Message("Error", text + ": " + cause.getLocalizedMessage(), Message.Type.ERROR, null));
     }
 
     @Override
@@ -203,9 +202,10 @@ public class MainView extends javax.swing.JFrame
     {
       MainView.this.warningPanel.addMessage(new Message("Error", text, Message.Type.ERROR, null));
     }
-    
+
     @Override
-    public void removeMessageWithId(String messageId) {
+    public void removeMessageWithId(String messageId)
+    {
       MainView.this.warningPanel.removeMessageWithId(messageId);
     }
   };
@@ -252,7 +252,7 @@ public class MainView extends javax.swing.JFrame
     }
     return profile;
   }
-  
+
   /** Creates new form MainView */
   public MainView()
   {
@@ -263,7 +263,7 @@ public class MainView extends javax.swing.JFrame
     }
     catch (Exception e)
     {
-      System.err.println("Error reading image: "+e);
+      System.err.println("Error reading image: " + e);
     }
     instance = this;
     initComponents();
@@ -275,14 +275,25 @@ public class MainView extends javax.swing.JFrame
     viewPort.setScrollMode(JViewport.BLIT_SCROLL_MODE);
     viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
     viewPort.setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
-    jScrollPane2.addComponentListener(new ComponentListener(){
+    jScrollPane2.addComponentListener(new ComponentListener()
+    {
+
       public void componentResized(ComponentEvent ce)
       {
         MainView.this.previewPanel.resizeToFitZoomAndArea();
       }
-      public void componentMoved(ComponentEvent ce){}
-      public void componentShown(ComponentEvent ce){}
-      public void componentHidden(ComponentEvent ce){}
+
+      public void componentMoved(ComponentEvent ce)
+      {
+      }
+
+      public void componentShown(ComponentEvent ce)
+      {
+      }
+
+      public void componentHidden(ComponentEvent ce)
+      {
+      }
     });
     if (Helper.isMacOS())
     {//Mac OS has its own exit menu and different Keybindings
@@ -294,8 +305,8 @@ public class MainView extends javax.swing.JFrame
       zoomInMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ADD, java.awt.event.InputEvent.META_MASK));
       zoomOutMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SUBTRACT, java.awt.event.InputEvent.META_MASK));
     }
-    
-    fixMaterialThicknesses();    
+
+    fixMaterialThicknesses();
     fillComboBoxes();
     refreshMaterialThicknessesComboBox();
 
@@ -303,7 +314,8 @@ public class MainView extends javax.swing.JFrame
     {
       com.apple.eawt.Application macApplication = com.apple.eawt.Application.getApplication();
       jmPreferences.setVisible(false);
-      macApplication.setPreferencesHandler(new com.apple.eawt.PreferencesHandler() {
+      macApplication.setPreferencesHandler(new com.apple.eawt.PreferencesHandler()
+      {
 
         public void handlePreferences(PreferencesEvent pe)
         {
@@ -311,7 +323,8 @@ public class MainView extends javax.swing.JFrame
         }
       });
       exitMenuItem.setVisible(false);
-      macApplication.setQuitHandler(new com.apple.eawt.QuitHandler() {
+      macApplication.setQuitHandler(new com.apple.eawt.QuitHandler()
+      {
 
         public void handleQuitRequestWith(QuitEvent qe, QuitResponse qr)
         {
@@ -319,14 +332,16 @@ public class MainView extends javax.swing.JFrame
         }
       });
       aboutMenuItem.setVisible(false);
-      macApplication.setAboutHandler(new com.apple.eawt.AboutHandler() {
+      macApplication.setAboutHandler(new com.apple.eawt.AboutHandler()
+      {
 
         public void handleAbout(AboutEvent ae)
         {
           MainView.this.aboutMenuItemActionPerformed(null);
         }
       });
-      macApplication.setOpenFileHandler(new com.apple.eawt.OpenFilesHandler() {
+      macApplication.setOpenFileHandler(new com.apple.eawt.OpenFilesHandler()
+      {
 
         public void openFiles(OpenFilesEvent ofe)
         {
@@ -385,7 +400,9 @@ public class MainView extends javax.swing.JFrame
 
     PositionPanelController c = new PositionPanelController(positionPanel, visicutModel1);
     this.warningPanel.setVisible(false);
-    LaserDeviceManager.getInstance().addPropertyChangeListener(new PropertyChangeListener(){
+    LaserDeviceManager.getInstance().addPropertyChangeListener(new PropertyChangeListener()
+    {
+
       public void propertyChange(PropertyChangeEvent pce)
       {
         refreshLaserDeviceComboBox();
@@ -399,29 +416,31 @@ public class MainView extends javax.swing.JFrame
       this.setPreferredSize(new Dimension(lastBounds.width, lastBounds.height));
       this.setBounds(lastBounds);
     }
-    
+
     // all GUI parts are now initialised.
-    if (LaserDeviceManager.getInstance().getAll().isEmpty()) {
+    if (LaserDeviceManager.getInstance().getAll().isEmpty())
+    {
       this.jmDownloadSettingsActionPerformed(null);
     }
-    
+
     // Cleanup old temporary files, which might not have been deleted correctly
     FileUtils.cleanupOldTempFilesAtStartup();
   }
+  private ActionListener exampleItemClicked = new ActionListener()
+  {
 
-  private ActionListener exampleItemClicked = new ActionListener(){
-      public void actionPerformed(ActionEvent ae)
+    public void actionPerformed(ActionEvent ae)
+    {
+      if (!"".equals(ae.getActionCommand()))
       {
-        if (!"".equals(ae.getActionCommand()))
-        {
-          MainView.this.loadFile(new File(ae.getActionCommand()), false);
-        }
+        MainView.this.loadFile(new File(ae.getActionCommand()), false);
       }
-    };
+    }
+  };
 
   private void fillMenu(JMenu parent, Map<String, Object> map)
   {
-    for (Entry<String, Object> e: map.entrySet())
+    for (Entry<String, Object> e : map.entrySet())
     {
       if (e.getValue() instanceof File)
       {
@@ -438,8 +457,8 @@ public class MainView extends javax.swing.JFrame
       }
     }
   }
-  
   private JMenuItem openExamples;
+
   private void refreshExampleMenu()
   {
     jmExamples.removeAll();
@@ -450,7 +469,8 @@ public class MainView extends javax.swing.JFrame
     if (openExamples == null)
     {
       openExamples = new JMenuItem(bundle.getString("EDIT"));
-      openExamples.addActionListener(new ActionListener(){
+      openExamples.addActionListener(new ActionListener()
+      {
 
         public void actionPerformed(ActionEvent ae)
         {
@@ -469,13 +489,15 @@ public class MainView extends javax.swing.JFrame
   private void refreshRecentFilesMenu()
   {
     this.recentFilesMenu.removeAll();
-    for (String p: this.visicutModel1.getPreferences().getRecentFiles())
+    for (String p : this.visicutModel1.getPreferences().getRecentFiles())
     {
       final File f = new File(p);
       if (f.isFile())
       {
         JMenuItem i = new JMenuItem(f.getName());
-        i.addActionListener(new ActionListener(){
+        i.addActionListener(new ActionListener()
+        {
+
           public void actionPerformed(ActionEvent ae)
           {
             loadFile(f, false);
@@ -514,22 +536,28 @@ public class MainView extends javax.swing.JFrame
     this.jLabel1.setVisible(materialUiVisible);
     this.jLabel5.setVisible(materialUiVisible);
   }
-  
+
   // add a "0.0mm" material thickness if the material has an empty list of thicknesses
-  private void fixMaterialThicknesses() {
+  private void fixMaterialThicknesses()
+  {
     List<MaterialProfile> materials = MaterialManager.getInstance().getAll();
-    for (MaterialProfile mp: materials) {
-      if (mp.getMaterialThicknesses().isEmpty()) {
+    for (MaterialProfile mp : materials)
+    {
+      if (mp.getMaterialThicknesses().isEmpty())
+      {
         LinkedList<Float> l = new LinkedList<Float>();
         l.add((float) 0.0);
         mp.setMaterialThicknesses(l);
         System.err.println("Found material \"" + mp.getName() + "\" without a thickness entry - this should not happen! Adding a thickness 0.0 for this material. Please report if you find a way to create materials without a thickness.");
-        try {
+        try
+        {
           MaterialManager.getInstance().save(mp);
-        } catch(IOException e) {
+        }
+        catch (IOException e)
+        {
           System.err.println("Failed to fix because of exception " + e);
         }
-        
+
       }
     }
   }
@@ -543,7 +571,7 @@ public class MainView extends javax.swing.JFrame
     this.refreshMaterialComboBox();
     this.refreshObjectComboBox();
   }
-  
+
   private void refreshLaserDeviceComboBox()
   {
     String sld = this.visicutModel1.getSelectedLaserDevice() != null ? this.visicutModel1.getSelectedLaserDevice().getName() : null;
@@ -571,32 +599,40 @@ public class MainView extends javax.swing.JFrame
     }
     ignoreLaserCutterComboBoxUpdates = false;
   }
-   /**
+
+  /**
    * update entries of objectComboBox, then update selection
    * @param forceUpdate even update if the list of PlfParts has not changed
    * @throws RuntimeException if forceUpdate==false and PlfParts have not changed
    */
-  public void refreshObjectComboBox() {        
+  public void refreshObjectComboBox()
+  {
     this.ignoreObjectComboBoxEvents = true;
     // fill new list of PlfItems
     this.objectComboBox.removeAllItems();
-    if (VisicutModel.getInstance().getSelectedPart() == null) {
+    if (VisicutModel.getInstance().getSelectedPart() == null)
+    {
       // add default "nothing selected" item if nothing is selected
       this.objectComboBox.addItem(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/MainView").getString("(nothing selected)"));
     }
-    for (PlfPart p: VisicutModel.getInstance().getPlfFile()) {
-      if (p == null || p.getSourceFile() == null) { // necessary? 
+    for (PlfPart p : VisicutModel.getInstance().getPlfFile())
+    {
+      if (p == null || p.getSourceFile() == null)
+      { // necessary? 
         continue;
       }
       // add regular item
       this.objectComboBox.addItem(p);
     }
-    
+
     // now set the correct selection
-    if (VisicutModel.getInstance().getSelectedPart() != null) {
+    if (VisicutModel.getInstance().getSelectedPart() != null)
+    {
       // something is selected, also select this in the combobox
       this.objectComboBox.setSelectedItem(VisicutModel.getInstance().getSelectedPart());
-    } else {
+    }
+    else
+    {
       // no PlfPart is selected, so select the pseudo-item "nothing selected"
       this.objectComboBox.setSelectedIndex(0);
     }
@@ -605,11 +641,11 @@ public class MainView extends javax.swing.JFrame
     boolean selected = this.visicutModel1.getSelectedPart() != null;
     if (files == 1 && selected)
     {
-      this.jLabel2.setText("<html>"+this.bundle.getString("jLabel2.text")+" <b>"+this.visicutModel1.getSelectedPart().getSourceFile().getName()+"</b></html>");
+      this.jLabel2.setText("<html>" + this.bundle.getString("jLabel2.text") + " <b>" + this.visicutModel1.getSelectedPart().getSourceFile().getName() + "</b></html>");
     }
     else
     {
-      this.jLabel2.setText(this.bundle.getString("jLabel2.text") + (files == 1 && !selected ? " "+this.bundle.getString("(nothing selected)") : ""));
+      this.jLabel2.setText(this.bundle.getString("jLabel2.text") + (files == 1 && !selected ? " " + this.bundle.getString("(nothing selected)") : ""));
     }
 
     // Avoid some frequent visible changes if GUI is disabled for QR code detection
@@ -622,7 +658,7 @@ public class MainView extends javax.swing.JFrame
     this.btRemoveObject.setVisible(files > 0 && selected);
     this.ignoreObjectComboBoxEvents = false;
   }
-  
+
   /** This method is called from within the constructor to
    * initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is
@@ -722,6 +758,9 @@ public class MainView extends javax.swing.JFrame
         jmInstallInkscape = new javax.swing.JMenuItem();
         jmInstallIllustrator = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
+        manualMenuItem = new javax.swing.JMenuItem();
+        wikiMenuItem = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
         aboutMenuItem = new javax.swing.JMenuItem();
 
         visicutModel1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -1452,6 +1491,27 @@ public class MainView extends javax.swing.JFrame
         helpMenu.setText(resourceMap.getString("helpMenu.text")); // NOI18N
         helpMenu.setName("helpMenu"); // NOI18N
 
+        manualMenuItem.setText(resourceMap.getString("manualMenuItem.text")); // NOI18N
+        manualMenuItem.setName("manualMenuItem"); // NOI18N
+        manualMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                manualMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(manualMenuItem);
+
+        wikiMenuItem.setText(resourceMap.getString("wikiMenuItem.text")); // NOI18N
+        wikiMenuItem.setName("wikiMenuItem"); // NOI18N
+        wikiMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                wikiMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(wikiMenuItem);
+
+        jSeparator3.setName("jSeparator3"); // NOI18N
+        helpMenu.add(jSeparator3);
+
         aboutMenuItem.setAction(actionMap.get("showAboutDialog")); // NOI18N
         aboutMenuItem.setText(resourceMap.getString("aboutMenuItem.text")); // NOI18N
         aboutMenuItem.setName("aboutMenuItem"); // NOI18N
@@ -1524,7 +1584,7 @@ public class MainView extends javax.swing.JFrame
     recent.add(0, file.getAbsolutePath());
     if (recent.size() > 5)
     {
-      for (int i=recent.size()-1;i>=5;i--)
+      for (int i = recent.size() - 1; i >= 5; i--)
       {
         recent.remove(i);
       }
@@ -1580,46 +1640,46 @@ public class MainView extends javax.swing.JFrame
         return;
       }
     }
-    
-    if( (modification.oldX != modification.newX) || (modification.oldY != modification.newY) )
+
+    if ((modification.oldX != modification.newX) || (modification.oldY != modification.newY))
     {
-      text += "\n"+bundle.getString("OLDXY")+": (" + modification.oldX+","+ modification.oldY +")";
-      text += "\n"+bundle.getString("CHANGED_TO")+": (" + modification.newX+","+ modification.newY +")";
-    }    
-    
-    if( (modification.oldWidth != modification.newWidth) || (modification.oldHeight != modification.newHeight) )
-    {
-      text += "\n"+bundle.getString("OLDWH")+": (" +  modification.oldWidth+","+modification.oldHeight+")";
-      text += "\n"+bundle.getString("CHANGED_TO")+": (" + modification.newWidth+","+modification.newHeight+")";
-      text += "\n scaling factor: "+modification.factor;
+      text += "\n" + bundle.getString("OLDXY") + ": (" + modification.oldX + "," + modification.oldY + ")";
+      text += "\n" + bundle.getString("CHANGED_TO") + ": (" + modification.newX + "," + modification.newY + ")";
     }
-    
-    
+
+    if ((modification.oldWidth != modification.newWidth) || (modification.oldHeight != modification.newHeight))
+    {
+      text += "\n" + bundle.getString("OLDWH") + ": (" + modification.oldWidth + "," + modification.oldHeight + ")";
+      text += "\n" + bundle.getString("CHANGED_TO") + ": (" + modification.newWidth + "," + modification.newHeight + ")";
+      text += "\n scaling factor: " + modification.factor;
+    }
+
+
     warningPanel.addMessage(new Message("Info", text, Message.Type.INFO, new com.t_oster.uicomponents.warnings.Action[]
-    {
-      new com.t_oster.uicomponents.warnings.Action(bundle.getString("UNDO"))
       {
-        @Override
-        public boolean clicked()
+        new com.t_oster.uicomponents.warnings.Action(bundle.getString("UNDO"))
         {
-          for (Entry<PlfPart, AffineTransform> e : backup.entrySet())
+
+          @Override
+          public boolean clicked()
           {
-            e.getKey().getGraphicObjects().setTransform(e.getValue());
-            VisicutModel.getInstance().firePartUpdated(e.getKey());
+            for (Entry<PlfPart, AffineTransform> e : backup.entrySet())
+            {
+              e.getKey().getGraphicObjects().setTransform(e.getValue());
+              VisicutModel.getInstance().firePartUpdated(e.getKey());
+            }
+            return true;
           }
-          return true;
-        } 
-      }
-    }
-    ));
+        }
+      }));
   }
-  
+
   private void loadFileReal(File file, boolean discardCurrent)
   {
     // bring window to front - needed when VisiCut was called from a plugin
     this.toFront();
     this.requestFocus();
-    
+
     // remove old error messages, they are no longer relevant (or for multiple files it is too confusing which one refers to which file)
     warningPanel.removeAllWarnings();
 
@@ -1629,9 +1689,9 @@ public class MainView extends javax.swing.JFrame
       LinkedList<String> warnings = new LinkedList<String>();
       this.visicutModel1.loadFile(MappingManager.getInstance(), file, warnings, discardCurrent);
       if (!warnings.isEmpty())
-        {
-          dialog.showWarningMessage(warnings);
-        }
+      {
+        dialog.showWarningMessage(warnings);
+      }
       //if the image is too big, fit it a nd notify the user
       this.fitObjectsIntoBed();
       this.progressBar.setIndeterminate(false);
@@ -1673,10 +1733,12 @@ public class MainView extends javax.swing.JFrame
     if (this.visicutModel1.getSelectedLaserDevice() != null)
     {
       LaserCutter lc = this.visicutModel1.getSelectedLaserDevice().getLaserCutter();
-      for (LaserProperty p : new LaserProperty[]{
-        lc.getLaserPropertyForVectorPart(),
-        lc.getLaserPropertyForRasterPart(),
-        lc.getLaserPropertyForRaster3dPart()})
+      for (LaserProperty p : new LaserProperty[]
+        {
+          lc.getLaserPropertyForVectorPart(),
+          lc.getLaserPropertyForRasterPart(),
+          lc.getLaserPropertyForRaster3dPart()
+        })
       {
         if (p != null && Arrays.asList(p.getPropertyKeys()).contains("focus"))
         {
@@ -1696,10 +1758,10 @@ public class MainView extends javax.swing.JFrame
       this.jCheckBox1.setVisible(true);
       this.jSeparator1.setVisible(true);
     }
-    
+
     refreshExecuteButtons(false);
   }
-  
+
   public void refreshExecuteButtons(boolean skipLockCheck)
   {
     boolean execute = this.visicutModel1.getMaterial() != null
@@ -1709,7 +1771,7 @@ public class MainView extends javax.swing.JFrame
     if (execute)
     {
       boolean jobEmpty = true;
-      for(PlfPart p:this.visicutModel1.getPlfFile())
+      for (PlfPart p : this.visicutModel1.getPlfFile())
       {
         if (p.getMapping() != null && p.getMapping().size() > 0)
         {
@@ -1722,12 +1784,11 @@ public class MainView extends javax.swing.JFrame
         execute = false;
       }
     }
-    this.jTextFieldJobName.setText( "" );
+    this.jTextFieldJobName.setText("");
     this.calculateTimeButton.setEnabled(execute);
     this.executeJobButton.setEnabled(execute);
     this.executeJobMenuItem.setEnabled(execute);
   }
-  
   private File lastDirectory = null;
 
   private void openFileDialog(boolean discardCurrent)
@@ -1744,6 +1805,7 @@ public class MainView extends javax.swing.JFrame
       }
       openFileChooser.setFilenameFilter(new FilenameFilter()
       {
+
         public boolean accept(File dir, String file)
         {
           return allFilter.accept(new File(dir, file));
@@ -1798,97 +1860,135 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
       this.previewPanel.repaint();
     }
   }
-  
   private JFileChooser fileChooser = new JFileChooser();
-	private void exportGcodeMenuItemActionPerformed( java.awt.event.ActionEvent evg ) {
-		String jobname = getJobName();
-		List<String> warnings = new LinkedList<String>();
-		final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob();
-		if (cuttingSettings == null)
-		{
-			return;
-		}
 
-		ProgressListener pl = new ProgressListener()
-		{
-			public void progressChanged(Object o, int i)
-			{
-				MainView.this.progressBar.setValue(i);
-				MainView.this.progressBar.repaint();
-			}
-			public void taskChanged(Object o, String string)
-			{
-				MainView.this.progressBar.setString(string);
-			}
-		};
-		try {
-			int userreturn = this.fileChooser.showSaveDialog(this);
-			if( userreturn == JFileChooser.APPROVE_OPTION) {
-				File selectedFile = this.fileChooser.getSelectedFile();
-				System.out.println( "selected " + selectedFile.getAbsolutePath() );
+  private void exportGcodeMenuItemActionPerformed(java.awt.event.ActionEvent evg)
+  {
+    String jobname = getJobName();
+    List<String> warnings = new LinkedList<String>();
+    final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob();
+    if (cuttingSettings == null)
+    {
+      return;
+    }
 
-				MainView.this.visicutModel1
-						.saveJob(jobname, selectedFile, pl, cuttingSettings, warnings);
-			}
-		} catch( Exception e3 ) {
+    ProgressListener pl = new ProgressListener()
+    {
+
+      public void progressChanged(Object o, int i)
+      {
+        MainView.this.progressBar.setValue(i);
+        MainView.this.progressBar.repaint();
+      }
+
+      public void taskChanged(Object o, String string)
+      {
+        MainView.this.progressBar.setString(string);
+      }
+    };
+    try
+    {
+      int userreturn = this.fileChooser.showSaveDialog(this);
+      if (userreturn == JFileChooser.APPROVE_OPTION)
+      {
+        File selectedFile = this.fileChooser.getSelectedFile();
+        System.out.println("selected " + selectedFile.getAbsolutePath());
+
+        MainView.this.visicutModel1.saveJob(jobname, selectedFile, pl, cuttingSettings, warnings);
+      }
+    }
+    catch (Exception e3)
+    {
       dialog.showErrorMessage(e3);
-		}
-	}
+    }
+  }
 
-	private String getJobName() {
-		String jobname = "(unnamed job)";
-		try {
-			MainView.this.warningPanel.removeAllWarnings();
-			jobnumber++;
-			String nameprefix = MainView.this.jTextFieldJobName.getText();
-			//
-			// Most simplistic implementation of user editable job names:
-			//  - we just add a prefix, if any. (This is okay for Zing lasers that only display 16 chars.)
-			// Todo: Better compute the next proposed job name in e.g. refreshExecuteButtons() ahead of time
-			// and show it in jTextFieldJobName near the Execute button. When we come here, just retrieve the
-			// (possibly edited) name from there.
-			//
-			String prefix = MainView.this.visicutModel1.getSelectedLaserDevice()
-					.getJobPrefix();
-			jobname = nameprefix + prefix + jobnumber;
-			if (PreferencesManager.getInstance().getPreferences()
-					.isUseFilenamesForJobs()) {
-				//use filename of the PLF file or any part with a filename as job name
-				PlfFile plf = MainView.this.visicutModel1.getPlfFile();
-				List< PlfPart > plfParts = MainView.this.visicutModel1
-						.getPlfFile().getPartsCopy();
-				File f = plf.getFile();
-				if (f == null) {
-					for (PlfPart p : plfParts) {
-						if (p.getSourceFile() != null) {
-							f = p.getSourceFile();
-							break;
-						}
-					}
-				}
-				if (f != null) {
-					jobname = nameprefix + f.getName();
-				}
-			}
-		} catch (Exception ex) {
-			if (ex instanceof IllegalJobException && ex.getMessage()
-					.startsWith("Illegal Focus value")) {
-				dialog.showWarningMessage(bundle.getString(
-						"YOU MATERIAL IS TOO HIGH FOR AUTOMATIC FOCUSSING.PLEASE FOCUS MANUALLY AND SET THE TOTAL HEIGHT TO 0."));
-			} else if (ex instanceof java.net.SocketTimeoutException) {
-				dialog.showErrorMessage(ex,
-						bundle.getString("SOCKETTIMEOUT") + " " + bundle
-								.getString("CHECKSWITCHEDON"));
-			} else if (ex instanceof java.net.UnknownHostException) {
-				dialog.showErrorMessage(ex,
-						bundle.getString("UNKNOWNHOST") + " " + bundle
-								.getString("CHECKSWITCHEDON"));
-			} else {
-				dialog.showErrorMessage(ex);
-			}
-		}
-		return jobname;
-	}
+  private String getJobName()
+  {
+    String jobname = "(unnamed job)";
+    try
+    {
+      MainView.this.warningPanel.removeAllWarnings();
+      jobnumber++;
+      String nameprefix = MainView.this.jTextFieldJobName.getText();
+      //
+      // Most simplistic implementation of user editable job names:
+      //  - we just add a prefix, if any. (This is okay for Zing lasers that only display 16 chars.)
+      // Todo: Better compute the next proposed job name in e.g. refreshExecuteButtons() ahead of time
+      // and show it in jTextFieldJobName near the Execute button. When we come here, just retrieve the
+      // (possibly edited) name from there.
+      //
+      String prefix = MainView.this.visicutModel1.getSelectedLaserDevice().getJobPrefix();
+      jobname = nameprefix + prefix + jobnumber;
+      if (PreferencesManager.getInstance().getPreferences().isUseFilenamesForJobs())
+      {
+        //use filename of the PLF file or any part with a filename as job name
+        PlfFile plf = MainView.this.visicutModel1.getPlfFile();
+        List< PlfPart> plfParts = MainView.this.visicutModel1.getPlfFile().getPartsCopy();
+        File f = plf.getFile();
+        if (f == null)
+        {
+          for (PlfPart p : plfParts)
+          {
+            if (p.getSourceFile() != null)
+            {
+              f = p.getSourceFile();
+              break;
+            }
+          }
+        }
+        if (f != null)
+        {
+          jobname = nameprefix + f.getName();
+        }
+      }
+    }
+    catch (Exception ex)
+    {
+      if (ex instanceof IllegalJobException && ex.getMessage().startsWith("Illegal Focus value"))
+      {
+        dialog.showWarningMessage(bundle.getString(
+          "YOU MATERIAL IS TOO HIGH FOR AUTOMATIC FOCUSSING.PLEASE FOCUS MANUALLY AND SET THE TOTAL HEIGHT TO 0."));
+      }
+      else if (ex instanceof java.net.SocketTimeoutException)
+      {
+        dialog.showErrorMessage(ex,
+          bundle.getString("SOCKETTIMEOUT") + " " + bundle.getString("CHECKSWITCHEDON"));
+      }
+      else if (ex instanceof java.net.UnknownHostException)
+      {
+        dialog.showErrorMessage(ex,
+          bundle.getString("UNKNOWNHOST") + " " + bundle.getString("CHECKSWITCHEDON"));
+      }
+      else
+      {
+        dialog.showErrorMessage(ex);
+      }
+    }
+    return jobname;
+  }
+
+  private static void openWebpage(String urlString) {
+    try
+    {
+      if (Desktop.isDesktopSupported())
+      {
+        Desktop.getDesktop().browse(new URL(urlString).toURI());
+      }
+    }
+    catch (Exception e)
+    {
+        e.printStackTrace();
+    }
+  }
+
+  private void manualMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+    openWebpage("https://github.com/t-oster/VisiCut/wiki/VisiCut-manual");
+  }
+
+  private void wikiMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+    openWebpage("https://github.com/t-oster/VisiCut/wiki");
+  }
 
 private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
   VisicutAboutBox box = new VisicutAboutBox(this);
@@ -1905,7 +2005,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       if (cuttingSettings == null)
       {
         return;
-      }     
+      }
       if (VisicutModel.getInstance().getStartPoint() != null)
       {
         if (!dialog.showYesNoQuestion(bundle.getString("STARTPOINTWARNING")))
@@ -1913,22 +2013,25 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
           return;
         }
       }
-      
+
       setLaserJobInProgress(true);
       laserJobStarted();
-      
+
       new Thread()
       {
+
         @Override
         public void run()
         {
           ProgressListener pl = new ProgressListener()
           {
+
             public void progressChanged(Object o, int i)
             {
               MainView.this.progressBar.setValue(i);
               MainView.this.progressBar.repaint();
             }
+
             public void taskChanged(Object o, String string)
             {
               MainView.this.progressBar.setString(string);
@@ -1946,15 +2049,15 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             MainView.this.warningPanel.removeAllWarnings();
             jobnumber++;
             String nameprefix = MainView.this.jTextFieldJobName.getText();
-	    //
-	    // Most simplistic implementation of user editable job names:
-	    //  - we just add a prefix, if any. (This is okay for Zing lasers that only display 16 chars.)
-	    // Todo: Better compute the next proposed job name in e.g. refreshExecuteButtons() ahead of time 
-	    // and show it in jTextFieldJobName near the Execute button. When we come here, just retrieve the 
-	    // (possibly edited) name from there.
-	    //
+            //
+            // Most simplistic implementation of user editable job names:
+            //  - we just add a prefix, if any. (This is okay for Zing lasers that only display 16 chars.)
+            // Todo: Better compute the next proposed job name in e.g. refreshExecuteButtons() ahead of time 
+            // and show it in jTextFieldJobName near the Execute button. When we come here, just retrieve the 
+            // (possibly edited) name from there.
+            //
             String prefix = MainView.this.visicutModel1.getSelectedLaserDevice().getJobPrefix();
-            jobname = nameprefix+prefix+jobnumber;
+            jobname = nameprefix + prefix + jobnumber;
             if (PreferencesManager.getInstance().getPreferences().isUseFilenamesForJobs())
             {
               //use filename of the PLF file or any part with a filename as job name
@@ -1998,11 +2101,11 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             }
             else if (ex instanceof java.net.SocketTimeoutException)
             {
-              dialog.showErrorMessage(ex, bundle.getString("SOCKETTIMEOUT")+" "+bundle.getString("CHECKSWITCHEDON"));
+              dialog.showErrorMessage(ex, bundle.getString("SOCKETTIMEOUT") + " " + bundle.getString("CHECKSWITCHEDON"));
             }
             else if (ex instanceof java.net.UnknownHostException)
             {
-              dialog.showErrorMessage(ex, bundle.getString("UNKNOWNHOST")+" "+bundle.getString("CHECKSWITCHEDON"));
+              dialog.showErrorMessage(ex, bundle.getString("UNKNOWNHOST") + " " + bundle.getString("CHECKSWITCHEDON"));
             }
             else
             {
@@ -2025,7 +2128,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
   }
 
 private void executeJobButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobButtonActionPerformed
-    this.executeJob();
+  this.executeJob();
 }//GEN-LAST:event_executeJobButtonActionPerformed
 
 private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)//GEN-FIRST:event_filesDropSupport1PropertyChange
@@ -2093,12 +2196,13 @@ private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
 
 private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_visicutModel1PropertyChange
   if (evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_ADDED)
-    ||evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_REMOVED)
-    ||evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART)) {
+    || evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_REMOVED)
+    || evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART))
+  {
     // regenerate list of parts, update selection in ComboBox
     this.refreshObjectComboBox();
   }
-    
+
   if (evt.getPropertyName().equals(VisicutModel.PROP_PLF_FILE_CHANGED))
   {
     MainView.this.timeLabel.setText("");
@@ -2113,8 +2217,8 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
     this.refreshButtonStates(evt.getPropertyName());
   }
   else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDLASERDEVICE)
-    ||evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_UPDATED)
-    ||evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_REMOVED))
+    || evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_UPDATED)
+    || evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_REMOVED))
   {
     MainView.this.timeLabel.setText("");
     this.refreshButtonStates(evt.getPropertyName());
@@ -2151,10 +2255,10 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
   else if (evt.getPropertyName().equals(VisicutModel.PROP_PREFERENCES))
   {
     Preferences p = null;
-    
+
     if (evt.getNewValue() != null)
     {
-      p = (Preferences)(evt.getNewValue());
+      p = (Preferences) (evt.getNewValue());
     }
     else if (PreferencesManager.getInstance() != null && PreferencesManager.getInstance().getPreferences() != null)
     {
@@ -2241,16 +2345,17 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
 
       new Thread()
       {
+
         @Override
         public void run()
         {
-          URLConnection conn=null;
+          URLConnection conn = null;
           try
           {
             URL src = new URL(getVisiCam());
             conn = src.openConnection();
-            conn.setConnectTimeout(5*1000); // 5s connect timeout
-            conn.setReadTimeout(30*1000); // 30s read timeout after connecting
+            conn.setConnectTimeout(5 * 1000); // 5s connect timeout
+            conn.setReadTimeout(30 * 1000); // 30s read timeout after connecting
 
             // HTTP authentication
             if (VisicutModel.getInstance() != null && VisicutModel.getInstance().getSelectedLaserDevice() != null)
@@ -2262,14 +2367,14 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
               }
             }
 
-            ImageInputStream stream=new MemoryCacheImageInputStream(conn.getInputStream());
+            ImageInputStream stream = new MemoryCacheImageInputStream(conn.getInputStream());
             BufferedImage back = ImageIO.read(stream);
             if (back != null && MainView.this.visicutModel1.getBackgroundImage() == null)
             {//First Time Image is Captured => resize View
               // TODO also called when image reappears after error, while the user is moving some object around -- not so good. Put this call somewhere else.
               // MainView.this.previewPanel.setZoom(100d);
             }
-            
+
             // Check again if camera and background are active, might have changed in the meantime, because of threading
             if (back != null && isCameraActive() && isPreviewPanelShowBackgroundImage())
             {
@@ -2281,60 +2386,81 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
           {
             MainView.this.visicutModel1.setBackgroundImage(null);
             ex.printStackTrace();
-            if (ex instanceof IOException && conn instanceof HttpURLConnection) {
+            if (ex instanceof IOException && conn instanceof HttpURLConnection)
+            {
               // possible HTTP error - if the server sent a message, display it
               // This can be used by VisiCam to show an error message like "error capturing image"
-              String msg="";
-              int responseCode=0;
-              try {
-                responseCode=((HttpURLConnection) conn).getResponseCode();
-                if (responseCode != 200) {
+              String msg = "";
+              int responseCode = 0;
+              try
+              {
+                responseCode = ((HttpURLConnection) conn).getResponseCode();
+                if (responseCode != 200)
+                {
                   // received a text error message, display it
-                  InputStream stream=((HttpURLConnection) conn).getErrorStream();
-                  if (stream == null) {
-                    msg="(no message sent)";
-                  } else {
-                    InputStreamReader errorReader=new InputStreamReader(stream);
-                    StringBuilder buffer=new StringBuilder();
+                  InputStream stream = ((HttpURLConnection) conn).getErrorStream();
+                  if (stream == null)
+                  {
+                    msg = "(no message sent)";
+                  }
+                  else
+                  {
+                    InputStreamReader errorReader = new InputStreamReader(stream);
+                    StringBuilder buffer = new StringBuilder();
                     int c;
-                    while ((c=errorReader.read()) != -1) {
+                    while ((c = errorReader.read()) != -1)
+                    {
                       // read until finished
                       buffer.append((char) c);
-                      if (buffer.length() > 200) {
+                      if (buffer.length() > 200)
+                      {
                         buffer.append("...");
                         break;
                       }
                     }
-                    msg=buffer.toString();
+                    msg = buffer.toString();
                   }
-                } else {
-                  // server sent HTTP OK, so the exception is not a HTTP problem
-                  msg=ex.toString();
                 }
-              } catch(Exception e) {
+                else
+                {
+                  // server sent HTTP OK, so the exception is not a HTTP problem
+                  msg = ex.toString();
+                }
+              }
+              catch (Exception e)
+              {
                 e.printStackTrace();
-                if (e instanceof java.net.SocketException) {
-                    // Network errors like "port not found" have meaningful error messages
-                    msg=e.getLocalizedMessage();
-                } else {
+                if (e instanceof java.net.SocketException)
+                {
+                  // Network errors like "port not found" have meaningful error messages
+                  msg = e.getLocalizedMessage();
+                }
+                else
+                {
                   // Most other exceptions are not easy to understand without the class name
                   // (e.g. 'java.net.UnknownHostException: foo.example.com')
                   msg = ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage();
                 }
               }
-              if (responseCode != 0) {
+              if (responseCode != 0)
+              {
                 msg = msg + "\n(HTTP " + responseCode + ")";
               }
-              if (responseCode == 503 && conn.getHeaderFields().containsKey("Retry-After")) {
-                    // For temporary errors like 'marker not found' that should not cause an error message,
-                    // the VisiCam server can send status 503 with a Retry-After header.
-                    // Then we don't show an error message.
-                    cameraCapturingError = "";
-                    System.err.println("ignoring camera error (as signaled by HTTP 503 + Retry-After).");
-              } else  {
-                cameraCapturingError = bundle.getString("ERROR CAPTURING PHOTO") + ": "+ msg;
+              if (responseCode == 503 && conn.getHeaderFields().containsKey("Retry-After"))
+              {
+                // For temporary errors like 'marker not found' that should not cause an error message,
+                // the VisiCam server can send status 503 with a Retry-After header.
+                // Then we don't show an error message.
+                cameraCapturingError = "";
+                System.err.println("ignoring camera error (as signaled by HTTP 503 + Retry-After).");
               }
-            } else {
+              else
+              {
+                cameraCapturingError = bundle.getString("ERROR CAPTURING PHOTO") + ": " + msg;
+              }
+            }
+            else
+            {
               cameraCapturingError = bundle.getString("ERROR CAPTURING PHOTO") + "\nError (" + ex.getClass().getSimpleName() + "): " + ex.getLocalizedMessage();
             }
           }
@@ -2344,16 +2470,20 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
       }.start();
     }
   }
-  
-  public boolean isVisiCamDetected(){
-    try{
+
+  public boolean isVisiCamDetected()
+  {
+    try
+    {
       String url = MainView.this.visicutModel1.getSelectedLaserDevice().getCameraURL();
       return url != null && !"".equals(url);
-    }catch(Exception e){
+    }
+    catch (Exception e)
+    {
       return false;
     }
   }
-  
+
   public String getVisiCam()
   {
     LaserDevice dev = MainView.this.visicutModel1.getSelectedLaserDevice();
@@ -2373,17 +2503,16 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
   }
 
 private void editMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMappingMenuItemActionPerformed
-    try
-    {
-      this.editMappings();
-    }
-    catch (Exception ex)
-    {
-      dialog.showErrorMessage(ex);
-    }
+  try
+  {
+    this.editMappings();
+  }
+  catch (Exception ex)
+  {
+    dialog.showErrorMessage(ex);
+  }
 }//GEN-LAST:event_editMappingMenuItemActionPerformed
-
-private boolean ignoreMaterialComboBoxChanges = false;
+  private boolean ignoreMaterialComboBoxChanges = false;
 private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_materialComboBoxActionPerformed
   if (ignoreMaterialComboBoxChanges)
   {
@@ -2416,7 +2545,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       {
         dialog.showErrorMessage(ex);
       }
-      
+
     }
   }//GEN-LAST:event_materialMenuItemActionPerformed
 
@@ -2519,13 +2648,13 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   private void jmExportSettingsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmExportSettingsActionPerformed
   {//GEN-HEADEREND:event_jmExportSettingsActionPerformed
     File file = null;
-    
+
     // Show warning if passwords are exported
     boolean fabqrPrivatePasswordSet = (PreferencesManager.getInstance() != null && PreferencesManager.getInstance().getPreferences() != null
-                                      && PreferencesManager.getInstance().getPreferences().getFabqrPrivatePassword() != null && !PreferencesManager.getInstance().getPreferences().getFabqrPrivatePassword().isEmpty());
-    
+      && PreferencesManager.getInstance().getPreferences().getFabqrPrivatePassword() != null && !PreferencesManager.getInstance().getPreferences().getFabqrPrivatePassword().isEmpty());
+
     boolean urlPasswordSet = (VisicutModel.getInstance() != null && VisicutModel.getInstance().getSelectedLaserDevice() != null
-                                  && VisicutModel.getInstance().getSelectedLaserDevice().getURLPassword() != null && !VisicutModel.getInstance().getSelectedLaserDevice().getURLPassword().isEmpty());
+      && VisicutModel.getInstance().getSelectedLaserDevice().getURLPassword() != null && !VisicutModel.getInstance().getSelectedLaserDevice().getURLPassword().isEmpty());
 
     if (fabqrPrivatePasswordSet || urlPasswordSet)
     {
@@ -2534,7 +2663,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         return;
       }
     }
-    
+
     //On Mac os, awt.FileDialog looks more native
     if (Helper.isMacOS())
     {
@@ -2564,7 +2693,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     {
       if (!file.getName().toLowerCase().endsWith(".vcsettings"))
       {
-        file = new File(file.getParentFile(), file.getName()+".vcsettings");
+        file = new File(file.getParentFile(), file.getName() + ".vcsettings");
       }
       try
       {
@@ -2583,17 +2712,19 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
    * @param file : File or null for loading the default example settings
    * @throws Exception 
    */
-  private void importSettingsFromFile(File file) throws Exception {
+  private void importSettingsFromFile(File file) throws Exception
+  {
     PreferencesManager.getInstance().importSettings(file);
     this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
     this.fillComboBoxes();
     this.refreshExampleMenu();
     dialog.showSuccessMessage(bundle.getString("SETTINGS SUCCESSFULLY IMPORTED"));
   }
-  
+
   private void jmImportSettingsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmImportSettingsActionPerformed
   {//GEN-HEADEREND:event_jmImportSettingsActionPerformed
-    if (!askForOverwriteSettings()) {
+    if (!askForOverwriteSettings())
+    {
       return;
     }
     this.importSettingsAskForFile();
@@ -2602,10 +2733,14 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   /**
    * display a file chooser for importing settings and then import them
    */
-  private void importSettingsAskForFile() {
+  private void importSettingsAskForFile()
+  {
     try
     {
-      final FileFilter zipFilter = new ExtensionFilter(new String[]{".zip",".vcsettings"}, bundle.getString("ZIPPED SETTINGS (*.ZIP)"));
+      final FileFilter zipFilter = new ExtensionFilter(new String[]
+        {
+          ".zip", ".vcsettings"
+        }, bundle.getString("ZIPPED SETTINGS (*.ZIP)"));
       File file = null;
       //On Mac os, awt.FileDialog looks more native
       if (Helper.isMacOS())
@@ -2618,6 +2753,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
         }
         openFileChooser.setFilenameFilter(new FilenameFilter()
         {
+
           public boolean accept(File dir, String file)
           {
             return zipFilter.accept(new File(dir, file));
@@ -2652,7 +2788,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       dialog.showErrorMessage(e);
     }
   }
-  
+
   private void jmManageLaserprofilesActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmManageLaserprofilesActionPerformed
   {//GEN-HEADEREND:event_jmManageLaserprofilesActionPerformed
     EditProfilesDialog d = new EditProfilesDialog(this, true);
@@ -2690,7 +2826,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       m = om.clone();
       //create only the selected thicknesses
       m.setMaterialThicknesses(cd.getSelectedThicknesses());
-      m.setName(m.getName()+" 2");
+      m.setName(m.getName() + " 2");
     }
     else
     {//create from scratch
@@ -2853,19 +2989,21 @@ private void btRemoveObjectActionPerformed(java.awt.event.ActionEvent evt) {//GE
 private void btAddObjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAddObjectActionPerformed
   importMenuItemActionPerformed(evt);
 }//GEN-LAST:event_btAddObjectActionPerformed
-
-private boolean ignoreObjectComboBoxEvents = false;
+  private boolean ignoreObjectComboBoxEvents = false;
 private void objectComboBoxChangeHandler(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_objectComboBoxChangeHandler
-  if (ignoreObjectComboBoxEvents || !(this.objectComboBox.getSelectedItem() instanceof PlfPart)) {
+  if (ignoreObjectComboBoxEvents || !(this.objectComboBox.getSelectedItem() instanceof PlfPart))
+  {
     // the user selected the "please select something" item - ignore this
     return;
   }
   PlfPart selected = (PlfPart) this.objectComboBox.getSelectedItem();
-  if (!VisicutModel.getInstance().getPlfFile().contains(selected)) {
+  if (!VisicutModel.getInstance().getPlfFile().contains(selected))
+  {
     // not available - can this happen? maybe if a strange timing occurs while loading a file and changing the combobox
     return;
   }
-  if (evt.getStateChange()!=java.awt.event.ItemEvent.SELECTED) {
+  if (evt.getStateChange() != java.awt.event.ItemEvent.SELECTED)
+  {
     return;
   }
   VisicutModel.getInstance().setSelectedPart(selected);
@@ -2889,19 +3027,22 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     }
   }
 }//GEN-LAST:event_jmPreferencesActionPerformed
-  
-  private void btFacebookActionPerformed(java.awt.event.ActionEvent evt)                                           
+
+  private void btFacebookActionPerformed(java.awt.event.ActionEvent evt)
   {
     startFacebook();
-  }                                          
-  
+  }
+
   private String browserLoginDialog(String title, String loginUrl, String redirectUrlPrefix) throws Exception
   {
     // JavaFX available, load BrowserLoginDialog dynamically (depends on JavaFX)
     String browserCode = null;
-    
+
     URL jarUrl = MainView.class.getResource("lib/BrowserLoginDialog.jar");
-    URLClassLoader classLoader = new URLClassLoader(new URL[] { jarUrl }, MainView.class.getClassLoader());
+    URLClassLoader classLoader = new URLClassLoader(new URL[]
+      {
+        jarUrl
+      }, MainView.class.getClassLoader());
     Class<?> ThingiverseLoginDialog = classLoader.loadClass("com.tur0kk.thingiverse.fxgui.BrowserLoginDialog");
 
     Class<?>[] constructorParameterTypes = new Class[]
@@ -2917,9 +3058,9 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
     // Create instance
     Object loginDialog = constructor.newInstance(new Object[]
-    {
-      this, true, title, loginUrl, redirectUrlPrefix
-    });
+      {
+        this, true, title, loginUrl, redirectUrlPrefix
+      });
 
     // Parameter types for methods
     Class<?>[] setVisibleParameterTypes = new Class[]
@@ -2929,7 +3070,6 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
     Class<?>[] getBrowserCodeParameterTypes = new Class[]
     {
-
     };
 
     Method setVisibleMethod = ThingiverseLoginDialog.getMethod("setVisible", setVisibleParameterTypes);
@@ -2942,27 +3082,26 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
     Object[] getBrowserCodeArgumentList = new Object[]
     {
-
     };
 
     // invoke JavaFX browser with thingiverse website
     setVisibleMethod.invoke(loginDialog, setVisibleArgumentList);
     browserCode = (String) getBrowserCodeMethod.invoke(loginDialog, getBrowserCodeArgumentList);
-    
+
     return browserCode;
   }
-  
+
   private String systemBrowserLogin(String name, String loginUrl) throws Exception
   {
     // if JavaFX is not available use system browser to show thingiverse website. Necessary to copy auth code by hand.
     String browserCode;
-  
+
     Desktop.getDesktop().browse(URI.create(loginUrl));
     browserCode = javax.swing.JOptionPane.showInputDialog("Log in with your " + name + "-account, click allow, paste code here:");
 
     return browserCode;
   }
-  
+
   private boolean isJavaFxAvailable()
   {
     try
@@ -2976,130 +3115,133 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       return false;
     }
   }
-private boolean askForOverwriteSettings() {
-    if (LaserDeviceManager.getInstance().getAll().isEmpty() && 
-      MaterialManager.getInstance().getAll().isEmpty() &&
-      ProfileManager.getInstance().getAll().isEmpty() &&
-      MappingManager.getInstance().getAll().isEmpty()) {
+
+  private boolean askForOverwriteSettings()
+  {
+    if (LaserDeviceManager.getInstance().getAll().isEmpty()
+      && MaterialManager.getInstance().getAll().isEmpty()
+      && ProfileManager.getInstance().getAll().isEmpty()
+      && MappingManager.getInstance().getAll().isEmpty())
+    {
       // do not ask if settings are empty
       return true;
     }
-    int answer=JOptionPane.showConfirmDialog(this, bundle.getString("IMPORT_SETTINGS_OVERWRITE?"), bundle.getString("WARNING"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-    return answer==JOptionPane.OK_OPTION;
-}
-
-private void startFacebook()
-{
-  /*
-   * just hide facebookDialog on close to keep state.
-   * if logged out, create new instance of dialog
-   */
-  FacebookManager facebook = FacebookManager.getInstance();
-
-  try
-  {
-    // Try login with persistent access token.
-    boolean loginSuccess = facebook.logIn();
-
-    if (!loginSuccess)
-    {
-      String loginUrl = facebook.initiateAuthentication();
-      String browserCode;
-
-      if (isJavaFxAvailable())
-      {
-        browserCode = browserLoginDialog("Facebook Login", loginUrl, facebook.getRedirectUrlPrefix());
-      }
-      else
-      {
-        // JavaFX not available...
-        System.out.println("JavaFX is not available. Using fallback behavior.");
-        browserCode = systemBrowserLogin("Facebook", loginUrl);
-      }
-
-      facebook.logIn(browserCode);
-    }
-
-    if (facebook.isLoggedIn())
-    {
-      FacebookDialog facebookDialog = new FacebookDialog(this, true);
-      facebookDialog.setLocationRelativeTo(null);
-      facebookDialog.setVisible(true);
-    }
+    int answer = JOptionPane.showConfirmDialog(this, bundle.getString("IMPORT_SETTINGS_OVERWRITE?"), bundle.getString("WARNING"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+    return answer == JOptionPane.OK_OPTION;
   }
-  catch (Exception ex)
-  {
-    ex.printStackTrace();
-    this.dialog.showErrorMessage("Unable to load FacebookDialog");
-  }
-}
 
-private void startThingiverse()
-{
-  ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-
-  /*
-   * Just hide thingiverseDialog on close to keep state.
-   * if logged out, create new instance of ThingiverseDialog
-   */
-  if (!thingiverse.isLoggedIn() || thingiverseDialog == null)
+  private void startFacebook()
   {
+    /*
+     * just hide facebookDialog on close to keep state.
+     * if logged out, create new instance of dialog
+     */
+    FacebookManager facebook = FacebookManager.getInstance();
+
     try
     {
-      // Try login with persistent access token from disk.
-      boolean loginSuccess = thingiverse.logIn();
+      // Try login with persistent access token.
+      boolean loginSuccess = facebook.logIn();
 
       if (!loginSuccess)
       {
-        // Login with persitent token failed.
-        // Start new authentication procedure.
-        String loginUrl = thingiverse.initiateAuthentication();
-        String browserCode = "";
+        String loginUrl = facebook.initiateAuthentication();
+        String browserCode;
 
         if (isJavaFxAvailable())
         {
-          // If java fx is available we open a browser dialog and let the user
-          // enter his credentials. This method blocks until the dialog
-          // closes itself and returns a code from thingiverse.
-          browserCode = browserLoginDialog("Thingiverse Login", loginUrl, thingiverse.getRedirectUrlPrefix());
+          browserCode = browserLoginDialog("Facebook Login", loginUrl, facebook.getRedirectUrlPrefix());
         }
         else
         {
           // JavaFX not available...
-          // Open system default browser and let the user copy/paste the
-          // browser code.
           System.out.println("JavaFX is not available. Using fallback behavior.");
-          browserCode = systemBrowserLogin("Thingiverse", loginUrl);
+          browserCode = systemBrowserLogin("Facebook", loginUrl);
         }
 
-        thingiverse.logIn(browserCode);
+        facebook.logIn(browserCode);
       }
 
-      if (thingiverse.isLoggedIn())
+      if (facebook.isLoggedIn())
       {
-        thingiverseDialog = new ThingiverseDialog(this, true);
-        thingiverseDialog.setLocationRelativeTo(null);
-        thingiverseDialog.setVisible(true);
+        FacebookDialog facebookDialog = new FacebookDialog(this, true);
+        facebookDialog.setLocationRelativeTo(null);
+        facebookDialog.setVisible(true);
       }
     }
     catch (Exception ex)
     {
       ex.printStackTrace();
-      this.dialog.showErrorMessage("Unable to load ThingiverseDialog");
+      this.dialog.showErrorMessage("Unable to load FacebookDialog");
     }
   }
-  else // instance available, show thingiverseDialog
+
+  private void startThingiverse()
   {
-    thingiverseDialog.setVisible(true);
+    ThingiverseManager thingiverse = ThingiverseManager.getInstance();
+
+    /*
+     * Just hide thingiverseDialog on close to keep state.
+     * if logged out, create new instance of ThingiverseDialog
+     */
+    if (!thingiverse.isLoggedIn() || thingiverseDialog == null)
+    {
+      try
+      {
+        // Try login with persistent access token from disk.
+        boolean loginSuccess = thingiverse.logIn();
+
+        if (!loginSuccess)
+        {
+          // Login with persitent token failed.
+          // Start new authentication procedure.
+          String loginUrl = thingiverse.initiateAuthentication();
+          String browserCode = "";
+
+          if (isJavaFxAvailable())
+          {
+            // If java fx is available we open a browser dialog and let the user
+            // enter his credentials. This method blocks until the dialog
+            // closes itself and returns a code from thingiverse.
+            browserCode = browserLoginDialog("Thingiverse Login", loginUrl, thingiverse.getRedirectUrlPrefix());
+          }
+          else
+          {
+            // JavaFX not available...
+            // Open system default browser and let the user copy/paste the
+            // browser code.
+            System.out.println("JavaFX is not available. Using fallback behavior.");
+            browserCode = systemBrowserLogin("Thingiverse", loginUrl);
+          }
+
+          thingiverse.logIn(browserCode);
+        }
+
+        if (thingiverse.isLoggedIn())
+        {
+          thingiverseDialog = new ThingiverseDialog(this, true);
+          thingiverseDialog.setLocationRelativeTo(null);
+          thingiverseDialog.setVisible(true);
+        }
+      }
+      catch (Exception ex)
+      {
+        ex.printStackTrace();
+        this.dialog.showErrorMessage("Unable to load ThingiverseDialog");
+      }
+    }
+    else // instance available, show thingiverseDialog
+    {
+      thingiverseDialog.setVisible(true);
+    }
   }
-}
 
 private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmDownloadSettingsActionPerformed
   warningPanel.removeAllWarnings();
-  Map<String,String> choices = new LinkedHashMap<String, String>();
+  Map<String, String> choices = new LinkedHashMap<String, String>();
   choices.put(bundle.getString("EXAMPLE_SETTINGS"), "__DEFAULT__");
   choices.put(bundle.getString("EMPTY_SETTINGS"), "__EMPTY__");
-  choices.put(bundle.getString("IMPORT_SETTINGS_FROM_FILE"),"__FILE__");
+  choices.put(bundle.getString("IMPORT_SETTINGS_FROM_FILE"), "__FILE__");
   // TODO add FabLab Aachen etc.
   // Want your lab in this list? Look at https://github.com/t-oster/VisiCut/wiki/How-to-add-default-settings-for-your-lab !
   // choices.put("Country, City: Institution", "http://whatever.com/foo");
@@ -3112,43 +3254,57 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   choices.put("Netherlands, Amersfoort: FabLab", "https://github.com/Fablab-Amersfoort/visicut-settings/archive/master.zip");
   choices.put("United Kingdom, Manchester: Hackspace", "https://github.com/hacmanchester/visicut-settings/archive/master.zip");
   choices.put("United Kingdom, Leeds: Hackspace", "https://github.com/leedshackspace/visicut-settings/archive/master.zip");
-  choices.put(bundle.getString("DOWNLOAD_NOT_IN_LIST"),"__HELP__");
-  String s = (String)JOptionPane.showInputDialog(this, bundle.getString("DOWNLOAD_SETTINGS_INFO"), null, JOptionPane.PLAIN_MESSAGE, null, choices.keySet().toArray(), choices.keySet().toArray()[0]);
-  if ((s==null) || (s.length() == 0)) {
+  choices.put(bundle.getString("DOWNLOAD_NOT_IN_LIST"), "__HELP__");
+  String s = (String) JOptionPane.showInputDialog(this, bundle.getString("DOWNLOAD_SETTINGS_INFO"), null, JOptionPane.PLAIN_MESSAGE, null, choices.keySet().toArray(), choices.keySet().toArray()[0]);
+  if ((s == null) || (s.length() == 0))
+  {
     return;
   }
-  if (!askForOverwriteSettings()) {
+  if (!askForOverwriteSettings())
+  {
     return;
   }
-  String url="";
-  try {
-    if (choices.containsKey(s)) {
-      url=choices.get(s);
-      if (url.equals("__DEFAULT__")) {
+  String url = "";
+  try
+  {
+    if (choices.containsKey(s))
+    {
+      url = choices.get(s);
+      if (url.equals("__DEFAULT__"))
+      {
         // load default settings
         this.importSettingsFromFile(null);
         return;
-      } else if (url.equals("__HELP__")) {
+      }
+      else if (url.equals("__HELP__"))
+      {
         dialog.showInfoMessage("Please look at https://github.com/t-oster/VisiCut/wiki/How-to-add-default-settings-for-your-lab . \n You can reopen this dialog in Edit -> Settings -> Download.");
         return;
-      } else if (url.equals("__FILE__")) {
+      }
+      else if (url.equals("__FILE__"))
+      {
         this.importSettingsAskForFile();
         return;
-      } else if (url.equals("__EMPTY__")) {
+      }
+      else if (url.equals("__EMPTY__"))
+      {
         this.importSettingsFromFile(new File("__EMPTY__"));
         return;
       }
     }
-    if (!(url.startsWith("https://") || url.startsWith("http://"))) {
+    if (!(url.startsWith("https://") || url.startsWith("http://")))
+    {
       dialog.showErrorMessage("Invalid URL or entry");
       return;
     }
-    File tempfile=File.createTempFile("vcsettings-download",".zip");
-    FileUtils.downloadUrlToFile(url,tempfile);
+    File tempfile = File.createTempFile("vcsettings-download", ".zip");
+    FileUtils.downloadUrlToFile(url, tempfile);
     this.importSettingsFromFile(tempfile);
     tempfile.delete();
-  } catch (Exception e) {
-    dialog.showErrorMessage("Could not download settings.\n"+e.getLocalizedMessage());
+  }
+  catch (Exception e)
+  {
+    dialog.showErrorMessage("Could not download settings.\n" + e.getLocalizedMessage());
   }
 }//GEN-LAST:event_jmDownloadSettingsActionPerformed
 
@@ -3197,7 +3353,6 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     qrWebcamScanDialog.setLocationRelativeTo(null);
     qrWebcamScanDialog.setVisible(true);
   }//GEN-LAST:event_webcamQRCodeMenuItemActionPerformed
-  
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenu actionsMenu;
@@ -3245,6 +3400,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JPopupMenu.Separator jSeparator6;
@@ -3259,6 +3415,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     private javax.swing.JMenuItem jmManageLaserprofiles;
     private javax.swing.JMenuItem jmPreferences;
     private com.t_oster.uicomponents.ImageComboBox laserCutterComboBox;
+    private javax.swing.JMenuItem manualMenuItem;
     private com.t_oster.visicut.gui.mapping.MappingPanel mappingPanel;
     private javax.swing.JTabbedPane mappingTabbedPane;
     private com.t_oster.uicomponents.ImageComboBox materialComboBox;
@@ -3285,6 +3442,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     private com.t_oster.visicut.VisicutModel visicutModel1;
     private com.t_oster.uicomponents.warnings.WarningPanel warningPanel;
     private javax.swing.JMenuItem webcamQRCodeMenuItem;
+    private javax.swing.JMenuItem wikiMenuItem;
     private javax.swing.JMenuItem zoomInMenuItem;
     private javax.swing.JMenuItem zoomOutMenuItem;
     private javax.swing.JMenuItem zoomRealMenuItem;
@@ -3330,15 +3488,15 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
         double dist = -1;
         double res = 0;
         double soll = lp.getDPI();
-        for(double r : this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions())
+        for (double r : this.visicutModel1.getSelectedLaserDevice().getLaserCutter().getResolutions())
         {
-          if (dist == -1 || dist > Math.abs(soll-r))
+          if (dist == -1 || dist > Math.abs(soll - r))
           {
-            dist = Math.abs(soll-r);
+            dist = Math.abs(soll - r);
             res = r;
           }
         }
-        if (!dialog.showYesNoQuestion(bundle.getString("THE LASERCUTTER YOU SELECTED, DOES NOT SUPPORT ")+soll+bundle.getString("DPI DO YOU WANT TO USE ")+res+bundle.getString("DPI INSTEAD?")))
+        if (!dialog.showYesNoQuestion(bundle.getString("THE LASERCUTTER YOU SELECTED, DOES NOT SUPPORT ") + soll + bundle.getString("DPI DO YOU WANT TO USE ") + res + bundle.getString("DPI INSTEAD?")))
         {
           return null;
         }
@@ -3367,7 +3525,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   {
     previewPanel.setShowBackgroundImage(showBackgroundImage);
   }
-  
+
   public boolean isCameraActive()
   {
     return cameraActive;
@@ -3400,7 +3558,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
       cameraActiveMenuItem.setSelected(false);
     }
   }
-  
+
   /**
    * Get camera error message
    * @return  - last error message from camera capture
@@ -3411,12 +3569,12 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   {
     return cameraCapturingError;
   }
-  
+
   public void resetCameraCapturingError()
   {
     cameraCapturingError = null;
   }
-  
+
   public boolean isProjectorActive()
   {
     return projectorActive;
@@ -3448,12 +3606,12 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
       projectorActiveMenuItem.setSelected(false);
     }
   }
-  
+
   public boolean isEditGuiForQRCodesDisabled()
   {
     return editGuiForQRCodesDisabled;
   }
-  
+
   public synchronized void disableEditGuiForQRCodes(boolean disable)
   {
     // No state change at all, return
@@ -3468,17 +3626,18 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     if (disable)
     {
       objectComboBox.setVisible(false);
-      
+
       executeJobButton.setEnabled(!disable);
       executeJobMenuItem.setEnabled(!disable);
       calculateTimeButton.setEnabled(!disable);
-      jTextFieldJobName.setText( "" );
+      jTextFieldJobName.setText("");
 
       // Message is automatically removed and closed, therefore no close button
       Message m = new Message("Info", bundle.getString("QR_CODE_DETECTION_GUI_DISABLE_TEXT"), Message.Type.INFO, new com.t_oster.uicomponents.warnings.Action[]
         {
           new com.t_oster.uicomponents.warnings.Action(bundle.getString("QR_CODE_DETECTION_GUI_DISABLE_BUTTON"))
           {
+
             @Override
             public boolean clicked()
             {
@@ -3492,10 +3651,11 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
               return true;
             }
           }
-        }
-      );
+        });
       m.setCloseButtonVisible(false);
-      m.setCloseListener(new ActionListener(){
+      m.setCloseListener(new ActionListener()
+      {
+
         public void actionPerformed(ActionEvent ae)
         {
         }
@@ -3508,44 +3668,44 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
       {
         objectComboBox.setVisible(visicutModel1.getPlfFile().size() > 1);
         LinkedList<PlfPart> removePlfParts = new LinkedList<PlfPart>();
-        
+
         // Iterate over elements in PLF file, remove preview loaded QR code objects, which were not stored yet
         for (PlfPart part : visicutModel1.getPlfFile())
         {
           QRCodeInfo qrCodePartInfo = part.getQRCodeInfo();
-          
+
           if (qrCodePartInfo != null)
           {
             // Check if this part was loaded by preview QR code scanning and is not position stored
             if (qrCodePartInfo.isPreviewQRCodeSource() && !qrCodePartInfo.isPreviewPositionQRStored())
             {
-                removePlfParts.add(part);
+              removePlfParts.add(part);
             }
           }
         }
-        
+
         // Delete stored elements
         for (PlfPart part : removePlfParts)
         {
           visicutModel1.removePlfPart(part);
         }
       }
-      
+
       refreshExecuteButtons(true);
     }
-    
+
     // Handle GUI settings, disable most of the elements, which could cause some trouble
     // No need to deactivate those actions strictly, but they could cause some exceptions
     newMenuItem.setEnabled(!disable);
     openMenuItem.setEnabled(!disable);
-	exportGcodeMenuItem.setEnabled(!disable);
+    exportGcodeMenuItem.setEnabled(!disable);
     importMenuItem.setEnabled(!disable);
     recentFilesMenu.setEnabled(!disable);
-    jmExamples.setEnabled(!disable);    
+    jmExamples.setEnabled(!disable);
     btAddObject.setEnabled(!disable);
     btRemoveObject.setEnabled(!disable);
     objectComboBox.setEnabled(!disable);
-    
+
     // State changed
     editGuiForQRCodesDisabled = disable;
   }
@@ -3559,7 +3719,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   {
     this.laserJobInProgress = laserJobInProgress;
   }
-  
+
   private void laserJobStarted()
   {
     // Check correct state
@@ -3567,17 +3727,18 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     {
       return;
     }
-    
+
     // Ask user for FabQR upload, if FabQR is enabled and available
     if (MainView.getInstance() != null && FabQRFunctions.isFabqrActive()
-        && FabQRFunctions.getFabqrPrivateURL() != null && !FabQRFunctions.getFabqrPrivateURL().isEmpty() && !isFabqrUploadDialogOpened())
+      && FabQRFunctions.getFabqrPrivateURL() != null && !FabQRFunctions.getFabqrPrivateURL().isEmpty() && !isFabqrUploadDialogOpened())
     {
       if (dialog.showYesNoQuestion(bundle.getString("DIALOG_QUESTION_FABQR_UPLOAD")))
       {
         setFabqrUploadDialogOpened(true);
-        
+
         new Thread()
         {
+
           @Override
           public void run()
           {
@@ -3589,7 +3750,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
       }
     }
   }
-  
+
   private void laserJobStopped()
   {
     // Check correct state
