@@ -758,6 +758,9 @@ public class MainView extends javax.swing.JFrame
         jmInstallInkscape = new javax.swing.JMenuItem();
         jmInstallIllustrator = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
+        manualMenuItem = new javax.swing.JMenuItem();
+        wikiMenuItem = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
         aboutMenuItem = new javax.swing.JMenuItem();
 
         visicutModel1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -1488,6 +1491,27 @@ public class MainView extends javax.swing.JFrame
         helpMenu.setText(resourceMap.getString("helpMenu.text")); // NOI18N
         helpMenu.setName("helpMenu"); // NOI18N
 
+        manualMenuItem.setText(resourceMap.getString("manualMenuItem.text")); // NOI18N
+        manualMenuItem.setName("manualMenuItem"); // NOI18N
+        manualMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                manualMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(manualMenuItem);
+
+        wikiMenuItem.setText(resourceMap.getString("wikiMenuItem.text")); // NOI18N
+        wikiMenuItem.setName("wikiMenuItem"); // NOI18N
+        wikiMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                wikiMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(wikiMenuItem);
+
+        jSeparator3.setName("jSeparator3"); // NOI18N
+        helpMenu.add(jSeparator3);
+
         aboutMenuItem.setAction(actionMap.get("showAboutDialog")); // NOI18N
         aboutMenuItem.setText(resourceMap.getString("aboutMenuItem.text")); // NOI18N
         aboutMenuItem.setName("aboutMenuItem"); // NOI18N
@@ -1942,6 +1966,28 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
       }
     }
     return jobname;
+  }
+
+  private static void openWebpage(String urlString) {
+    try
+    {
+      if (Desktop.isDesktopSupported())
+      {
+        Desktop.getDesktop().browse(new URL(urlString).toURI());
+      }
+    }
+    catch (Exception e)
+    {
+        e.printStackTrace();
+    }
+  }
+
+  private void manualMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+    openWebpage("https://github.com/t-oster/VisiCut/wiki/VisiCut-manual");
+  }
+
+  private void wikiMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+    openWebpage("https://github.com/t-oster/VisiCut/wiki");
   }
 
 private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
@@ -3354,6 +3400,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JPopupMenu.Separator jSeparator6;
@@ -3368,6 +3415,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     private javax.swing.JMenuItem jmManageLaserprofiles;
     private javax.swing.JMenuItem jmPreferences;
     private com.t_oster.uicomponents.ImageComboBox laserCutterComboBox;
+    private javax.swing.JMenuItem manualMenuItem;
     private com.t_oster.visicut.gui.mapping.MappingPanel mappingPanel;
     private javax.swing.JTabbedPane mappingTabbedPane;
     private com.t_oster.uicomponents.ImageComboBox materialComboBox;
@@ -3394,6 +3442,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     private com.t_oster.visicut.VisicutModel visicutModel1;
     private com.t_oster.uicomponents.warnings.WarningPanel warningPanel;
     private javax.swing.JMenuItem webcamQRCodeMenuItem;
+    private javax.swing.JMenuItem wikiMenuItem;
     private javax.swing.JMenuItem zoomInMenuItem;
     private javax.swing.JMenuItem zoomOutMenuItem;
     private javax.swing.JMenuItem zoomRealMenuItem;
