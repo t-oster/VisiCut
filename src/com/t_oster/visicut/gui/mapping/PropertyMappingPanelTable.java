@@ -301,11 +301,21 @@ public class PropertyMappingPanelTable extends EditableTablePanel implements Edi
       }
     }
     //add everything else
-    MappingTableEntry e = new MappingTableEntry();
-    e.enabled = false;
-    e.filterSet = null;
-    e.profile = defaultProfile;
-    entries.add(e);
+    boolean suppressDuplicateEverythingElse=false;
+    for (MappingTableEntry existingEntry: entries) {
+      if (existingEntry.filterSet == null) {
+        suppressDuplicateEverythingElse=true;
+        break;
+      }
+    }
+    if (!suppressDuplicateEverythingElse)
+    {
+      MappingTableEntry e = new MappingTableEntry();
+      e.enabled = false;
+      e.filterSet = null;
+      e.profile = defaultProfile;
+      entries.add(e);
+    }
     suppressMappingUpdate = true;
     model.fireTableDataChanged();
     suppressMappingUpdate = false;
