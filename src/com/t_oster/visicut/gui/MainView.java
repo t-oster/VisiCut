@@ -1900,7 +1900,7 @@ public class MainView extends javax.swing.JFrame
   {
     final FileFilter allFilter = VisicutModel.getInstance().getAllFileFilter();
     //On Mac os, awt.FileDialog looks more native
-    if (Helper.isMacOS())
+    if (Helper.isMacOS() || Helper.isLinux())
     {
       FileDialog openFileChooser = new FileDialog(this, bundle.getString("PLEASE SELECT A FILE"));
       openFileChooser.setMode(FileDialog.LOAD);
@@ -2251,7 +2251,7 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
   {
     File file = null;
     //On Mac os, awt.FileDialog looks more native
-    if (Helper.isMacOS())
+    if (Helper.isMacOS() || Helper.isLinux())
     {
       FileDialog fdialog = new java.awt.FileDialog(this);
       fdialog.setMode(FileDialog.SAVE);
