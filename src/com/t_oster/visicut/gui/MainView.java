@@ -746,7 +746,7 @@ public class MainView extends javax.swing.JFrame
     webcamQRCodeMenuItem = new javax.swing.JMenuItem();
     optionsMenu = new javax.swing.JMenu();
     calibrateCameraMenuItem = new javax.swing.JMenuItem();
-    jMenu1 = new javax.swing.JMenu();
+    jSeparator9 = new javax.swing.JPopupMenu.Separator();
     jMenuItem1 = new javax.swing.JMenuItem();
     jmImportSettings = new javax.swing.JMenuItem();
     jmExportSettings = new javax.swing.JMenuItem();
@@ -755,6 +755,7 @@ public class MainView extends javax.swing.JFrame
     jmManageLaserprofiles = new javax.swing.JMenuItem();
     materialMenuItem = new javax.swing.JMenuItem();
     jMenuItem2 = new javax.swing.JMenuItem();
+    jSeparator10 = new javax.swing.JPopupMenu.Separator();
     jmPreferences = new javax.swing.JMenuItem();
     jmExtras = new javax.swing.JMenu();
     jmInstallInkscape = new javax.swing.JMenuItem();
@@ -1457,8 +1458,8 @@ public class MainView extends javax.swing.JFrame
     });
     optionsMenu.add(calibrateCameraMenuItem);
 
-    jMenu1.setText(resourceMap.getString("jMenu1.text")); // NOI18N
-    jMenu1.setName("jMenu1"); // NOI18N
+    jSeparator9.setName("jSeparator9"); // NOI18N
+    optionsMenu.add(jSeparator9);
 
     jMenuItem1.setText(resourceMap.getString("jmDownloadSettings.text")); // NOI18N
     jMenuItem1.setName("jmDownloadSettings"); // NOI18N
@@ -1469,7 +1470,7 @@ public class MainView extends javax.swing.JFrame
         jmDownloadSettingsActionPerformed(evt);
       }
     });
-    jMenu1.add(jMenuItem1);
+    optionsMenu.add(jMenuItem1);
 
     jmImportSettings.setText(resourceMap.getString("jmImportSettings.text")); // NOI18N
     jmImportSettings.setName("jmImportSettings"); // NOI18N
@@ -1480,7 +1481,7 @@ public class MainView extends javax.swing.JFrame
         jmImportSettingsActionPerformed(evt);
       }
     });
-    jMenu1.add(jmImportSettings);
+    optionsMenu.add(jmImportSettings);
 
     jmExportSettings.setText(resourceMap.getString("jmExportSettings.text")); // NOI18N
     jmExportSettings.setName("jmExportSettings"); // NOI18N
@@ -1491,10 +1492,10 @@ public class MainView extends javax.swing.JFrame
         jmExportSettingsActionPerformed(evt);
       }
     });
-    jMenu1.add(jmExportSettings);
+    optionsMenu.add(jmExportSettings);
 
     jSeparator8.setName("jSeparator8"); // NOI18N
-    jMenu1.add(jSeparator8);
+    optionsMenu.add(jSeparator8);
 
     editMappingMenuItem.setText(resourceMap.getString("editMappingMenuItem.text")); // NOI18N
     editMappingMenuItem.setName("editMappingMenuItem"); // NOI18N
@@ -1505,7 +1506,7 @@ public class MainView extends javax.swing.JFrame
         editMappingMenuItemActionPerformed(evt);
       }
     });
-    jMenu1.add(editMappingMenuItem);
+    optionsMenu.add(editMappingMenuItem);
 
     jmManageLaserprofiles.setText(resourceMap.getString("jmManageLaserprofiles.text")); // NOI18N
     jmManageLaserprofiles.setName("jmManageLaserprofiles"); // NOI18N
@@ -1516,7 +1517,7 @@ public class MainView extends javax.swing.JFrame
         jmManageLaserprofilesActionPerformed(evt);
       }
     });
-    jMenu1.add(jmManageLaserprofiles);
+    optionsMenu.add(jmManageLaserprofiles);
 
     materialMenuItem.setText(resourceMap.getString("materialMenuItem.text")); // NOI18N
     materialMenuItem.setName("materialMenuItem"); // NOI18N
@@ -1527,7 +1528,7 @@ public class MainView extends javax.swing.JFrame
         materialMenuItemActionPerformed(evt);
       }
     });
-    jMenu1.add(materialMenuItem);
+    optionsMenu.add(materialMenuItem);
 
     jMenuItem2.setText(resourceMap.getString("jMenuItem2.text")); // NOI18N
     jMenuItem2.setName("jMenuItem2"); // NOI18N
@@ -1538,9 +1539,10 @@ public class MainView extends javax.swing.JFrame
         jMenuItem2ActionPerformed(evt);
       }
     });
-    jMenu1.add(jMenuItem2);
+    optionsMenu.add(jMenuItem2);
 
-    optionsMenu.add(jMenu1);
+    jSeparator10.setName("jSeparator10"); // NOI18N
+    optionsMenu.add(jSeparator10);
 
     jmPreferences.setText(bundle1.getString("PREFERENCES")); // NOI18N
     jmPreferences.setName("jmPreferences"); // NOI18N
@@ -3491,7 +3493,6 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   private javax.swing.JLabel jLabel5;
   private javax.swing.JLabel jLabel9;
   private javax.swing.JLabel jLabelJobName;
-  private javax.swing.JMenu jMenu1;
   private javax.swing.JMenuItem jMenuItem1;
   private javax.swing.JMenuItem jMenuItem2;
   private javax.swing.JPanel jPanel1;
@@ -3500,6 +3501,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JSeparator jSeparator1;
+  private javax.swing.JPopupMenu.Separator jSeparator10;
   private javax.swing.JPopupMenu.Separator jSeparator2;
   private javax.swing.JPopupMenu.Separator jSeparator3;
   private javax.swing.JPopupMenu.Separator jSeparator4;
@@ -3507,6 +3509,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   private javax.swing.JPopupMenu.Separator jSeparator6;
   private javax.swing.JPopupMenu.Separator jSeparator7;
   private javax.swing.JPopupMenu.Separator jSeparator8;
+  private javax.swing.JPopupMenu.Separator jSeparator9;
   private javax.swing.JTextField jTextFieldJobName;
   private javax.swing.JMenu jmExamples;
   private javax.swing.JMenuItem jmExportSettings;
