@@ -779,6 +779,7 @@ public class VisicutModel
 	  {
 		  lasercutter.saveJob(fileOutputStream, job);
 	  }
+    fileOutputStream.close();
   }
 
   public int estimateTime(Map<LaserProfile, List<LaserProperty>> propmap) throws FileNotFoundException, IOException
