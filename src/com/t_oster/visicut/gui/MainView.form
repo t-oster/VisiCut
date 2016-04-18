@@ -200,6 +200,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="zoomRealMenuItem">
               <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Ctrl+1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" resourceKey="zoomRealMenuItem.text"/>
                 <Property name="toolTipText" type="java.lang.String" resourceKey="zoomRealMenuItem.toolTipText"/>
                 <Property name="name" type="java.lang.String" value="zoomRealMenuItem" noResource="true"/>
@@ -429,6 +432,9 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="manualMenuItem">
               <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="F1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" resourceKey="manualMenuItem.text"/>
                 <Property name="name" type="java.lang.String" value="manualMenuItem" noResource="true"/>
               </Properties>

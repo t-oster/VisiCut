@@ -1354,6 +1354,7 @@ public class MainView extends javax.swing.JFrame
     });
     viewMenu.add(zoomWindowMenuItem);
 
+    zoomRealMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_1, java.awt.event.InputEvent.CTRL_MASK));
     zoomRealMenuItem.setText(resourceMap.getString("zoomRealMenuItem.text")); // NOI18N
     zoomRealMenuItem.setToolTipText(resourceMap.getString("zoomRealMenuItem.toolTipText")); // NOI18N
     zoomRealMenuItem.setName("zoomRealMenuItem"); // NOI18N
@@ -1588,6 +1589,7 @@ public class MainView extends javax.swing.JFrame
     helpMenu.setText(resourceMap.getString("helpMenu.text")); // NOI18N
     helpMenu.setName("helpMenu"); // NOI18N
 
+    manualMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
     manualMenuItem.setText(resourceMap.getString("manualMenuItem.text")); // NOI18N
     manualMenuItem.setName("manualMenuItem"); // NOI18N
     manualMenuItem.addActionListener(new java.awt.event.ActionListener()
