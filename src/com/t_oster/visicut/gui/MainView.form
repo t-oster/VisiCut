@@ -200,6 +200,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="zoomRealMenuItem">
               <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Ctrl+1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" resourceKey="zoomRealMenuItem.text"/>
                 <Property name="toolTipText" type="java.lang.String" resourceKey="zoomRealMenuItem.toolTipText"/>
                 <Property name="name" type="java.lang.String" value="zoomRealMenuItem" noResource="true"/>
@@ -301,82 +304,84 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="calibrateCameraMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
-            <Menu class="javax.swing.JMenu" name="jMenu1">
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator9">
               <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="jMenu1.text"/>
-                <Property name="name" type="java.lang.String" value="jMenu1" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="jSeparator9" noResource="true"/>
               </Properties>
-              <SubComponents>
-                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" resourceKey="jmDownloadSettings.text"/>
-                    <Property name="name" type="java.lang.String" value="jmDownloadSettings" noResource="true"/>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmDownloadSettingsActionPerformed"/>
-                  </Events>
-                </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="jmImportSettings">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" resourceKey="jmImportSettings.text"/>
-                    <Property name="name" type="java.lang.String" value="jmImportSettings" noResource="true"/>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmImportSettingsActionPerformed"/>
-                  </Events>
-                </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="jmExportSettings">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" resourceKey="jmExportSettings.text"/>
-                    <Property name="name" type="java.lang.String" value="jmExportSettings" noResource="true"/>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmExportSettingsActionPerformed"/>
-                  </Events>
-                </MenuItem>
-                <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator8">
-                  <Properties>
-                    <Property name="name" type="java.lang.String" value="jSeparator8" noResource="true"/>
-                  </Properties>
-                </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="editMappingMenuItem">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" resourceKey="editMappingMenuItem.text"/>
-                    <Property name="name" type="java.lang.String" value="editMappingMenuItem" noResource="true"/>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editMappingMenuItemActionPerformed"/>
-                  </Events>
-                </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="jmManageLaserprofiles">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" resourceKey="jmManageLaserprofiles.text"/>
-                    <Property name="name" type="java.lang.String" value="jmManageLaserprofiles" noResource="true"/>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmManageLaserprofilesActionPerformed"/>
-                  </Events>
-                </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="materialMenuItem">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" resourceKey="materialMenuItem.text"/>
-                    <Property name="name" type="java.lang.String" value="materialMenuItem" noResource="true"/>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="materialMenuItemActionPerformed"/>
-                  </Events>
-                </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem2">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" resourceKey="jMenuItem2.text"/>
-                    <Property name="name" type="java.lang.String" value="jMenuItem2" noResource="true"/>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem2ActionPerformed"/>
-                  </Events>
-                </MenuItem>
-              </SubComponents>
-            </Menu>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="jmDownloadSettings.text"/>
+                <Property name="name" type="java.lang.String" value="jmDownloadSettings" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmDownloadSettingsActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jmImportSettings">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="jmImportSettings.text"/>
+                <Property name="name" type="java.lang.String" value="jmImportSettings" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmImportSettingsActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jmExportSettings">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="jmExportSettings.text"/>
+                <Property name="name" type="java.lang.String" value="jmExportSettings" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmExportSettingsActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator8">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jSeparator8" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="editMappingMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="editMappingMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="editMappingMenuItem" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editMappingMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jmManageLaserprofiles">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="jmManageLaserprofiles.text"/>
+                <Property name="name" type="java.lang.String" value="jmManageLaserprofiles" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmManageLaserprofilesActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="materialMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="materialMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="materialMenuItem" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="materialMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem2">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItem2.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItem2" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem2ActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator10">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jSeparator10" noResource="true"/>
+              </Properties>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jmPreferences">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
@@ -427,6 +432,9 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="manualMenuItem">
               <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="F1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" resourceKey="manualMenuItem.text"/>
                 <Property name="name" type="java.lang.String" value="manualMenuItem" noResource="true"/>
               </Properties>
