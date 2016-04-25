@@ -290,23 +290,36 @@ Function DetectJRE
   Push $2	; $2 = Javahome
   Push $3	; $3 and $4 are used for checking the major/minor version of java
   Push $4
+
+  SetRegView 64
+  Call :DetectJava
+  StrCmp $2 "" 0 GetJRE
+  SetRegView 32
+  Call :DetectJava
+  StrCmp $2 "" 0 GetJRE
+  Goto NoFound
+
+DetectJava:
 ;  MessageBox MB_OK "Detecting JRE"
   ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
 ;  MessageBox MB_OK "Read : $1"
-  StrCmp $1 "" DetectTry2
+  StrCmp $1 "" DetectJDK
   ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$1" "JavaHome"
 ;  MessageBox MB_OK "Read 3: $2"
-  StrCmp $2 "" DetectTry2
-  Goto GetJRE
+  StrCmp $2 "" DetectJDK
+  Return
  
-DetectTry2:
+DetectJDK:
   ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
 ;  MessageBox MB_OK "Detect Read : $1"
-  StrCmp $1 "" NoFound
+  StrCmp $1 "" EndDetectJava
   ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$1" "JavaHome"
 ;  MessageBox MB_OK "Detect Read 3: $2"
-  StrCmp $2 "" NoFound
- 
+  StrCmp $2 "" EndDetectJava
+
+EndDetectJava:
+  Return
+  
 GetJRE:
 ; $0 = version requested. $1 = version found. $2 = javaHome
 ;  MessageBox MB_OK "Getting JRE"
@@ -351,7 +364,7 @@ DetectJREEnd:
 	Exch	; => r0,rv
 	Pop $0	; => rv 
 FunctionEnd
- 
+
 Function RestoreSections
   !insertmacro UnselectSection ${jre}
   !insertmacro SelectSection ${SecAppFiles}
