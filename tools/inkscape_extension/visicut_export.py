@@ -67,16 +67,19 @@ if (sys.platform == "win32"):
             k32 = ctypes.windll.kernel32
             wow64 = ctypes.c_long( 0 )
             # disable system32 redirection
-            k32.Wow64DisableWow64FsRedirection( ctypes.byref(wow64) )
-            # do what we want
             try:
-                query_output=querySession()
-            except WindowsError:
-                #in some cases query doesn't exist on windows 7 if terminal services isn't installed
+                k32.Wow64DisableWow64FsRedirection( ctypes.byref(wow64) )
+                # do what we want
+                try:
+                    query_output=querySession()
+                except WindowsError:
+                    #in some cases query doesn't exist on windows 7 if terminal services isn't installed
+                    pass
+                finally:
+                    # re-enable system32 redirection
+                    k32.Wow64EnableWow64FsRedirection( wow64 )
+            except AttributeError:
                 pass
-            finally:
-                # re-enable system32 redirection
-                k32.Wow64EnableWow64FsRedirection( wow64 )
         
         if query_output is not None:
             id=None
