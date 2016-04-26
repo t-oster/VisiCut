@@ -253,20 +253,34 @@ public class Helper
     {
       throw new FileNotFoundException("Not a directory: "+src);
     }
-    File trg = null;
-    if (isWindowsXP())
+    
+    String profile_path = System.getenv("INKSCAPE_PORTABLE_PROFILE_DIR");
+
+    if (profile_path == null)
     {
-        trg = new File(new File(FileUtils.getUserDirectory(), ".inkscape"), "extensions");
+      profile_path = System.getenv("INKSCAPE_PROFILE_DIR");
     }
-    else if (isWindows())
+
+    File trg;
+
+    if (profile_path != null)
     {
-        trg = new File(new File(new File(System.getenv("AppData")), "inkscape"), "extensions");
+      trg = new File(profile_path);
     }
     else
     {
-      trg = new File(new File(new File(FileUtils.getUserDirectory(), ".config"), "inkscape"), "extensions");
+      if (isWindows())
+      {
+        trg = new File(System.getenv("AppData"));
+      }
+      else
+      {
+        trg = new File(FileUtils.getUserDirectory(), ".config");
+      }
     }
-
+    
+    trg = new File(new File(trg, "inkscape"), "extensions");      
+    
     if (!trg.exists() && !trg.mkdirs())
     {
       throw new FileNotFoundException("Can't create directory: "+trg);
