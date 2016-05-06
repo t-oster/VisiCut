@@ -201,7 +201,6 @@ public final class PreferencesManager
             System.out.println("Copying default settings...");
             FileUtils.copyDirectoryToDirectory(new File(vc, folder), new File(bp, folder));
             System.out.println("done.");
-            return;
           }
           catch (Exception ex)
           {
@@ -215,7 +214,7 @@ public final class PreferencesManager
     }
     try
     {
-      System.err.println("No default settings found. Generating some...");
+      System.err.println("Generating some defaults if no examples exist...");
       this.generateDefault();
       System.out.println("Saving generated settings...");
       this.savePreferences();
