@@ -20,6 +20,7 @@ package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.drivers.EpilogZing;
+import com.t_oster.visicut.misc.Homography;
 import com.t_oster.uicomponents.ImageListable;
 import java.awt.geom.AffineTransform;
 
@@ -94,7 +95,9 @@ public class LaserDevice implements ImageListable
   {
     this.laserCutter = laserCutter;
   }
+  /** Deprecated, but may be populated by settings file */
   protected AffineTransform cameraCalibration = null;
+  protected Homography cameraHomography = null;
 
   /**
    * Get the value of cameraCalibration
@@ -106,9 +109,14 @@ public class LaserDevice implements ImageListable
    *
    * @return the value of cameraCalibration
    */
-  public AffineTransform getCameraCalibration()
+  public Homography getCameraCalibration()
   {
-    return cameraCalibration;
+    if (cameraCalibration != null && cameraHomography == null) {
+      // convert from old format
+      cameraHomography = Homography.fromAffineTransform(cameraCalibration, this);
+      cameraCalibration = null;
+    }
+    return cameraHomography;
   }
 
   /**
@@ -116,9 +124,9 @@ public class LaserDevice implements ImageListable
    *
    * @param cameraCalibration new value of cameraCalibration
    */
-  public void setCameraCalibration(AffineTransform cameraCalibration)
+  public void setCameraCalibration(Homography cameraHomography)
   {
-    this.cameraCalibration = cameraCalibration;
+    this.cameraHomography = cameraHomography;
   }
   
   protected String URLUser = null;
@@ -365,7 +373,7 @@ public class LaserDevice implements ImageListable
   public LaserDevice clone()
   {
     LaserDevice result = new LaserDevice();
-    result.cameraCalibration = cameraCalibration;
+    result.cameraHomography = cameraHomography;
     result.URLUser = URLUser;
     result.URLPassword = URLPassword;
     result.cameraURL = cameraURL;

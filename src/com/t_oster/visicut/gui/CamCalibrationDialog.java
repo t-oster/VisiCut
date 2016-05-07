@@ -32,6 +32,7 @@ import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.managers.LaserPropertyManager;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.misc.Homography;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.uicomponents.PlatformIcon;
@@ -81,9 +82,19 @@ public class CamCalibrationDialog extends javax.swing.JDialog
 
   protected BufferedImage backgroundImage = null;
   public static final String PROP_BACKGROUNDIMAGE = "backgroundImage";
-  private LaserDevice ld = VisicutModel.getInstance().getSelectedLaserDevice();
-  private Point2D.Double laserUpperLeft = new Point2D.Double(0.2d*ld.getLaserCutter().getBedWidth(), 0.2d*ld.getLaserCutter().getBedHeight());
-  private Point2D.Double laserLowerRight = new Point2D.Double(0.8d*ld.getLaserCutter().getBedWidth(), 0.8d*ld.getLaserCutter().getBedHeight());
+  private int numAlignmentPoints = 8;
+  private static Point2D.Double[] alignmentPoints;
+
+  private static Point2D.Double[] alignmentPointsDefaults = {
+    new Point2D.Double(0.2d, 0.2d), // upper left
+    new Point2D.Double(0.8d, 0.8d), // lower right
+    new Point2D.Double(0.8d, 0.2d), // upper right
+    new Point2D.Double(0.2d, 0.8d), // lower left
+    new Point2D.Double(0.5d, 0.2d), // upper mid
+    new Point2D.Double(0.5d, 0.8d), // lower mid
+    new Point2D.Double(0.3d, 0.5d), // mid left
+    new Point2D.Double(0.7d, 0.5d), // mid right
+  };
 
 
   /**
@@ -108,68 +119,82 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     //Check if a point is not in the Image (thus not reachable anymore)
     for (Point2D.Double p :this.calibrationPanel1.getPointList())
     {
-      if (p.x >= backgroundImage.getWidth() || p.y >= backgroundImage.getHeight())
-      {
-       calibrationPanel1.setPointList(new Point2D.Double[]{
-         new Point2D.Double(20*backgroundImage.getWidth()/100,20*backgroundImage.getHeight()/100),
-         new Point2D.Double(80*backgroundImage.getWidth()/100,80*backgroundImage.getHeight()/100)
-       });
-       break;
+      if (p.x >= backgroundImage.getWidth()) {
+        p.x = backgroundImage.getWidth() - 1;
+      }
+      if (p.y >= backgroundImage.getHeight()) {
+        p.y = backgroundImage.getHeight() - 1;
       }
     }
   }
 
-  protected AffineTransform currentTransformation = currentTransformation = AffineTransform.getScaleInstance(0.01, 0.01);
-  public static final String PROP_CURRENTTRANSFORMATION = "currentTransformation";
+  public void fetchFreshImage() {
+        try
+        {
+          URL src = new URL(imageURL);
+          if (src != null)
+          {
+            URLConnection conn = src.openConnection();
+
+            // HTTP authentication
+            if (VisicutModel.getInstance() != null && VisicutModel.getInstance().getSelectedLaserDevice() != null)
+            {
+              String encodedCredentials = Helper.getEncodedCredentials(VisicutModel.getInstance().getSelectedLaserDevice().getURLUser(), VisicutModel.getInstance().getSelectedLaserDevice().getURLPassword());
+              if (!encodedCredentials.isEmpty())
+              {
+                conn.setRequestProperty("Authorization", "Basic " + encodedCredentials);
+              }
+            }
+
+            ImageInputStream stream=new MemoryCacheImageInputStream(conn.getInputStream());
+            BufferedImage back = ImageIO.read(stream);
+            CamCalibrationDialog.this.setBackgroundImage(back);
+          }
+        }
+        catch (Exception ex)
+        {
+          JOptionPane.showMessageDialog(CamCalibrationDialog.this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("ERROR LOADING IMAGE:") + ex.getLocalizedMessage(), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("ERROR"), JOptionPane.ERROR_MESSAGE);
+        }
+  }
+
+  private Point2D.Double[] imagePoints;
 
   private void refreshImagePoints()
   {
-    Point2D.Double imageUpperLeft = (Point2D.Double) laserUpperLeft.clone();
-    Point2D.Double imageLowerRight = (Point2D.Double) laserLowerRight.clone();
-    if (this.getResultingTransformation() != null)
-    {
-      try
-      {
-        AffineTransform img2mm = this.getResultingTransformation();
-        AffineTransform mm2img = img2mm.createInverse();
-        mm2img.transform(imageUpperLeft, imageUpperLeft);
-        mm2img.transform(imageLowerRight, imageLowerRight);
-        this.calibrationPanel1.setPointList(new Point2D.Double[]
-          {
-            imageUpperLeft, imageLowerRight
-          });
-      }
-      catch (NoninvertibleTransformException ex)
-      {
-        Logger.getLogger(CamCalibrationDialog.class.getName()).log(Level.SEVERE, null, ex);
+    int numPriorPoints = 0;
+    if (imagePoints == null) {
+      imagePoints = new Point2D.Double[numAlignmentPoints];
+    } else {
+      numPriorPoints = imagePoints.length;
+      if (imagePoints.length != numAlignmentPoints) {
+        calibrationPanel1.setPointList(imagePoints);
+        Point2D.Double[] temp = new Point2D.Double[numAlignmentPoints];
+        for (int i = 0; i < Math.min(numAlignmentPoints, numPriorPoints); i++) {
+          temp[i] = imagePoints[i];
+        }
+        imagePoints = temp;
       }
     }
-  }
 
-  /**
-   * Get the value of currentTransformation
-   *
-   * @return the value of currentTransformation
-   */
-  public AffineTransform getCurrentTransformation()
-  {
-    Point2D.Double[] img = this.calibrationPanel1.getPointList();
-    return Helper.getTransform(
-      new Rectangle2D.Double(img[0].x, img[0].y, img[1].x - img[0].x, img[1].y - img[0].y),
-      new Rectangle2D.Double(laserUpperLeft.x, laserUpperLeft.y, laserLowerRight.x - laserUpperLeft.x, laserLowerRight.y - laserUpperLeft.y)
-      );
+    for (int i = numPriorPoints; i < numAlignmentPoints; i++) {
+      imagePoints[i] = new Point2D.Double(alignmentPointsDefaults[i].x * backgroundImage.getWidth(),
+          alignmentPointsDefaults[i].y * backgroundImage.getHeight());
+    }
+    this.calibrationPanel1.setPointList(imagePoints);
   }
-  protected AffineTransform resultingTransformation = null;
-  public static final String PROP_RESULTINGTRANSFORMATION = "resultingTransformation";
 
   /**
    * Get the value of resultingTransformation
    *
    * @return the value of resultingTransformation
    */
-  public AffineTransform getResultingTransformation()
+  public Homography getResultingHomography()
   {
-    return resultingTransformation;
+    Point2D.Double[] ap = new Point2D.Double[numAlignmentPoints];
+    for (int i = 0; i < numAlignmentPoints; i++) {
+      ap[i] = alignmentPoints[i];
+    }
+    return new Homography(ap, imagePoints);
   }
 
   private VectorProfile profile = null;
@@ -178,17 +203,11 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     this.profile = p;
   }
 
-  /**
-   * Set the value of resultingTransformation
-   *
-   * @param resultingTransformation new value of resultingTransformation
-   */
-  public void setResultingTransformation(AffineTransform resultingTransformation)
-  {
-    AffineTransform oldResultingTransformation = this.resultingTransformation;
-    this.resultingTransformation = resultingTransformation != null ? resultingTransformation : new AffineTransform();
-    firePropertyChange(PROP_RESULTINGTRANSFORMATION, oldResultingTransformation, resultingTransformation);
-    this.refreshImagePoints();
+  public void setCorrespondencePoints(Point2D.Double[] points) {
+    imagePoints = points;
+    numAlignmentPoints = points.length;
+    alignmentPointsCombo.setSelectedItem(String.valueOf(numAlignmentPoints));
+    refreshImagePoints();
   }
 
   public CamCalibrationDialog()
@@ -202,6 +221,11 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     super(parent, modal);
     initComponents();
     LaserCutter lc = VisicutModel.getInstance().getSelectedLaserDevice().getLaserCutter();
+    alignmentPoints = new Point2D.Double[alignmentPointsDefaults.length];
+    for (int i = 0; i < alignmentPointsDefaults.length; i++) {
+      alignmentPoints[i] = new Point2D.Double(alignmentPointsDefaults[i].x * lc.getBedWidth(),
+          alignmentPointsDefaults[i].y * lc.getBedHeight());
+    }
     this.calibrationPanel1.setAreaSize(new Point2D.Double(lc.getBedWidth(), lc.getBedHeight()));
   }
 
@@ -223,6 +247,8 @@ public class CamCalibrationDialog extends javax.swing.JDialog
         calibrationPanel1 = new com.t_oster.visicut.gui.beans.CalibrationPanel();
         btZoomIn = new javax.swing.JButton();
         btZoomOut = new javax.swing.JButton();
+        alignmentPointsLabel = new javax.swing.JLabel();
+        alignmentPointsCombo = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog"); // NOI18N
@@ -281,11 +307,11 @@ public class CamCalibrationDialog extends javax.swing.JDialog
         calibrationPanel1.setLayout(calibrationPanel1Layout);
         calibrationPanel1Layout.setHorizontalGroup(
             calibrationPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 960, Short.MAX_VALUE)
+            .addGap(0, 1021, Short.MAX_VALUE)
         );
         calibrationPanel1Layout.setVerticalGroup(
             calibrationPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 409, Short.MAX_VALUE)
+            .addGap(0, 412, Short.MAX_VALUE)
         );
 
         jScrollPane1.setViewportView(calibrationPanel1);
@@ -308,6 +334,17 @@ public class CamCalibrationDialog extends javax.swing.JDialog
             }
         });
 
+        alignmentPointsLabel.setText(resourceMap.getString("alignmentPointsLabel.text")); // NOI18N
+        alignmentPointsLabel.setName("alignmentPointsLabel"); // NOI18N
+
+        alignmentPointsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "2", "4", "6", "8" }));
+        alignmentPointsCombo.setName("alignmentPointsCombo"); // NOI18N
+        alignmentPointsCombo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                alignmentPointsComboItemStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -316,9 +353,13 @@ public class CamCalibrationDialog extends javax.swing.JDialog
                 .addComponent(btZoomOut, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btZoomIn, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(6, 6, 6)
+                .addComponent(alignmentPointsLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(alignmentPointsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(captureButton)
-                .addContainerGap())
+                .addGap(552, 552, 552))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(sendButton)
@@ -326,17 +367,19 @@ public class CamCalibrationDialog extends javax.swing.JDialog
                 .addComponent(cancelButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 818, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1035, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(captureButton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btZoomIn, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btZoomOut, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btZoomOut, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(alignmentPointsLabel)
+                    .addComponent(alignmentPointsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(captureButton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(okButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -351,7 +394,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     }// </editor-fold>//GEN-END:initComponents
 
 private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-  this.setResultingTransformation(this.getCurrentTransformation());
+  this.setCorrespondencePoints(this.calibrationPanel1.getPointList());
   this.setVisible(false);
 }//GEN-LAST:event_okButtonActionPerformed
 
@@ -382,17 +425,25 @@ private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
         vp.setProperty(lp);
       }
       int size = (int) Util.mm2px(10, profile.getDPI());
-      for (Point2D p : new Point2D[]
-        {
-          laserUpperLeft, laserLowerRight
-        })
+      int mm = (int) Util.mm2px(1, profile.getDPI());
+      for (int i = 0; i < numAlignmentPoints; i++)
       {
+        Point2D p = alignmentPoints[i];
         int x = (int) Util.mm2px(p.getX(), profile.getDPI());
         int y = (int) Util.mm2px(p.getY(), profile.getDPI());
         vp.moveto(x - size / 2, y);
         vp.lineto(x + size / 2, y);
         vp.moveto(x, y - size / 2);
         vp.lineto(x, y + size / 2);
+        for (int j = 0; j <= i; j++) {
+          // label counts with short ticks underneath
+          if ((j+1) % 5 == 0) {
+	    vp.moveto(x - i*mm + (j-5)*mm*2, y + size);
+          } else {
+	    vp.moveto(x - i*mm + j*mm*2, y + size);
+          }
+	    vp.lineto(x - i*mm + j*mm*2, y + size+4*mm);
+        }
       }
     }
     LaserJob job = new LaserJob(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("CALIBRATION"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("VISICUT CALIBRATION PAGE"), "visicut");
@@ -421,32 +472,7 @@ new Thread()
       public void run()
       {
         CamCalibrationDialog.this.captureButton.setEnabled(false);
-        try
-        {
-          URL src = new URL(imageURL);
-          if (src != null)
-          {
-            URLConnection conn = src.openConnection();
-
-            // HTTP authentication
-            if (VisicutModel.getInstance() != null && VisicutModel.getInstance().getSelectedLaserDevice() != null)
-            {
-              String encodedCredentials = Helper.getEncodedCredentials(VisicutModel.getInstance().getSelectedLaserDevice().getURLUser(), VisicutModel.getInstance().getSelectedLaserDevice().getURLPassword());
-              if (!encodedCredentials.isEmpty())
-              {
-                conn.setRequestProperty("Authorization", "Basic " + encodedCredentials);
-              }
-            }
-
-            ImageInputStream stream=new MemoryCacheImageInputStream(conn.getInputStream());
-            BufferedImage back = ImageIO.read(stream);
-            CamCalibrationDialog.this.setBackgroundImage(back);
-          }
-        }
-        catch (Exception ex)
-        {
-          JOptionPane.showMessageDialog(CamCalibrationDialog.this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("ERROR LOADING IMAGE:") + ex.getLocalizedMessage(), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("ERROR"), JOptionPane.ERROR_MESSAGE);
-        }
+        fetchFreshImage();
         CamCalibrationDialog.this.captureButton.setEnabled(true);
       }
     }.start();
@@ -462,7 +488,14 @@ new Thread()
     calibrationPanel1.setZoom(calibrationPanel1.getZoom() - (2 * calibrationPanel1.getZoom() / 32));
   }//GEN-LAST:event_btZoomOutActionPerformed
 
+private void alignmentPointsComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_alignmentPointsComboItemStateChanged
+  this.numAlignmentPoints = Integer.parseInt((String)alignmentPointsCombo.getSelectedItem());
+  this.refreshImagePoints();
+}//GEN-LAST:event_alignmentPointsComboItemStateChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox alignmentPointsCombo;
+    private javax.swing.JLabel alignmentPointsLabel;
     private javax.swing.JButton btZoomIn;
     private javax.swing.JButton btZoomOut;
     private com.t_oster.visicut.gui.beans.CalibrationPanel calibrationPanel1;

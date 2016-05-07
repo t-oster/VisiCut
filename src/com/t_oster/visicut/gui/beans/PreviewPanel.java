@@ -53,7 +53,6 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
@@ -500,15 +499,19 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       gg.setClip(r.x, r.y, r.width, r.height);
       gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-      RenderedImage backgroundImage = VisicutModel.getInstance().getBackgroundImage();
+      BufferedImage backgroundImage = VisicutModel.getInstance().getBackgroundImage();
       if (backgroundImage != null && showBackgroundImage && VisicutModel.getInstance().getSelectedLaserDevice() != null)
       {
         AffineTransform img2px = new AffineTransform(this.getMmToPxTransform());
         if (VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration() != null)
         {
-          img2px.concatenate(VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration());
+          // if there is camera calibration, the image should correspond to the total size of the bed, so compute a pixel-to-mm scale.
+          // x and y should should be equal, but do them both anyway.
+          double xscale = bedWidth / (double)backgroundImage.getWidth();
+          double yscale = bedHeight / (double)backgroundImage.getHeight();
+          img2px.scale(xscale,yscale);
+          gg.drawRenderedImage(backgroundImage, img2px);
         }
-        gg.drawRenderedImage(backgroundImage, img2px);
       }
       Rectangle box = Helper.toRect(Helper.transform(
           new Rectangle2D.Double(0, 0, this.bedWidth, this.bedHeight),
