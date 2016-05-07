@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -32,6 +33,8 @@ import java.awt.geom.Point2D;
 import java.awt.image.RenderedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.KeyStroke;
 
 /**
  * This Panel displays a Set of points which are draggable
@@ -49,6 +52,18 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
   {
     this.addMouseListener(this);
     this.addMouseMotionListener(this);
+    getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("LEFT"), "left");
+    getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("KP_LEFT"), "left");
+    getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("RIGHT"), "right");
+    getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("KP_RIGHT"), "right");
+    getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("UP"), "up");
+    getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("KP_UP"), "up");
+    getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("DOWN"), "down");
+    getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("KP_DOWN"), "down");
+    getActionMap().put("left", new MoveAction(-1,0));
+    getActionMap().put("right", new MoveAction(1,0));
+    getActionMap().put("up", new MoveAction(0,-1));
+    getActionMap().put("down", new MoveAction(0,1));
   }
   protected RenderedImage backgroundImage = null;
 
@@ -111,12 +126,13 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
         gg.drawRenderedImage(backgroundImage, this.getMmToPxTransform());
       }
       gg.setColor(Color.red);
-      for (Point2D.Double p : this.pointList)
+      for (int i = 0; i < this.pointList.length; i++)
       {
+        Point2D p = this.pointList[i];
         Point2D.Double sp = new Point2D.Double();
         AffineTransform trans = this.getMmToPxTransform();
         trans.transform(p, sp);
-        drawCross(gg, sp, SIZE);
+        drawCrossAndTicks(gg, sp, SIZE, i);
         if (p == selectedPoint)
         {
           gg.drawOval((int) (sp.x - SIZE / 2), (int) (sp.y - SIZE / 2), (int) SIZE, (int) SIZE);
@@ -125,10 +141,18 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
     }
   }
 
-  private void drawCross(Graphics2D g, Point2D.Double p, int size)
+  private void drawCrossAndTicks(Graphics2D g, Point2D.Double p, int size, int ticks)
   {
     g.drawLine((int) (p.x - size / 2), (int) p.y, (int) (p.x + size / 2), (int) p.y);
     g.drawLine((int) p.x, (int) (p.y - size / 2), (int) p.x, (int) (p.y + size / 2));
+    for (int j = 0; j <= ticks; j++) {
+          // label counts with ticks underneath
+      if ((j+1) % 5 == 0) {
+        g.drawLine((int)p.x - ticks * 2 + (j-5) * 4, (int)p.y + size+1, (int)p.x - ticks * 2 + j * 4, (int)p.y +size+ 4);
+      } else {
+        g.drawLine((int)p.x - ticks * 2 + j * 4, (int)p.y + size+1, (int)p.x - ticks * 2 + j * 4, (int)p.y +size+ 4);
+      }
+    }
   }
 
   public void mouseClicked(MouseEvent me)
@@ -154,7 +178,6 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
 
   public void mouseReleased(MouseEvent me)
   {
-    selectedPoint = null;
   }
 
   public void mouseEntered(MouseEvent me)
@@ -187,4 +210,21 @@ public class CalibrationPanel extends ZoomablePanel implements MouseListener, Mo
   public void mouseMoved(MouseEvent me)
   {
   }
+
+  public class MoveAction extends AbstractAction {
+    int x;
+    int y;
+    public MoveAction(int x, int y) {
+      this.x = x;
+      this.y = y;
+    }
+    public void actionPerformed(ActionEvent e) {
+      if (selectedPoint != null) {
+      selectedPoint.x += x;
+      selectedPoint.y += y;
+      repaint();
+      }
+    }
+  }
+
 }

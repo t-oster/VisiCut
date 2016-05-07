@@ -731,12 +731,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     {
       try
       {
-        AffineTransform mm2imgpx = new AffineTransform();
-        if (VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration() != null)
-        {
-          mm2imgpx = VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration().createInverse();
-        }
-        Rectangle crop = Helper.toRect(Helper.transform(this.previewPanel.getEditRectangle(), mm2imgpx));
+        Rectangle crop = Helper.toRect(this.previewPanel.getEditRectangle());
         VisicutModel.getInstance().addScreenshotOfBackgroundImage(crop, this.previewPanel.getEditRectangle());
       }
       catch (Exception ex)

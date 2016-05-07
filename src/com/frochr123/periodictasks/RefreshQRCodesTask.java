@@ -26,6 +26,7 @@ import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.PreferencesManager;
+import com.t_oster.visicut.misc.Homography;
 import com.t_oster.visicut.model.PlfFile;
 import com.t_oster.visicut.model.PlfPart;
 import java.awt.geom.AffineTransform;
@@ -124,7 +125,7 @@ public class RefreshQRCodesTask implements Observer
       {
         // Prepare variables
         ArrayList<PlfPart> removePlfParts = new ArrayList<PlfPart>();
-        AffineTransform qrCodePixelPosition2mm = null;
+        Homography qrCodePixelPosition2mm = null;
         double laserbedWidthMm = 0.0;
         double laserbedHeightMm = 0.0;
         int addedPartsCount = 0;
@@ -137,10 +138,9 @@ public class RefreshQRCodesTask implements Observer
         }
         
         // Get calibration values for correct computation of position, is actually allowed to be null
-        // Use copy constructor
         if (VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration() != null)
         {
-          qrCodePixelPosition2mm = new AffineTransform(VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration());
+          qrCodePixelPosition2mm = VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration();
         }
 
         // Find laser bed width and height

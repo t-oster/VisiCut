@@ -145,6 +145,7 @@ public class MainView extends javax.swing.JFrame
   private boolean editGuiForQRCodesDisabled = false;
   private boolean laserJobInProgress = false;
   private boolean isFabqrUploadDialogOpened = false;
+  private BufferedImage correctedBackgroundImage = null;
 
   public static MainView getInstance()
   {
@@ -1997,8 +1998,6 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
       if (userreturn == JFileChooser.APPROVE_OPTION)
       {
         File selectedFile = this.fileChooser.getSelectedFile();
-        System.out.println("selected " + selectedFile.getAbsolutePath());
-
         MainView.this.visicutModel1.saveJob(jobname, selectedFile, pl, cuttingSettings, warnings);
       }
     }
@@ -2422,11 +2421,13 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
   //material and cutter are available
   CamCalibrationDialog ccd = new CamCalibrationDialog(this, true);
   ccd.setVectorProfile(p);
-  ccd.setBackgroundImage(this.visicutModel1.getBackgroundImage());
   ccd.setImageURL(getVisiCam());
-  ccd.setResultingTransformation(this.visicutModel1.getSelectedLaserDevice().getCameraCalibration());
+  ccd.fetchFreshImage();
+  if (this.visicutModel1.getSelectedLaserDevice().getCameraCalibration() != null) {
+    ccd.setCorrespondencePoints(this.visicutModel1.getSelectedLaserDevice().getCameraCalibration().getViewPoints());
+  }
   ccd.setVisible(true);
-  this.visicutModel1.getSelectedLaserDevice().setCameraCalibration(ccd.getResultingTransformation());
+  this.visicutModel1.getSelectedLaserDevice().setCameraCalibration(ccd.getResultingHomography());
   try
   {
     LaserDeviceManager.getInstance().save(this.visicutModel1.getSelectedLaserDevice());
@@ -2483,7 +2484,20 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
             // Check again if camera and background are active, might have changed in the meantime, because of threading
             if (back != null && isCameraActive() && isPreviewPanelShowBackgroundImage())
             {
-              MainView.this.visicutModel1.setBackgroundImage(back);
+              LaserDevice ld = visicutModel1.getSelectedLaserDevice();
+              if (ld.getCameraCalibration() != null) {
+                // Do the homography mapping in this thread, off the UI thread, to avoid jank.
+                // It also simplifies things if the background image stored in the main view is already corrected.
+                long start = System.currentTimeMillis();
+                correctedBackgroundImage = ld.getCameraCalibration().correct(back, ld.getLaserCutter().getBedWidth(), ld.getLaserCutter().getBedHeight(), correctedBackgroundImage);
+                MainView.this.visicutModel1.setBackgroundImage(correctedBackgroundImage);
+                try {
+                  // Don't use more than 1/4 of the CPU time calculating this
+                  Thread.sleep((System.currentTimeMillis() - start) * 3);
+                } catch (InterruptedException e) { }
+              } else {
+                MainView.this.visicutModel1.setBackgroundImage(back);
+              }
             }
             cameraCapturingError = "";
           }
