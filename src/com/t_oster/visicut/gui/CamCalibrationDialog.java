@@ -157,30 +157,42 @@ public class CamCalibrationDialog extends javax.swing.JDialog
         }
   }
 
-  private Point2D.Double[] imagePoints;
+  /** These are the accepted correspondence points, either from initial values
+   * or after OK has been pressed */
+  private Point2D.Double[] confirmedImagePoints;
+  /** These are points as modified by the dialog/panel, and are not confirmed
+   * until OK has been pressed */
+  private Point2D.Double[] modifiedImagePoints;
 
   private void refreshImagePoints()
   {
     int numPriorPoints = 0;
-    if (imagePoints == null) {
-      imagePoints = new Point2D.Double[numAlignmentPoints];
+    if (modifiedImagePoints == null) {
+      modifiedImagePoints = new Point2D.Double[numAlignmentPoints];
+      if (confirmedImagePoints != null) {
+        // Make a deep copy so alterations aren't applied until OK is pressed.
+        numPriorPoints = Math.min(numAlignmentPoints, confirmedImagePoints.length);
+        for (int i = 0; i < numPriorPoints; i++) {
+          modifiedImagePoints[i] = new Point2D.Double(confirmedImagePoints[i].x,
+              confirmedImagePoints[i].y);
+        }
+      }
     } else {
-      numPriorPoints = imagePoints.length;
-      if (imagePoints.length != numAlignmentPoints) {
-        calibrationPanel1.setPointList(imagePoints);
+      numPriorPoints = modifiedImagePoints.length;
+      if (modifiedImagePoints.length != numAlignmentPoints) {
         Point2D.Double[] temp = new Point2D.Double[numAlignmentPoints];
         for (int i = 0; i < Math.min(numAlignmentPoints, numPriorPoints); i++) {
-          temp[i] = imagePoints[i];
+          temp[i] = modifiedImagePoints[i];
         }
-        imagePoints = temp;
+        modifiedImagePoints = temp;
       }
     }
 
     for (int i = numPriorPoints; i < numAlignmentPoints; i++) {
-      imagePoints[i] = new Point2D.Double(alignmentPointsDefaults[i].x * backgroundImage.getWidth(),
+      modifiedImagePoints[i] = new Point2D.Double(alignmentPointsDefaults[i].x * backgroundImage.getWidth(),
           alignmentPointsDefaults[i].y * backgroundImage.getHeight());
     }
-    this.calibrationPanel1.setPointList(imagePoints);
+    this.calibrationPanel1.setPointList(modifiedImagePoints);
   }
 
   /**
@@ -190,11 +202,11 @@ public class CamCalibrationDialog extends javax.swing.JDialog
    */
   public Homography getResultingHomography()
   {
-    Point2D.Double[] ap = new Point2D.Double[numAlignmentPoints];
-    for (int i = 0; i < numAlignmentPoints; i++) {
+    Point2D.Double[] ap = new Point2D.Double[confirmedImagePoints.length];
+    for (int i = 0; i < confirmedImagePoints.length; i++) {
       ap[i] = alignmentPoints[i];
     }
-    return new Homography(ap, imagePoints);
+    return new Homography(ap, confirmedImagePoints);
   }
 
   private VectorProfile profile = null;
@@ -204,7 +216,8 @@ public class CamCalibrationDialog extends javax.swing.JDialog
   }
 
   public void setCorrespondencePoints(Point2D.Double[] points) {
-    imagePoints = points;
+    confirmedImagePoints = points;
+    modifiedImagePoints = null;
     numAlignmentPoints = points.length;
     alignmentPointsCombo.setSelectedItem(String.valueOf(numAlignmentPoints));
     refreshImagePoints();
