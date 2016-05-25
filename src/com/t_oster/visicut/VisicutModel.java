@@ -317,9 +317,11 @@ public class VisicutModel
    */
   public void setBackgroundImage(BufferedImage backgroundImage)
   {
-    BufferedImage oldBackgroundImage = this.backgroundImage;
     this.backgroundImage = backgroundImage;
-    propertyChangeSupport.firePropertyChange(PROP_BACKGROUNDIMAGE, oldBackgroundImage, backgroundImage);
+    // The background image is recycled, and the object reference does not change when updated.
+    // Passing the same object for old and new values in firePropertyChange would result in no
+    // event being fired, so send null as the old value to force an event.
+    propertyChangeSupport.firePropertyChange(PROP_BACKGROUNDIMAGE, null, backgroundImage);
   }
   protected Preferences preferences = new Preferences();
   public static final String PROP_PREFERENCES = "preferences";
