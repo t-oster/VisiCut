@@ -99,7 +99,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     LaserDevice oldCurrentLaserDevice = this.currentLaserDevice;
     this.currentLaserDevice = currentLaserDevice;
     firePropertyChange(PROP_CURRENTLASERDEVICE, oldCurrentLaserDevice, currentLaserDevice);
-    this.driverName.setText(currentLaserDevice.getName());
+    this.driverName.setText(currentLaserDevice.getLaserCutter().getModelName());
     this.settingsTable.setModel(new CustomizableTableModel(currentLaserDevice.getLaserCutter()));
   }
 
