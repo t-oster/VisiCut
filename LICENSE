@@ -8,8 +8,42 @@ However, it contains some 3rd Party files, which are listed below.
 - The VisiCut Icon "icon.png" is from the icon pack "Pry System" by "Jonas Rask Design" and licensed under "Freeware Non-commercial"
 
 3rd Party libraries:
-- SVG Support: SVGSalamander (http://svgsalamander.java.net/) by Mark McKay (LGPL)
-- DXF Support: Kabeja (kabeja.sourceforge.net) is licensed under (Apache Software License 2.0), see http://www.apache.org/licenses/LICENSE-2.0
-- EPS Support: Freehep PS Viewer (http://java.freehep.org/freehep1.x/psviewer/index.html) is licensed under LGPL
-- PNG Encoder: PngEncoder by ObjectPlanet, Inc. (http://objectplanet.com/pngencoder/), licensed according to http://objectplanet.com/pngencoder/licenseagreement.html, includes permission for binary redistribution, explicitly confirmed via email
-- QR code reader: ZXing by ZXing authors (https://github.com/zxing/) is licensed under (Apache Software License 2.0), see http://www.apache.org/licenses/LICENSE-2.0
+
+NON-FREE LICENSED:
+- PngEncoder by ObjectPlanet, Inc. (http://objectplanet.com/pngencoder/), licensed according to http://objectplanet.com/pngencoder/licenseagreement.html, includes permission for binary redistribution, explicitly confirmed via email
+
+LGPL licensed:
+- SVGSalamander by Mark McKay (http://svgsalamander.java.net/)
+- Freehep PS Viewer (http://java.freehep.org/freehep1.x/psviewer/index.html)
+- Javassist (http://jboss-javassist.github.io/javassist/)
+- GTKJFileChooser (https://code.google.com/archive/p/gtkjfilechooser/)
+- Beansbinding (https://java.net/projects/beansbinding/)
+- Appframework (https://java.net/projects/appframework/)
+
+Apache Software License 2.0:
+- Kabeja (http://kabeja.sourceforge.net)
+- ZXing by ZXing authors (https://github.com/zxing/)
+- Apache Commons IO (https://commons.apache.org/proper/commons-io/)
+- Apache Commons Net (https://commons.apache.org/proper/commons-net/)
+- Apache Commons OGNL (https://commons.apache.org/proper/commons-ognl/)
+- Apache HttpComponents (https://hc.apache.org/)
+- Thymeleaf (http://www.thymeleaf.org/)
+- JSON Simple (https://github.com/fangyidong/json-simple)
+
+Apache Software License 1.1:
+- XPP3 (https://www.extreme.indiana.edu/xgws/xsoap/xpp/mxp1/index.html)
+
+BSD licensed:
+- Bridj by Olivier Chafik (https://github.com/nativelibs4java/BridJ), see https://github.com/nativelibs4java/BridJ/blob/master/LICENSE
+- XStream by XStream Committers (http://x-stream.github.io/), see http://x-stream.github.io/license.html
+
+MIT licensed:
+- SLF4J by QOS.ch (http://www.slf4j.org/)
+- Webcam-capture by Bartosz Firyn and Contributors (https://github.com/sarxos/webcam-capture)
+- Scribe by hh.ru and Pablo Fernandez (https://github.com/scribejava/scribejava)
+
+Eclipse Public License 1.0:
+- JUnit (http://junit.org/), see http://junit.org/junit4/license.html
+
+Public Domain:
+- Jama by The MathWorks and NIST (http://math.nist.gov/javanumerics/jama/)
