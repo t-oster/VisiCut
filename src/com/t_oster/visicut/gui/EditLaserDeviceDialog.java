@@ -127,6 +127,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     driverName = new javax.swing.JLabel();
     jScrollPane1 = new javax.swing.JScrollPane();
     settingsTable = new BetterJTable();
+    jCheckBox1 = new javax.swing.JCheckBox();
     cameraPanel = new javax.swing.JPanel();
     cameraUrlLabel = new javax.swing.JLabel();
     cameraUrlTextField = new javax.swing.JTextField();
@@ -236,6 +237,12 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
       settingsTable.getColumnModel().getColumn(3).setHeaderValue(resourceMap.getString("settingsTable.columnModel.title3")); // NOI18N
     }
 
+    jCheckBox1.setText(resourceMap.getString("jCheckBox1.text")); // NOI18N
+    jCheckBox1.setName("jCheckBox1"); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.originBottomLeft}"), jCheckBox1, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+    bindingGroup.addBinding(binding);
+
     javax.swing.GroupLayout driverPanelLayout = new javax.swing.GroupLayout(driverPanel);
     driverPanel.setLayout(driverPanelLayout);
     driverPanelLayout.setHorizontalGroup(
@@ -243,24 +250,27 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
       .addGroup(driverPanelLayout.createSequentialGroup()
         .addContainerGap()
         .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
           .addGroup(driverPanelLayout.createSequentialGroup()
             .addComponent(driverLabel)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(driverName)
-            .addGap(0, 0, Short.MAX_VALUE))
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jCheckBox1)))
         .addContainerGap())
     );
     driverPanelLayout.setVerticalGroup(
       driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(driverPanelLayout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(driverLabel)
-          .addComponent(driverName))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
-        .addGap(14, 14, 14))
+        .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addComponent(driverLabel)
+            .addComponent(driverName))
+          .addComponent(jCheckBox1))
+        .addGap(18, 18, 18)
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab(resourceMap.getString("driverPanel.TabConstraints.tabTitle"), driverPanel); // NOI18N
@@ -490,7 +500,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     );
     jobPanelLayout.setVerticalGroup(
       jobPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 265, Short.MAX_VALUE)
+      .addGap(0, 283, Short.MAX_VALUE)
       .addGroup(jobPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jobPanelLayout.createSequentialGroup()
           .addContainerGap()
@@ -501,7 +511,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
           .addGroup(jobPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jobPanelLayout.createSequentialGroup()
               .addComponent(jLabel7)
-              .addGap(0, 203, Short.MAX_VALUE))
+              .addGap(0, 211, Short.MAX_VALUE))
             .addComponent(jScrollPane2))
           .addContainerGap()))
     );
@@ -608,6 +618,7 @@ private void searchCameraButtonActionPerformed(java.awt.event.ActionEvent evt) {
   private javax.swing.JPanel driverPanel;
   private javax.swing.JButton jButton1;
   private javax.swing.JButton jButton2;
+  private javax.swing.JCheckBox jCheckBox1;
   private javax.swing.JTextField jDescriptionTextField;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel10;
