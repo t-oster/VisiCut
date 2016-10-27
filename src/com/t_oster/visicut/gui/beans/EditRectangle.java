@@ -18,7 +18,9 @@
  **/
 package com.t_oster.visicut.gui.beans;
 
+import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.LaserDevice;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -241,6 +243,14 @@ public class EditRectangle extends Rectangle2D.Double
     }
     else
     {
+      boolean originBottom = false;
+      double bedHeight = 300;
+      LaserDevice device = VisicutModel.getInstance().getSelectedLaserDevice();
+      if (device != null) {
+        bedHeight = device.getLaserCutter().getBedHeight();
+        originBottom = device.isOriginBottomLeft();
+      }
+      
       gg.drawRect(tr.x, tr.y, tr.width, tr.height);
       if (full)
       {
@@ -261,9 +271,9 @@ public class EditRectangle extends Rectangle2D.Double
       int h = gg.getFontMetrics().getHeight();
       if (full)
       {
-        gg.drawString(txt, tr.x+tr.width/2-w/2, tr.y+tr.height+h);
+        gg.drawString(txt, tr.x+tr.width/2-w/2, originBottom ? tr.y-h : tr.y+tr.height+h);
       }
-      this.parameterFieldBounds[2].setBounds(tr.x+tr.width/2-w/2, tr.y+tr.height+h-ascend, w, h);
+      this.parameterFieldBounds[2].setBounds(tr.x+tr.width/2-w/2, originBottom ? tr.y-h-ascend : tr.y+tr.height+h-ascend, w, h);
       //draw the height
       w = (int) Math.round(this.height);
       txt = (w/10)+","+(w%10)+" cm";
@@ -279,7 +289,13 @@ public class EditRectangle extends Rectangle2D.Double
       if (full)
       {
         gg.drawLine(zero.x, tr.y+tr.height/2, tr.x, tr.y+tr.height/2);
-        gg.drawLine(tr.x+tr.width/2, zero.y, tr.x+tr.width/2, tr.y);
+        if (originBottom) {
+          Point2D bh = mm2px.transform(new Point2D.Double(0, bedHeight), null);
+          gg.drawLine(tr.x+tr.width/2, tr.y+tr.height, tr.x+tr.width/2, (int) bh.getY());
+        }
+        else {
+          gg.drawLine(tr.x+tr.width/2, zero.y, tr.x+tr.width/2, tr.y);
+        }
       }
       //draw the left
       gg.setColor(textColor);
@@ -293,14 +309,17 @@ public class EditRectangle extends Rectangle2D.Double
       }
       this.parameterFieldBounds[0].setBounds(tr.x-w-10, tr.y+tr.height/2+h-ascend, w, h);
       //draw the top offset
-      w = (int) Math.round(this.y);
+      
+      
+      
+      w = (int) Math.round(originBottom ? bedHeight - this.y - this.height : this.y);
       txt = (w/10)+","+(w%10)+" cm";
       w = gg.getFontMetrics().stringWidth(txt);
       if (full)
       {
-        gg.drawString(txt, tr.x+tr.width/2+5, tr.y-h);
+        gg.drawString(txt, tr.x+tr.width/2+5, originBottom ? tr.y+tr.height+h : tr.y-h);
       }
-      this.parameterFieldBounds[1].setBounds(tr.x+tr.width/2+5, tr.y-h-ascend, w, h);
+      this.parameterFieldBounds[1].setBounds(tr.x+tr.width/2+5, originBottom ? tr.y+tr.height+h-ascend : tr.y-h-ascend, w, h);
     }
   }
   

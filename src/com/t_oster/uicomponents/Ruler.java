@@ -18,6 +18,8 @@
  **/
 package com.t_oster.uicomponents;
 
+import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.model.LaserDevice;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -73,15 +75,27 @@ public class Ruler extends JPanel implements PropertyChangeListener, ComponentLi
     }
     else
     {
+      boolean originBottom = false;
+      double bedHeight = 300;
+      LaserDevice device = VisicutModel.getInstance().getSelectedLaserDevice();
+      if (device != null) {
+        bedHeight = device.getLaserCutter().getBedHeight();
+        originBottom = device.isOriginBottomLeft();
+      }
+      
       double dst = mm2px.getScaleY();
       for (int mm = 0; mm < target.getAreaSize().y; mm+= dst > 5 ? 1 : dst > 2 ? 5 : 10)
       {
         boolean drawText = mm % (dst > 3 ? 10 : 100) == 0;
-        g.drawLine((drawText ? 5 : 6)*size/8, (int) (dst*mm), size, (int) (dst*mm));
+        double y = (dst*mm);
+        if (originBottom) {
+          y = dst*bedHeight - y;
+        }
+        g.drawLine((drawText ? 5 : 6)*size/8, (int) y, size, (int) y);
         if (drawText && mm != 0)
         {
           int h = g.getFontMetrics().getHeight();
-          g.drawString(""+mm/10, 0, (int) (dst*mm)+h/2);
+          g.drawString(""+mm/10, 0, (int) y+h/2);
         }
       }
     }

@@ -171,13 +171,14 @@
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
+                          <Component id="jScrollPane1" alignment="1" pref="448" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
                               <Component id="driverLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="driverName" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="jCheckBox1" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="jScrollPane1" alignment="1" pref="433" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -187,13 +188,16 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="driverLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="driverName" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="driverLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="driverName" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="jCheckBox1" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" pref="215" max="32767" attributes="0"/>
-                      <EmptySpace min="14" pref="14" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="jScrollPane1" min="-2" pref="218" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -266,6 +270,15 @@
                 </Component>
               </SubComponents>
             </Container>
+            <Component class="javax.swing.JCheckBox" name="jCheckBox1">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="jCheckBox1.text"/>
+                <Property name="name" type="java.lang.String" value="jCheckBox1" noResource="true"/>
+              </Properties>
+              <BindingProperties>
+                <BindingProperty name="selected" source="Form" sourcePath="${currentLaserDevice.originBottomLeft}" target="jCheckBox1" targetPath="selected" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="cameraPanel">
@@ -578,7 +591,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="265" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="283" max="32767" attributes="0"/>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
@@ -590,7 +603,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
                                   <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="203" max="32767" attributes="0"/>
+                                  <EmptySpace min="0" pref="211" max="32767" attributes="0"/>
                               </Group>
                               <Component id="jScrollPane2" max="32767" attributes="0"/>
                           </Group>

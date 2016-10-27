@@ -34,7 +34,6 @@ import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
-import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.AlphaComposite;
@@ -72,6 +71,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
 
   private double bedWidth = 600;
   private double bedHeight = 300;
+  private boolean originBottom = false;
 
   public PreviewPanel()
   {
@@ -86,6 +86,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       LaserCutter lc = d.getLaserCutter();
       bedWidth = lc.getBedWidth();
       bedHeight = lc.getBedHeight();
+      originBottom = d.isOriginBottomLeft();
       setAreaSize(new Point2D.Double(lc.getBedWidth(), lc.getBedHeight()));
       repaint();
     }
@@ -289,6 +290,11 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   {
     return fastPreview;
   }
+  
+  public boolean isOriginBottom()
+  {
+    return originBottom;
+  }
 
   /**
    * Set the value of fastPreview
@@ -404,6 +410,11 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   public EditRectangle getEditRectangle()
   {
     return editRectangle;
+  }
+  
+  public double getBedHeight()
+  {
+    return bedHeight;
   }
 
   /**
@@ -768,8 +779,8 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     }
     for (double y = 0; y < this.bedHeight; y += gridDst)
     {
-      Point a = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(0, y), null));
-      Point b = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(bedWidth, y), null));
+      Point a = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(0, originBottom ? bedHeight - y : y), null));
+      Point b = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(bedWidth, originBottom ? bedHeight - y : y), null));
       if (a.y > 0)
       {
         if (a.y > this.getHeight())

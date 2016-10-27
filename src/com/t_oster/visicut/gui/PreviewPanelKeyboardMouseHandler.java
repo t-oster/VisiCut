@@ -484,7 +484,10 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
           }
           if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.Y).contains(me.getPoint()))
           {
-            Double y = dialogHelper.askLength(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("TOP OFFSET"), this.getEditRect().y);
+            boolean originBottom = previewPanel.isOriginBottom();
+            double bedHeight = previewPanel.getBedHeight();
+            
+            Double y = dialogHelper.askLength(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString(originBottom ? "BOTTOM OFFSET" : "TOP OFFSET"), originBottom ? bedHeight - this.getEditRect().y - this.getEditRect().height : this.getEditRect().y);
             if (y == null)
             {
               return true;
@@ -494,7 +497,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
               dialogHelper.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("OUT_OF_BOUNDS"));
               return true;
             }
-            this.getEditRect().y = y;
+            this.getEditRect().y = originBottom ? bedHeight - y - this.getEditRect().height : y;
             this.applyEditRectoToSet();
             VisicutModel.getInstance().firePartUpdated(getSelectedPart());
             return true;

@@ -32,6 +32,17 @@ import java.awt.geom.AffineTransform;
 public class LaserDevice implements ImageListable
 {
 
+  protected boolean originBottomLeft = false;
+
+  public boolean isOriginBottomLeft()
+  {
+    return originBottomLeft;
+  }
+
+  public void setOriginBottomLeft(boolean originBottomLeft)
+  {
+    this.originBottomLeft = originBottomLeft;
+  }
   protected String jobSentText = "Job was sent as '$jobname'\nPlease:\n-Close the lid\n-Turn on the Ventilation\n-And press 'start' on the Lasercutter $name";
 
   /**
@@ -388,6 +399,7 @@ public class LaserDevice implements ImageListable
     result.thumbnailPath = thumbnailPath;
     result.jobPrefix = jobPrefix;
     result.jobSentText = jobSentText;
+    result.originBottomLeft = originBottomLeft;
     return result;
   }
 

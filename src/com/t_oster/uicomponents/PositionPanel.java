@@ -19,6 +19,8 @@
 package com.t_oster.uicomponents;
 
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.model.LaserDevice;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -188,10 +190,17 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
           break;
       }
     }
+    boolean originBottom = false;
+    double bedHeight = 300;
+    LaserDevice device = VisicutModel.getInstance().getSelectedLaserDevice();
+    if (device != null) {
+      bedHeight = device.getLaserCutter().getBedHeight();
+      originBottom = device.isOriginBottomLeft();
+    }
     boolean oldIgnoreTextfieldUpdates = ignoreTextfieldUpdates;
     ignoreTextfieldUpdates = true;
     tfX.setValue(checkNaN(x));
-    tfY.setValue(checkNaN(y));
+    tfY.setValue(checkNaN(originBottom ? bedHeight - y : y));
     ignoreTextfieldUpdates = oldIgnoreTextfieldUpdates;
   }
 
@@ -210,10 +219,18 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
   {
     try
     {
+      boolean originBottom = false;
+      double bedHeight = 300;
+      LaserDevice device = VisicutModel.getInstance().getSelectedLaserDevice();
+      if (device != null) {
+        bedHeight = device.getLaserCutter().getBedHeight();
+        originBottom = device.isOriginBottomLeft();
+      }
+      
       double w = tfWidth.getValue();
       double h = tfHeight.getValue();
       double x = tfX.getValue();
-      double y = tfY.getValue();
+      double y = originBottom ? bedHeight - tfY.getValue() : tfY.getValue();
       switch (this.ancorPointPanel1.getPosition())
       {
         case TOP_LEFT:
