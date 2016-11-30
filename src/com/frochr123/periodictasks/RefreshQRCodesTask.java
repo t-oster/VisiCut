@@ -22,8 +22,8 @@ import com.frochr123.helper.CachedFileDownloader;
 import com.frochr123.helper.QRCodeInfo;
 import com.frochr123.qrcodescan.QRCodeScanner;
 import com.frochr123.qrcodescan.QRCodeScannerResult;
-import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.VisicutModel;
+import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.misc.Homography;
@@ -227,8 +227,8 @@ public class RefreshQRCodesTask implements Observer
             // Use default coordinate 0.0 for millimeters if no information for correct computation is available (= uncalibrated camera)
             if (qrCodePixelPosition2mm != null)
             {
-              Point2D sourcePoint = new Point2D.Double(centerPixelX, centerPixelY);
-              Point2D destPoint = qrCodePixelPosition2mm.transform(sourcePoint, null);
+              Point2D.Double sourcePoint = new Point2D.Double(centerPixelX, centerPixelY);
+              Point2D.Double destPoint = qrCodePixelPosition2mm.transform(sourcePoint);
               centerMmX = destPoint.getX();
               centerMmY = destPoint.getY();
             }
