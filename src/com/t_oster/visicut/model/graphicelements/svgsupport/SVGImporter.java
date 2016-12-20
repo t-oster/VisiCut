@@ -274,10 +274,18 @@ public class SVGImporter extends AbstractImporter
       if (root.getPres(sty.setName("width")))
       {
         width = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolution);
+        if (sty.getNumberWithUnits().getUnits() == NumberWithUnits.UT_PERCENT)
+	  {
+	    width = 0;	// cannot use percent here!
+	  }
       }
       if (root.getPres(sty.setName("height")))
       {
         height = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolution);
+        if (sty.getNumberWithUnits().getUnits() == NumberWithUnits.UT_PERCENT)
+	  {
+	    height = 0;	// cannot use percent here!
+	  }
       }
       if (width != 0 && height != 0 && root.getPres(sty.setName("viewBox")))
       {
