@@ -1,10 +1,10 @@
 #!/bin/bash
 echo "Checking for rsvg..."
-if which rsvg >/dev/null 2>&1
+if which rsvg-convert >/dev/null 2>&1
 then
 	echo "found."
 else
-	echo "no rsvg found. skipping generation of splash"
+	echo "no rsvg-convert found. skipping generation of splash"
 	exit
 fi
 echo "Determining Version..."
@@ -13,7 +13,7 @@ echo "Version is: $VERSION"
 echo "Generating SVG"
 cat splashsource.svg|sed s#insert#$VERSION#g# > splash.svg
 echo "Converting to png"
-rsvg -w 404 -h 304 splash.svg src/com/t_oster/visicut/gui/resources/splash.png
+rsvg-convert -w 404 -h 304 splash.svg > src/com/t_oster/visicut/gui/resources/splash.png
 echo "cleaning..."
 rm splash.svg
 echo "done."
