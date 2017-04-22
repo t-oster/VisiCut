@@ -221,7 +221,7 @@ public class SVGImporter extends AbstractImporter
 		try { vers_min = Integer.parseInt(matcher.group(2)); }
 		catch (NumberFormatException e) { vers_min = -1; }
 
-		if ((vers_maj >= 0) && (vers_min >= 92))
+		if (((vers_maj == 0) && (vers_min >= 92)) || (vers_maj > 0))
 		  {
 		    InkscapeVersion092Seen = true;
 		  }
