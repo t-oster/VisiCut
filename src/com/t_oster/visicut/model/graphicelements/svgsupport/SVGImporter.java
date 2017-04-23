@@ -178,17 +178,44 @@ public class SVGImporter extends AbstractImporter
         return n.getValue();
     }
   }
+  /**
+   * check whether given NumberWithUnits n has an absolute unit
+   * (directly related to millimeters, independent of DPI value, i.e. inch, mm etc.)
+   * @param n NumberWithUnits
+   * @return 
+   */
+  public static boolean isAbsoluteUnit(NumberWithUnits n) {
+    if (n == null) {
+      return false;
+    }
+    switch (n.getUnits())
+    {
+      case NumberWithUnits.UT_IN:
+      case NumberWithUnits.UT_MM:
+      case NumberWithUnits.UT_CM:
+      case NumberWithUnits.UT_PT: // 1pt = 1/72 in
+        return true;
+      default:
+        return false;
+    }
+  }
 
   /**
    * Since different programs have a different idea of the reference resolution
    * in SVG, this method tries to determine it.
-   * @param root
-   * @param f
+   * 
+   * Tries to determine the Coordinate resolution in DPI.
+   * Inkscape before 0.92 has 90 DPI. This is our fallback default for unknown files.
+   * Adobe Illustrator has 72 DPI.
+   * Corel X8 uses absolute units (DPI unknown but doesn't matter).
+   * Inkscape 0.92 uses absolute units and internally 96 DPI.
+   * The SVG standard says 96 DPI (early versions erroneously stated 90 DPI).
+   *
    * @return
    */
-  public double determineResolution(File f, List<String> warnings)
+  public double determineReferenceResolution(File f, List<String> warnings)
   {
-    BufferedReader in = null;;
+    BufferedReader in = null;
     double result = 90;
     boolean AdobeIllustratorSeen = false;
     boolean WwwInkscapeComSeen = false;
@@ -288,18 +315,18 @@ public class SVGImporter extends AbstractImporter
          {
            warnings.add("Inkscape Version 0.92+ comment seen in SVG.");
 	 }
-       warnings.add("Switching DPI from 90 to " + result + " - Please check object size!");
+       warnings.add("Object size unclear. Assuming " + result + " DPI - Please check object size!");
     }
     return result;
   }
 
-  /*
-   * Tries to determine the Coordinate resolution in DPI.
-   * SVG default is 90, but AI generates 72??
-   * Since inkscape 0.92 SVG default is 96 DPI.
-   */
-  private AffineTransform determineTransformation(SVGRoot root, double svgResolution)
+
+  private AffineTransform determineTransformation(SVGRoot root, double svgResolutionGuess, List<String> warnings)
   {
+    // Is the object size dependent on the assumed DPI?
+    // If yes, a warning will be printed later.
+    // Newer versions of Corel and Inkscape will add viewBox and absolute width/height to prevent this problem.
+    boolean resolutionIsAmbiguous = true;
     try
     {
       StyleAttribute sty = new StyleAttribute();
@@ -307,17 +334,21 @@ public class SVGImporter extends AbstractImporter
       double y=0;
       double width=0;
       double height=0;
+      boolean widthHasAbsoluteUnit = false;
+      boolean heightHasAbsoluteUnit = false;
+      
       if (root.getPres(sty.setName("x")))
       {
-        x = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolution);
+        x = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolutionGuess);
       }
       if (root.getPres(sty.setName("y")))
       {
-        y = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolution);
+        y = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolutionGuess);
       }
       if (root.getPres(sty.setName("width")))
       {
-        width = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolution);
+        widthHasAbsoluteUnit = isAbsoluteUnit(sty.getNumberWithUnits());
+        width = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolutionGuess);
         if (sty.getNumberWithUnits().getUnits() == NumberWithUnits.UT_PERCENT)
 	  {
 	    width = 0;	// cannot use percent here!
@@ -325,7 +356,8 @@ public class SVGImporter extends AbstractImporter
       }
       if (root.getPres(sty.setName("height")))
       {
-        height = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolution);
+        heightHasAbsoluteUnit = isAbsoluteUnit(sty.getNumberWithUnits());
+        height = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolutionGuess);
         if (sty.getNumberWithUnits().getUnits() == NumberWithUnits.UT_PERCENT)
 	  {
 	    height = 0;	// cannot use percent here!
@@ -336,6 +368,9 @@ public class SVGImporter extends AbstractImporter
         float[] coords = sty.getFloatList();
         Rectangle2D coordinateBox = new Rectangle2D.Double(x,y,width,height);
         Rectangle2D viewBox = new Rectangle2D.Float(coords[0], coords[1], coords[2], coords[3]);
+        if (heightHasAbsoluteUnit && widthHasAbsoluteUnit) {
+          resolutionIsAmbiguous = false;
+        }
         return Helper.getTransform(viewBox, coordinateBox);
       }
     }
@@ -343,7 +378,13 @@ public class SVGImporter extends AbstractImporter
     {
       Logger.getLogger(SVGImporter.class.getName()).log(Level.SEVERE, null, ex);
     }
-    double px2mm = Util.inch2mm(1/svgResolution);
+    finally {
+      // this check is called independent of where the function returns.
+      if (resolutionIsAmbiguous) {
+        warnings.add("Please check object size.");
+      }
+    }
+    double px2mm = Util.inch2mm(1/svgResolutionGuess);
     return AffineTransform.getScaleInstance(px2mm, px2mm);
   }
 
@@ -352,7 +393,7 @@ public class SVGImporter extends AbstractImporter
   {
     try
     {
-      double svgResolution = determineResolution(inputFile, warnings);
+      double svgResolution = determineReferenceResolution(inputFile, warnings);
       GraphicSet result = this.importSetFromFile(new FileInputStream(inputFile), inputFile.getName(), svgResolution, warnings);
       return result;
     }
