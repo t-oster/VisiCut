@@ -133,6 +133,16 @@ public class SVGImporter extends AbstractImporter
       root = u.getDiagram(svg).getRoot();
       GraphicSet result = new GraphicSet();
       result.setBasicTransform(determineTransformation(root, svgResolution));
+
+      // The resulting transformation is the mapping of "SVG pixels" to real millimeters.
+      // If viewBox, width and height are set, this scaling can be different from
+      // the implicit svgResolution before, so we recalculate the svgResolution.
+      //
+      // Note: Modifying svgResolution at this point only affects the values
+      // of stroke-width shown in the mapping table, and nothing else, especially
+      // not the rendering or the laser engraving result.
+      double mmPerPx = (result.getBasicTransform().getScaleX() + result.getBasicTransform().getScaleY()) / 2;
+      svgResolution = 1/Util.mm2inch(mmPerPx);
       importNode(root, result, svgResolution, warnings);
       Logger.getLogger(SVGConst.SVG_LOGGER).removeHandler(svgImportLoggerHandler);
       return result;
