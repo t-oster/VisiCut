@@ -26,7 +26,9 @@ import com.kitfox.svg.SVGException;
 import com.kitfox.svg.ShapeElement;
 import com.kitfox.svg.Text;
 import com.kitfox.svg.Tspan;
+import com.kitfox.svg.xml.NumberWithUnits;
 import com.kitfox.svg.xml.StyleAttribute;
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import java.awt.BasicStroke;
@@ -82,6 +84,49 @@ public class SVGShape extends SVGObject implements ShapeObject
     }
     return null;
   }
+
+  /**
+   * Return the effective stroke width in millimeters. Transformations are taken
+   * into account, so that the result is equal to what you would measure on a
+   * printout of the rendered SVG.
+   *
+   * @return stroke width or 0 if the stroke is disabled.
+   */
+  private double getEffectiveStrokeWidthMm()
+  {
+    // If "stroke:none" is set, the stroke is disabled regardless of stroke-width.
+    StyleAttribute strokeStyle = this.getStyleAttributeRecursive("stroke");
+    boolean strokeDisabled = (strokeStyle == null) || ("none".equals(strokeStyle.getStringValue()));
+    if (strokeDisabled)
+    {
+      return 0;
+    }
+
+    // Get stroke-width.
+    // The default value is 1px (SVG standard).
+    NumberWithUnits strokeWidth = new NumberWithUnits("1");
+    StyleAttribute strokeWidthStyle = this.getStyleAttributeRecursive("stroke-width");
+    if (strokeWidthStyle != null)
+    {
+      strokeWidth = strokeWidthStyle.getNumberWithUnits();
+    }
+
+    // convert to mm and apply transformation
+    double width = SVGImporter.numberWithUnitsToMm(strokeWidth, this.svgResolution);
+    try
+    {
+      AffineTransform t = this.getAbsoluteTransformation();
+      width *= (t.getScaleX() + t.getScaleY()) / 2;
+    }
+    catch (SVGException ex)
+    {
+      Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
+      // something went wrong, return harmless nonzero value
+      return 1e-2;
+    }
+    return width;
+  }
+
   private Map<String, List<Object>> attributeValues = new LinkedHashMap<String, List<Object>>();
 
   @Override
@@ -96,22 +141,7 @@ public class SVGShape extends SVGObject implements ShapeObject
     {
       case Stroke_Width:
       {
-        StyleAttribute sa = getStyleAttributeRecursive("stroke-width");
-        double width = 1;
-        if (sa != null)
-        {
-          width = SVGImporter.numberWithUnitsToMm(sa.getNumberWithUnits(), this.svgResolution);
-        }
-        try
-         {
-           AffineTransform t = this.getAbsoluteTransformation();
-           width *= (t.getScaleX()+t.getScaleY()) / 2;
-         }
-         catch (SVGException ex)
-         {
-           Logger.getLogger(SVGShape.class.getName()).log(Level.SEVERE, null, ex);
-         }
-         result.add((Double) width);
+        result.add((Double) getEffectiveStrokeWidthMm());
         break;
       }
       case Type:
@@ -213,6 +243,10 @@ public class SVGShape extends SVGObject implements ShapeObject
     return bb;
   }
   
+  /**
+   * get bounding box in SVG pixels
+   * @return 
+   */
   @Override
   public Rectangle2D getBoundingBox()
   {
@@ -227,13 +261,9 @@ public class SVGShape extends SVGObject implements ShapeObject
       at = new AffineTransform();
     }
     Rectangle2D bb = Helper.smallestBoundingBox(this.getDecoratee().getShape(), at);
-    StyleAttribute sa = getStyleAttributeRecursive("stroke-width");
-    if (sa != null)
-    {
-      double w = SVGImporter.numberWithUnitsToMm(sa.getNumberWithUnits(),svgResolution);
-      //TODO: get Stroke width with unit and add it to width/height of BB
-      bb.setRect(bb.getX()-w/2, bb.getY()-w/2, bb.getWidth()+w, bb.getHeight()+w);
-    }
+    // get stroke width (w) and add it to width/height of BB
+    double w = Util.mm2px(this.getEffectiveStrokeWidthMm(), svgResolution);
+    bb.setRect(bb.getX()-w/2, bb.getY()-w/2, bb.getWidth()+w, bb.getHeight()+w);
     return bb;
   }
   
