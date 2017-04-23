@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -200,6 +201,19 @@ public class SVGImporter extends AbstractImporter
     }
   }
 
+  public double determineReferenceResolution(File f, List<String> warnings) {
+    // FIXME WORK IN PROGRESS
+    
+    // refactor so that dpiGuessInfo is discarded when determineTransformation() doesn't need the guessed DPI info.
+    List<String> dpiGuessInfo = new LinkedList<String>();
+    List<String> otherWarnings = new LinkedList<String>();
+    double ret = determineReferenceResolution(f, dpiGuessInfo, otherWarnings);
+    warnings.addAll(dpiGuessInfo);
+    warnings.addAll(otherWarnings);
+    return ret;
+  }
+  
+  
   /**
    * Since different programs have a different idea of the reference resolution
    * in SVG, this method tries to determine it.
@@ -211,9 +225,12 @@ public class SVGImporter extends AbstractImporter
    * Inkscape 0.92 uses absolute units and internally 96 DPI.
    * The SVG standard says 96 DPI (early versions erroneously stated 90 DPI).
    *
-   * @return
+   * @param dpiGuessInfo information issued about guessing the file DPI.
+   *   This can be ignored if the file scaling is unambiguous.
+   * @param warnings Other warnings issued about other SVG elements that might cause trouble
+   * @return best guess of reference DPI
    */
-  public double determineReferenceResolution(File f, List<String> warnings)
+  public double determineReferenceResolution(File f, List<String> dpiGuessInfo, List<String> warnings)
   {
     BufferedReader in = null;
     double result = 90;
@@ -302,21 +319,27 @@ public class SVGImporter extends AbstractImporter
 
     // SVG files saved with Illustrator are 72 DPI,
     // SVG files loaded in inkscape retain the Illustrator comment, but are saved with 90 DPI.
-    if (AdobeIllustratorSeen) { result = 72; }
-    if (WwwInkscapeComSeen) { result = 90; }	// inkscape wins over Illustrator
-    if (InkscapeVersion092Seen) { result = 96; }	// inkscape with known version wins over anything else.
-    if (result != 90)
-    {
-       if (AdobeIllustratorSeen)
-         {
-           warnings.add("Adobe Illustrator comment seen in SVG.");
-	 }
-       if (InkscapeVersion092Seen)
-         {
-           warnings.add("Inkscape Version 0.92+ comment seen in SVG.");
-	 }
-       warnings.add("Object size unclear. Assuming " + result + " DPI - Please check object size!");
+    
+    String guessedProgram = "unknown program";
+    if (AdobeIllustratorSeen) {
+      result = 72;
+      guessedProgram = "Adobe Illustrator";
     }
+    // inkscape wins over Illustrator
+    if (WwwInkscapeComSeen) {
+      result = 90;
+      guessedProgram = "Inkscape older than version 0.92";
+    }
+    // inkscape with known version wins over anything else.
+    if (InkscapeVersion092Seen) {
+      result = 96;
+      guessedProgram = "Inkscape version 0.92 or newer";
+    }
+    
+    if (AdobeIllustratorSeen && (WwwInkscapeComSeen || InkscapeVersion092Seen)) {
+      dpiGuessInfo.add("This file was edited with both Illustrator and Inkscape. Scaling may be wrong!");
+    }
+       dpiGuessInfo.add("File detected as: " + guessedProgram + " (" + result + " DPI) - Please check object size!");
     return result;
   }
 
@@ -381,7 +404,12 @@ public class SVGImporter extends AbstractImporter
     finally {
       // this check is called independent of where the function returns.
       if (resolutionIsAmbiguous) {
-        warnings.add("Please check object size.");
+        warnings.add("Please check object scaling.");
+      }
+      
+      // FIXME WORK IN PROGRESS -- instead of this, just skip the dpiGuessInfo warning output
+      if (!resolutionIsAmbiguous) {
+        warnings.add("Everything is fine, please ignore the warnings regarding object scaling! (FIXME)");
       }
     }
     double px2mm = Util.inch2mm(1/svgResolutionGuess);
