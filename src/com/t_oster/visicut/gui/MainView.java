@@ -96,10 +96,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLClassLoader;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -3359,13 +3361,28 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   warningPanel.removeAllWarnings();
   Map<String, String> choices = new LinkedHashMap<String, String>();
   choices.put(bundle.getString("EXAMPLE_SETTINGS"), "__DEFAULT__");
+  Object defaultChoice = choices.keySet().toArray()[0];
   choices.put(bundle.getString("EMPTY_SETTINGS"), "__EMPTY__");
   choices.put(bundle.getString("IMPORT_SETTINGS_FROM_FILE"), "__FILE__");
-  // TODO add FabLab Aachen etc.
+
+  // Get FQDN for auto-detecting the lab, at least on computers owned by the lab.
+  String hostname = "";
+  try
+  {
+    hostname = InetAddress.getLocalHost().getCanonicalHostName();
+  }
+  catch (UnknownHostException ex)
+  {
+    // Cannot get local hostname -- ignore exception
+  }
+
   // Want your lab in this list? Look at https://github.com/t-oster/VisiCut/wiki/How-to-add-default-settings-for-your-lab !
-  // choices.put("Country, City: Institution", "http://whatever.com/foo");
+  // choices.put("Country, City: Institution", "https://example.org/foo.zip");
   choices.put("Germany, Aachen: FabLab RWTH Aachen", "https://github.com/renebohne/zing6030-visicut-settings/archive/master.zip");
   choices.put("Germany, Erlangen: FAU FabLab", "https://github.com/fau-fablab/visicut-settings/archive/master.zip");
+  if (hostname.endsWith(".fau.de") || hostname.endsWith(".uni-erlangen.de")) {
+    defaultChoice = "Germany, Erlangen: FAU FabLab";
+  }
   choices.put("Germany, Nuremberg: Fab lab Region Nürnberg e.V.", "https://github.com/fablabnbg/visicut-settings/archive/master.zip");
   choices.put("Germany, Berlin: Fab Lab Berlin", "https://github.com/FabLabBerlin/visicut-settings/archive/master.zip");
   choices.put("Germany, Bremen: FabLab Bremen e.V.", "http://www.fablab-bremen.org/FabLab_Bremen.vcsettings");
@@ -3376,7 +3393,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   choices.put("United Kingdom, Manchester: Hackspace", "https://github.com/hacmanchester/visicut-settings/archive/master.zip");
   choices.put("United Kingdom, Leeds: Hackspace", "https://github.com/leedshackspace/visicut-settings/archive/master.zip");
   choices.put(bundle.getString("DOWNLOAD_NOT_IN_LIST"), "__HELP__");
-  String s = (String) JOptionPane.showInputDialog(this, bundle.getString("DOWNLOAD_SETTINGS_INFO"), null, JOptionPane.PLAIN_MESSAGE, null, choices.keySet().toArray(), choices.keySet().toArray()[0]);
+  String s = (String) JOptionPane.showInputDialog(this, bundle.getString("DOWNLOAD_SETTINGS_INFO"), null, JOptionPane.PLAIN_MESSAGE, null, choices.keySet().toArray(), defaultChoice);
   if ((s == null) || (s.length() == 0))
   {
     return;
