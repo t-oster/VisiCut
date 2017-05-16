@@ -5,6 +5,8 @@ jdk:
 
 before_install:
   - git submodule update --init --recursive
+  - sudo apt-get -qq update
+  - sudo apt-get install -y ant-optional
 
 script: 
   - "./test.sh"
