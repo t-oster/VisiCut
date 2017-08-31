@@ -18,7 +18,6 @@
  **/
 package com.frochr123.helper;
 
-import com.objectplanet.image.PngEncoder;
 import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
@@ -39,6 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import javax.imageio.ImageIO;
 
 /**
  * PreviewImageExport.java: Generate the current preview as image and export / send it to other locations
@@ -172,9 +172,7 @@ public class PreviewImageExport
 
   public static void writePngToOutputStream(OutputStream imageOutputStream, BufferedImage img) throws IOException
   {
-    // PngEncoder by objectplanet, has better performance than default Java ImageIO converter
-    PngEncoder pngencoder = new PngEncoder();
-    pngencoder.encode(img, imageOutputStream);
+    ImageIO.write(img, "PNG", imageOutputStream);
   }
 
   public static void writePngToFile(String filePath, BufferedImage img) throws FileNotFoundException, IOException

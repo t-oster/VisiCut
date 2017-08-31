@@ -9,9 +9,6 @@ However, it contains some 3rd Party files, which are listed below.
 
 3rd Party libraries:
 
-NON-FREE LICENSED:
-- PngEncoder by ObjectPlanet, Inc. (http://objectplanet.com/pngencoder/), licensed according to http://objectplanet.com/pngencoder/licenseagreement.html, includes permission for binary redistribution, explicitly confirmed via email
-
 LGPL licensed:
 - SVGSalamander by Mark McKay (http://svgsalamander.java.net/)
 - Freehep PS Viewer (http://java.freehep.org/freehep1.x/psviewer/index.html)
@@ -47,3 +44,4 @@ Eclipse Public License 1.0:
 
 Public Domain:
 - Jama by The MathWorks and NIST (http://math.nist.gov/javanumerics/jama/)
+
