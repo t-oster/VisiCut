@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:th="http://www.thymeleaf.org"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="Kabelbinder.parametric.svg">
+  <defs
+     id="defs4">
+    <ref
+       id="ref3804"
+       type="Integer"
+       default="4"
+       param="holes"
+       label="Number of Holes"
+       label_de-DE="Anzahl Löcher"    />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.53283526"
+     inkscape:cx="602.3617"
+     inkscape:cy="526.18109"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1680"
+     inkscape:window-height="992"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:none;stroke:#ff0000;stroke-width:2.55267072;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2985"
+       width="658.97119"
+       height="81.321465"
+       x="50.276337"
+       y="407.03323"
+       ry="26.103189"
+       th:attr="width = ${658.97119 + holes*36}" />
+    <path
+       sodipodi:type="arc"
+       style="fill:none;stroke:#ff0000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="path3755"
+       sodipodi:cx="243.57143"
+       sodipodi:cy="765.2193"
+       sodipodi:rx="27.857143"
+       sodipodi:ry="24.285715"
+       d="m 271.42857,765.2193 a 27.857143,24.285715 0 1 1 -55.71429,0 27.857143,24.285715 0 1 1 55.71429,0 z"
+       transform="matrix(0.30621617,0,0,0.35124795,22.98704,178.86506)" />
+    <g
+       id="g3800">
+      <path
+         style="fill:none;stroke:#ff0000;stroke-width:0.91828817;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         d="m 679.98692,448.22832 c 0.0421,4.44482 -2.58929,8.46837 -5.998,10.3602 -5.02884,2.92469 -11.78632,1.76547 -15.51432,-3.21485 -2.46441,-3.14855 -3.11514,-7.99863 -1.43404,-11.79388 2.05253,-4.84267 6.88629,-7.51454 11.46558,-7.28514 4.44728,0.11856 8.98851,3.00605 10.75612,7.82747 0.47613,1.29559 0.72606,2.69998 0.72466,4.1062 z"
+         id="path3757"
+         inkscape:connector-curvature="0"
+         th:each="i: ${#numbers.sequence(1, holes)}"
+         th:attr="transform='translate(' + ${36 * i} + ', 0)'" />
+    </g>
+  </g>
+</svg>

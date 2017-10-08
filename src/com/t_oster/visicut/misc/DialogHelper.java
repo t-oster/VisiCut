@@ -166,6 +166,10 @@ public class DialogHelper
 
   public void showWarningMessage(List<String> text)
   {
+    if (text == null || text.isEmpty())
+    {
+      return;
+    }
     String txt = "";
     for(String s : text)
     {
@@ -177,6 +181,12 @@ public class DialogHelper
   public void showWarningMessage(String text)
   {
     JOptionPane.showMessageDialog(parent, text, title, JOptionPane.WARNING_MESSAGE);
+  }
+  
+  public void showWarningMessageOnce(String text, String messageId, int timeoutMilliseconds) {
+    // timeout or 'show once' is not implemented in this simple implementation, but this method
+    // is overridden in MainView
+    showWarningMessage(text);
   }
 
   public void showSuccessMessage(String text)
@@ -203,6 +213,10 @@ public class DialogHelper
   public void showErrorMessage(String text)
   {
     JOptionPane.showMessageDialog(parent, text, title + " Error", JOptionPane.ERROR_MESSAGE);
+  }
+  
+  public void removeMessageWithId(String messageId) {
+    // do nothing, needs to be implemented by subclass
   }
 
   private Double askUnit(UnitTextfield tf, String text, double val)

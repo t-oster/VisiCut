@@ -20,6 +20,7 @@ package com.t_oster.visicut.managers;
 
 import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.misc.Homography;
 import com.thoughtworks.xstream.XStream;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

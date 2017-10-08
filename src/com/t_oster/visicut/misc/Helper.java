@@ -50,6 +50,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import org.apache.commons.net.util.Base64;
 
 /**
  * This class contains frequently used conversion methods
@@ -252,20 +253,34 @@ public class Helper
     {
       throw new FileNotFoundException("Not a directory: "+src);
     }
-    File trg = null;
-    if (isWindowsXP())
+    
+    String profile_path = System.getenv("INKSCAPE_PORTABLE_PROFILE_DIR");
+
+    if (profile_path == null)
     {
-        trg = new File(new File(FileUtils.getUserDirectory(), ".inkscape"), "extensions");
+      profile_path = System.getenv("INKSCAPE_PROFILE_DIR");
     }
-    else if (isWindows())
+
+    File trg;
+
+    if (profile_path != null)
     {
-        trg = new File(new File(new File(FileUtils.getUserDirectory(), "Application Data"), "inkscape"), "extensions");
+      trg = new File(profile_path);
     }
     else
     {
-      trg = new File(new File(new File(FileUtils.getUserDirectory(), ".config"), "inkscape"), "extensions");
+      if (isWindows())
+      {
+        trg = new File(System.getenv("AppData"));
+      }
+      else
+      {
+        trg = new File(FileUtils.getUserDirectory(), ".config");
+      }
     }
-
+    
+    trg = new File(new File(trg, "inkscape"), "extensions");      
+    
     if (!trg.exists() && !trg.mkdirs())
     {
       throw new FileNotFoundException("Can't create directory: "+trg);
@@ -280,20 +295,9 @@ public class Helper
         String line = r.readLine();
         while (line != null)
         {
-          if ("VISICUTBIN=\"visicut\"".equals(line))
+          if ("VISICUTDIR=\"\"".equals(line))
           {
-            if (isMacOS())
-            {
-              line = "VISICUTBIN=\""+new File(getVisiCutFolder(), "VisiCut.MacOS").getAbsolutePath()+"\"";
-            }
-            else if (isWindows())
-            {
-              line = "VISICUTBIN=\""+new File(getVisiCutFolder(), "VisiCut.exe").getAbsolutePath()+"\"";
-            }
-            else
-            {
-              line = "VISICUTBIN=\""+new File(getVisiCutFolder(), "VisiCut.Linux").getAbsolutePath()+"\"";
-            }
+            line = "VISICUTDIR=r\""+getVisiCutFolder().getAbsolutePath()+"\"";
           }
           w.write(line);
           w.newLine();
@@ -317,8 +321,10 @@ public class Helper
       new File("/Applications/Adobe Illustrator CS3/Presets"),
       new File("/Applications/Adobe Illustrator CS4/Presets"),
       new File("/Applications/Adobe Illustrator CS5/Presets"),
+      new File("/Applications/Adobe Illustrator CS6/Presets"),      
       new File("/Applications/Adobe Illustrator CS4/Presets.localized"),
-      new File("/Applications/Adobe Illustrator CS5/Presets.localized")
+      new File("/Applications/Adobe Illustrator CS5/Presets.localized"),
+      new File("/Applications/Adobe Illustrator CS6/Presets.localized")
     })
     {
       if (dir.exists() && dir.isDirectory())
@@ -734,6 +740,31 @@ public class Helper
         }
       }
     }
+    return result;
+  }
+  
+  public static String getEncodedCredentials(String user, String password)
+  {
+    String result = "";
+
+    if (user != null && !user.isEmpty() && password != null && !password.isEmpty())
+    {
+      String credentials = user + ":" + password;
+
+      try
+      {
+        result = Base64.encodeBase64String(credentials.getBytes("UTF-8"));
+      }
+      catch (UnsupportedEncodingException e)
+      {
+        result = Base64.encodeBase64String(credentials.getBytes());
+      }
+
+      // Remove line breaks in result, old versions of Base64.encodeBase64String add wrong line breaks
+      result = result.replace("\n", "");
+      result = result.replace("\r", "");
+    }
+
     return result;
   }
 }

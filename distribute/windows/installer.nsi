@@ -6,7 +6,7 @@
 !define AppName "VisiCut"
 !define AppVersion "VISICUTVERSION"
 !define ShortName "VisiCut"
-!define JRE_VERSION "1.6.0"
+!define JRE_VERSION "1.8"
 !define Vendor "RWTH Aachen University"
  
 !include "MUI.nsh"
@@ -105,12 +105,13 @@ Section -installjre jre
   DetailPrint "Starting the JRE installation"
 InstallJRE:
   File /oname=$TEMP\jre_setup.exe j2re-setup.exe
-  MessageBox MB_OK "Installing JRE"
+;  MessageBox MB_OK "Installing JRE"
   DetailPrint "Launching JRE setup"
-  ;ExecWait "$TEMP\jre_setup.exe /S" $0
-  ; The silent install /S does not work for installing the JRE, sun has documentation on the 
-  ; parameters needed.  I spent about 2 hours hammering my head against the table until it worked
-  ExecWait '"$TEMP\jre_setup.exe" /s /v\"/qn REBOOT=Suppress JAVAUPDATE=0 WEBSTARTICON=0\"' $0
+  ; commandline switches see https://www.java.com/de/download/help/silent_install.xml
+  ; we leave out the silent-install switch /s for now to find problems easier
+  ; there could be problems with closing browser windows etc.
+  ; SPONSORS=0 disables the silly "Ask toolbar" crapware bundled with Java
+  ExecWait '"$TEMP\jre_setup.exe" SPONSORS=0' $0
   DetailPrint "Setup finished"
   Delete "$TEMP\jre_setup.exe"
   StrCmp $0 "0" InstallVerif 0
@@ -123,11 +124,13 @@ InstallVerif:
   Push "${JRE_VERSION}"
   Call DetectJRE  
   Pop $0	  ; DetectJRE's return value
+  Push "JRE cannot be found after running setup. Please report this error. (bundled setup may be outdated)"
   StrCmp $0 "0" ExitInstallJRE 0
   StrCmp $0 "-1" ExitInstallJRE 0
+  Pop $9 ; if the code didn't jump to ExitInstallJRE, remove the message from the stack. $9 is never used
   Goto JavaExeVerif
-  Push "The JRE setup failed"
-  Goto ExitInstallJRE
+  Push "The JRE setup failed"; never executed??
+  Goto ExitInstallJRE ; never executed??
  
 JavaExeVerif:
   IfFileExists $0 JREPathStorage 0
@@ -143,6 +146,7 @@ JREPathStorage:
 ExitInstallJRE:
   Pop $1
   MessageBox MB_OK "The setup is about to be interrupted for the following reason : $1"
+  MessageBox MB_OK "Please try installing Java 8 (JRE) from java.com yourself. Make sure to uncheck 'Ask Toolbar' and any other offers in the setup."
   Pop $1 	; Restore $1
   Pop $0 	; Restore $0
   Abort
@@ -168,9 +172,27 @@ File /r "stream\"
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ShortName}" "NoRepair" "1"
 
   ; instert visicut to path
+  Push $0
+  Push $1
+  ; string length check taken from CMake/Modules/NSIS.template.in
+  ; if the path is too long for a NSIS variable NSIS will return a 0
+  ; length string.  If we find that, then warn and skip any path
+  ; modification as it will trash the existing path.
+  ReadEnvStr $0 PATH
+  StrLen $1 $0
+  IntCmp $1 0 CheckPathLength_ShowPathWarning CheckPathLength_Done CheckPathLength_Done
+    CheckPathLength_ShowPathWarning:
+    Messagebox MB_OK|MB_ICONEXCLAMATION "Warning: The PATH envirnoment variable is too long, the installer is unable to modify it! If you install VisiCut to the default directory, everything will still work."
+    Goto AddToPath_done
+  CheckPathLength_Done:
+  ; update path if it is safe:
   ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR" 
-
+  AddToPath_done:
+  Pop $1
+  Pop $0
+  
   ; register file extensions
+  ${registerExtension} "$INSTDIR\VisiCut.exe" ".ls" "VisiCut LaserScript File"
   ${registerExtension} "$INSTDIR\VisiCut.exe" ".plf" "VisiCut Portable Laser File"
   ${registerExtension} "$INSTDIR\VisiCut.exe" ".svg" "SVG File"
   ${registerExtension} "$INSTDIR\VisiCut.exe" ".dxf" "DXF File"
@@ -233,7 +255,7 @@ FoundOld:
  
 NoFound:
 ;  MessageBox MB_OK "JRE not found"
-  !insertmacro MUI_INSTALLOPTIONS_WRITE "jre.ini" "Field 1" "Text" "No Java Runtime Environment could be found on your computer. The installation of JRE v${JRE_VERSION} will start."
+  !insertmacro MUI_INSTALLOPTIONS_WRITE "jre.ini" "Field 1" "Text" "No Java Runtime Environment could be found. JRE v${JRE_VERSION} will be installed."
   !insertmacro MUI_HEADER_TEXT "$(TEXT_JRE_TITLE)" "$(TEXT_JRE_SUBTITLE)"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY_RETURN "jre.ini"
   Goto MustInstallJRE
@@ -268,23 +290,36 @@ Function DetectJRE
   Push $2	; $2 = Javahome
   Push $3	; $3 and $4 are used for checking the major/minor version of java
   Push $4
+
+  SetRegView 64
+  Call :DetectJava
+  StrCmp $2 "" 0 GetJRE
+  SetRegView 32
+  Call :DetectJava
+  StrCmp $2 "" 0 GetJRE
+  Goto NoFound
+
+DetectJava:
 ;  MessageBox MB_OK "Detecting JRE"
   ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
 ;  MessageBox MB_OK "Read : $1"
-  StrCmp $1 "" DetectTry2
+  StrCmp $1 "" DetectJDK
   ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$1" "JavaHome"
 ;  MessageBox MB_OK "Read 3: $2"
-  StrCmp $2 "" DetectTry2
-  Goto GetJRE
+  StrCmp $2 "" DetectJDK
+  Return
  
-DetectTry2:
+DetectJDK:
   ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
 ;  MessageBox MB_OK "Detect Read : $1"
-  StrCmp $1 "" NoFound
+  StrCmp $1 "" EndDetectJava
   ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$1" "JavaHome"
 ;  MessageBox MB_OK "Detect Read 3: $2"
-  StrCmp $2 "" NoFound
- 
+  StrCmp $2 "" EndDetectJava
+
+EndDetectJava:
+  Return
+  
 GetJRE:
 ; $0 = version requested. $1 = version found. $2 = javaHome
 ;  MessageBox MB_OK "Getting JRE"
@@ -299,7 +334,8 @@ GetJRE:
   IntCmp $4 $3 FoundNew FoundOld FoundNew
  
 NoFound:
-  MessageBox MB_OK "JRE not found"
+;  MessageBox MB_OK "JRE not found"
+  DetailPrint "JRE not found"
   Push "0"
   Goto DetectJREEnd
  
@@ -328,7 +364,7 @@ DetectJREEnd:
 	Exch	; => r0,rv
 	Pop $0	; => rv 
 FunctionEnd
- 
+
 Function RestoreSections
   !insertmacro UnselectSection ${jre}
   !insertmacro SelectSection ${SecAppFiles}
@@ -348,7 +384,25 @@ FunctionEnd
 Section "Uninstall"
 
   ; remove visicut from path
+  Push $0
+  Push $1
+  ; string length check taken from CMake/Modules/NSIS.template.in
+  ; if the path is too long for a NSIS variable NSIS will return a 0
+  ; length string.  If we find that, then warn and skip any path
+  ; modification as it will trash the existing path.
+  ReadEnvStr $0 PATH
+  StrLen $1 $0
+  IntCmp $1 0 CheckPathLength_ShowPathWarning CheckPathLength_Done CheckPathLength_Done
+    CheckPathLength_ShowPathWarning:
+    Messagebox MB_OK|MB_ICONEXCLAMATION "Warning! PATH too long, installer unable to modify PATH!"
+    Goto AddToPath_done
+  CheckPathLength_Done:
+  ; update path if it is safe:
   ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR"
+  AddToPath_done:
+  Pop $1
+  Pop $0
+  
 
   ; remove file associations
   ${unregisterExtension} ".plf" "VisiCut Portable Laser File"

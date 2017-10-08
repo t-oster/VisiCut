@@ -23,6 +23,8 @@ import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
+import com.t_oster.liblasercut.VectorPart;
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.MappingManager;
 import com.t_oster.visicut.managers.MaterialManager;
@@ -39,9 +41,9 @@ import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.graphicelements.GraphicFileImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
+import com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -54,12 +56,15 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
+import java.io.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -161,9 +166,20 @@ public class VisicutModel
    */
   public void setSelectedPart(PlfPart selectedPart)
   {
+    setSelectedPart(selectedPart, true);
+  }
+  
+  /**
+   * Set the value of selectedPart
+   *
+   * @param selectedPart new value of selectedPart
+   * @param autoSelect automatically select new available selected part
+   */
+  public void setSelectedPart(PlfPart selectedPart, boolean autoSelect)
+  {
     PlfPart oldSelectedPart = this.selectedPart;
     this.selectedPart = selectedPart;
-    if (selectedPart == null && this.plfFile != null && !this.plfFile.isEmpty())
+    if (autoSelect && selectedPart == null && this.plfFile != null && !this.plfFile.isEmpty())
     {
       this.selectedPart = this.plfFile.get(0);
     }
@@ -301,9 +317,11 @@ public class VisicutModel
    */
   public void setBackgroundImage(BufferedImage backgroundImage)
   {
-    BufferedImage oldBackgroundImage = this.backgroundImage;
     this.backgroundImage = backgroundImage;
-    propertyChangeSupport.firePropertyChange(PROP_BACKGROUNDIMAGE, oldBackgroundImage, backgroundImage);
+    // The background image is recycled, and the object reference does not change when updated.
+    // Passing the same object for old and new values in firePropertyChange would result in no
+    // event being fired, so send null as the old value to force an event.
+    propertyChangeSupport.firePropertyChange(PROP_BACKGROUNDIMAGE, null, backgroundImage);
   }
   protected Preferences preferences = new Preferences();
   public static final String PROP_PREFERENCES = "preferences";
@@ -327,7 +345,7 @@ public class VisicutModel
   {
     Preferences oldPreferences = this.preferences;
     this.preferences = preferences;
-    propertyChangeSupport.firePropertyChange(PROP_PREFERENCES, oldPreferences, preferences);
+    propertyChangeSupport.firePropertyChange(VisicutModel.PROP_PREFERENCES, oldPreferences, preferences);
     if (this.preferences != null)
     {
       this.graphicFileImporter = null;
@@ -385,6 +403,15 @@ public class VisicutModel
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
   /**
+   * Get PropertyChangeSupport.
+   * 
+   */
+  public PropertyChangeSupport getPropertyChangeSupport()
+  {
+    return propertyChangeSupport;
+  }
+
+  /**
    * Add PropertyChangeListener.
    *
    * @param listener
@@ -438,29 +465,38 @@ public class VisicutModel
         this.setPlfFile(nf);
       }
       PlfPart p = loadGraphicFile(file, warnings);
+      if (this.preferences.getDefaultMapping() != null)
+      {
+        try
+        {
+          p.setMapping(MappingManager.getInstance().getItemByName(this.preferences.getDefaultMapping()));
+        }
+        catch (Exception e)
+        {
+          System.err.println("Could not load mapping '"+this.preferences.getDefaultMapping()+"'");
+        }
+      }
       this.plfFile.add(p);
       this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_ADDED, null, p);
       this.setSelectedPart(p);
     }
   }
   
-  private PlfFile loadPlfFile(MappingManager mm, File f, List<String> warnings) throws FileNotFoundException, IOException, ImportException
+  public PlfFile loadPlfFile(MappingManager mm, File f, List<String> warnings) throws FileNotFoundException, IOException, ImportException
   {
     ZipFile zip = new ZipFile(f);
     PlfFile resultingFile = new PlfFile();
     resultingFile.setFile(f);
-    Map<Integer,PlfPart> result = new LinkedHashMap<Integer,PlfPart>();
+    //Collect for each part the transform,mapping and sourceFile
     Map<Integer,AffineTransform> transforms = new LinkedHashMap<Integer,AffineTransform>();
+    Map<Integer,MappingSet> mappings = new LinkedHashMap<Integer, MappingSet>();
+    Map<Integer,File> sourceFiles = new LinkedHashMap<Integer, File>();
     Enumeration entries = zip.entries();
     while (entries.hasMoreElements())
     {
       ZipEntry entry = (ZipEntry) entries.nextElement();
       String name = entry.getName();
       Integer i = name.matches("[0-9]+/.*") ? Integer.parseInt(name.split("/")[0]) : 0;
-      if (!result.containsKey(i))
-      {
-        result.put(i, new PlfPart());
-      }
       if (name.equals((i > 0 ? i+"/" : "")+"transform.xml"))
       {
         XMLDecoder decoder = new XMLDecoder(zip.getInputStream(entry));
@@ -471,7 +507,7 @@ public class VisicutModel
         MappingSet map = mm.loadFromFile(zip.getInputStream(entry));
         if (map != null)
         {
-          result.get(i).setMapping(map);
+          mappings.put(i, map);
         }
         else
         {
@@ -480,11 +516,11 @@ public class VisicutModel
       }
       else
       {
-        int k = 0;
-        result.get(i).setSourceFile(FileUtils.getNonexistingWritableFile(name.replace("/","_")));
+        //source files get extracted
+        File tempFile = FileUtils.getNonexistingWritableFile(name.replace("/","_"));
         byte[] buf = new byte[1024];
         InputStream in = zip.getInputStream(entry);
-        FileOutputStream out = new FileOutputStream(result.get(i).getSourceFile());
+        FileOutputStream out = new FileOutputStream(tempFile);
         // Transfer bytes from the file to the ZIP file
         int len;
         while ((len = in.read(buf)) > 0)
@@ -493,27 +529,47 @@ public class VisicutModel
         }
         out.close();
         in.close();
-        result.get(i).getSourceFile().deleteOnExit();
+        tempFile.deleteOnExit();
+        //Parameter files for parametric svg files are just extracted next
+        //to the svg, but not counted as source file
+        if (!name.toLowerCase().endsWith(".parameters"))
+        {
+          sourceFiles.put(i, tempFile);
+        }
       }
     }
-    for (Integer i : result.keySet())
+    
+    for (Integer i : sourceFiles.keySet())
     {
-      result.get(i).setGraphicObjects(this.loadSetFromFile(result.get(i).getSourceFile(), warnings));
-      if (result.get(i).getGraphicObjects() == null)
+      try
       {
-        warnings.add("Corrupted input file "+i);
+        PlfPart p = this.loadGraphicFile(sourceFiles.get(i), warnings);
+        if (p.getGraphicObjects() == null)
+        {
+          warnings.add("Corrupted input file "+i);
+        }
+        else
+        {
+          if (transforms.containsKey(i))
+          {
+            p.getGraphicObjects().setTransform(transforms.get(i));
+          }
+          else
+          {
+            warnings.add("Could not load Transform "+i+" from PLF File");
+          }
+          if (mappings.containsKey(i))
+          {
+            p.setMapping(mappings.get(i));
+          }
+
+          p.setIsFileSourcePLF(true);
+          resultingFile.add(p);
+        }
       }
-      else
+      catch (ImportException e)
       {
-        resultingFile.add(result.get(i));
-      }
-      if (transforms.containsKey(i))
-      {
-        result.get(i).getGraphicObjects().setTransform(transforms.get(i));
-      }
-      else
-      {
-        warnings.add("Could not load Transform "+i+" from PLF File");
+        warnings.add("Error loading "+sourceFiles.get(i).getName()+": "+e.getMessage());
       }
     }
     return resultingFile;
@@ -521,12 +577,18 @@ public class VisicutModel
 
   public void saveToFile(MaterialManager pm, MappingManager mm, File f) throws FileNotFoundException, IOException
   {
-    PlfFile plf = this.getPlfFile();
+    FileOutputStream outputStream = new FileOutputStream(f);
+    savePlfToStream(pm, mm, outputStream);
+  }
+
+  public void savePlfToStream(MaterialManager pm, MappingManager mm, OutputStream outputStream) throws FileNotFoundException, IOException
+  {
+    List<PlfPart> plf = this.getPlfFile().getPartsCopy();
     FileInputStream in;
     byte[] buf = new byte[1024];
     int len;
     // Create the ZIP file
-    ZipOutputStream out = new ZipOutputStream(new FileOutputStream(f));
+    ZipOutputStream out = new ZipOutputStream(outputStream);
     //find temporary file for xml
     int k = 0;
     File tmp = null;
@@ -548,6 +610,15 @@ public class VisicutModel
       in.close();
       // Complete the entry
       out.closeEntry();
+      //If it's a Parametric PlfPart, write the parameters into an extra file
+      if (plf.get(i) instanceof ParametricPlfPart)
+      {
+        // Add source GraphicsFile to the Zip File
+        out.putNextEntry(new ZipEntry((i > 0 ? i+"/" : "")+plf.get(i).getSourceFile().getName()+".parameters"));
+        ParametricPlfPart.serializeParameterValues(((ParametricPlfPart) plf.get(i)).getParameters(), out);
+        // Complete the entry
+        out.closeEntry(); 
+      }
       AffineTransform at = plf.get(i).getGraphicObjects().getTransform();
       if (at != null)
       {
@@ -612,24 +683,9 @@ public class VisicutModel
     return graphicFileImporter;
   }
 
-  private GraphicSet loadSetFromFile(File f, List<String> warnings) throws ImportException
+  public PlfPart loadGraphicFile(File f, List<String> warnings) throws ImportException
   {
-    GraphicFileImporter im = this.getGraphicFileImporter();
-    GraphicSet set = im.importFile(f, warnings);
-    return set;
-  }
-
-  private PlfPart loadGraphicFile(File f, List<String> warnings) throws ImportException
-  {
-    GraphicSet gs = this.loadSetFromFile(f, warnings);
-    PlfPart p = null;
-    if (gs != null)
-    {
-      p = new PlfPart();
-      p.setGraphicObjects(gs);
-      p.setSourceFile(f);
-    }
-    return p;
+    return this.getGraphicFileImporter().importFile(f, warnings);
   }
   protected MaterialProfile material = null;
   public static final String PROP_MATERIAL = "material";
@@ -665,7 +721,7 @@ public class VisicutModel
     }
     float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() || !this.useThicknessAsFocusOffset ? 0 : this.materialThickness;
 
-    for (PlfPart p : this.getPlfFile())
+    for (PlfPart p : this.getPlfFile().getPartsCopy())
     {
       if (p.getMapping() == null)
       {
@@ -705,6 +761,29 @@ public class VisicutModel
     }
   }
 
+  public void saveJob( String name, File saveFile, ProgressListener pl, Map<LaserProfile, List<LaserProperty>> props, List<String> warnings ) throws IllegalJobException, SocketTimeoutException, Exception{
+	  LaserCutter lasercutter = this.getSelectedLaserDevice().getLaserCutter();
+
+
+	  if (pl != null)
+	  {
+		  pl.taskChanged(this, "preparing job");
+	  }
+
+	  java.io.PrintStream fileOutputStream = new PrintStream(saveFile);
+	  LaserJob job = this.prepareJob(name, props);
+	  if (pl != null)
+	  {
+		  pl.taskChanged(this, "sending job");
+		  lasercutter.saveJob(fileOutputStream, job);
+	  }
+	  else
+	  {
+		  lasercutter.saveJob(fileOutputStream, job);
+	  }
+    fileOutputStream.close();
+  }
+
   public int estimateTime(Map<LaserProfile, List<LaserProperty>> propmap) throws FileNotFoundException, IOException
   {
     LaserCutter lc = this.getSelectedLaserDevice().getLaserCutter();
@@ -740,13 +819,67 @@ public class VisicutModel
     return result;
   }
 
-  public enum Modification
+  //moves the laser head to the given position (in mm)
+  public void moveHeadTo(Point2D.Double p)
+  {
+    try
+    {
+      LaserCutter lasercutter = this.getSelectedLaserDevice().getLaserCutter();
+      LaserJob job = new LaserJob("move", "move", "visicut");
+      if (this.startPoint != null)
+      {
+        job.setStartPoint(this.startPoint.x, this.startPoint.y);
+      }
+      double dpi = lasercutter.getResolutions().get(lasercutter.getResolutions().size()-1);
+      double factor = Util.dpi2dpmm(dpi);
+      AffineTransform mm2laserpx = AffineTransform.getScaleInstance(factor, factor);
+      VectorPart part = new VectorPart(lasercutter.getLaserPropertyForVectorPart(), dpi);
+      mm2laserpx.transform(p, p);
+      part.moveto((int) p.x, (int) p.y);
+      job.addPart(part);
+      lasercutter.sendJob(job);
+    }
+    catch (IllegalJobException ex)
+    {
+      Logger.getLogger(VisicutModel.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    catch (Exception ex)
+    {
+      Logger.getLogger(VisicutModel.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
+
+  public enum ModificationEnum
   {
     NONE,
     RESIZE,
     MOVE,
     ROTATE
   }
+  
+  public class Modification
+  {
+    public ModificationEnum type = ModificationEnum.NONE;
+    public double oldWidth = 0;
+    public double oldHeight = 0;
+    
+    public double newWidth = 0;
+    public double newHeight = 0;
+    
+    public double oldX = 0;
+    public double oldY = 0;
+    
+    public double newX = 0;
+    public double newY = 0;
+    
+    public double factor = 0;
+    
+    public Modification(ModificationEnum e)
+    {
+      type = e;
+    }
+  }
+  
   
   /**
    * Adjusts the Transform of the Graphic-Objects such that the Objects
@@ -757,13 +890,27 @@ public class VisicutModel
   public Modification fitObjectsIntoBed()
   {
     //TODO rotate file 90° if it would fit then
-    Modification result = Modification.NONE;
+    Modification result = new Modification(ModificationEnum.NONE);
+    
     double bw = getSelectedLaserDevice() != null ? getSelectedLaserDevice().getLaserCutter().getBedWidth() : 600d;
     double bh = getSelectedLaserDevice() != null ? getSelectedLaserDevice().getLaserCutter().getBedHeight() : 300d;
+    
+    
     for(PlfPart p : this.plfFile)
     {
+      // Do not apply to preview QR loaded parts
+      if (p.getQRCodeInfo() != null && p.getQRCodeInfo().isPreviewQRCodeSource())
+      {
+        continue;
+      }
+
       boolean modified = false;
       Rectangle2D bb = p.getGraphicObjects().getBoundingBox();
+      
+      result.oldHeight = bb.getHeight();
+      result.oldWidth = bb.getWidth();
+    
+      
       AffineTransform trans = p.getGraphicObjects().getTransform();
       //first try moving to origin, if not in range
       if (bb.getX() < 0 || bb.getX() + bb.getWidth() > bw)
@@ -772,7 +919,11 @@ public class VisicutModel
         p.getGraphicObjects().setTransform(trans);
         bb = p.getGraphicObjects().getBoundingBox();
         modified = true;
-        result = Modification.MOVE;
+        result.type = ModificationEnum.MOVE;
+        result.newHeight = bb.getHeight();
+        result.newWidth = bb.getWidth();
+        result.newX = bb.getX();
+        result.newY = bb.getY();        
       }
       if (bb.getY() < 0 || bb.getY() + bb.getHeight() > bh)
       {
@@ -780,7 +931,11 @@ public class VisicutModel
         p.getGraphicObjects().setTransform(trans);
         bb = p.getGraphicObjects().getBoundingBox();
         modified = true;
-        result = Modification.MOVE;
+        result.type = ModificationEnum.MOVE;
+        result.newHeight = bb.getHeight();
+        result.newWidth = bb.getWidth();
+        result.newX = bb.getX();
+        result.newY = bb.getY();          
       }
       //if still too big (we're in origin now) check if rotation is useful 
       if (bb.getX() + bb.getWidth() > bw || bb.getY() + bb.getHeight() > bh)
@@ -790,14 +945,21 @@ public class VisicutModel
         {//if so, rotate the graphic 90 degrees, keeping the x and y value
           double oldX = bb.getX();
           double oldY = bb.getY();
+          result.oldX = oldX;
+          result.oldY = oldY;
+          
           trans.preConcatenate(AffineTransform.getQuadrantRotateInstance(3));
           p.getGraphicObjects().setTransform(trans);
           bb = p.getGraphicObjects().getBoundingBox();
           //move to old position
           trans.preConcatenate(AffineTransform.getTranslateInstance(oldX-bb.getX(), oldY-bb.getY()));
           p.getGraphicObjects().setTransform(trans);
+          result.type = ModificationEnum.ROTATE;
           bb = p.getGraphicObjects().getBoundingBox();
-          result = Modification.ROTATE;
+          result.newHeight = bb.getHeight();
+          result.newWidth = bb.getWidth();
+          result.newX = bb.getX();
+          result.newY = bb.getY();
         }
       }
       //Do not scale the object, because this might be very confising for the user
@@ -805,10 +967,17 @@ public class VisicutModel
       if (bb.getX() + bb.getWidth() > bw || bb.getY() + bb.getHeight() > bh)
       {
         double factor = Math.min(bw/bb.getWidth(), bh/bb.getHeight());
+        
         trans.preConcatenate(AffineTransform.getScaleInstance(factor, factor));
         p.getGraphicObjects().setTransform(trans);
         modified = true;
-        result = Modification.RESIZE;
+        bb = p.getGraphicObjects().getBoundingBox();
+        result.newHeight = bb.getHeight();
+        result.newWidth = bb.getWidth();
+        result.newX = bb.getX();
+        result.newY = bb.getY();
+        result.factor = factor;
+        result.type = ModificationEnum.RESIZE;
       }
       if (modified)
       {
@@ -839,9 +1008,14 @@ public class VisicutModel
   {
     if (this.selectedPart != null)
     {
-      AffineTransform tr = this.selectedPart.getGraphicObjects().getTransform();
-      this.selectedPart.setGraphicObjects(this.loadSetFromFile(this.selectedPart.getSourceFile(), warnings));
-      this.selectedPart.getGraphicObjects().setTransform(tr);
+      AffineTransform tr = this.selectedPart.getGraphicObjects().getTransform();   
+      PlfPart p = this.loadGraphicFile(this.selectedPart.getSourceFile(), warnings);
+      p.getGraphicObjects().setTransform(tr);
+      this.selectedPart.setGraphicObjects(p.getGraphicObjects());
+      if (p instanceof ParametricPlfPart && this.selectedPart instanceof ParametricPlfPart)
+      {
+        ((ParametricPlfPart) this.selectedPart).setParameters(((ParametricPlfPart) p).getParameters());
+      }
       this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_UPDATED, null, this.selectedPart);
     }
   }

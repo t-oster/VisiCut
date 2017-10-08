@@ -22,14 +22,9 @@ import com.t_oster.uicomponents.BetterJTable;
 import com.t_oster.uicomponents.EditableTablePanel;
 import com.t_oster.uicomponents.EditableTableProvider;
 import com.t_oster.visicut.VisicutModel;
-import com.t_oster.visicut.gui.EditRaster3dProfileDialog;
-import com.t_oster.visicut.gui.EditRasterProfileDialog;
-import com.t_oster.visicut.gui.EditVectorProfileDialog;
 import com.t_oster.visicut.gui.MainView;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.model.LaserProfile;
-import com.t_oster.visicut.model.Raster3dProfile;
-import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
@@ -175,8 +170,6 @@ public class CustomMappingPanel extends EditableTablePanel implements EditableTa
     ProfileManager.getInstance().addPropertyChangeListener(this);
     VisicutModel.getInstance().addPropertyChangeListener(this);
     model.addTableModelListener(this);
-    //in this table we have dialog-like-editors, so the focus will get lost
-    this.getTable().putClientProperty("terminateEditOnFocusLost", Boolean.FALSE);
     ((BetterJTable) this.getTable()).setColumnRelations(new int[]{6,16,9});
   }
 

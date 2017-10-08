@@ -31,7 +31,6 @@ import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.Raster3dProfile;
 import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
-import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.mapping.FilterSet;
 import com.t_oster.visicut.model.mapping.Mapping;
@@ -41,7 +40,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
@@ -303,11 +301,21 @@ public class PropertyMappingPanelTable extends EditableTablePanel implements Edi
       }
     }
     //add everything else
-    MappingTableEntry e = new MappingTableEntry();
-    e.enabled = false;
-    e.filterSet = null;
-    e.profile = defaultProfile;
-    entries.add(e);
+    boolean suppressDuplicateEverythingElse=false;
+    for (MappingTableEntry existingEntry: entries) {
+      if (existingEntry.filterSet == null) {
+        suppressDuplicateEverythingElse=true;
+        break;
+      }
+    }
+    if (!suppressDuplicateEverythingElse)
+    {
+      MappingTableEntry e = new MappingTableEntry();
+      e.enabled = false;
+      e.filterSet = null;
+      e.profile = defaultProfile;
+      entries.add(e);
+    }
     suppressMappingUpdate = true;
     model.fireTableDataChanged();
     suppressMappingUpdate = false;

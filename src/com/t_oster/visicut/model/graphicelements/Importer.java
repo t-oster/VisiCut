@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut.model.graphicelements;
 
+import com.t_oster.visicut.model.PlfPart;
 import java.io.File;
 import java.util.List;
 import javax.swing.filechooser.FileFilter;
@@ -41,6 +42,6 @@ public interface Importer
    * @return
    * @throws ImportException 
    */
-  GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException;
+  PlfPart importFile(File inputFile, List<String> warnings) throws ImportException;
   
 }

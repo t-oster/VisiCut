@@ -19,6 +19,7 @@
 package com.t_oster.visicut.model.graphicelements;
 
 import com.t_oster.visicut.misc.MultiFilter;
+import com.t_oster.visicut.model.PlfPart;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
@@ -68,7 +69,7 @@ public class GraphicFileImporter implements Importer
     }
   }
 
-  public GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException
+  public PlfPart importFile(File inputFile, List<String> warnings) throws ImportException
   {
     if (inputFile == null)
     {
@@ -84,7 +85,7 @@ public class GraphicFileImporter implements Importer
       {
         if (i.getFileFilter().accept(inputFile))
         {
-          GraphicSet gs = i.importFile(inputFile, warnings);
+          PlfPart gs = i.importFile(inputFile, warnings);
           return gs;
         }
       }

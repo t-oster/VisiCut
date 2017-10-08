@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <_name>Open in VisiCut</_name>
+  <id>visicut.export_replace</id>
+  <dependency type="executable" location="extensions">visicut_export.py</dependency>
+  <param name="import" type="boolean" gui-hidden="true">false</param>  
+  <effect needs-live-preview="false">
+        <object-type>path</object-type>
+        <effects-menu>
+            <submenu _name="Lasercut Path"/>
+        </effects-menu>
+    </effect>
+  <script>
+    <command reldir="extensions" interpreter="python">visicut_export.py</command>
+  </script>
+</inkscape-extension>

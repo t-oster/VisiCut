@@ -20,9 +20,9 @@ package com.t_oster.visicut.model.graphicelements.epssupport;
 
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.ExtensionFilter;
+import com.t_oster.visicut.model.graphicelements.AbstractImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
-import com.t_oster.visicut.model.graphicelements.Importer;
 import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -48,7 +48,7 @@ import org.w3c.dom.Document;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class EPSImporter implements Importer
+public class EPSImporter extends AbstractImporter
 {
 
   public FileFilter getFileFilter()
@@ -98,7 +98,7 @@ public class EPSImporter implements Importer
     return result;
   }
 
-  public GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException
+  public GraphicSet importSetFromFile(File inputFile, List<String> warnings) throws ImportException
   {
     Writer out = null;
     try
@@ -125,7 +125,7 @@ public class EPSImporter implements Importer
       File tmp = File.createTempFile("temp", "svg");
       tmp.deleteOnExit();
       svgGenerator.stream(new FileWriter(tmp));
-      GraphicSet result = new SVGImporter().importFile(tmp, warnings);
+      GraphicSet result = new SVGImporter().importSetFromFile(tmp, warnings);
       //Assume the EPS has been created with 72DPI (from Inkscape)
       double px2mm = Util.inch2mm(1d/72d);
       result.setBasicTransform(AffineTransform.getScaleInstance(px2mm, px2mm));

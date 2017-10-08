@@ -9,16 +9,17 @@ license=('LGPL')
 groups=()
 depends=('java-environment' 'bash' 'potrace')
 makedepends=('git' 'apache-ant')
-optdepends=('inkscape-extension-visicut: Use VisiCut directly from Inkscape')
+optdepends=()
 provides=(visicut)
 conflicts=(visicut)
 replaces=()
 backup=()
 options=()
 install=install
-source=(plf-mime.xml)
+source=(plf-mime.xml ls-mime.xml)
 noextract=()
-md5sums=('023d09901b9075e86821a23953e82710')
+md5sums=('023d09901b9075e86821a23953e82710'
+'daeabc0ae9054e49f0154f5d2f57a700')
 
 _gitroot=git://github.com/t-oster/VisiCut.git
 _gitname=develop
@@ -52,6 +53,7 @@ rm VisicutApp.properties
 package() {
   cd "$srcdir/$_gitname-build"
   make DESTDIR="$pkgdir/" install
+  cp "$srcdir/ls-mime.xml" "$pkgdir/usr/share/visicut/"
   cp "$srcdir/plf-mime.xml" "$pkgdir/usr/share/visicut/"
 }
 

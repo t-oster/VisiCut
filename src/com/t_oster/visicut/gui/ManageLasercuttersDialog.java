@@ -54,7 +54,11 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
    */
   public List<LaserDevice> getLaserCutters()
   {
-    return laserCutters;
+    if (laserCutters == null) {
+      return null;
+    } else {
+      return new LinkedList<LaserDevice>(laserCutters);
+    }
   }
 
   /**
@@ -288,7 +292,7 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
   {
     JComboBox driver = new JComboBox();
     Map<String, String> driverClassnames = new LinkedHashMap<String,String>();
-    driver.setEditable(true);
+    driver.setEditable(false);
     for (String s:PreferencesManager.getInstance().getPreferences().getAvailableLasercutterDrivers())
     {
       String modelName = s;

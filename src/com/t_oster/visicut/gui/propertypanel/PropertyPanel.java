@@ -63,16 +63,25 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
     });
   }
   
+  private String allfilters = "";
   private String text = "title";
   private String title = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PropertyPanel").getString("PROPERTY_TITLE");
   private String unused = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PropertyPanel").getString("UNUSED");
-  
+
+  public void resetPanel()
+  {
+    // Panels have state and get re-used by updatePanels(). reloadPanels() avoids re-using.
+    allfilters = "";
+  }
+
   public void setMapping(Mapping m, boolean isUnused)
   {
     
     String profile = m.getProfile() != null ? m.getProfile().getName() : java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("IGNORE");
     String filters = m.getFilterSet() != null ? m.getFilterSet().toString() : java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/mapping/resources/CustomMappingPanel").getString("EVERYTHING_ELSE");
-    text = title.replace("$profile", profile).replace("$mapping", filters);
+    allfilters += (allfilters == "" ? "" : ", ") + filters;
+    text = title.replace("$profile", profile).replace("$mapping", allfilters);
+
     //change colors to their html representation
     text = text.replaceAll("#([0-9a-fA-F]+)", "<span bgcolor='$1' color='$1'>bla</span>");
     if (isUnused)

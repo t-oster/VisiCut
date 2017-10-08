@@ -71,7 +71,11 @@ public class EditMaterialsDialog extends javax.swing.JDialog implements Editable
    */
   public List<MaterialProfile> getMaterials()
   {
-    return materials;
+    if (materials == null) {
+      return null;
+    } else {
+      return new LinkedList<MaterialProfile>(materials);
+    }
   }
 
   /**

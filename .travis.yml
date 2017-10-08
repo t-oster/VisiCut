@@ -1,13 +1,22 @@
 language: java
 jdk:
-  - oraclejdk7
   - openjdk7
-  - openjdk6
+  - openjdk8
+  - oraclejdk8
 
 before_install:
   - git submodule update --init --recursive
+  - sudo apt-get -qq update
+  - sudo apt-get install -y ant-optional
 
 script: 
   - "./test.sh"
   - "ant test"
   - "ant jar"
+
+addons:
+  # Fix OpenJDK 7 buffer overflows when the host name is too long.
+  # https://docs.travis-ci.com/user/hostname
+  # https://github.com/travis-ci/travis-ci/issues/5227
+  hostname: dummy
+

@@ -15,7 +15,7 @@ RequestExecutionLevel user
 ;You want to change the next two lines too
 !define CLASSPATH ".;lib"
 !define JARFILE "Visicut.jar"
-!define VMARGS "-Xms256m -Xmx512m"
+!define VMARGS "-Xms256m -Xmx1024m"
 !define PRGARGS "--singleinstanceport 6543"
 
 !include "FileFunc.nsh"
@@ -49,17 +49,40 @@ Function GetJRE
   StrCpy $R0 "$EXEDIR\jre\bin\javaw.exe"
   IfFileExists $R0 JreFound
   StrCpy $R0 ""
- 
+
   ClearErrors
   ReadEnvStr $R0 "JAVA_HOME"
   StrCpy $R0 "$R0\bin\javaw.exe"
   IfErrors 0 JreFound
- 
+
   ClearErrors
+  SetRegView 64
   ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
   ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
   StrCpy $R0 "$R0\bin\javaw.exe"
- 
+
+  IfErrors 0 JreFound
+
+  ClearErrors
+  ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
+  ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$R1" "JavaHome"
+  StrCpy $R0 "$R0\bin\javaw.exe"
+
+  IfErrors 0 JreFound
+
+  ClearErrors
+  SetRegView 32
+  ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
+  ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
+  StrCpy $R0 "$R0\bin\javaw.exe"
+
+  IfErrors 0 JreFound
+
+  ClearErrors
+  ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
+  ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$R1" "JavaHome"
+  StrCpy $R0 "$R0\bin\javaw.exe"
+
   IfErrors 0 JreFound
   StrCpy $R0 "javaw.exe"
  

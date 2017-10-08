@@ -19,9 +19,9 @@
 package com.t_oster.visicut.model.graphicelements.jpgpngsupport;
 
 import com.t_oster.liblasercut.platform.Util;
+import com.t_oster.visicut.model.graphicelements.AbstractImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
-import com.t_oster.visicut.model.graphicelements.Importer;
 import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
@@ -33,10 +33,10 @@ import javax.swing.filechooser.FileFilter;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class JPGPNGImporter implements Importer
+public class JPGPNGImporter extends AbstractImporter
 {
 
-  public GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException
+  public GraphicSet importSetFromFile(File inputFile, List<String> warnings) throws ImportException
   {
     try
     {

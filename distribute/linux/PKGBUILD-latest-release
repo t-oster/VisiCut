@@ -1,6 +1,6 @@
 # Maintainer: Thomas Oster
 pkgname=visicut
-pkgver=1.5
+pkgver=1.7
 pkgrel=1
 pkgdesc="A userfriendly tool to generate, save and send Jobs to a Lasercutter"
 arch=(any)
@@ -10,7 +10,7 @@ groups=()
 depends=('java-runtime' 'bash')
 makedepends=('apache-ant')
 checkdepends=()
-optdepends=('inkscape-extension-visicut: Use VisiCut directly from Inkscape')
+optdepends=()
 provides=()
 conflicts=('visicut-git')
 replaces=()
@@ -19,14 +19,15 @@ options=()
 install=install
 changelog=
 source=(
-https://github.com/t-oster/VisiCut/tarball/$pkgver 
+https://github.com/t-oster/VisiCut/archive/$pkgver.tar.gz 
 plf-mime.xml
-https://github.com/t-oster/LibLaserCut/tarball/visicut$pkgver
+ls-mime.xml
+https://github.com/t-oster/LibLaserCut/archive/visicut$pkgver.tar.gz
 )
-md5sums=('144b0f166029a16b47840e6187c8bc71'
+md5sums=('e999d42ff2fe3eb0b67d2b2e15684030'
          '023d09901b9075e86821a23953e82710'
-         'ee0c8e896c52013a9a73045f51ba2570')
-
+	 'daeabc0ae9054e49f0154f5d2f57a700'
+         'bdc355978fb4d356f6874bfbd05c4bf8')
 _gitdir=t-oster-VisiCut-
 
 build() {
@@ -42,4 +43,6 @@ package() {
   cd "$srcdir/${_gitdir}"*
   make DESTDIR="$pkgdir/" install
   cp "$srcdir/plf-mime.xml" "$pkgdir/usr/share/visicut/"
+  cp "$srcdir/ls-mime.xml" "$pkgdir/usr/share/visicut/"
+
 }
