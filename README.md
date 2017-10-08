@@ -9,8 +9,7 @@ www.visicut.org
 
 Download
 --------
-* Latest stable release: http://137.226.142.25:5080/wwwshare/VisiCutNightly/master
-* Current development state: http://137.226.142.25:5080/wwwshare/VisiCutNightly/develop
+* Latest stable release: http://download.visicut.org/
 
 Compiling and Hacking
 ---------------------
