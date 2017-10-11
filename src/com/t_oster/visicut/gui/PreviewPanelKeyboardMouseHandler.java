@@ -115,7 +115,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     startPointRemoveMenuItem = new JMenuItem(bundle.getString("REMOVE_STARTPOINT"));
     selectScreenshotMenuItem = new JMenuItem(bundle.getString("SELECT_SCREENSHOT"));
     //TODO: i10n
-    moveToPositionMenuItem = new JMenuItem("MOVE TO POSITION");
+    moveToPositionMenuItem = new JMenuItem(bundle.getString("MOVE_TO_POSITION"));
 
     resetMenuItem.addActionListener(new ActionListener()
     {
