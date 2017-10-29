@@ -36,19 +36,36 @@
 
 <p>a userfriendy, platform-independent tool for preparing, saving and sending jobs to Lasercutters.</p>
 
-<p>For more information please look at the project page at:</p>
 
-<p><a href="http://www.visicut.org">www.visicut.org</a></p>
+<p>VisiCut started as part of a <a title="VisiCut - An Application Genre for Lasercutting in Personal Fabrication" href="http://hci.rwth-aachen.de/visicutthesis">Bachelor's Thesis</a> by <a title="oster" href="http://hci.rwth-aachen.de/oster">Thomas Oster</a>, supervised by <a href="http://hci.rwth-aachen.de/bohne">René Bohne</a>. As an open-source project with many contributors, it grew to be loved by many FabLabs and Hackerspaces, who often prefer it to the original manufacturers&#39; software, or use it for custom-built machines for which there is no official software.
+</p>
 
 <h2>
 <a id="download" class="anchor" href="#download" aria-hidden="true"><span class="octicon octicon-link"></span></a>Download</h2>
 
 <ul>
-<li>Latest stable releases: <a href="http://download.visicut.org">http://download.visicut.org</a>
+<li>Latest releases: <a href="http://download.visicut.org">http://download.visicut.org</a>
 </li>
-<li>Development builds: <a href="http://download.visicut.org/develop">http://download.visicut.org/develop</a>
-</li>
+<li>Source code: <a href="https://github.com/t-oster/VisiCut">https://github.com/t-oster/VisiCut</a>
 </ul>
+
+<h2>Features</h2>
+<ul>
+    <li> Includes <a href="https://github.com/t-oster/LibLaserCut">LibLaserCut</a>, a platform independant library for Lasercutters (currently supporting the Epilog ZING, MINI and HELIX and Lasercutters with the LAOS board and some more)</li>
+    <li> Load predefined settings for many FabLabs and Hackerspaces </li>
+    <li> Currently supports SVG, EPS, DXF and the VisiCut PLF (Portable Laser Format)</li>
+    <li> Get a preview how your graphic would look on the material</li>
+    <li> Easily place your graphic on the target material using a camera preview</li>
+    <li> Save your work and publish it in the VisiCut PLF-Format</li>
+    <li> Prepare your laserjobs at home – no more surprises when importing your file in the FabLab</li>
+</ul>
+
+
+<h2>Documentation</h2>
+<p>Documentation can be found in the <a href="https://github.com/t-oster/VisiCut/wiki/">Wiki</a>. We intended to make VisiCut as intuitive and self explanatory as possible, but it would be very nice to have more documentation and tutorials. We would appreciate any help on creating a good documentation so please feel free to improve and extend it.</p>
+
+<h2>Feedback, Contact and Feature Requests</h2>
+<p>The Application crashed, did not do what it should or did not start at all? Please report this on <a href="https://github.com/t-oster/VisiCut/issues">https://github.com/t-oster/VisiCut/issues</a> after checking if it isn’t already reported, so we can fix it and improve the Software.</p>
 
 <h2>
 <a id="compiling-and-hacking" class="anchor" href="#compiling-and-hacking" aria-hidden="true"><span class="octicon octicon-link"></span></a>Compiling and Hacking</h2>
@@ -58,9 +75,14 @@
 <h1>
 <a id="liblasercut" class="anchor" href="#liblasercut" aria-hidden="true"><span class="octicon octicon-link"></span></a>LibLaserCut</h1>
 
-<p>For controlling Lasercutters, VisiCut uses the LibLaserCut. The sources can be found here: <a href="https://github.com/t-oster/LibLaserCut">https://github.com/t-oster/LibLaserCut</a></p>
+<p>For controlling Lasercutters, VisiCut uses LibLaserCut. The sources can be found here: <a href="">https://github.com/t-oster/LibLaserCut</a></p>
 
 <p>Feel free to create your own, personal Lasercutter Applications</p>
+
+<h1>
+<a id="visicam" class="anchor" href="#visicam" aria-hidden="true"><span class="octicon octicon-link"></span></a>VisiCam</h1>
+
+<p>For the camera preview, the camera position needs to be calibrated, which can be done in VisiCut itself. However, if your camera is not rigidly fixed to your lasercutter and can slightly move, you can use <a href="https://github.com/t-oster/VisiCam">VisiCam</a> to automatically calibrate the image based on markers attached to the lasercutter bed. More information can be found in the <a href="https://github.com/t-oster/VisiCam/wiki">VisiCam Wiki</a>.</p>
       </section>
     </div>
 
@@ -68,7 +90,7 @@
     <div id="footer_wrap" class="outer">
       <footer class="inner">
         <p class="copyright">Visicut maintained by <a href="https://github.com/t-oster">t-oster</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a> -- <a href="https://github.com/t-oster/VisiCut/wiki/Editing-the-website">Editing</a></p>
       </footer>
     </div>
 
