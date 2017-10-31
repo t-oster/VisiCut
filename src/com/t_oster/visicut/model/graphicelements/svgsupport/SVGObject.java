@@ -26,10 +26,10 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -127,7 +127,11 @@ public abstract class SVGObject implements GraphicObject
     g.setTransform(bak);
   }
   
-  private Map<String, List<Object>> attributeValues = new LinkedHashMap<String, List<Object>>();
+  // Cache for attribute values. Needs to be threadsafe, as getAttributeValues()
+  // is used both in the GUI (via PropertyMappingPanelTable) and the preview
+  // and calculation of the lasercut file (via MappingFilter), which is in a
+  // separate thread.
+  private Map<String, List<Object>> attributeValues = new ConcurrentHashMap<String, List<Object>>();
 
   public List<Object> getAttributeValues(String name)
   {
