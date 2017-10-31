@@ -40,9 +40,10 @@ public class WarningPanel extends javax.swing.JPanel
   
   public void removeAllWarnings()
   {
-    for (Message m: messages)
+    // removeMessage calls messages.remove(), so we can't use foreach here!
+    while (messages.size() > 0)
     {
-      removeMessage(m);
+      removeMessage(messages.get(0));
     }
   }
   
