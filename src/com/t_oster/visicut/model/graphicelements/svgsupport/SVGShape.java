@@ -31,18 +31,14 @@ import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.ShapeObject;
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -127,7 +123,9 @@ public class SVGShape extends SVGObject implements ShapeObject
     return width;
   }
 
-  private Map<String, List<Object>> attributeValues = new LinkedHashMap<String, List<Object>>();
+  // cache for attribute values needs to be threadsafe, see
+  // the comment at SVGObject.attributeValues
+  private Map<String, List<Object>> attributeValues = new ConcurrentHashMap<String, List<Object>>();
 
   @Override
   public List<Object> getAttributeValues(String a)
@@ -136,7 +134,7 @@ public class SVGShape extends SVGObject implements ShapeObject
     {
       return attributeValues.get(a);
     }
-    List<Object> result = super.getAttributeValues(a);
+    List<Object> result = new LinkedList<Object>(super.getAttributeValues(a));
     switch (Attribute.valueOf(a.replace(" ", "_")))
     {
       case Stroke_Width:
