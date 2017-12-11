@@ -1,4 +1,3 @@
 #!/bin/bash
 DIR="$( cd -P "$( dirname "$0" )" && pwd )"
-cd $DIR
-java -Xms256m -Xmx1024m -jar Visicut.jar --singleinstanceport 6543 "$@"
+java -Xms256m -Xmx1024m -jar "$DIR/Visicut.jar" --singleinstanceport 6543 "$@"

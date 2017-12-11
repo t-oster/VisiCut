@@ -34,10 +34,10 @@ import com.kitfox.svg.xml.StyleAttribute;
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.ExtensionFilter;
 import com.t_oster.visicut.misc.Helper;
+import com.t_oster.visicut.model.graphicelements.AbstractImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
-import com.t_oster.visicut.model.graphicelements.Importer;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
@@ -49,6 +49,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -59,7 +61,7 @@ import javax.swing.filechooser.FileFilter;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class SVGImporter implements Importer
+public class SVGImporter extends AbstractImporter
 {
 
   private SVGUniverse u = new SVGUniverse();
@@ -105,7 +107,7 @@ public class SVGImporter implements Importer
     }
   }
 
-  public GraphicSet importFile(InputStream in, String name, double svgResolution, final List<String> warnings) throws Exception
+  public GraphicSet importSetFromFile(InputStream in, String name, double svgResolution, final List<String> warnings) throws Exception
   {
     Handler svgImportLoggerHandler = new Handler()
     {
@@ -122,7 +124,7 @@ public class SVGImporter implements Importer
       public void close() throws SecurityException{}
 
     };
-    
+
     try
     {
       u.clear();
@@ -131,6 +133,16 @@ public class SVGImporter implements Importer
       root = u.getDiagram(svg).getRoot();
       GraphicSet result = new GraphicSet();
       result.setBasicTransform(determineTransformation(root, svgResolution));
+
+      // The resulting transformation is the mapping of "SVG pixels" to real millimeters.
+      // If viewBox, width and height are set, this scaling can be different from
+      // the implicit svgResolution before, so we recalculate the svgResolution.
+      //
+      // Note: Modifying svgResolution at this point only affects the values
+      // of stroke-width shown in the mapping table, and nothing else, especially
+      // not the rendering or the laser engraving result.
+      double mmPerPx = (result.getBasicTransform().getScaleX() + result.getBasicTransform().getScaleY()) / 2;
+      svgResolution = 1/Util.mm2inch(mmPerPx);
       importNode(root, result, svgResolution, warnings);
       Logger.getLogger(SVGConst.SVG_LOGGER).removeHandler(svgImportLoggerHandler);
       return result;
@@ -156,12 +168,12 @@ public class SVGImporter implements Importer
       case NumberWithUnits.UT_CM:
         return 10.0 * n.getValue();
       case NumberWithUnits.UT_PT:
+        return Util.inch2mm(n.getValue()/72.0);
       case NumberWithUnits.UT_PX:
+      case NumberWithUnits.UT_UNITLESS:
         return Util.px2mm(n.getValue(), dpi);
       case NumberWithUnits.UT_IN:
         return Util.inch2mm(n.getValue());
-      case NumberWithUnits.UT_UNITLESS:
-        return n.getValue();
       default:
         return n.getValue();
     }
@@ -174,10 +186,13 @@ public class SVGImporter implements Importer
    * @param f
    * @return
    */
-  private double determineResolution(File f, List<String> warnings)
+  public double determineResolution(File f, List<String> warnings)
   {
     BufferedReader in = null;;
     double result = 90;
+    boolean AdobeIllustratorSeen = false;
+    boolean WwwInkscapeComSeen = false;
+    boolean InkscapeVersion092Seen = false;
     boolean usesFlowRoot = false;
     try
     {
@@ -189,7 +204,38 @@ public class SVGImporter implements Importer
         {
           if (line.startsWith("<!-- Generator: Adobe Illustrator"))
           {
-            result = 72;
+            AdobeIllustratorSeen = true;
+          }
+          if (line.contains("www.inkscape.org/namespaces"))
+          {
+            WwwInkscapeComSeen = true;
+          }
+          if (line.contains("inkscape:version="))
+          {
+	    // inkscape:version="0.92.0 ...."
+	    // inkscape:version="0.91 r"
+
+	    // FIXME: version number comparison needed here!
+	    Pattern versionPattern = Pattern.compile("inkscape:version\\s*=\\s*[\"']?([0-9]+)\\.([0-9]+)");
+	    Matcher matcher = versionPattern.matcher(line);
+	    if (matcher.find())
+	      {
+	        String vers = matcher.group();
+		// vers = "inkscape:version=\"0.92"
+
+	        int vers_maj;
+		try { vers_maj = Integer.parseInt(matcher.group(1)); }
+		catch (NumberFormatException e) { vers_maj = -1; }
+
+	        int vers_min;
+		try { vers_min = Integer.parseInt(matcher.group(2)); }
+		catch (NumberFormatException e) { vers_min = -1; }
+
+		if (((vers_maj == 0) && (vers_min >= 92)) || (vers_maj > 0))
+		  {
+		    InkscapeVersion092Seen = true;
+		  }
+              }
           }
           if (line.contains("</flowRoot>"))
           {
@@ -226,13 +272,31 @@ public class SVGImporter implements Importer
     {
       warnings.add(java.util.ResourceBundle.getBundle("com/t_oster/visicut/model/graphicelements/svgsupport/resources/SVGImporter").getString("FLOWROOT_WARNING"));
     }
+
+    // SVG files saved with Illustrator are 72 DPI,
+    // SVG files loaded in inkscape retain the Illustrator comment, but are saved with 90 DPI.
+    if (AdobeIllustratorSeen) { result = 72; }
+    if (WwwInkscapeComSeen) { result = 90; }	// inkscape wins over Illustrator
+    if (InkscapeVersion092Seen) { result = 96; }	// inkscape with known version wins over anything else.
+    if (result != 90)
+    {
+       if (AdobeIllustratorSeen)
+         {
+           warnings.add("Adobe Illustrator comment seen in SVG.");
+	 }
+       if (InkscapeVersion092Seen)
+         {
+           warnings.add("Inkscape Version 0.92+ comment seen in SVG.");
+	 }
+       warnings.add("Switching DPI from 90 to " + result + " - Please check object size!");
+    }
     return result;
   }
 
   /*
    * Tries to determine the Coordinate resolution in DPI.
    * SVG default is 90, but AI generates 72??
-   *
+   * Since inkscape 0.92 SVG default is 96 DPI.
    */
   private AffineTransform determineTransformation(SVGRoot root, double svgResolution)
   {
@@ -254,10 +318,18 @@ public class SVGImporter implements Importer
       if (root.getPres(sty.setName("width")))
       {
         width = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolution);
+        if (sty.getNumberWithUnits().getUnits() == NumberWithUnits.UT_PERCENT)
+	  {
+	    width = 0;	// cannot use percent here!
+	  }
       }
       if (root.getPres(sty.setName("height")))
       {
         height = numberWithUnitsToMm(sty.getNumberWithUnits(), svgResolution);
+        if (sty.getNumberWithUnits().getUnits() == NumberWithUnits.UT_PERCENT)
+	  {
+	    height = 0;	// cannot use percent here!
+	  }
       }
       if (width != 0 && height != 0 && root.getPres(sty.setName("viewBox")))
       {
@@ -276,12 +348,12 @@ public class SVGImporter implements Importer
   }
 
   @Override
-  public GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException
+  public GraphicSet importSetFromFile(File inputFile, List<String> warnings) throws ImportException
   {
     try
     {
       double svgResolution = determineResolution(inputFile, warnings);
-      GraphicSet result = this.importFile(new FileInputStream(inputFile), inputFile.getName(), svgResolution, warnings);
+      GraphicSet result = this.importSetFromFile(new FileInputStream(inputFile), inputFile.getName(), svgResolution, warnings);
       return result;
     }
     catch (Exception ex)

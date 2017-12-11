@@ -20,6 +20,7 @@ package com.t_oster.visicut.model;
 
 import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.drivers.EpilogZing;
+import com.t_oster.visicut.misc.Homography;
 import com.t_oster.uicomponents.ImageListable;
 import java.awt.geom.AffineTransform;
 
@@ -31,6 +32,17 @@ import java.awt.geom.AffineTransform;
 public class LaserDevice implements ImageListable
 {
 
+  protected boolean originBottomLeft = false;
+
+  public boolean isOriginBottomLeft()
+  {
+    return originBottomLeft;
+  }
+
+  public void setOriginBottomLeft(boolean originBottomLeft)
+  {
+    this.originBottomLeft = originBottomLeft;
+  }
   protected String jobSentText = "Job was sent as '$jobname'\nPlease:\n-Close the lid\n-Turn on the Ventilation\n-And press 'start' on the Lasercutter $name";
 
   /**
@@ -94,16 +106,28 @@ public class LaserDevice implements ImageListable
   {
     this.laserCutter = laserCutter;
   }
+  /** Deprecated, but may be populated by settings file */
   protected AffineTransform cameraCalibration = null;
+  protected Homography cameraHomography = null;
 
   /**
    * Get the value of cameraCalibration
+   * 
+   * Computation for scale: Millimeters per one Pixel
+   * Millimeters are real millimeters
+   * Pixels are pixels of the original unmodified camera image
+   * Seperate values for width and height scale
    *
    * @return the value of cameraCalibration
    */
-  public AffineTransform getCameraCalibration()
+  public Homography getCameraCalibration()
   {
-    return cameraCalibration;
+    if (cameraCalibration != null && cameraHomography == null) {
+      // convert from old format
+      cameraHomography = Homography.fromAffineTransform(cameraCalibration, this);
+      cameraCalibration = null;
+    }
+    return cameraHomography;
   }
 
   /**
@@ -111,10 +135,55 @@ public class LaserDevice implements ImageListable
    *
    * @param cameraCalibration new value of cameraCalibration
    */
-  public void setCameraCalibration(AffineTransform cameraCalibration)
+  public void setCameraCalibration(Homography cameraHomography)
   {
-    this.cameraCalibration = cameraCalibration;
+    this.cameraHomography = cameraHomography;
   }
+  
+  protected String URLUser = null;
+
+  /**
+   * Get the value of URLUser
+   *
+   * @return the value of URLUser
+   */
+  public String getURLUser()
+  {
+    return URLUser;
+  }
+
+  /**
+   * Set the value of URLUser
+   *
+   * @param URLUser new value of URLUser
+   */
+  public void setURLUser(String URLUser)
+  {
+    this.URLUser = URLUser;
+  }
+  
+  protected String URLPassword = null;
+
+  /**
+   * Get the value of URLPassword
+   *
+   * @return the value of URLPassword
+   */
+  public String getURLPassword()
+  {
+    return URLPassword;
+  }
+
+  /**
+   * Set the value of URLPassword
+   *
+   * @param URLPassword new value of URLPassword
+   */
+  public void setURLPassword(String URLPassword)
+  {
+    this.URLPassword = URLPassword;
+  }
+  
   protected String cameraURL = null;
 
   /**
@@ -136,6 +205,117 @@ public class LaserDevice implements ImageListable
   {
     this.cameraURL = cameraURL;
   }
+
+  protected int cameraTiming = 0;
+  
+  /**
+   * Get the value of camera timing
+   *
+   * @return the value of camera timing
+   */
+  public int getCameraTiming()
+  {
+    return cameraTiming;
+  }
+
+  /**
+   * Set the value of camera timing
+   *
+   * @param cameraTiming new value of camera timing
+   */
+  public void setCameraTiming(int cameraTiming)
+  {
+    this.cameraTiming = cameraTiming;
+  }
+
+  protected String projectorURL = null;
+
+  /**
+   * Get the value of projectorURL
+   *
+   * @return the value of projectorURL
+   */
+  public String getProjectorURL()
+  {
+    return projectorURL;
+  }
+
+  /**
+   * Set the value of projectorURL
+   *
+   * @param cameraURL new value of projectorURL
+   */
+  public void setProjectorURL(String projectorURL)
+  {
+    this.projectorURL = projectorURL;
+  }
+  
+  protected int projectorTiming = 0;
+
+  /**
+   * Get the value of projector timing
+   *
+   * @return the value of projector timing
+   */
+  public int getProjectorTiming()
+  {
+    return projectorTiming;
+  }
+
+  /**
+   * Set the value of projector timing
+   *
+   * @param cameraTiming new value of projector timing
+   */
+  public void setProjectorTiming(int projectorTiming)
+  {
+    this.projectorTiming = projectorTiming;
+  }
+  
+  protected int projectorWidth = 0;
+  
+  /**
+   * Get the value of projector width
+   *
+   * @return the value of projector width
+   */
+  public int getProjectorWidth()
+  {
+    return projectorWidth;
+  }
+
+  /**
+   * Set the value of projector width
+   *
+   * @param cameraTiming new value of projector width
+   */
+  public void setProjectorWidth(int projectorWidth)
+  {
+    this.projectorWidth = projectorWidth;
+  }
+  
+  protected int projectorHeight = 0;
+  
+  /**
+   * Get the value of projector height
+   *
+   * @return the value of projector height
+   */
+  public int getProjectorHeight()
+  {
+    return projectorHeight;
+  }
+
+  /**
+   * Set the value of projector height
+   *
+   * @param cameraTiming new value of projector height
+   */
+  public void setProjectorHeight(int projectorHeight)
+  {
+    this.projectorHeight = projectorHeight;
+  }
+
   protected String thumbnailPath = null;
 
   /**
@@ -204,14 +384,22 @@ public class LaserDevice implements ImageListable
   public LaserDevice clone()
   {
     LaserDevice result = new LaserDevice();
-    result.cameraCalibration = cameraCalibration;
+    result.cameraHomography = cameraHomography;
+    result.URLUser = URLUser;
+    result.URLPassword = URLPassword;
     result.cameraURL = cameraURL;
+    result.cameraTiming = cameraTiming;
+    result.projectorURL = projectorURL;
+    result.projectorTiming = projectorTiming;
+    result.projectorWidth = projectorWidth;
+    result.projectorHeight = projectorHeight;
     result.description = description;
     result.name = name;
     result.laserCutter = laserCutter.clone();
     result.thumbnailPath = thumbnailPath;
     result.jobPrefix = jobPrefix;
     result.jobSentText = jobSentText;
+    result.originBottomLeft = originBottomLeft;
     return result;
   }
 

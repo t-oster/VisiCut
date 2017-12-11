@@ -36,11 +36,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipException;
 
 /**
  *
@@ -73,6 +72,7 @@ public final class PreferencesManager
   private void generateDefault() throws FileNotFoundException, IOException
   {
     preferences = new Preferences();
+    
     if (LaserDeviceManager.getInstance().getAll().isEmpty())
     {
       //Create a Laserdevice for each known driver
@@ -150,9 +150,24 @@ public final class PreferencesManager
       engrave3d.setName("engrave 3d");
       ProfileManager.getInstance().add(engrave3d);
     }
+    this.generateThingiverseDefault();
+  }
+  
+  // generates the default settings for the thingiverse integration
+  private void generateThingiverseDefault(){
+    preferences.setLaserCutterTags("lasercutter, lasercut, laser cutter, laser cut");
+    preferences.setSupportedExtensions("svg, plf, dxf, eps, gcode");
   }
 
-  private void initializeSettingDirectory()
+  private void initializeSettingDirectory() {
+    this.initializeSettingDirectory(false);
+  }
+  
+  /**
+   * create the settings directory
+   * @param generateDefaults : fill it with demo settings
+   */
+  private void initializeSettingDirectory(boolean generateDefaults)
   {
     File bp = Helper.getBasePath();
     System.out.println("'" + bp.getAbsolutePath() + "' doesn't exist. We create it.");
@@ -161,17 +176,29 @@ public final class PreferencesManager
       System.err.println("Can't create directory: '" + bp.getAbsolutePath() + "'. VisiCut won't save any settings");
       return;
     }
+    
+    if (!generateDefaults) {
+      try
+      {
+        this.savePreferences();
+      }
+      catch (Exception ex)
+      {
+        Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      return;
+    }
     //Try to copy skeleton from VisiCut's program folder
     File vc = Helper.getVisiCutFolder();
     if (vc != null && vc.isDirectory())
     {
-      for (String folder : new String[]{"examples", "profiles", "materials", "mappings", "devices", "laserprofiles"})
+      for (String folder : new String[]{"profiles", "materials", "mappings", "devices", "laserprofiles"})
       {
-      if (new File(vc, "examples").isDirectory())
+        if (new File(vc, folder).isDirectory())
         {
           try
           {
-            System.out.println("Copying "+folder+"...");
+            System.out.println("Copying default settings...");
             FileUtils.copyDirectoryToDirectory(new File(vc, folder), new File(bp, folder));
             System.out.println("done.");
           }
@@ -180,27 +207,14 @@ public final class PreferencesManager
             Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println("Can't copy default settings.");
           }
-        }
-      }
-      if (new File(vc, "settings").isDirectory())
-      {
-        try
-        {
-          System.out.println("Copying default settings...");
-          FileUtils.copyDirectoryToDirectory(new File(vc, "settings"), new File(bp, "settings"));
-          System.out.println("done.");
-          return;
-        }
-        catch (Exception ex)
-        {
-          Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex);
-          System.err.println("Can't copy default settings.");
+        } else {
+          System.err.println("cannot find default settings folder for "+folder);
         }
       }
     }
     try
     {
-      System.err.println("No default settings found. Generating some...");
+      System.err.println("Generating some defaults if no examples exist...");
       this.generateDefault();
       System.out.println("Saving generated settings...");
       this.savePreferences();
@@ -211,31 +225,52 @@ public final class PreferencesManager
       System.err.println("Couldn't save preferences");
     }
   }
-
-  private List<String> exampleFilenames = null;
-  public List<String> getExampleFilenames()
+  private Map<String, Object> listDirectory(File dir)
   {
-    if (exampleFilenames == null)
+    Map<String, Object> result = new LinkedHashMap<String, Object>();
+    if (dir.exists() && dir.isDirectory())
     {
-      exampleFilenames = new LinkedList<String>();
-      File dir = new File(Helper.getBasePath(), "examples");
-      if (dir.exists() && dir.isDirectory())
+      for(File f : dir.listFiles())
       {
-        for(File f : dir.listFiles())
+        if (f.isFile())
         {
-          if (f.isFile())
-          {
-            exampleFilenames.add(f.getName());
-          }
+          result.put(f.getName(), f);
+        }
+        else if (f.isDirectory())
+        {
+          result.put(f.getName(), this.listDirectory(f));
         }
       }
     }
-    return exampleFilenames;
+    return result;
   }
   
-  public File getExampleFile(String name)
+  /*
+   * A Map either containing a name and a file each
+   * or a name and another list of the same form
+   * (aka the example files tree)
+   */
+  private Map<String, Object> exampleFiles = null;
+  public Map<String, Object> getExampleFiles()
   {
-    return new File(new File(Helper.getBasePath(), "examples"), name);
+    if (exampleFiles == null)
+    {
+      exampleFiles = this.listDirectory(
+        new File(Helper.getBasePath(), "examples")
+        );
+    }
+    return exampleFiles;
+  }
+  
+  private Map<String, Object> builtinExampleFiles = null;
+  public Map<String, Object> getBuiltinExampleFiles()
+  {
+    if (builtinExampleFiles == null)
+    {
+      builtinExampleFiles = this.listDirectory(
+        new File(Helper.getVisiCutFolder(), "examples"));
+    }
+    return builtinExampleFiles;
   }
   
   public Preferences getPreferences()
@@ -250,18 +285,15 @@ public final class PreferencesManager
       try
       {
         preferences = this.loadPreferences(this.getPreferencesPath());
+        
+        // check if thingiverse defailts are set, if not upgrade old settings file
+        if(preferences.getLaserCutterTags() == null || preferences.getSupportedExtensions() == null){
+          this.generateThingiverseDefault();
+        }
       }
       catch (Exception ex)
       {
-        System.err.println("Can't load settings. Using default ones...");
-        try
-        {
-          this.generateDefault();
-        }
-        catch (Exception ex1)
-        {
-          Logger.getLogger(PreferencesManager.class.getName()).log(Level.SEVERE, null, ex1);
-        }
+        System.err.println("Can't load settings.");
       }
       if (preferences == null)
       {
@@ -271,6 +303,12 @@ public final class PreferencesManager
     return preferences;
   }
 
+  public void savePreferences(Preferences pref) throws FileNotFoundException, IOException
+  {
+    this.preferences = pref;
+    savePreferences();
+  }
+  
   public void savePreferences() throws FileNotFoundException, IOException
   {
     File target = this.getPreferencesPath();
@@ -325,22 +363,46 @@ public final class PreferencesManager
     FileUtils.zipDirectory(Helper.getBasePath(), file);
   }
 
-  public void importSettings(File file) throws ZipException, IOException
+  /**
+   * import settings from file created by exportSettings
+   * @param file, or null to load the example settings, or File("__EMPTY__") to delete everything
+   * @throws Exception when the file is invalid
+   */
+  public void importSettings(File file) throws Exception
   {
-    FileUtils.cleanDirectory(Helper.getBasePath());
-    FileUtils.unzipToDirectory(file, Helper.getBasePath());
-    this.exampleFilenames = null;
     try
     {
-      preferences = this.loadPreferences(this.getPreferencesPath());
+      FileUtils.cleanDirectory(Helper.getBasePath());
+      this.exampleFiles = null;
+      if (file == null || "__EMPTY__".equals(file.getName())) {
+        Helper.getBasePath().delete();
+        LaserDeviceManager.getInstance().reload();
+        MappingManager.getInstance().reload();
+        MaterialManager.getInstance().reload();
+        ProfileManager.getInstance().reload();
+        if (file==null) {
+          // file==null: load example settings (generateDefault=true)
+          this.initializeSettingDirectory(true);
+        } else {
+          // file==__EMPTY__: clear settings (generateDefault=false)
+          this.initializeSettingDirectory(false);
+        }
+        this.preferences = new Preferences();
+      } else {
+        FileUtils.unzipSettingsToDirectory(file, Helper.getBasePath());
+      }
+      this.preferences = this.loadPreferences(this.getPreferencesPath());
     }
     catch (Exception e)
     {
       this.preferences = new Preferences();
+      throw new Exception("Error importing settings",e);
     }
-    LaserDeviceManager.getInstance().reload();
-    MappingManager.getInstance().reload();
-    MaterialManager.getInstance().reload();
-    ProfileManager.getInstance().reload();
+    finally {
+      LaserDeviceManager.getInstance().reload();
+      MappingManager.getInstance().reload();
+      MaterialManager.getInstance().reload();
+      ProfileManager.getInstance().reload();
+    }
   }
 }

@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# derived from distribute/linux/install:pre_remove(){}
+
+[ -x /usr/bin/xdg-icon-resource ] && xdg-icon-resource uninstall --context mimetypes --size 32 application-x-plf || true
+[ -x /usr/bin/xdg-icon-resource ] && xdg-icon-resource uninstall --context mimetypes --size 32 application-x-ls || true
+[ -x /usr/bin/xdg-icon-resource ] && xdg-icon-resource uninstall --context mimetypes --size 48 application-x-plf || true
+[ -x /usr/bin/xdg-icon-resource ] && xdg-icon-resource uninstall --context mimetypes --size 48 application-x-ls || true
+
+[ -x /usr/bin/xdg-mime ] && xdg-mime uninstall /usr/share/visicut/plf-mime.xml || true
+[ -x /usr/bin/xdg-mime ] && xdg-mime uninstall /usr/share/visicut/ls-mime.xml || true
+
+[ -x /usr/bin/update-desktop-database ] && update-desktop-database -q || true
+[ -x /usr/bin/gtk-update-icon-cache ] && gtk-update-icon-cache -q -t -f usr/share/icons/hicolor || true
+
+echo "Removing inkscape extension"
+rm -f /usr/share/inkscape/extensions/visicut*
+rm -f /usr/share/inkscape/extensions/daemonize.py

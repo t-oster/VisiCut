@@ -152,6 +152,12 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
    * returns the transformation, which transforms coordinates in mm
    * of the AreaSize to pixels of the preview panel. Taking into account
    * zoom and position.
+   * 
+   * Computation for scale: Pixels per one Millimeter
+   * Pixels are the corrected pixels for the preview panel with the current zoom factor
+   * Millimeters are real millimeters
+   * Same scale value for width and height
+   * 
    * @return
    */
   public AffineTransform getMmToPxTransform()

@@ -32,6 +32,18 @@ public class Preferences
   {
   }
   
+  private String defaultMapping = null;
+
+  public String getDefaultMapping()
+  {
+    return defaultMapping;
+  }
+
+  public void setDefaultMapping(String defaultMapping)
+  {
+    this.defaultMapping = defaultMapping;
+  }
+  
   private boolean disableSandbox = false;
   
   public boolean isDisableSandbox()
@@ -42,6 +54,118 @@ public class Preferences
   public void setDisableSandbox(boolean disableSandbox)
   {
     this.disableSandbox = disableSandbox;
+  }
+  
+  private boolean useFilenamesForJobs = false;
+
+  public boolean isUseFilenamesForJobs()
+  {
+    return useFilenamesForJobs;
+  }
+
+  public void setUseFilenamesForJobs(boolean useFilenamesForJobs)
+  {
+    this.useFilenamesForJobs = useFilenamesForJobs;
+  }
+  
+  private String labName = null;
+  
+  public String getLabName()
+  {
+    if(labName == null)
+    {
+      labName = "unknown lab";
+    }
+    return labName;
+  }
+  
+  public void setLabName(String labName)
+  {
+    this.labName = labName;
+  }
+  
+  private boolean enableQRCodes = false;
+
+  public boolean isEnableQRCodes()
+  {
+    return enableQRCodes;
+  }
+
+  public void setEnableQRCodes(boolean enableQRCodes)
+  {
+    this.enableQRCodes = enableQRCodes;
+  }
+  
+  private boolean fastQRCodes = false;
+
+  public boolean isFastQRCodes()
+  {
+    return fastQRCodes;
+  }
+
+  public void setFastQRCodes(boolean fastQRCodes)
+  {
+    this.fastQRCodes = fastQRCodes;
+  }
+  
+  private boolean fabqrActive = false;
+
+  public boolean isFabqrActive()
+  {
+    return fabqrActive;
+  }
+
+  public void setFabqrActive(boolean fabqrActive)
+  {
+    this.fabqrActive = fabqrActive;
+  }
+  
+  private String fabqrPrivateURL = "";
+  
+  public String getFabqrPrivateURL()
+  {
+    return fabqrPrivateURL;
+  }
+
+  public void setFabqrPrivateURL(String fabqrPrivateURL)
+  {
+    this.fabqrPrivateURL = fabqrPrivateURL;
+  }
+  
+  private String fabqrPublicURL = "";
+  
+  public String getFabqrPublicURL()
+  {
+    return fabqrPublicURL;
+  }
+
+  public void setFabqrPublicURL(String fabqrPublicURL)
+  {
+    this.fabqrPublicURL = fabqrPublicURL;
+  }
+  
+  private String fabqrPrivateUser = "";
+  
+  public String getFabqrPrivateUser()
+  {
+    return fabqrPrivateUser;
+  }
+
+  public void setFabqrPrivateUser(String fabqrPrivateUser)
+  {
+    this.fabqrPrivateUser = fabqrPrivateUser;
+  }
+  
+  private String fabqrPrivatePassword = "";
+  
+  public String getFabqrPrivatePassword()
+  {
+    return fabqrPrivatePassword;
+  }
+
+  public void setFabqrPrivatePassword(String fabqrPrivatePassword)
+  {
+    this.fabqrPrivatePassword = fabqrPrivatePassword;
   }
   
   private String potracePath = null;
@@ -219,14 +343,16 @@ public class Preferences
   {
     this.availableLasercutterDrivers = availableLasercutterDrivers;
   }
-
   
   protected static String[] builtinImporters = new String[]{
+    "com.t_oster.visicut.model.graphicelements.psvgsupport.ParametricSVGImporter",
+    "com.t_oster.visicut.model.graphicelements.psvgsupport.PSVGImporter",
     "com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter",
     "com.t_oster.visicut.model.graphicelements.jpgpngsupport.JPGPNGImporter",
     "com.t_oster.visicut.model.graphicelements.dxfsupport.DXFImporter",
     "com.t_oster.visicut.model.graphicelements.epssupport.EPSImporter",
-    "com.t_oster.visicut.model.graphicelements.lssupport.LaserScriptImporter"
+    "com.t_oster.visicut.model.graphicelements.lssupport.LaserScriptImporter",
+    "com.t_oster.visicut.model.graphicelements.gcodesupport.GCodeImporter"
   };
   
   protected String[] availableImporters = new String[0];
@@ -279,5 +405,114 @@ public class Preferences
   {
     this.editSettingsBeforeExecuting = editSettingsBeforeExecuting;
   }
+  
+  // location id of the facebook fablab site, to add a link in each facebook post
+  private String fabLabLocationFacebookId = "";
 
+  /**
+   * Get the value of fabLabLocationFacebookId
+   *
+   * @return the value of fabLabLocationFacebookId
+   */
+  public String getFabLabLocationFacebookId()
+  {
+    return fabLabLocationFacebookId;
+  }
+
+  /**
+   * Set the value of fabLabLocationFacebookId
+   *
+   * @param fabLabLocationFacebookId new value of fabLabLocationFacebookId
+   */
+  public void setFabLabLocationFacebookId(String fabLabLocationFacebookId)
+  {
+    this.fabLabLocationFacebookId = fabLabLocationFacebookId;
+  }
+  // comma separated list
+  // list containing all lasercuttertags which should be considered for filtering in the thingivserse dialog
+  private String laserCutterTags = new String();
+  
+  /**
+   * Get the value of laserCutterTags
+   *
+   * @return the value of laserCutterTags
+   */
+  public String getLaserCutterTags()
+  {
+    return this.laserCutterTags;
+  }
+
+  /**
+   * Set the value of laserCutterTags
+   *
+   * @param laserCutterTags new value of laserCutterTags
+   */
+  public void setLaserCutterTags(String tags)
+  {
+    this.laserCutterTags = tags;
+  }
+  
+  // comma separated list
+  // list containing all supported file extensions which should be considered for filtering in the thingivserse dialog
+  private String supportedExtensions = "";
+  
+  /**
+   * Get the value of supportedExtensions
+   *
+   * @return the value of supportedExtensions
+   */
+  public String getSupportedExtensions()
+  {
+    return this.supportedExtensions;
+  }
+
+  /**
+   * Set the value of supportedExtensions
+   *
+   * @param supportedExtensions new value of supportedExtensions
+   */
+  public void setSupportedExtensions(String extensions)
+  {
+    this.supportedExtensions = extensions;
+  }
+
+  @Override
+  public Preferences clone()
+  {
+    Preferences result = new Preferences();
+    if (availableImporters != null)
+    {
+      result.availableImporters = new String[availableImporters.length];
+      System.arraycopy(availableImporters, 0, result.availableImporters, 0, availableImporters.length);
+    }
+    if (availableLasercutterDrivers != null)
+    {
+      result.availableLasercutterDrivers = new String[availableLasercutterDrivers.length];
+      System.arraycopy(availableLasercutterDrivers, 0, result.availableLasercutterDrivers, 0, availableLasercutterDrivers.length);
+    }
+    result.defaultMapping = defaultMapping;
+    result.disableSandbox = disableSandbox;
+    result.editSettingsBeforeExecuting = editSettingsBeforeExecuting;
+    result.lastLaserDevice = lastLaserDevice;
+    result.lastMaterial = lastMaterial;
+    result.mkbitmapPath = mkbitmapPath;
+    result.potracePath = potracePath;
+    result.recentFiles = new LinkedList<String>();
+    result.recentFiles.addAll(recentFiles);
+    result.useThicknessAsFocusOffset = useThicknessAsFocusOffset;
+    result.windowBounds = windowBounds;
+    result.useFilenamesForJobs = useFilenamesForJobs;
+    result.labName = labName;
+    result.enableQRCodes = enableQRCodes;
+    result.fastQRCodes = fastQRCodes;
+    result.fabqrActive = fabqrActive;
+    result.fabqrPrivateURL = fabqrPrivateURL;
+    result.fabqrPublicURL = fabqrPublicURL;
+    result.fabqrPrivateUser = fabqrPrivateUser;
+    result.fabqrPrivatePassword = fabqrPrivatePassword;
+    result.fabLabLocationFacebookId = fabLabLocationFacebookId;
+    result.supportedExtensions = supportedExtensions;
+    result.laserCutterTags = laserCutterTags;
+    return result;
+  }
 }

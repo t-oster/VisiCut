@@ -311,7 +311,15 @@ public class VisicutApp extends SingleFrameApplication
         {
           if (message != null && !"".equals(message))
           {
-            VisicutApp.this.mainView.loadFile(new File(message), false);
+            if (message.startsWith("@"))
+            {
+              message = message.substring(1);
+              VisicutApp.this.mainView.loadFile(new File(message), false);
+            }
+            else
+            {
+              VisicutApp.this.mainView.loadFile(new File(message), true);
+            }
           }
           VisicutApp.this.mainView.requestFocus();
         }

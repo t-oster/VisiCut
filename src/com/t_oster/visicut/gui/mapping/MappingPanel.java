@@ -173,13 +173,18 @@ public class MappingPanel extends javax.swing.JPanel
   }//GEN-LAST:event_predefinedMappingBoxActionPerformed
 
   private void btProfileSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btProfileSettingsActionPerformed
+    // "edit" button right of the mapping selection dropdown was pressed
     PlfPart p = VisicutModel.getInstance().getSelectedPart();
     if (p == null || p.getMapping() == null || p.getMapping().isEmpty()) { return; }
     if (p.getMapping().size() > 1)
     {
-      //TODO: ask user which profile to edit
+      // when the "edit" button is pressed for mappings longer than 1 item,
+      // show the customMappingPanel.
+      // individual profiles can be edited with the "edit" button in that panel.
+      predefinedMappingBox.setSelectedItem(predefinedMappingBox.CUSTOM);
       return;
     }
+    // for mappings of length 1 (e.g. cut everything) show the "edit profile" window
     LaserProfile profile = MainView.getInstance().editLaserProfile(p.getMapping().get(0).getProfile());
     if (profile != null)
     {

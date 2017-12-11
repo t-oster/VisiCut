@@ -33,10 +33,11 @@ import com.t_oster.visicut.model.RasterProfile;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
-import com.t_oster.visicut.model.mapping.FilterSet;
+import com.t_oster.visicut.model.graphicelements.ShapeObject;
 import com.t_oster.visicut.model.mapping.Mapping;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics;
@@ -44,11 +45,13 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
@@ -68,6 +71,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
 
   private double bedWidth = 600;
   private double bedHeight = 300;
+  private boolean originBottom = false;
 
   public PreviewPanel()
   {
@@ -82,6 +86,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       LaserCutter lc = d.getLaserCutter();
       bedWidth = lc.getBedWidth();
       bedHeight = lc.getBedHeight();
+      originBottom = d.isOriginBottomLeft();
       setAreaSize(new Point2D.Double(lc.getBedWidth(), lc.getBedHeight()));
       repaint();
     }
@@ -118,6 +123,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     {
       PlfPart p = (PlfPart) pce.getOldValue();
       this.clearCache(p);
+      repaint();
     }
     else if (VisicutModel.PROP_MATERIAL.equals(pce.getPropertyName())
       || VisicutModel.PROP_PLF_FILE_CHANGED.equals(pce.getPropertyName()))
@@ -284,6 +290,11 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   {
     return fastPreview;
   }
+  
+  public boolean isOriginBottom()
+  {
+    return originBottom;
+  }
 
   /**
    * Set the value of fastPreview
@@ -400,6 +411,11 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   {
     return editRectangle;
   }
+  
+  public double getBedHeight()
+  {
+    return bedHeight;
+  }
 
   /**
    * set editRectangle to the bounding-box of the selected part (or null if nothing is selected)
@@ -494,15 +510,19 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       gg.setClip(r.x, r.y, r.width, r.height);
       gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-      RenderedImage backgroundImage = VisicutModel.getInstance().getBackgroundImage();
+      BufferedImage backgroundImage = VisicutModel.getInstance().getBackgroundImage();
       if (backgroundImage != null && showBackgroundImage && VisicutModel.getInstance().getSelectedLaserDevice() != null)
       {
         AffineTransform img2px = new AffineTransform(this.getMmToPxTransform());
         if (VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration() != null)
         {
-          img2px.concatenate(VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration());
+          // if there is camera calibration, the image should correspond to the total size of the bed, so compute a pixel-to-mm scale.
+          // x and y should should be equal, but do them both anyway.
+          double xscale = bedWidth / (double)backgroundImage.getWidth();
+          double yscale = bedHeight / (double)backgroundImage.getHeight();
+          img2px.scale(xscale,yscale);
+          gg.drawRenderedImage(backgroundImage, img2px);
         }
-        gg.drawRenderedImage(backgroundImage, img2px);
       }
       Rectangle box = Helper.toRect(Helper.transform(
           new Rectangle2D.Double(0, 0, this.bedWidth, this.bedHeight),
@@ -524,7 +544,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
         gg.setColor(Color.DARK_GRAY);
         drawGrid(gg);
       }
-      for (PlfPart part : VisicutModel.getInstance().getPlfFile())
+      for (PlfPart part : VisicutModel.getInstance().getPlfFile().getPartsCopy())
       {
         boolean selected = (part.equals(VisicutModel.getInstance().getSelectedPart()));
         HashMap<Mapping,ImageProcessingThread> renderBuffer = renderBuffers.get(part);
@@ -533,12 +553,81 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
           renderBuffer = new LinkedHashMap<Mapping,ImageProcessingThread>();
           renderBuffers.put(part,renderBuffer);
         }
+
         if (part.getGraphicObjects() != null)
         {
           MappingSet mappingsToDraw = part.getMapping();
           if (VisicutModel.getInstance().getMaterial() == null || mappingsToDraw == null || mappingsToDraw.isEmpty())
-          {//Just draw the original Image
-            this.renderOriginalImage(gg, null, part, this.fastPreview && selected);
+          {
+            if (part.getQRCodeInfo() != null && part.getQRCodeInfo().isPreviewQRCodeSource() && !part.getQRCodeInfo().isPreviewPositionQRStored() && part.getGraphicObjects() != null)
+            {
+              GraphicSet graphicSet = part.getGraphicObjects();
+              Stroke originalStroke = gg.getStroke();
+              Color originalColor = gg.getColor();
+
+              float strokeWidth = 1.1f;
+              Color strokeColor = Color.GREEN;
+              Stroke stroke = new BasicStroke(strokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+              gg.setColor(strokeColor);
+              gg.setStroke(stroke);
+
+              for (GraphicObject graphicObject : graphicSet)
+              {
+                // Shape measured in mm
+                Shape shape = (graphicObject instanceof ShapeObject) ? ((ShapeObject)graphicObject).getShape() : graphicObject.getBoundingBox();
+
+                if (graphicSet.getTransform() != null)
+                {
+                  shape = graphicSet.getTransform().createTransformedShape(shape);
+                }
+
+                // Transform shape from mm to pixel
+                shape = this.getMmToPxTransform().createTransformedShape(shape);
+
+                if (shape != null)
+                {
+                  PathIterator iter = shape.getPathIterator(null, 1);
+                  int startx = 0;
+                  int starty = 0;
+                  int lastx = 0;
+                  int lasty = 0;
+
+                  while (!iter.isDone())
+                  {
+                    double[] test = new double[8];
+                    int result = iter.currentSegment(test);
+                    //transform coordinates to preview-coordinates
+                    //laserPx2PreviewPx.transform(test, 0, test, 0, 1);
+                    if (result == PathIterator.SEG_MOVETO)
+                    {
+                      startx = (int) test[0];
+                      starty = (int) test[1];
+                      lastx = (int) test[0];
+                      lasty = (int) test[1];
+                    }
+                    else if (result == PathIterator.SEG_LINETO)
+                    {
+                      gg.drawLine(lastx, lasty, (int)test[0], (int)test[1]);
+                      lastx = (int) test[0];
+                      lasty = (int) test[1];
+                    }
+                    else if (result == PathIterator.SEG_CLOSE)
+                    {
+                      gg.drawLine(lastx, lasty, startx, starty);
+                    }
+                    iter.next();
+                  }
+                }
+              }
+              
+              gg.setColor(originalColor);
+              gg.setStroke(originalStroke);
+            }
+            else
+            {
+              //Just draw the original Image
+              this.renderOriginalImage(gg, null, part, this.fastPreview && selected);
+            }
           }
           else
           {
@@ -690,8 +779,8 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     }
     for (double y = 0; y < this.bedHeight; y += gridDst)
     {
-      Point a = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(0, y), null));
-      Point b = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(bedWidth, y), null));
+      Point a = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(0, originBottom ? bedHeight - y : y), null));
+      Point b = Helper.toPoint(this.getMmToPxTransform().transform(new Point2D.Double(bedWidth, originBottom ? bedHeight - y : y), null));
       if (a.y > 0)
       {
         if (a.y > this.getHeight())

@@ -15,9 +15,10 @@ replaces=()
 backup=()
 options=()
 install=install
-source=(plf-mime.xml)
+source=(plf-mime.xml ls-mime.xml)
 noextract=()
-md5sums=('023d09901b9075e86821a23953e82710')
+md5sums=('023d09901b9075e86821a23953e82710'
+'daeabc0ae9054e49f0154f5d2f57a700')
 
 _gitroot=../../../
 
@@ -31,5 +32,6 @@ package() {
   cd "$srcdir"
   cd ../../../
   make DESTDIR="$pkgdir/" install
+  cp "$srcdir/ls-mime.xml" "$pkgdir/usr/share/visicut/"
   cp "$srcdir/plf-mime.xml" "$pkgdir/usr/share/visicut/"
 }

@@ -18,8 +18,10 @@
  **/
 package com.t_oster.uicomponents;
 
+import com.t_oster.liblasercut.OptionSelector;
 import java.awt.Component;
 import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
@@ -29,21 +31,29 @@ import javax.swing.table.TableCellRenderer;
  * This table gives out the default Editors and Renderers
  * for Booleans, Integers, Doubles and Strings without
  * restricting the columns to be from one class
- * 
+ *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class BetterJTable extends JTable
 {
 
+  public BetterJTable()
+  {
+    if (this.getRowHeight() < 23)
+    {
+      this.setRowHeight(23);
+    }
+  }
+
   private int[] relativeWidths = null;
-  
+
   public void setColumnRelations(int[] relativeWidths)
   {
     this.relativeWidths = relativeWidths;
   }
 
-  
-  
+
+
   @Override
   public void doLayout()
   {
@@ -67,9 +77,9 @@ public class BetterJTable extends JTable
     }
     super.doLayout();
   }
-  
-  
-  
+
+
+
   @Override
   public TableCellEditor getCellEditor(int row, int column)
   {
@@ -78,6 +88,12 @@ public class BetterJTable extends JTable
     if (o instanceof Boolean)
     {
       result = this.getDefaultEditor(Boolean.class);
+    }
+    else if (o instanceof OptionSelector)
+    {
+      JComboBox c = new JComboBox(((OptionSelector)o).getItems());
+      c.setSelectedItem(((OptionSelector)o).getSelectedItem());
+      result = new DefaultCellEditor(c);
     }
     else if (o instanceof String || o instanceof Integer || o instanceof Float || o instanceof Double)
     {
@@ -131,7 +147,7 @@ public class BetterJTable extends JTable
     {
     }
   }
-  
+
   //directly enable editing on focus change
   @Override
   public void changeSelection(final int row, final int column, boolean toggle, boolean extend)
@@ -140,7 +156,7 @@ public class BetterJTable extends JTable
       this.editCellAt(row, column);
       this.transferFocus();
   }
-  
+
 
   @Override
   public TableCellRenderer getCellRenderer(int row, int column)
@@ -150,7 +166,23 @@ public class BetterJTable extends JTable
     {
       return this.getDefaultRenderer(Boolean.class);
     }
+    else if (o instanceof OptionSelector)
+    {
+      return new TableCellRenderer()
+      {
+        @Override
+        public Component getTableCellRendererComponent(JTable table,
+                Object value, boolean isSelected, boolean hasFocus,
+                int row, int column)
+        {
+          OptionSelector options = (OptionSelector) value;
+          JComboBox combo = new JComboBox(options.getItems());
+          combo.setSelectedItem(options.getSelectedItem());
+          return combo;
+        }
+      };
+    }
     return super.getCellRenderer(row, column);
   }
-  
+
 }

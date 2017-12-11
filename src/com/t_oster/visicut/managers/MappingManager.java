@@ -29,6 +29,7 @@ import com.t_oster.visicut.model.mapping.MappingFilter;
 import com.t_oster.visicut.model.mapping.MappingSet;
 import com.thoughtworks.xstream.XStream;
 import java.util.Comparator;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -90,7 +91,39 @@ public class MappingManager extends FilebasedManager<MappingSet>
     String doEverything = bundle.getString("EVERYTHING_DO");
     List<MappingSet> result = new LinkedList<MappingSet>();
     Set<String> profiles = new LinkedHashSet<String>();
-    for (LaserProfile lp:ProfileManager.getInstance().getAll())
+    List<LaserProfile> lp_all = ProfileManager.getInstance().getAll();
+
+    /*
+     * Sort the list of laser profiles to
+     *  - have vector profiles before non-vector-profiles (bend, mark, cut before all kinds of engrave)
+     *  - have vector profiles named "cut..." before others (bend, mark). A cutter cuts.
+     * Caution: similar code in
+     *  - mapping/CustomMappingPanel.java:generateDefaultEntries()
+     *  - our private Comparator<MappingSet> comp
+     *
+     * TODO:
+     *  - check if they all should do the same?
+     *  - check if bend and mark should really have isIsCut() return true?
+     *    They don't really cut through the material. If the had iscut=false, we could use
+     *    that instead of the hackish name prefix comparison "cut".
+     */
+    Collections.sort(lp_all, new Comparator<LaserProfile>()
+      {
+	public int compare(LaserProfile p1, LaserProfile p2)
+	  {
+	    if (p1.getName().toLowerCase().startsWith("cut") !=  p2.getName().toLowerCase().startsWith("cut"))
+	      {
+	        if (p1.getName().toLowerCase().startsWith("cut")) { return -1; } else { return 1; }
+	      }
+	    if ((p1 instanceof VectorProfile) != (p2 instanceof VectorProfile))
+	      {
+	        if (p1 instanceof VectorProfile) { return -1; } else { return 1; }
+	      }
+	    return p1.getName().compareToIgnoreCase(p2.getName());
+	  }
+      });
+
+    for (LaserProfile lp : lp_all)
     {
       if (!profiles.contains(lp.getName()))
       {
@@ -104,7 +137,7 @@ public class MappingManager extends FilebasedManager<MappingSet>
     }
     return result;
   }
-  
+
   @Override
   protected String getSubfolderName()
   {
@@ -137,7 +170,7 @@ public class MappingManager extends FilebasedManager<MappingSet>
   {
     return comp;
   }
-  
+ 
     /**
    * Find a mapping with the given name
    * @param name
@@ -145,6 +178,11 @@ public class MappingManager extends FilebasedManager<MappingSet>
    */
   public MappingSet getItemByName(String name) {
     for (MappingSet obj: this.getAll()) {
+      if (obj.getName().equals(name)) {
+        return obj;
+      }
+    }
+    for (MappingSet obj: this.generateDefaultMappings()) {
       if (obj.getName().equals(name)) {
         return obj;
       }

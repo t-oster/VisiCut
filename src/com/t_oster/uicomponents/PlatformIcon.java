@@ -49,6 +49,7 @@ public class PlatformIcon
   //public static final String NEW = "new";
   //public static final String NEXT = "next";
   public static final String NO_IMAGE = "no-image";
+  public static final String PROJECTOR = "projector";
   //public static final String PREV = "prev";
   public static final String REMOVE = "remove";
   public static final String REMOVE_FILE = "remove-file";
@@ -60,6 +61,8 @@ public class PlatformIcon
   public static final String ZOOM_LASERBED = "zoom-laserbed"; //ZOOM_FIT
   public static final String ZOOM_IN = "zoom-in";
   public static final String ZOOM_OUT = "zoom-out";
+  public static final String THINGIVERSE_LOGO = "thingiverse-logo";
+  public static final String FACEBOOK_LOGO = "facebook-logo";
   
   private static final Map<String, String> gtkIconNames = new LinkedHashMap<String, String>();
   static

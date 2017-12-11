@@ -29,6 +29,7 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.PlfFile;
 import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
+import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.t_oster.visicut.vectorize.VectorizeDialog;
 import java.awt.Cursor;
 import java.awt.Point;
@@ -70,21 +71,26 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
   private DialogHelper dialogHelper;
   private JPopupMenu objectmenu;
   private JMenuItem resetMenuItem;
+  private JMenuItem reloadMenuItem;
   private JMenuItem vectorizeMenuItem;
   private JMenuItem duplicateMenuItem;
   private JMenuItem deleteMenuItem;
   private JMenuItem flipHorizMenuItem;
   private JMenuItem flipVertMenuItem;
+  private JMenuItem rot90CwMenuItem;
   private JMenuItem openMenuItem;
   private JPopupMenu backgroundMenu;
   private JMenuItem startPointSetMenuItem;
   private JMenuItem startPointRemoveMenuItem;
   private JMenuItem selectScreenshotMenuItem;
+  private JMenuItem moveToPositionMenuItem;
+  
+  private boolean shiftKeyDown = false;
   
   public PreviewPanelKeyboardMouseHandler(PreviewPanel panel)
   {
     this.previewPanel = panel;
-    this.dialogHelper = new DialogHelper(panel, "VisiCut");
+    this.dialogHelper = MainView.getInstance().getDialog();
     this.previewPanel.addMouseListener(this);
     this.previewPanel.addMouseMotionListener(this);
     this.previewPanel.addKeyListener(this);
@@ -96,16 +102,20 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler");
     objectmenu = new JPopupMenu();
     resetMenuItem = new JMenuItem(bundle.getString("RESET TRANSFORMATION"));
+    reloadMenuItem = new JMenuItem(bundle.getString("RELOAD"));
     duplicateMenuItem = new JMenuItem(bundle.getString("DUPLICATE"));
     vectorizeMenuItem = new JMenuItem(bundle.getString("VECTORIZE"));
     deleteMenuItem = new JMenuItem(bundle.getString("REMOVE"));
     flipHorizMenuItem = new JMenuItem(bundle.getString("FLIP_HORIZONTALLY"));
     flipVertMenuItem = new JMenuItem(bundle.getString("FLIP_VERTICALLY"));
+    rot90CwMenuItem = new JMenuItem(bundle.getString("ROTATE_90_CW"));
     openMenuItem = new JMenuItem(bundle.getString("OPEN"));
     backgroundMenu = new JPopupMenu();
     startPointSetMenuItem = new JMenuItem(bundle.getString("ADD_STARTPOINT"));
     startPointRemoveMenuItem = new JMenuItem(bundle.getString("REMOVE_STARTPOINT"));
     selectScreenshotMenuItem = new JMenuItem(bundle.getString("SELECT_SCREENSHOT"));
+    //TODO: i10n
+    moveToPositionMenuItem = new JMenuItem(bundle.getString("MOVE_TO_POSITION"));
 
     resetMenuItem.addActionListener(new ActionListener()
     {
@@ -119,6 +129,23 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       }
     });
     objectmenu.add(resetMenuItem);
+    reloadMenuItem.addActionListener(new ActionListener()
+    {
+      public void actionPerformed(ActionEvent ae)
+      {
+        try
+        {
+          LinkedList<String> warnings = new LinkedList<String>();
+          VisicutModel.getInstance().reloadSelectedPart(warnings);
+          dialogHelper.showWarningMessage(warnings);
+        }
+        catch (ImportException ex)
+        {
+          dialogHelper.showErrorMessage(ex);
+        }
+      }
+    });
+    objectmenu.add(reloadMenuItem);
     vectorizeMenuItem.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae)
       {
@@ -177,6 +204,13 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       }
     });
     objectmenu.add(flipVertMenuItem);
+    rot90CwMenuItem.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae)
+      {
+        rotateBy(90.0);
+      }
+    });
+    objectmenu.add(rot90CwMenuItem);
     duplicateMenuItem.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae)
       {
@@ -254,6 +288,25 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       }
     });
     backgroundMenu.add(selectScreenshotMenuItem);
+    moveToPositionMenuItem.addActionListener(new ActionListener(){
+
+      public void actionPerformed(ActionEvent ae)
+      {
+        try
+        {
+          PreviewPanelKeyboardMouseHandler that = PreviewPanelKeyboardMouseHandler.this;
+          Point2D.Double p = new Point2D.Double(that.lastMousePosition.x, that.lastMousePosition.y);
+          that.previewPanel.getMmToPxTransform().createInverse().transform(p, p);
+          VisicutModel.getInstance().moveHeadTo(p);
+        }
+        catch (NoninvertibleTransformException ex)
+        {
+          Logger.getLogger(PreviewPanelKeyboardMouseHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+      
+    });
+    backgroundMenu.add(moveToPositionMenuItem);
   }
 
   private void flip(boolean horizontal)
@@ -272,6 +325,20 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     previewPanel.repaint();
   }
 
+  private void rotateBy(double angle)
+  {
+    Rectangle2D bb = getSelectedPart().getBoundingBox();
+    double mx = bb.getX()+bb.getWidth()/2;
+    double my = bb.getY()+bb.getHeight()/2;
+    AffineTransform rot = AffineTransform.getRotateInstance(Math.toRadians(angle), mx, my);
+    AffineTransform cur = getSelectedSet().getTransform();
+    cur.preConcatenate(rot);
+    getSelectedSet().setTransform(cur);
+    previewPanel.updateEditRectangle();
+    previewPanel.clearCache(getSelectedPart());
+    previewPanel.repaint();
+  }
+
   private EditRectangle getEditRect()
   {
     return this.previewPanel.getEditRectangle();
@@ -283,7 +350,9 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
 
   public void keyPressed(KeyEvent ke)
   {
-    if (this.getEditRect() != null)
+    shiftKeyDown = ke.isShiftDown();
+    
+    if (this.getEditRect() != null && !this.getEditRect().isRotateMode())
     {
       double diffx = 0;
       double diffy = 0;
@@ -333,13 +402,15 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
 
   public void keyReleased(KeyEvent ke)
   {
-    if (ke.getKeyCode() == KeyEvent.VK_SHIFT)
+    shiftKeyDown = ke.isShiftDown();
+    
+    if (ke.getKeyCode() == KeyEvent.VK_SHIFT && this.getEditRect() != null && !this.getEditRect().isRotateMode())
     {
       this.previewPanel.setFastPreview(false);
       this.applyEditRectoToSet();
       VisicutModel.getInstance().firePartUpdated(getSelectedPart());
     }
-    else if (ke.getKeyCode() == KeyEvent.VK_DELETE)
+    else if (ke.getKeyCode() == KeyEvent.VK_DELETE && this.getEditRect() != null)
     {
       VisicutModel.getInstance().removeSelectedPart();
     }
@@ -413,7 +484,10 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
           }
           if (this.getEditRect().getParameterFieldBounds(EditRectangle.ParameterField.Y).contains(me.getPoint()))
           {
-            Double y = dialogHelper.askLength(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("TOP OFFSET"), this.getEditRect().y);
+            boolean originBottom = previewPanel.isOriginBottom();
+            double bedHeight = previewPanel.getBedHeight();
+            
+            Double y = dialogHelper.askLength(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString(originBottom ? "BOTTOM OFFSET" : "TOP OFFSET"), originBottom ? bedHeight - this.getEditRect().y - this.getEditRect().height : this.getEditRect().y);
             if (y == null)
             {
               return true;
@@ -423,7 +497,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
               dialogHelper.showErrorMessage(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/PreviewPanelKeyboardMouseHandler").getString("OUT_OF_BOUNDS"));
               return true;
             }
-            this.getEditRect().y = y;
+            this.getEditRect().y = originBottom ? bedHeight - y - this.getEditRect().height : y;
             this.applyEditRectoToSet();
             VisicutModel.getInstance().firePartUpdated(getSelectedPart());
             return true;
@@ -473,6 +547,12 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
 
   public void mouseClicked(MouseEvent me)
   {
+    // Do not allow clicks while GUI is diables for QR code editing
+    if (MainView.getInstance() != null && MainView.getInstance().isEditGuiForQRCodesDisabled())
+    {
+      return;
+    }
+      
     if (currentAction == MouseAction.selectingScreenshot)
     {
       currentAction = null;
@@ -543,7 +623,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     }
     else if (me.getButton() == MouseEvent.BUTTON3)
     {
-      if (getEditRect() != null)
+      if (this.previewPanel.isHighlightSelection() && getEditRect() != null)
       {
         Rectangle2D bb = getSelectedPart().getBoundingBox();
         Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
@@ -589,6 +669,13 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       return;
     }
     currentAction = MouseAction.movingViewport;
+    
+    // Only allow movingViewport while GUI is diables for QR code editing
+    if (MainView.getInstance() != null && MainView.getInstance().isEditGuiForQRCodesDisabled())
+    {
+      return;
+    }
+
     if (VisicutModel.getInstance().getStartPoint() != null)
     {
       Point2D sp = previewPanel.getMmToPxTransform().transform(VisicutModel.getInstance().getStartPoint(), null);
@@ -647,12 +734,7 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     {
       try
       {
-        AffineTransform mm2imgpx = new AffineTransform();
-        if (VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration() != null)
-        {
-          mm2imgpx = VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration().createInverse();
-        }
-        Rectangle crop = Helper.toRect(Helper.transform(this.previewPanel.getEditRectangle(), mm2imgpx));
+        Rectangle crop = Helper.toRect(this.previewPanel.getEditRectangle());
         VisicutModel.getInstance().addScreenshotOfBackgroundImage(crop, this.previewPanel.getEditRectangle());
       }
       catch (Exception ex)
@@ -727,6 +809,19 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
             Rectangle2D bb = getSelectedPart().getBoundingBox();
             Point2D middle = previewPanel.getMmToPxTransform().transform(new Point2D.Double(bb.getCenterX(), bb.getCenterY()), null);
             double angle = Math.atan2(evt.getPoint().y-middle.getY(), evt.getPoint().x-middle.getX());
+            //snap if shift is down
+            if (shiftKeyDown)
+            {
+              //180° workaround
+              if (Math.abs(angle-Math.toRadians(180)) <= Math.toRadians(15))
+              {
+                angle = Math.toRadians(180);
+              }
+              else
+              {
+                angle = Math.toRadians(15)* (int) (angle/Math.toRadians(15));
+              }
+            }
             this.rotateTo(angle);
             break;
           }
@@ -815,6 +910,12 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
             Point2D.Double d = new Point2D.Double(diff.x, diff.y);
             tr.createInverse().deltaTransform(d, d);
             this.moveSet(d.x, d.y);
+
+	    /* make sure the objects are visible */
+            Rectangle2D bb = getSelectedPart().getBoundingBox();
+            Rectangle2D e = Helper.transform(bb, this.previewPanel.getMmToPxTransform());
+            this.previewPanel.scrollRectToVisible(
+	      new Rectangle((int)e.getX(),(int)e.getY(),(int)e.getWidth(),(int)e.getHeight()));
             this.previewPanel.repaint();
             break;
           }

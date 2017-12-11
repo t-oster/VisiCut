@@ -20,9 +20,9 @@ package com.t_oster.visicut.model.graphicelements.dxfsupport;
 
 import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.misc.ExtensionFilter;
+import com.t_oster.visicut.model.graphicelements.AbstractImporter;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import com.t_oster.visicut.model.graphicelements.ImportException;
-import com.t_oster.visicut.model.graphicelements.Importer;
 import com.t_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,10 +48,10 @@ import org.xml.sax.SAXException;
  *
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
-public class DXFImporter implements Importer
+public class DXFImporter extends AbstractImporter
 {
 
-  public GraphicSet importFile(File inputFile, List<String> warnings) throws ImportException
+  public GraphicSet importSetFromFile(File inputFile, List<String> warnings) throws ImportException
   {
     GraphicSet result = new GraphicSet();
     try
@@ -92,7 +92,7 @@ public class DXFImporter implements Importer
         }).start();
       SVGImporter svgimp = new SVGImporter();
       //TODO Check which resolution it exports and adapt it to mm
-      result = svgimp.importFile(in, inputFile.getName(), 1/Util.mm2inch(1), warnings);
+      result = svgimp.importSetFromFile(in, inputFile.getName(), 1/Util.mm2inch(1), warnings);
     }
     catch (Exception ex)
     {

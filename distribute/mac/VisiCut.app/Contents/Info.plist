@@ -50,6 +50,7 @@
 				<string>png</string>
 				<string>svg</string>
 				<string>dxf</string>
+				<string>ls</string>
         		</array>
         		<key>CFBundleTypeRole</key>
         		<string>Viewer</string>
