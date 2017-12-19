@@ -501,12 +501,12 @@
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="warningPanel" pref="556" max="32767" attributes="0"/>
+                  <Component id="warningPanel" pref="545" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="jPanel1" pref="408" max="32767" attributes="0"/>
+                              <Component id="jPanel1" pref="397" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jPanel3" min="-2" pref="140" max="-2" attributes="0"/>
                           </Group>
@@ -515,7 +515,7 @@
                   </Group>
               </Group>
               <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-              <Component id="jScrollPane1" pref="563" max="32767" attributes="0"/>
+              <Component id="jScrollPane1" pref="574" max="32767" attributes="0"/>
               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -525,19 +525,19 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" pref="0" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jPanel3" min="-2" pref="45" max="-2" attributes="0"/>
                           <Component id="jPanel1" min="-2" pref="45" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="497" max="32767" attributes="0"/>
+                      <Component id="jScrollPane2" pref="604" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="warningPanel" pref="185" max="32767" attributes="0"/>
+                      <Component id="warningPanel" pref="246" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -574,7 +574,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="457" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="566" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
@@ -605,7 +605,7 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabelJobName" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                                      <Component id="jTextFieldJobName" pref="168" max="32767" attributes="0"/>
+                                      <Component id="jTextFieldJobName" max="32767" attributes="0"/>
                                       <EmptySpace min="-2" pref="199" max="-2" attributes="0"/>
                                       <Component id="executeJobButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -613,7 +613,7 @@
                                       <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="timeLabel" min="-2" pref="166" max="-2" attributes="0"/>
-                                      <EmptySpace pref="199" max="32767" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
                                       <Component id="calculateTimeButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -621,20 +621,19 @@
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="mappingTabbedPane" alignment="0" pref="514" max="32767" attributes="1"/>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="objectComboBox" pref="416" max="32767" attributes="0"/>
+                                      <Component id="objectComboBox" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="btAddObject" min="-2" pref="31" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="btRemoveObject" min="-2" pref="31" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="jSeparator1" alignment="0" pref="514" max="32767" attributes="0"/>
-                                  <Component id="laserCutterComboBox" alignment="0" pref="514" max="32767" attributes="1"/>
+                                  <Component id="jSeparator1" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="laserCutterComboBox" alignment="0" max="32767" attributes="1"/>
                                   <Group type="102" alignment="1" attributes="0">
-                                      <Component id="materialComboBox" pref="477" max="32767" attributes="1"/>
+                                      <Component id="materialComboBox" max="32767" attributes="1"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="btAddMaterial" min="-2" pref="31" max="-2" attributes="0"/>
                                   </Group>
@@ -647,7 +646,7 @@
                                           </Group>
                                           <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace pref="158" max="32767" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
                                       <Component id="jCheckBox1" min="-2" pref="197" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
@@ -655,8 +654,9 @@
                                           <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="0" pref="454" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
+                                  <Component id="jScrollPane3" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                           </Group>
@@ -694,16 +694,16 @@
                       <Component id="jSeparator1" min="-2" pref="8" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="btRemoveObject" min="-2" pref="31" max="-2" attributes="1"/>
+                          <Component id="btAddObject" min="-2" pref="31" max="-2" attributes="1"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="objectComboBox" alignment="3" max="32767" attributes="1"/>
                               <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="btRemoveObject" min="-2" pref="31" max="-2" attributes="1"/>
-                          <Component id="btAddObject" min="-2" pref="31" max="-2" attributes="1"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="mappingTabbedPane" max="32767" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="jScrollPane3" min="-2" pref="347" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="timeLabel" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                           <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -794,69 +794,6 @@
                 <Property name="name" type="java.lang.String" value="timeLabel" noResource="true"/>
               </Properties>
             </Component>
-            <Container class="javax.swing.JTabbedPane" name="mappingTabbedPane">
-              <Properties>
-                <Property name="name" type="java.lang.String" value="Custom" noResource="true"/>
-              </Properties>
-              <AccessibilityProperties>
-                <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="com/t_oster/visicut/gui/resources/MainView.properties" key="MAPPING" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                </Property>
-              </AccessibilityProperties>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
-              <SubComponents>
-                <Component class="com.t_oster.visicut.gui.mapping.MappingPanel" name="mappingPanel">
-                  <Properties>
-                    <Property name="name" type="java.lang.String" value="mappingPanel" noResource="true"/>
-                  </Properties>
-                  <Constraints>
-                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                      <JTabbedPaneConstraints tabName="Mapping">
-                        <Property name="tabTitle" type="java.lang.String" resourceKey="mappingPanel.TabConstraints.tabTitle"/>
-                      </JTabbedPaneConstraints>
-                    </Constraint>
-                  </Constraints>
-                </Component>
-                <Component class="com.t_oster.uicomponents.PositionPanel" name="positionPanel">
-                  <Properties>
-                    <Property name="name" type="java.lang.String" value="positionPanel" noResource="true"/>
-                  </Properties>
-                  <Constraints>
-                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                      <JTabbedPaneConstraints tabName="Position">
-                        <Property name="tabTitle" type="java.lang.String" resourceKey="positionPanel.TabConstraints.tabTitle"/>
-                      </JTabbedPaneConstraints>
-                    </Constraint>
-                  </Constraints>
-                </Component>
-                <Container class="javax.swing.JScrollPane" name="propertyPanelContainer">
-                  <Properties>
-                    <Property name="name" type="java.lang.String" value="propertyPanelContainer" noResource="true"/>
-                  </Properties>
-                  <Constraints>
-                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                      <JTabbedPaneConstraints tabName="Laser Settings">
-                        <Property name="tabTitle" type="java.lang.String" resourceKey="propertyPanelContainer.TabConstraints.tabTitle"/>
-                      </JTabbedPaneConstraints>
-                    </Constraint>
-                  </Constraints>
-
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-                  <SubComponents>
-                    <Container class="com.t_oster.visicut.gui.propertypanel.PropertiesPanel" name="propertiesPanel">
-                      <Properties>
-                        <Property name="name" type="java.lang.String" value="propertiesPanel" noResource="true"/>
-                      </Properties>
-
-                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout">
-                        <Property name="axis" type="int" value="1"/>
-                      </Layout>
-                    </Container>
-                  </SubComponents>
-                </Container>
-              </SubComponents>
-            </Container>
             <Component class="javax.swing.JButton" name="btAddMaterial">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
@@ -960,6 +897,112 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btAddObjectActionPerformed"/>
               </Events>
             </Component>
+            <Container class="javax.swing.JScrollPane" name="jScrollPane3">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jScrollPane3" noResource="true"/>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel4">
+                  <Properties>
+                    <Property name="name" type="java.lang.String" value="jPanel4" noResource="true"/>
+                  </Properties>
+
+                  <Layout>
+                    <DimensionLayout dim="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                                  <Component id="mappingTabbedPane" pref="529" max="32767" attributes="1"/>
+                                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                    <DimensionLayout dim="1">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="mappingTabbedPane" min="-2" pref="471" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JTabbedPane" name="mappingTabbedPane">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="Custom" noResource="true"/>
+                      </Properties>
+                      <AccessibilityProperties>
+                        <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                          <ResourceString bundle="com/t_oster/visicut/gui/resources/MainView.properties" key="MAPPING" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                        </Property>
+                      </AccessibilityProperties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+                      <SubComponents>
+                        <Component class="com.t_oster.visicut.gui.mapping.MappingPanel" name="mappingPanel">
+                          <Properties>
+                            <Property name="name" type="java.lang.String" value="mappingPanel" noResource="true"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="Mapping">
+                                <Property name="tabTitle" type="java.lang.String" resourceKey="mappingPanel.TabConstraints.tabTitle"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+                        </Component>
+                        <Component class="com.t_oster.uicomponents.PositionPanel" name="positionPanel">
+                          <Properties>
+                            <Property name="name" type="java.lang.String" value="positionPanel" noResource="true"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="Position">
+                                <Property name="tabTitle" type="java.lang.String" resourceKey="positionPanel.TabConstraints.tabTitle"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+                        </Component>
+                        <Container class="javax.swing.JScrollPane" name="propertyPanelContainer">
+                          <Properties>
+                            <Property name="name" type="java.lang.String" value="propertyPanelContainer" noResource="true"/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="Laser Settings">
+                                <Property name="tabTitle" type="java.lang.String" resourceKey="propertyPanelContainer.TabConstraints.tabTitle"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                          <SubComponents>
+                            <Container class="com.t_oster.visicut.gui.propertypanel.PropertiesPanel" name="propertiesPanel">
+                              <Properties>
+                                <Property name="name" type="java.lang.String" value="propertiesPanel" noResource="true"/>
+                              </Properties>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout">
+                                <Property name="axis" type="int" value="1"/>
+                              </Layout>
+                            </Container>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
           </SubComponents>
         </Container>
       </SubComponents>
