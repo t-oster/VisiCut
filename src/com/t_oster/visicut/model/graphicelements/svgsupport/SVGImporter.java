@@ -194,6 +194,7 @@ public class SVGImporter extends AbstractImporter
     boolean WwwInkscapeComSeen = false;
     boolean InkscapeVersion092Seen = false;
     boolean InkscapeVersionSeen = false;
+    boolean ViewBoxSeen = false;
     boolean usesFlowRoot = false;
     try
     {
@@ -211,13 +212,17 @@ public class SVGImporter extends AbstractImporter
           {
             WwwInkscapeComSeen = true;
           }
+          if (line.contains("viewBox="))
+          {
+            ViewBoxSeen = true;
+            // viewBox="0 0 210 300"
+          }
           if (line.contains("inkscape:version="))
           {
             InkscapeVersionSeen = true;
 	    // inkscape:version="0.92.0 ...."
 	    // inkscape:version="0.91 r"
 
-	    // FIXME: version number comparison needed here!
 	    Pattern versionPattern = Pattern.compile("inkscape:version\\s*=\\s*[\"']?([0-9]+)\\.([0-9]+)");
 	    Matcher matcher = versionPattern.matcher(line);
 	    if (matcher.find())
@@ -280,23 +285,23 @@ public class SVGImporter extends AbstractImporter
     if (AdobeIllustratorSeen) { result = 72; }
     if (WwwInkscapeComSeen) { result = 90; }	// inkscape wins over Illustrator
     if (InkscapeVersion092Seen) { result = 96; }	// inkscape with known version wins over anything else.
-    if (result != 96)
+    if ((result != 96) && !ViewBoxSeen)
     {
        if (AdobeIllustratorSeen)
          {
-           warnings.add("Adobe Illustrator comment seen in SVG. Using "+result+" dpi.");
+           warnings.add("Adobe Illustrator comment seen in SVG. No viewBox. Using "+result+" dpi.");
 	 }
        if (InkscapeVersion092Seen)
          {
-           warnings.add("Inkscape Version 0.92+ comment seen in SVG. Using "+result+" dpi.");
+           warnings.add("Inkscape Version 0.92+ comment seen in SVG. No viewBox. Using "+result+" dpi.");
 	 }
        if (WwwInkscapeComSeen && !InkscapeVersionSeen)
          {
-           warnings.add("Old inkscape header without version seen in SVG. Using "+result+" dpi.");
+           warnings.add("Old inkscape header without version seen in SVG. No viewBox. Using "+result+" dpi.");
          }
        if (InkscapeVersionSeen && !InkscapeVersion092Seen)
          {
-           warnings.add("Old inkscape version (< 0.92) seen in SVG. Using "+result+" dpi.");
+           warnings.add("Old inkscape version (< 0.92) seen in SVG. No viewBox. Using "+result+" dpi.");
          }
     }
     return result;
