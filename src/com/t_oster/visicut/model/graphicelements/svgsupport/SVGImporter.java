@@ -287,22 +287,22 @@ public class SVGImporter extends AbstractImporter
     if (InkscapeVersion092Seen) { result = 96; }	// inkscape with known version wins over anything else.
     if ((result != 96) && !ViewBoxSeen)
     {
-       if (AdobeIllustratorSeen)
-         {
-           warnings.add("Adobe Illustrator comment seen in SVG. No viewBox. Using "+result+" dpi.");
-	 }
-       if (InkscapeVersion092Seen)
-         {
-           warnings.add("Inkscape Version 0.92+ comment seen in SVG. No viewBox. Using "+result+" dpi.");
-	 }
-       if (WwwInkscapeComSeen && !InkscapeVersionSeen)
-         {
-           warnings.add("Old inkscape header without version seen in SVG. No viewBox. Using "+result+" dpi.");
-         }
-       if (InkscapeVersionSeen && !InkscapeVersion092Seen)
-         {
-           warnings.add("Old inkscape version (< 0.92) seen in SVG. No viewBox. Using "+result+" dpi.");
-         }
+      if (AdobeIllustratorSeen)
+        {
+          warnings.add("Adobe Illustrator comment seen in SVG. No viewBox. Using "+result+" dpi.");
+        }
+      if (InkscapeVersion092Seen)
+        {
+          warnings.add("Inkscape Version 0.92+ comment seen in SVG. No viewBox. Using "+result+" dpi.");
+        }
+      if (WwwInkscapeComSeen && !InkscapeVersionSeen)
+        {
+          warnings.add("Old inkscape header without version seen in SVG. No viewBox. Using "+result+" dpi.");
+        }
+      if (InkscapeVersionSeen && !InkscapeVersion092Seen)
+        {
+          warnings.add("Old inkscape version (< 0.92) seen in SVG. No viewBox. Using "+result+" dpi.");
+        }
     }
     return result;
   }
