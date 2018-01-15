@@ -3407,6 +3407,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
 
   // Want your lab in this list? Look at https://github.com/t-oster/VisiCut/wiki/How-to-add-default-settings-for-your-lab !
   // choices.put("Country, City: Institution", "https://example.org/foo.zip");
+  choices.put("China, Hong Kong: Renaissance College Hong Kong", "https://github.com/RCHK-DT/visicut-settings/archive/master.zip");
   choices.put("Germany, Aachen: FabLab RWTH Aachen", "https://github.com/renebohne/zing6030-visicut-settings/archive/master.zip");
   choices.put("Germany, Erlangen: FAU FabLab", "https://github.com/fau-fablab/visicut-settings/archive/master.zip");
   if (hostname.endsWith(".fau.de") || hostname.endsWith(".uni-erlangen.de")) {
