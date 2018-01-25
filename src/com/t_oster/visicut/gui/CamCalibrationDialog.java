@@ -36,6 +36,7 @@ import com.t_oster.visicut.misc.Homography;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.VectorProfile;
 import com.t_oster.uicomponents.PlatformIcon;
+import com.t_oster.visicut.misc.DialogHelper;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
@@ -96,6 +97,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
     new Point2D.Double(0.7d, 0.5d), // mid right
   };
 
+  final protected DialogHelper dialog = new DialogHelper(this, this.getTitle());
 
   /**
    * Get the value of backgroundImage
@@ -153,7 +155,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
         }
         catch (Exception ex)
         {
-          JOptionPane.showMessageDialog(CamCalibrationDialog.this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("ERROR LOADING IMAGE:") + ex.getLocalizedMessage(), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("ERROR"), JOptionPane.ERROR_MESSAGE);
+          dialog.showErrorMessage(ex, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("ERROR LOADING IMAGE:"));
         }
   }
 
@@ -466,7 +468,7 @@ private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
   }
   catch (Exception e)
   {
-    JOptionPane.showMessageDialog(this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("ERROR SENDING PAGE: ") + e.getLocalizedMessage(), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("ERROR"), JOptionPane.ERROR_MESSAGE);
+    dialog.showErrorMessage(e, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("ERROR SENDING PAGE: "));
   }
 }//GEN-LAST:event_sendButtonActionPerformed
 

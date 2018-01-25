@@ -204,10 +204,67 @@ public class DialogHelper
     this.showErrorMessage(cause, "");
   }
 
+  /**
+   * Show a human-readable but useful message for an exception.
+   * @param cause Exception
+   * @param text Error message
+   */
   public void showErrorMessage(Exception cause, String text)
   {
     cause.printStackTrace();
-    JOptionPane.showMessageDialog(parent, text + "\nError (" + cause.getClass().getSimpleName() + "): " + cause.getLocalizedMessage(), title + " Error", JOptionPane.ERROR_MESSAGE);
+    String message = getHumanReadableErrorMessage(cause, text);
+    JOptionPane.showMessageDialog(parent, message, title + " Error", JOptionPane.ERROR_MESSAGE);
+  }
+
+    /**
+   * Generate a human-readable but useful message for an exception.
+   * Also print the stack trace to stdout.
+   * @param cause Exception
+   * @param text Error message (optional)
+   * @return Message string useful for showing in an error dialog
+   */
+  public static String getHumanReadableErrorMessage(Exception cause, String text)
+  {
+    cause.printStackTrace();
+    String message = "";
+    if (text != null && text.length() > 0)
+    {
+      message = text + "\n";
+    }
+    // display the localized message (such as "No route to host") if there is one
+    // otherwise show the class name
+    if (cause.getLocalizedMessage() == null)
+    {
+      message = message + cause.getClass().getSimpleName();
+    }
+    else
+    {
+      if (cause instanceof java.net.SocketException)
+      {
+        // Network errors like "port not found" have meaningful error messages
+        message = message + cause.getLocalizedMessage();
+      }
+      else
+      {
+        // Most other exceptions are not easy to understand without the class name
+        // (e.g. 'java.net.UnknownHostException: foo.example.com')
+        message = message + cause.getClass().getSimpleName() + ": " + cause.getLocalizedMessage();
+      }
+    }
+    // for interesting exceptions, add the first few stack trace lines
+    if (cause.getClass().equals(NullPointerException.class))
+    {
+      StackTraceElement[] stackTrace = cause.getStackTrace();
+      for (int i = 0; i < 2 && i < stackTrace.length; i++)
+      {
+        message = message + "\n" + stackTrace[i].toString();
+      }
+    }
+    return message;
+  }
+
+  public static String getHumanReadableErrorMessage(Exception cause) {
+    return getHumanReadableErrorMessage(cause, null);
   }
 
   public void showErrorMessage(String text)

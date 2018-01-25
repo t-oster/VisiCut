@@ -159,51 +159,45 @@ public class MainView extends javax.swing.JFrame
     @Override
     public void showWarningMessage(String text)
     {
-      MainView.this.warningPanel.addMessage(new Message("Warning", text, Message.Type.WARNING, null));
+      MainView.this.warningPanel.addMessage(new Message(bundle.getString("WARNING"), text, Message.Type.WARNING, null));
     }
 
     @Override
     public void showWarningMessageOnce(String text, String messageId, int timeout)
     {
       // use timeout=-1 to disable timeout
-      MainView.this.warningPanel.addMessageOnce(new Message("Warning", text, Message.Type.WARNING, null, timeout), messageId);
+      MainView.this.warningPanel.addMessageOnce(new Message(bundle.getString("WARNING"), text, Message.Type.WARNING, null, timeout), messageId);
     }
 
     @Override
     public void showSuccessMessage(String text)
     {
-      MainView.this.warningPanel.addMessage(new Message("Success", text, Message.Type.SUCCESS, null, 10000));
+      MainView.this.warningPanel.addMessage(new Message(bundle.getString("SUCCESS"), text, Message.Type.SUCCESS, null, 10000));
     }
 
     @Override
     public void showInfoMessage(String text)
     {
-      MainView.this.warningPanel.addMessage(new Message("Info", text, Message.Type.INFO, null));
+      MainView.this.warningPanel.addMessage(new Message(bundle.getString("INFO"), text, Message.Type.INFO, null));
     }
 
     @Override
     public void showErrorMessage(Exception ex)
     {
-      Throwable cause = ex;
-      while ((cause.getMessage() == null || "".equals(cause.getMessage())) && cause.getCause() != null)
-      {
-        cause = cause.getCause();
-      }
-      cause.printStackTrace();
-      MainView.this.warningPanel.addMessage(new Message("Error", "Exception: " + cause.getLocalizedMessage(), Message.Type.ERROR, null));
+      this.showErrorMessage(ex, null);
     }
 
     @Override
     public void showErrorMessage(Exception cause, String text)
     {
       cause.printStackTrace();
-      MainView.this.warningPanel.addMessage(new Message("Error", text + ": " + cause.getLocalizedMessage(), Message.Type.ERROR, null));
+      this.showErrorMessage(DialogHelper.getHumanReadableErrorMessage(cause, text));
     }
 
     @Override
     public void showErrorMessage(String text)
     {
-      MainView.this.warningPanel.addMessage(new Message("Error", text, Message.Type.ERROR, null));
+      MainView.this.warningPanel.addMessage(new Message(bundle.getString("ERROR"), text, Message.Type.ERROR, null));
     }
 
     @Override
@@ -2579,18 +2573,7 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
               }
               catch (Exception e)
               {
-                e.printStackTrace();
-                if (e instanceof java.net.SocketException)
-                {
-                  // Network errors like "port not found" have meaningful error messages
-                  msg = e.getLocalizedMessage();
-                }
-                else
-                {
-                  // Most other exceptions are not easy to understand without the class name
-                  // (e.g. 'java.net.UnknownHostException: foo.example.com')
-                  msg = ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage();
-                }
+                msg = DialogHelper.getHumanReadableErrorMessage(e);
               }
               if (responseCode != 0)
               {
@@ -2611,7 +2594,7 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
             }
             else
             {
-              cameraCapturingError = bundle.getString("ERROR CAPTURING PHOTO") + "\nError (" + ex.getClass().getSimpleName() + "): " + ex.getLocalizedMessage();
+              cameraCapturingError = DialogHelper.getHumanReadableErrorMessage(ex, bundle.getString("ERROR CAPTURING PHOTO"));
             }
           }
 
