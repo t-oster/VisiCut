@@ -45,6 +45,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -429,7 +430,14 @@ private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
       throw new Exception(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("NO LASERCUTTER SELECTED"));
     }
     VectorPart vp = null;
-    for (LaserProperty lp : LaserPropertyManager.getInstance().getLaserProperties(laserDevice, vm.getMaterial(), profile, vm.getMaterialThickness()))
+    if (vm.getMaterial() == null) {
+      throw new Exception(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("NO MATERIAL SELECTED"));
+    }
+    List<LaserProperty> laserProperties = LaserPropertyManager.getInstance().getLaserProperties(laserDevice, vm.getMaterial(), profile, vm.getMaterialThickness());
+    if (laserProperties == null) {
+      throw new Exception(java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/resources/CamCalibrationDialog").getString("NO LASER SETTINGS FOR THIS MATERIAL"));
+    }
+    for (LaserProperty lp : laserProperties)
     {
       if (vp == null)
       {
