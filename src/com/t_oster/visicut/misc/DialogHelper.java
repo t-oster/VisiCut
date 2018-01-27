@@ -252,7 +252,9 @@ public class DialogHelper
       }
     }
     // for interesting exceptions, add the first few stack trace lines
-    if (cause.getClass().equals(NullPointerException.class))
+    boolean emptyMessage = cause.getMessage() == null || cause.getMessage().trim().length() == 0;
+    if (cause.getClass().equals(NullPointerException.class) ||
+        (cause.getClass().equals(Exception.class) && emptyMessage))
     {
       StackTraceElement[] stackTrace = cause.getStackTrace();
       for (int i = 0; i < 2 && i < stackTrace.length; i++)
