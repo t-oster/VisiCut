@@ -104,6 +104,7 @@ import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -3632,6 +3633,8 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   private Map<LaserProfile, List<LaserProperty>> getPropertyMapForCurrentJob()
   {
     Map<LaserProfile, List<LaserProperty>> result = this.propertiesPanel.getPropertyMap();
+    Map<LaserProfile, Double> newMap = new HashMap<LaserProfile, Double>();
+
     for (LaserProfile lp : result.keySet())
     {
       if (lp == null)//ignore-profile
@@ -3656,12 +3659,15 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
           return null;
         }
         //changing the DPI changes the hash-code, so we have to
-        //remove and re-assign the profile to the map
-        List<LaserProperty> val = result.get(lp);
-        result.remove(lp);
-        lp.setDPI(res);
-        result.put(lp, val);
+        //remove and re-assign the profile to the map after iteration.
+        newMap.put(lp, res);
       }
+    }
+    for (LaserProfile lp : newMap.keySet()) {
+      List<LaserProperty> val = result.get(lp);
+      result.remove(lp);
+      lp.setDPI(newMap.get(lp));
+      result.put(lp, val);
     }
     return result;
   }
