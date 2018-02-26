@@ -23,7 +23,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +30,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -199,6 +199,7 @@ public class GraphicSet extends LinkedList<GraphicObject>
   @Override
   public boolean add(GraphicObject o)
   {
+    // this method is not threadsafe
     this.boundingBoxCache = null;
     if (this.attributesCache != null)
     {
@@ -210,6 +211,7 @@ public class GraphicSet extends LinkedList<GraphicObject>
   
   public boolean remove(GraphicObject o)
   {
+    // this method is not threadsafe
     this.boundingBoxCache = null;
     if (this.attributesCache != null)
     {
@@ -231,13 +233,10 @@ public class GraphicSet extends LinkedList<GraphicObject>
     return result;
   }
 
-  private Map<String, Set<Object>> attributeValueCache = null;
+  private final Map<String, Set<Object>> attributeValueCache = new ConcurrentHashMap<String, Set<Object>>();
   public Set<Object> getAttributeValues(String attribute)
   {
-    if (attributeValueCache == null)
-    {
-      attributeValueCache = new LinkedHashMap<String, Set<Object>>();
-    }
+    // this "read-only" method must be threadsafe.
     if (!attributeValueCache.containsKey(attribute))
     {
       Set<Object> values = new LinkedHashSet<Object>();
@@ -254,13 +253,16 @@ public class GraphicSet extends LinkedList<GraphicObject>
   
   public Iterable<String> getAttributes()
   {
+    // this "read-only" method must be threadsafe.
     if (attributesCache == null)
     {
-      attributesCache = new LinkedHashSet();
+      Set attributes = new LinkedHashSet();
       for(GraphicObject o:this)
       {
-        attributesCache.addAll(o.getAttributes());
+        attributes.addAll(o.getAttributes());
       }
+      // late assignment for threadsafety
+      attributesCache = attributes;
     }
     return attributesCache;
   }
@@ -273,17 +275,20 @@ public class GraphicSet extends LinkedList<GraphicObject>
    */
   public Iterable<String> getInterestingAttributes()
   {
+    // this "read-only" method must be threadsafe.
     if (interestingAttributesCache == null)
     {
-      interestingAttributesCache = new LinkedHashSet();
+      Set interestingAttributes = new LinkedHashSet();
       for (String attribute : this.getAttributes())
       {
         //only makes sense if at least two properties are present
         if (this.getAttributeValues(attribute).size() > 1)
         {
-          interestingAttributesCache.add(attribute);
+          interestingAttributes.add(attribute);
         }
       }
+      // late assignment for threadsafety
+      interestingAttributesCache = interestingAttributes;
     }
     return interestingAttributesCache;
   }

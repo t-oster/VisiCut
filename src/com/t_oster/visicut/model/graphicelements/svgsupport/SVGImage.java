@@ -20,9 +20,9 @@ package com.t_oster.visicut.model.graphicelements.svgsupport;
 
 import com.kitfox.svg.ImageSVG;
 import com.kitfox.svg.RenderableElement;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -44,7 +44,8 @@ public class SVGImage extends SVGObject
     return decoratee;
   }
 
-  private Map<String,List<Object>> attributeValues = new LinkedHashMap<String,List<Object>>();
+  // needs to be threadsafe, see note in SVGObject
+  private Map<String,List<Object>> attributeValues = new ConcurrentHashMap<String,List<Object>>();
   @Override
   public List<Object> getAttributeValues(String attribute)
   {
