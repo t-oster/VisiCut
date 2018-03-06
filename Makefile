@@ -30,3 +30,10 @@ uninstall:
 	rm -f $(PREFIX)/share/pixmaps/visicut.png
 	rm -f $(PREFIX)/bin/visicut
 	rm -f $(PREFIX)/share/applications/VisiCut.desktop
+
+prop2po:
+	prop2po src po
+
+po2prop:
+	po2prop --personality=java -t src po src
+	find src -name '*.properties' -exec sed -e 's/\(\\u....\)/\L\1/g' -i {} \;
