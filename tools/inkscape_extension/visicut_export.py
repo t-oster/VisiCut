@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 '''
 This extension strips everything which is not selected from
-the current svg, saves it under "<currenttmpfilename>.svg" and
+the current svg, saves it and
 calls VisiCut on it.
 
 Copyright (C) 2012 Thomas Oster, thomas.oster@rwth-aachen.de
-Copyright (C) 2014 Max Gaukler, development@maxgaukler.de
+Copyright (C) 2014-2018 Max Gaukler, development@maxgaukler.de
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -29,6 +29,9 @@ import re
 import subprocess
 from subprocess import Popen
 import traceback
+import tempfile
+import unicodedata
+import codecs
 
 SINGLEINSTANCEPORT=6543
 
@@ -184,13 +187,21 @@ def stripSVG_inkscape(src,dest,elements):
  if len(elements)>0:
   #selection += ["--verb=FitCanvasToSelection"] # TODO add a user configuration option whether to keep the page size (and by this the position relative to the page)
   selection += ["--verb=EditInvertInAllLayers","--verb=EditDelete"]
+
+ # create temporary file for opening with inkscape.
+ # delete this file later so that it will disappear from the "recently opened" list.
+ tmpfile = tempfile.NamedTemporaryFile(delete=False, prefix='temp-visicut-', suffix='.svg')
+ tmpfile.close()
+ tmpfile = tmpfile.name
  import shutil
- shutil.copyfile(src, dest)
+ shutil.copyfile(src, tmpfile)
+ 
  hidegui=["--without-gui"]
+ 
  # currently this only works with gui  because of a bug in inkscape: https://bugs.launchpad.net/inkscape/+bug/843260
  hidegui=[]
  
- command = [INKSCAPEBIN]+hidegui+[dest,"--verb=UnlockAllInAllLayers","--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers","--verb=EditUnlinkClone","--verb=ObjectToPath","--verb=FileSave","--verb=FileQuit"]
+ command = [INKSCAPEBIN]+hidegui+[tmpfile,"--verb=UnlockAllInAllLayers","--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers","--verb=EditUnlinkClone","--verb=ObjectToPath","--verb=FileSave","--verb=FileQuit"]
  inkscape_output="(not yet run)"
  try:
   # run inkscape, buffer output
@@ -211,7 +222,56 @@ def stripSVG_inkscape(src,dest,elements):
   # sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect.\nInkscape's output was:\n" + inkscape_output)
  except:
   sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect. Exception information: \n" + str(sys.exc_info()[0]) + "Inkscape's output was:\n" + inkscape_output)
+
+ # move output to the intended destination filename
+ os.rename(tmpfile, dest)
  
+
+"""
+Get document name (original filename) from Inkscape SVG
+
+Inkscape saves the file to a random temporary name.
+However, the original filename is stored inside the SVG.
+"""
+def get_original_filename(filename):
+    docname = None
+    
+    # parse SVG for docname tag
+    with codecs.open(filename, "r", encoding='utf-8') as f:
+        for line in f:
+            if 'sodipodi:docname="' in line:
+                matches = re.search('sodipodi:docname="(.*).svg"', line)
+                if not matches:
+                    break
+                try:
+                    docname = matches.group(1)
+                except IndexError:
+                    # something is wrong with this line
+                    break
+                # unescape XML string
+                docname = docname.replace('&lt;', '<')
+                docname = docname.replace('&gt;', '>')
+                docname = docname.replace('&quot;', '"')
+                docname = docname.replace('&amp;','&')
+                
+                # normalize accented characters (äöü -> aou)
+                docname = unicodedata.normalize('NFKD', docname).encode('ASCII', 'ignore')
+                break
+
+    if not docname:
+        # failed to read filename from SVG, return original one
+        docname = os.path.basename(filename)
+        if str.endswith(docname, ".svg"):
+            docname = docname[:-4]
+        if str.startswith(docname, "ink_ext_"):
+            # inkscape temporary file, the name is useless
+            docname = "new"
+
+    # sanitize the filename:
+    # filter out special characters (@/\& ...)
+    docname = "".join( x for x in docname if (x.isalnum() or x in "._- "))
+    docname = docname + ".svg"
+    return docname
 
 # find executable paths
 import platform
@@ -223,8 +283,11 @@ else:
     VISICUTBIN=which("VisiCut.Linux",[VISICUTDIR, "/usr/share/visicut"])
 INKSCAPEBIN=which("inkscape",[INKSCAPEDIR])
 
+tmpdir = tempfile.mkdtemp(prefix='temp-visicut-')
+dest_filename = os.path.join(tmpdir, get_original_filename(filename))
+
 # remove all non-selected elements and convert inkscape-specific elements (text-to-path etc.)
-stripSVG_inkscape(src=filename,dest=filename+".svg",elements=elements)
+stripSVG_inkscape(src=filename,dest=dest_filename,elements=elements)
 
 # Try to connect to running VisiCut instance
 try:
@@ -232,9 +295,9 @@ try:
   s=socket.socket()
   s.connect(("localhost", SINGLEINSTANCEPORT))
   if (IMPORT == "true" or IMPORT == true or IMPORT == "\"true\""):
-    s.send("@"+filename+".svg\n")
+    s.send("@"+ dest_filename + "\n")
   else:
-    s.send(filename+".svg\n")
+    s.send(dest_filename + "\n")
   s.close()
   sys.exit(0)
 except SystemExit, e:
@@ -258,7 +321,9 @@ try:
         daemonize.createDaemon()
       except:
         sys.stderr.write("Could not daemonize. Sorry, but Inkscape was blocked until VisiCut is closed")
-  cmd=[VISICUTBIN]+arguments+[filename+".svg"]
+  cmd = [VISICUTBIN] + arguments + [dest_filename]
   Popen(cmd,creationflags=creationflags,close_fds=close_fds)
 except:
   sys.stderr.write("Can not start VisiCut ("+str(sys.exc_info()[0])+"). Please start manually or change the VISICUTDIR variable in the Inkscape-Extension script\n")
+
+# TODO (complicated, probably WONTFIX): cleanup temporary directories -- this is really difficult because we need to make sure that visicut no longer needs the file, even for reloading!
