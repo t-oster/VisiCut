@@ -62,25 +62,6 @@ public class CamCalibrationDialog extends javax.swing.JDialog
 
   protected String imageURL = null;
 
-  /**
-   * Get the value of imageURL
-   *
-   * @return the value of imageURL
-   */
-  public String getImageURL()
-  {
-    return imageURL;
-  }
-
-  /**
-   * Set the value of imageURL
-   *
-   * @param imageURL new value of imageURL
-   */
-  public void setImageURL(String imageURL)
-  {
-    this.imageURL = imageURL;
-  }
 
   protected BufferedImage backgroundImage = null;
   public static final String PROP_BACKGROUNDIMAGE = "backgroundImage";
@@ -213,10 +194,6 @@ public class CamCalibrationDialog extends javax.swing.JDialog
   }
 
   private VectorProfile profile = null;
-  public void setVectorProfile(VectorProfile p)
-  {
-    this.profile = p;
-  }
 
   public void setCorrespondencePoints(Point2D.Double[] points) {
     confirmedImagePoints = points;
@@ -228,21 +205,26 @@ public class CamCalibrationDialog extends javax.swing.JDialog
 
   public CamCalibrationDialog()
   {
-    this(null, true);
+    this(null, true, null, "");
   }
 
   /** Creates new form CamCalibrationDialog */
-  public CamCalibrationDialog(java.awt.Frame parent, boolean modal)
+  public CamCalibrationDialog(java.awt.Frame parent, boolean modal, VectorProfile profile, String imageURL)
   {
     super(parent, modal);
     initComponents();
+    this.profile = profile;
+    this.imageURL = imageURL;
     LaserCutter lc = VisicutModel.getInstance().getSelectedLaserDevice().getLaserCutter();
     alignmentPoints = new Point2D.Double[alignmentPointsDefaults.length];
     for (int i = 0; i < alignmentPointsDefaults.length; i++) {
       alignmentPoints[i] = new Point2D.Double(alignmentPointsDefaults[i].x * lc.getBedWidth(),
           alignmentPointsDefaults[i].y * lc.getBedHeight());
     }
+
     this.calibrationPanel1.setAreaSize(new Point2D.Double(lc.getBedWidth(), lc.getBedHeight()));
+    this.fetchFreshImage();
+    this.alignmentPointsComboItemStateChanged(null); // implies refreshImagePoints()
   }
 
   /** This method is called from within the constructor to
