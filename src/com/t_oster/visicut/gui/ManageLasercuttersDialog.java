@@ -331,7 +331,30 @@ public class ManageLasercuttersDialog extends javax.swing.JDialog implements Edi
   {
     EditLaserDeviceDialog d = new EditLaserDeviceDialog(null, true);
     d.setLaserDevice((LaserDevice) o);
+    String oldName = ((LaserDevice) o).getName();
     d.setVisible(true);
-    return d.getLaserDevice();
+    LaserDevice laserDevice = d.getLaserDevice();
+    if (laserDevice.getName() == null || laserDevice.getName().isEmpty()) {
+      // set default name if the name is empty
+      laserDevice.setName(laserDevice.getLaserCutter().getModelName());
+    }
+    if (!laserDevice.getName().equals(oldName)) {
+      // Name was changed.
+      // Check for duplicate names and fix the name by appending " (2)" repeatedly until it is unique
+      while (true) {
+        boolean nameCollision = false;
+        for (LaserDevice dev: currentLaserCutters) {
+          if (dev.getName().equals(laserDevice.getName())) {
+            nameCollision = true;
+          }
+        }
+        if (nameCollision) {
+          laserDevice.setName(laserDevice.getName() + " (2)");
+        } else {
+          break;
+        }
+      }
+    }
+    return laserDevice;
   }
 }
