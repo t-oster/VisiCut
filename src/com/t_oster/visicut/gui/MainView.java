@@ -70,8 +70,8 @@ import com.tur0kk.thingiverse.ThingiverseManager;
 import com.frochr123.periodictasks.RefreshCameraThread;
 import com.frochr123.periodictasks.RefreshProjectorThread;
 import com.frochr123.periodictasks.RefreshQRCodesTask;
-import com.t_oster.uicomponents.warnings.WarningPanel;
 import com.t_oster.visicut.Preferences;
+import com.t_oster.visicut.misc.Homography;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
@@ -1865,6 +1865,8 @@ public class MainView extends javax.swing.JFrame
 
       this.calibrateCameraMenuItem.setEnabled(cam);
       this.cameraActiveMenuItem.setEnabled(cam);
+
+      MainView.this.visicutModel1.setBackgroundImage(null); // hide camera image until a new one has been fetched
       previewPanel.setShowBackgroundImage(cam);
       setCameraActive(cam);
 
@@ -2456,11 +2458,6 @@ private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 }//GEN-LAST:event_newMenuItemActionPerformed
 
 private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calibrateCameraMenuItemActionPerformed
-  if (this.visicutModel1.getBackgroundImage() == null)
-  {
-    dialog.showErrorMessage(bundle.getString("THE CAMERA DOESN'T SEEM TO BE WORKING. PLEASE CHECK THE URL IN THE LASERCUTTER SETTINGS"));
-    return;
-  }
   List<VectorProfile> profiles = ProfileManager.getInstance().getVectorProfiles();
   if (profiles.isEmpty())
   {
@@ -2474,10 +2471,7 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
   }
   //TODO ask user for VectorProfile and make sure the properties for current
   //material and cutter are available
-  CamCalibrationDialog ccd = new CamCalibrationDialog(this, true);
-  ccd.setVectorProfile(p);
-  ccd.setImageURL(getVisiCam());
-  ccd.fetchFreshImage();
+  CamCalibrationDialog ccd = new CamCalibrationDialog(this, true, p, getVisiCam());
   if (this.visicutModel1.getSelectedLaserDevice().getCameraCalibration() != null) {
     ccd.setCorrespondencePoints(this.visicutModel1.getSelectedLaserDevice().getCameraCalibration().getViewPoints());
   }
@@ -2491,6 +2485,7 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
   {
     dialog.showErrorMessage(ex, bundle.getString("ERROR WHILE SAVING SETTINGS"));
   }
+  captureImage();
   this.previewPanel.repaint();
 }//GEN-LAST:event_calibrateCameraMenuItemActionPerformed
 
@@ -2530,30 +2525,28 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
 
             ImageInputStream stream = new MemoryCacheImageInputStream(conn.getInputStream());
             BufferedImage back = ImageIO.read(stream);
-            if (back != null && MainView.this.visicutModel1.getBackgroundImage() == null)
-            {//First Time Image is Captured => resize View
-              // TODO also called when image reappears after error, while the user is moving some object around -- not so good. Put this call somewhere else.
-              // MainView.this.previewPanel.setZoom(100d);
+            if (back == null) {
+              throw new Exception("camera image is null");
             }
-
-            // Check again if camera and background are active, might have changed in the meantime, because of threading
-            if (back != null && isCameraActive() && isPreviewPanelShowBackgroundImage())
-            {
-              LaserDevice ld = visicutModel1.getSelectedLaserDevice();
-              if (ld.getCameraCalibration() != null) {
-                // Do the homography mapping in this thread, off the UI thread, to avoid jank.
-                // It also simplifies things if the background image stored in the main view is already corrected.
-                long start = System.currentTimeMillis();
-                correctedBackgroundImage = ld.getCameraCalibration().correct(back, ld.getLaserCutter().getBedWidth(), ld.getLaserCutter().getBedHeight(), correctedBackgroundImage);
-                MainView.this.visicutModel1.setBackgroundImage(correctedBackgroundImage);
-                try {
-                  // Don't use more than 1/4 of the CPU time calculating this
-                  Thread.sleep((System.currentTimeMillis() - start) * 3);
-                } catch (InterruptedException e) { }
-              } else {
-                MainView.this.visicutModel1.setBackgroundImage(back);
-              }
+            LaserDevice ld = visicutModel1.getSelectedLaserDevice();
+            if (ld == null || !isCameraActive() || !isPreviewPanelShowBackgroundImage()) {
+              // no camera image requested
+              cameraCapturingError = "";
+              return;
             }
+            Homography cameraCalibration = ld.getCameraCalibration();
+            if (cameraCalibration == null) {
+              throw new Exception(bundle.getString("CAMERA_NOT_YET_CALIBRATED"));
+            }
+            // Do the homography mapping in this thread, off the UI thread, to avoid jank.
+            // It also simplifies things if the background image stored in the main view is already corrected.
+            long start = System.currentTimeMillis();
+            correctedBackgroundImage = ld.getCameraCalibration().correct(back, ld.getLaserCutter().getBedWidth(), ld.getLaserCutter().getBedHeight(), correctedBackgroundImage);
+            MainView.this.visicutModel1.setBackgroundImage(correctedBackgroundImage);
+            try {
+              // Don't use more than 1/4 of the CPU time calculating this
+              Thread.sleep((System.currentTimeMillis() - start) * 3);
+            } catch (InterruptedException e) { }
             cameraCapturingError = "";
           }
           catch (Exception ex)
@@ -3427,10 +3420,12 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
     defaultChoice = "Germany, Erlangen: FAU FabLab";
   }
   choices.put("Germany, Nuremberg: Fab lab Region Nürnberg e.V.", "https://github.com/fablabnbg/visicut-settings/archive/master.zip");
+  choices.put("Germany, Veitsbronn: FabLab Landkreis Fürth e.V.", "https://github.com/falafue/visicut-settings/archive/master.zip");
   choices.put("Germany, Berlin: Fab Lab Berlin", "https://github.com/FabLabBerlin/visicut-settings/archive/master.zip");
   choices.put("Germany, Bremen: FabLab Bremen e.V.", "http://www.fablab-bremen.org/FabLab_Bremen.vcsettings");
   choices.put("Germany, Paderborn: FabLab Paderborn e.V.", "https://github.com/fablab-paderborn/visicut-settings/archive/master.zip");
   choices.put("Germany, Heidelberg: Heidelberg Makerspace", "https://github.com/heidelberg-makerspace/visicut-settings/archive/master.zip");
+  choices.put("Germany, Dresden: Makerspace Dresden", "https://github.com/Makerspace-Dresden/visicut-settings/archive/master.zip");
   choices.put("France, HAUM: Le Mans Hackerspace", "https://github.com/haum/visicut-settings/archive/master.zip");
   choices.put("Netherlands, Amersfoort: FabLab", "https://github.com/Fablab-Amersfoort/visicut-settings/archive/master.zip");
   choices.put("Netherlands, Enschede: TkkrLab", "https://github.com/TkkrLab/visicut-settings/archive/master.zip");
@@ -3711,11 +3706,6 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   public boolean isPreviewPanelShowBackgroundImage()
   {
     return previewPanel.isShowBackgroundImage();
-  }
-
-  public void setPreviewPanelShowBackgroundImage(boolean showBackgroundImage)
-  {
-    previewPanel.setShowBackgroundImage(showBackgroundImage);
   }
 
   public boolean isCameraActive()
