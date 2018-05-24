@@ -691,6 +691,7 @@ public class MainView extends javax.swing.JFrame
     cbMaterialThickness = new javax.swing.JComboBox();
     btAddMaterialThickness = new javax.swing.JButton();
     jCheckBox1 = new javax.swing.JCheckBox();
+    jCheckBoxAutoFocus = new javax.swing.JCheckBox();
     executeJobButton = new javax.swing.JButton();
     objectComboBox = new javax.swing.JComboBox();
     jSeparator1 = new javax.swing.JSeparator();
@@ -906,6 +907,19 @@ public class MainView extends javax.swing.JFrame
     org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${useThicknessAsFocusOffset}"), jCheckBox1, org.jdesktop.beansbinding.BeanProperty.create("selected"), "cbUseThickness");
     bindingGroup.addBinding(binding);
 
+    jCheckBoxAutoFocus.setText(resourceMap.getString("jCheckBoxAutoFocus.text")); // NOI18N
+    jCheckBoxAutoFocus.setToolTipText(resourceMap.getString("jCheckBoxAutoFocus.toolTipText")); // NOI18N
+    jCheckBoxAutoFocus.setName("jCheckBoxAutoFocus"); // NOI18N
+
+    jCheckBoxAutoFocus.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        visicutModel1.setAutoFocusEnabled(jCheckBoxAutoFocus.isSelected());
+      }
+    });
+
+
     executeJobButton.setText(resourceMap.getString("executeJobButton.text")); // NOI18N
     executeJobButton.setName("executeJobButton"); // NOI18N
     executeJobButton.addActionListener(new java.awt.event.ActionListener()
@@ -1043,6 +1057,7 @@ public class MainView extends javax.swing.JFrame
                     .addComponent(btAddMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                   .addComponent(jLabel5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addComponent(jCheckBoxAutoFocus, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE))
               .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -1073,6 +1088,7 @@ public class MainView extends javax.swing.JFrame
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addComponent(btAddMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addComponent(jCheckBoxAutoFocus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1867,25 +1883,37 @@ public class MainView extends javax.swing.JFrame
     if (this.visicutModel1.getSelectedLaserDevice() != null)
     {
       LaserCutter lc = this.visicutModel1.getSelectedLaserDevice().getLaserCutter();
-      for (LaserProperty p : new LaserProperty[]
+      if (lc.getProperty("SoftwareFocusNotSupported") != null) {
+        focusSupported = !(Boolean) lc.getProperty("SoftwareFocusNotSupported");
+      } else {
+        for (LaserProperty p : new LaserProperty[]
+          {
+            lc.getLaserPropertyForVectorPart(),
+            lc.getLaserPropertyForRasterPart(),
+            lc.getLaserPropertyForRaster3dPart()
+          })
         {
-          lc.getLaserPropertyForVectorPart(),
-          lc.getLaserPropertyForRasterPart(),
-          lc.getLaserPropertyForRaster3dPart()
-        })
-      {
-        if (p != null && Arrays.asList(p.getPropertyKeys()).contains("focus"))
-        {
-          focusSupported = true;
-          break;
+          if (p != null && Arrays.asList(p.getPropertyKeys()).contains("focus"))
+          {
+            focusSupported = true;
+            break;
+          }
         }
       }
+    }
+    if (this.visicutModel1.getSelectedLaserDevice().getLaserCutter().isAutoFocus()) {
+      // Display the autofocus setting as retained in VisicutModel
+      this.jCheckBoxAutoFocus.setSelected(visicutModel1.isAutoFocusEnabled());
+      this.jCheckBoxAutoFocus.setVisible(true);
+    } else {
+      this.jCheckBoxAutoFocus.setVisible(false);
     }
     if (!focusSupported || (MaterialManager.getInstance().getAll().size() == 1 && MaterialManager.getInstance().getAll().get(0).getMaterialThicknesses().size() == 1))
     {
       this.jCheckBox1.setSelected(false);
       this.jCheckBox1.setVisible(false);
-      this.jSeparator1.setVisible(this.laserCutterComboBox.isVisible());
+      this.jSeparator1.setVisible(this.laserCutterComboBox.isVisible() ||
+          this.jCheckBoxAutoFocus.isVisible());
     }
     else
     {
@@ -2214,6 +2242,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             }
             List<String> warnings = new LinkedList<String>();
             MainView.this.visicutModel1.sendJob(jobname, pl, cuttingSettings, warnings);
+
             for (String w : warnings)
             {
               dialog.showWarningMessage(w);
@@ -3534,6 +3563,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   private javax.swing.JButton jButton1;
   private javax.swing.JButton jButton2;
   private javax.swing.JCheckBox jCheckBox1;
+  private javax.swing.JCheckBox jCheckBoxAutoFocus;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel10;
   private javax.swing.JLabel jLabel2;

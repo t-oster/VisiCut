@@ -248,6 +248,29 @@ public class VisicutModel
     propertyChangeSupport.firePropertyChange(PROP_USETHICKNESSASFOCUSOFFSET, oldUseThicknessAsFocusOffset, useThicknessAsFocusOffset);
   }
 
+  protected boolean autoFocusEnabled = true;
+  public static final String PROP_AUTOFOCUSENABLED = "autoFocusEnabled";
+
+  /**
+   * Get the value of autoFocusEnabled.  Only meaningful on cutters that support it.
+   *
+   * @return the value of autoFocusEnabled.
+   */
+  public boolean isAutoFocusEnabled()
+  {
+    return autoFocusEnabled;
+  }
+
+  /**
+   * Set the value of autoFocusEnabled.  Only meaningful on cutters that support it.
+   *
+   * @param autoFocusEnabeled new value of autoFocusEnabled.
+   */
+  public void setAutoFocusEnabled(boolean autoFocusEnabled)
+  {
+    this.autoFocusEnabled = autoFocusEnabled;
+  }
+
 
   public static final FileFilter PLFFilter = new ExtensionFilter(".plf", "VisiCut Portable Laser Format (*.plf)");
 
@@ -718,6 +741,9 @@ public class VisicutModel
     if (this.startPoint != null)
     {
       job.setStartPoint(this.startPoint.x, this.startPoint.y);
+    }
+    if (this.selectedLaserDevice.getLaserCutter().isAutoFocus()) {
+      job.setAutoFocusEnabled(autoFocusEnabled);
     }
     float focusOffset = this.selectedLaserDevice.getLaserCutter().isAutoFocus() || !this.useThicknessAsFocusOffset ? 0 : this.materialThickness;
 
