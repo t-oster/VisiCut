@@ -244,7 +244,6 @@ public class Preferences
     this.useThicknessAsFocusOffset = useThicknessAsFocusOffset;
   }
 
-  
   protected LinkedList<String> recentFiles = new LinkedList<String>();
 
   /**

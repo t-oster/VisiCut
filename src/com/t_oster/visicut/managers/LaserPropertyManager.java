@@ -19,6 +19,7 @@
 package com.t_oster.visicut.managers;
 
 import com.t_oster.liblasercut.LaserProperty;
+import com.t_oster.liblasercut.PowerSpeedFocusProperty;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
@@ -143,6 +144,11 @@ public class LaserPropertyManager
               }
             }
             result.set(result.indexOf(p), expected);
+          }
+          // Some laser properties have a "hideFocus" setting which is really a machine property but unfortunately gets serialized into the material properties.
+          // To get around this we copy the "hideFocus" value from the expected one from the machine over anything read from the config.
+          if (expected instanceof PowerSpeedFocusProperty && p instanceof PowerSpeedFocusProperty) {
+            ((PowerSpeedFocusProperty)p).setHideFocus(((PowerSpeedFocusProperty)expected).isHideFocus());
           }
         }
       }
