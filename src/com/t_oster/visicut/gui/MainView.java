@@ -1908,6 +1908,13 @@ public class MainView extends javax.swing.JFrame
         this.jCheckBoxAutoFocus.setVisible(false);
       }
     }
+    if (this.visicutModel1.getSelectedLaserDevice().getLaserCutter().isAutoFocus()) {
+      // Display the autofocus setting as retained in VisicutModel
+      this.jCheckBoxAutoFocus.setSelected(visicutModel1.isAutoFocusEnabled());
+      this.jCheckBoxAutoFocus.setVisible(true);
+    } else {
+      this.jCheckBoxAutoFocus.setVisible(false);
+    }
     if (!focusSupported || (MaterialManager.getInstance().getAll().size() == 1 && MaterialManager.getInstance().getAll().get(0).getMaterialThicknesses().size() == 1))
     {
       this.jCheckBox1.setSelected(false);
