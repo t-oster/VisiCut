@@ -17,7 +17,8 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="jScrollPane1" pref="475" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+              <Component id="jScrollPane1" pref="469" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Component id="btLoad" alignment="1" max="32767" attributes="1"/>
@@ -44,14 +45,15 @@
               <Component id="btUp" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btDown" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="176" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="btRevert" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btLoad" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btSave" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
-          <Component id="jScrollPane1" pref="0" max="32767" attributes="0"/>
+          <Component id="jScrollPane1" pref="172" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
