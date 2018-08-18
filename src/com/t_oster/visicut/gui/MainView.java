@@ -407,12 +407,18 @@ public class MainView extends javax.swing.JFrame
       }
     });
     //apply the saved window size and position, if in current screen size
+    // Note: the window size is saved at exit in MainView.exitMenuItemActionPerformed()
     Rectangle lastBounds = PreferencesManager.getInstance().getPreferences().getWindowBounds();
-    if (lastBounds != null && this.getGraphicsConfiguration().getBounds().contains(lastBounds))
+    Rectangle graphicsBounds = this.getGraphicsConfiguration().getBounds();
+    if (lastBounds != null && lastBounds.width <= graphicsBounds.width && lastBounds.height <= graphicsBounds.height)
     {
       this.setExtendedState(JFrame.NORMAL);
       this.setPreferredSize(new Dimension(lastBounds.width, lastBounds.height));
       this.setBounds(lastBounds);
+    } else {
+      // previous state was maximized (this is stored as "null"),
+      // or we failed to restore last position and fall back to maximized
+      this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
     }
 
     // all GUI parts are now initialised.
@@ -1717,7 +1723,12 @@ public class MainView extends javax.swing.JFrame
   }// </editor-fold>//GEN-END:initComponents
 
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
-      PreferencesManager.getInstance().getPreferences().setWindowBounds(MainView.this.getBounds());
+      Rectangle bounds = this.getBounds();
+      if ((this.getExtendedState() & MAXIMIZED_BOTH) == MAXIMIZED_BOTH) {
+        // window is maximized, store this as "null"
+        bounds = null;
+      }
+      PreferencesManager.getInstance().getPreferences().setWindowBounds(bounds);
       this.visicutModel1.updatePreferences();
       System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
