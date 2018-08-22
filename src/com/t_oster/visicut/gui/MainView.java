@@ -2660,13 +2660,13 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
   @Action
   public void zoomIn()
   {
-    previewPanel.setZoom(previewPanel.getZoom() - (-2 * previewPanel.getZoom() / 32));
+    previewPanel.setZoom((int) (previewPanel.getZoom() * 1.3));
   }
 
   @Action
   public void zoomOut()
   {
-    previewPanel.setZoom(previewPanel.getZoom() - (2 * previewPanel.getZoom() / 32));
+    previewPanel.setZoom((int) (previewPanel.getZoom() / 1.3));
   }
 
 private void editMappingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMappingMenuItemActionPerformed
