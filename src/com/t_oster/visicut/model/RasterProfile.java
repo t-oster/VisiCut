@@ -127,29 +127,37 @@ public class RasterProfile extends LaserProfile
     return this.getRenderedPreview(objects, material, mm2px, null);
   }
 
+  private BufferedImage renderObjects(GraphicSet objects, AffineTransform mm2laserPx, Rectangle bb, int bufferedImageType) {
+    //Create an Image which fits the bounding box
+    BufferedImage scaledImg = new BufferedImage(bb.width, bb.height, bufferedImageType);
+    Graphics2D g = scaledImg.createGraphics();
+    //fill it with white background for dithering
+    g.setColor(Color.white);
+    g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
+    g.setClip(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
+    //render all objects onto the image, moved to the images origin
+    AffineTransform pipe = AffineTransform.getTranslateInstance(-bb.x, -bb.y);
+    pipe.concatenate(mm2laserPx);
+    pipe.concatenate(objects.getTransform());
+    g.setTransform(pipe);
+    // antialiasing doesn't make sense for 1-bit output, and makes font edges look jittery.
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+    g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+    for (GraphicObject o : objects)
+    {
+      o.render(g);
+    }
+    return scaledImg;
+  }
+
   public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material, AffineTransform mm2px, ProgressListener pl)
   {
     Rectangle bb = Helper.toRect(Helper.transform(objects.getBoundingBox(), mm2px));
     final Color engraveColor = material.getEngraveColor();
     if (bb != null && bb.width > 0 && bb.height > 0)
-    {//Create an Image which fits the bounding box
-      final BufferedImage scaledImg = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_INT_ARGB);
-      Graphics2D g = scaledImg.createGraphics();
-      //fill it with black or white background for dithering depending on invert flag
-      g.setColor( (invertColors ? Color.black : Color.white) );
-      g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
-      g.setClip(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
-      //render all objects onto the image, moved to the images origin
-      AffineTransform pipe = AffineTransform.getTranslateInstance(-bb.x, -bb.y);
-      pipe.concatenate(mm2px);
-      pipe.concatenate(objects.getTransform());
-      g.setTransform(pipe);
-      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-      g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-      for (GraphicObject o : objects)
-      {
-        o.render(g);
-      }
+    {
+      final BufferedImage scaledImg = renderObjects(objects, mm2px, bb, BufferedImage.TYPE_INT_ARGB);
+
       BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors)
       {
         //TODO: Gefahr, dass man das Dithering ergebnis verändert, falls
@@ -204,23 +212,8 @@ public class RasterProfile extends LaserProfile
       Rectangle bb = Helper.toRect(Helper.transform(objects.getBoundingBox(), mm2laserPx));
       if (bb != null && bb.width > 0 && bb.height > 0)
       {
-        BufferedImage scaledImg = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = scaledImg.createGraphics();
-        //fill it with white background for dithering
-        g.setColor(Color.white);
-        g.fillRect(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
-        g.setClip(0, 0, scaledImg.getWidth(), scaledImg.getHeight());
-        //render all objects onto the image, moved to the images origin
-        AffineTransform pipe = AffineTransform.getTranslateInstance(-bb.x, -bb.y);
-        pipe.concatenate(mm2laserPx);
-        pipe.concatenate(objects.getTransform());
-        g.setTransform(pipe);
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        for (GraphicObject o : objects)
-        {
-          o.render(g);
-        }
+        // render into color image
+        BufferedImage scaledImg = renderObjects(objects, mm2laserPx, bb, BufferedImage.TYPE_INT_RGB);
         //Then dither this image
         BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors);
         ad.setColorShift(this.getColorShift());
