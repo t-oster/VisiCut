@@ -132,9 +132,9 @@ public abstract class LaserProfile implements ImageListable, Cloneable
   //with old XML files
   private transient boolean temporaryCopy;
   
-  public abstract void renderPreview(Graphics2D g, GraphicSet objects, MaterialProfile material, AffineTransform mm2px);
+  public abstract void renderPreview(Graphics2D g, GraphicSet objects, MaterialProfile material, AffineTransform mm2px) throws InterruptedException;
 
-  public abstract void addToLaserJob(LaserJob job, GraphicSet objects, List<LaserProperty> laserProperties);
+  public abstract void addToLaserJob(LaserJob job, GraphicSet objects, List<LaserProperty> laserProperties) throws InterruptedException;
 
   @Override
   public String toString()

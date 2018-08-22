@@ -149,6 +149,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     updatesToIgnore++;
   }
 
+  static final Object globalRenderingLock = new Object();
   private class ImageProcessingThread extends Thread implements ProgressListener
   {
 
@@ -219,7 +220,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       this.isFinished = finished;
     }
 
-    private void render()
+    private void render() throws InterruptedException
     {
       buffer = null;
       if (p instanceof RasterProfile)
@@ -232,53 +233,71 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
         Raster3dProfile rp = (Raster3dProfile) p;
         buffer = rp.getRenderedPreview(set, VisicutModel.getInstance().getMaterial(), mm2laserPx, this);
       }
-      if (buffer != null) {
-        scaledownImgFine = buffer.getScaledInstance(Math.max(1, (int) (buffer.getWidth()/bufferScaledownFactorFine)), -1, Image.SCALE_SMOOTH);
-        scaledownImgCoarse = scaledownImgFine.getScaledInstance(Math.max(1, (int) (buffer.getWidth()/bufferScaledownFactorCoarse)), -1, Image.SCALE_SMOOTH);
+      if (Thread.interrupted()) {
+        throw new InterruptedException();
       }
+      scaledownImgFine = buffer.getScaledInstance(Math.max(1, (int) (buffer.getWidth()/bufferScaledownFactorFine)), -1, Image.SCALE_SMOOTH);
+      scaledownImgCoarse = scaledownImgFine.getScaledInstance(Math.max(1, (int) (buffer.getWidth()/bufferScaledownFactorCoarse)), -1, Image.SCALE_SMOOTH);
     }
 
     @Override
     public void run()
     {
-      try
-      {
-        logger.log(Level.FINE, "Rendering started");
-        long start = System.currentTimeMillis();
-        render();
-        long stop = System.currentTimeMillis();
-        logger.log(Level.FINE, "Rendering finished. Took: {0} ms", (stop-start));
-      }
-      catch (OutOfMemoryError e)
-      {
-        logger.log(Level.FINE, "Out of memory during rendering. Staring garbage collection");
-        buffer = null;
-        System.gc();
-        try
-        {
-          logger.log(Level.FINE, "Re started Rendering");
-          long start = System.currentTimeMillis();
-          render();
-          long stop = System.currentTimeMillis();
-          logger.log(Level.FINE, "2nd Rendering took {0} ms", (stop-start));
+      // ensure that only one thread at a time is rendering, so that we
+      // implicitly wait for old threads to finish (so that GC can reclaim their
+      // memory)
+      logger.log(Level.FINE, "Rendering starting...");
+      synchronized (globalRenderingLock) {
+        try {
+          System.gc();
+          try
+          {
+            logger.log(Level.FINE, "Rendering started");
+            long start = System.currentTimeMillis();
+            render();
+            long stop = System.currentTimeMillis();
+            logger.log(Level.FINE, "Rendering finished. Took: {0} ms", (stop-start));
+          }
+          catch (OutOfMemoryError e)
+          {
+            e = null; // does this really save memory?
+            logger.log(Level.SEVERE, "Out of memory during rendering. Pausing and then staring garbage collection");
+            buffer = null;
+            scaledownImgFine = null;
+            scaledownImgCoarse = null;
+            Thread.sleep(500);
+            System.gc();
+            try
+            {
+              logger.log(Level.FINE, "Re started Rendering");
+              long start = System.currentTimeMillis();
+              render();
+              long stop = System.currentTimeMillis();
+              logger.log(Level.FINE, "2nd Rendering took {0} ms", (stop-start));
+            }
+            catch (OutOfMemoryError ee)
+            {
+              JOptionPane.showMessageDialog(PreviewPanel.this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("ERROR: NOT ENOUGH MEMORY PLEASE START THE PROGRAM FROM THE PROVIDED SHELL SCRIPTS INSTEAD OF RUNNING THE .JAR FILE"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("ERROR: OUT OF MEMORY"), JOptionPane.ERROR_MESSAGE);
+            }
+          }
+          this.setFinished(true);
+          PreviewPanel.this.repaint();
+          logger.log(Level.FINE, "Thread finished");
+        } catch (InterruptedException ex) {
+          logger.log(Level.FINE, "Thread cancelled.");
+          this.setFinished(true);
+          this.buffer = null;
+          this.scaledownImgCoarse = null;
+          this.scaledownImgFine = null;
         }
-        catch (OutOfMemoryError ee)
-        {
-          JOptionPane.showMessageDialog(PreviewPanel.this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("ERROR: NOT ENOUGH MEMORY PLEASE START THE PROGRAM FROM THE PROVIDED SHELL SCRIPTS INSTEAD OF RUNNING THE .JAR FILE"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("ERROR: OUT OF MEMORY"), JOptionPane.ERROR_MESSAGE);
-        }
       }
-      this.setFinished(true);
-      PreviewPanel.this.repaint();
-      logger.log(Level.FINE, "Thread finished");
     }
 
-    private void cancel()
-    {
-      logger.log(Level.FINE, "Canceling Thread");
-      this.stop();
-      this.buffer = null;
-      this.set = null;
-      logger.log(Level.FINE, "Thread canceled");
+    private void cancelAsynchronously() {
+      // cancel this thread as soon as possible in the future.
+      // NOTE: memory is not freed immediately!
+      logger.log(Level.FINE, "Canceling Thread asynchronously");
+      this.interrupt();
     }
 
     public int getProgress()
@@ -362,7 +381,9 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
         {
           if (!thr.isFinished())
           {
-            thr.cancel();
+              // NOTE: this does not immediately free memory, the thread continues running until it has reacted to the interrupt.
+              // But other threads will wait and not start rendering until it has finished.
+              thr.cancelAsynchronously();
           }
         }
         this.renderBuffers.get(p).clear();
@@ -674,6 +695,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
                       ImageProcessingThread procThread = renderBuffer.get(m);
                       if (procThread == null || !procThread.isFinished() || Math.abs(bbInMm.getWidth()-procThread.getBoundingBoxInMm().getWidth()) > 0.01 || Math.abs(bbInMm.getHeight()-procThread.getBoundingBoxInMm().getHeight()) > 0.01)
                       {//Image not rendered or Size differs
+
                         if (!renderBuffer.containsKey(m))
                         {//image not yet scheduled for rendering
                           logger.log(Level.FINE, "Starting ImageProcessing Thread for {0}", m);
@@ -684,10 +706,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
                         else if (bbInMm.getWidth() != procThread.getBoundingBoxInMm().getWidth() || bbInMm.getHeight() != procThread.getBoundingBoxInMm().getHeight())
                         {//Image is (being) rendered with wrong size
                           logger.log(Level.FINE, "Image has wrong size");
-                          if (!procThread.isFinished())
-                          {//stop the old thread if still running
-                            procThread.cancel();
-                          }
+                          procThread.cancelAsynchronously();
                           logger.log(Level.FINE, "Starting ImageProcessingThread for{0}", m);
                           procThread = new ImageProcessingThread(current, p);
                           renderBuffer.put(m, procThread);
@@ -741,7 +760,14 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
                   }
                   else if (p instanceof VectorProfile)
                   {
-                    p.renderPreview(gg, current, VisicutModel.getInstance().getMaterial(), this.getMmToPxTransform());
+                    try
+                    {
+                      p.renderPreview(gg, current, VisicutModel.getInstance().getMaterial(), this.getMmToPxTransform());
+                    }
+                    catch (InterruptedException ex)
+                    {
+                      throw new RuntimeException("this must not happen: GUI thread was interrupted.");
+                    }
                   }
                 }
                 else
