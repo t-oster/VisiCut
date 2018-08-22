@@ -127,7 +127,7 @@ public class RasterProfile extends LaserProfile
     this.ditherAlgorithm = ditherAlgorithm;
   }
 
-  public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material, AffineTransform mm2px)
+  public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material, AffineTransform mm2px) throws InterruptedException
   {
     return this.getRenderedPreview(objects, material, mm2px, null);
   }
@@ -159,7 +159,7 @@ public class RasterProfile extends LaserProfile
     return scaledImg;
   }
 
-  public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material, AffineTransform mm2px, ProgressListener pl)
+  public BufferedImage getRenderedPreview(GraphicSet objects, MaterialProfile material, AffineTransform mm2px, ProgressListener pl) throws InterruptedException
   {
     Rectangle bb = Helper.toRect(Helper.transform(objects.getBoundingBox(), mm2px));
     final Color engraveColor = material.getEngraveColor();
@@ -210,7 +210,7 @@ public class RasterProfile extends LaserProfile
 }
 
   @Override
-  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material, AffineTransform mm2px)
+  public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material, AffineTransform mm2px) throws InterruptedException
   {
     Rectangle2D bb = Helper.transform(objects.getBoundingBox(), mm2px);
     if (bb != null && bb.getWidth() > 0 && bb.getHeight() > 0)
@@ -221,7 +221,7 @@ public class RasterProfile extends LaserProfile
   }
 
   @Override
-  public void addToLaserJob(LaserJob job, GraphicSet set, List<LaserProperty> laserProperties)
+  public void addToLaserJob(LaserJob job, GraphicSet set, List<LaserProperty> laserProperties) throws InterruptedException
   {
     double factor = Util.dpi2dpmm(this.getDPI());
     AffineTransform mm2laserPx = AffineTransform.getScaleInstance(factor, factor);
