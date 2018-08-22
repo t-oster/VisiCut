@@ -385,7 +385,9 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       else
       {
         this.moveSet(diffx, diffy);
-        VisicutModel.getInstance().firePartUpdated(getSelectedPart());
+        if (diffx != 0. || diffy != 0.) {
+          VisicutModel.getInstance().firePartUpdated(getSelectedPart());
+        }
       }
     }
   }
