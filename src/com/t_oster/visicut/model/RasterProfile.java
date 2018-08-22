@@ -38,6 +38,7 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.util.List;
 
 /**
@@ -157,7 +158,11 @@ public class RasterProfile extends LaserProfile
     if (bb != null && bb.width > 0 && bb.height > 0)
     {
       final BufferedImage scaledImg = renderObjects(objects, mm2px, bb, BufferedImage.TYPE_INT_ARGB);
-
+      final WritableRaster alphaRaster = scaledImg.getAlphaRaster(); // caching this yields significant speedup
+      final int[] zeros = new int[]
+              {
+                0, 0, 0
+              };
       BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors)
       {
         //TODO: Gefahr, dass man das Dithering ergebnis verändert, falls
@@ -167,10 +172,7 @@ public class RasterProfile extends LaserProfile
         {
           if (greyscale == 255)
           {
-            scaledImg.getAlphaRaster().setPixel(x, y, new int[]
-              {
-                0, 0, 0
-              });
+            alphaRaster.setPixel(x, y, zeros);
           }
           else if (greyscale == 0)
           {

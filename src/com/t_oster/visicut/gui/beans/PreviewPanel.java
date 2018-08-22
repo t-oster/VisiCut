@@ -234,6 +234,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       catch (OutOfMemoryError e)
       {
         logger.log(Level.FINE, "Out of memory during rendering. Staring garbage collection");
+        buffer = null;
         System.gc();
         try
         {
