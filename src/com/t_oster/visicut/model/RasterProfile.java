@@ -32,13 +32,17 @@ import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.graphicelements.GraphicObject;
 import com.t_oster.visicut.model.graphicelements.GraphicSet;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
+import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -128,9 +132,13 @@ public class RasterProfile extends LaserProfile
     return this.getRenderedPreview(objects, material, mm2px, null);
   }
 
-  private BufferedImage renderObjects(GraphicSet objects, AffineTransform mm2laserPx, Rectangle bb, int bufferedImageType) {
-    //Create an Image which fits the bounding box
-    BufferedImage scaledImg = new BufferedImage(bb.width, bb.height, bufferedImageType);
+  private BufferedImage renderObjects(GraphicSet objects, AffineTransform mm2laserPx, Rectangle bb) {
+    // Create an Image which fits the bounding box
+    //
+    // Unfortunately, we cannot use BufferedImage.TYPE_BYTE_GRAY here, mainly
+    // because the SVG rendering refuses to render color gradients on a
+    // grayscale buffer. (just throws an exception).
+    BufferedImage scaledImg = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_INT_RGB);
     Graphics2D g = scaledImg.createGraphics();
     //fill it with white background for dithering
     g.setColor(Color.white);
@@ -157,29 +165,8 @@ public class RasterProfile extends LaserProfile
     final Color engraveColor = material.getEngraveColor();
     if (bb != null && bb.width > 0 && bb.height > 0)
     {
-      final BufferedImage scaledImg = renderObjects(objects, mm2px, bb, BufferedImage.TYPE_INT_ARGB);
-      final WritableRaster alphaRaster = scaledImg.getAlphaRaster(); // caching this yields significant speedup
-      final int[] zeros = new int[]
-              {
-                0, 0, 0
-              };
-      BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors)
-      {
-        //TODO: Gefahr, dass man das Dithering ergebnis verändert, falls
-        //der Algorithmus einen Pixel 2x ausliest
-      @Override
-        public void setGreyScale(int x, int y, int greyscale)
-        {
-          if (greyscale == 255)
-          {
-            alphaRaster.setPixel(x, y, zeros);
-          }
-          else if (greyscale == 0)
-          {
-            scaledImg.setRGB(x, y, engraveColor.getRGB());
-          }
-        }
-      };
+      final BufferedImage scaledImg = renderObjects(objects, mm2px, bb);
+      BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors);
       ad.setColorShift(this.getColorShift());
       DitheringAlgorithm alg = this.getDitherAlgorithm();
       if (pl != null)
@@ -187,10 +174,40 @@ public class RasterProfile extends LaserProfile
         alg.addProgressListener(pl);
       }
       alg.ditherDirect(ad);
-      return scaledImg;
+
+
+      return convertToOneBitGrayscale(scaledImg, engraveColor);
     }
     return null;
   }
+// adapted from https://stackoverflow.com/a/12860219
+  /**
+   * convert a black/white image to 1bit indexed palette,
+   * optionally substituting $engraveColor for black.
+   *
+   * This saves about 75% of memory.
+   * @param image
+   * @param engraveColor the color which should be substituted for black (may be null)
+   * @return
+   */
+  public static BufferedImage convertToOneBitGrayscale(BufferedImage image, Color engraveColor) {
+  // black and white
+  IndexColorModel whiteOrBlack = new IndexColorModel(1, 2, new byte[] {(byte) 255, (byte) 0}, new byte[] {(byte) 255, (byte) 0}, new byte[] {(byte) 255, (byte) 0}, new byte[] {(byte) 255, (byte) 255});
+  IndexColorModel engravePreviewColored = new IndexColorModel(1, 2, new byte[] {(byte) 0, (byte) engraveColor.getRed()}, new byte[] {(byte) 0, (byte) engraveColor.getGreen()}, new byte[] {(byte) 0, (byte) engraveColor.getBlue()}, new byte[] {(byte) 0, (byte) 255});
+  BufferedImage result = new BufferedImage(
+            image.getWidth(),
+            image.getHeight(),
+            BufferedImage.TYPE_BYTE_INDEXED, whiteOrBlack);
+  Graphics g = result.getGraphics();
+  g.drawImage(image, 0, 0, null);
+  g.dispose();
+  if (engraveColor != null) {
+    BufferedImage resultColored = new BufferedImage(engravePreviewColored, result.getRaster(), result.isAlphaPremultiplied(), new Hashtable());
+    return resultColored;
+  } else {
+    return result;
+  }
+}
 
   @Override
   public void renderPreview(Graphics2D gg, GraphicSet objects, MaterialProfile material, AffineTransform mm2px)
@@ -215,7 +232,7 @@ public class RasterProfile extends LaserProfile
       if (bb != null && bb.width > 0 && bb.height > 0)
       {
         // render into color image
-        BufferedImage scaledImg = renderObjects(objects, mm2laserPx, bb, BufferedImage.TYPE_INT_RGB);
+        BufferedImage scaledImg = renderObjects(objects, mm2laserPx, bb);
         //Then dither this image
         BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors);
         ad.setColorShift(this.getColorShift());
