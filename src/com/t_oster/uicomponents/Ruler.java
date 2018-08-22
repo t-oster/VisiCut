@@ -22,7 +22,9 @@ import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.model.LaserDevice;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.geom.AffineTransform;
@@ -53,6 +55,13 @@ public class Ruler extends JPanel implements PropertyChangeListener, ComponentLi
   @Override
   public void paintComponent(Graphics g)
   {
+    // Workaround to enforce text antialiasing here
+    // TODO make this less ugly
+    try {
+      Graphics2D.class.cast(g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    } catch (ClassCastException e) {
+      // we can't cast to Graphics2D, silently ignore this.
+    }
     Rectangle vr = this.getVisibleRect();
     g.setColor(this.getBackground());
     g.fillRect(vr.x, vr.y, vr.width, vr.height);
