@@ -109,7 +109,7 @@ public class RasterProfile extends LaserProfile
     {
       ditherAlgorithm = new FloydSteinberg();
     }
-    return ditherAlgorithm;
+    return ditherAlgorithm.clone(); // clone() required because otherwise we will get trouble with ProgressListener
   }
 
   /**
