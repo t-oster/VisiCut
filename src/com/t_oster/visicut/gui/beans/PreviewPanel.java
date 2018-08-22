@@ -42,6 +42,7 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -153,6 +154,10 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
 
     private Logger logger = Logger.getLogger(ImageProcessingThread.class.getName());
     private BufferedImage buffer = null;
+    private Image scaledownImgCoarse = null;
+    private Image scaledownImgFine = null;
+    public static final double bufferScaledownFactorCoarse = 4;
+    public static final double bufferScaledownFactorFine = 2;
     private GraphicSet set;
     private AffineTransform mm2laserPx;
     private LaserProfile p;
@@ -179,6 +184,14 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     public BufferedImage getImage()
     {
       return buffer;
+    }
+
+    public Image getScaledownImageCoarse() {
+      return scaledownImgCoarse;
+    }
+
+    public Image getScaledownImageFine() {
+      return scaledownImgFine;
     }
 
     public ImageProcessingThread(GraphicSet objects, LaserProfile p)
@@ -208,6 +221,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
 
     private void render()
     {
+      buffer = null;
       if (p instanceof RasterProfile)
       {
         RasterProfile rp = (RasterProfile) p;
@@ -217,6 +231,10 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       {
         Raster3dProfile rp = (Raster3dProfile) p;
         buffer = rp.getRenderedPreview(set, VisicutModel.getInstance().getMaterial(), mm2laserPx, this);
+      }
+      if (buffer != null) {
+        scaledownImgFine = buffer.getScaledInstance(Math.max(1, (int) (buffer.getWidth()/bufferScaledownFactorFine)), -1, Image.SCALE_SMOOTH);
+        scaledownImgCoarse = scaledownImgFine.getScaledInstance(Math.max(1, (int) (buffer.getWidth()/bufferScaledownFactorCoarse)), -1, Image.SCALE_SMOOTH);
       }
     }
 
@@ -510,6 +528,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       r=r.intersection(new Rectangle(0, 0, (int) dim.getX(), (int) dim.getY()));
       gg.setClip(r.x, r.y, r.width, r.height);
       gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      gg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
       gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
       BufferedImage backgroundImage = VisicutModel.getInstance().getBackgroundImage();
       if (backgroundImage != null && showBackgroundImage && VisicutModel.getInstance().getSelectedLaserDevice() != null)
@@ -693,8 +712,30 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
                         laserPxToPreviewPx.translate(procThread.getBoundingBox().x, procThread.getBoundingBox().y);
                         gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                         gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-      
-                        gg.drawRenderedImage(procThread.getImage(), laserPxToPreviewPx);
+                        gg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
+                        BufferedImage img = procThread.getImage();
+                        double zoomScale = Math.min(laserPxToPreviewPx.getScaleX(), laserPxToPreviewPx.getScaleY());
+                        // choose the largest image with a resolution less than screenSize/allowedAliasingFactor.
+                        // allowedAliasingFactor controls the trade-off between
+                        // sharper display, but more aliasing, (low factor),
+                        // and smooth but blurry display (high factor).
+                        // In theory, 1 would be perfect; in practice other values may be better.
+                        double allowedAliasingFactor = 1.;
+                        if (zoomScale < allowedAliasingFactor/ImageProcessingThread.bufferScaledownFactorFine) {
+                          Image scaledImg = procThread.getScaledownImageCoarse();
+                          AffineTransform scaledownPxToPreviewPx = AffineTransform.getScaleInstance(((double) img.getWidth())/scaledImg.getWidth(null), ((double) img.getHeight())/scaledImg.getHeight(null));
+                          scaledownPxToPreviewPx.preConcatenate(laserPxToPreviewPx);
+                          gg.drawImage(scaledImg, scaledownPxToPreviewPx, null);
+                        }
+                        else if (zoomScale < allowedAliasingFactor) {
+                          Image scaledImg = procThread.getScaledownImageFine();
+                          AffineTransform scaledownPxToPreviewPx = AffineTransform.getScaleInstance(((double) img.getWidth())/scaledImg.getWidth(null), ((double) img.getHeight())/scaledImg.getHeight(null));
+                          scaledownPxToPreviewPx.preConcatenate(laserPxToPreviewPx);
+                          gg.drawImage(scaledImg, scaledownPxToPreviewPx, null);
+                        } else {
+                          gg.drawImage(img, laserPxToPreviewPx, null);
+                        }
                       }
                     }
                   }
