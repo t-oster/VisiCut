@@ -210,6 +210,10 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       }
     }
 
+    /**
+     * is the thread finished (was not cancelled early, and a result is available)?
+     * @return
+     */
     public synchronized boolean isFinished()
     {
       return isFinished;
@@ -260,36 +264,26 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
           }
           catch (OutOfMemoryError e)
           {
-            e = null; // does this really save memory?
-            logger.log(Level.SEVERE, "Out of memory during rendering. Pausing and then staring garbage collection");
-            buffer = null;
-            scaledownImgFine = null;
-            scaledownImgCoarse = null;
-            Thread.sleep(500);
-            System.gc();
-            try
-            {
-              logger.log(Level.FINE, "Re started Rendering");
-              long start = System.currentTimeMillis();
-              render();
-              long stop = System.currentTimeMillis();
-              logger.log(Level.FINE, "2nd Rendering took {0} ms", (stop-start));
-            }
-            catch (OutOfMemoryError ee)
-            {
+            logger.log(Level.SEVERE, "Not enough memory, all " + Runtime.getRuntime().maxMemory() * 1e-9 + " gigabytes of heap used");
+            JOptionPane.showMessageDialog(PreviewPanel.this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("ERROR: OUT OF MEMORY"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("ERROR: OUT OF MEMORY"), JOptionPane.ERROR_MESSAGE);
+            if (Runtime.getRuntime().maxMemory() < 1e9) {
+              logger.log(Level.SEVERE, "Configured heap limit is very low, please don't start the jar directly (or use -Xmx2048m for 2GB RAM)");
               JOptionPane.showMessageDialog(PreviewPanel.this, java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("ERROR: NOT ENOUGH MEMORY PLEASE START THE PROGRAM FROM THE PROVIDED SHELL SCRIPTS INSTEAD OF RUNNING THE .JAR FILE"), java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("ERROR: OUT OF MEMORY"), JOptionPane.ERROR_MESSAGE);
-            }
+            };
+            this.buffer = null;
+            this.scaledownImgCoarse = null;
+            this.scaledownImgFine = null;
+            return;
           }
-          this.setFinished(true);
-          PreviewPanel.this.repaint();
           logger.log(Level.FINE, "Thread finished");
+          this.setFinished(true);
         } catch (InterruptedException ex) {
           logger.log(Level.FINE, "Thread cancelled.");
-          this.setFinished(true);
           this.buffer = null;
           this.scaledownImgCoarse = null;
           this.scaledownImgFine = null;
         }
+        PreviewPanel.this.repaint();
       }
     }
 
@@ -302,7 +296,8 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
 
     public int getProgress()
     {
-      return this.progress;
+      // Workaround: computing scaledownImg is not part of the shown progress
+      return (int) (this.progress*0.901);
     }
 
     public void progressChanged(Object source, int percent)
@@ -677,7 +672,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
             {//Render Original Image
               if (m.getProfile() != null && (this.fastPreview && selected))
               {
-                somethingMatched = this.renderOriginalImage(gg, m, part, this.fastPreview);
+                somethingMatched |= this.renderOriginalImage(gg, m, part, this.fastPreview);
               }
               else if (m.getProfile() != null)
               {//Render only parts the material supports, or where Profile = null
@@ -714,7 +709,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
                         }
                         this.renderOriginalImage(gg, m, part, false);
                         Composite o = gg.getComposite();
-                        gg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+                        gg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
                         Point po = new Point(bbInPx.x + bbInPx.width / 2, bbInPx.y + bbInPx.height / 2);
                         String txt = java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("PLEASE WAIT (")+procThread.getProgress()+java.util.ResourceBundle.getBundle("com/t_oster/visicut/gui/beans/resources/PreviewPanel").getString("%)");
                         int w = gg.getFontMetrics().stringWidth(txt);
