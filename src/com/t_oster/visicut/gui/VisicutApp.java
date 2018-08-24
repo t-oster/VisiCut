@@ -22,6 +22,7 @@ import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.LibInfo;
 import com.t_oster.liblasercut.ProgressListener;
+import com.t_oster.liblasercut.platform.Util;
 import com.t_oster.visicut.VisicutModel;
 import com.t_oster.visicut.managers.LaserDeviceManager;
 import com.t_oster.visicut.managers.LaserPropertyManager;
@@ -31,12 +32,16 @@ import com.t_oster.visicut.managers.PreferencesManager;
 import com.t_oster.visicut.managers.ProfileManager;
 import com.t_oster.visicut.misc.ApplicationInstanceListener;
 import com.t_oster.visicut.misc.ApplicationInstanceManager;
+import com.t_oster.visicut.misc.DialogHelper;
 import com.t_oster.visicut.misc.Helper;
 import com.t_oster.visicut.model.LaserDevice;
 import com.t_oster.visicut.model.LaserProfile;
 import com.t_oster.visicut.model.MaterialProfile;
 import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.mapping.Mapping;
+import java.awt.AWTEvent;
+import java.awt.EventQueue;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -116,6 +121,28 @@ public class VisicutApp extends SingleFrameApplication
    */
   public static void main(String[] args)
   {
+    final String weFuckedUp = "Sorry: An unexpected Error occured\n Please try to reproduce it and fill in a Bugreport at\nhttps://github.com/t-oster/VisiCut/issues\n\n";
+    // catch all unhandled exceptions, show an error message so that we can fix them
+    // based on http://ruben42.wordpress.com/2009/03/30/catching-all-runtime-exceptions-in-swing/
+    class EventQueueProxy extends EventQueue {
+      boolean ignoreFutureErrors = false;
+      protected void dispatchEvent(AWTEvent newEvent) {
+          try {
+            super.dispatchEvent(newEvent);
+          } catch (Throwable t) {
+            if (ignoreFutureErrors) {
+              return;
+            }
+            ignoreFutureErrors = true;
+            // TODO localize
+            // TODO make the dialog nicer, more like the MATLAB crash dialog https://i.stack.imgur.com/lHGM1.png
+            JOptionPane.showMessageDialog(null, DialogHelper.getHumanReadableErrorMessage(t, weFuckedUp, true), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Please restart VisiCut now.\n (If you continue without a restart, \n no more error messages will be shown, \n but the behaviour may be unpredictable.)", "Error", JOptionPane.ERROR_MESSAGE);
+          }
+      }
+    }
+    Toolkit.getDefaultToolkit().getSystemEventQueue().push(new EventQueueProxy());
+
     //Mac Specific
     if (Helper.isMacOS())
     {
@@ -169,7 +196,7 @@ public class VisicutApp extends SingleFrameApplication
     }
     catch (Exception e)
     {
-      JOptionPane.showMessageDialog(null, "Sorry: An unexpected Error occured\n Please try to reproduce it and fill in a Bugreport at\nhttps://github.com/t-oster/VisiCut/issues", "Error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(null, weFuckedUp, "Error", JOptionPane.ERROR_MESSAGE);
       e.printStackTrace();
       System.exit(1);
     }

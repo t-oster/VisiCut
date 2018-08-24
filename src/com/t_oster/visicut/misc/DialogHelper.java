@@ -215,15 +215,26 @@ public class DialogHelper
     String message = getHumanReadableErrorMessage(cause, text);
     JOptionPane.showMessageDialog(parent, message, title + " Error", JOptionPane.ERROR_MESSAGE);
   }
-
     /**
    * Generate a human-readable but useful message for an exception.
    * Also print the stack trace to stdout.
    * @param cause Exception
    * @param text Error message (optional)
    * @return Message string useful for showing in an error dialog
+  */
+    public static String getHumanReadableErrorMessage(Throwable cause, String text) {
+      return getHumanReadableErrorMessage(cause, text, false);
+    }
+
+    /**
+   * Generate a human-readable but useful message for an exception.
+   * Also print the stack trace to stdout.
+   * @param cause Exception
+   * @param text Error message (optional)
+   * @param alwaysShowStacktrace force that a stacktrace is shown (if false: stacktrace is hidden for well-known exceptions such as "Host not found")
+   * @return Message string useful for showing in an error dialog
    */
-  public static String getHumanReadableErrorMessage(Exception cause, String text)
+  public static String getHumanReadableErrorMessage(Throwable cause, String text, boolean alwaysShowStacktrace)
   {
     cause.printStackTrace();
     String message = "";
@@ -253,7 +264,8 @@ public class DialogHelper
     }
     // for interesting exceptions, add the first few stack trace lines
     boolean emptyMessage = cause.getMessage() == null || cause.getMessage().trim().length() == 0;
-    if (cause.getClass().equals(NullPointerException.class) ||
+    if (alwaysShowStacktrace ||
+        cause.getClass().equals(NullPointerException.class) ||
         (cause.getClass().equals(Exception.class) && emptyMessage))
     {
       StackTraceElement[] stackTrace = cause.getStackTrace();
@@ -265,7 +277,7 @@ public class DialogHelper
     return message;
   }
 
-  public static String getHumanReadableErrorMessage(Exception cause) {
+  public static String getHumanReadableErrorMessage(Throwable cause) {
     return getHumanReadableErrorMessage(cause, null);
   }
 
