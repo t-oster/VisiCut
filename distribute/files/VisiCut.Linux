@@ -7,4 +7,4 @@ port=${DISPLAY##*:}
 port=${port%.*}
 # add it to the instance-port
 let port=port+6543
-java -Xms256m -Xmx1024m -jar "$DIR/Visicut.jar" --singleinstanceport $port "$@"
+java -Xms256m -Xmx2048m -jar "$DIR/Visicut.jar" --singleinstanceport $port "$@"
