@@ -119,6 +119,9 @@ public class CamCalibrationDialog extends javax.swing.JDialog
           if (src != null)
           {
             URLConnection conn = src.openConnection();
+            conn.setConnectTimeout(5 * 1000); // 5s connect timeout
+            conn.setReadTimeout(30 * 1000); // 30s read timeout after connecting
+
 
             // HTTP authentication
             if (VisicutModel.getInstance() != null && VisicutModel.getInstance().getSelectedLaserDevice() != null)
@@ -150,6 +153,9 @@ public class CamCalibrationDialog extends javax.swing.JDialog
 
   private void refreshImagePoints()
   {
+    if (backgroundImage == null) {
+      return;
+    }
     int numPriorPoints = 0;
     if (modifiedImagePoints == null) {
       modifiedImagePoints = new Point2D.Double[numAlignmentPoints];

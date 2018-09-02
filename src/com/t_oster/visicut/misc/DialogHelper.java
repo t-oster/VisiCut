@@ -266,6 +266,8 @@ public class DialogHelper
     boolean emptyMessage = cause.getMessage() == null || cause.getMessage().trim().length() == 0;
     if (alwaysShowStacktrace ||
         cause.getClass().equals(NullPointerException.class) ||
+        cause.getClass().equals(ArrayIndexOutOfBoundsException.class) ||
+        cause.getClass().equals(ClassCastException.class) ||
         (cause.getClass().equals(Exception.class) && emptyMessage))
     {
       StackTraceElement[] stackTrace = cause.getStackTrace();
