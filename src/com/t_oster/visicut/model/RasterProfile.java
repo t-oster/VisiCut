@@ -80,6 +80,28 @@ public class RasterProfile extends LaserProfile
   {
     this.invertColors = invertColors;
   }
+  
+   protected boolean bottomUp = false;
+
+  /**
+   * Get the value of bottomUp
+   *
+   * @return the value of bottomUp
+   */
+  public boolean isBottomUp()
+  {
+    return bottomUp;
+  }
+
+  /**
+   * Set the value of bottomUp
+   *
+   * @param bottomUp new value of bottomUp
+   */
+  public void setBottomUp(boolean bottomUp)
+  {
+    this.bottomUp = bottomUp;
+  }
   protected int colorShift = 0;
 
   /**
@@ -240,6 +262,7 @@ public class RasterProfile extends LaserProfile
         for (LaserProperty prop : laserProperties)
         {
           RasterPart part = new RasterPart(bw, prop, new Point(bb.x, bb.y), getDPI());
+          part.setBottomUp(bottomUp);
           job.addPart(part);
         }
       }
@@ -254,6 +277,7 @@ public class RasterProfile extends LaserProfile
     rp.description = this.description;
     rp.ditherAlgorithm = this.ditherAlgorithm;
     rp.invertColors = this.invertColors;
+    rp.bottomUp = this.bottomUp;
     rp.name = this.name;
     rp.thumbnailPath = this.thumbnailPath;
     rp.setDPI(getDPI());
@@ -262,7 +286,7 @@ public class RasterProfile extends LaserProfile
   
   public int hashCode()
   {
-    return super.hashCodeBase() * 31 + (invertColors?1:0) *17 + colorShift;
+    return super.hashCodeBase() * 31 + (invertColors?1:0) *17 + colorShift + (bottomUp?1:0);
   }
   
   public boolean equals(Object obj)
@@ -277,6 +301,10 @@ public class RasterProfile extends LaserProfile
     }
     final RasterProfile other = (RasterProfile) obj;
     if (this.invertColors != other.invertColors)
+    {
+      return false;
+    }
+     if (this.bottomUp != other.bottomUp)
     {
       return false;
     }

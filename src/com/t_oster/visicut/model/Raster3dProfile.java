@@ -62,7 +62,28 @@ public class Raster3dProfile extends LaserProfile
   {
     return invertColors;
   }
+  
+   protected boolean bottomUp = false;
 
+  /**
+   * Get the value of bottomUp
+   *
+   * @return the value of bottomUp
+   */
+  public boolean isBottomUp()
+  {
+    return bottomUp;
+  }
+
+  /**
+   * Set the value of bottomUp
+   *
+   * @param bottomUp new value of bottomUp
+   */
+  public void setBottomUp(boolean bottomUp)
+  {
+    this.bottomUp = bottomUp;
+  }
   /**
    * Set the value of invertColors
    *
@@ -217,6 +238,7 @@ public class Raster3dProfile extends LaserProfile
         for (LaserProperty prop : laserProperties)
         {
           Raster3dPart part = new Raster3dPart(ad, prop, new Point((int) bb.getX(), (int) bb.getY()), getDPI());
+          part.setBottomUp(bottomUp);
           job.addPart(part);
         }
       }
@@ -230,6 +252,7 @@ public class Raster3dProfile extends LaserProfile
     rp.colorShift = this.colorShift;
     rp.description = this.description;
     rp.invertColors = this.invertColors;
+    rp.bottomUp = this.bottomUp;
     rp.name = this.name;
     rp.thumbnailPath = this.thumbnailPath;
     rp.setDPI(getDPI());
@@ -239,7 +262,7 @@ public class Raster3dProfile extends LaserProfile
   @Override
   public int hashCode()
   {
-    return super.hashCodeBase() * 31 + (invertColors?1:0) *17 + colorShift;
+    return super.hashCodeBase() * 31 + (invertColors?1:0) *17 + colorShift + (bottomUp?1:0);
   }
 
   @Override
@@ -255,6 +278,10 @@ public class Raster3dProfile extends LaserProfile
     }
     final Raster3dProfile other = (Raster3dProfile) obj;
     if (this.invertColors != other.invertColors)
+    {
+      return false;
+    }
+    if (this.bottomUp != other.bottomUp)
     {
       return false;
     }
