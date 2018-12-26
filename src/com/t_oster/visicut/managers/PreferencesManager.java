@@ -342,7 +342,7 @@ public final class PreferencesManager
   
   public Preferences loadPreferences(File f) throws FileNotFoundException
   {
-    return (Preferences) FilebasedManager.readObjectFromXmlStream(new FileInputStream(f), getXStream());
+    return (Preferences) FilebasedManager.readObjectFromXmlFile(f, getXStream());
   }
 
   public void exportSettings(File file) throws FileNotFoundException, IOException

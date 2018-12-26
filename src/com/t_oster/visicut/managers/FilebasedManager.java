@@ -206,7 +206,7 @@ public abstract class FilebasedManager<T>
     this.setThumbnail(mp, Helper.addParentPath(f.getParentFile(), this.getThumbnail(mp)));
   }
   
-
+ 
   public T loadFromFile(File f) throws FileNotFoundException, IOException
   {
     FileInputStream fin = new FileInputStream(f);
@@ -242,7 +242,7 @@ public abstract class FilebasedManager<T>
       return null;
     }
   }
-
+  
   /**
    * Convert serialized XML file to Object
    * @param in input stream which reads from XML file
@@ -255,24 +255,43 @@ public abstract class FilebasedManager<T>
     } catch (Exception e) {
     } catch (java.lang.InstantiationError e) {
     }
-
+    
+    Logger.getLogger(FilebasedManager.class.getName()).log(Level.WARNING, "Failed to load object from XML.");
+    return null;
+  }
+  
+    /**
+   * Convert serialized XML file to Object
+   * Unlike readObjectFromXmlStream(), this function is backwards-compatible to the old format used before 2012.
+   * @param f XML file
+   * @param xStream XStream instance
+   * @return deserialized Object
+   * @throws java.io.FileNotFoundException
+   */
+  public static Object readObjectFromXmlFile(File f, XStream xStream) throws FileNotFoundException {
+    Object o = readObjectFromXmlStream(new FileInputStream(f), xStream);
+    if (o != null) {
+      return o;
+    }
+    
     // TODO: Does anything actually still use the old format???
     // Format was changed 2012.
-    Logger.getLogger(FilebasedManager.class.getName()).log(Level.WARNING, "Failed to load object from XML, retrying with old format:");
+    Logger.getLogger(FilebasedManager.class.getName()).log(Level.WARNING, "Could not load object in current XML format, retrying with old format from 2012:");
+    
     try
     {
-      XMLDecoder dec = new XMLDecoder(in);
+      XMLDecoder dec = new XMLDecoder(new FileInputStream(f));
       Object result = dec.readObject();
       dec.close();
       return result;
     }
     catch (Exception e)
     {
-      Logger.getLogger(FilebasedManager.class.getName()).log(Level.SEVERE, "Failed to load object from XML.");
+      Logger.getLogger(FilebasedManager.class.getName()).log(Level.SEVERE, "Failed to load object from XML in old format.");
       return null;
     }
   }
-
+  
   /**
    * Serialize object to XML with correct encoding.
    * Use readObjectFromXmlStream() for deserialization.
@@ -284,7 +303,7 @@ public abstract class FilebasedManager<T>
     OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
     xStream.toXML(obj, writer);
   }
-
+  
   /**
    * Serialize object to XML with correct encoding.
    * Use readObjectFromXmlStream() for deserialization.

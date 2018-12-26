@@ -194,7 +194,7 @@ public class LaserPropertyManager
   {
     try
     {
-      return (List<LaserProperty>) FilebasedManager.readObjectFromXmlStream(new FileInputStream(f), getXStream());
+      return (List<LaserProperty>) FilebasedManager.readObjectFromXmlFile(f, getXStream());
     }
     catch (Exception e)
     {
