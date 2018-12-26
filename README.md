@@ -1,7 +1,7 @@
 VisiCut
 =======
 
-a userfriendy, platform-independent tool for preparing, saving and sending jobs to Lasercutters.
+a userfriendly, platform-independent tool for preparing, saving and sending jobs to Lasercutters.
 
 For more information please look at the project page at:
 
