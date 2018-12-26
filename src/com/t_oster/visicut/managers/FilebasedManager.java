@@ -20,12 +20,12 @@ package com.t_oster.visicut.managers;
 
 import com.t_oster.visicut.misc.FileUtils;
 import com.t_oster.visicut.misc.Helper;
-import com.t_oster.visicut.misc.Homography;
 import com.thoughtworks.xstream.XStream;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -201,35 +201,17 @@ public abstract class FilebasedManager<T>
       this.setThumbnail(mp, Helper.removeParentPath(f.getParentFile(), this.getThumbnail(mp)));
     }
     FileOutputStream out = new FileOutputStream(f);
-    this.getXStream().toXML(mp, out);
+    writeObjectToXmlStream(mp, out, xstream);
     out.close();
     this.setThumbnail(mp, Helper.addParentPath(f.getParentFile(), this.getThumbnail(mp)));
   }
   
-  private T loadFromOldFile(File f)
-  {
-    try
-    {
-      XMLDecoder dec = new XMLDecoder(new FileInputStream(f));
-      T result = (T) dec.readObject();
-      dec.close();
-      return result;
-    }
-    catch (Exception e)
-    {
-      return null;
-    }
-  }
-  
+
   public T loadFromFile(File f) throws FileNotFoundException, IOException
   {
     FileInputStream fin = new FileInputStream(f);
     T result = this.loadFromFile(fin);
     fin.close();
-    if (result == null)
-    {
-      result = this.loadFromOldFile(f);
-    }
     if (result == null)
     {
       System.err.println("Error reading: "+f.getAbsolutePath()+". Invalid File Format (created with old VisiCut version?)");    
@@ -249,7 +231,7 @@ public abstract class FilebasedManager<T>
   {
     try
     {
-      return (T) this.getXStream().fromXML(in);
+      return (T) readObjectFromXmlStream(in, getXStream());
     }
     catch (Exception e)
     {
@@ -259,6 +241,62 @@ public abstract class FilebasedManager<T>
     {
       return null;
     }
+  }
+
+  /**
+   * Convert serialized XML file to Object
+   * @param in input stream which reads from XML file
+   * @param xStream XStream instance
+   * @return deserialized Object
+   */
+  public static Object readObjectFromXmlStream(InputStream in, XStream xStream) {
+    try {
+      return xStream.fromXML(new InputStreamReader(in, StandardCharsets.UTF_8));
+    } catch (Exception e) {
+    } catch (java.lang.InstantiationError e) {
+    }
+
+    // TODO: Does anything actually still use the old format???
+    // Format was changed 2012.
+    Logger.getLogger(FilebasedManager.class.getName()).log(Level.WARNING, "Failed to load object from XML, retrying with old format:");
+    try
+    {
+      XMLDecoder dec = new XMLDecoder(in);
+      Object result = dec.readObject();
+      dec.close();
+      return result;
+    }
+    catch (Exception e)
+    {
+      Logger.getLogger(FilebasedManager.class.getName()).log(Level.SEVERE, "Failed to load object from XML.");
+      return null;
+    }
+  }
+
+  /**
+   * Serialize object to XML with correct encoding.
+   * Use readObjectFromXmlStream() for deserialization.
+   * @param obj object to be serialized
+   * @param out OutputStream to which XML is written
+   * @param xStream XStream instance for serialization
+   */
+  public static void writeObjectToXmlStream(Object obj, OutputStream out, XStream xStream) {
+    OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+    xStream.toXML(obj, writer);
+  }
+
+  /**
+   * Serialize object to XML with correct encoding.
+   * Use readObjectFromXmlStream() for deserialization.
+   * @param obj object to be serialized
+   * @param f File to which XML is written
+   * @param xStream XStream instance for serialization
+   * @throws java.io.IOException
+   */
+  public static void writeObjectToXmlFile(Object obj, File f, XStream xStream) throws IOException {
+    FileOutputStream out = new FileOutputStream(f);
+    writeObjectToXmlStream(obj, out, xStream);
+    out.close();
   }
 
   /**

@@ -20,6 +20,7 @@
 package com.t_oster.visicut.model.graphicelements.psvgsupport;
 
 import com.t_oster.uicomponents.parameter.Parameter;
+import com.t_oster.visicut.managers.FilebasedManager;
 import com.t_oster.visicut.model.PlfPart;
 import com.t_oster.visicut.model.graphicelements.ImportException;
 import com.thoughtworks.xstream.XStream;
@@ -63,7 +64,7 @@ public class ParametricPlfPart extends PlfPart
     {
       values.put(e.getKey(), e.getValue().value);
     }
-    xstream.toXML(values, out);
+    FilebasedManager.writeObjectToXmlStream(values, out, xstream);
   }
 
   /*
@@ -72,7 +73,7 @@ public class ParametricPlfPart extends PlfPart
   static void unserializeParameterValues(Map<String, Parameter> parameters, FileInputStream in)
   {
     XStream xstream = getXStream();
-    Map<String, Object> values = (Map<String, Object>) xstream.fromXML(in);
+    Map<String, Object> values = (Map<String, Object>) FilebasedManager.readObjectFromXmlStream(in, xstream);
     for (Entry<String, Object> e : values.entrySet())
     {
       if (parameters.containsKey(e.getKey()))

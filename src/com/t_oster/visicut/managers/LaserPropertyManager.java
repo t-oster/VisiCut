@@ -187,44 +187,14 @@ public class LaserPropertyManager
     {
       f.getParentFile().mkdirs();
     }
-    FileOutputStream out = new FileOutputStream(f);
-    getXStream().toXML(lps, out);
-    out.close();
-  }
-
-  private List<LaserProperty> loadPropertiesOld(File f)
-  {
-    try
-    {
-      FileInputStream in = new FileInputStream(f);
-      XMLDecoder dec = new XMLDecoder(in);
-      List<LaserProperty> result = (List<LaserProperty>) dec.readObject();
-      dec.close();
-      return result;
-    }
-    catch (Exception e)
-    {
-      return null;
-    }
+    FilebasedManager.writeObjectToXmlFile(lps, f, getXStream());
   }
 
   public List<LaserProperty> loadProperties(File f) throws FileNotFoundException, IOException
   {
-    FileInputStream fin = new FileInputStream(f);
-    List<LaserProperty> result = this.loadProperties(fin);
-    fin.close();
-    if (result == null)
-    {
-      result = this.loadPropertiesOld(f);
-    }
-    return result;
-  }
-
-  public List<LaserProperty> loadProperties(InputStream in)
-  {
     try
     {
-      return (List<LaserProperty>) getXStream().fromXML(in);
+      return (List<LaserProperty>) FilebasedManager.readObjectFromXmlStream(new FileInputStream(f), getXStream());
     }
     catch (Exception e)
     {
