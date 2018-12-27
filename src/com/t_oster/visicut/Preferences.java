@@ -21,6 +21,7 @@ package com.t_oster.visicut;
 import com.t_oster.liblasercut.LibInfo;
 import java.awt.Rectangle;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -200,6 +201,54 @@ public class Preferences
     this.mkbitmapPath = mkbitmapPath;
   }
   
+  private boolean autoUpdateSettingsDisabled = false;
+
+  /**
+   * automatically update settings every 14 days?
+   * @return
+   */
+  public boolean isAutoUpdateSettings() {
+    return !autoUpdateSettingsDisabled;
+  }
+
+  public void setAutoUpdateSettings(boolean autoUpdateSettings) {
+    this.autoUpdateSettingsDisabled = !autoUpdateSettings;
+  }
+
+  // Date.getTime() of last autoUpdate.
+  private long lastAutoUpdateTime = 0;
+
+  public long getDaysSinceLastAutoUpdate()
+  {
+    return (new Date().getTime() - lastAutoUpdateTime)/(24 * 60 * 60 * 1000);
+  }
+
+  public void resetLastAutoUpdateTime()
+  {
+    this.lastAutoUpdateTime = new Date().getTime();
+  }
+
+  /**
+   * Which lab was selected (in MainView.jmDownloadSettingsActionPerformed)?
+   * null = unknown - preferences are from older VisiCut version
+   * "" = imported from file, not from web
+   * "Germany, Berlin, ..." = imported from web
+   */
+  private String lastAutoUpdateLabName = null;
+
+  public String getLastAutoUpdateLabName()
+  {
+    return lastAutoUpdateLabName;
+  }
+
+  public void setLastAutoUpdateLabName(String lastAutoUpdateLabName)
+  {
+    this.lastAutoUpdateLabName = lastAutoUpdateLabName;
+  }
+
+
+
+
   private Rectangle windowBounds = null;
 
   /**
@@ -512,6 +561,9 @@ public class Preferences
     result.fabLabLocationFacebookId = fabLabLocationFacebookId;
     result.supportedExtensions = supportedExtensions;
     result.laserCutterTags = laserCutterTags;
+    result.autoUpdateSettingsDisabled = autoUpdateSettingsDisabled;
+    result.lastAutoUpdateLabName = lastAutoUpdateLabName;
+    result.lastAutoUpdateTime = lastAutoUpdateTime;
     return result;
   }
 }

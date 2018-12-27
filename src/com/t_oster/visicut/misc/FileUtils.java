@@ -31,6 +31,9 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -335,6 +338,16 @@ public class FileUtils
   }
   
   /**
+   * Write string to file
+   * @param str
+   * @param file
+   * @throws java.io.IOException
+   */
+  public static void writeStringToFile(String str, File file) throws IOException {
+    Files.write(file.toPath(), str.getBytes("UTF-8"));
+  }
+
+  /**
    * Download URL to file
    * @param url
    * @param file
@@ -348,6 +361,18 @@ public class FileUtils
     fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
   }
   
+  /**
+   * Update a file's modification time. Create it if it doesn't exist.
+   * @param file
+   * @throws java.io.IOException
+   */
+  public static void touchFile(File file) throws IOException {
+    if (!file.exists()) {
+      file.createNewFile();
+    }
+    file.setLastModified(System.currentTimeMillis());
+  }
+
   /**
    * Called at startup to cleanup old temporary files
    */
