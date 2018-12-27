@@ -325,9 +325,7 @@ public final class PreferencesManager
   
   public void savePreferences(Preferences pref, File f) throws FileNotFoundException, IOException
   {
-    FileOutputStream os = new FileOutputStream(f);
-    getXStream().toXML(pref, os);
-    os.close();
+    FilebasedManager.writeObjectToXmlFile(pref, f, getXStream());
   }
 
   private XStream xstream = null;
@@ -344,18 +342,7 @@ public final class PreferencesManager
   
   public Preferences loadPreferences(File f) throws FileNotFoundException
   {
-    try
-    {
-      return (Preferences) getXStream().fromXML(f);
-    }
-    catch (Exception e)
-    {
-      FileInputStream os = new FileInputStream(f);
-      XMLDecoder decoder = new XMLDecoder(os);
-      Preferences p = (Preferences) decoder.readObject();
-      decoder.close();
-      return p;
-    }
+    return (Preferences) FilebasedManager.readObjectFromXmlFile(f, getXStream());
   }
 
   public void exportSettings(File file) throws FileNotFoundException, IOException
