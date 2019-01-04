@@ -424,7 +424,27 @@ public class MainView extends javax.swing.JFrame
     // all GUI parts are now initialised.
     if (LaserDeviceManager.getInstance().getAll().isEmpty())
     {
+      // no lasercutters present - ask for downloading settings
       this.jmDownloadSettingsActionPerformed(null);
+    } else {
+      // Ask for updating settings if they are old.
+      if (!Helper.basePathIsVersionControlled() // settings is not under version control
+        && visicutModel1.getPreferences().isAutoUpdateSettings() // auto-update is enabled
+        && !getRecommendedLab().equals("") // and we know where to download the settings
+        // and the last update is more than 14 days ago (or unknown)
+        && visicutModel1.getPreferences().getDaysSinceLastAutoUpdate() > 14)
+      {
+        // Ask: "Would you like to download updated settings?"
+        if (dialog.showYesNoQuestion(bundle.getString("UPDATE_SETTINGS")))
+        {
+          // TODO: We could skip some of the questions im jmDownloadSettingsActionPerfored.
+          // TODO: We could check if the remote file has actually changed and keep quiet otherwise.
+          // see https://www.hackdiary.com/2003/04/09/using-http-conditional-get-in-java-for-efficient-polling/
+          this.jmDownloadSettingsActionPerformed(null);
+        }
+        visicutModel1.getPreferences().resetLastAutoUpdateTime();
+      }
+
     }
 
     // Cleanup old temporary files, which might not have been deleted correctly
@@ -2883,9 +2903,38 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   {
     PreferencesManager.getInstance().importSettings(file);
     this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
+    // unset the lab name for auto-updates. Will be reset in importSettingsFromWeb,
+    // if the update was loaded from the web (and not a local file).
+    this.visicutModel1.getPreferences().setLastAutoUpdateLabName("");
     this.fillComboBoxes();
     this.refreshExampleMenu();
     dialog.showSuccessMessage(bundle.getString("SETTINGS SUCCESSFULLY IMPORTED"));
+  }
+
+  /**
+   * Import Lasercutter settings from the web
+   * @param url HTTP(s) URL
+   * @param labName Name of FabLab to be preselected when the dialog
+   * "Download recommended settings" is opened the next time (may be empty).
+   * @throws Exception
+   */
+  private void importSettingsFromWeb(String url, String labName) throws Exception {
+    if (!(url.startsWith("https://") || url.startsWith("http://")))
+    {
+      throw new FileNotFoundException("illegal start of URL");
+    }
+    File tempfile = File.createTempFile("vcsettings-download", ".zip");
+    FileUtils.downloadUrlToFile(url, tempfile);
+    this.importSettingsFromFile(tempfile);
+    tempfile.delete();
+    // enable the automatic update of preferences:
+    // The user downloaded the preferences from the web, so in most cases it's
+    // desired to download updates (and discard local changes). Because the person
+    // who exported the preferences will probably have disabled auto-updates, we
+    // re-enable them here.
+    this.visicutModel1.getPreferences().setAutoUpdateSettings(true);
+    this.visicutModel1.getPreferences().setLastAutoUpdateLabName(labName);
+    this.visicutModel1.getPreferences().resetLastAutoUpdateTime();
   }
 
   private void jmImportSettingsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmImportSettingsActionPerformed
@@ -3403,27 +3452,65 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     }
   }
 
+  /**
+   * Guess the recommended lab for downloading settings, based on last download
+   * URL or the local hostname.
+   * @return URL or selection key for jmDownloadSettingsActionPerformed, or "" if unknown.
+   */
+  private String getRecommendedLab() {
+
+    // Get default choice from last download
+    if (visicutModel1.getPreferences().getLastAutoUpdateLabName() != null) {
+      return visicutModel1.getPreferences().getLastAutoUpdateLabName();
+    }
+
+    // Otherwise:
+    // Get localhost FQDN for auto-detecting the lab, at least on computers owned by the lab.
+    String hostname = "";
+    try
+    {
+      hostname = InetAddress.getLocalHost().getCanonicalHostName();
+    }
+    catch (UnknownHostException ex)
+    {
+      // Cannot get local hostname -- ignore exception
+    }
+
+    // initial guess from local hostname. Will be used if the URL is not known
+    // (first startup, or preferences from before December 2018 when
+    //  remembering the URL was implemented)
+    if (hostname.endsWith(".fau.de") || hostname.endsWith(".uni-erlangen.de")) {
+      return "Germany, Erlangen: FAU FabLab";
+    }
+
+    return ""; // unknown
+  }
+
+  /***
+   * "Download recommended settings" menu item clicked
+   * @param evt
+   */
 private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmDownloadSettingsActionPerformed
   warningPanel.removeAllWarnings();
+  // Refuse download (overwrite) if the settings directory is a version control (git) repository
+  if (Helper.basePathIsVersionControlled()) {
+    dialog.showErrorMessage(bundle.getString("SETTINGS_DIR_IS_VCS_REPOSITORY") + "\n" + Helper.getBasePath());
+    return;
+  }
+
   Map<String, String> choices = new LinkedHashMap<String, String>();
   choices.put(bundle.getString("EXAMPLE_SETTINGS"), "__DEFAULT__");
-  Object defaultChoice = choices.keySet().toArray()[0];
+  Object defaultChoice = getRecommendedLab();
+  if ("".equals(defaultChoice)) {
+    defaultChoice = choices.keySet().toArray()[0];
+  }
   choices.put(bundle.getString("EMPTY_SETTINGS"), "__EMPTY__");
   choices.put(bundle.getString("IMPORT_SETTINGS_FROM_FILE"), "__FILE__");
 
-  // Get FQDN for auto-detecting the lab, at least on computers owned by the lab.
-  String hostname = "";
-  try
-  {
-    hostname = InetAddress.getLocalHost().getCanonicalHostName();
-  }
-  catch (UnknownHostException ex)
-  {
-    // Cannot get local hostname -- ignore exception
-  }
 
   // Want your lab in this list? Look at https://github.com/t-oster/VisiCut/wiki/How-to-add-default-settings-for-your-lab !
   // choices.put("Country, City: Institution", "https://example.org/foo.zip");
+  // also have a look at getRecommendedLab() if you want your lab to be suggested for all PCs in your local network.
   // The list is sorted alphabetically.
   choices.put("China, Hong Kong: Renaissance College Hong Kong", "https://github.com/RCHK-DT/visicut-settings/archive/master.zip");
   choices.put("France, Chemillé en Anjou : FabLab le Boc@l", "https://github.com/bocal-chemille/Visicut/raw/master/config_laser_bocal.vcsettings");
@@ -3433,9 +3520,6 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   choices.put("Germany, Bremen: FabLab Bremen e.V.", "http://www.fablab-bremen.org/FabLab_Bremen.vcsettings");
   choices.put("Germany, Dresden: Makerspace Dresden", "https://github.com/Makerspace-Dresden/visicut-settings/archive/master.zip");
   choices.put("Germany, Erlangen: FAU FabLab", "https://github.com/fau-fablab/visicut-settings/archive/master.zip");
-  if (hostname.endsWith(".fau.de") || hostname.endsWith(".uni-erlangen.de")) {
-    defaultChoice = "Germany, Erlangen: FAU FabLab";
-  }
   choices.put("Germany, Heidelberg: Heidelberg Makerspace", "https://github.com/heidelberg-makerspace/visicut-settings/archive/master.zip");
   choices.put("Germany, Nuremberg: Fab lab Region Nürnberg e.V.", "https://github.com/fablabnbg/visicut-settings/archive/master.zip");
   choices.put("Germany, Paderborn: FabLab Paderborn e.V.", "https://github.com/fablab-paderborn/visicut-settings/archive/master.zip");
@@ -3445,9 +3529,18 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   choices.put("United Kingdom, Leeds: Hackspace", "https://github.com/leedshackspace/visicut-settings/archive/master.zip");
   choices.put("United Kingdom, Manchester: Hackspace", "https://github.com/hacmanchester/visicut-settings/archive/master.zip");
   choices.put(bundle.getString("DOWNLOAD_NOT_IN_LIST"), "__HELP__");
+
+
+
   String s = (String) JOptionPane.showInputDialog(this, bundle.getString("DOWNLOAD_SETTINGS_INFO"), null, JOptionPane.PLAIN_MESSAGE, null, choices.keySet().toArray(), defaultChoice);
   if ((s == null) || (s.length() == 0))
   {
+    return;
+  }
+  if ("__HELP__".equals(choices.get(s)))
+  {
+    dialog.showInfoMessage("Please look at https://github.com/t-oster/VisiCut/wiki/How-to-add-default-settings-for-your-lab . \n You can reopen this dialog in Edit -> Settings -> Download.");
+    openWebpage("https://github.com/t-oster/VisiCut/wiki/How-to-add-default-settings-for-your-lab");
     return;
   }
   if (!askForOverwriteSettings())
@@ -3466,11 +3559,6 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
         this.importSettingsFromFile(null);
         return;
       }
-      else if (url.equals("__HELP__"))
-      {
-        dialog.showInfoMessage("Please look at https://github.com/t-oster/VisiCut/wiki/How-to-add-default-settings-for-your-lab . \n You can reopen this dialog in Edit -> Settings -> Download.");
-        return;
-      }
       else if (url.equals("__FILE__"))
       {
         this.importSettingsAskForFile();
@@ -3482,15 +3570,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
         return;
       }
     }
-    if (!(url.startsWith("https://") || url.startsWith("http://")))
-    {
-      dialog.showErrorMessage("Invalid URL or entry");
-      return;
-    }
-    File tempfile = File.createTempFile("vcsettings-download", ".zip");
-    FileUtils.downloadUrlToFile(url, tempfile);
-    this.importSettingsFromFile(tempfile);
-    tempfile.delete();
+    this.importSettingsFromWeb(url, s);
   }
   catch (Exception e)
   {

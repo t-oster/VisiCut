@@ -1,15 +1,13 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
     <Property name="locationByPlatform" type="boolean" value="true"/>
-    <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-      <Connection code="new Dimension(450, 300)" type="code"/>
-    </Property>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
@@ -26,9 +24,9 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="tpSettings" alignment="1" pref="469" max="32767" attributes="0"/>
+          <Component id="tpSettings" alignment="1" max="32767" attributes="0"/>
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="329" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
               <Component id="btCancel" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="btOk" min="-2" max="-2" attributes="0"/>
@@ -39,7 +37,7 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="tpSettings" pref="219" max="32767" attributes="0"/>
+              <Component id="tpSettings" max="32767" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="btOk" min="-2" max="-2" attributes="0"/>
@@ -87,15 +85,22 @@
                           <Component id="jLabel3" alignment="0" min="-2" pref="130" max="-2" attributes="0"/>
                           <Component id="lbEnableQRCodes" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="lbFastQRCodes" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbAutoUpdateSettings" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="47" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="cbSandboxLaserScript1" min="-2" max="-2" attributes="0"/>
-                          <Component id="cbSandboxLaserScript" min="-2" max="-2" attributes="0"/>
-                          <Component id="jTextFieldLabName" alignment="0" pref="267" max="32767" attributes="0"/>
-                          <Component id="cbDefaultMapping" alignment="0" pref="267" max="32767" attributes="0"/>
-                          <Component id="cbEnableQRCodes" min="-2" max="-2" attributes="0"/>
-                          <Component id="cbFastQRCodes" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextFieldLabName" alignment="0" pref="306" max="32767" attributes="0"/>
+                          <Component id="cbDefaultMapping" alignment="0" pref="306" max="32767" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="cbSandboxLaserScript1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="cbSandboxLaserScript" min="-2" max="-2" attributes="0"/>
+                                  <Component id="cbEnableQRCodes" min="-2" max="-2" attributes="0"/>
+                                  <Component id="cbFastQRCodes" min="-2" max="-2" attributes="0"/>
+                                  <Component id="cbAutoUpdateSettings" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -112,7 +117,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="cbSandboxLaserScript" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -131,10 +136,15 @@
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="cbFastQRCodes" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="lbFastQRCodes" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbFastQRCodes" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="lbAutoUpdateSettings" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbAutoUpdateSettings" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -245,6 +255,21 @@
                 <BindingProperty name="selected" source="Form" sourcePath="${preferences.fastQRCodes}" target="cbFastQRCodes" targetPath="selected" updateStrategy="0" immediately="false"/>
               </BindingProperties>
             </Component>
+            <Component class="javax.swing.JLabel" name="lbAutoUpdateSettings">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="com/t_oster/visicut/gui/resources/PreferencesDialog.properties" key="AUTO_UPDATE_SETTINGS" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="com/t_oster/visicut/gui/resources/PreferencesDialog.properties" key="FAST_QR_CODES_TOOLTIP" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="cbAutoUpdateSettings">
+              <BindingProperties>
+                <BindingProperty name="selected" source="Form" sourcePath="${preferences.autoUpdateSettings}" target="cbAutoUpdateSettings" targetPath="selected" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="pnlFacebook">
@@ -266,7 +291,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lblFabLabLocationFacebookId" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="txtfFabLabLocationFacebookId" pref="289" max="32767" attributes="0"/>
+                      <Component id="txtfFabLabLocationFacebookId" pref="404" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -279,7 +304,7 @@
                           <Component id="lblFabLabLocationFacebookId" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="txtfFabLabLocationFacebookId" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="160" max="32767" attributes="0"/>
+                      <EmptySpace pref="182" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -325,8 +350,8 @@
                       </Group>
                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="txtfLasercutterTags" alignment="0" pref="317" max="32767" attributes="0"/>
-                          <Component id="txtfSupportedExtensions" alignment="0" pref="317" max="32767" attributes="0"/>
+                          <Component id="txtfLasercutterTags" alignment="0" pref="446" max="32767" attributes="0"/>
+                          <Component id="txtfSupportedExtensions" alignment="0" pref="446" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -345,7 +370,7 @@
                           <Component id="lblSupportedExtensions" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="txtfSupportedExtensions" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="134" max="32767" attributes="0"/>
+                      <EmptySpace pref="157" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -401,26 +426,30 @@
                               <Component id="cbFabqrActive" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="363" max="-2" attributes="0"/>
                           </Group>
-                          <Group type="102" alignment="0" attributes="0">
+                          <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="lblFabqrHint" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lblFabqrExample" alignment="0" min="-2" pref="346" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace pref="28" max="32767" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="lblFabqrPublicURL" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lblFabqrPrivateUser" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lblFabqrPrivatePassword" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lblFabqrPrivateURL" alignment="0" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace pref="16" max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="txtFabqrPrivateURL" alignment="1" pref="276" max="32767" attributes="1"/>
-                                  <Component id="txtFabqrPrivateUser" alignment="1" max="32767" attributes="1"/>
-                                  <Component id="passFabqrPrivatePassword" alignment="1" max="32767" attributes="1"/>
-                                  <Component id="txtFabqrPublicURL" alignment="1" min="-2" pref="305" max="-2" attributes="1"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="lblFabqrHint" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="lblFabqrExample" alignment="0" min="-2" pref="346" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="lblFabqrPublicURL" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="lblFabqrPrivateUser" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="lblFabqrPrivatePassword" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="lblFabqrPrivateURL" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="txtFabqrPrivateURL" alignment="1" max="32767" attributes="1"/>
+                                          <Component id="txtFabqrPrivateUser" alignment="1" max="32767" attributes="1"/>
+                                          <Component id="passFabqrPrivatePassword" alignment="1" max="32767" attributes="1"/>
+                                          <Component id="txtFabqrPublicURL" alignment="1" min="-2" pref="305" max="-2" attributes="1"/>
+                                      </Group>
+                                  </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
