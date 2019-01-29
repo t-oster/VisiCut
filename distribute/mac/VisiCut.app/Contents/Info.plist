@@ -1,32 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CFBundleAllowMixedLocalizations</key>
-	<string>true</string>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>English</string>
-	<key>CFBundleExecutable</key>
-	<string>JavaApplicationStub</string>
-	<key>CFBundleGetInfoString</key>
-	<string>A userfriendly tool to create, save and send Jobs to a Lasercutter</string>
-	<key>CFBundleIconFile</key>
-	<string>MacIcon.icns</string>
-	<key>CFBundleIdentifier</key>
-	<string>com.t_oster.visicut.gui.VisicutApp</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>VisiCut</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>VISICUTVERSION</string>
-	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2012, Thomas Oster, Media Computing Group, RWTH Aachen University. This Software is licensed under the GNU Lesser Public License (LGPL) version 3.</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleDocumentTypes</key>
+  <dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>English</string>
+    <key>CFBundleExecutable</key>
+    <string>JavaAppLauncher</string>
+    <key>CFBundleGetInfoString</key>
+    <string>A userfriendly tool to create, save and send Jobs to a Lasercutter</string>
+    <key>CFBundleIconFile</key>
+    <string>MacIcon.icns</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.t_oster.visicut.gui.VisicutApp</string>
+    <key>CFBundleDisplayName</key>
+    <string>VisiCut</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright © 2018, Thomas Oster, Media Computing Group, RWTH Aachen University. This Software is licensed under the GNU Lesser Public License (LGPL) version 3.</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>VisiCut</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>$VERSION</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleDocumentTypes</key>
 	<array>
     		<dict>
         		<key>CFBundleTypeExtensions</key>
@@ -56,30 +58,35 @@
         		<string>Viewer</string>
     		</dict>
 	</array>
-	<key>Java</key>
-	<dict>
-		<key>ClassPath</key>
-		<array>
-			<string>$JAVAROOT/Visicut.jar</string>
-			<string>$JAVAROOT/lib</string>
-		</array>
-		<key>JVMVersion</key>
-		<string>1.6+</string>
-		<key>MainClass</key>
-		<string>com.t_oster.visicut.gui.VisicutApp</string>
-		<key>Arguments</key>
-		<string>--singleinstanceport 6543</string>
-		<key>Properties</key>
-		<dict>
-			<key>apple.laf.useScreenMenuBar</key>
-			<string>true</string>
-		</dict>
-		<key>VMOptions</key>
-		<string>-Xms256m -Xmx1024m</string>
-		<key>WorkingDirectory</key>
-		<string>$APP_PACKAGE/Contents/Resources/Java</string>
-		<key>SplashFile</key>
-                <string>$APP_PACKAGE/Contents/Resources/Java/Visicut.jar</string>
-	</dict>
-</dict>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSSupportsAutomaticGraphicsSwitching</key>
+    <true/>
+    <!-- use this if you embed the JRE in Contents/Plugins/JRE
+    <key>JVMRuntime</key>
+    <string>JRE</string>
+    <key>JVMRuntimePath</key>
+    <string></string>
+    -->
+    <key>JVMMainClassName</key>
+    <string>com.t_oster.visicut.gui.VisicutApp</string>
+    <key>JVMClassPaths</key>
+    <array>
+      <string>Visicut.jar</string>
+    </array>
+    <key>JVMVersion</key>
+    <string>1.8+</string>
+    <key>JVMOptions</key>
+    <array>
+      <string>-Dapple.laf.useScreenMenuBar=true</string>
+      <string>-Xdock:name=VisiCut</string>
+      <string>-Xms128m</string>
+      <string>-Xmx1048m</string>
+      <string>-splash:splash.png</string>
+    </array>
+<key>JVMArguments</key>
+<array/>
+    <key>LauncherWorkingDirectory</key>
+    <string>$APP_ROOT/Contents/Resources/Java</string>
+      </dict>
 </plist>

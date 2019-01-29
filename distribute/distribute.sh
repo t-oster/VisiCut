@@ -86,6 +86,10 @@ then
   cp -r "mac/VisiCut.app" .
   mkdir -p "VisiCut.app/Contents/Resources/Java"
   cp -r visicut/* "VisiCut.app/Contents/Resources/Java/"
+  mkdir "VisiCut.app/Contents/Java"
+  mv "VisiCut.app/Contents/Resources/Java/Visicut.jar" "VisiCut.app/Contents/Java/"
+  mv "VisiCut.app/Contents/Resources/Java/lib" "VisiCut.app/Contents/Java/"
+  cp "../src/com/t_oster/visicut/gui/resources/splash.png" "VisiCut.app/Contents/Resources/Java"
   echo "Updating Bundle Info"
   cp "VisiCut.app/Contents/Info.plist" .
   cat Info.plist|sed s#VISICUTVERSION#"$VERSION"#g > VisiCut.app/Contents/Info.plist
