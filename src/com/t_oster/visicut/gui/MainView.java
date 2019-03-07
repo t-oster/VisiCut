@@ -2557,7 +2557,13 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
             ImageInputStream stream = new MemoryCacheImageInputStream(conn.getInputStream());
             BufferedImage back = ImageIO.read(stream);
             if (back == null) {
-              throw new Exception("camera image is null");
+              if (conn.getHeaderFields().containsKey("Location")) {
+                // URLConnection does not follow cross-protocol redirects, e.g. from HTTP to HTTPS.
+                // Then, we'll get stuck here.
+                // https://stackoverflow.com/questions/1884230/urlconnection-doesnt-follow-redirect
+                throw new Exception("Did not receive a camera image, but only a HTTP/S redirect. Please use the actual URL instead: " + conn.getHeaderField("Location"));
+              }
+              throw new Exception("Cannot read camera image: invalid format or empty file. Please make sure the camera URL returns a valid JPEG or PNG image.");
             }
             LaserDevice ld = visicutModel1.getSelectedLaserDevice();
             if (ld == null || !isCameraActive() || !isPreviewPanelShowBackgroundImage()) {
