@@ -26,6 +26,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -82,11 +83,13 @@ public abstract class SVGObject implements GraphicObject
     if (this.getDecoratee() != null)
     {
       AffineTransform tr = new AffineTransform();
-      for (Object o : this.getPathToRoot())
+      List<SVGElement> pathToRoot = this.getPathToRoot();
+      Collections.reverse(pathToRoot);
+      for (Object o : pathToRoot)
       {
         if (o instanceof Group)
         {
-          StyleAttribute sty = new StyleAttribute("transform"); 
+          StyleAttribute sty = new StyleAttribute("transform");
           if (((SVGElement) o).getPres(sty))
           {
             String value = sty.getStringValue();
@@ -96,8 +99,7 @@ public abstract class SVGObject implements GraphicObject
               if (!"".equals(v))
               {
                 AffineTransform trans = SVGElement.parseSingleTransform(v+")");
-                trans.concatenate(tr);
-                tr = trans;
+                tr.concatenate(trans);
               }
             }
           }
