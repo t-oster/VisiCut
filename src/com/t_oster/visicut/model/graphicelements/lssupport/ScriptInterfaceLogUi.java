@@ -21,6 +21,7 @@ package com.t_oster.visicut.model.graphicelements.lssupport;
 import com.t_oster.liblasercut.laserscript.ScriptInterface;
 import com.t_oster.uicomponents.LogFrame;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -66,6 +67,16 @@ public class ScriptInterfaceLogUi implements ScriptInterface
   public Object get(String property)
   {
     return decoratee.get(property);
+  }
+
+  @Override
+  public String prompt(String title, String defaultValue)
+  {
+    String answer = (String) JOptionPane.showInputDialog(null, title, "LaserScript", JOptionPane.QUESTION_MESSAGE, null, null, defaultValue);
+    if (answer == null) {
+      answer = defaultValue;
+    }
+    return answer;
   }
   
 }

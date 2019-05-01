@@ -118,6 +118,13 @@ public class LaserScriptImporter extends AbstractImporter
           //intercepted by decorator anyway
         }
 
+        @Override
+        public String prompt(String title, String defaultValue)
+        {
+          //intercepted by decorator anyway
+          return null;
+        }
+        
       }), !PreferencesManager.getInstance().getPreferences().isDisableSandbox());
     }
     catch (IOException e)
