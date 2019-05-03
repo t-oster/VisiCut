@@ -201,7 +201,7 @@ public abstract class FilebasedManager<T>
       this.setThumbnail(mp, Helper.removeParentPath(f.getParentFile(), this.getThumbnail(mp)));
     }
     FileOutputStream out = new FileOutputStream(f);
-    writeObjectToXmlStream(mp, out, xstream);
+    writeObjectToXmlStream(mp, out, getXStream());
     out.close();
     this.setThumbnail(mp, Helper.addParentPath(f.getParentFile(), this.getThumbnail(mp)));
   }
