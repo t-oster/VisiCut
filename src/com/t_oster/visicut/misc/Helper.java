@@ -296,9 +296,9 @@ public class Helper
         String line = r.readLine();
         while (line != null)
         {
-          if ("VISICUTDIR=\"\"".equals(line))
+          if ("VISICUTDIR = \"\"".equals(line))
           {
-            line = "VISICUTDIR=r\""+getVisiCutFolder().getAbsolutePath()+"\"";
+            line = "VISICUTDIR = r\""+getVisiCutFolder().getAbsolutePath()+"\"";
           }
           w.write(line);
           w.newLine();
