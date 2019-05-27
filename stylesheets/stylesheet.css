@@ -354,6 +354,36 @@ Full-Width Styles
   background: url(../images/sprite_download.png) no-repeat top right;
 }
 
+
+.source_download_link {
+  display: block;
+  float: right;
+  width: 90px;
+  height:70px;
+  text-indent: -5000px;
+  overflow: hidden;
+  background: url(../images/sprite_new.png) no-repeat bottom left;
+}
+
+.download_download_link {
+  display: block;
+  float: right;
+  width: 90px;
+  height:70px;
+  text-indent: -5000px;
+  overflow: hidden;
+  background: url(../images/sprite_new.png) no-repeat bottom right;
+  margin-left: 10px;
+}
+
+.source_download_link:hover {
+  background: url(../images/sprite_new.png) no-repeat top left;
+}
+
+.download_download_link:hover {
+  background: url(../images/sprite_new.png) no-repeat top right;
+}
+
 #main_content_wrap {
   background: #f2f2f2;
   border-top: 1px solid #111;
