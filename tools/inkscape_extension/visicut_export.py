@@ -33,6 +33,8 @@ import tempfile
 import unicodedata
 import codecs
 
+DEVNULL = open(os.devnull, 'w')
+
 SINGLEINSTANCEPORT = 6543
 
 # if on linux, add display variable to singleinstanceport
@@ -176,6 +178,18 @@ def which(program, extraPaths=[]):
 #  shutil.copyfile(src, dest)
 
 
+
+def inkscape_version():
+    """determine if Inkscape is version 0 or 1"""
+    version = subprocess.check_output([INKSCAPEBIN, "--version"],  stderr=DEVNULL)
+    assert version.startswith("Inkscape ")
+    if version.startswith("Inkscape 0"):
+        return 0
+    else:
+        return 1
+    
+
+
 # Strip SVG to only contain selected elements, convert objects to paths, unlink clones
 # Inkscape version: takes care of special cases where the selected objects depend on non-selected ones.
 # Examples are linked clones, flowtext limited to a shape and linked flowtext boxes (overflow into the next box).
@@ -183,14 +197,8 @@ def which(program, extraPaths=[]):
 # Inkscape is called with certain "verbs" (gui actions) to do the required cleanup
 # The idea is similar to http://bazaar.launchpad.net/~nikitakit/inkscape/svg2sif/view/head:/share/extensions/synfig_prepare.py#L181 , but more primitive - there is no need for more complicated preprocessing here
 def stripSVG_inkscape(src, dest, elements):
-    # Selection commands: select items, invert selection, delete
-    selection = []
-    for el in elements:
-        selection += ["--select=" + el]
-    if len(elements) > 0:
-        # selection += ["--verb=FitCanvasToSelection"] # TODO add a user configuration option whether to keep the page size (and by this the position relative to the page)
-        selection += ["--verb=EditInvertInAllLayers", "--verb=EditDelete"]
-
+    version = inkscape_version()
+    
     # create temporary file for opening with inkscape.
     # delete this file later so that it will disappear from the "recently opened" list.
     tmpfile = tempfile.NamedTemporaryFile(delete=False, prefix='temp-visicut-', suffix='.svg')
@@ -199,30 +207,57 @@ def stripSVG_inkscape(src, dest, elements):
     import shutil
     shutil.copyfile(src, tmpfile)
 
-    hidegui = ["--without-gui"]
 
-    # currently this only works with gui  because of a bug in inkscape: https://bugs.launchpad.net/inkscape/+bug/843260
-    hidegui = []
+    if version == 0:
+        # inkscape 0.92 long-term-support release. Will be in Linux distributions until 2025 or so
+        # Selection commands: select items, invert selection, delete
+        selection = []
+        for el in elements:
+            selection += ["--select=" + el]
 
-    command = [INKSCAPEBIN] + hidegui + [tmpfile, "--verb=UnlockAllInAllLayers", "--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers", "--verb=EditUnlinkClone", "--verb=ObjectToPath", "--verb=FileSave", "--verb=FileQuit"]
+        if len(elements) > 0:
+            # selection += ["--verb=FitCanvasToSelection"] # TODO add a user configuration option whether to keep the page size (and by this the position relative to the page)
+            selection += ["--verb=EditInvertInAllLayers", "--verb=EditDelete"]
+
+
+        hidegui = ["--without-gui"]
+
+        # currently this only works with gui because of a bug in inkscape: https://bugs.launchpad.net/inkscape/+bug/843260
+        hidegui = []
+
+        command = [INKSCAPEBIN] + hidegui + [tmpfile, "--verb=UnlockAllInAllLayers", "--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers", "--verb=EditUnlinkClone", "--verb=ObjectToPath", "--verb=FileSave", "--verb=FileQuit"]
+    else:
+        # Inkscape 1.0, to be released ca 2020
+        # inkscape --select=... --verbs=...
+        # (see inkscape --help, inkscape --verb-list)
+        command = [INKSCAPEBIN, tmpfile, "--batch-process"]
+        verbs = ["ObjectToPath", "UnlockAllInAllLayers"]
+        if elements: # something is selected
+            # --select=object1,object2,object3,...
+            command += ["--select=" + ",".join(elements)]
+        else:
+            verbs += ["EditSelectAllInAllLayers"]
+        verbs += ["UnhideAllInAllLayers", "EditInvertInAllLayers", "EditDelete", "EditSelectAllInAllLayers", "EditUnlinkClone", "ObjectToPath", "FileSave"]
+        # --verb=action1;action2;...
+        command += ["--verb=" + ";".join(verbs)]
+        
+        
+        DEBUG = False
+        if DEBUG:
+            # Inkscape sometimes silently ignores wrong verbs, so we need to double-check that everything's right
+            for verb in verbs:
+                verb_list = [line.split(":")[0] for line in subprocess.check_output([INKSCAPEBIN, "--verb-list"], stderr=DEVNULL).split("\n")]
+                if verb not in verb_list:
+                    sys.stderr.write("Inkscape does not have the verb '{}'. Please report this as a VisiCut bug.".format(verb))
+        
     inkscape_output = "(not yet run)"
     try:
+        #sys.stderr.write(" ".join(command))
         # run inkscape, buffer output
         inkscape = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         inkscape_output = inkscape.communicate()[0]
-        errors = False
-        # see if the output contains someting interesting (an error or an important warning)
-        for line in inkscape_output.splitlines():
-            # ignore empty/blank lines
-            if (line.isspace() or line == ""):
-                continue
-            # ignore GTK_IS_MISC warnings - they occur sometimes (at least in debian squeeze) even if everything works perfectly
-            if "gtk_misc_set_alignment: assertion `GTK_IS_MISC (misc)' failed" in line:
-                continue
-            # something else happened - but since inkscape outputs much stuff, don't notify the user
-            # errors = True
-        # if errors:
-        # sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect.\nInkscape's output was:\n" + inkscape_output)
+        if inkscape.returncode != 0:
+            sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect.\nInkscape's output was:\n" + inkscape_output)
     except:
         sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect. Exception information: \n" + str(sys.exc_info()[0]) + "Inkscape's output was:\n" + inkscape_output)
 
