@@ -763,7 +763,7 @@ public class VisicutModel
         }
         List<LaserProperty> props = propmap.get(pr);
         try {
-          pr.addToLaserJob(job, set, this.addFocusOffset(props, focusOffset));
+          pr.addToLaserJob(job, set, this.addFocusOffset(props, focusOffset), this.selectedLaserDevice.getLaserCutter());
         } catch (InterruptedException ex) {
           throw new RuntimeException("this must not happen");
         }

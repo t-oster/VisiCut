@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut.model;
 
+import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.ProgressListener;
@@ -186,7 +187,7 @@ public class Raster3dProfile extends LaserProfile
   }
 
   @Override
-  public void addToLaserJob(LaserJob job, GraphicSet set, List<LaserProperty> laserProperties)
+  public void addToLaserJob(LaserJob job, GraphicSet set, List<LaserProperty> laserProperties, LaserCutter cutter)
   {
     double factor = Util.dpi2dpmm(this.getDPI());
     AffineTransform mm2laserPx = AffineTransform.getScaleInstance(factor, factor);

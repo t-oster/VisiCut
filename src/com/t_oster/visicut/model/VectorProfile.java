@@ -18,6 +18,7 @@
  **/
 package com.t_oster.visicut.model;
 
+import com.t_oster.liblasercut.LaserCutter;
 import com.t_oster.liblasercut.LaserJob;
 import com.t_oster.liblasercut.LaserProperty;
 import com.t_oster.liblasercut.VectorPart;
@@ -254,7 +255,7 @@ public class VectorProfile extends LaserProfile
   }
 
   @Override
-  public void addToLaserJob(LaserJob job, GraphicSet objects, List<LaserProperty> laserProperties)
+  public void addToLaserJob(LaserJob job, GraphicSet objects, List<LaserProperty> laserProperties, LaserCutter cutter)
   {
     if (this.isUseOutline())
     {
@@ -301,7 +302,7 @@ public class VectorProfile extends LaserProfile
             sh = objects.getTransform().createTransformedShape(sh);
           }
           sh = mm2laserpx.createTransformedShape(sh);
-          conv.addShape(sh, part);
+          conv.addShape(sh, part, cutter);
         }
       }
     }
