@@ -3581,7 +3581,7 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   }
   catch (Exception e)
   {
-    dialog.showErrorMessage("Could not download settings.\n" + e.getLocalizedMessage());
+    dialog.showErrorMessage("Could not download settings.\n" + DialogHelper.getHumanReadableErrorMessage(e));
   }
 }//GEN-LAST:event_jmDownloadSettingsActionPerformed
 
