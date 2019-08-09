@@ -3489,6 +3489,12 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       return "Germany, Erlangen: FAU FabLab";
     }
 
+    // Guess the lab based on wifi ssid.
+    String wirelessSsid = Helper.getWifiSSID();
+    if (wirelessSsid.equals("WL-seattle-maker-space")) {
+      return "United States, Seattle: Fremont Hangar";
+    }
+
     return ""; // unknown
   }
 

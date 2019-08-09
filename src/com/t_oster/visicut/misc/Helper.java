@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
@@ -785,4 +786,47 @@ public class Helper
 
     return result;
   }
+
+  /**
+   * Attempt to get the wifi ssid, returning empty string if not found.
+   * This attempts to call system specific shell commands to find wifi info.
+   */
+  public static String getWifiSSID() {
+    if (isLinux()) {
+      try {
+        // This command works for ubuntu linux
+        Process p = Runtime.getRuntime().exec("iwgetid -r");
+        p.waitFor();
+        if (p.exitValue() == 0) {
+          return new BufferedReader(new InputStreamReader(p.getInputStream())).readLine();
+        }
+      } catch (Exception e) {
+        // Ignore all the expections, it's just a failure to get the SSID.
+      }
+    }
+    if (isWindows()) {
+      try {
+        Process p = Runtime.getRuntime().exec("NETSH WLAN SHOW INTERFACE | findstr /r \"^....SSID\"");
+        p.waitFor();
+        if (p.exitValue() == 0) {
+          return new BufferedReader(new InputStreamReader(p.getInputStream())).readLine();
+        }
+      } catch (Exception e) {
+        // Ignore all the expections, it's just a failure to get the SSID.
+      }
+    }
+    if (isMacOS()) {
+      try {
+        Process p = Runtime.getRuntime().exec("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | awk '/ SSID/ {print substr($0, index($0, $2))}'");
+        p.waitFor();
+        if (p.exitValue() == 0) {
+          return new BufferedReader(new InputStreamReader(p.getInputStream())).readLine();
+        }
+      } catch (Exception e) {
+        // Ignore all the expections, it's just a failure to get the SSID.
+      }
+    }
+    return "";
+  }
+
 }
