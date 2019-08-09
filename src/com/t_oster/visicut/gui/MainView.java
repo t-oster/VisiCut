@@ -72,6 +72,7 @@ import com.frochr123.periodictasks.RefreshProjectorThread;
 import com.frochr123.periodictasks.RefreshQRCodesTask;
 import com.t_oster.visicut.Preferences;
 import com.t_oster.visicut.misc.Homography;
+import com.t_oster.visicut.misc.LabSettings;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
@@ -110,6 +111,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -3472,29 +3474,28 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
     // Otherwise:
     // Get localhost FQDN for auto-detecting the lab, at least on computers owned by the lab.
-    String hostname = "";
     try
     {
-      hostname = InetAddress.getLocalHost().getCanonicalHostName();
+      final String hostname = InetAddress.getLocalHost().getCanonicalHostName();
+      Optional<LabSettings> r = LabSettings.get().stream().filter(s -> s.acceptsHostname(hostname)).findFirst();
+      if (r.isPresent()) {
+        return r.get().name;
+      }
     }
     catch (UnknownHostException ex)
     {
       // Cannot get local hostname -- ignore exception
     }
-
-    // initial guess from local hostname. Will be used if the URL is not known
-    // (first startup, or preferences from before December 2018 when
-    //  remembering the URL was implemented)
-    if (hostname.endsWith(".fau.de") || hostname.endsWith(".uni-erlangen.de")) {
-      return "Germany, Erlangen: FAU FabLab";
-    }
-
+    
     // Guess the lab based on wifi ssid.
     String wirelessSsid = Helper.getWifiSSID();
-    if (wirelessSsid.equals("WL-seattle-maker-space")) {
-      return "United States, Seattle: Fremont Hangar";
+    if (wirelessSsid != null) {
+      Optional<LabSettings> r = LabSettings.get().stream().filter(s -> s.acceptsSSID(wirelessSsid)).findFirst();
+      if (r.isPresent()) {
+        return r.get().name;
+      }
     }
-
+    
     return ""; // unknown
   }
 
@@ -3518,30 +3519,9 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   }
   choices.put(bundle.getString("EMPTY_SETTINGS"), "__EMPTY__");
   choices.put(bundle.getString("IMPORT_SETTINGS_FROM_FILE"), "__FILE__");
-
-
-  // Want your lab in this list? Look at https://github.com/t-oster/VisiCut/wiki/How-to-add-default-settings-for-your-lab !
-  // choices.put("Country, City: Institution", "https://example.org/foo.zip");
-  // also have a look at getRecommendedLab() if you want your lab to be suggested for all PCs in your local network.
-  // The list is sorted alphabetically.
-  choices.put("China, Hong Kong: Renaissance College Hong Kong", "https://github.com/RCHK-DT/visicut-settings/archive/master.zip");
-  choices.put("France, Chemillé en Anjou : FabLab le Boc@l", "https://github.com/bocal-chemille/Visicut/raw/master/config_laser_bocal.vcsettings");
-  choices.put("France, Le Mans: HAUM Hackerspace", "https://github.com/haum/visicut-settings/archive/master.zip");
-  choices.put("Germany, Aachen: FabLab RWTH Aachen", "https://github.com/renebohne/zing6030-visicut-settings/archive/master.zip");
-  choices.put("Germany, Berlin: Fab Lab Berlin", "https://github.com/FabLabBerlin/visicut-settings/archive/master.zip");
-  choices.put("Germany, Bremen: FabLab Bremen e.V.", "http://www.fablab-bremen.org/FabLab_Bremen.vcsettings");
-  choices.put("Germany, Dresden: Konglomerat e.V.", "https://github.com/konglomerat/visicut-settings/archive/master.zip");
-  choices.put("Germany, Dresden: Makerspace Dresden", "https://github.com/Makerspace-Dresden/visicut-settings/archive/master.zip");
-  choices.put("Germany, Erlangen: FAU FabLab", "https://github.com/fau-fablab/visicut-settings/archive/master.zip");
-  choices.put("Germany, Heidelberg: Heidelberg Makerspace", "https://github.com/heidelberg-makerspace/visicut-settings/archive/master.zip");
-  choices.put("Germany, Nuremberg: Fab lab Region Nürnberg e.V.", "https://github.com/fablabnbg/visicut-settings/archive/master.zip");
-  choices.put("Germany, Paderborn: FabLab Paderborn e.V.", "https://github.com/fablab-paderborn/visicut-settings/archive/master.zip");
-  choices.put("Germany, Veitsbronn: FabLab Landkreis Fürth e.V.", "https://github.com/falafue/visicut-settings/archive/master.zip");
-  choices.put("Netherlands, Amersfoort: FabLab", "https://github.com/Fablab-Amersfoort/visicut-settings/archive/master.zip");
-  choices.put("Netherlands, Enschede: TkkrLab", "https://github.com/TkkrLab/visicut-settings/archive/master.zip");
-  choices.put("United Kingdom, Leeds: Hackspace", "https://github.com/leedshackspace/visicut-settings/archive/master.zip");
-  choices.put("United Kingdom, Manchester: Hackspace", "https://github.com/hacmanchester/visicut-settings/archive/master.zip");
-  choices.put("United States, Seattle: Fremont Hangar", "https://github.com/hghile/visicut-settings/archive/master.zip");
+  for (LabSettings s : LabSettings.get()) {
+    choices.put(s.name, s.URL);
+  }
   choices.put(bundle.getString("DOWNLOAD_NOT_IN_LIST"), "__HELP__");
 
 
