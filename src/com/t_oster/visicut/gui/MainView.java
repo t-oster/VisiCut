@@ -87,7 +87,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
@@ -3490,30 +3489,8 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       return "Germany, Erlangen: FAU FabLab";
     }
 
-    // Try to find the wireless SSID to guess the lab
-    String wirelessSsid = "";
-    try {
-      // This command works for ubuntu linux
-      Process p = Runtime.getRuntime().exec("iwgetid -r");
-      p.waitFor();
-      if (p.exitValue() == 0) {
-        wirelessSsid = new BufferedReader(new InputStreamReader(p.getInputStream())).readLine();
-      }
-    } catch (Exception e) {
-      // Ignore all the expections, it's just a failure to get the SSID.
-    }
-    if (wirelessSsid.length() == 0) {
-      try {
-        // This command is for mac
-        Process p = Runtime.getRuntime().exec("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | awk '/ SSID/ {print substr($0, index($0, $2))}'");
-        p.waitFor();
-        if (p.exitValue() == 0) {
-          wirelessSsid = new BufferedReader(new InputStreamReader(p.getInputStream())).readLine();
-        }
-      } catch (Exception e) {
-        // Ignore all the expections, it's just a failure to get the SSID.
-      }
-    }
+    // Guess the lab based on wifi ssid.
+    String wirelessSsid = Helper.getWifiSSID();
     if (wirelessSsid.equals("WL-seattle-maker-space")) {
       return "United States, Seattle: Fremont Hangar";
     }
