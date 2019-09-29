@@ -81,7 +81,14 @@ then
 	unzip -q ../cache/jre.zip
     mv *jre*/ stream/jre/
 	test -e stream/jre/bin/java.exe || { echo "Cannot find java.exe in JRE ZIP file"; exit 1; }
-	
+	test -e stream/jre/legal/java.base/LICENSE || { echo "Cannot find license information in JRE ZIP file"; exit 1; }
+	# Build license text for Windows installer
+    {
+        cat ../../LICENSE
+        echo "Java Runtime for Windows:"
+        echo -e "- OpenJRE (GPLv2 with Classpath exception). License details follow:"
+        find stream/jre/legal/ -type f -print -exec cat '{}' ';'
+    }  > stream/license-with-jre.txt
 	makensis launcher.nsi > /dev/null || exit 1 # build VisiCut.exe
 	cp VisiCut.exe ../visicut/ # copy VisiCut.exe so that it is included in the platform independent ZIP
 	mv VisiCut.exe ./stream/
