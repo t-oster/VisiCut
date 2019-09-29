@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e # exit 1 if any command fails
+set -o pipefail
 cd "$(dirname "$0")"
 # set -x # uncomment for debugging
 if [ "$1" == "--nocompile" ]
@@ -40,9 +41,30 @@ cp ../tools/inkscape_extension/*.inx visicut/inkscape_extension/
 mkdir -p visicut/illustrator_script
 cp ../tools/illustrator_script/*.scpt visicut/illustrator_script/
 
+# check_sha256 <filename> <hash>
+# -> returns 0 if file exists and its hash is correct, 1 otherwise.
+function check_sha256() {
+    test -e "$1" || return 1
+    sha256sum "$1" | grep -q "$2" || { echo "SHA256 hash of $1 does not match. Expected: $2, Got:"; sha256sum $1; return 1; }
+    return 0
+}
+
+# URL and hash of the OpenJRE ZIP file for Windows.
+# You can override this with environment variables.
+# The distribution by Oracle has evil license terms, so we use the OpenJDK JRE from https://adoptopenjdk.net/
+WINDOWS_JRE_URL=${WINDOWS_JRE_URL:-"https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.4%2B11/OpenJDK11U-jre_x64_windows_hotspot_11.0.4_11.zip"}
+WINDOWS_JRE_SHA256=${WINDOWS_JRE_SHA256:-"be88c679fd24194bee71237f92f7a2a71c88f71a853a56a7c05742b0e158c1be"}
+
 if which makensis > /dev/null
 then
 	echo "Building Windows launcher and installer"
+	mkdir -p cache
+	echo "Downloading OpenJRE for Windows (may be overridden with WINDOWS_JRE_URL and WINDOWS_JRE_URL)"
+	# download JRE if not existing or wrong file contents
+    check_sha256 cache/jre.zip $WINDOWS_JRE_SHA256 || wget "$WINDOWS_JRE_URL" -O cache/jre.zip
+    # check if downloaded JRE is correct (to exclude incomplete download)
+    check_sha256 cache/jre.zip $WINDOWS_JRE_SHA256 || exit 1
+    
 	# Copy files to wintmp/
 	rm -rf wintmp
 	mkdir wintmp
@@ -55,6 +77,11 @@ then
 	# and VisiCut.exe launcher executable
 	cat windows/installer.nsi|sed s#VISICUTVERSION#"$VERSION"#g > wintmp/installer.nsi
 	pushd wintmp > /dev/null
+	# Unpack JRE. We assume that this creates a subfolder with "jre" in its name
+	unzip -q ../cache/jre.zip
+    mv *jre*/ stream/jre/
+	test -e stream/jre/bin/java.exe || { echo "Cannot find java.exe in JRE ZIP file"; exit 1; }
+	
 	makensis launcher.nsi > /dev/null || exit 1 # build VisiCut.exe
 	cp VisiCut.exe ../visicut/ # copy VisiCut.exe so that it is included in the platform independent ZIP
 	mv VisiCut.exe ./stream/
