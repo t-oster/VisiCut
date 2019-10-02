@@ -1,6 +1,7 @@
 /build/
 /nbproject/private/
 /dist/
+/distribute/cache/
 /distribute/VisiCut*.zip
 /distribute/*.deb
 /distribute/*.exe
@@ -14,6 +15,7 @@
 /settings/
 /*-pak
 # Temporary files:
+/distribute/wintmp/
 *~
 
 # Maven stuff:
