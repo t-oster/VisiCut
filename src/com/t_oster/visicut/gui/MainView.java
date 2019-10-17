@@ -22,11 +22,11 @@ package com.t_oster.visicut.gui;
 // It is loaded dynamically iff JavaFX is available:
 // import com.tur0kk.thingiverse.gui.ThingiverseLoginDialog;
 import com.tur0kk.thingiverse.gui.ThingiverseDialog;
-import com.apple.eawt.AppEvent.AboutEvent;
-import com.apple.eawt.AppEvent.OpenFilesEvent;
-import com.apple.eawt.AppEvent.PreferencesEvent;
-import com.apple.eawt.AppEvent.QuitEvent;
-import com.apple.eawt.QuitResponse;
+import java.awt.desktop.AboutEvent;
+import java.awt.desktop.OpenFilesEvent;
+import java.awt.desktop.PreferencesEvent;
+import java.awt.desktop.QuitEvent;
+import java.awt.desktop.QuitResponse;
 import com.frochr123.fabqr.FabQRFunctions;
 import com.frochr123.fabqr.gui.FabQRUploadDialog;
 import com.frochr123.gui.QRWebcamScanDialog;
@@ -312,9 +312,9 @@ public class MainView extends javax.swing.JFrame
 
     if (Helper.isMacOS())
     {
-      com.apple.eawt.Application macApplication = com.apple.eawt.Application.getApplication();
+      java.awt.Desktop macApplication = java.awt.Desktop.getDesktop();
       jmPreferences.setVisible(false);
-      macApplication.setPreferencesHandler(new com.apple.eawt.PreferencesHandler()
+      macApplication.setPreferencesHandler(new java.awt.desktop.PreferencesHandler()
       {
 
         public void handlePreferences(PreferencesEvent pe)
@@ -323,7 +323,7 @@ public class MainView extends javax.swing.JFrame
         }
       });
       exitMenuItem.setVisible(false);
-      macApplication.setQuitHandler(new com.apple.eawt.QuitHandler()
+      macApplication.setQuitHandler(new java.awt.desktop.QuitHandler()
       {
 
         public void handleQuitRequestWith(QuitEvent qe, QuitResponse qr)
@@ -332,7 +332,7 @@ public class MainView extends javax.swing.JFrame
         }
       });
       aboutMenuItem.setVisible(false);
-      macApplication.setAboutHandler(new com.apple.eawt.AboutHandler()
+      macApplication.setAboutHandler(new java.awt.desktop.AboutHandler()
       {
 
         public void handleAbout(AboutEvent ae)
@@ -340,7 +340,7 @@ public class MainView extends javax.swing.JFrame
           MainView.this.aboutMenuItemActionPerformed(null);
         }
       });
-      macApplication.setOpenFileHandler(new com.apple.eawt.OpenFilesHandler()
+      macApplication.setOpenFileHandler(new java.awt.desktop.OpenFilesHandler()
       {
 
         public void openFiles(OpenFilesEvent ofe)
