@@ -1,12 +1,12 @@
 PREFIX?=/usr
 all: jar
 
-src/com/t_oster/visicut/gui/resources/splash.png: splashsource.svg src/com/t_oster/visicut/gui/resources/VisicutApp.properties
+src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png: splashsource.svg src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties
 	./generatesplash.sh
-jar: src/com/t_oster/visicut/gui/resources/splash.png
-	ant jar
+jar: src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png
+	mvn package
 clean:
-	ant clean
+	mvn clean
 install:
 	mkdir -p $(DESTDIR)$(PREFIX)/share
 	cp -r dist $(DESTDIR)$(PREFIX)/share/visicut

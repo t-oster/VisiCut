@@ -1,3 +1,0 @@
-[submodule "lib/LibLaserCut"]
-	path = lib/LibLaserCut
-	url = git://github.com/t-oster/LibLaserCut.git 

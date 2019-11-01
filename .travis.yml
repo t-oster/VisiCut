@@ -1,15 +1,15 @@
 language: java
 jdk:
-  - openjdk9
   - openjdk11
 
 before_install:
-  - git submodule update --init --recursive
-  - sudo apt-get -qq update
-  - sudo apt-get install -y ant-optional
+  # install current snapshot of LibLaserCut (TODO remove after it's on central)
+  - git clone --branch maven https://github.com/t-oster/LibLaserCut.git
+  - pushd LibLaserCut && mvn install && popd
+  # make sure we install legacy deps
+  - mvn initialize
 
 script: 
   - "./test.sh"
-  - "ant test"
-  - "ant jar"
+  - "mvn test"
 

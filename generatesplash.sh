@@ -8,12 +8,12 @@ else
 	exit
 fi
 echo "Determining Version..."
-VERSION=$(cat src/com/t_oster/visicut/gui/resources/VisicutApp.properties |grep Application.version|cut -d'=' -f2|tr -d ' ')
+VERSION=$(cat src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties |grep Application.version|cut -d'=' -f2|tr -d ' ')
 echo "Version is: $VERSION"
 echo "Generating SVG"
 cat splashsource.svg|sed s#insert#$VERSION#g# > splash.svg
 echo "Converting to png"
-rsvg-convert -w 404 -h 304 splash.svg > src/com/t_oster/visicut/gui/resources/splash.png
+rsvg-convert -w 404 -h 304 splash.svg > src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png
 echo "cleaning..."
 rm splash.svg
 echo "done."

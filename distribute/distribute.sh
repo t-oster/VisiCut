@@ -10,7 +10,7 @@ else
    COMPILE=1
 fi
 echo "Determining Version (may be overriden with environment variable VERSION):"
-VERSION=${VERSION:-$(cat ../src/com/t_oster/visicut/gui/resources/VisicutApp.properties |grep Application.version)}
+VERSION=${VERSION:-$(cat ../src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties |grep Application.version)}
 VERSION=${VERSION#*=}
 VERSION=${VERSION// /}
 echo "Version is: \"$VERSION\""
@@ -18,7 +18,7 @@ if [ "$COMPILE" == 1 ]
 then
 	echo "Building jar..."
 	cd ..
-	ant clean > /dev/null
+	make clean > /dev/null
 	make > /dev/null || exit 1
 	cd distribute
 fi
@@ -28,7 +28,7 @@ rm -rf visicut
 
 echo "Copying content..."
 mkdir visicut
-cp -r ../dist/* visicut/
+cp -r ../target/visicut*.jar visicut/Visicut.jar
 cp -r files/* visicut/
 cp ../README.md visicut/README
 cp ../COPYING.LESSER visicut/
@@ -122,8 +122,7 @@ then
   cp -r visicut/* "VisiCut.app/Contents/Resources/Java/"
   mkdir "VisiCut.app/Contents/Java"
   mv "VisiCut.app/Contents/Resources/Java/Visicut.jar" "VisiCut.app/Contents/Java/"
-  mv "VisiCut.app/Contents/Resources/Java/lib" "VisiCut.app/Contents/Java/"
-  cp "../src/com/t_oster/visicut/gui/resources/splash.png" "VisiCut.app/Contents/Resources/Java"
+  cp "../src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png" "VisiCut.app/Contents/Resources/Java"
   echo "Updating Bundle Info"
   cp "VisiCut.app/Contents/Info.plist" .
   cat Info.plist|sed s#VISICUTVERSION#"$VERSION"#g > VisiCut.app/Contents/Info.plist
