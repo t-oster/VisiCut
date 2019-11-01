@@ -386,6 +386,8 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       {
         this.moveSet(diffx, diffy);
         if (diffx != 0. || diffy != 0.) {
+          //do not delete cache, we're just moving...
+          previewPanel.ignoreNextUpdate();
           VisicutModel.getInstance().firePartUpdated(getSelectedPart());
         }
       }
@@ -481,6 +483,8 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
             }
             this.getEditRect().x = x;
             this.applyEditRectoToSet();
+            //no need to clear cache on moving actions
+            previewPanel.ignoreNextUpdate();
             VisicutModel.getInstance().firePartUpdated(getSelectedPart());
             return true;
           }
@@ -501,6 +505,8 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
             }
             this.getEditRect().y = originBottom ? bedHeight - y - this.getEditRect().height : y;
             this.applyEditRectoToSet();
+            //no need to clear cache on moving actions
+            previewPanel.ignoreNextUpdate();
             VisicutModel.getInstance().firePartUpdated(getSelectedPart());
             return true;
           }
