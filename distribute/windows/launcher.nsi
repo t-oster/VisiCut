@@ -28,6 +28,7 @@ Var /GLOBAL maximumJavaRAM
 Var /GLOBAL s_SystemMemoryMB
 Var /GLOBAL s_SystemMemoryGB
 Var /GLOBAL ARGV
+Var /GLOBAL VISICUTCOMMAND
 
 Section ""
   ${GetParameters} $ARGV
@@ -49,7 +50,6 @@ Section ""
   ; maximumJavaRAM= systemRAM / 2
   IntOp $maximumJavaRAM $s_SystemMemoryMB / 2
 
-  ; TODO: the reported sy
   ; limit maximumJavaRAM to 4GB (should be enough for everything)
   ${If} $maximumJavaRAM > 4096
     StrCpy $maximumJavaRAM "4096"
@@ -60,10 +60,13 @@ Section ""
   Call startVisicut
 
   IfErrors 0 end
+  ClearErrors
   ; if errors: retry with lower RAM (workaround if the JVM is 32bit or too stupid to allocate some memory)
     DetailPrint "failed (maybe Java couldn't start because the RAM size was set too high). retrying with smaller RAM."
     StrCpy $maximumJavaRAM "1024"
     Call startVisicut
+  IfErrors 0 end
+    MessageBox MB_OK|MB_ICONSTOP "Error running Java with command $\n $VISICUTCOMMAND"
   end:
   ; if no errors: just exit.
 
@@ -76,9 +79,9 @@ Function startVisicut
   StrCpy $2 $maximumJavaRAM
   DetailPrint "java ram: $2 MB"
   StrCpy $VMARGS "-Xms256m -Xmx$2m"
-  StrCpy $0 '"$R0" $VMARGS -classpath "${CLASSPATH}" -jar ${JARFILE} ${PRGARGS} $ARGV'
+  StrCpy $VISICUTCOMMAND '"$R0" $VMARGS -classpath "${CLASSPATH}" -jar ${JARFILE} ${PRGARGS} $ARGV'
   SetOutPath $EXEDIR
-  ExecWait $0
+  ExecWait $VISICUTCOMMAND
 FunctionEnd
  
 Function GetJRE

@@ -59,7 +59,7 @@ if which makensis > /dev/null
 then
 	echo "Building Windows launcher and installer"
 	mkdir -p cache
-	echo "Downloading OpenJRE for Windows (may be overridden with WINDOWS_JRE_URL and WINDOWS_JRE_URL)"
+	echo "Downloading OpenJRE for Windows (may be overridden with WINDOWS_JRE_URL and WINDOWS_JRE_SHA256)"
 	# download JRE if not existing or wrong file contents
     check_sha256 cache/jre.zip $WINDOWS_JRE_SHA256 || wget "$WINDOWS_JRE_URL" -O cache/jre.zip
     # check if downloaded JRE is correct (to exclude incomplete download)
