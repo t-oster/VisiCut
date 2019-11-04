@@ -18,6 +18,7 @@
  **/
 package de.thomas_oster.visicut.managers;
 
+import com.pmease.commons.xmt.VersionedDocument;
 import de.thomas_oster.visicut.misc.FileUtils;
 import de.thomas_oster.visicut.misc.Helper;
 import com.thoughtworks.xstream.XStream;
@@ -25,10 +26,12 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.IOUtils;
 
 /**
  * This class manages the available Material Profiles
@@ -266,14 +269,13 @@ public abstract class FilebasedManager<T>
    */
   public static Object readObjectFromXmlStream(InputStream in, XStream xStream) {
     try {
-      return xStream.fromXML(new InputStreamReader(in, StandardCharsets.UTF_8));
+      VersionedDocument.xstream = xStream;
+      return VersionedDocument.fromXML(IOUtils.toString(in, StandardCharsets.UTF_8)).toBean();
     } catch (Exception e) {
-    } catch (java.lang.InstantiationError e) {
-    }
-    
         Logger.getLogger(FilebasedManager.class.getName()).log(Level.WARNING, "Failed to load object from XML.");
         return null;
     }
+  }
   
     /**
    * Convert serialized XML file to Object
@@ -308,15 +310,20 @@ public abstract class FilebasedManager<T>
   }
   
   /**
-   * Serialize object to XML with correct encoding.
-   * Use readObjectFromXmlStream() for deserialization.
+   * Serialize object to XML with correct encoding.Use readObjectFromXmlStream() for deserialization.
    * @param obj object to be serialized
    * @param out OutputStream to which XML is written
    * @param xStream XStream instance for serialization
    */
   public static void writeObjectToXmlStream(Object obj, OutputStream out, XStream xStream) {
-    OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
-    xStream.toXML(obj, writer);
+    try {
+        //make sure we're using the right xstream
+        VersionedDocument.xstream = xStream;
+        out.write(VersionedDocument.fromBean(obj).toXML().getBytes(Charset.forName("UTF-8")));
+    }
+    catch (Exception e) {
+        Logger.getLogger(FilebasedManager.class.getName()).log(Level.SEVERE, e.getMessage());
+    }
   }
   
   /**
