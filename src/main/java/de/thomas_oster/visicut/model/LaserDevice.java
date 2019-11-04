@@ -44,7 +44,7 @@ public class LaserDevice implements ImageListable
     this.originBottomLeft = originBottomLeft;
   }
   protected String jobSentText = "Job was sent as '$jobname'\nPlease:\n-Close the lid\n-Turn on the Ventilation\n-And press 'start' on the Lasercutter $name";
-
+  
   /**
    * Get the value of jobSentText
    *
