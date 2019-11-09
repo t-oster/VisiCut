@@ -19,6 +19,7 @@
 package de.thomas_oster.uicomponents.warnings;
 
 import de.thomas_oster.visicut.gui.MainView;
+import com.t_oster.visicut.gui.ThreadUtils;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -62,6 +63,7 @@ public class WarningPanel extends javax.swing.JPanel
   
   public void addMessage(final Message m)
   {
+    ThreadUtils.assertInGUIThread();
     messages.add(m);
     m.setCloseListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae)
@@ -80,6 +82,7 @@ public class WarningPanel extends javax.swing.JPanel
   }
   
   public void removeMessage(final Message m, boolean hidePanelIfEmpty) {
+    ThreadUtils.assertInGUIThread();
     messagesById.values().remove(m);
     messages.remove(m);
     warningContainer.remove(m);
@@ -109,6 +112,7 @@ public class WarningPanel extends javax.swing.JPanel
    */
   public WarningPanel()
   {
+    ThreadUtils.assertInGUIThread();
     initComponents();
   }
 
