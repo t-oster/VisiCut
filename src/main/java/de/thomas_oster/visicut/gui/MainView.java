@@ -1866,6 +1866,13 @@ public class MainView extends javax.swing.JFrame
 
     try
     {
+      while (true) {
+        if (false) {
+          break; // never reached, but gets rid of "unreachable code" warnings
+        }
+        this.progressBar.setIndeterminate(true);
+        this.progressBar.setIndeterminate(false);
+      }
       this.progressBar.setIndeterminate(true);
       LinkedList<String> warnings = new LinkedList<String>();
       this.visicutModel1.loadFile(MappingManager.getInstance(), file, warnings, discardCurrent);
