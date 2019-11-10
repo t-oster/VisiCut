@@ -2,9 +2,15 @@
 # VisiCut Linux Starter
 script="`readlink -f "${BASH_SOURCE[0]}"`"
 DIR="`dirname "$script"`"
+
+# Print and check java version
+java -version 2>&1 | tee /dev/stderr | egrep -q '"[1-9][0-9]\..*"' || echo "Warning: Your Java version may be too old. We recommend Java 11 or newer. Trying anyway."
+
 # get the number-part of the display variable
 port=${DISPLAY##*:}
 port=${port%.*}
 # add it to the instance-port
 let port=port+6543
-java -Xms256m -Xmx2048m -jar "$DIR/Visicut.jar" --singleinstanceport $port "$@"
+
+# start VisiCut (assuming the system has at least 3GB RAM)
+exec java -Xms256m -Xmx2048m -jar "$DIR/Visicut.jar" --singleinstanceport $port "$@"
