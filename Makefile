@@ -3,8 +3,11 @@ all: jar
 
 src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png: splashsource.svg src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties
 	./generatesplash.sh
-jar: src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png
+jar: src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png libLaserCut
 	mvn package
+libLaserCut:
+	cd LibLaserCut && mvn install
+	cd ..
 clean:
 	mvn clean
 install:
