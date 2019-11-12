@@ -6,7 +6,10 @@ src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png: splashsourc
 jar: src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png libLaserCut
 	mvn initialize
 	mvn package
+run: jar
+	java -Xmx2048m -Xms256m -jar target/visicut*full.jar
 libLaserCut:
+	test -f LibLaserCut/pom.xml  || { echo "Error: the LibLaserCut submodule is missing. Try running 'git submodule update --init'."; false; }
 	cd LibLaserCut && mvn install
 	cd ..
 clean:
