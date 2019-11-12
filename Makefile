@@ -13,7 +13,7 @@ clean:
 	mvn clean
 install:
 	mkdir -p $(DESTDIR)$(PREFIX)/share/visicut
-	cp target/visicut*.jar $(DESTDIR)$(PREFIX)/share/visicut/Visicut.jar
+	cp target/visicut*full.jar $(DESTDIR)$(PREFIX)/share/visicut/Visicut.jar
 	mkdir -p $(DESTDIR)$(PREFIX)/share/pixmaps
 	cp icon.png $(DESTDIR)$(PREFIX)/share/pixmaps/visicut.png
 	cp icon-48.png $(DESTDIR)$(PREFIX)/share/pixmaps/visicut-48.png

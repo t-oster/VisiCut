@@ -28,7 +28,7 @@ rm -rf visicut
 
 echo "Copying content..."
 mkdir visicut
-cp -r ../target/visicut*.jar visicut/Visicut.jar
+cp -r ../target/visicut*full.jar visicut/Visicut.jar
 cp -r files/* visicut/
 cp ../README.md visicut/README
 cp ../COPYING.LESSER visicut/

@@ -4,6 +4,7 @@
     <groupId>de.thomas-oster</groupId>
     <artifactId>visicut</artifactId>
     <version>1.9-SNAPSHOT</version>
+    <name>VisiCut</name>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
@@ -222,6 +223,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.1</version>
+                    <configuration>
+                       <shadedArtifactAttached>true</shadedArtifactAttached>
+                       <shadedClassifierName>full</shadedClassifierName>
+                    </configuration>
                 <executions>
                     <execution>
                         <goals>
