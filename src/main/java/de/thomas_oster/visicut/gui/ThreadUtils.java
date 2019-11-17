@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with VisiCut.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.t_oster.visicut.gui;
+package de.thomas_oster.visicut.gui;
 
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.SwingUtilities;
