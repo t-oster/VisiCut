@@ -172,6 +172,8 @@ public class LaserPropertyManager
     if (xstream == null)
     {
       xstream = new XStream();
+      //fix old class references
+      xstream.aliasPackage("com.t_oster", "de.thomas_oster");
       xstream.alias("LaosCutterProperty", de.thomas_oster.liblasercut.drivers.LaosCutterProperty.class);
       xstream.alias("FloatPowerSpeedFocusFrequencyProperty", de.thomas_oster.liblasercut.FloatPowerSpeedFocusFrequencyProperty.class);
       xstream.alias("PowerSpeedFocusFrequencyProperty", de.thomas_oster.liblasercut.PowerSpeedFocusFrequencyProperty.class);
