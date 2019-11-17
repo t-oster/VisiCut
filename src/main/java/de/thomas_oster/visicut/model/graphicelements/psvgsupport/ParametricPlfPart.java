@@ -73,7 +73,7 @@ public class ParametricPlfPart extends PlfPart
   static void unserializeParameterValues(Map<String, Parameter> parameters, FileInputStream in)
   {
     XStream xstream = getXStream();
-    Map<String, Object> values = (Map<String, Object>) FilebasedManager.readObjectFromXmlStream(in, xstream);
+    Map<String, Object> values = (Map<String, Object>) FilebasedManager.readObjectFromXmlStream(in, xstream, "parametric PLF part");
     for (Entry<String, Object> e : values.entrySet())
     {
       if (parameters.containsKey(e.getKey()))

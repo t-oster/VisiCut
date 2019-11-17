@@ -228,7 +228,7 @@ public abstract class FilebasedManager<T>
   public T loadFromFile(File f) throws FileNotFoundException, IOException
   {
     FileInputStream fin = new FileInputStream(f);
-    T result = this.loadFromFile(fin);
+    T result = this.loadFromFile(fin, f.getPath());
     fin.close();
     if (result == null)
     {
@@ -245,11 +245,11 @@ public abstract class FilebasedManager<T>
     return result;
   }
 
-  public T loadFromFile(InputStream in)
+  public T loadFromFile(InputStream in, String humanReadableName)
   {
     try
     {
-      return (T) readObjectFromXmlStream(in, getXStream(true));
+      return (T) readObjectFromXmlStream(in, getXStream(true), humanReadableName);
     }
     catch (Exception e)
     {
@@ -265,14 +265,15 @@ public abstract class FilebasedManager<T>
    * Convert serialized XML file to Object
    * @param in input stream which reads from XML file
    * @param xStream XStream instance
+   * @param humanReadableName File name or comment for printing an error message
    * @return deserialized Object
    */
-  public static Object readObjectFromXmlStream(InputStream in, XStream xStream) {
+  public static Object readObjectFromXmlStream(InputStream in, XStream xStream, String humanReadableName) {
     try {
       VersionedDocument.xstream = xStream;
       return VersionedDocument.fromXML(IOUtils.toString(in, StandardCharsets.UTF_8)).toBean();
     } catch (Exception e) {
-        Logger.getLogger(FilebasedManager.class.getName()).log(Level.WARNING, "Failed to load object from XML.");
+        Logger.getLogger(FilebasedManager.class.getName()).log(Level.WARNING, "Failed to load object from XML: " + humanReadableName);
         return null;
     }
   }
@@ -286,7 +287,7 @@ public abstract class FilebasedManager<T>
    * @throws java.io.FileNotFoundException
    */
   public static Object readObjectFromXmlFile(File f, XStream xStream) throws FileNotFoundException {
-    Object o = readObjectFromXmlStream(new FileInputStream(f), xStream);
+    Object o = readObjectFromXmlStream(new FileInputStream(f), xStream, f.getPath());
     if (o != null) {
       return o;
     }

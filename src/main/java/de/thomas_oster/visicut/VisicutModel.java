@@ -527,7 +527,7 @@ public class VisicutModel
       }
       else if (name.equals((i > 0 ? i+"/" : "")+"mappings.xml"))
       {
-        MappingSet map = mm.loadFromFile(zip.getInputStream(entry));
+        MappingSet map = mm.loadFromFile(zip.getInputStream(entry), name);
         if (map != null)
         {
           mappings.put(i, map);
