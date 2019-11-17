@@ -1,6 +1,17 @@
+# list all targets which are not actual files:
+.PHONY: all help jar run libLaserCut clean install uninstall prop2po po2prop
+
 PREFIX?=/usr
+
 all: jar
 
+help:
+	@echo "\n\n\n\
+	usage: \n\
+	make (or make jar): compile (includes LibLaserCut) \n\
+	make run: compile and run \n\
+	make clean: remove all compiled files\n\
+	"
 src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png: splashsource.svg src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties
 	./generatesplash.sh
 jar: src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png libLaserCut
