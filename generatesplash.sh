@@ -2,13 +2,18 @@
 echo "Checking for rsvg..."
 if which rsvg-convert >/dev/null 2>&1
 then
-	echo "found."
+	echo "found rsvg-convert."
 else
-	echo "no rsvg-convert found. skipping generation of splash"
+	echo "no rsvg-convert found. skipping generation of splash" >&2
+	cp src/main/resources/de/thomas_oster/visicut/gui/resources/splash{-fallback,}.png
 	exit
 fi
-echo "Determining Version..."
-VERSION=$(cat src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties |grep Application.version|cut -d'=' -f2|tr -d ' ')
+echo "Determining Version (may be overridden with environment variable VERSION)"
+cd "$(dirname $0)"
+VERSION=${VERSION:-$(cat ./src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties |grep Application.version)}
+VERSION=${VERSION#*=}
+VERSION=${VERSION// /}
+echo "Version is: \"$VERSION\""
 echo "Version is: $VERSION"
 echo "Generating SVG"
 cat splashsource.svg|sed s#insert#$VERSION#g# > splash.svg

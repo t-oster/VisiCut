@@ -10,16 +10,20 @@ else
    COMPILE=1
 fi
 echo "Determining Version (may be overriden with environment variable VERSION):"
+# VisiCutBuilder writes the setting in that file:
 VERSION=${VERSION:-$(cat ../src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties |grep Application.version)}
+# remove "Application.version =   " prefix which comes from the VisiCutApp.properties file
 VERSION=${VERSION#*=}
 VERSION=${VERSION// /}
+# normally running ./distribute.sh doesn't write the above file. Then, fall back to what git describe tells us
+VERSION=${VERSION:-$(git describe --tags || echo unknown)+devel}
 echo "Version is: \"$VERSION\""
 if [ "$COMPILE" == 1 ]
 then
 	echo "Building jar..."
 	cd ..
 	make clean > /dev/null
-	make > /dev/null || exit 1
+	VERSION="$VERSION" make > /dev/null || { echo "Compilation failed. Please run 'make' to see what failed."; exit 1; }
 	cd distribute
 fi
 
@@ -57,14 +61,13 @@ WINDOWS_JRE_SHA256=${WINDOWS_JRE_SHA256:-"be88c679fd24194bee71237f92f7a2a71c88f7
 
 if which makensis > /dev/null
 then
-	echo "Building Windows launcher and installer"
 	mkdir -p cache
 	echo "Downloading OpenJRE for Windows (may be overridden with WINDOWS_JRE_URL and WINDOWS_JRE_SHA256)"
 	# download JRE if not existing or wrong file contents
     check_sha256 cache/jre.zip $WINDOWS_JRE_SHA256 || wget "$WINDOWS_JRE_URL" -O cache/jre.zip
     # check if downloaded JRE is correct (to exclude incomplete download)
     check_sha256 cache/jre.zip $WINDOWS_JRE_SHA256 || exit 1
-    
+    echo "Building Windows launcher and installer"
 	# Copy files to wintmp/
 	rm -rf wintmp
 	mkdir wintmp

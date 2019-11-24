@@ -12,7 +12,7 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="svg3039"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    width="404"
    height="304"
    sodipodi:docname="splashsource.svg">
@@ -130,38 +130,26 @@
      y="96.804039" />
   <text
      xml:space="preserve"
-     style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Monospace;-inkscape-font-specification:Monospace"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:monospace;-inkscape-font-specification:Monospace;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
      x="72.407738"
      y="71.691849"
-     id="text3849"
-     sodipodi:linespacing="125%"><tspan
+     id="text3849"><tspan
        sodipodi:role="line"
        id="tspan3851"
        x="72.407738"
        y="71.691849"
-       style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Monospace;-inkscape-font-specification:Monospace">VisiCut</tspan></text>
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;line-height:1.25;font-family:monospace;-inkscape-font-specification:Monospace">VisiCut</tspan></text>
   <text
      xml:space="preserve"
-     style="font-size:18px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-     x="126.71354"
-     y="254.21968"
-     id="text3853"
-     sodipodi:linespacing="125%"><tspan
+     style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"
+     x="197.11099"
+     y="244.21968"
+     id="text3853"><tspan
        sodipodi:role="line"
        id="tspan3855"
-       x="126.71354"
-       y="254.21968">Version: insert</tspan></text>
-  <text
-     xml:space="preserve"
-     style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-     x="170.45988"
-     y="291.1778"
-     id="text3857"
-     sodipodi:linespacing="125%"><tspan
-       sodipodi:role="line"
-       id="tspan3859"
-       x="170.45988"
-       y="291.1778">loading...</tspan></text>
+       x="197.11099"
+       y="244.21968"
+       style="font-size:18px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle">Version insert</tspan></text>
   <image
      width="104.72314"
      height="28.260265"

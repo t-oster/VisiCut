@@ -12,6 +12,7 @@ help:
 	make run: compile and run \n\
 	make clean: remove all compiled files\n\
 	"
+# Note: If you override the splash screen version with $VERSION, you must run 'make clean' because 'make' doesn't understand the dependency on environment variables.
 src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png: splashsource.svg src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties
 	./generatesplash.sh
 jar: src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png libLaserCut
@@ -24,6 +25,7 @@ libLaserCut:
 	cd LibLaserCut && mvn install
 	cd ..
 clean:
+	rm -f src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png
 	mvn clean
 install:
 	mkdir -p $(DESTDIR)$(PREFIX)/share/visicut
