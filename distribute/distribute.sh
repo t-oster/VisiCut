@@ -16,7 +16,7 @@ VERSION=${VERSION:-$(cat ../src/main/resources/de/thomas_oster/visicut/gui/resou
 VERSION=${VERSION#*=}
 VERSION=${VERSION// /}
 # normally running ./distribute.sh doesn't write the above file. Then, fall back to what git describe tells us
-VERSION=${VERSION:-$(git describe --tags)+devel}
+VERSION=${VERSION:-$(git describe --tags || echo unknown)+devel}
 echo "Version is: \"$VERSION\""
 if [ "$COMPILE" == 1 ]
 then
