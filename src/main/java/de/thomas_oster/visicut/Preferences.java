@@ -33,6 +33,19 @@ public class Preferences
   {
   }
   
+  /**
+   * Clear all preferences which are user-specific, e.g., recent files and window-size
+   */
+  public void anonymize()
+  {
+    setLastMaterial(null);
+    setLastLaserDevice(null);
+    setRecentFiles(null);
+    setWindowBounds(null);
+    lastAutoUpdateTime=0;
+    setLastAutoUpdateLabName(null);
+  }
+
   private String defaultMapping = null;
 
   public String getDefaultMapping()
@@ -302,6 +315,10 @@ public class Preferences
    */
   public LinkedList<String> getRecentFiles()
   {
+    if (recentFiles == null)
+    {
+      recentFiles = new LinkedList<String>();
+    }
     return recentFiles;
   }
 

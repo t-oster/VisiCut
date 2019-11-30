@@ -62,11 +62,25 @@ public final class PreferencesManager
   }
   private Preferences preferences;
   
+  /**
+   * Get path of settings.xml, where all settings except some user-specific data (recent files, window size, etc.) are stored
+   * @see getPrivatePreferencesPath()
+   * @return File handle
+   */
   private File getPreferencesPath()
   {
     return new File(new File(Helper.getBasePath(), "settings"), "settings.xml");
   }
   
+  /**
+   * Get path of settings.private.xml, where all settings including user-specific data (recent files, window size, etc.) are stored
+   * @return File handle
+   */
+  private File getPrivatePreferencesPath()
+  {
+    return new File(new File(Helper.getBasePath(), "settings"), "settings.private.xml");
+  }
+
   private PreferencesManager()
   {
   }
@@ -288,20 +302,37 @@ public final class PreferencesManager
       }
       try
       {
-        preferences = this.loadPreferences(this.getPreferencesPath());
-        
-        // check if thingiverse defailts are set, if not upgrade old settings file
-        if(preferences.getLaserCutterTags() == null || preferences.getSupportedExtensions() == null){
-          this.generateThingiverseDefault();
+        // if it exists, load the local 'preferences.private.xml'. This file may be removed to remove sensitive information, e.g., recent files
+          if (this.getPrivatePreferencesPath().lastModified() < this.getPreferencesPath().lastModified()) {
+            System.err.println("Notice: settings.private.xml is older than settings.xml; deleting settings.private.xml.");
+            this.getPrivatePreferencesPath().delete();
         }
+        preferences = this.loadPreferences(this.getPrivatePreferencesPath());
       }
       catch (Exception ex)
       {
-        System.err.println("Can't load settings.");
+        System.err.println("Notice: Can't load settings.private.xml - loading settings.xml instead. This may be ignored. It is normal if the settings were imported from elsewhere or settings.private.xml file was deleted or settings.xml is newer than settings.private.xml.");
+        try
+        {
+          // if for any reason preferences.private.xml cannot be loaded,
+          // fall back to the public (anonymized) 'preferences.xml' file.
+
+          preferences = this.loadPreferences(this.getPreferencesPath());
+        }
+        catch (Exception exx)
+        {
+          System.err.println("Error: Can't load settings. Something is wrong with the settings file, or it is missing.");
+        }
       }
+
+
       if (preferences == null)
       {
         preferences = new Preferences();
+      }
+      // check if thingiverse defailts are set, if not upgrade old settings file
+      if(preferences.getLaserCutterTags() == null || preferences.getSupportedExtensions() == null){
+        this.generateThingiverseDefault();
       }
     }
     return preferences;
@@ -319,7 +350,14 @@ public final class PreferencesManager
     File settingsDir = target.getParentFile();
     if (settingsDir.isDirectory() || settingsDir.mkdirs())
     {
-      this.savePreferences(preferences, target);
+      // save slightly anonymized file (settings.xml) with some information removed
+      Preferences anonymizedPreferences = preferences.clone();
+      anonymizedPreferences.anonymize();
+      this.savePreferences(anonymizedPreferences, target);
+
+      // save full preferences file (settings.private.xml), including sensitive information (e.g., recent files)
+      // Note that this must be after saving the first file so that the modification date is newer.
+      this.savePreferences(preferences, getPrivatePreferencesPath());
     }
     else
     {
