@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
     <key>CFBundleExecutable</key>
-    <string>JavaAppLauncher</string>
+    <string>universalJavaApplicationStub</string>
     <key>CFBundleGetInfoString</key>
     <string>A userfriendly tool to create, save and send Jobs to a Lasercutter</string>
     <key>CFBundleIconFile</key>
@@ -68,6 +68,11 @@
     <key>JVMRuntimePath</key>
     <string></string>
     -->
+    <key>LSEnvironment</key>
+    <dict>
+        <key>JAVA_HOME</key>
+        <string>Contents/Plugins/JRE/Contents/Home/</string>
+    </dict>
     <key>JVMMainClassName</key>
     <string>de.thomas_oster.visicut.gui.VisicutApp</string>
     <key>JVMClassPaths</key>

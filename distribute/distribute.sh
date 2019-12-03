@@ -115,6 +115,11 @@ echo ""
 echo "****************************************************************"
 echo "Mac OS Version: Building the Mac OS Version should work on all platforms"
 echo "Build Mac OS Version (Y/n)?"
+# URL and hash of the OpenJRE ZIP file for OSX.
+# You can override this with environment variables.
+# The distribution by Oracle has evil license terms, so we use the OpenJDK JRE from https://adoptopenjdk.net/
+OSX_JRE_URL=${OSX_JRE_URL:-"https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_mac_hotspot_11.0.5_10.tar.gz"}
+OSX_JRE_SHA256=${OSX_JRE_SHA256:-"dfd212023321ebb41bce8cced15b4668001e86ecff6bffdd4f2591ccaae41566"}
 read answer || true
 if [ "$answer" != "n" ]
 then
@@ -130,11 +135,19 @@ then
   cp "VisiCut.app/Contents/Info.plist" .
   cat Info.plist|sed s#VISICUTVERSION#"$VERSION"#g > VisiCut.app/Contents/Info.plist
   rm Info.plist
+  mkdir -p mac/jre
+  echo "Downloading OpenJRE for OSX (may be overridden with OSX_JRE_URL and OSX_JRE_SHA256)"
+  # download JRE if not existing or wrong file contents
+  check_sha256 mac/jre/jre.tar.gz $OSX_JRE_SHA256 || wget "$OSX_JRE_URL" -O mac/jre/jre.tar.gz
+  # check if downloaded JRE is correct (to exclude incomplete download)
+  check_sha256 mac/jre/jre.tar.gz $OSX_JRE_SHA256 || exit 1
+  echo "Inserting JRE into the app bundle..:"
+  mkdir -p VisiCut.app/Contents/Plugins
+  tar -xf mac/jre/jre.tar.gz -C VisiCut.app/Contents/Plugins
+  mv VisiCut.app/Contents/Plugins/jdk-11.0.5+10-jre VisiCut.app/Contents/Plugins/JRE
   echo "Compressing Mac OS Bundle"
   rm -rf VisiCutMac-$VERSION.zip
   zip -r VisiCutMac-$VERSION.zip VisiCut.app > /dev/null || exit 1
-  echo "Cleaning up..."
-  rm -rf VisiCut.app
 fi
 
 echo "Dir:$(pwd)"
