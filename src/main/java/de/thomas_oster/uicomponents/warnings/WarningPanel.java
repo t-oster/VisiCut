@@ -19,6 +19,7 @@
 package de.thomas_oster.uicomponents.warnings;
 
 import de.thomas_oster.visicut.gui.MainView;
+import de.thomas_oster.visicut.gui.ThreadUtils;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -40,11 +41,13 @@ public class WarningPanel extends javax.swing.JPanel
   
   public void removeAllWarnings()
   {
-    // removeMessage calls messages.remove(), so we can't use foreach here!
-    while (messages.size() > 0)
-    {
-      removeMessage(messages.get(0));
-    }
+    ThreadUtils.runInGUIThread(()->{
+        // removeMessage calls messages.remove(), so we can't use foreach here!
+        while (messages.size() > 0)
+        {
+          removeMessage(messages.get(0));
+        }
+    });
   }
   
   /**
@@ -53,26 +56,30 @@ public class WarningPanel extends javax.swing.JPanel
    * @param messageId unique message identifier like 'camera error'. If null, no old message will be removed.
    */
   public void addMessageOnce(final Message newMessage, String messageId) {
-    addMessage(newMessage);
-    if (messageId != null) {
-      removeMessageWithId(messageId, false);
-      messagesById.put(messageId, newMessage);
-    }
+    ThreadUtils.runInGUIThread(()->{
+        addMessage(newMessage);
+        if (messageId != null) {
+          removeMessageWithId(messageId, false);
+          messagesById.put(messageId, newMessage);
+        }
+    });
   }
   
   public void addMessage(final Message m)
   {
-    messages.add(m);
-    m.setCloseListener(new ActionListener(){
-      public void actionPerformed(ActionEvent ae)
-      {
-        removeMessage(m);
-      }
+    ThreadUtils.runInGUIThread(()->{
+        messages.add(m);
+        m.setCloseListener(new ActionListener(){
+          public void actionPerformed(ActionEvent ae)
+          {
+            removeMessage(m);
+          }
+        });
+        this.warningContainer.add(m);
+        revalidate();
+        repaint();
+        setVisible(true);
     });
-    this.warningContainer.add(m);
-    revalidate();
-    repaint();
-    setVisible(true);
   }
   
   public void removeMessage(final Message m) {
@@ -80,24 +87,28 @@ public class WarningPanel extends javax.swing.JPanel
   }
   
   public void removeMessage(final Message m, boolean hidePanelIfEmpty) {
-    messagesById.values().remove(m);
-    messages.remove(m);
-    warningContainer.remove(m);
-    m.setCloseListener(null);
-    
-    revalidate();
-    repaint();
+    ThreadUtils.runInGUIThread(()->{
+        messagesById.values().remove(m);
+        messages.remove(m);
+        warningContainer.remove(m);
+        m.setCloseListener(null);
 
-    if (messages.isEmpty() && hidePanelIfEmpty)
-    {
-      setVisible(false);
-    }
+        revalidate();
+        repaint();
+
+        if (messages.isEmpty() && hidePanelIfEmpty)
+        {
+          setVisible(false);
+        }
+    });
   }
   
   public void removeMessageWithId(String messageId, boolean hidePanelIfEmpty) {
-    if (messagesById.containsKey(messageId)) {
-      removeMessage(messagesById.get(messageId), hidePanelIfEmpty);
-    }
+    ThreadUtils.runInGUIThread(()->{
+        if (messagesById.containsKey(messageId)) {
+          removeMessage(messagesById.get(messageId), hidePanelIfEmpty);
+        }
+    });
   }
   
   public void removeMessageWithId(String messageId) {
@@ -109,6 +120,7 @@ public class WarningPanel extends javax.swing.JPanel
    */
   public WarningPanel()
   {
+    ThreadUtils.assertInGUIThread();
     initComponents();
   }
 

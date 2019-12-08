@@ -487,6 +487,7 @@ public class MainView extends javax.swing.JFrame
 
   private void refreshExampleMenu()
   {
+    ThreadUtils.assertInGUIThread();
     jmExamples.removeAll();
     JMenu builtin = new JMenu(bundle.getString("BUILTIN"));
     this.fillMenu(builtin, PreferencesManager.getInstance().getBuiltinExampleFiles());
@@ -514,6 +515,7 @@ public class MainView extends javax.swing.JFrame
    */
   private void refreshRecentFilesMenu()
   {
+    ThreadUtils.assertInGUIThread();
     this.recentFilesMenu.removeAll();
     for (String p : this.visicutModel1.getPreferences().getRecentFiles())
     {
@@ -536,6 +538,7 @@ public class MainView extends javax.swing.JFrame
 
   private void refreshMaterialComboBox()
   {
+    ThreadUtils.assertInGUIThread();
     this.ignoreMaterialComboBoxChanges = true;
     String sp = this.visicutModel1.getMaterial() != null ? this.visicutModel1.getMaterial().getName() : null;
     this.materialComboBox.removeAllItems();
@@ -600,6 +603,7 @@ public class MainView extends javax.swing.JFrame
 
   private void refreshLaserDeviceComboBox()
   {
+    ThreadUtils.assertInGUIThread();
     String sld = this.visicutModel1.getSelectedLaserDevice() != null ? this.visicutModel1.getSelectedLaserDevice().getName() : null;
     ignoreLaserCutterComboBoxUpdates = true;
     this.laserCutterComboBox.removeAllItems();
@@ -633,6 +637,7 @@ public class MainView extends javax.swing.JFrame
    */
   public void refreshObjectComboBox()
   {
+    ThreadUtils.assertInGUIThread();
     this.ignoreObjectComboBoxEvents = true;
     // fill new list of PlfItems
     this.objectComboBox.removeAllItems();
@@ -1745,6 +1750,7 @@ public class MainView extends javax.swing.JFrame
   }// </editor-fold>//GEN-END:initComponents
 
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
+      ThreadUtils.assertInGUIThread();
       Rectangle bounds = this.getBounds();
       if ((this.getExtendedState() & MAXIMIZED_BOTH) == MAXIMIZED_BOTH) {
         // window is maximized, store this as "null"
@@ -1855,34 +1861,53 @@ public class MainView extends javax.swing.JFrame
       }));
   }
 
+  /**
+   * Load file.
+   * This method is safe to call also from non-GUI-Threads.
+   * @param file
+   * @param discardCurrent true: replace old file
+   */
   private void loadFileReal(File file, boolean discardCurrent)
   {
-    // bring window to front - needed when VisiCut was called from a plugin
-    this.toFront();
-    this.requestFocus();
+    ThreadUtils.runInGUIThread(()->{
+      // we would like to call: this.setEnabled(false); // ignore user events (mouse, keyboard)
+      // but it causes flicker, so don't do it for now.
+      this.progressBar.setIndeterminate(true);
+      // bring window to front - needed when VisiCut was called from a plugin
+      this.toFront();
+      this.requestFocus();
 
-    // remove old error messages, they are no longer relevant (or for multiple files it is too confusing which one refers to which file)
-    warningPanel.removeAllWarnings();
+      // remove old error messages, they are no longer relevant (or for multiple files it is too confusing which one refers to which file)
+      warningPanel.removeAllWarnings();
+    });
 
     try
     {
-      this.progressBar.setIndeterminate(true);
       LinkedList<String> warnings = new LinkedList<String>();
       this.visicutModel1.loadFile(MappingManager.getInstance(), file, warnings, discardCurrent);
-      if (!warnings.isEmpty())
-      {
-        dialog.showWarningMessage(warnings);
-      }
-      //if the image is too big, fit it a nd notify the user
-      this.fitObjectsIntoBed();
-      this.progressBar.setIndeterminate(false);
-      this.refreshButtonStates(VisicutModel.PROP_PLF_PART_ADDED);
+      ThreadUtils.runInGUIThread(()->{
+        if (!warnings.isEmpty())
+        {
+          dialog.showWarningMessage(warnings);
+        }
+        //if the image is too big, fit it and notify the user
+        this.fitObjectsIntoBed();
+        this.progressBar.setIndeterminate(false);
+        this.refreshButtonStates(VisicutModel.PROP_PLF_PART_ADDED);
+      });
+
     }
     catch (Exception e)
     {
-      this.progressBar.setIndeterminate(false);
-      dialog.showErrorMessage(e, bundle.getString("ERROR WHILE OPENING '") + file.getName() + "'");
+      ThreadUtils.runInGUIThread(()->{
+        dialog.showErrorMessage(e, bundle.getString("ERROR WHILE OPENING '") + file.getName() + "'");
+      });
     }
+
+    ThreadUtils.runInGUIThread(()->{
+      this.progressBar.setIndeterminate(false);
+      // this.setEnabled(true);
+    });
   }
 
   /**
@@ -1890,6 +1915,7 @@ public class MainView extends javax.swing.JFrame
    */
   public void refreshButtonStates(String action)
   {
+    ThreadUtils.assertInGUIThread();
     // Is called at application start up as well
     if (action != null && action.equals(VisicutModel.PROP_SELECTEDLASERDEVICE))
     {
@@ -1959,6 +1985,7 @@ public class MainView extends javax.swing.JFrame
 
   public void refreshExecuteButtons(boolean skipLockCheck)
   {
+    ThreadUtils.assertInGUIThread();
     boolean execute = this.visicutModel1.getMaterial() != null
       && this.visicutModel1.getSelectedLaserDevice() != null
       && this.visicutModel1.getPlfFile().size() > 0
@@ -2039,6 +2066,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 
   private void editMappings() throws FileNotFoundException, IOException
   {
+    ThreadUtils.assertInGUIThread();
     List<MappingSet> mappingsets = new LinkedList<MappingSet>();
     for (MappingSet m : MappingManager.getInstance().getAll())
     {
@@ -2072,12 +2100,14 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 
       public void progressChanged(Object o, int i)
       {
+        ThreadUtils.assertInGUIThread();
         MainView.this.progressBar.setValue(i);
         MainView.this.progressBar.repaint();
       }
 
       public void taskChanged(Object o, String string)
       {
+        ThreadUtils.assertInGUIThread();
         MainView.this.progressBar.setString(string);
       }
     };
@@ -2098,6 +2128,7 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 
   private String getJobName()
   {
+    ThreadUtils.assertInGUIThread();
     String jobname = "(unnamed job)";
     try
     {
@@ -2221,15 +2252,18 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
             public void progressChanged(Object o, int i)
             {
+              ThreadUtils.assertInGUIThread(); // FIXME: this causes warnings, and they are right
               MainView.this.progressBar.setValue(i);
               MainView.this.progressBar.repaint();
             }
 
             public void taskChanged(Object o, String string)
             {
+              ThreadUtils.assertInGUIThread(); // FIXME: this causes warnings, and they are right
               MainView.this.progressBar.setString(string);
             }
           };
+          ThreadUtils.assertInGUIThread(); // FIXME: this causes warnings, and they are right
           MainView.this.progressBar.setMinimum(0);
           MainView.this.progressBar.setMaximum(100);
           MainView.this.progressBar.setValue(1);
@@ -2389,82 +2423,85 @@ private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
 }//GEN-LAST:event_saveAsMenuItemActionPerformed
 
 private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_visicutModel1PropertyChange
-  if (evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_ADDED)
-    || evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_REMOVED)
-    || evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART))
-  {
-    // regenerate list of parts, update selection in ComboBox
-    this.refreshObjectComboBox();
-  }
+  ThreadUtils.runInGUIThread(() -> { // FIXME: THis should not be required, something is wrong with the way we set up PropertyChangeListener.
+    if (evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_ADDED)
+      || evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_REMOVED)
+      || evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART))
+    {
+      // regenerate list of parts, update selection in ComboBox
+      this.refreshObjectComboBox();
+      this.refreshButtonStates(evt.getPropertyName());
+    }
 
-  if (evt.getPropertyName().equals(VisicutModel.PROP_PLF_FILE_CHANGED))
-  {
-    MainView.this.timeLabel.setText("");
-    if (this.visicutModel1.getPlfFile().getFile() != null)
+    if (evt.getPropertyName().equals(VisicutModel.PROP_PLF_FILE_CHANGED))
     {
-      this.setTitle("VisiCut - " + this.visicutModel1.getPlfFile().getFile().getName());
-    }
-    else
-    {
-      this.setTitle("VisiCut - Unnamed PLF");
-    }
-    this.refreshButtonStates(evt.getPropertyName());
-  }
-  else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDLASERDEVICE)
-    || evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_UPDATED)
-    || evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_REMOVED))
-  {
-    MainView.this.timeLabel.setText("");
-    this.refreshButtonStates(evt.getPropertyName());
-  }
-  else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART))
-  {
-    PlfPart p = this.visicutModel1.getSelectedPart();
-    this.mappingTabbedPane.setVisible(p != null);
-    if (p != null)
-    {
-      if (p instanceof ParametricPlfPart)
+      MainView.this.timeLabel.setText("");
+      if (this.visicutModel1.getPlfFile().getFile() != null)
       {
-        if (this.mappingTabbedPane.indexOfTabComponent(this.parameterPanel) == -1)
-        {
-          this.mappingTabbedPane.add(bundle.getString("PARAMETERS"), this.parameterPanel);
-        }
+        this.setTitle("VisiCut - " + this.visicutModel1.getPlfFile().getFile().getName());
       }
       else
       {
-        if (this.mappingTabbedPane.indexOfTabComponent(this.parameterPanel) == -1)
+        this.setTitle("VisiCut - Unnamed PLF");
+      }
+      this.refreshButtonStates(evt.getPropertyName());
+    }
+    else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDLASERDEVICE)
+      || evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_UPDATED)
+      || evt.getPropertyName().equals(VisicutModel.PROP_PLF_PART_REMOVED))
+    {
+      MainView.this.timeLabel.setText("");
+      this.refreshButtonStates(evt.getPropertyName());
+    }
+    else if (evt.getPropertyName().equals(VisicutModel.PROP_SELECTEDPART))
+    {
+      PlfPart p = this.visicutModel1.getSelectedPart();
+      this.mappingTabbedPane.setVisible(p != null);
+      if (p != null)
+      {
+        if (p instanceof ParametricPlfPart)
         {
-          this.mappingTabbedPane.remove(this.parameterPanel);
+          if (this.mappingTabbedPane.indexOfTabComponent(this.parameterPanel) == -1)
+          {
+            this.mappingTabbedPane.add(bundle.getString("PARAMETERS"), this.parameterPanel);
+          }
+        }
+        else
+        {
+          if (this.mappingTabbedPane.indexOfTabComponent(this.parameterPanel) == -1)
+          {
+            this.mappingTabbedPane.remove(this.parameterPanel);
+          }
         }
       }
     }
-  }
-  else if (evt.getPropertyName().equals(VisicutModel.PROP_MATERIAL))
-  {
-    MainView.this.timeLabel.setText("");
-    this.refreshMaterialThicknessesComboBox();
-    this.refreshButtonStates(evt.getPropertyName());
-  }
-  // Called on application start (= loading preferences) and change preferences
-  else if (evt.getPropertyName().equals(VisicutModel.PROP_PREFERENCES))
-  {
-    Preferences p = null;
+    else if (evt.getPropertyName().equals(VisicutModel.PROP_MATERIAL))
+    {
+      MainView.this.timeLabel.setText("");
+      this.refreshMaterialThicknessesComboBox();
+      this.refreshButtonStates(evt.getPropertyName());
+    }
+    // Called on application start (= loading preferences) and change preferences
+    else if (evt.getPropertyName().equals(VisicutModel.PROP_PREFERENCES))
+    {
+      Preferences p = null;
 
-    if (evt.getNewValue() != null)
-    {
-      p = (Preferences) (evt.getNewValue());
-    }
-    else if (PreferencesManager.getInstance() != null && PreferencesManager.getInstance().getPreferences() != null)
-    {
-      p = PreferencesManager.getInstance().getPreferences();
-    }
+      if (evt.getNewValue() != null)
+      {
+        p = (Preferences) (evt.getNewValue());
+      }
+      else if (PreferencesManager.getInstance() != null && PreferencesManager.getInstance().getPreferences() != null)
+      {
+        p = PreferencesManager.getInstance().getPreferences();
+      }
 
-    if (p != null)
-    {
-      btQRWebcamScan.setVisible(p.isEnableQRCodes());
-      webcamQRCodeMenuItem.setVisible(p.isEnableQRCodes());
+      if (p != null)
+      {
+        btQRWebcamScan.setVisible(p.isEnableQRCodes());
+        webcamQRCodeMenuItem.setVisible(p.isEnableQRCodes());
+      }
     }
-  }
+  });
 }//GEN-LAST:event_visicutModel1PropertyChange
 
 private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuItemActionPerformed
@@ -2491,6 +2528,7 @@ private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 }//GEN-LAST:event_newMenuItemActionPerformed
 
 private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calibrateCameraMenuItemActionPerformed
+  ThreadUtils.assertInGUIThread();
   List<VectorProfile> profiles = ProfileManager.getInstance().getVectorProfiles();
   if (profiles.isEmpty())
   {
@@ -2723,6 +2761,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
 
   private void materialMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_materialMenuItemActionPerformed
   {//GEN-HEADEREND:event_materialMenuItemActionPerformed
+    ThreadUtils.assertInGUIThread();
     EditMaterialsDialog d = new EditMaterialsDialog(this, true);
     d.setMaterials(MaterialManager.getInstance().getAll());
     d.setVisible(true);
@@ -2746,6 +2785,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
 
   private void laserCutterComboBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_laserCutterComboBoxActionPerformed
   {//GEN-HEADEREND:event_laserCutterComboBoxActionPerformed
+    ThreadUtils.assertInGUIThread();
     if (!ignoreLaserCutterComboBoxUpdates)
     {
       LaserDevice newDev = laserCutterComboBox.getSelectedItem() instanceof LaserDevice ? (LaserDevice) laserCutterComboBox.getSelectedItem() : null;
@@ -2767,6 +2807,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
 
   private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem2ActionPerformed
   {//GEN-HEADEREND:event_jMenuItem2ActionPerformed
+    ThreadUtils.assertInGUIThread();
     ManageLasercuttersDialog d = new ManageLasercuttersDialog(this, true);
     d.setLaserCutters(LaserDeviceManager.getInstance().getAll());
     d.setVisible(true);
@@ -2807,24 +2848,32 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
 
   private void calculateTimeButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_calculateTimeButtonActionPerformed
   {//GEN-HEADEREND:event_calculateTimeButtonActionPerformed
+    ThreadUtils.assertInGUIThread();
+    MainView.this.calculateTimeButton.setEnabled(false);
+    MainView.this.timeLabel.setText("...");
     new Thread()
     {
-
       @Override
       public void run()
       {
+        this.setName("calculateTimeThread");
         try
         {
-          MainView.this.calculateTimeButton.setEnabled(false);
-          MainView.this.timeLabel.setText("...");
-          MainView.this.timeLabel.setText(Helper.toHHMMSS(MainView.this.visicutModel1.estimateTime(MainView.this.getPropertyMapForCurrentJob())));
-          MainView.this.calculateTimeButton.setEnabled(true);
+          String result = Helper.toHHMMSS(MainView.this.visicutModel1.estimateTime(MainView.this.getPropertyMapForCurrentJob()));
+          ThreadUtils.runInGUIThread(() ->
+          {
+            MainView.this.timeLabel.setText(result);
+            MainView.this.calculateTimeButton.setEnabled(true);
+          });
         }
         catch (Exception ex)
         {
-          dialog.showErrorMessage(ex);
-          MainView.this.timeLabel.setText("error");
-          MainView.this.calculateTimeButton.setEnabled(true);
+          ThreadUtils.runInGUIThread(() ->
+          {
+            dialog.showErrorMessage(ex);
+            MainView.this.timeLabel.setText("error");
+            MainView.this.calculateTimeButton.setEnabled(true);
+          });
         }
       }
     }.start();
@@ -2909,6 +2958,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
    */
   private void importSettingsFromFile(File file) throws Exception
   {
+    ThreadUtils.assertInGUIThread();
     PreferencesManager.getInstance().importSettings(file);
     this.visicutModel1.setPreferences(PreferencesManager.getInstance().getPreferences());
     // unset the lab name for auto-updates. Will be reset in importSettingsFromWeb,
@@ -3015,6 +3065,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
 
   private void jmManageLaserprofilesActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmManageLaserprofilesActionPerformed
   {//GEN-HEADEREND:event_jmManageLaserprofilesActionPerformed
+    ThreadUtils.assertInGUIThread();
     EditProfilesDialog d = new EditProfilesDialog(this, true);
     List<LaserProfile> profiles = new LinkedList<LaserProfile>();
     profiles.addAll(ProfileManager.getInstance().getAll());
@@ -3037,6 +3088,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
 
   private void btAddMaterialActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btAddMaterialActionPerformed
   {//GEN-HEADEREND:event_btAddMaterialActionPerformed
+    ThreadUtils.assertInGUIThread();
     CreateNewMaterialDialog cd = new CreateNewMaterialDialog(this, true);
     cd.setVisible(true);
     if (!cd.isOkClicked())
@@ -3721,6 +3773,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
 
   private void refreshMaterialThicknessesComboBox()
   {
+    ThreadUtils.assertInGUIThread();
     if (VisicutModel.getInstance().getMaterial() != null)
     {
       Float current = (Float) this.cbMaterialThickness.getSelectedItem();

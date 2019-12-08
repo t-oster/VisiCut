@@ -34,7 +34,7 @@ public class RefreshCameraThread extends Thread
   // Constructor
   public RefreshCameraThread()
   {
-    super();
+    super("RefreshCameraThread");
   }
 
   // Compute update timer, ensure valid data

@@ -18,6 +18,7 @@
 # Temporary files:
 /distribute/wintmp/
 *~
+*.orig
 
 # Maven stuff:
 /lib/nbproject/private/

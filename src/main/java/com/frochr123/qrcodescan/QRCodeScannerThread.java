@@ -54,7 +54,7 @@ public class QRCodeScannerThread extends Thread
   // Constructor, needs QRCodeScanner
   public QRCodeScannerThread(QRCodeScanner scanner)
   {
-    super();
+    super("QRCodeScannerThread");
     this.scanner = scanner;
     active = false;
   }
