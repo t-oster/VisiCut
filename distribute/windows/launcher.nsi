@@ -18,7 +18,7 @@ RequestExecutionLevel user
 ;You want to change the next two lines too
 !define CLASSPATH ".;lib"
 !define JARFILE "Visicut.jar"
-!define PRGARGS "--singleinstanceport 6543"
+!define PRGARGS ""
 
 !include "FileFunc.nsh"
 !include LogicLib.nsh
@@ -85,11 +85,13 @@ Function startVisicut
 FunctionEnd
  
 Function GetJRE
+  # save C:\path\to\javaw.exe into $R0
   push "javaw.exe"
   call GetJREPath
 FunctionEnd
 
 Function GetJREConsole
+  # save C:\path\to\java.exe (with console output) into $R0
   push "java.exe"
   call GetJREPath
 FunctionEnd

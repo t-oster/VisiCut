@@ -42,9 +42,11 @@ import de.thomas_oster.visicut.model.mapping.Mapping;
 import java.awt.AWTEvent;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -212,6 +214,7 @@ public class VisicutApp extends SingleFrameApplication
     String file = null;
     String basepath = null;
     Float height = null;
+    boolean add = false;
     VisicutModel model = VisicutModel.getInstance();
     boolean execute = false;
     try
@@ -270,11 +273,12 @@ public class VisicutApp extends SingleFrameApplication
             System.out.println("\t visicut [options] [<filename>]");
             System.out.println("\t visicut [options] --execute filename");
             System.out.println("Options are:");
+            System.out.println(" --add (do not replace old file if VisiCut is already running)");
             System.out.println(" --material <materialname e.g. \"Acrylic Glass 2mm\">");
             System.out.println(" --laserdevice <laserdevice e.g. \"Epilog ZING @ Miltons Office\">");
             System.out.println(" --mapping <mapping e.g. \"Cut\">");
             System.out.println(" --total-height <Height in mm e.g. \"2.5\"> (only valid with --execute)");
-            System.out.println(" --singleinstanceport <port> (Tries to open the given port, to check for running instances)");
+            System.out.println(" --singleinstanceport <port> (Set port to check for running instances -- 0 to disable)");
             System.out.println(" --basepath <path> \t Sets VisiCuts settings directory (default is $HOME/.visicut)");
             System.out.println(" --gtkfilechooser (experimental)");
             System.exit(0);
@@ -294,6 +298,10 @@ public class VisicutApp extends SingleFrameApplication
           else if ("--execute".equals(s))
           {
             execute = true;
+          }
+          else if ("--add".equals(s))
+          {
+            add = true;
           }
           else
           {
@@ -325,11 +333,28 @@ public class VisicutApp extends SingleFrameApplication
     {
       Helper.setBasePath(new File(basepath));
     }
+    if (port == null) {
+        port = ApplicationInstanceManager.getSingleInstancePort();
+    }
     if (port != null)
     {
-      if (!ApplicationInstanceManager.registerInstance(port, (file != null ? file : "")))
+      System.out.println("using single-instance port: " + port);
+      // encode message to send to already running instance (if there is one)
+      String singleInstanceMessage = "";
+      if (file != null)
       {
-        System.exit(0);
+          if (add) {
+              singleInstanceMessage = "@";
+          }
+          singleInstanceMessage += file;
+      }
+      if (port != 0) {
+        // single instance mode is active -- try contacting the already runnig instance
+        if (!ApplicationInstanceManager.registerInstance(port, singleInstanceMessage))
+        {
+          System.out.println("found already running instance. Opening file in that instance. Exiting.");
+          System.exit(0);
+        }
       }
       ApplicationInstanceManager.setApplicationInstanceListener(new ApplicationInstanceListener()
       {

@@ -26,6 +26,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * Adapted from: http://www.rbgrn.net/content/43-java-single-application-instance
@@ -102,5 +104,52 @@ public class ApplicationInstanceManager {
       if (subListener != null) {
         subListener.newInstanceCreated(msg);
       }
+  }
+
+
+  /**
+   * determine unique port for the single-instance-detection, even if there are multiple user sessions on the same PC
+   * @return port number
+   */
+  public static int getSingleInstancePort()
+  {
+    // CAUTION: all changes to this function must be mirrored in inkscape_extension/visicut_export.py
+    int port = 6543;
+    if (Helper.isWindows() && System.getenv("SESSIONNAME") != null) {
+        // Windows: vary port by SessionID (usually 0, except on Terminal Server with multiple users)
+        // if on Windows with Terminal Services, choose a singleinstanceport unique for each session ID.
+        // note: we cannot use SESSIONNAME here because it can change when disconnecting and reconnecting a session!
+        // (think of SESSIONNAME like a display that can be connected to different session IDs)
+        try
+        {
+            Process exec = Runtime.getRuntime().exec("powershell -Command (get-process -pid $pid).sessionid");
+            String sessionId = new String(exec.getInputStream().readAllBytes()).strip();
+            if (!sessionId.isEmpty()) {
+                port += 2 + Integer.valueOf(sessionId);
+            }
+        }
+        catch (IOException | NumberFormatException | NullPointerException ex)
+        {
+            Logger.getLogger(ApplicationInstanceManager.class.getName()).log(Level.WARNING, "cannot determine single-instance port", ex);
+        }
+    }
+    else if (Helper.isLinux())
+    {
+        try
+        {
+            // Linux: vary port by DISPLAY number.
+            // Extract number:
+            // DISPLAY=0:1.2 -> "1"
+            // DISPLAY=0:1 -> "1"
+            port += Integer.valueOf((System.getenv("DISPLAY").split(":")[1]).split("\\.")[0]);
+        }
+        catch (NumberFormatException | NullPointerException | ArrayIndexOutOfBoundsException ex)
+        {
+            Logger.getLogger(ApplicationInstanceManager.class.getName()).log(Level.WARNING, "cannot determine single-instance port", ex);
+        }
+    } else {
+        // nothing special on Mac.
+    }
+    return port;
   }
 }

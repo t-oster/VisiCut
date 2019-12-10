@@ -4,4 +4,4 @@ DIR="$( cd -P "$( dirname "$0" )" && pwd )"
 # Print and check java version
 java -version 2>&1 | tee /dev/stderr | egrep -q '"[1-9][0-9]\..*"' || echo "Warning: Your Java version may be too old. We recommend Java 11 or newer. Trying anyway."
 
-java -Xms256m -Xmx2048m -jar "$DIR/Visicut.jar" --singleinstanceport 6543 "$@"
+java -Xms256m -Xmx2048m -jar "$DIR/Visicut.jar" "$@"

@@ -35,67 +35,33 @@ import codecs
 
 DEVNULL = open(os.devnull, 'w')
 
-SINGLEINSTANCEPORT = 6543
+def get_single_instance_port():
+    """
+    get the single instance port used by VisiCut.
+    CAUTION: This code must behave exactly the same as ApplicationInstanceManager.getSingleInstancePort() in Visicut.
+    """
+    port = 6543
+    if (sys.platform == "linux"):
+        d = os.environ.get("DISPLAY")
+        if (d != None):
+            d = d.split(':')[1].split('.')[0]
+            port += int(d)
 
-# if on linux, add display variable to singleinstanceport
-if (sys.platform == "linux"):
-    d = os.environ.get("DISPLAY")
-    if (d != None):
-        d = d.split(':')[1].split('.')[0]
-        SINGLEINSTANCEPORT += int(d)
-
-# if on Windows with Terminal Services, choose a singleinstanceport unique for each session ID.
-# note: we cannot use SESSIONNAME here because it can change when disconnecting and reconnecting a session!
-#       (think of SESSIONNAME like a display that can be connected to different session IDs)
-if (sys.platform == "win32"):
-    d = os.environ.get("SESSIONNAME")
-    if d == None:
-        # no Terminal Services installed
-        pass
-    else:
-        # get ID by parsing output of `query session`:
-        # the relevant line looks like:
-        # >rdp-tcp#0         Fablab                   12  Aktiv   rdpwd
-        # where "12" is the ID.
-
-        def querySession():
-            query = Popen(["query", "session"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            return query.communicate()[0]
-        try:
-            query_output = None
-            query_output = querySession()
-        except WindowsError:
-            # as if this is not easy enough, we have to invoke some black magic to make this work with 32bit python on 64bit windows
-            # (query.exe lives in Windows/System32 folder, but access to this is redirected to the Syswow64 folder for 32bit applications, where no query.exe exists!)
-            # https://mail.python.org/pipermail/python-win32/2009-June/009263.html
-            import ctypes
-            k32 = ctypes.windll.kernel32
-            wow64 = ctypes.c_long(0)
-            # disable system32 redirection
+    if (sys.platform == "win32"):
+        d = os.environ.get("SESSIONNAME")
+        if d == None:
+            # no Terminal Services installed
+            pass
+        else:
+            # get session ID
             try:
-                k32.Wow64DisableWow64FsRedirection(ctypes.byref(wow64))
-                # do what we want
-                try:
-                    query_output = querySession()
-                except WindowsError:
-                    # in some cases query doesn't exist on windows 7 if terminal services isn't installed
-                    pass
-                finally:
-                    # re-enable system32 redirection
-                    k32.Wow64EnableWow64FsRedirection(wow64)
-            except AttributeError:
-                pass
-
-        if query_output is not None:
-            id = None
-            for line in query_output.splitlines():
-                if line.startswith(">"):  # current session
-                    numbers = re.findall("[0-9]+", line)
-                    id = int(numbers[-1])  # ID is the last number on the line
-                    break
-            assert id,  "could not parse TS session ID"
-            assert 0 < id < 1000
-            SINGLEINSTANCEPORT += 2 + id
+                CREATE_NO_WINDOW = 0x08000000
+                id = subprocess.check_output("powershell -Command (get-process -pid $pid).sessionid",creationflags=CREATE_NO_WINDOW)
+                id = int(id.strip())
+                port += 2 + id
+            except:
+                sys.stderr.write("Warning: Cannot determine session ID. please report this.\n")
+    return port
 
 # if Visicut or Inkscape cannot be found, change these lines here to VISICUTDIR="C:/Programs/Visicut" or wherever you installed it.
 # please use forward slashes (/), not backslashes (\).
@@ -107,9 +73,11 @@ VISICUTDIR = ""
 INKSCAPEDIR = ""
 
 # wether to add (true) or replace (false) current visicut's content
-IMPORT = "true"
+IMPORT = True
 # Store the IDs of selected Elements
 elements = []
+
+arguments=[]
 
 for arg in sys.argv[1:]:
     if arg[0] == "-":
@@ -120,15 +88,17 @@ for arg in sys.argv[1:]:
             pass
             # VISICUTBIN=arg[13:]
         elif len(arg) >= 9 and arg[0:9] == "--import=":
-            IMPORT = arg[9:]
+            IMPORT = "true" in str(arg[9:])
         else:
             arguments += [arg]
     else:
         filename = arg
 
+if IMPORT:
+    # do not replace old file
+    arguments += ["--add"]
+
 # find executable in the PATH
-
-
 def which(program, extraPaths=[]):
     pathlist = extraPaths + os.environ["PATH"].split(os.pathsep) + [""]
     if "nt" in os.name:  # Windows
@@ -150,33 +120,6 @@ def which(program, extraPaths=[]):
                     "For a quick fix: Set VISICUTDIR and INKSCAPEDIR in "
                     "{2}"
                     .format(str(program), str(pathlist), os.path.realpath(__file__)))
-
-# def removeAllButThem(element, elements):
-# if element.get('id') in elements:
-#  return True
-# else:
-#  keepSubtree = False
-#  for e in element:
-#   if not removeAllButThem(e, elements):
-#    element.remove(e)
-#   else:
-#    keepSubtree = True
-#  return keepSubtree
-#
-# Strip SVG to only contain selected elements
-# LXML version
-# def stripSVG_lxml(src,dest,elements):
-# try:
-#  from lxml import etree
-#  tree = etree.parse(src)
-#  if len(elements) > 0:
-#   removeAllButThem(tree.getroot(), elements)
-#  tree.write(dest)
-# except:
-#  sys.stderr.write("Python-LXML not installed. Can only send complete SVG\n")
-#  import shutil
-#  shutil.copyfile(src, dest)
-
 
 
 def inkscape_version():
@@ -330,11 +273,13 @@ dest_filename = os.path.join(tmpdir, get_original_filename(filename))
 stripSVG_inkscape(src=filename, dest=dest_filename, elements=elements)
 
 # Try to connect to running VisiCut instance
+# Note: this step may be omitted, as VisiCut will do the same.
+# However, doing it here saves 2-3 seconds of waiting time on Windows.
 try:
     import socket
     s = socket.socket()
-    s.connect(("localhost", SINGLEINSTANCEPORT))
-    if (IMPORT == "true" or IMPORT == true or IMPORT == "\"true\""):
+    s.connect(("localhost", get_single_instance_port()))
+    if IMPORT:
         s.send("@" + dest_filename + "\n")
     else:
         s.send(dest_filename + "\n")
@@ -347,8 +292,6 @@ except:
 
 # Try to start own VisiCut instance
 try:
-    arguments = ["--singleinstanceport", str(SINGLEINSTANCEPORT)]
-
     creationflags = 0
     close_fds = False
     if os.name == "nt":
