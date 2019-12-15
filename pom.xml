@@ -214,6 +214,9 @@
                             <addClasspath>true</addClasspath>
                             <mainClass>de.thomas_oster.visicut.gui.VisicutApp</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <splashscreen-image>de/thomas_oster/visicut/gui/resources/splash.png</splashscreen-image>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
