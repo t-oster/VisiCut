@@ -115,7 +115,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="exportGcodeMenuItem">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Export Laser Code..." noResource="true"/>
+                <Property name="text" type="java.lang.String" resourceKey="exportGcodeMenuItem.text"/>
                 <Property name="name" type="java.lang.String" value="exportGcodeMenuItem" noResource="true"/>
               </Properties>
               <Events>
@@ -647,6 +647,8 @@
                                           <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="jCheckBoxAutoFocus" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                                       <Component id="jCheckBox1" min="-2" pref="197" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
@@ -679,7 +681,7 @@
                           <Component id="materialComboBox" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Group type="102" attributes="0">
                               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -688,7 +690,8 @@
                                   <Component id="btAddMaterialThickness" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <Component id="jCheckBox1" min="-2" max="-2" attributes="1"/>
+                          <Component id="jCheckBoxAutoFocus" min="-2" max="-2" attributes="1"/>
+                          <Component id="jCheckBox1" alignment="0" pref="0" max="32767" attributes="1"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="jSeparator1" min="-2" pref="8" max="-2" attributes="0"/>
@@ -838,6 +841,16 @@
                   <Property name="name" type="java.lang.String" value="cbUseThickness"/>
                 </BindingProperty>
               </BindingProperties>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="jCheckBoxAutoFocus">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="jCheckBoxAutoFocus.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="jCheckBoxAutoFocus.toolTipText"/>
+                <Property name="name" type="java.lang.String" value="jCheckBoxAutoFocus" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jCheckBoxAutoFocusActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="executeJobButton">
               <Properties>

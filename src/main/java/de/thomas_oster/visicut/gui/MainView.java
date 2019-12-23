@@ -823,7 +823,7 @@ public class MainView extends javax.swing.JFrame
     saveFileChooser.setName("saveFileChooser"); // NOI18N
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-    org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(de.thomas_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(MainView.class);
+    org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance().getContext().getResourceMap(MainView.class);
     setTitle(resourceMap.getString("Form.title")); // NOI18N
     setName("Form"); // NOI18N
 
@@ -943,15 +943,13 @@ public class MainView extends javax.swing.JFrame
     jCheckBoxAutoFocus.setText(resourceMap.getString("jCheckBoxAutoFocus.text")); // NOI18N
     jCheckBoxAutoFocus.setToolTipText(resourceMap.getString("jCheckBoxAutoFocus.toolTipText")); // NOI18N
     jCheckBoxAutoFocus.setName("jCheckBoxAutoFocus"); // NOI18N
-
     jCheckBoxAutoFocus.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
       {
-        visicutModel1.setAutoFocusEnabled(jCheckBoxAutoFocus.isSelected());
+        jCheckBoxAutoFocusActionPerformed(evt);
       }
     });
-
 
     executeJobButton.setText(resourceMap.getString("executeJobButton.text")); // NOI18N
     executeJobButton.setName("executeJobButton"); // NOI18N
@@ -1090,7 +1088,8 @@ public class MainView extends javax.swing.JFrame
                     .addComponent(btAddMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                   .addComponent(jLabel5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(jCheckBoxAutoFocus, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jCheckBoxAutoFocus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
                 .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE))
               .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -1114,15 +1113,15 @@ public class MainView extends javax.swing.JFrame
           .addComponent(btAddMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addGroup(jPanel2Layout.createSequentialGroup()
             .addComponent(jLabel5)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addComponent(btAddMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addComponent(jCheckBoxAutoFocus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(jCheckBoxAutoFocus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1357,7 +1356,7 @@ public class MainView extends javax.swing.JFrame
     });
     fileMenu.add(saveAsMenuItem);
 
-    exportGcodeMenuItem.setText(resourceMap.getString("exportGcodeMenuItem.text"));
+    exportGcodeMenuItem.setText(resourceMap.getString("exportGcodeMenuItem.text")); // NOI18N
     exportGcodeMenuItem.setName("exportGcodeMenuItem"); // NOI18N
     exportGcodeMenuItem.addActionListener(new java.awt.event.ActionListener()
     {
@@ -1404,7 +1403,7 @@ public class MainView extends javax.swing.JFrame
     viewMenu.setText(resourceMap.getString("viewMenu.text")); // NOI18N
     viewMenu.setName("viewMenu"); // NOI18N
 
-    javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(de.thomas_oster.visicut.gui.VisicutApp.class).getContext().getActionMap(MainView.class, this);
+    javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance().getContext().getActionMap(MainView.class, this);
     zoomOutMenuItem.setAction(actionMap.get("zoomOut")); // NOI18N
     zoomOutMenuItem.setText(resourceMap.getString("zoomOutMenuItem.text")); // NOI18N
     zoomOutMenuItem.setToolTipText(resourceMap.getString("zoomOutMenuItem.toolTipText")); // NOI18N
@@ -3669,6 +3668,12 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     qrWebcamScanDialog.setLocationRelativeTo(null);
     qrWebcamScanDialog.setVisible(true);
   }//GEN-LAST:event_webcamQRCodeMenuItemActionPerformed
+
+  private void jCheckBoxAutoFocusActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jCheckBoxAutoFocusActionPerformed
+  {//GEN-HEADEREND:event_jCheckBoxAutoFocusActionPerformed
+    visicutModel1.setAutoFocusEnabled(jCheckBoxAutoFocus.isSelected());
+  }//GEN-LAST:event_jCheckBoxAutoFocusActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
   private javax.swing.JMenu actionsMenu;
