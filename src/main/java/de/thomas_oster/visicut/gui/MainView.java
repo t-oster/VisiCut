@@ -707,36 +707,6 @@ public class MainView extends javax.swing.JFrame
     buttonGroup1 = new javax.swing.ButtonGroup();
     jScrollPane2 = new javax.swing.JScrollPane();
     previewPanel = new de.thomas_oster.visicut.gui.beans.PreviewPanel();
-    jScrollPane1 = new javax.swing.JScrollPane();
-    jPanel2 = new javax.swing.JPanel();
-    jLabel1 = new javax.swing.JLabel();
-    jLabel2 = new javax.swing.JLabel();
-    jLabel5 = new javax.swing.JLabel();
-    materialComboBox = new de.thomas_oster.uicomponents.ImageComboBox();
-    jLabel9 = new javax.swing.JLabel();
-    laserCutterComboBox = new de.thomas_oster.uicomponents.ImageComboBox();
-    jLabel10 = new javax.swing.JLabel();
-    jLabelJobName = new javax.swing.JLabel();
-    jTextFieldJobName = new javax.swing.JTextField();
-    calculateTimeButton = new javax.swing.JButton();
-    timeLabel = new javax.swing.JLabel();
-    btAddMaterial = new javax.swing.JButton();
-    cbMaterialThickness = new javax.swing.JComboBox();
-    btAddMaterialThickness = new javax.swing.JButton();
-    jCheckBox1 = new javax.swing.JCheckBox();
-    jCheckBoxAutoFocus = new javax.swing.JCheckBox();
-    executeJobButton = new javax.swing.JButton();
-    objectComboBox = new javax.swing.JComboBox();
-    jSeparator1 = new javax.swing.JSeparator();
-    btRemoveObject = new javax.swing.JButton();
-    btAddObject = new javax.swing.JButton();
-    jScrollPane3 = new javax.swing.JScrollPane();
-    jPanel4 = new javax.swing.JPanel();
-    mappingTabbedPane = new javax.swing.JTabbedPane();
-    mappingPanel = new de.thomas_oster.visicut.gui.mapping.MappingPanel();
-    positionPanel = new de.thomas_oster.uicomponents.PositionPanel();
-    propertyPanelContainer = new javax.swing.JScrollPane();
-    propertiesPanel = new de.thomas_oster.visicut.gui.propertypanel.PropertiesPanel();
     warningPanel = new de.thomas_oster.uicomponents.warnings.WarningPanel();
     jPanel1 = new javax.swing.JPanel();
     jButton2 = new javax.swing.JButton();
@@ -749,6 +719,35 @@ public class MainView extends javax.swing.JFrame
     btQRWebcamScan = new javax.swing.JButton();
     jPanel3 = new javax.swing.JPanel();
     progressBar = new javax.swing.JProgressBar();
+    jPanel4 = new javax.swing.JPanel();
+    jScrollPane1 = new javax.swing.JScrollPane();
+    jPanel2 = new javax.swing.JPanel();
+    jLabel1 = new javax.swing.JLabel();
+    jLabel2 = new javax.swing.JLabel();
+    jLabel5 = new javax.swing.JLabel();
+    materialComboBox = new de.thomas_oster.uicomponents.ImageComboBox();
+    jLabel9 = new javax.swing.JLabel();
+    laserCutterComboBox = new de.thomas_oster.uicomponents.ImageComboBox();
+    btAddMaterial = new javax.swing.JButton();
+    cbMaterialThickness = new javax.swing.JComboBox();
+    btAddMaterialThickness = new javax.swing.JButton();
+    jCheckBox1 = new javax.swing.JCheckBox();
+    jCheckBoxAutoFocus = new javax.swing.JCheckBox();
+    objectComboBox = new javax.swing.JComboBox();
+    jSeparator1 = new javax.swing.JSeparator();
+    btRemoveObject = new javax.swing.JButton();
+    btAddObject = new javax.swing.JButton();
+    mappingTabbedPane = new javax.swing.JTabbedPane();
+    mappingPanel = new de.thomas_oster.visicut.gui.mapping.MappingPanel();
+    positionPanel = new de.thomas_oster.uicomponents.PositionPanel();
+    propertiesPanel = new de.thomas_oster.visicut.gui.propertypanel.PropertiesPanel();
+    jPanel5 = new javax.swing.JPanel();
+    jLabelJobName = new javax.swing.JLabel();
+    jTextFieldJobName = new javax.swing.JTextField();
+    executeJobButton = new javax.swing.JButton();
+    calculateTimeButton = new javax.swing.JButton();
+    jLabel10 = new javax.swing.JLabel();
+    timeLabel = new javax.swing.JLabel();
     menuBar = new javax.swing.JMenuBar();
     fileMenu = new javax.swing.JMenu();
     newMenuItem = new javax.swing.JMenuItem();
@@ -838,315 +837,14 @@ public class MainView extends javax.swing.JFrame
     previewPanel.setLayout(previewPanelLayout);
     previewPanelLayout.setHorizontalGroup(
       previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 605, Short.MAX_VALUE)
+      .addGap(0, 0, Short.MAX_VALUE)
     );
     previewPanelLayout.setVerticalGroup(
       previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 566, Short.MAX_VALUE)
+      .addGap(0, 0, Short.MAX_VALUE)
     );
 
     jScrollPane2.setViewportView(previewPanel);
-
-    jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-    jScrollPane1.setName("jScrollPane1"); // NOI18N
-
-    jPanel2.setName("jPanel2"); // NOI18N
-
-    jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
-    jLabel1.setName("jLabel1"); // NOI18N
-
-    jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
-    jLabel2.setName("jLabel2"); // NOI18N
-
-    jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
-    jLabel5.setName("jLabel5"); // NOI18N
-
-    materialComboBox.setName("materialComboBox"); // NOI18N
-    materialComboBox.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        materialComboBoxActionPerformed(evt);
-      }
-    });
-
-    jLabel9.setText(resourceMap.getString("jLabel9.text")); // NOI18N
-    jLabel9.setName("jLabel9"); // NOI18N
-
-    laserCutterComboBox.setName("laserCutterComboBox"); // NOI18N
-    laserCutterComboBox.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        laserCutterComboBoxActionPerformed(evt);
-      }
-    });
-
-    jLabel10.setText(resourceMap.getString("jLabel10.text")); // NOI18N
-    jLabel10.setName("jLabel10"); // NOI18N
-
-    jLabelJobName.setText(resourceMap.getString("jLabelJobName.text")); // NOI18N
-    jLabelJobName.setName("jLabelJobName"); // NOI18N
-
-    jTextFieldJobName.setName("jTextFieldJobName"); // NOI18N
-
-    calculateTimeButton.setText(resourceMap.getString("calculateTimeButton.text")); // NOI18N
-    calculateTimeButton.setEnabled(false);
-    calculateTimeButton.setName("calculateTimeButton"); // NOI18N
-    calculateTimeButton.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        calculateTimeButtonActionPerformed(evt);
-      }
-    });
-
-    timeLabel.setText(resourceMap.getString("timeLabel.text")); // NOI18N
-    timeLabel.setName("timeLabel"); // NOI18N
-
-    btAddMaterial.setIcon(PlatformIcon.get(PlatformIcon.ADD));
-    btAddMaterial.setName("btAddMaterial"); // NOI18N
-    btAddMaterial.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btAddMaterialActionPerformed(evt);
-      }
-    });
-
-    cbMaterialThickness.setName("cbMaterialThickness"); // NOI18N
-    cbMaterialThickness.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        cbMaterialThicknessActionPerformed(evt);
-      }
-    });
-
-    btAddMaterialThickness.setIcon(PlatformIcon.get(PlatformIcon.ADD));
-    btAddMaterialThickness.setName("btAddMaterialThickness"); // NOI18N
-    btAddMaterialThickness.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btAddMaterialThicknessActionPerformed(evt);
-      }
-    });
-
-    jCheckBox1.setText(resourceMap.getString("jCheckBox1.text")); // NOI18N
-    jCheckBox1.setToolTipText(resourceMap.getString("jCheckBox1.toolTipText")); // NOI18N
-    jCheckBox1.setName("jCheckBox1"); // NOI18N
-
-    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${useThicknessAsFocusOffset}"), jCheckBox1, org.jdesktop.beansbinding.BeanProperty.create("selected"), "cbUseThickness");
-    bindingGroup.addBinding(binding);
-
-    jCheckBoxAutoFocus.setText(resourceMap.getString("jCheckBoxAutoFocus.text")); // NOI18N
-    jCheckBoxAutoFocus.setToolTipText(resourceMap.getString("jCheckBoxAutoFocus.toolTipText")); // NOI18N
-    jCheckBoxAutoFocus.setName("jCheckBoxAutoFocus"); // NOI18N
-    jCheckBoxAutoFocus.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        jCheckBoxAutoFocusActionPerformed(evt);
-      }
-    });
-
-    executeJobButton.setText(resourceMap.getString("executeJobButton.text")); // NOI18N
-    executeJobButton.setName("executeJobButton"); // NOI18N
-    executeJobButton.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        executeJobButtonActionPerformed(evt);
-      }
-    });
-
-    objectComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-    objectComboBox.setName("objectComboBox"); // NOI18N
-    objectComboBox.addItemListener(new java.awt.event.ItemListener()
-    {
-      public void itemStateChanged(java.awt.event.ItemEvent evt)
-      {
-        objectComboBoxChangeHandler(evt);
-      }
-    });
-
-    jSeparator1.setName("jSeparator1"); // NOI18N
-
-    btRemoveObject.setIcon(PlatformIcon.get(PlatformIcon.REMOVE_FILE));
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("de.thomas_oster/uicomponents/resources/EditableTablePanel"); // NOI18N
-    btRemoveObject.setToolTipText(bundle.getString("-")); // NOI18N
-    btRemoveObject.setName("btRemoveObject"); // NOI18N
-    btRemoveObject.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btRemoveObjectActionPerformed(evt);
-      }
-    });
-
-    btAddObject.setIcon(PlatformIcon.get(PlatformIcon.ADD_FILE));
-    btAddObject.setToolTipText(bundle.getString("+")); // NOI18N
-    btAddObject.setName("btAddObject"); // NOI18N
-    btAddObject.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btAddObjectActionPerformed(evt);
-      }
-    });
-
-    jScrollPane3.setName("jScrollPane3"); // NOI18N
-
-    jPanel4.setName("jPanel4"); // NOI18N
-
-    mappingTabbedPane.setName("Custom"); // NOI18N
-
-    mappingPanel.setName("mappingPanel"); // NOI18N
-    mappingTabbedPane.addTab(resourceMap.getString("mappingPanel.TabConstraints.tabTitle"), mappingPanel); // NOI18N
-
-    positionPanel.setName("positionPanel"); // NOI18N
-    mappingTabbedPane.addTab(resourceMap.getString("positionPanel.TabConstraints.tabTitle"), positionPanel); // NOI18N
-
-    propertyPanelContainer.setName("propertyPanelContainer"); // NOI18N
-
-    propertiesPanel.setName("propertiesPanel"); // NOI18N
-    propertiesPanel.setLayout(new javax.swing.BoxLayout(propertiesPanel, javax.swing.BoxLayout.Y_AXIS));
-    propertyPanelContainer.setViewportView(propertiesPanel);
-
-    mappingTabbedPane.addTab(resourceMap.getString("propertyPanelContainer.TabConstraints.tabTitle"), propertyPanelContainer); // NOI18N
-
-    javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-    jPanel4.setLayout(jPanel4Layout);
-    jPanel4Layout.setHorizontalGroup(
-      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 0, Short.MAX_VALUE)
-      .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jPanel4Layout.createSequentialGroup()
-          .addGap(10, 10, 10)
-          .addComponent(mappingTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)
-          .addGap(10, 10, 10)))
-    );
-    jPanel4Layout.setVerticalGroup(
-      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 0, Short.MAX_VALUE)
-      .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jPanel4Layout.createSequentialGroup()
-          .addContainerGap()
-          .addComponent(mappingTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 471, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-    );
-
-    java.util.ResourceBundle bundle1 = java.util.ResourceBundle.getBundle("de.thomas_oster/visicut/gui/resources/MainView"); // NOI18N
-    mappingTabbedPane.getAccessibleContext().setAccessibleName(bundle1.getString("MAPPING")); // NOI18N
-
-    jScrollPane3.setViewportView(jPanel4);
-
-    javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-    jPanel2.setLayout(jPanel2Layout);
-    jPanel2Layout.setHorizontalGroup(
-      jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel2Layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(jPanel2Layout.createSequentialGroup()
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabelJobName)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextFieldJobName)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(executeJobButton))
-              .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabel10)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(calculateTimeButton)))
-            .addContainerGap())
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-              .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(objectComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btAddObject, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btRemoveObject, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-              .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(laserCutterComboBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(materialComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btAddMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-              .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                  .addGroup(jPanel2Layout.createSequentialGroup()
-                    .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(btAddMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                  .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jCheckBoxAutoFocus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE))
-              .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                  .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING)
-                  .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING))
-                .addGap(0, 0, Short.MAX_VALUE))
-              .addComponent(jScrollPane3))
-            .addGap(20, 20, 20))))
-    );
-    jPanel2Layout.setVerticalGroup(
-      jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel2Layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(jLabel9)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(laserCutterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jLabel1)
-        .addGap(6, 6, 6)
-        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(btAddMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addGroup(jPanel2Layout.createSequentialGroup()
-            .addComponent(jLabel5)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(btAddMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
-          .addComponent(jCheckBoxAutoFocus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(btRemoveObject, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(btAddObject, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(objectComboBox)
-            .addComponent(jLabel2)))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
-        .addGap(48, 48, 48)
-        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jLabel10)
-          .addComponent(calculateTimeButton))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jLabelJobName)
-          .addComponent(jTextFieldJobName)
-          .addComponent(executeJobButton))
-        .addContainerGap())
-    );
-
-    jScrollPane1.setViewportView(jPanel2);
 
     warningPanel.setName("warningPanel"); // NOI18N
     warningPanel.setPreferredSize(new java.awt.Dimension(276, 123));
@@ -1280,6 +978,301 @@ public class MainView extends javax.swing.JFrame
     progressBar.setMinimumSize(new java.awt.Dimension(140, 33));
     progressBar.setName("progressBar"); // NOI18N
     jPanel3.add(progressBar);
+
+    jPanel4.setName("jPanel4"); // NOI18N
+
+    jScrollPane1.setBorder(null);
+    jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    jScrollPane1.setName("jScrollPane1"); // NOI18N
+
+    jPanel2.setName("jPanel2"); // NOI18N
+
+    jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
+    jLabel1.setName("jLabel1"); // NOI18N
+
+    jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
+    jLabel2.setName("jLabel2"); // NOI18N
+
+    jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
+    jLabel5.setName("jLabel5"); // NOI18N
+
+    materialComboBox.setName("materialComboBox"); // NOI18N
+    materialComboBox.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        materialComboBoxActionPerformed(evt);
+      }
+    });
+
+    jLabel9.setText(resourceMap.getString("jLabel9.text")); // NOI18N
+    jLabel9.setName("jLabel9"); // NOI18N
+
+    laserCutterComboBox.setName("laserCutterComboBox"); // NOI18N
+    laserCutterComboBox.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        laserCutterComboBoxActionPerformed(evt);
+      }
+    });
+
+    btAddMaterial.setIcon(PlatformIcon.get(PlatformIcon.ADD));
+    btAddMaterial.setName("btAddMaterial"); // NOI18N
+    btAddMaterial.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btAddMaterialActionPerformed(evt);
+      }
+    });
+
+    cbMaterialThickness.setName("cbMaterialThickness"); // NOI18N
+    cbMaterialThickness.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        cbMaterialThicknessActionPerformed(evt);
+      }
+    });
+
+    btAddMaterialThickness.setIcon(PlatformIcon.get(PlatformIcon.ADD));
+    btAddMaterialThickness.setName("btAddMaterialThickness"); // NOI18N
+    btAddMaterialThickness.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btAddMaterialThicknessActionPerformed(evt);
+      }
+    });
+
+    jCheckBox1.setText(resourceMap.getString("jCheckBox1.text")); // NOI18N
+    jCheckBox1.setToolTipText(resourceMap.getString("jCheckBox1.toolTipText")); // NOI18N
+    jCheckBox1.setName("jCheckBox1"); // NOI18N
+
+    org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${useThicknessAsFocusOffset}"), jCheckBox1, org.jdesktop.beansbinding.BeanProperty.create("selected"), "cbUseThickness");
+    bindingGroup.addBinding(binding);
+
+    jCheckBoxAutoFocus.setText(resourceMap.getString("jCheckBoxAutoFocus.text")); // NOI18N
+    jCheckBoxAutoFocus.setToolTipText(resourceMap.getString("jCheckBoxAutoFocus.toolTipText")); // NOI18N
+    jCheckBoxAutoFocus.setName("jCheckBoxAutoFocus"); // NOI18N
+    jCheckBoxAutoFocus.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        jCheckBoxAutoFocusActionPerformed(evt);
+      }
+    });
+
+    objectComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    objectComboBox.setName("objectComboBox"); // NOI18N
+    objectComboBox.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        objectComboBoxChangeHandler(evt);
+      }
+    });
+
+    jSeparator1.setName("jSeparator1"); // NOI18N
+
+    btRemoveObject.setIcon(PlatformIcon.get(PlatformIcon.REMOVE_FILE));
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("de.thomas_oster/uicomponents/resources/EditableTablePanel"); // NOI18N
+    btRemoveObject.setToolTipText(bundle.getString("-")); // NOI18N
+    btRemoveObject.setName("btRemoveObject"); // NOI18N
+    btRemoveObject.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btRemoveObjectActionPerformed(evt);
+      }
+    });
+
+    btAddObject.setIcon(PlatformIcon.get(PlatformIcon.ADD_FILE));
+    btAddObject.setToolTipText(bundle.getString("+")); // NOI18N
+    btAddObject.setName("btAddObject"); // NOI18N
+    btAddObject.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btAddObjectActionPerformed(evt);
+      }
+    });
+
+    mappingPanel.setName("mappingPanel"); // NOI18N
+    mappingTabbedPane.addTab(resourceMap.getString("mappingPanel.TabConstraints.tabTitle"), mappingPanel); // NOI18N
+
+    positionPanel.setName("positionPanel"); // NOI18N
+    mappingTabbedPane.addTab(resourceMap.getString("positionPanel.TabConstraints.tabTitle"), positionPanel); // NOI18N
+
+    propertiesPanel.setName("propertiesPanel"); // NOI18N
+    propertiesPanel.setLayout(new javax.swing.BoxLayout(propertiesPanel, javax.swing.BoxLayout.Y_AXIS));
+    mappingTabbedPane.addTab(resourceMap.getString("propertyPanelContainer.TabConstraints.tabTitle"), propertiesPanel); // NOI18N
+
+    javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+    jPanel2.setLayout(jPanel2Layout);
+    jPanel2Layout.setHorizontalGroup(
+      jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel2Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(mappingTabbedPane)
+          .addGroup(jPanel2Layout.createSequentialGroup()
+            .addComponent(jLabel2)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(objectComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(btAddObject, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(btRemoveObject, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(jSeparator1)
+          .addComponent(laserCutterComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+            .addComponent(materialComboBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(btAddMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+              .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btAddMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+              .addComponent(jLabel5))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jCheckBoxAutoFocus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(0, 0, 0)
+            .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel9)
+              .addComponent(jLabel1))
+            .addGap(0, 0, Short.MAX_VALUE)))
+        .addGap(26, 26, 26))
+    );
+    jPanel2Layout.setVerticalGroup(
+      jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel2Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(jLabel9)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(laserCutterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jLabel1)
+        .addGap(6, 6, 6)
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(btAddMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(materialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+          .addGroup(jPanel2Layout.createSequentialGroup()
+            .addComponent(jLabel5)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(cbMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(btAddMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
+          .addComponent(jCheckBoxAutoFocus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(btRemoveObject, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(btAddObject, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addComponent(objectComboBox)
+            .addComponent(jLabel2)))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addComponent(mappingTabbedPane)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+
+    jScrollPane1.setViewportView(jPanel2);
+
+    jPanel5.setName("jPanel5"); // NOI18N
+
+    jLabelJobName.setText(resourceMap.getString("jLabelJobName.text")); // NOI18N
+    jLabelJobName.setName("jLabelJobName"); // NOI18N
+
+    jTextFieldJobName.setName("jTextFieldJobName"); // NOI18N
+
+    executeJobButton.setText(resourceMap.getString("executeJobButton.text")); // NOI18N
+    executeJobButton.setName("executeJobButton"); // NOI18N
+    executeJobButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        executeJobButtonActionPerformed(evt);
+      }
+    });
+
+    calculateTimeButton.setText(resourceMap.getString("calculateTimeButton.text")); // NOI18N
+    calculateTimeButton.setEnabled(false);
+    calculateTimeButton.setName("calculateTimeButton"); // NOI18N
+    calculateTimeButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        calculateTimeButtonActionPerformed(evt);
+      }
+    });
+
+    jLabel10.setText(resourceMap.getString("jLabel10.text")); // NOI18N
+    jLabel10.setName("jLabel10"); // NOI18N
+
+    timeLabel.setText(resourceMap.getString("timeLabel.text")); // NOI18N
+    timeLabel.setName("timeLabel"); // NOI18N
+
+    javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+    jPanel5.setLayout(jPanel5Layout);
+    jPanel5Layout.setHorizontalGroup(
+      jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel5Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(jPanel5Layout.createSequentialGroup()
+            .addComponent(jLabelJobName)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jTextFieldJobName, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(executeJobButton))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+            .addComponent(jLabel10)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(calculateTimeButton)))
+        .addContainerGap())
+    );
+    jPanel5Layout.setVerticalGroup(
+      jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel5Layout.createSequentialGroup()
+        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(calculateTimeButton)
+          .addComponent(jLabel10)
+          .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabelJobName)
+          .addComponent(jTextFieldJobName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(executeJobButton))
+        .addGap(0, 0, 0))
+    );
+
+    javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+    jPanel4.setLayout(jPanel4Layout);
+    jPanel4Layout.setHorizontalGroup(
+      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+      .addComponent(jScrollPane1)
+    );
+    jPanel4Layout.setVerticalGroup(
+      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+        .addComponent(jScrollPane1)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGap(0, 0, 0))
+    );
 
     menuBar.setName("menuBar"); // NOI18N
 
@@ -1620,6 +1613,7 @@ public class MainView extends javax.swing.JFrame
     jSeparator10.setName("jSeparator10"); // NOI18N
     optionsMenu.add(jSeparator10);
 
+    java.util.ResourceBundle bundle1 = java.util.ResourceBundle.getBundle("de.thomas_oster/visicut/gui/resources/MainView"); // NOI18N
     jmPreferences.setText(bundle1.getString("PREFERENCES")); // NOI18N
     jmPreferences.setName("jmPreferences"); // NOI18N
     jmPreferences.addActionListener(new java.awt.event.ActionListener()
@@ -1713,17 +1707,17 @@ public class MainView extends javax.swing.JFrame
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
         .addGap(0, 0, 0)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 545, Short.MAX_VALUE)
+          .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addGap(2, 2, 2)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 542, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-              .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
-        .addGap(18, 18, 18)
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
+              .addComponent(jScrollPane2))))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addGap(0, 0, 0))
     );
     layout.setVerticalGroup(
@@ -1731,16 +1725,18 @@ public class MainView extends javax.swing.JFrame
       .addGroup(layout.createSequentialGroup()
         .addGap(0, 0, 0)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jScrollPane1)
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGap(8, 8, 8)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE)
+            .addComponent(jScrollPane2)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
-            .addContainerGap())))
+            .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addGroup(layout.createSequentialGroup()
+            .addGap(12, 12, 12)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        .addContainerGap())
     );
 
     bindingGroup.bind();
@@ -3718,9 +3714,9 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
   private javax.swing.JPanel jPanel4;
+  private javax.swing.JPanel jPanel5;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
-  private javax.swing.JScrollPane jScrollPane3;
   private javax.swing.JSeparator jSeparator1;
   private javax.swing.JPopupMenu.Separator jSeparator10;
   private javax.swing.JPopupMenu.Separator jSeparator2;
@@ -3756,7 +3752,6 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   private javax.swing.JProgressBar progressBar;
   private javax.swing.JCheckBoxMenuItem projectorActiveMenuItem;
   private de.thomas_oster.visicut.gui.propertypanel.PropertiesPanel propertiesPanel;
-  private javax.swing.JScrollPane propertyPanelContainer;
   private javax.swing.JMenu recentFilesMenu;
   private javax.swing.JMenuItem saveAsMenuItem;
   private javax.swing.JFileChooser saveFileChooser;
