@@ -34,27 +34,6 @@ import javax.swing.JRadioButton;
  */
 public class AncorPointPanel extends javax.swing.JPanel implements ActionListener
 {
-
-  @Override
-  protected void paintComponent(Graphics g)
-  {
-    super.paintComponent(g);
-    
-    // draw a nice rectangle to symbolize the object
-    int x1,x2,y1,y2;
-    x1=rTopLeft.getX()+rTopLeft.getWidth()/2;
-    y1=rTopLeft.getY()+rTopLeft.getHeight()/2;
-    x2=rBottomRight.getX()+rBottomRight.getWidth()/2;
-    y2=rBottomRight.getY()+rBottomRight.getHeight()/2;
-    
-    g.setColor(Color.LIGHT_GRAY); // TODO get color from Look-and-feel
-    g.fill3DRect(x1,y1,x2-x1,y2-y1, true);
-    
-    g.setColor(getForeground());
-    g.draw3DRect(x1,y1,x2-x1,y2-y1, true);
-    
-
-  }
   
   public void actionPerformed(ActionEvent ae)
   {
@@ -139,9 +118,11 @@ public class AncorPointPanel extends javax.swing.JPanel implements ActionListene
    */
   @SuppressWarnings("unchecked")
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+  private void initComponents()
+  {
 
     radioButtonGroup = new javax.swing.ButtonGroup();
+    jPanel1 = new javax.swing.JPanel();
     rTopLeft = new javax.swing.JRadioButton();
     rTopCenter = new javax.swing.JRadioButton();
     rTopRight = new javax.swing.JRadioButton();
@@ -152,77 +133,121 @@ public class AncorPointPanel extends javax.swing.JPanel implements ActionListene
     rBottomLeft = new javax.swing.JRadioButton();
     rBottomRight = new javax.swing.JRadioButton();
 
+    jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
     rTopLeft.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rTopLeft);
     rTopLeft.setSelected(true);
+    rTopLeft.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    rTopLeft.setOpaque(false);
 
     rTopCenter.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rTopCenter);
+    rTopCenter.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    rTopCenter.setOpaque(false);
 
     rTopRight.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rTopRight);
+    rTopRight.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    rTopRight.setOpaque(false);
 
     rCenterLeft.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rCenterLeft);
+    rCenterLeft.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    rCenterLeft.setOpaque(false);
 
     rCenterCenter.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rCenterCenter);
+    rCenterCenter.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    rCenterCenter.setOpaque(false);
 
     rCenterRight.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rCenterRight);
+    rCenterRight.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    rCenterRight.setOpaque(false);
 
     rBottomCenter.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rBottomCenter);
+    rBottomCenter.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    rBottomCenter.setOpaque(false);
 
     rBottomLeft.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rBottomLeft);
+    rBottomLeft.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    rBottomLeft.setOpaque(false);
 
     rBottomRight.setBackground(new Color(0,0,0,0));
     radioButtonGroup.add(rBottomRight);
+    rBottomRight.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    rBottomRight.setOpaque(false);
+
+    javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+    jPanel1.setLayout(jPanel1Layout);
+    jPanel1Layout.setHorizontalGroup(
+      jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel1Layout.createSequentialGroup()
+        .addGap(0, 0, 0)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(jPanel1Layout.createSequentialGroup()
+            .addComponent(rTopLeft)
+            .addGap(18, 18, 18)
+            .addComponent(rTopCenter)
+            .addGap(18, 18, 18)
+            .addComponent(rTopRight))
+          .addGroup(jPanel1Layout.createSequentialGroup()
+            .addComponent(rCenterLeft)
+            .addGap(18, 18, 18)
+            .addComponent(rCenterCenter)
+            .addGap(18, 18, 18)
+            .addComponent(rCenterRight))
+          .addGroup(jPanel1Layout.createSequentialGroup()
+            .addComponent(rBottomLeft)
+            .addGap(18, 18, 18)
+            .addComponent(rBottomCenter)
+            .addGap(18, 18, 18)
+            .addComponent(rBottomRight)))
+        .addGap(0, 0, 0))
+    );
+    jPanel1Layout.setVerticalGroup(
+      jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel1Layout.createSequentialGroup()
+        .addGap(0, 0, 0)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+          .addComponent(rTopRight)
+          .addComponent(rTopCenter)
+          .addComponent(rTopLeft))
+        .addGap(18, 18, 18)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+          .addComponent(rCenterLeft)
+          .addComponent(rCenterCenter)
+          .addComponent(rCenterRight))
+        .addGap(18, 18, 18)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+          .addComponent(rBottomRight)
+          .addComponent(rBottomCenter)
+          .addComponent(rBottomLeft))
+        .addGap(0, 0, 0))
+    );
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addComponent(rTopLeft)
-        .addGap(18, 18, 18)
-        .addComponent(rTopCenter)
-        .addGap(18, 18, 18)
-        .addComponent(rTopRight))
-      .addGroup(layout.createSequentialGroup()
-        .addComponent(rCenterLeft)
-        .addGap(18, 18, 18)
-        .addComponent(rCenterCenter)
-        .addGap(18, 18, 18)
-        .addComponent(rCenterRight))
-      .addGroup(layout.createSequentialGroup()
-        .addComponent(rBottomLeft)
-        .addGap(18, 18, 18)
-        .addComponent(rBottomCenter)
-        .addGap(18, 18, 18)
-        .addComponent(rBottomRight))
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-          .addComponent(rTopRight)
-          .addComponent(rTopCenter)
-          .addComponent(rTopLeft))
-        .addGap(18, 18, 18)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-          .addComponent(rCenterLeft)
-          .addComponent(rCenterCenter)
-          .addComponent(rCenterRight))
-        .addGap(18, 18, 18)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-          .addComponent(rBottomRight)
-          .addComponent(rBottomCenter)
-          .addComponent(rBottomLeft)))
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JPanel jPanel1;
   private javax.swing.JRadioButton rBottomCenter;
   private javax.swing.JRadioButton rBottomLeft;
   private javax.swing.JRadioButton rBottomRight;
