@@ -85,8 +85,13 @@ public class SVGImporter extends AbstractImporter
     }
     if (e instanceof ShapeElement && !(e instanceof Group))
     {
-      if (((ShapeElement) e).getShape() != null)
+      var shape = ((ShapeElement) e).getShape();
+      if (shape != null)
       {
+        if (Helper.shapeIsEmpty(shape)) {
+          // ignore empty paths (only MOVETO segments, no actual path)
+          return;
+        }
         result.add(new SVGShape((ShapeElement) e, svgResolution));
       }
       else

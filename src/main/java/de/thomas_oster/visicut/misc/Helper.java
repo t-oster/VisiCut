@@ -559,13 +559,12 @@ public class Helper
   
   public static Rectangle2D smallestBoundingBox(Shape s, AffineTransform t)
   {
-    double minX = 0;
-    double maxX = 0;
-    double minY = 0;
-    double maxY = 0;
+    double minX = Double.POSITIVE_INFINITY;
+    double maxX = Double.NEGATIVE_INFINITY;
+    double minY = Double.POSITIVE_INFINITY;
+    double maxY = Double.NEGATIVE_INFINITY;
     PathIterator pi = s.getPathIterator(t, 1);
-    double[] last = null;
-    boolean first = true;
+    double[] lastMoveTo = null;
     while (!pi.isDone())
     {
       double[] d = new double[8];
@@ -573,48 +572,46 @@ public class Helper
       {
         case PathIterator.SEG_LINETO:
         {
-          if (last != null)
+          if (lastMoveTo != null)
           {
-            if (first)
-            {
-              minX = last[0];
-              maxX = last[0];
-              minY = last[1];
-              maxY = last[1];
-              first = false;
-            }
-            else
-            {
-              if (last[0] < minX) { minX = last[0]; }
-              if (last[0] > maxX) { maxX = last[0]; }
-              if (last[1] < minY) { minY = last[1]; }
-              if (last[1] > maxY) { maxY = last[1]; }
-            }
+            if (lastMoveTo[0] < minX) { minX = lastMoveTo[0]; }
+            if (lastMoveTo[0] > maxX) { maxX = lastMoveTo[0]; }
+            if (lastMoveTo[1] < minY) { minY = lastMoveTo[1]; }
+            if (lastMoveTo[1] > maxY) { maxY = lastMoveTo[1]; }
           }
-          if (first)
-          {
-            minX = d[0];
-            maxX = d[0];
-            minY = d[1];
-            maxY = d[1];
-            first = false;
-          }
-          else
-          {
-            if (d[0] < minX) { minX = d[0]; }
-            if (d[0] > maxX) { maxX = d[0]; }
-            if (d[1] < minY) { minY = d[1]; }
-            if (d[1] > maxY) { maxY = d[1]; }
-          }
+          if (d[0] < minX) { minX = d[0]; }
+          if (d[0] > maxX) { maxX = d[0]; }
+          if (d[1] < minY) { minY = d[1]; }
+          if (d[1] > maxY) { maxY = d[1]; }
           break;
         }
         case PathIterator.SEG_MOVETO:
         {
-          last = d;
+          lastMoveTo = d;
           break;
         }
       }
       pi.next();
+    }
+    if (Double.isInfinite(minX)) {
+      // edge case: path contains no LINETO segments, only MOVETO
+      if (lastMoveTo != null) {
+        // path only consists of MOVETO parts
+        Logger.getLogger(Helper.class.getName()).log(Level.WARNING, "cannot compute useful bounding box -- path contains only MOVETO elements");
+        minX = lastMoveTo[0];
+        maxX = lastMoveTo[0];
+        minY = lastMoveTo[1];
+        maxY = lastMoveTo[1];
+      } else {
+        // the path contains no points
+        // There is no sensible return value as it is expected to be != null.
+        // Just output 0,0.
+        Logger.getLogger(Helper.class.getName()).log(Level.WARNING, "cannot compute bounding box -- path contains no points");
+        minX = 0;
+        maxX = 0;
+        minY = 0;
+        maxY = 0;
+      }
     }
     return new Rectangle.Double(minX, minY, maxX-minX, maxY - minY);
   }
@@ -646,6 +643,23 @@ public class Helper
       }
       return smallestBoundingBox(points);
     }
+  }
+
+  /**
+   * Test if given path is empty (i.e., can be ignored for drawing or lasercutting)
+   * @param path
+   * @return True if the path contains zero points or only MOVETO points, False otherwise.
+   */
+  public static boolean shapeIsEmpty(Shape path) {
+    double[] d = new double[8];
+    var pi = path.getPathIterator(null);
+    while (!pi.isDone()) {
+      if (pi.currentSegment(d) != PathIterator.SEG_MOVETO) {
+        return false;
+      }
+      pi.next();
+    }
+    return true;
   }
 
   public static String toHtmlRGB(Color col)
