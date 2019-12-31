@@ -265,7 +265,7 @@ public class EditRectangle extends Rectangle2D.Double
       //draw the width
       gg.setColor(textColor);
       int w = (int) Math.round(this.width);
-      String txt = (w/10)+","+(w%10)+" cm";
+      String txt = "↔ " + (w/10)+","+(w%10)+" cm";
       w = gg.getFontMetrics().stringWidth(txt);
       int ascend = gg.getFontMetrics().getAscent();
       int h = gg.getFontMetrics().getHeight();
@@ -276,7 +276,7 @@ public class EditRectangle extends Rectangle2D.Double
       this.parameterFieldBounds[2].setBounds(tr.x+tr.width/2-w/2, originBottom ? tr.y-h-ascend : tr.y+tr.height+h-ascend, w, h);
       //draw the height
       w = (int) Math.round(this.height);
-      txt = (w/10)+","+(w%10)+" cm";
+      txt = "↕ " + (w/10)+","+(w%10)+" cm";
       w = gg.getFontMetrics().stringWidth(txt);
       if (full)
       {
@@ -300,7 +300,7 @@ public class EditRectangle extends Rectangle2D.Double
       //draw the left
       gg.setColor(textColor);
       w = (int) Math.round(this.x);
-      txt = (w/10)+","+(w%10)+" cm";
+      txt = (w/10)+","+(w%10)+" cm →";
       w = gg.getFontMetrics().stringWidth(txt);
       h = gg.getFontMetrics().getHeight();
       if (full)
@@ -313,7 +313,8 @@ public class EditRectangle extends Rectangle2D.Double
       
       
       w = (int) Math.round(originBottom ? bedHeight - this.y - this.height : this.y);
-      txt = (w/10)+","+(w%10)+" cm";
+      txt = originBottom ? "↑ " : "↓ ";
+      txt += (w/10)+","+(w%10)+" cm";
       w = gg.getFontMetrics().stringWidth(txt);
       if (full)
       {
