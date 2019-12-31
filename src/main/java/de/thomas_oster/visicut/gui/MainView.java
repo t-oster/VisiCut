@@ -2078,10 +2078,10 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
       this.previewPanel.repaint();
     }
   }
-  private JFileChooser fileChooser = new JFileChooser();
-
   private void exportGcodeMenuItemActionPerformed(java.awt.event.ActionEvent evg)
   {
+    JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle(bundle.getString("exportGcodeMenuItem.text"));
     String jobname = getJobName();
     List<String> warnings = new LinkedList<String>();
     final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob();
@@ -2108,10 +2108,9 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     };
     try
     {
-      int userreturn = this.fileChooser.showSaveDialog(this);
-      if (userreturn == JFileChooser.APPROVE_OPTION)
+      File selectedFile = chooseSaveFile(fileChooser);
+      if (selectedFile != null)
       {
-        File selectedFile = this.fileChooser.getSelectedFile();
         MainView.this.visicutModel1.saveJob(jobname, selectedFile, pl, cuttingSettings, warnings);
       }
     }
@@ -2365,13 +2364,24 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
   }
 }//GEN-LAST:event_filesDropSupport1PropertyChange
 
-  private void save()
+  /**
+   * Open a "Save file" dialog, remembering the last directory
+   * @param fileChooser JFileChooser with desired title
+   * @return File handle or "null" if aborted
+   */
+  private File chooseSaveFile(JFileChooser fileChooser)
   {
+    if (fileChooser == null)
+    {
+      fileChooser = new JFileChooser();
+      fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+    }
     File file = null;
-    //On Mac os, awt.FileDialog looks more native
+    //On Mac and Linux, awt.FileDialog looks more native
     if (Helper.isMacOS() || Helper.isLinux())
     {
       FileDialog fdialog = new java.awt.FileDialog(this);
+      fdialog.setTitle(fileChooser.getDialogTitle());
       fdialog.setMode(FileDialog.SAVE);
       if (lastDirectory != null)
       {
@@ -2385,15 +2395,25 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
     }
     else
     {
-      saveFileChooser.setCurrentDirectory(lastDirectory);
-      if (saveFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+      // On Windows, use JFileChooser
+      fileChooser.setCurrentDirectory(lastDirectory);
+      if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
       {
-        file = saveFileChooser.getSelectedFile();
+        file = fileChooser.getSelectedFile();
       }
     }
     if (file != null)
     {
       lastDirectory = file.getParentFile();
+    }
+    return file;
+  }
+
+  private void save()
+  {
+    File file = chooseSaveFile(saveFileChooser);
+    if (file != null)
+    {
       if (!file.getName().endsWith("plf"))
       {
         file = new File(file.getAbsolutePath() + ".plf");
@@ -2903,31 +2923,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
       }
     }
 
-    //On Mac os, awt.FileDialog looks more native
-    if (Helper.isMacOS())
-    {
-      FileDialog fileDialog = new java.awt.FileDialog(this);
-      fileDialog.setMode(FileDialog.SAVE);
-      if (lastDirectory != null)
-      {
-        fileDialog.setDirectory(lastDirectory.getAbsolutePath());
-      }
-      fileDialog.setVisible(true);
-      if (fileDialog.getFile() != null)
-      {
-        file = new File(new File(fileDialog.getDirectory()), fileDialog.getFile());
-      }
-    }
-    else
-    {
-      JFileChooser chooser = new JFileChooser();
-      chooser.setDialogType(JFileChooser.SAVE_DIALOG);
-      chooser.setCurrentDirectory(lastDirectory);
-      if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
-      {
-        file = chooser.getSelectedFile();
-      }
-    }
+    file = chooseSaveFile(null);
     if (file != null)
     {
       if (!file.getName().toLowerCase().endsWith(".vcsettings"))
