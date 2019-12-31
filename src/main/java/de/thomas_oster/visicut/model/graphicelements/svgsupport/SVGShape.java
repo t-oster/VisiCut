@@ -112,7 +112,7 @@ public class SVGShape extends SVGObject implements ShapeObject
     try
     {
       AffineTransform t = this.getAbsoluteTransformation();
-      width *= (t.getScaleX() + t.getScaleY()) / 2;
+      width *= (Math.abs(t.getScaleX()) + Math.abs(t.getScaleY())) / 2;
     }
     catch (SVGException ex)
     {
