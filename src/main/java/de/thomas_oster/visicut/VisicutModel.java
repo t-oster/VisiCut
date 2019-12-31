@@ -602,6 +602,8 @@ public class VisicutModel
   {
     FileOutputStream outputStream = new FileOutputStream(f);
     savePlfToStream(pm, mm, outputStream);
+    this.getPlfFile().setFile(f);
+    this.setPlfFile(this.getPlfFile()); // fire property change events
   }
 
   public void savePlfToStream(MaterialManager pm, MappingManager mm, OutputStream outputStream) throws FileNotFoundException, IOException
