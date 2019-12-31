@@ -18,6 +18,7 @@
  **/
 package de.thomas_oster.visicut.gui;
 
+import de.thomas_oster.uicomponents.AncorPointPanel;
 import de.thomas_oster.visicut.VisicutModel;
 import de.thomas_oster.uicomponents.PositionPanel;
 import de.thomas_oster.visicut.misc.Helper;
@@ -68,6 +69,11 @@ public class PositionPanelController extends EditRectangleController implements 
       }
       else if (pce.getSource().equals(vm))
       {
+        if (VisicutModel.PROP_SELECTEDLASERDEVICE.equals(pce.getPropertyName()) && VisicutModel.getInstance().getSelectedLaserDevice() != null)
+        {
+          // reset anchor point to default if the lasercutter changed
+          this.pp.setAnchorPosition(VisicutModel.getInstance().getSelectedLaserDevice().isOriginBottomLeft() ? AncorPointPanel.Position.BOTTOM_LEFT : AncorPointPanel.Position.TOP_LEFT);
+        }
         if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName())
           || VisicutModel.PROP_PLF_FILE_CHANGED.equals(pce.getPropertyName())
           || VisicutModel.PROP_PLF_PART_UPDATED.equals(pce.getPropertyName()))

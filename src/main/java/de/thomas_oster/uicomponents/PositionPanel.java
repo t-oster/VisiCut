@@ -135,6 +135,10 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
     return rectangle;
   }
 
+  public void setAnchorPosition(AncorPointPanel.Position pos) {
+    this.ancorPointPanel1.setPosition(pos);
+  }
+
   private void updateXYText()
   {
     AncorPointPanel.Position p = this.ancorPointPanel1.getPosition();
