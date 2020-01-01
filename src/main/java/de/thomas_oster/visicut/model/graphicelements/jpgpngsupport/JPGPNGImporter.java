@@ -23,6 +23,7 @@ import de.thomas_oster.visicut.model.graphicelements.AbstractImporter;
 import de.thomas_oster.visicut.model.graphicelements.GraphicSet;
 import de.thomas_oster.visicut.model.graphicelements.ImportException;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -44,7 +45,16 @@ public class JPGPNGImporter extends AbstractImporter
       //TODO: Get Real Resolution
       double px2mm = Util.inch2mm(1d/72d);
       result.setBasicTransform(AffineTransform.getScaleInstance(px2mm, px2mm));
-      result.add(new JPGPNGImage(ImageIO.read(inputFile)));
+      BufferedImage image = ImageIO.read(inputFile);
+      if (image != null)
+      {
+        result.add(new JPGPNGImage(image));
+      }
+      else
+      {
+        throw new ImportException("Image file is damaged or has unsupported format.");
+      }
+
       return result;
     }
     catch (IOException ex)
