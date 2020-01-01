@@ -742,7 +742,10 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
     {
       try
       {
-        Rectangle crop = Helper.toRect(this.previewPanel.getEditRectangle());
+        // mm_to_background = mm_to_px * px_to_background
+        var mmToBackgroundImageTransform = this.previewPanel.getBackgroundImageToPxTransform().createInverse();
+        mmToBackgroundImageTransform.concatenate(this.previewPanel.getMmToPxTransform());
+        Rectangle crop = Helper.toRect(mmToBackgroundImageTransform.createTransformedShape(Helper.toRect(this.previewPanel.getEditRectangle())).getBounds2D());
         VisicutModel.getInstance().addScreenshotOfBackgroundImage(crop, this.previewPanel.getEditRectangle());
       }
       catch (Exception ex)

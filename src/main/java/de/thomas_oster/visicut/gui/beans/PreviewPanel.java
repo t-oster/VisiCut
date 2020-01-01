@@ -532,6 +532,33 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     return somethingMatched;
   }
 
+  protected AffineTransform backgroundImageToPxTransform = null;
+
+  /**
+   * Compute transformation from background (camera) image to screen pixels
+   * @param backgroundImage
+   * @return
+   */
+  protected AffineTransform updateBackgroundImageToPxTransform(BufferedImage backgroundImage) {
+    AffineTransform img2px = new AffineTransform(this.getMmToPxTransform());
+    // if there is camera calibration, the image should correspond to the total size of the bed, so compute a pixel-to-mm scale.
+    // x and y should should be equal, but do them both anyway.
+    double xscale = bedWidth / (double)backgroundImage.getWidth();
+    double yscale = bedHeight / (double)backgroundImage.getHeight();
+    img2px.scale(xscale,yscale);
+    backgroundImageToPxTransform = img2px;
+    return img2px;
+  }
+
+  /**
+   * Get cached transformation from background (camera) image to screen pixels
+   * @return last result of updateBackgroundImageToPxTransform()
+   */
+  public AffineTransform getBackgroundImageToPxTransform()
+  {
+    return backgroundImageToPxTransform;
+  }
+
   @Override
   protected void paintComponent(Graphics g)
   {
@@ -549,15 +576,10 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       BufferedImage backgroundImage = VisicutModel.getInstance().getBackgroundImage();
       if (backgroundImage != null && showBackgroundImage && VisicutModel.getInstance().getSelectedLaserDevice() != null)
       {
-        AffineTransform img2px = new AffineTransform(this.getMmToPxTransform());
+
         if (VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration() != null)
         {
-          // if there is camera calibration, the image should correspond to the total size of the bed, so compute a pixel-to-mm scale.
-          // x and y should should be equal, but do them both anyway.
-          double xscale = bedWidth / (double)backgroundImage.getWidth();
-          double yscale = bedHeight / (double)backgroundImage.getHeight();
-          img2px.scale(xscale,yscale);
-          gg.drawRenderedImage(backgroundImage, img2px);
+          gg.drawRenderedImage(backgroundImage, this.updateBackgroundImageToPxTransform(backgroundImage));
         }
       }
       Rectangle box = Helper.toRect(Helper.transform(

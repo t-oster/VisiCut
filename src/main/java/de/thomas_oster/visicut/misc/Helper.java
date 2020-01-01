@@ -533,7 +533,25 @@ public class Helper
     {
       return new Rectangle(0, 0, 0, 0);
     }
-    return new Rectangle((int) src.getX(), (int) src.getY(), (int) src.getWidth(), (int) src.getHeight());
+
+    int x = (int) src.getX();
+    int y = (int) src.getY();
+    int w = (int) src.getWidth();
+    int h = (int) src.getHeight();
+
+    // Normalize negative width and height to positive values, adjust x,y accordingly.
+    if (w < 0)
+    {
+      w = -w;
+      x = x - w;
+    }
+    if (h < 0)
+    {
+      h = -h;
+      y = y - h;
+    }
+
+    return new Rectangle(x, y, w, h);
   }
 
   /**

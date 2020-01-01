@@ -44,6 +44,7 @@ import de.thomas_oster.visicut.model.graphicelements.ImportException;
 import de.thomas_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import de.thomas_oster.visicut.model.mapping.Mapping;
 import de.thomas_oster.visicut.model.mapping.MappingSet;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -93,7 +94,12 @@ public class VisicutModel
   {
     File tmp = FileUtils.getNonexistingWritableFile("screenshot.png");
     tmp.deleteOnExit();
-    BufferedImage cut = this.backgroundImage.getSubimage(crop.x, crop.y, crop.width, crop.height);
+    // the following is a robust variant of
+    // 'this.backgroundImage.getSubimage(crop.x, crop.y, crop.width, crop.height);'
+    // that also works if the crop is outside of the image bounds
+    BufferedImage cut = new BufferedImage(crop.width, crop.height, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g = cut.createGraphics();
+    g.drawImage(backgroundImage, AffineTransform.getTranslateInstance(-crop.x, -crop.y), null);
     ImageIO.write(cut, "png", tmp);
     PlfPart p = this.loadGraphicFile(tmp, new LinkedList<String>());
     if (target != null)
