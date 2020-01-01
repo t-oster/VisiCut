@@ -30,11 +30,8 @@ import de.thomas_oster.visicut.model.RasterProfile;
 import de.thomas_oster.visicut.model.VectorProfile;
 import com.thoughtworks.xstream.XStream;
 import java.awt.Color;
-import java.beans.XMLDecoder;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -168,13 +165,6 @@ public final class PreferencesManager
       engrave3d.setName("engrave 3d");
       ProfileManager.getInstance().add(engrave3d);
     }
-    this.generateThingiverseDefault();
-  }
-  
-  // generates the default settings for the thingiverse integration
-  private void generateThingiverseDefault(){
-    preferences.setLaserCutterTags("lasercutter, lasercut, laser cutter, laser cut");
-    preferences.setSupportedExtensions("svg, plf, dxf, eps, gcode");
   }
 
   private void initializeSettingDirectory() {
@@ -329,10 +319,6 @@ public final class PreferencesManager
       if (preferences == null)
       {
         preferences = new Preferences();
-      }
-      // check if thingiverse defailts are set, if not upgrade old settings file
-      if(preferences.getLaserCutterTags() == null || preferences.getSupportedExtensions() == null){
-        this.generateThingiverseDefault();
       }
     }
     return preferences;

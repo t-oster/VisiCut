@@ -12,6 +12,7 @@
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_formBundle" type="java.lang.String" value="de/thomas_oster/visicut/gui/resources/PropertyPanel"/>
     <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
     <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
@@ -54,9 +55,7 @@
         <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
       </Properties>
       <AccessibilityProperties>
-        <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="de.thomas_oster/visicut/gui/resources/PreferencesDialog.properties" key="GENERAL" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-        </Property>
+        <Property name="AccessibleContext.accessibleName" type="java.lang.String" resourceKey="GENERAL"/>
       </AccessibilityProperties>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
@@ -152,12 +151,8 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="jLabel1">
               <Properties>
-                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de.thomas_oster/visicut/gui/resources/PreferencesDialog.properties" key="DEFAULT_MAPPING" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                </Property>
-                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de.thomas_oster/visicut/gui/resources/PreferencesDialog.properties" key="DEFAULT_MAPPING_TOOLTIP" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="DEFAULT_MAPPING"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="DEFAULT_MAPPING_TOOLTIP"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JComboBox" name="cbDefaultMapping">
@@ -179,12 +174,8 @@
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel2">
               <Properties>
-                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de.thomas_oster/visicut/gui/resources/PreferencesDialog.properties" key="SANDBOX_LASERSCRIPT" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                </Property>
-                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de.thomas_oster/visicut/gui/resources/PreferencesDialog.properties" key="SANDBOX_TOOLTIP" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="SANDBOX_LASERSCRIPT"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="SANDBOX_TOOLTIP"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JCheckBox" name="cbSandboxLaserScript">
@@ -194,12 +185,8 @@
             </Component>
             <Component class="javax.swing.JLabel" name="lbFilenamesForJobs">
               <Properties>
-                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de.thomas_oster/visicut/gui/resources/PreferencesDialog.properties" key="USE_FILENAMES_FOR_JOBS" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                </Property>
-                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de.thomas_oster/visicut/gui/resources/PreferencesDialog.properties" key="FILENAMES_FOR_JOBS_TOOLTIP" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="USE_FILENAMES_FOR_JOBS"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="FILENAMES_FOR_JOBS_TOOLTIP"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JCheckBox" name="cbSandboxLaserScript1">
@@ -219,30 +206,20 @@
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel3">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Lab name:"/>
+                <Property name="text" type="java.lang.String" resourceKey="LAB_NAME"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="LAB_NAME_TOOLTIP"/>
               </Properties>
-              <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="jLabel3.setText(bundle.getString(&quot;LAB_NAME&quot;)); // NOI18N&#xa;&#xa;jLabel3.setToolTipText(bundle.getString(&quot;LAB_NAME_TOOLTIP&quot;)); // NOI18N"/>
-              </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="lbEnableQRCodes">
               <Properties>
-                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de.thomas_oster/visicut/gui/resources/PreferencesDialog.properties" key="ENABLE_QR_CODES_TEXT" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                </Property>
-                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de.thomas_oster/visicut/gui/resources/PreferencesDialog.properties" key="ENABLE_QR_CODES_TOOLTIP" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="ENABLE_QR_CODES_TEXT"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="ENABLE_QR_CODES_TOOLTIP"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lbFastQRCodes">
               <Properties>
-                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de.thomas_oster/visicut/gui/resources/PreferencesDialog.properties" key="FAST_QR_CODES_TEXT" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                </Property>
-                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de.thomas_oster/visicut/gui/resources/PreferencesDialog.properties" key="FAST_QR_CODES_TOOLTIP" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="FAST_QR_CODES_TEXT"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="FAST_QR_CODES_TOOLTIP"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JCheckBox" name="cbEnableQRCodes">
@@ -257,149 +234,12 @@
             </Component>
             <Component class="javax.swing.JLabel" name="lbAutoUpdateSettings">
               <Properties>
-                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de.thomas_oster/visicut/gui/resources/PreferencesDialog.properties" key="AUTO_UPDATE_SETTINGS" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                </Property>
-                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de.thomas_oster/visicut/gui/resources/PreferencesDialog.properties" key="FAST_QR_CODES_TOOLTIP" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="AUTO_UPDATE_SETTINGS"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JCheckBox" name="cbAutoUpdateSettings">
               <BindingProperties>
                 <BindingProperty name="selected" source="Form" sourcePath="${preferences.autoUpdateSettings}" target="cbAutoUpdateSettings" targetPath="selected" updateStrategy="0" immediately="false"/>
-              </BindingProperties>
-            </Component>
-          </SubComponents>
-        </Container>
-        <Container class="javax.swing.JPanel" name="pnlFacebook">
-          <Properties>
-            <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
-          </Properties>
-          <Constraints>
-            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Facebook">
-                <Property name="tabTitle" type="java.lang.String" value="Facebook"/>
-              </JTabbedPaneConstraints>
-            </Constraint>
-          </Constraints>
-
-          <Layout>
-            <DimensionLayout dim="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="lblFabLabLocationFacebookId" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="txtfFabLabLocationFacebookId" pref="404" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                  </Group>
-              </Group>
-            </DimensionLayout>
-            <DimensionLayout dim="1">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="lblFabLabLocationFacebookId" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtfFabLabLocationFacebookId" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace pref="182" max="32767" attributes="0"/>
-                  </Group>
-              </Group>
-            </DimensionLayout>
-          </Layout>
-          <SubComponents>
-            <Component class="javax.swing.JLabel" name="lblFabLabLocationFacebookId">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="FabLab location facebook id:"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JTextField" name="txtfFabLabLocationFacebookId">
-              <Properties>
-                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Specify the id of your FabLab Facebook site. It will be referenced &lt;br&gt;&#xa; in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL&lt;br&gt;&#xa;of the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 &lt;br&gt;&#xa;enter 191850277562397 in this field.&lt;/html&gt;" noResource="true"/>
-              </Properties>
-              <BindingProperties>
-                <BindingProperty name="text" source="Form" sourcePath="${preferences.fabLabLocationFacebookId}" target="txtfFabLabLocationFacebookId" targetPath="text" updateStrategy="0" immediately="false">
-                  <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
-                </BindingProperty>
-              </BindingProperties>
-            </Component>
-          </SubComponents>
-        </Container>
-        <Container class="javax.swing.JPanel" name="pnlThingiverse">
-          <Properties>
-            <Property name="toolTipText" type="java.lang.String" value="" noResource="true"/>
-          </Properties>
-          <Constraints>
-            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Thingiverse">
-                <Property name="tabTitle" type="java.lang.String" value="Thingiverse"/>
-              </JTabbedPaneConstraints>
-            </Constraint>
-          </Constraints>
-
-          <Layout>
-            <DimensionLayout dim="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lblSupportedExtensions" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblLasercutterTags" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="txtfLasercutterTags" alignment="0" pref="446" max="32767" attributes="0"/>
-                          <Component id="txtfSupportedExtensions" alignment="0" pref="446" max="32767" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                  </Group>
-              </Group>
-            </DimensionLayout>
-            <DimensionLayout dim="1">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="lblLasercutterTags" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtfLasercutterTags" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="lblSupportedExtensions" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtfSupportedExtensions" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace pref="157" max="32767" attributes="0"/>
-                  </Group>
-              </Group>
-            </DimensionLayout>
-          </Layout>
-          <SubComponents>
-            <Component class="javax.swing.JLabel" name="lblLasercutterTags">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Lasercutter tags:"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JTextField" name="txtfLasercutterTags">
-              <Properties>
-                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Specify the id of your FabLab Facebook site. It will be referenced &lt;br&gt;&#xa; in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL&lt;br&gt;&#xa;of the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 &lt;br&gt;&#xa;enter 191850277562397 in this field.&lt;/html&gt;" noResource="true"/>
-              </Properties>
-              <BindingProperties>
-                <BindingProperty name="text" source="Form" sourcePath="${preferences.laserCutterTags}" target="txtfLasercutterTags" targetPath="text" updateStrategy="0" immediately="false"/>
-              </BindingProperties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="lblSupportedExtensions">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Supported extensions:"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JTextField" name="txtfSupportedExtensions">
-              <Properties>
-                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Specify the id of your FabLab Facebook site. It will be referenced &lt;br&gt;&#xa; in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL&lt;br&gt;&#xa;of the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 &lt;br&gt;&#xa;enter 191850277562397 in this field.&lt;/html&gt;" noResource="true"/>
-              </Properties>
-              <BindingProperties>
-                <BindingProperty name="text" source="Form" sourcePath="${preferences.supportedExtensions}" target="txtfSupportedExtensions" targetPath="text" updateStrategy="0" immediately="false"/>
               </BindingProperties>
             </Component>
           </SubComponents>

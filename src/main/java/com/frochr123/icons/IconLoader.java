@@ -32,14 +32,6 @@ public class IconLoader
   // Loading animations
   public static final String ICON_LOADING_CIRCLE_SMALL = "icon_loading_circle_small.gif";
   public static final String ICON_LOADING_CIRCLE_MEDIUM = "icon_loading_circle_medium.gif";
-
-  // Thingiverse
-  public static final String ICON_THINGIVERSE = "icon-thingiverse.png";
-  public static final String ICON_THINGIVERSE_NO_AVATAR = "icon-thingiverse-no-avatar.jpg";
-  public static final String ICON_THINGIVERSE_NO_IMG = "icon-thingiverse-no-img.png";
-
-  // Facebook
-  public static final String ICON_FACEBOOK = "icon-facebook.png";
   
   // QR codes
   public static final String ICON_QRCODE = "icon-qrcode.png";

@@ -23,7 +23,6 @@ import de.thomas_oster.visicut.VisicutModel;
 import de.thomas_oster.visicut.managers.MappingManager;
 import de.thomas_oster.visicut.model.mapping.MappingSet;
 import java.awt.Component;
-import java.awt.Dimension;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -114,14 +113,6 @@ public class PreferencesDialog extends javax.swing.JDialog
     cbFastQRCodes = new javax.swing.JCheckBox();
     lbAutoUpdateSettings = new javax.swing.JLabel();
     cbAutoUpdateSettings = new javax.swing.JCheckBox();
-    pnlFacebook = new javax.swing.JPanel();
-    lblFabLabLocationFacebookId = new javax.swing.JLabel();
-    txtfFabLabLocationFacebookId = new javax.swing.JTextField();
-    pnlThingiverse = new javax.swing.JPanel();
-    lblLasercutterTags = new javax.swing.JLabel();
-    txtfLasercutterTags = new javax.swing.JTextField();
-    lblSupportedExtensions = new javax.swing.JLabel();
-    txtfSupportedExtensions = new javax.swing.JTextField();
     pnlFabqr = new javax.swing.JPanel();
     cbFabqrActive = new javax.swing.JCheckBox();
     lblFabqrHint = new javax.swing.JLabel();
@@ -144,23 +135,23 @@ public class PreferencesDialog extends javax.swing.JDialog
 
     pnlGeneral.setToolTipText("General settings regarding the functionality."); // NOI18N
 
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("de.thomas_oster/visicut/gui/resources/PreferencesDialog"); // NOI18N
-    jLabel1.setText(bundle.getString("DEFAULT_MAPPING")); // NOI18N
-    jLabel1.setToolTipText(bundle.getString("DEFAULT_MAPPING_TOOLTIP")); // NOI18N
+    org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance().getContext().getResourceMap(PreferencesDialog.class);
+    jLabel1.setText(resourceMap.getString("DEFAULT_MAPPING")); // NOI18N
+    jLabel1.setToolTipText(resourceMap.getString("DEFAULT_MAPPING_TOOLTIP")); // NOI18N
 
     cbDefaultMapping.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
     org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.defaultMapping}"), cbDefaultMapping, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"), "defMap");
     bindingGroup.addBinding(binding);
 
-    jLabel2.setText(bundle.getString("SANDBOX_LASERSCRIPT")); // NOI18N
-    jLabel2.setToolTipText(bundle.getString("SANDBOX_TOOLTIP")); // NOI18N
+    jLabel2.setText(resourceMap.getString("SANDBOX_LASERSCRIPT")); // NOI18N
+    jLabel2.setToolTipText(resourceMap.getString("SANDBOX_TOOLTIP")); // NOI18N
 
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.disableSandbox}"), cbSandboxLaserScript, org.jdesktop.beansbinding.BeanProperty.create("selected"));
     bindingGroup.addBinding(binding);
 
-    lbFilenamesForJobs.setText(bundle.getString("USE_FILENAMES_FOR_JOBS")); // NOI18N
-    lbFilenamesForJobs.setToolTipText(bundle.getString("FILENAMES_FOR_JOBS_TOOLTIP")); // NOI18N
+    lbFilenamesForJobs.setText(resourceMap.getString("USE_FILENAMES_FOR_JOBS")); // NOI18N
+    lbFilenamesForJobs.setToolTipText(resourceMap.getString("FILENAMES_FOR_JOBS_TOOLTIP")); // NOI18N
 
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.useFilenamesForJobs}"), cbSandboxLaserScript1, org.jdesktop.beansbinding.BeanProperty.create("selected"));
     bindingGroup.addBinding(binding);
@@ -176,16 +167,14 @@ public class PreferencesDialog extends javax.swing.JDialog
       }
     });
 
-    jLabel3.setText("Lab name:");
-    jLabel3.setText(bundle.getString("LAB_NAME")); // NOI18N
+    jLabel3.setText(resourceMap.getString("LAB_NAME")); // NOI18N
+    jLabel3.setToolTipText(resourceMap.getString("LAB_NAME_TOOLTIP")); // NOI18N
 
-    jLabel3.setToolTipText(bundle.getString("LAB_NAME_TOOLTIP")); // NOI18N
+    lbEnableQRCodes.setText(resourceMap.getString("ENABLE_QR_CODES_TEXT")); // NOI18N
+    lbEnableQRCodes.setToolTipText(resourceMap.getString("ENABLE_QR_CODES_TOOLTIP")); // NOI18N
 
-    lbEnableQRCodes.setText(bundle.getString("ENABLE_QR_CODES_TEXT")); // NOI18N
-    lbEnableQRCodes.setToolTipText(bundle.getString("ENABLE_QR_CODES_TOOLTIP")); // NOI18N
-
-    lbFastQRCodes.setText(bundle.getString("FAST_QR_CODES_TEXT")); // NOI18N
-    lbFastQRCodes.setToolTipText(bundle.getString("FAST_QR_CODES_TOOLTIP")); // NOI18N
+    lbFastQRCodes.setText(resourceMap.getString("FAST_QR_CODES_TEXT")); // NOI18N
+    lbFastQRCodes.setToolTipText(resourceMap.getString("FAST_QR_CODES_TOOLTIP")); // NOI18N
 
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.enableQRCodes}"), cbEnableQRCodes, org.jdesktop.beansbinding.BeanProperty.create("selected"));
     bindingGroup.addBinding(binding);
@@ -193,8 +182,7 @@ public class PreferencesDialog extends javax.swing.JDialog
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fastQRCodes}"), cbFastQRCodes, org.jdesktop.beansbinding.BeanProperty.create("selected"));
     bindingGroup.addBinding(binding);
 
-    lbAutoUpdateSettings.setText(bundle.getString("AUTO_UPDATE_SETTINGS")); // NOI18N
-    lbAutoUpdateSettings.setToolTipText(bundle.getString("FAST_QR_CODES_TOOLTIP")); // NOI18N
+    lbAutoUpdateSettings.setText(resourceMap.getString("AUTO_UPDATE_SETTINGS")); // NOI18N
 
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.autoUpdateSettings}"), cbAutoUpdateSettings, org.jdesktop.beansbinding.BeanProperty.create("selected"));
     bindingGroup.addBinding(binding);
@@ -262,85 +250,6 @@ public class PreferencesDialog extends javax.swing.JDialog
     );
 
     tpSettings.addTab("General", pnlGeneral);
-
-    pnlFacebook.setToolTipText(""); // NOI18N
-
-    lblFabLabLocationFacebookId.setText("FabLab location facebook id:");
-
-    txtfFabLabLocationFacebookId.setToolTipText("<html>Specify the id of your FabLab Facebook site. It will be referenced <br>\n in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL<br>\nof the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 <br>\nenter 191850277562397 in this field.</html>"); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabLabLocationFacebookId}"), txtfFabLabLocationFacebookId, org.jdesktop.beansbinding.BeanProperty.create("text"));
-    bindingGroup.addBinding(binding);
-
-    javax.swing.GroupLayout pnlFacebookLayout = new javax.swing.GroupLayout(pnlFacebook);
-    pnlFacebook.setLayout(pnlFacebookLayout);
-    pnlFacebookLayout.setHorizontalGroup(
-      pnlFacebookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(pnlFacebookLayout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(lblFabLabLocationFacebookId)
-        .addGap(18, 18, 18)
-        .addComponent(txtfFabLabLocationFacebookId, javax.swing.GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE)
-        .addContainerGap())
-    );
-    pnlFacebookLayout.setVerticalGroup(
-      pnlFacebookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(pnlFacebookLayout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(pnlFacebookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(lblFabLabLocationFacebookId)
-          .addComponent(txtfFabLabLocationFacebookId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(182, Short.MAX_VALUE))
-    );
-
-    tpSettings.addTab("Facebook", pnlFacebook);
-
-    pnlThingiverse.setToolTipText(""); // NOI18N
-
-    lblLasercutterTags.setText("Lasercutter tags:");
-
-    txtfLasercutterTags.setToolTipText("<html>Specify the id of your FabLab Facebook site. It will be referenced <br>\n in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL<br>\nof the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 <br>\nenter 191850277562397 in this field.</html>"); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.laserCutterTags}"), txtfLasercutterTags, org.jdesktop.beansbinding.BeanProperty.create("text"));
-    bindingGroup.addBinding(binding);
-
-    lblSupportedExtensions.setText("Supported extensions:");
-
-    txtfSupportedExtensions.setToolTipText("<html>Specify the id of your FabLab Facebook site. It will be referenced <br>\n in each of your posts. Leave empty to disable the referenciation. The id can be found in the URL<br>\nof the Facebook site, e.g. if your URL is https://www.facebook.com/pages/Fablab-Aachen/191850277562397 <br>\nenter 191850277562397 in this field.</html>"); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.supportedExtensions}"), txtfSupportedExtensions, org.jdesktop.beansbinding.BeanProperty.create("text"));
-    bindingGroup.addBinding(binding);
-
-    javax.swing.GroupLayout pnlThingiverseLayout = new javax.swing.GroupLayout(pnlThingiverse);
-    pnlThingiverse.setLayout(pnlThingiverseLayout);
-    pnlThingiverseLayout.setHorizontalGroup(
-      pnlThingiverseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(pnlThingiverseLayout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(pnlThingiverseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(lblSupportedExtensions)
-          .addComponent(lblLasercutterTags))
-        .addGap(18, 18, 18)
-        .addGroup(pnlThingiverseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(txtfLasercutterTags, javax.swing.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
-          .addComponent(txtfSupportedExtensions, javax.swing.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE))
-        .addContainerGap())
-    );
-    pnlThingiverseLayout.setVerticalGroup(
-      pnlThingiverseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(pnlThingiverseLayout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(pnlThingiverseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(lblLasercutterTags)
-          .addComponent(txtfLasercutterTags, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(pnlThingiverseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(lblSupportedExtensions)
-          .addComponent(txtfSupportedExtensions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(157, Short.MAX_VALUE))
-    );
-
-    tpSettings.addTab("Thingiverse", pnlThingiverse);
 
     pnlFabqr.setToolTipText(""); // NOI18N
 
@@ -481,7 +390,7 @@ public class PreferencesDialog extends javax.swing.JDialog
         .addContainerGap())
     );
 
-    tpSettings.getAccessibleContext().setAccessibleName(bundle.getString("GENERAL")); // NOI18N
+    tpSettings.getAccessibleContext().setAccessibleName(resourceMap.getString("GENERAL")); // NOI18N
 
     bindingGroup.bind();
 
@@ -523,27 +432,19 @@ public class PreferencesDialog extends javax.swing.JDialog
   private javax.swing.JLabel lbEnableQRCodes;
   private javax.swing.JLabel lbFastQRCodes;
   private javax.swing.JLabel lbFilenamesForJobs;
-  private javax.swing.JLabel lblFabLabLocationFacebookId;
   private javax.swing.JLabel lblFabqrExample;
   private javax.swing.JLabel lblFabqrHint;
   private javax.swing.JLabel lblFabqrPrivatePassword;
   private javax.swing.JLabel lblFabqrPrivateURL;
   private javax.swing.JLabel lblFabqrPrivateUser;
   private javax.swing.JLabel lblFabqrPublicURL;
-  private javax.swing.JLabel lblLasercutterTags;
-  private javax.swing.JLabel lblSupportedExtensions;
   private javax.swing.JPasswordField passFabqrPrivatePassword;
   private javax.swing.JPanel pnlFabqr;
-  private javax.swing.JPanel pnlFacebook;
   private javax.swing.JPanel pnlGeneral;
-  private javax.swing.JPanel pnlThingiverse;
   private javax.swing.JTabbedPane tpSettings;
   private javax.swing.JTextField txtFabqrPrivateURL;
   private javax.swing.JTextField txtFabqrPrivateUser;
   private javax.swing.JTextField txtFabqrPublicURL;
-  private javax.swing.JTextField txtfFabLabLocationFacebookId;
-  private javax.swing.JTextField txtfLasercutterTags;
-  private javax.swing.JTextField txtfSupportedExtensions;
   private org.jdesktop.beansbinding.BindingGroup bindingGroup;
   // End of variables declaration//GEN-END:variables
 }

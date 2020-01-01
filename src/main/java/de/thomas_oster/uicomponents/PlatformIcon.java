@@ -61,8 +61,6 @@ public class PlatformIcon
   public static final String ZOOM_LASERBED = "zoom-laserbed"; //ZOOM_FIT
   public static final String ZOOM_IN = "zoom-in";
   public static final String ZOOM_OUT = "zoom-out";
-  public static final String THINGIVERSE_LOGO = "thingiverse-logo";
-  public static final String FACEBOOK_LOGO = "facebook-logo";
   
   private static final Map<String, String> gtkIconNames = new LinkedHashMap<String, String>();
   static

@@ -18,10 +18,6 @@
  **/
 package de.thomas_oster.visicut.gui;
 
-// Do not add this import!
-// It is loaded dynamically iff JavaFX is available:
-// import com.tur0kk.thingiverse.gui.ThingiverseLoginDialog;
-import com.tur0kk.thingiverse.gui.ThingiverseDialog;
 import java.awt.desktop.AboutEvent;
 import java.awt.desktop.OpenFilesEvent;
 import java.awt.desktop.PreferencesEvent;
@@ -64,9 +60,6 @@ import de.thomas_oster.visicut.model.RasterProfile;
 import de.thomas_oster.visicut.model.VectorProfile;
 import de.thomas_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import de.thomas_oster.visicut.model.mapping.MappingSet;
-import com.tur0kk.facebook.FacebookManager;
-import com.tur0kk.facebook.gui.FacebookDialog;
-import com.tur0kk.thingiverse.ThingiverseManager;
 import com.frochr123.periodictasks.RefreshCameraThread;
 import com.frochr123.periodictasks.RefreshProjectorThread;
 import com.frochr123.periodictasks.RefreshQRCodesTask;
@@ -138,7 +131,6 @@ public class MainView extends javax.swing.JFrame
 
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("de.thomas_oster/visicut/gui/resources/MainView");
-  private ThingiverseDialog thingiverseDialog = null;
   private ParameterPanel parameterPanel = new ParameterPanel();
   private boolean cameraActive = false;
   private boolean cameraCapturing = false;
@@ -714,8 +706,6 @@ public class MainView extends javax.swing.JFrame
     btFitScreen = new javax.swing.JButton();
     bt1to1 = new javax.swing.JButton();
     filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(35, 35), new java.awt.Dimension(35, 35));
-    btFacebook = new javax.swing.JButton();
-    btThingiverse = new javax.swing.JButton();
     btQRWebcamScan = new javax.swing.JButton();
     jPanel3 = new javax.swing.JPanel();
     progressBar = new javax.swing.JProgressBar();
@@ -774,8 +764,6 @@ public class MainView extends javax.swing.JFrame
     jSeparator7 = new javax.swing.JPopupMenu.Separator();
     showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
     actionsMenu = new javax.swing.JMenu();
-    facebookMenuItem = new javax.swing.JMenuItem();
-    thingiverseMenuItem = new javax.swing.JMenuItem();
     webcamQRCodeMenuItem = new javax.swing.JMenuItem();
     optionsMenu = new javax.swing.JMenu();
     calibrateCameraMenuItem = new javax.swing.JMenuItem();
@@ -919,40 +907,6 @@ public class MainView extends javax.swing.JFrame
 
     filler2.setName("filler2"); // NOI18N
     jPanel1.add(filler2);
-
-    btFacebook.setIcon(com.frochr123.icons.IconLoader.loadIcon(com.frochr123.icons.IconLoader.ICON_FACEBOOK));
-    btFacebook.setText(resourceMap.getString("btFacebook.text")); // NOI18N
-    btFacebook.setToolTipText(resourceMap.getString("btFacebook.toolTipText")); // NOI18N
-    btFacebook.setMaximumSize(new java.awt.Dimension(35, 35));
-    btFacebook.setMinimumSize(new java.awt.Dimension(35, 35));
-    btFacebook.setName("btFacebook"); // NOI18N
-    btFacebook.setPreferredSize(new java.awt.Dimension(35, 35));
-    btFacebook.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btFacebookActionPerformed(evt);
-      }
-    });
-    jPanel1.add(btFacebook);
-    btFacebook.getAccessibleContext().setAccessibleDescription(resourceMap.getString("btFacebook.AccessibleContext.accessibleDescription")); // NOI18N
-
-    btThingiverse.setIcon(com.frochr123.icons.IconLoader.loadIcon(com.frochr123.icons.IconLoader.ICON_THINGIVERSE));
-    btThingiverse.setText(resourceMap.getString("btThingiverse.text")); // NOI18N
-    btThingiverse.setToolTipText(resourceMap.getString("btThingiverse.toolTipText")); // NOI18N
-    btThingiverse.setMaximumSize(new java.awt.Dimension(35, 35));
-    btThingiverse.setMinimumSize(new java.awt.Dimension(35, 35));
-    btThingiverse.setName("btThingiverse"); // NOI18N
-    btThingiverse.setPreferredSize(new java.awt.Dimension(35, 35));
-    btThingiverse.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btThingiverseActionPerformed(evt);
-      }
-    });
-    jPanel1.add(btThingiverse);
-    btThingiverse.getAccessibleContext().setAccessibleDescription(resourceMap.getString("btThingiverse.AccessibleContext.accessibleDescription")); // NOI18N
 
     btQRWebcamScan.setIcon(com.frochr123.icons.IconLoader.loadIcon(com.frochr123.icons.IconLoader.ICON_QRCODE));
     btQRWebcamScan.setToolTipText(resourceMap.getString("btQRWebcamScan.toolTipText")); // NOI18N
@@ -1477,28 +1431,6 @@ public class MainView extends javax.swing.JFrame
 
     actionsMenu.setText(resourceMap.getString("actionsMenu.text")); // NOI18N
     actionsMenu.setName("actionsMenu"); // NOI18N
-
-    facebookMenuItem.setText(resourceMap.getString("facebookMenuItem.text")); // NOI18N
-    facebookMenuItem.setName("facebookMenuItem"); // NOI18N
-    facebookMenuItem.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        facebookMenuItemActionPerformed(evt);
-      }
-    });
-    actionsMenu.add(facebookMenuItem);
-
-    thingiverseMenuItem.setText(resourceMap.getString("thingiverseMenuItem.text")); // NOI18N
-    thingiverseMenuItem.setName("thingiverseMenuItem"); // NOI18N
-    thingiverseMenuItem.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        thingiverseMenuItemActionPerformed(evt);
-      }
-    });
-    actionsMenu.add(thingiverseMenuItem);
 
     webcamQRCodeMenuItem.setText(resourceMap.getString("webcamQRCodeMenuItem.text")); // NOI18N
     webcamQRCodeMenuItem.setName("webcamQRCodeMenuItem"); // NOI18N
@@ -3295,94 +3227,6 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
   }
 }//GEN-LAST:event_jmPreferencesActionPerformed
 
-  private void btFacebookActionPerformed(java.awt.event.ActionEvent evt)
-  {
-    startFacebook();
-  }
-
-  private String browserLoginDialog(String title, String loginUrl, String redirectUrlPrefix) throws Exception
-  {
-    // JavaFX available, load BrowserLoginDialog dynamically (depends on JavaFX)
-    String browserCode = null;
-
-    URL jarUrl = MainView.class.getResource("lib/BrowserLoginDialog.jar");
-    URLClassLoader classLoader = new URLClassLoader(new URL[]
-      {
-        jarUrl
-      }, MainView.class.getClassLoader());
-    Class<?> ThingiverseLoginDialog = classLoader.loadClass("com.tur0kk.thingiverse.fxgui.BrowserLoginDialog");
-
-    Class<?>[] constructorParameterTypes = new Class[]
-    {
-      java.awt.Frame.class,
-      boolean.class,
-      String.class,
-      String.class,
-      String.class
-    };
-
-    Constructor<?> constructor = ThingiverseLoginDialog.getConstructor(constructorParameterTypes);
-
-    // Create instance
-    Object loginDialog = constructor.newInstance(new Object[]
-      {
-        this, true, title, loginUrl, redirectUrlPrefix
-      });
-
-    // Parameter types for methods
-    Class<?>[] setVisibleParameterTypes = new Class[]
-    {
-      boolean.class
-    };
-
-    Class<?>[] getBrowserCodeParameterTypes = new Class[]
-    {
-    };
-
-    Method setVisibleMethod = ThingiverseLoginDialog.getMethod("setVisible", setVisibleParameterTypes);
-    Method getBrowserCodeMethod = ThingiverseLoginDialog.getMethod("getBrowserCode", getBrowserCodeParameterTypes);
-
-    Object[] setVisibleArgumentList = new Object[]
-    {
-      true
-    };
-
-    Object[] getBrowserCodeArgumentList = new Object[]
-    {
-    };
-
-    // invoke JavaFX browser with thingiverse website
-    setVisibleMethod.invoke(loginDialog, setVisibleArgumentList);
-    browserCode = (String) getBrowserCodeMethod.invoke(loginDialog, getBrowserCodeArgumentList);
-
-    return browserCode;
-  }
-
-  private String systemBrowserLogin(String name, String loginUrl) throws Exception
-  {
-    // if JavaFX is not available use system browser to show thingiverse website. Necessary to copy auth code by hand.
-    String browserCode;
-
-    Desktop.getDesktop().browse(URI.create(loginUrl));
-    browserCode = javax.swing.JOptionPane.showInputDialog("Log in with your " + name + "-account, click allow, paste code here:");
-
-    return browserCode;
-  }
-
-  private boolean isJavaFxAvailable()
-  {
-    try
-    {
-      ClassLoader classLoader = MainView.class.getClassLoader();
-      classLoader.loadClass("javafx.embed.swing.JFXPanel");
-      return true;
-    }
-    catch (ClassNotFoundException e)
-    {
-      return false;
-    }
-  }
-
   private boolean askForOverwriteSettings()
   {
     if (LaserDeviceManager.getInstance().getAll().isEmpty()
@@ -3395,112 +3239,6 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     }
     int answer = JOptionPane.showConfirmDialog(this, bundle.getString("IMPORT_SETTINGS_OVERWRITE?"), bundle.getString("WARNING"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
     return answer == JOptionPane.OK_OPTION;
-  }
-
-  private void startFacebook()
-  {
-    /*
-     * just hide facebookDialog on close to keep state.
-     * if logged out, create new instance of dialog
-     */
-    FacebookManager facebook = FacebookManager.getInstance();
-
-    try
-    {
-      // Try login with persistent access token.
-      boolean loginSuccess = facebook.logIn();
-
-      if (!loginSuccess)
-      {
-        String loginUrl = facebook.initiateAuthentication();
-        String browserCode;
-
-        if (isJavaFxAvailable())
-        {
-          browserCode = browserLoginDialog("Facebook Login", loginUrl, facebook.getRedirectUrlPrefix());
-        }
-        else
-        {
-          // JavaFX not available...
-          System.out.println("JavaFX is not available. Using fallback behavior.");
-          browserCode = systemBrowserLogin("Facebook", loginUrl);
-        }
-
-        facebook.logIn(browserCode);
-      }
-
-      if (facebook.isLoggedIn())
-      {
-        FacebookDialog facebookDialog = new FacebookDialog(this, true);
-        facebookDialog.setLocationRelativeTo(null);
-        facebookDialog.setVisible(true);
-      }
-    }
-    catch (Exception ex)
-    {
-      ex.printStackTrace();
-      this.dialog.showErrorMessage("Unable to load FacebookDialog");
-    }
-  }
-
-  private void startThingiverse()
-  {
-    ThingiverseManager thingiverse = ThingiverseManager.getInstance();
-
-    /*
-     * Just hide thingiverseDialog on close to keep state.
-     * if logged out, create new instance of ThingiverseDialog
-     */
-    if (!thingiverse.isLoggedIn() || thingiverseDialog == null)
-    {
-      try
-      {
-        // Try login with persistent access token from disk.
-        boolean loginSuccess = thingiverse.logIn();
-
-        if (!loginSuccess)
-        {
-          // Login with persitent token failed.
-          // Start new authentication procedure.
-          String loginUrl = thingiverse.initiateAuthentication();
-          String browserCode = "";
-
-          if (isJavaFxAvailable())
-          {
-            // If java fx is available we open a browser dialog and let the user
-            // enter his credentials. This method blocks until the dialog
-            // closes itself and returns a code from thingiverse.
-            browserCode = browserLoginDialog("Thingiverse Login", loginUrl, thingiverse.getRedirectUrlPrefix());
-          }
-          else
-          {
-            // JavaFX not available...
-            // Open system default browser and let the user copy/paste the
-            // browser code.
-            System.out.println("JavaFX is not available. Using fallback behavior.");
-            browserCode = systemBrowserLogin("Thingiverse", loginUrl);
-          }
-
-          thingiverse.logIn(browserCode);
-        }
-
-        if (thingiverse.isLoggedIn())
-        {
-          thingiverseDialog = new ThingiverseDialog(this, true);
-          thingiverseDialog.setLocationRelativeTo(null);
-          thingiverseDialog.setVisible(true);
-        }
-      }
-      catch (Exception ex)
-      {
-        ex.printStackTrace();
-        this.dialog.showErrorMessage("Unable to load ThingiverseDialog");
-      }
-    }
-    else // instance available, show thingiverseDialog
-    {
-      thingiverseDialog.setVisible(true);
-    }
   }
 
   /**
@@ -3615,11 +3353,6 @@ private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {
   }
 }//GEN-LAST:event_jmDownloadSettingsActionPerformed
 
-  private void btThingiverseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btThingiverseActionPerformed
-  {//GEN-HEADEREND:event_btThingiverseActionPerformed
-    startThingiverse();
-  }//GEN-LAST:event_btThingiverseActionPerformed
-
 private void zoomWindowMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomWindowMenuItemActionPerformed
   this.previewPanel.setZoom(100d);
 }//GEN-LAST:event_zoomWindowMenuItemActionPerformed
@@ -3627,14 +3360,6 @@ private void zoomWindowMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
 private void zoomRealMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomRealMenuItemActionPerformed
   this.previewPanel.setOneToOneZoom();
 }//GEN-LAST:event_zoomRealMenuItemActionPerformed
-
-private void thingiverseMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_thingiverseMenuItemActionPerformed
-  startThingiverse();
-}//GEN-LAST:event_thingiverseMenuItemActionPerformed
-
-private void facebookMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_facebookMenuItemActionPerformed
-  startFacebook();
-}//GEN-LAST:event_facebookMenuItemActionPerformed
 
 private void cameraActiveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cameraActiveMenuItemActionPerformed
   boolean cam = (!getVisiCam().isEmpty()) && cameraActiveMenuItem.isSelected();
@@ -3673,11 +3398,9 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   private javax.swing.JButton btAddMaterial;
   private javax.swing.JButton btAddMaterialThickness;
   private javax.swing.JButton btAddObject;
-  private javax.swing.JButton btFacebook;
   private javax.swing.JButton btFitScreen;
   private javax.swing.JButton btQRWebcamScan;
   private javax.swing.JButton btRemoveObject;
-  private javax.swing.JButton btThingiverse;
   private javax.swing.ButtonGroup buttonGroup1;
   private javax.swing.JButton calculateTimeButton;
   private javax.swing.JMenuItem calibrateCameraMenuItem;
@@ -3688,7 +3411,6 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   private javax.swing.JMenuItem executeJobMenuItem;
   private javax.swing.JMenuItem exitMenuItem;
   private javax.swing.JMenuItem exportGcodeMenuItem;
-  private javax.swing.JMenuItem facebookMenuItem;
   private javax.swing.JMenu fileMenu;
   private de.thomas_oster.uicomponents.FilesDropSupport filesDropSupport1;
   private javax.swing.Box.Filler filler2;
@@ -3753,7 +3475,6 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   private javax.swing.JFileChooser saveFileChooser;
   private javax.swing.JMenuItem saveMenuItem;
   private javax.swing.JCheckBoxMenuItem showGridMenuItem;
-  private javax.swing.JMenuItem thingiverseMenuItem;
   private javax.swing.JLabel timeLabel;
   private javax.swing.JMenu viewMenu;
   private de.thomas_oster.visicut.VisicutModel visicutModel1;

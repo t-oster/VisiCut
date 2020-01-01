@@ -471,75 +471,10 @@ public class Preferences
     this.editSettingsBeforeExecuting = editSettingsBeforeExecuting;
   }
   
-  // location id of the facebook fablab site, to add a link in each facebook post
-  private String fabLabLocationFacebookId = "";
-
-  /**
-   * Get the value of fabLabLocationFacebookId
-   *
-   * @return the value of fabLabLocationFacebookId
-   */
-  public String getFabLabLocationFacebookId()
-  {
-    return fabLabLocationFacebookId;
-  }
-
-  /**
-   * Set the value of fabLabLocationFacebookId
-   *
-   * @param fabLabLocationFacebookId new value of fabLabLocationFacebookId
-   */
-  public void setFabLabLocationFacebookId(String fabLabLocationFacebookId)
-  {
-    this.fabLabLocationFacebookId = fabLabLocationFacebookId;
-  }
-  // comma separated list
-  // list containing all lasercuttertags which should be considered for filtering in the thingivserse dialog
-  private String laserCutterTags = new String();
-  
-  /**
-   * Get the value of laserCutterTags
-   *
-   * @return the value of laserCutterTags
-   */
-  public String getLaserCutterTags()
-  {
-    return this.laserCutterTags;
-  }
-
-  /**
-   * Set the value of laserCutterTags
-   *
-   * @param laserCutterTags new value of laserCutterTags
-   */
-  public void setLaserCutterTags(String tags)
-  {
-    this.laserCutterTags = tags;
-  }
-  
-  // comma separated list
-  // list containing all supported file extensions which should be considered for filtering in the thingivserse dialog
-  private String supportedExtensions = "";
-  
-  /**
-   * Get the value of supportedExtensions
-   *
-   * @return the value of supportedExtensions
-   */
-  public String getSupportedExtensions()
-  {
-    return this.supportedExtensions;
-  }
-
-  /**
-   * Set the value of supportedExtensions
-   *
-   * @param supportedExtensions new value of supportedExtensions
-   */
-  public void setSupportedExtensions(String extensions)
-  {
-    this.supportedExtensions = extensions;
-  }
+  // unused, keep only for compatibility with old settings
+  private String fabLabLocationFacebookId = "UNUSED";
+  private String laserCutterTags = "UNUSED";
+  private String supportedExtensions = "UNUSED";
 
   @Override
   public Preferences clone()
