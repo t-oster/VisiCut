@@ -29,6 +29,7 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 
 /**
  *
@@ -164,6 +165,7 @@ public class EditRectangle extends Rectangle2D.Double
 
   private Color lineColor = new Color(104,146,255);
   private Color textColor = Color.BLACK;
+  private Color textBackgroundColor = new Color(255, 255, 255, 160);
   private Color buttonColor = lineColor;
 
   public enum ParameterField
@@ -212,6 +214,33 @@ public class EditRectangle extends Rectangle2D.Double
    */
   public void render(Graphics2D gg, AffineTransform mm2px, boolean full)
   {
+    class GraphicsHelper
+    {
+      /**
+       * Draw text with filled background.
+       * @param show actually draw something (True) or just compute the bounding box (False)
+       * @param x position of text without background (as in Graphics2D.drawString)
+       * @param y position without background (as in Graphics2D.drawString)
+       * @return bounding box of text
+       */
+      public Rectangle drawTextWithBackground(boolean show, String text, int x, int y)
+      {
+        // determine bounding rectangle for drawString: https://stackoverflow.com/a/6416215
+        Rectangle2D bounds = gg.getFontMetrics().getStringBounds(text, gg);
+        bounds.setFrame(x, y - gg.getFontMetrics().getAscent(), bounds.getWidth(), bounds.getHeight());
+        double R = 4;
+        var fillRect = new RoundRectangle2D.Double(bounds.getX() - R/2, bounds.getY(), bounds.getWidth() + R, bounds.getHeight(), R, R);
+        if (show)
+        {
+          gg.setColor(textBackgroundColor);
+          gg.fill(fillRect);
+          gg.setColor(textColor);
+          gg.drawString(text, x, y);
+        }
+        return bounds.getBounds();
+      }
+    }
+    var gh = new GraphicsHelper();
     //draw the rectangle
     gg.setColor(lineColor);
     gg.setStroke(new BasicStroke(full ? 2 : 1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]
@@ -232,14 +261,8 @@ public class EditRectangle extends Rectangle2D.Double
       gg.setColor(textColor);
       int w = (int) Math.round(10*Helper.angle2degree(this.rotationAngle));
       String txt = (w/10)+","+(w%10)+"°";
-      w = gg.getFontMetrics().stringWidth(txt);
-      int ascend = gg.getFontMetrics().getAscent();
       int h = gg.getFontMetrics().getHeight();
-      if (full)
-      {
-        gg.drawString(txt, 10+(int) (center.x+diagonal/2), center.y+h/2);
-      }
-      this.parameterFieldBounds[4].setBounds(10+(int) (center.x+diagonal/2), center.y+h/2-ascend, w, h);
+      this.parameterFieldBounds[4] = gh.drawTextWithBackground(full, txt, 10+(int) (center.x+diagonal/2), center.y+h/2);
     }
     else
     {
@@ -263,26 +286,17 @@ public class EditRectangle extends Rectangle2D.Double
         }
       }
       //draw the width
+      gg.setColor(lineColor);
       gg.setColor(textColor);
       int w = (int) Math.round(this.width);
       String txt = "↔ " + (w/10)+","+(w%10)+" cm";
       w = gg.getFontMetrics().stringWidth(txt);
-      int ascend = gg.getFontMetrics().getAscent();
       int h = gg.getFontMetrics().getHeight();
-      if (full)
-      {
-        gg.drawString(txt, tr.x+tr.width/2-w/2, originBottom ? tr.y-h : tr.y+tr.height+h);
-      }
-      this.parameterFieldBounds[2].setBounds(tr.x+tr.width/2-w/2, originBottom ? tr.y-h-ascend : tr.y+tr.height+h-ascend, w, h);
+      this.parameterFieldBounds[2] = gh.drawTextWithBackground(full, txt, tr.x+tr.width/2-w/2, originBottom ? tr.y-h : tr.y+tr.height+h);
       //draw the height
       w = (int) Math.round(this.height);
       txt = "↕ " + (w/10)+","+(w%10)+" cm";
-      w = gg.getFontMetrics().stringWidth(txt);
-      if (full)
-      {
-        gg.drawString(txt, tr.x+tr.width+5, tr.y+tr.height/2);
-      }
-      this.parameterFieldBounds[3].setBounds(tr.x+tr.width+5, tr.y+tr.height/2-ascend, w, h);
+      this.parameterFieldBounds[3] = gh.drawTextWithBackground(full, txt, tr.x+tr.width+10, tr.y+tr.height/2);
       //draw lines from the left and upper center
       gg.setColor(lineColor);
       Point zero = new Point(0, 0);
@@ -303,11 +317,8 @@ public class EditRectangle extends Rectangle2D.Double
       txt = (w/10)+","+(w%10)+" cm →";
       w = gg.getFontMetrics().stringWidth(txt);
       h = gg.getFontMetrics().getHeight();
-      if (full)
-      {
-        gg.drawString(txt, tr.x-w-10, tr.y+tr.height/2+h);
-      }
-      this.parameterFieldBounds[0].setBounds(tr.x-w-10, tr.y+tr.height/2+h-ascend, w, h);
+      this.parameterFieldBounds[0] = gh.drawTextWithBackground(full, txt, tr.x-w-10, tr.y+tr.height/2+h);
+
       //draw the top offset
       
       
@@ -316,11 +327,7 @@ public class EditRectangle extends Rectangle2D.Double
       txt = originBottom ? "↑ " : "↓ ";
       txt += (w/10)+","+(w%10)+" cm";
       w = gg.getFontMetrics().stringWidth(txt);
-      if (full)
-      {
-        gg.drawString(txt, tr.x+tr.width/2+5, originBottom ? tr.y+tr.height+h : tr.y-h);
-      }
-      this.parameterFieldBounds[1].setBounds(tr.x+tr.width/2+5, originBottom ? tr.y+tr.height+h-ascend : tr.y-h-ascend, w, h);
+      this.parameterFieldBounds[1] = gh.drawTextWithBackground(full, txt, tr.x+tr.width/2+5, originBottom ? tr.y+tr.height+h : tr.y-h);
     }
   }
   
