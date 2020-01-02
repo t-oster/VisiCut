@@ -55,6 +55,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
@@ -154,11 +155,12 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   {
 
     private Logger logger = Logger.getLogger(ImageProcessingThread.class.getName());
+    /// full-resolution preview image (in lasercutter pixels)
     private BufferedImage buffer = null;
-    private Image scaledownImgCoarse = null;
-    private Image scaledownImgFine = null;
-    public static final double bufferScaledownFactorCoarse = 4;
-    public static final double bufferScaledownFactorFine = 2;
+    /// scaled-down preview images. scaledownImages[i] is buffer.scale(1/bufferScaledownFactor^i)
+    /// number of elements controls the maximum downscaling. Assumed worst case: 1000mm at 500dpi = 40 Mpx, scale down by 2^7 to 300px
+    private Image[] scaledownImages = new Image[8];
+    public static final double bufferScaledownFactor = 2;
     private GraphicSet set;
     private AffineTransform mm2laserPx;
     private LaserProfile p;
@@ -187,12 +189,45 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       return buffer;
     }
 
-    public Image getScaledownImageCoarse() {
-      return scaledownImgCoarse;
-    }
+    /**
+     * get scaled down preview image
+     * @param scaledownFactor desired approximate scaledown factor
+     * @return scaled down version of getImage() which has been scaled down by at most scaledownFactor
+     */
+    public Image getScaledownImage(double scaledownFactor) {
+      /// tradeoff between sharp (>= 1) but slightly aliased and smooth but slightly blurry (< 1)
+      // We need to err towards "slightly blurry" becaues Graphics2D antialiasing doesn't really work for scaling down (at least on Linux).
+      // Otherwise it would be better if we return an image with too high resolution.
+      double maximumSharpness;
 
-    public Image getScaledownImageFine() {
-      return scaledownImgFine;
+      // For low zoom levels, we prefer sharp lines with slight aliasing.
+      // For high zoom levels, the aliasing may be extreme because the original image are only black and white dots. Therefore make it more blurry if the user zooms in.
+
+      // if zoomed out more than $SCALEDOWN_ZOMOUT, prefer sharp image:
+      final double SCALEDOWN_ZOOM_OUT = 5;
+      final double SHARPNESS_ZOOM_OUT = 1.1;
+
+      // if zoomed in to $SCALEDOWN_ZOOMIN, prefer smooth image:
+      final double SCALEDOWN_ZOOM_IN = 1;
+      final double SHARPNESS_ZOOM_IN = 0.4;
+
+      // inbetween, interpolate the sharpness linearly:
+      if (scaledownFactor < SCALEDOWN_ZOOM_OUT)
+      {
+        maximumSharpness = Math.max(SHARPNESS_ZOOM_IN, SHARPNESS_ZOOM_OUT + (SHARPNESS_ZOOM_IN - SHARPNESS_ZOOM_OUT) / (SCALEDOWN_ZOOM_IN - SCALEDOWN_ZOOM_OUT) * (scaledownFactor - SCALEDOWN_ZOOM_OUT));
+      } else {
+        maximumSharpness = SHARPNESS_ZOOM_OUT;
+      }
+
+      for (int i=0; i < scaledownImages.length; i++)
+      {
+        scaledownFactor /= bufferScaledownFactor;
+        if (scaledownFactor <= maximumSharpness)
+        {
+          return scaledownImages[i];
+        }
+      }
+      return scaledownImages[scaledownImages.length - 1];
     }
 
     public ImageProcessingThread(GraphicSet objects, LaserProfile p)
@@ -226,6 +261,31 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
 
     private void render() throws InterruptedException
     {
+      class ImageScaler
+      {
+        Image scaleDown(Image im, double factor) {
+          int width = Math.max(1, (int) (im.getWidth(null) / factor));
+          int height = Math.max(1, (int) (im.getHeight(null) / factor));
+          /*
+          In theory, this could also be done using Graphics2D, but then antialiasing does not work :-(
+
+          Image result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+          Graphics2D g = (Graphics2D) result.getGraphics().create();
+          g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+          g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+          g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+          g.drawImage(im, 0, 0, width, height, null);
+          g.setColor(Color.gray);
+          g.fillRect(0,0,100,100);
+          g.setColor(Color.green);
+          g.drawString("W:" + width, 100, 100);
+          g.dispose();
+          return result;
+          */
+          return im.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        }
+      }
+      var imagescaler = new ImageScaler();
       buffer = null;
       if (p instanceof RasterProfile)
       {
@@ -237,11 +297,15 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
         Raster3dProfile rp = (Raster3dProfile) p;
         buffer = rp.getRenderedPreview(set, VisicutModel.getInstance().getMaterial(), mm2laserPx, this);
       }
-      if (Thread.interrupted()) {
-        throw new InterruptedException();
+      scaledownImages[0] = buffer;
+      for (int i=1; i < scaledownImages.length; i++)
+      {
+        if (Thread.interrupted()) {
+          throw new InterruptedException();
+        }
+        scaledownImages[i] = imagescaler.scaleDown(scaledownImages[i-1], bufferScaledownFactor);
+        progressChanged(null, (int)  (100 + (100/PROGRESS_PART_RENDERING - 100) * (i / (scaledownImages.length - 1.))));
       }
-      scaledownImgFine = buffer.getScaledInstance(Math.max(1, (int) (buffer.getWidth()/bufferScaledownFactorFine)), -1, Image.SCALE_SMOOTH);
-      scaledownImgCoarse = scaledownImgFine.getScaledInstance(Math.max(1, (int) (buffer.getWidth()/bufferScaledownFactorCoarse)), -1, Image.SCALE_SMOOTH);
     }
 
     @Override
@@ -271,8 +335,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
               JOptionPane.showMessageDialog(PreviewPanel.this, java.util.ResourceBundle.getBundle("de.thomas_oster/visicut/gui/beans/resources/PreviewPanel").getString("ERROR: NOT ENOUGH MEMORY PLEASE START THE PROGRAM FROM THE PROVIDED SHELL SCRIPTS INSTEAD OF RUNNING THE .JAR FILE"), java.util.ResourceBundle.getBundle("de.thomas_oster/visicut/gui/beans/resources/PreviewPanel").getString("ERROR: OUT OF MEMORY"), JOptionPane.ERROR_MESSAGE);
             };
             this.buffer = null;
-            this.scaledownImgCoarse = null;
-            this.scaledownImgFine = null;
+            Arrays.fill(scaledownImages, null);
             return;
           }
           logger.log(Level.FINE, "Thread finished");
@@ -280,8 +343,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
         } catch (InterruptedException ex) {
           logger.log(Level.FINE, "Thread cancelled.");
           this.buffer = null;
-          this.scaledownImgCoarse = null;
-          this.scaledownImgFine = null;
+          Arrays.fill(scaledownImages, null);
         }
         PreviewPanel.this.repaint();
       }
@@ -294,10 +356,13 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       this.interrupt();
     }
 
+    /// which part of the total progress is reserved for rendering?
+    /// (the rest is for image scaling)
+    private final double PROGRESS_PART_RENDERING = 0.6;
     public int getProgress()
     {
       // Workaround: computing scaledownImg is not part of the shown progress
-      return (int) (this.progress*0.901);
+      return (int) (this.progress*PROGRESS_PART_RENDERING);
     }
 
     public void progressChanged(Object source, int percent)
@@ -748,30 +813,16 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
                         laserPxToPreviewPx.translate(procThread.getBoundingBox().x, procThread.getBoundingBox().y);
                         gg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                         gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                        gg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                        gg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                        gg.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
 
                         BufferedImage img = procThread.getImage();
                         double zoomScale = Math.min(laserPxToPreviewPx.getScaleX(), laserPxToPreviewPx.getScaleY());
-                        // choose the largest image with a resolution less than screenSize/allowedAliasingFactor.
-                        // allowedAliasingFactor controls the trade-off between
-                        // sharper display, but more aliasing, (low factor),
-                        // and smooth but blurry display (high factor).
-                        // In theory, 1 would be perfect; in practice other values may be better.
-                        double allowedAliasingFactor = 1.;
-                        if (zoomScale < allowedAliasingFactor/ImageProcessingThread.bufferScaledownFactorFine) {
-                          Image scaledImg = procThread.getScaledownImageCoarse();
-                          AffineTransform scaledownPxToPreviewPx = AffineTransform.getScaleInstance(((double) img.getWidth())/scaledImg.getWidth(null), ((double) img.getHeight())/scaledImg.getHeight(null));
-                          scaledownPxToPreviewPx.preConcatenate(laserPxToPreviewPx);
-                          gg.drawImage(scaledImg, scaledownPxToPreviewPx, null);
-                        }
-                        else if (zoomScale < allowedAliasingFactor) {
-                          Image scaledImg = procThread.getScaledownImageFine();
-                          AffineTransform scaledownPxToPreviewPx = AffineTransform.getScaleInstance(((double) img.getWidth())/scaledImg.getWidth(null), ((double) img.getHeight())/scaledImg.getHeight(null));
-                          scaledownPxToPreviewPx.preConcatenate(laserPxToPreviewPx);
-                          gg.drawImage(scaledImg, scaledownPxToPreviewPx, null);
-                        } else {
-                          gg.drawImage(img, laserPxToPreviewPx, null);
-                        }
+                        // choose the appropriately scaled-down preview image
+                        Image scaledImg = procThread.getScaledownImage(1/zoomScale);
+                        AffineTransform scaledownPxToPreviewPx = AffineTransform.getScaleInstance(((double) img.getWidth())/scaledImg.getWidth(null), ((double) img.getHeight())/scaledImg.getHeight(null));
+                        scaledownPxToPreviewPx.preConcatenate(laserPxToPreviewPx);
+                        gg.drawImage(scaledImg, scaledownPxToPreviewPx, null);
                       }
                     }
                   }
