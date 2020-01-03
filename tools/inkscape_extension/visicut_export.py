@@ -88,7 +88,7 @@ for arg in sys.argv[1:]:
             pass
             # VISICUTBIN=arg[13:]
         elif len(arg) >= 9 and arg[0:9] == "--import=":
-            IMPORT = "true" in str(arg[9:])
+            IMPORT = "true" in arg[9:]
         else:
             arguments += [arg]
     else:
@@ -119,12 +119,12 @@ def which(program, extraPaths=[]):
                     "Please report this bug on https://github.com/t-oster/VisiCut/issues\n\n"
                     "For a quick fix: Set VISICUTDIR and INKSCAPEDIR in "
                     "{2}"
-                    .format(str(program), str(pathlist), os.path.realpath(__file__)))
+                    .format(repr(program), repr(pathlist), os.path.realpath(__file__)))
 
 
 def inkscape_version():
     """determine if Inkscape is version 0 or 1"""
-    version = subprocess.check_output([INKSCAPEBIN, "--version"],  stderr=DEVNULL)
+    version = subprocess.check_output([INKSCAPEBIN, "--version"],  stderr=DEVNULL).decode('ASCII', 'ignore')
     assert version.startswith("Inkscape ")
     if version.startswith("Inkscape 0"):
         return 0
@@ -232,13 +232,14 @@ def get_original_filename(filename):
                     # something is wrong with this line
                     break
                 # unescape XML string
+
                 docname = docname.replace('&lt;', '<')
                 docname = docname.replace('&gt;', '>')
                 docname = docname.replace('&quot;', '"')
                 docname = docname.replace('&amp;', '&')
 
                 # normalize accented characters (äöü -> aou)
-                docname = unicodedata.normalize('NFKD', docname).encode('ASCII', 'ignore')
+                docname = unicodedata.normalize('NFKD', docname).encode('ASCII', 'ignore').decode('ASCII')
                 break
 
     if not docname:
@@ -285,7 +286,7 @@ try:
         s.send(dest_filename + "\n")
     s.close()
     sys.exit(0)
-except SystemExit, e:
+except SystemExit as e:
     sys.exit(e)
 except:
     pass
