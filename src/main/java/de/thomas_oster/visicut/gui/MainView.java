@@ -1712,6 +1712,26 @@ public class MainView extends javax.swing.JFrame
     {
       Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
     }
+
+    if (!PreferencesManager.getInstance().getPreferences().isUseFilenamesForJobs())
+    {
+      // If we don't UseFilenamesForJobs implicitly, then we suggest a shortened job name in the prefix.
+      String jobName = file.getName();
+      if (jobName != null)
+      {
+	jobName = jobName.split("\\.", 2)[0];		// regexp split at the first dot, to remove all suffixes.
+        if (jobName.length() > 12)
+	{
+          jobName = jobName.substring(0, 8) + "*" + jobName.substring(jobName.length()-3, jobName.length());
+	}
+	this.jTextFieldJobName.setText(jobName);
+      }
+      else
+      {
+	this.jTextFieldJobName.setText("");
+      }
+    }
+
     new Thread()
     {
 
@@ -1933,7 +1953,6 @@ public class MainView extends javax.swing.JFrame
         execute = false;
       }
     }
-    this.jTextFieldJobName.setText("");
     this.calculateTimeButton.setEnabled(execute);
     this.executeJobButton.setEnabled(execute);
     this.executeJobMenuItem.setEnabled(execute);
@@ -2058,18 +2077,17 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     String jobname = "(unnamed job)";
     try
     {
+      // CAUTION: keep in sync with job name construction below in run()
       MainView.this.warningPanel.removeAllWarnings();
       jobnumber++;
-      String nameprefix = MainView.this.jTextFieldJobName.getText();
-      //
-      // Most simplistic implementation of user editable job names:
-      //  - we just add a prefix, if any. (This is okay for Zing lasers that only display 16 chars.)
-      // Todo: Better compute the next proposed job name in e.g. refreshExecuteButtons() ahead of time
-      // and show it in jTextFieldJobName near the Execute button. When we come here, just retrieve the
-      // (possibly edited) name from there.
-      //
+      String nameprefix = MainView.this.jTextFieldJobName.getText().trim();
       String prefix = MainView.this.visicutModel1.getSelectedLaserDevice().getJobPrefix();
-      jobname = nameprefix + prefix + jobnumber;
+      if (nameprefix.length() > 0)
+      {
+        jobname = nameprefix + " " + jobnumber;
+      } else {
+        jobname = prefix + jobnumber;
+      }
       if (PreferencesManager.getInstance().getPreferences().isUseFilenamesForJobs())
       {
         //use filename of the PLF file or any part with a filename as job name
@@ -2089,7 +2107,12 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
         }
         if (f != null)
         {
-          jobname = nameprefix + f.getName();
+          if (nameprefix.length() > 0)
+          {
+            jobname = nameprefix + " " + f.getName();
+          } else {
+            jobname = f.getName();
+          }
         }
       }
     }
@@ -2199,18 +2222,17 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
           String jobname = "(unnamed job)";
           try
           {
+	    // CAUTION: keep in sync with job name construction in getJobName()
             MainView.this.warningPanel.removeAllWarnings();
             jobnumber++;
-            String nameprefix = MainView.this.jTextFieldJobName.getText();
-            //
-            // Most simplistic implementation of user editable job names:
-            //  - we just add a prefix, if any. (This is okay for Zing lasers that only display 16 chars.)
-            // Todo: Better compute the next proposed job name in e.g. refreshExecuteButtons() ahead of time 
-            // and show it in jTextFieldJobName near the Execute button. When we come here, just retrieve the 
-            // (possibly edited) name from there.
-            //
+            String nameprefix = MainView.this.jTextFieldJobName.getText().trim();
             String prefix = MainView.this.visicutModel1.getSelectedLaserDevice().getJobPrefix();
-            jobname = nameprefix + prefix + jobnumber;
+            if (nameprefix.length() > 0)
+            {
+              jobname = nameprefix + " " + jobnumber;
+            } else {
+              jobname = prefix + jobnumber;
+            }
             if (PreferencesManager.getInstance().getPreferences().isUseFilenamesForJobs())
             {
               //use filename of the PLF file or any part with a filename as job name
@@ -2230,7 +2252,12 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
               }
               if (f != null)
               {
-                jobname = nameprefix + f.getName();
+                if (nameprefix.length() > 0)
+                {
+                  jobname = nameprefix + " " + f.getName();
+                } else {
+                  jobname = f.getName();
+                }
               }
             }
             List<String> warnings = new LinkedList<String>();
@@ -3669,7 +3696,6 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
       executeJobButton.setEnabled(!disable);
       executeJobMenuItem.setEnabled(!disable);
       calculateTimeButton.setEnabled(!disable);
-      jTextFieldJobName.setText("");
 
       // Message is automatically removed and closed, therefore no close button
       Message m = new Message("Info", bundle.getString("QR_CODE_DETECTION_GUI_DISABLE_TEXT"), Message.Type.INFO, new de.thomas_oster.uicomponents.warnings.Action[]
