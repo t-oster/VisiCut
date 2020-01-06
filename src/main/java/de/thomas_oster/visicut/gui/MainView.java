@@ -607,15 +607,15 @@ public class MainView extends javax.swing.JFrame
         this.laserCutterComboBox.setSelectedItem(ld);
       }
     }
-    //hide lasercutter combo box if only one lasercutter available
+    //disable (but show) lasercutter combo box if only one lasercutter available
     if (this.laserCutterComboBox.getItemCount() == 1)
     {
       this.laserCutterComboBox.setSelectedIndex(0);
-      this.laserCutterComboBox.setVisible(false);
-      this.jLabel9.setVisible(false);
+      this.laserCutterComboBox.setEnabled(false);
     }
     else
     {
+      this.laserCutterComboBox.setEnabled(true);
       this.laserCutterComboBox.setVisible(true);
       this.jLabel9.setVisible(true);
     }
