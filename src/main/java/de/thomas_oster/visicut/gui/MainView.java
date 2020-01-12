@@ -1777,15 +1777,19 @@ public class MainView extends javax.swing.JFrame
 
     if ((modification.oldX != modification.newX) || (modification.oldY != modification.newY))
     {
-      text += "\n" + bundle.getString("OLDXY") + ": (" + modification.oldX + "," + modification.oldY + ")";
-      text += "\n" + bundle.getString("CHANGED_TO") + ": (" + modification.newX + "," + modification.newY + ")";
+      final String FORMAT_XY = ": (%.1f mm, %.1f mm)";
+      text += "\n" + bundle.getString("OLDXY") + String.format(FORMAT_XY, modification.oldX, modification.oldY);
+      text += "\n" + bundle.getString("CHANGED_TO") + String.format(FORMAT_XY, modification.newX, modification.newY);;
     }
 
     if ((modification.oldWidth != modification.newWidth) || (modification.oldHeight != modification.newHeight))
     {
-      text += "\n" + bundle.getString("OLDWH") + ": (" + modification.oldWidth + "," + modification.oldHeight + ")";
-      text += "\n" + bundle.getString("CHANGED_TO") + ": (" + modification.newWidth + "," + modification.newHeight + ")";
-      text += "\n scaling factor: " + modification.factor;
+      final String FORMAT_WH = ": %.1f mm × %.1f mm";
+      text += "\n" + bundle.getString("OLDWH") + String.format(FORMAT_WH, modification.oldWidth, modification.oldHeight);
+      text += "\n" + bundle.getString("CHANGED_TO") + String.format(FORMAT_WH, modification.newWidth, modification.newHeight);
+      int significantDigits = 6;
+      int formatDigits = significantDigits - (int) Math.ceil(Math.log10(modification.factor * 100.));
+      text += "\n" + bundle.getString("SCALED_DOWN_TO") + String.format(" %." + formatDigits + "f", modification.factor * 100.) + " %";
     }
 
 
