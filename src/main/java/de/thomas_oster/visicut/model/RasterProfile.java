@@ -45,6 +45,7 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * This Class represents a profile, describing
@@ -166,6 +167,13 @@ public class RasterProfile extends LaserProfile
     final Color engraveColor = material.getEngraveColor();
     if (bb != null && bb.width > 0 && bb.height > 0)
     {
+      if (objects.isEmpty())
+      {
+        // Workaround: this should not happen.
+        // Happened before because GraphicSet.iterator().remove() didn't clear the bounding box cache
+        Logger.getLogger(this.getClass().getName()).warning("rendering called for empty set - this is a weird bug and should not happen.");
+        return null;
+      }
       final BufferedImage scaledImg = renderObjects(objects, mm2px, bb);
       BufferedImageAdapter ad = new BufferedImageAdapter(scaledImg, invertColors);
       ad.setColorShift(this.getColorShift());

@@ -243,6 +243,14 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
         logger.log(Level.SEVERE, "invalid BoundingBox");
         throw new IllegalArgumentException("Boundingbox zero");
       }
+      this.setUncaughtExceptionHandler(new UncaughtExceptionHandler()
+      {
+        @Override
+        public void uncaughtException(Thread arg0, Throwable arg1)
+        {
+          arg1.printStackTrace();
+        }
+      });
     }
 
     /**
@@ -264,6 +272,10 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       class ImageScaler
       {
         Image scaleDown(Image im, double factor) {
+          if (im == null)
+          {
+            return null;
+          }
           int width = Math.max(1, (int) (im.getWidth(null) / factor));
           int height = Math.max(1, (int) (im.getHeight(null) / factor));
           /*
@@ -820,9 +832,12 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
                         double zoomScale = Math.min(laserPxToPreviewPx.getScaleX(), laserPxToPreviewPx.getScaleY());
                         // choose the appropriately scaled-down preview image
                         Image scaledImg = procThread.getScaledownImage(1/zoomScale);
-                        AffineTransform scaledownPxToPreviewPx = AffineTransform.getScaleInstance(((double) img.getWidth())/scaledImg.getWidth(null), ((double) img.getHeight())/scaledImg.getHeight(null));
-                        scaledownPxToPreviewPx.preConcatenate(laserPxToPreviewPx);
-                        gg.drawImage(scaledImg, scaledownPxToPreviewPx, null);
+                        if (scaledImg != null)
+                        {
+                          AffineTransform scaledownPxToPreviewPx = AffineTransform.getScaleInstance(((double) img.getWidth())/scaledImg.getWidth(null), ((double) img.getHeight())/scaledImg.getHeight(null));
+                          scaledownPxToPreviewPx.preConcatenate(laserPxToPreviewPx);
+                          gg.drawImage(scaledImg, scaledownPxToPreviewPx, null);
+                        }
                       }
                     }
                   }

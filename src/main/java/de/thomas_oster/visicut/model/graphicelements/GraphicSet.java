@@ -23,9 +23,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -219,6 +221,86 @@ public class GraphicSet extends LinkedList<GraphicObject>
     }
     this.interestingAttributesCache = null;
     return super.remove(o);
+
+  }
+
+  @Override
+  public ListIterator<GraphicObject> listIterator(int index)
+  {
+    ListIterator<GraphicObject> it = super.listIterator(index);
+    ListIterator<GraphicObject> newIt = new ListIterator<GraphicObject>()
+    {
+      @Override
+      public boolean hasNext()
+      {
+        return it.hasNext();
+      }
+
+      @Override
+      public GraphicObject next()
+      {
+        return it.next();
+      }
+
+      @Override
+      public boolean hasPrevious()
+      {
+        return it.hasPrevious();
+      }
+
+      @Override
+      public GraphicObject previous()
+      {
+        return it.previous();
+      }
+
+      @Override
+      public int nextIndex()
+      {
+        return it.nextIndex();
+      }
+
+      @Override
+      public int previousIndex()
+      {
+        return it.previousIndex();
+      }
+
+      @Override
+      public void remove()
+      {
+        it.remove();
+        GraphicSet.this.clearCache();
+      }
+
+      @Override
+      public void set(GraphicObject arg0)
+      {
+        it.set(arg0);
+        GraphicSet.this.clearCache();
+      }
+
+      @Override
+      public void add(GraphicObject arg0)
+      {
+        it.add(arg0);
+        GraphicSet.this.clearCache();
+      }
+    };
+    return newIt;
+  }
+
+
+
+
+  /**
+   * Reset internal caches.
+   */
+  private void clearCache()
+  {
+    this.boundingBoxCache = null;
+    this.attributesCache = null;
+    this.interestingAttributesCache = null;
   }
   
   @Override
