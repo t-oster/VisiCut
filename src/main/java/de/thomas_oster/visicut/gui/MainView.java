@@ -697,9 +697,6 @@ public class MainView extends javax.swing.JFrame
     filesDropSupport1 = new de.thomas_oster.uicomponents.FilesDropSupport();
     saveFileChooser = new javax.swing.JFileChooser();
     buttonGroup1 = new javax.swing.ButtonGroup();
-    jScrollPane2 = new javax.swing.JScrollPane();
-    previewPanel = new de.thomas_oster.visicut.gui.beans.PreviewPanel();
-    warningPanel = new de.thomas_oster.uicomponents.warnings.WarningPanel();
     jPanel1 = new javax.swing.JPanel();
     jButton2 = new javax.swing.JButton();
     jButton1 = new javax.swing.JButton();
@@ -738,6 +735,10 @@ public class MainView extends javax.swing.JFrame
     calculateTimeButton = new javax.swing.JButton();
     jLabel10 = new javax.swing.JLabel();
     timeLabel = new javax.swing.JLabel();
+    jPanel6 = new javax.swing.JPanel();
+    warningPanel = new de.thomas_oster.uicomponents.warnings.WarningPanel();
+    jScrollPane2 = new javax.swing.JScrollPane();
+    previewPanel = new de.thomas_oster.visicut.gui.beans.PreviewPanel();
     menuBar = new javax.swing.JMenuBar();
     fileMenu = new javax.swing.JMenu();
     newMenuItem = new javax.swing.JMenuItem();
@@ -813,29 +814,6 @@ public class MainView extends javax.swing.JFrame
     org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance().getContext().getResourceMap(MainView.class);
     setTitle(resourceMap.getString("Form.title")); // NOI18N
     setName("Form"); // NOI18N
-
-    jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanel1.border.title"))); // NOI18N
-    jScrollPane2.setName("jScrollPane2"); // NOI18N
-    jScrollPane2.setWheelScrollingEnabled(false);
-
-    previewPanel.setName("previewPanel"); // NOI18N
-    de.thomas_oster.visicut.gui.PreviewPanelKeyboardMouseHandler ppMouseHandler = new de.thomas_oster.visicut.gui.PreviewPanelKeyboardMouseHandler(this.previewPanel);
-
-    javax.swing.GroupLayout previewPanelLayout = new javax.swing.GroupLayout(previewPanel);
-    previewPanel.setLayout(previewPanelLayout);
-    previewPanelLayout.setHorizontalGroup(
-      previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 0, Short.MAX_VALUE)
-    );
-    previewPanelLayout.setVerticalGroup(
-      previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 0, Short.MAX_VALUE)
-    );
-
-    jScrollPane2.setViewportView(previewPanel);
-
-    warningPanel.setName("warningPanel"); // NOI18N
-    warningPanel.setPreferredSize(new java.awt.Dimension(276, 123));
 
     jPanel1.setMinimumSize(new java.awt.Dimension(0, 0));
     jPanel1.setName("jPanel1"); // NOI18N
@@ -1225,6 +1203,53 @@ public class MainView extends javax.swing.JFrame
         .addComponent(jScrollPane1)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap())
+    );
+
+    jPanel6.setName("jPanel6"); // NOI18N
+
+    warningPanel.setName("warningPanel"); // NOI18N
+
+    jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanel1.border.title"))); // NOI18N
+    jScrollPane2.setName("jScrollPane2"); // NOI18N
+    jScrollPane2.setWheelScrollingEnabled(false);
+
+    previewPanel.setName("previewPanel"); // NOI18N
+    de.thomas_oster.visicut.gui.PreviewPanelKeyboardMouseHandler ppMouseHandler = new de.thomas_oster.visicut.gui.PreviewPanelKeyboardMouseHandler(this.previewPanel);
+
+    javax.swing.GroupLayout previewPanelLayout = new javax.swing.GroupLayout(previewPanel);
+    previewPanel.setLayout(previewPanelLayout);
+    previewPanelLayout.setHorizontalGroup(
+      previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGap(0, 0, Short.MAX_VALUE)
+    );
+    previewPanelLayout.setVerticalGroup(
+      previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGap(0, 0, Short.MAX_VALUE)
+    );
+
+    jScrollPane2.setViewportView(previewPanel);
+
+    javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+    jPanel6.setLayout(jPanel6Layout);
+    jPanel6Layout.setHorizontalGroup(
+      jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel6Layout.createSequentialGroup()
+        .addGap(0, 0, 0)
+        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addGroup(jPanel6Layout.createSequentialGroup()
+            .addGap(2, 2, 2)
+            .addComponent(jScrollPane2)))
+        .addGap(0, 0, 0))
+    );
+    jPanel6Layout.setVerticalGroup(
+      jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel6Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(jScrollPane2)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addGap(0, 0, 0))
     );
 
@@ -1637,17 +1662,15 @@ public class MainView extends javax.swing.JFrame
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-        .addGap(0, 0, 0)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addGap(2, 2, 2)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 542, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-              .addComponent(jScrollPane2))))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 542, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addGroup(layout.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addGap(0, 0, 0))
@@ -1655,18 +1678,15 @@ public class MainView extends javax.swing.JFrame
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addGap(0, 0, 0)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGap(8, 8, 8)
-            .addComponent(jScrollPane2)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
           .addGroup(layout.createSequentialGroup()
-            .addGap(12, 12, 12)
+            .addContainerGap()
             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         .addContainerGap())
     );
@@ -3433,6 +3453,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   private javax.swing.JPanel jPanel3;
   private javax.swing.JPanel jPanel4;
   private javax.swing.JPanel jPanel5;
+  private javax.swing.JPanel jPanel6;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JSeparator jSeparator1;
