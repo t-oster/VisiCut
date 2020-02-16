@@ -42,6 +42,7 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -58,6 +59,7 @@ import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -74,6 +76,14 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   private double bedWidth = 600;
   private double bedHeight = 300;
   private boolean originBottom = false;
+
+  // Variables for storing a cached version of the background (camera) image transformed to the current view.
+  // Update flag shared across threads by paintComponent() and propertyChange():
+  protected AtomicBoolean scaledBackgroundCacheNeedsUpdate = new AtomicBoolean(true);
+  // Cache storage - only used in paintComponent():
+  protected BufferedImage scaledBackgroundCacheImage;
+  protected Rectangle scaledBackgroundCacheVisibleRect;
+  protected AffineTransform scaledBackgroundCacheTransform;
 
   public PreviewPanel()
   {
@@ -99,6 +109,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     if (VisicutModel.PROP_SELECTEDLASERDEVICE.equals(pce.getPropertyName()))
     {
       updateBedSize((LaserDevice) pce.getNewValue());
+      scaledBackgroundCacheNeedsUpdate.set(true);
       repaint();
     }
     else if (VisicutModel.PROP_SELECTEDPART.equals(pce.getPropertyName()))
@@ -134,8 +145,12 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       this.clearCache();
       repaint();
     }
-    else if (VisicutModel.PROP_BACKGROUNDIMAGE.equals(pce.getPropertyName())
-      || VisicutModel.PROP_STARTPOINT.equals(pce.getPropertyName())
+    else if (VisicutModel.PROP_BACKGROUNDIMAGE.equals(pce.getPropertyName()))
+    {
+      scaledBackgroundCacheNeedsUpdate.set(true);
+      repaint();
+    }
+    else if (VisicutModel.PROP_STARTPOINT.equals(pce.getPropertyName())
       || VisicutModel.PROP_PLF_PART_ADDED.equals(pce.getPropertyName()))
     {
       repaint();
@@ -639,6 +654,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
   @Override
   protected void paintComponent(Graphics g)
   {
+
     super.paintComponent(g);
     if (g instanceof Graphics2D)
     {
@@ -651,13 +667,71 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
       gg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
       gg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
       BufferedImage backgroundImage = VisicutModel.getInstance().getBackgroundImage();
-      if (backgroundImage != null && showBackgroundImage && VisicutModel.getInstance().getSelectedLaserDevice() != null)
+      if (backgroundImage != null && showBackgroundImage &&
+        VisicutModel.getInstance().getSelectedLaserDevice() != null &&
+        VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration() != null
+        )
       {
-
-        if (VisicutModel.getInstance().getSelectedLaserDevice().getCameraCalibration() != null)
+        // Draw the background image with an appropriate camera transformation.
+        // The following is a cached version of:
+        // gg.drawRenderedImage(backgroundImage, this.updateBackgroundImageToPxTransform(backgroundImage));
+        // If you suspect a bug, set the environment variable VISICUT_NO_PREVIEW_CACHE=1 to disable all caching.
+        AffineTransform backgroundToVisibleRectTransform = AffineTransform.getTranslateInstance(-r.x, -r.y);
+        backgroundToVisibleRectTransform.concatenate(this.updateBackgroundImageToPxTransform(backgroundImage));
+        if (!r.equals(scaledBackgroundCacheVisibleRect) || !backgroundToVisibleRectTransform.equals(scaledBackgroundCacheTransform))
         {
-          gg.drawRenderedImage(backgroundImage, this.updateBackgroundImageToPxTransform(backgroundImage));
+          // invalidate cache - visible region or zoom level changed
+          scaledBackgroundCacheNeedsUpdate.set(true);
         }
+         // atomic (threadsafe) version of: if (needsUpdate) { needsUpdate=false; .... } else { .... }
+        if (scaledBackgroundCacheNeedsUpdate.compareAndSet(true, false) ||
+          "1".equals(System.getenv("VISICUT_NO_PREVIEW_CACHE")))
+        {
+          // cache needs update
+          // scale down background image
+          // create a buffer for the currently visible rectangle
+          // NOTE: For high-dpi displays, the Graphics2D pixels aren't the same as the device pixels!
+          //       The Graphics2D (gg) we get has a scaling transformation (typically 2x for high-dpi and 1x for low-dpi).
+          // compute width/height in actual device pixels
+          int canvasWidth = (int) (r.width * gg.getTransform().getScaleX());
+          int canvasHeight = (int) (r.height * gg.getTransform().getScaleY());
+          if (canvasWidth == 0 || canvasHeight == 0) {
+            scaledBackgroundCacheNeedsUpdate.set(true);
+            return;
+          }
+          scaledBackgroundCacheImage = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(canvasWidth, canvasHeight);
+          Graphics2D gBackground = scaledBackgroundCacheImage.createGraphics();
+          gBackground.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+          gBackground.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+          if (canvasWidth * canvasHeight > 2100 * 1100 &&
+              Math.max(backgroundToVisibleRectTransform.getScaleX(), backgroundToVisibleRectTransform.getScaleY()) <= 3)
+          {
+            // WORKAROUND: disable interpolation on high-DPI machines to speed up rendering, except for large zoom levels
+            // otherwise, there is annoying lag when dragging an object while the camera image is updated.
+            gBackground.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+          }
+          gBackground.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+          // Ideally, the following rendering operation should be done asynchronously in another thread.
+          // This isn't as easy as it sounds, because we're in the middle of paintComponent() and can't just pause and continue painting later.
+          // Also, we need to pass the desired transformation and clipping, which depends on pan and zoom in this component, to the rendering thread.
+          gBackground.setTransform(AffineTransform.getScaleInstance(gg.getTransform().getScaleX(), gg.getTransform().getScaleY()));
+          gBackground.drawRenderedImage(backgroundImage, backgroundToVisibleRectTransform);
+          // store result to cache
+          scaledBackgroundCacheVisibleRect = r;
+          scaledBackgroundCacheTransform = backgroundToVisibleRectTransform;
+        } else {
+          // cache is up to date -- use cached scaled-down background image
+        }
+        AffineTransform oldTransform = gg.getTransform();
+        System.out.println(oldTransform);
+        // switch to drawing raw pixels, even on high-dpi screens.
+        // Round the translation to whole pixels to avoid expensive interpolation.
+        AffineTransform drawImageTransform = AffineTransform.getTranslateInstance(Math.floor(oldTransform.getTranslateX() + oldTransform.getScaleX() * r.x), Math.floor(oldTransform.getTranslateY() + oldTransform.getScaleY() * r.y));
+        gg.setTransform(drawImageTransform);
+        System.out.println(drawImageTransform);
+        gg.drawRenderedImage(scaledBackgroundCacheImage, null);
+        // restore original transformation
+        gg.setTransform(oldTransform);
       }
       Rectangle box = Helper.toRect(Helper.transform(
           new Rectangle2D.Double(0, 0, this.bedWidth, this.bedHeight),
