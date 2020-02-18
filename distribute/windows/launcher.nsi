@@ -50,9 +50,9 @@ Section ""
   ; maximumJavaRAM= systemRAM / 2
   IntOp $maximumJavaRAM $s_SystemMemoryMB / 2
 
-  ; limit maximumJavaRAM to 4GB (should be enough for everything)
-  ${If} $maximumJavaRAM > 4096
-    StrCpy $maximumJavaRAM "4096"
+  ; limit maximumJavaRAM to 2GB (same as Linux launcher, should be enough for everything)
+  ${If} $maximumJavaRAM > 2048
+    StrCpy $maximumJavaRAM "2048"
   ${EndIf}
   DetailPrint "choosing java RAM limit = $maximumJavaRAM MB"
 
