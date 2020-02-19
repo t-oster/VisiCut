@@ -24,3 +24,7 @@
 /lib/nbproject/private/
 /lib/build/
 /target/
+
+# AppImage builds
+.appimagecraft-build*/
+*.AppImage
