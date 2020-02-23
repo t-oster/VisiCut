@@ -88,13 +88,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.net.InetAddress;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -119,6 +115,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import org.jdesktop.application.Action;
 
@@ -2171,6 +2168,43 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 }//GEN-LAST:event_aboutMenuItemActionPerformed
   private int jobnumber = 0;
 
+  private String generateJobName() {
+    jobnumber++;
+    String nameprefix = jTextFieldJobName.getText();
+    //
+    // Most simplistic implementation of user editable job names:
+    //  - we just add a prefix, if any. (This is okay for Zing lasers that only display 16 chars.)
+    // Todo: Better compute the next proposed job name in e.g. refreshExecuteButtons() ahead of time 
+    // and show it in jTextFieldJobName near the Execute button. When we come here, just retrieve the 
+    // (possibly edited) name from there.
+    //
+    String prefix = visicutModel1.getSelectedLaserDevice().getJobPrefix();
+    String jobname = nameprefix + prefix + jobnumber;
+    if (PreferencesManager.getInstance().getPreferences().isUseFilenamesForJobs())
+    {
+      //use filename of the PLF file or any part with a filename as job name
+      PlfFile plf = visicutModel1.getPlfFile();
+      List<PlfPart> plfParts = visicutModel1.getPlfFile().getPartsCopy();
+      File f = plf.getFile();
+      if (f == null)
+      {
+        for (PlfPart p : plfParts)
+        {
+          if (p.getSourceFile() != null)
+          {
+            f = p.getSourceFile();
+            break;
+          }
+        }
+      }
+      if (f != null)
+      {
+        jobname = nameprefix + f.getName();
+      }
+    }
+    return jobname;
+  }
+  
   private synchronized void executeJob()
   {
     try
@@ -2191,113 +2225,85 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       setLaserJobInProgress(true);
       laserJobStarted();
 
-      new Thread()
+      progressBar.setMinimum(0);
+      progressBar.setMaximum(100);
+      progressBar.setValue(1);
+      progressBar.setStringPainted(true);
+      executeJobButton.setEnabled(false);
+      executeJobMenuItem.setEnabled(false);
+      warningPanel.removeAllWarnings();
+      String jobname = generateJobName();
+      ProgressListener pl = new ProgressListener()
       {
+        
+        @Override
+        public void progressChanged(Object o, int i)
+        {
+          SwingUtilities.invokeLater(() -> {
+            MainView.this.progressBar.setValue(i);
+            MainView.this.progressBar.repaint();
+          });
+        }
 
         @Override
-        public void run()
+        public void taskChanged(Object o, String string)
         {
-          ProgressListener pl = new ProgressListener()
-          {
-
-            public void progressChanged(Object o, int i)
-            {
-              ThreadUtils.assertInGUIThread(); // FIXME: this causes warnings, and they are right
-              MainView.this.progressBar.setValue(i);
-              MainView.this.progressBar.repaint();
-            }
-
-            public void taskChanged(Object o, String string)
-            {
-              ThreadUtils.assertInGUIThread(); // FIXME: this causes warnings, and they are right
-              MainView.this.progressBar.setString(string);
-            }
-          };
-          ThreadUtils.assertInGUIThread(); // FIXME: this causes warnings, and they are right
-          MainView.this.progressBar.setMinimum(0);
-          MainView.this.progressBar.setMaximum(100);
-          MainView.this.progressBar.setValue(1);
-          MainView.this.progressBar.setStringPainted(true);
-          MainView.this.executeJobButton.setEnabled(false);
-          MainView.this.executeJobMenuItem.setEnabled(false);
-          String jobname = "(unnamed job)";
+          SwingUtilities.invokeLater(() -> {
+            MainView.this.progressBar.setString(string);
+          });
+        }
+      };
+      new Thread(() -> {
           try
           {
-            MainView.this.warningPanel.removeAllWarnings();
-            jobnumber++;
-            String nameprefix = MainView.this.jTextFieldJobName.getText();
-            //
-            // Most simplistic implementation of user editable job names:
-            //  - we just add a prefix, if any. (This is okay for Zing lasers that only display 16 chars.)
-            // Todo: Better compute the next proposed job name in e.g. refreshExecuteButtons() ahead of time 
-            // and show it in jTextFieldJobName near the Execute button. When we come here, just retrieve the 
-            // (possibly edited) name from there.
-            //
-            String prefix = MainView.this.visicutModel1.getSelectedLaserDevice().getJobPrefix();
-            jobname = nameprefix + prefix + jobnumber;
-            if (PreferencesManager.getInstance().getPreferences().isUseFilenamesForJobs())
-            {
-              //use filename of the PLF file or any part with a filename as job name
-              PlfFile plf = MainView.this.visicutModel1.getPlfFile();
-              List<PlfPart> plfParts = MainView.this.visicutModel1.getPlfFile().getPartsCopy();
-              File f = plf.getFile();
-              if (f == null)
-              {
-                for (PlfPart p : plfParts)
-                {
-                  if (p.getSourceFile() != null)
-                  {
-                    f = p.getSourceFile();
-                    break;
-                  }
-                }
-              }
-              if (f != null)
-              {
-                jobname = nameprefix + f.getName();
-              }
-            }
-            List<String> warnings = new LinkedList<String>();
+            List<String> warnings = new LinkedList<>();
             MainView.this.visicutModel1.sendJob(jobname, pl, cuttingSettings, warnings);
-
-            for (String w : warnings)
-            {
-              dialog.showWarningMessage(w);
-            }
-            MainView.this.progressBar.setValue(0);
-            MainView.this.progressBar.setString("");
-            MainView.this.progressBar.setStringPainted(false);
-            String txt = MainView.this.visicutModel1.getSelectedLaserDevice().getJobSentText();
-            txt = txt.replace("$jobname", jobname).replace("$name", MainView.this.visicutModel1.getSelectedLaserDevice().getName());
-            dialog.showSuccessMessage(txt);
+            
+            String txt = MainView.this.visicutModel1.getSelectedLaserDevice()
+              .getJobSentText()
+              .replace("$jobname", jobname)
+              .replace("$name", MainView.this.visicutModel1.getSelectedLaserDevice().getName());
+            
+            SwingUtilities.invokeLater(() -> {
+              for (String w : warnings)
+              {
+                dialog.showWarningMessage(w);
+              }
+              dialog.showSuccessMessage(txt);
+            });
+            
           }
           catch (Exception ex)
           {
-            if (ex instanceof IllegalJobException && ex.getMessage().startsWith("Illegal Focus value"))
-            {
-              dialog.showWarningMessage(bundle.getString("YOU MATERIAL IS TOO HIGH FOR AUTOMATIC FOCUSSING.PLEASE FOCUS MANUALLY AND SET THE TOTAL HEIGHT TO 0."));
-            }
-            else if (ex instanceof java.net.SocketTimeoutException)
-            {
-              dialog.showErrorMessage(ex, bundle.getString("SOCKETTIMEOUT") + " " + bundle.getString("CHECKSWITCHEDON"));
-            }
-            else if (ex instanceof java.net.UnknownHostException)
-            {
-              dialog.showErrorMessage(ex, bundle.getString("UNKNOWNHOST") + " " + bundle.getString("CHECKSWITCHEDON"));
-            }
-            else
-            {
-              dialog.showErrorMessage(ex);
-            }
+            SwingUtilities.invokeLater(() -> {
+              if (ex instanceof IllegalJobException && ex.getMessage().startsWith("Illegal Focus value"))
+              {
+                dialog.showWarningMessage(bundle.getString("YOU MATERIAL IS TOO HIGH FOR AUTOMATIC FOCUSSING.PLEASE FOCUS MANUALLY AND SET THE TOTAL HEIGHT TO 0."));
+              }
+              else if (ex instanceof java.net.SocketTimeoutException)
+              {
+                dialog.showErrorMessage(ex, bundle.getString("SOCKETTIMEOUT") + " " + bundle.getString("CHECKSWITCHEDON"));
+              }
+              else if (ex instanceof java.net.UnknownHostException)
+              {
+                dialog.showErrorMessage(ex, bundle.getString("UNKNOWNHOST") + " " + bundle.getString("CHECKSWITCHEDON"));
+              }
+              else
+              {
+                dialog.showErrorMessage(ex);
+              }
+            });
           }
-          MainView.this.progressBar.setString("");
-          MainView.this.progressBar.setValue(0);
-          MainView.this.executeJobButton.setEnabled(true);
-          MainView.this.executeJobMenuItem.setEnabled(true);
-          setLaserJobInProgress(false);
-          laserJobStopped();
-        }
-      }.start();
+          SwingUtilities.invokeLater(() -> {
+            MainView.this.progressBar.setString("");
+            MainView.this.progressBar.setValue(0);
+            MainView.this.progressBar.setStringPainted(false);
+            MainView.this.executeJobButton.setEnabled(true);
+            MainView.this.executeJobMenuItem.setEnabled(true);
+            setLaserJobInProgress(false);
+            laserJobStopped();
+          });
+        }).start();
     }
     catch (Exception ex)
     {
