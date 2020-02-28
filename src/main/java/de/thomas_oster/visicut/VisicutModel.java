@@ -79,6 +79,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
+import javax.swing.event.SwingPropertyChangeSupport;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -429,7 +430,7 @@ public class VisicutModel
     }
   }
 
-  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+  private PropertyChangeSupport propertyChangeSupport = new SwingPropertyChangeSupport(this, true);
 
   /**
    * Get PropertyChangeSupport.
