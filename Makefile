@@ -1,5 +1,5 @@
 # list all targets which are not actual files:
-.PHONY: all help jar run libLaserCut clean install uninstall prop2po po2prop
+.PHONY: all help jar run libLaserCut clean dist install uninstall prop2po po2prop
 
 PREFIX?=/usr
 
@@ -10,6 +10,7 @@ help:
 	usage: \n\
 	make (or make jar): compile (includes LibLaserCut) \n\
 	make run: compile and run \n\
+	make dist: build setup files (in ./distribute subdirectory)\n\
 	make clean: remove all compiled files\n\
 	"
 # Note: If you override the splash screen version with $VERSION, you must run 'make clean' because 'make' doesn't understand the dependency on environment variables.
@@ -18,10 +19,12 @@ src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png: splashsourc
 jar: src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png libLaserCut
 	mvn initialize
 	mvn package
+dist:
+	./distribute/distribute.sh
 run: jar
 	java -Xmx2048m -Xms256m -jar target/visicut*full.jar
 libLaserCut:
-	test -f LibLaserCut/pom.xml  || { echo "Error: the LibLaserCut submodule is missing. Try running 'git submodule update --init'."; false; }
+	@test -f LibLaserCut/pom.xml  || { echo "Error: the LibLaserCut submodule is missing. Try running 'git submodule update --init'."; false; }
 	cd LibLaserCut && mvn install
 	cd ..
 clean:
