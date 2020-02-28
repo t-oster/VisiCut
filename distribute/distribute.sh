@@ -74,6 +74,7 @@ then
 	cp -r windows/* wintmp/
 	[ -d wintmp/stream ] || mkdir wintmp/stream
 	cp -r visicut/* wintmp/stream/
+	cp ../src/main/resources/de/thomas_oster/visicut/gui/resources/splash*.png wintmp/stream
 	cp ../tools/inkscape_extension/* wintmp/
 
 	# build setup.exe installer
@@ -130,7 +131,7 @@ then
   cp -r visicut/* "VisiCut.app/Contents/Resources/Java/"
   mkdir "VisiCut.app/Contents/Java"
   mv "VisiCut.app/Contents/Resources/Java/Visicut.jar" "VisiCut.app/Contents/Java/"
-  cp "../src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png" "VisiCut.app/Contents/Resources/Java"
+  cp ../src/main/resources/de/thomas_oster/visicut/gui/resources/splash*.png "VisiCut.app/Contents/Resources/Java"
   echo "Updating Bundle Info"
   cp "VisiCut.app/Contents/Info.plist" .
   cat Info.plist|sed s#VISICUTVERSION#"$VERSION"#g > VisiCut.app/Contents/Info.plist

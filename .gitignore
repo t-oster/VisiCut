@@ -14,6 +14,7 @@
 /distribute/VisiCut.app/
 /settings/
 /src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png
+/src/main/resources/de/thomas_oster/visicut/gui/resources/splash@*.png
 /*-pak
 # Temporary files:
 /distribute/wintmp/

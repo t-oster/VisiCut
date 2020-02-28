@@ -215,7 +215,7 @@
                             <mainClass>de.thomas_oster.visicut.gui.VisicutApp</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <splashscreen-image>de/thomas_oster/visicut/gui/resources/splash.png</splashscreen-image>
+                            <SplashScreen-Image>de/thomas_oster/visicut/gui/resources/splash.png</SplashScreen-Image>
                         </manifestEntries>
                     </archive>
                 </configuration>

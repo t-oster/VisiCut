@@ -79,7 +79,7 @@ Function startVisicut
   StrCpy $2 $maximumJavaRAM
   DetailPrint "java ram: $2 MB"
   StrCpy $VMARGS "-Xms256m -Xmx$2m"
-  StrCpy $VISICUTCOMMAND '"$R0" $VMARGS -classpath "${CLASSPATH}" -jar ${JARFILE} ${PRGARGS} $ARGV'
+  StrCpy $VISICUTCOMMAND '"$R0" $VMARGS -classpath "${CLASSPATH}" -splash:splash.png -jar ${JARFILE} ${PRGARGS} $ARGV'
   SetOutPath $EXEDIR
   ExecWait $VISICUTCOMMAND
 FunctionEnd
