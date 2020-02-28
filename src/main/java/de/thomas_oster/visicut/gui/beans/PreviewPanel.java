@@ -475,7 +475,7 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     }
   }
   public static final String PROP_SHOW_BACKGROUNDIMAGE = "showBackgroundImage";
-  protected boolean showBackgroundImage = true;
+  protected volatile boolean showBackgroundImage = true;
 
   /**
    * Get the value of showBackgroundImage

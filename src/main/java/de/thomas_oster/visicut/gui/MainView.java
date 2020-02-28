@@ -132,9 +132,9 @@ public class MainView extends javax.swing.JFrame
   private static MainView instance = null;
   private ResourceBundle bundle = java.util.ResourceBundle.getBundle("de.thomas_oster/visicut/gui/resources/MainView");
   private ParameterPanel parameterPanel = new ParameterPanel();
-  private boolean cameraActive = false;
-  private boolean cameraCapturing = false;
-  private String cameraCapturingError = "";
+  private volatile boolean cameraActive = false;
+  private volatile boolean cameraCapturing = false;
+  private volatile String cameraCapturingError = "";
   private RefreshCameraThread cameraThread = null;
   private boolean projectorActive = false;
   private RefreshProjectorThread projectorThread = null;
@@ -2547,6 +2547,12 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         @Override
         public void run()
         {
+          captureOneImage();
+          MainView.this.cameraCapturing = false;
+        }
+
+        private void captureOneImage()
+        {
           URLConnection conn = null;
           try
           {
@@ -2668,8 +2674,6 @@ private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
               cameraCapturingError = DialogHelper.getHumanReadableErrorMessage(ex, bundle.getString("ERROR CAPTURING PHOTO"));
             }
           }
-
-          MainView.this.cameraCapturing = false;
         }
       }.start();
     }
