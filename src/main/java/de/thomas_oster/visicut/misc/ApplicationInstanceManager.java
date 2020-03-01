@@ -122,7 +122,8 @@ public class ApplicationInstanceManager {
         // (think of SESSIONNAME like a display that can be connected to different session IDs)
         try
         {
-            Process exec = Runtime.getRuntime().exec("powershell -Command (get-process -pid $pid).sessionid");
+            // Some ancient versions of PowerShell hang if called with "empty" stdin. As a workaround, we call it with "echo exit | powershell ...".
+            Process exec = Runtime.getRuntime().exec("cmd /c \"echo exit | powershell -Command (get-process -pid $pid).sessionid;exit\"");
             String sessionId = new String(exec.getInputStream().readAllBytes()).strip();
             if (!sessionId.isEmpty()) {
                 port += 2 + Integer.valueOf(sessionId);
