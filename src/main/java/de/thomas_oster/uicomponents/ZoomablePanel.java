@@ -131,6 +131,10 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
     {
       zoom = 100;
     }
+    if (zoom > 50000)
+    {
+      zoom = 50000;
+    }
     double oldZoom = this.zoom;
     this.zoom = zoom;
     if (oldZoom != zoom)
