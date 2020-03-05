@@ -89,12 +89,12 @@ public final class PreferencesManager
     if (LaserDeviceManager.getInstance().getAll().isEmpty())
     {
       //Create a Laserdevice for each known driver
-      for (Class laserdriver : LibInfo.getSupportedDrivers())
+      for (Class<? extends LaserCutter> laserdriver : LibInfo.getSupportedDrivers())
       {
         try
         {
           LaserDevice dev = new LaserDevice();
-          LaserCutter lc = (LaserCutter) laserdriver.newInstance();
+          LaserCutter lc = laserdriver.newInstance();
           dev.setLaserCutter(lc);
           dev.setName(lc.getModelName());
           dev.setThumbnailPath(new File(Helper.getBasePath(), "devices/"+lc.getModelName()+".png").getAbsolutePath());
