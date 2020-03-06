@@ -20,17 +20,11 @@ package de.thomas_oster.visicut.gui.mapping;
 
 import de.thomas_oster.uicomponents.PlatformIcon;
 import de.thomas_oster.visicut.VisicutModel;
-import de.thomas_oster.visicut.gui.EditRaster3dProfileDialog;
-import de.thomas_oster.visicut.gui.EditRasterProfileDialog;
-import de.thomas_oster.visicut.gui.EditVectorProfileDialog;
 import de.thomas_oster.visicut.gui.MainView;
 import de.thomas_oster.visicut.managers.MappingManager;
 import de.thomas_oster.visicut.misc.DialogHelper;
 import de.thomas_oster.visicut.model.LaserProfile;
 import de.thomas_oster.visicut.model.PlfPart;
-import de.thomas_oster.visicut.model.Raster3dProfile;
-import de.thomas_oster.visicut.model.RasterProfile;
-import de.thomas_oster.visicut.model.VectorProfile;
 import de.thomas_oster.visicut.model.mapping.MappingSet;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

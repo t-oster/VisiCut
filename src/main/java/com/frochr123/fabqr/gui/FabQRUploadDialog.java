@@ -39,7 +39,7 @@ import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JDialog;
-import javax.swing.SwingUtilities;
+
 import org.apache.http.client.ClientProtocolException;
 
 /**

@@ -28,7 +28,7 @@ import de.thomas_oster.liblasercut.LaserCutter;
 import de.thomas_oster.uicomponents.EditableTableProvider;
 import de.thomas_oster.visicut.managers.PreferencesManager;
 import de.thomas_oster.visicut.model.LaserDevice;
-import java.beans.PropertyChangeSupport;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;

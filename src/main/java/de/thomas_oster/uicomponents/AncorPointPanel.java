@@ -20,7 +20,6 @@ package de.thomas_oster.uicomponents;
 
 import de.thomas_oster.liblasercut.platform.Util;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EnumMap;

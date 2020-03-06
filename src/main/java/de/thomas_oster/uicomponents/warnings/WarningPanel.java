@@ -18,7 +18,6 @@
  **/
 package de.thomas_oster.uicomponents.warnings;
 
-import de.thomas_oster.visicut.gui.MainView;
 import de.thomas_oster.visicut.gui.ThreadUtils;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

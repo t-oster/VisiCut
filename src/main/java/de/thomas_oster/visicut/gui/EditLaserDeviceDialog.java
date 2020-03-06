@@ -23,16 +23,13 @@
  */
 package de.thomas_oster.visicut.gui;
 
-import de.thomas_oster.liblasercut.LaserCutter;
 import de.thomas_oster.uicomponents.BetterJTable;
 import de.thomas_oster.visicut.gui.beans.CustomizableTableModel;
-import de.thomas_oster.visicut.managers.PreferencesManager;
 import de.thomas_oster.visicut.misc.DialogHelper;
 import de.thomas_oster.visicut.misc.Helper;
 import de.thomas_oster.visicut.model.LaserDevice;
-import java.util.Arrays;
+
 import java.util.List;
-import javax.swing.JOptionPane;
 
 /**
  *

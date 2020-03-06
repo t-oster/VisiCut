@@ -28,11 +28,9 @@ import de.thomas_oster.visicut.model.Raster3dProfile;
 import de.thomas_oster.visicut.model.RasterProfile;
 import de.thomas_oster.visicut.model.VectorProfile;
 import com.thoughtworks.xstream.XStream;
-import java.beans.XMLDecoder;
+
 import java.io.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class manages the available Material Profiles
