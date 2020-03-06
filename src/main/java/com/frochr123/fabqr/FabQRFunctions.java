@@ -246,7 +246,7 @@ public class FabQRFunctions
     multipartEntityBuilder.addTextBody("name", name, contentType);
     multipartEntityBuilder.addTextBody("email", email, contentType);
     multipartEntityBuilder.addTextBody("projectName", projectName, contentType);
-    multipartEntityBuilder.addTextBody("licenseIndex", new Integer(licenseIndex).toString(), contentType);
+    multipartEntityBuilder.addTextBody("licenseIndex", Integer.valueOf(licenseIndex).toString(), contentType);
     multipartEntityBuilder.addTextBody("tools", tools, contentType);
     multipartEntityBuilder.addTextBody("description", description, contentType);
     multipartEntityBuilder.addTextBody("location", location, contentType);
@@ -271,7 +271,7 @@ public class FabQRFunctions
     // React to possible server side errors
     if (res.getStatusLine() == null || res.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
     {
-      throw new Exception("FabQR upload exception: Server sent wrong HTTP status code: " + new Integer(res.getStatusLine().getStatusCode()).toString());
+      throw new Exception("FabQR upload exception: Server sent wrong HTTP status code: " + Integer.valueOf(res.getStatusLine().getStatusCode()).toString());
     }
 
     // Close everything correctly

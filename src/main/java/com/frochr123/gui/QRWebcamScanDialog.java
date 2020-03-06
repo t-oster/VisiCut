@@ -447,7 +447,7 @@ public class QRWebcamScanDialog extends JDialog implements Observer
 
         // Laser cutting in main window in progress, show error and abort
         lblLoading.setIcon(null);
-        lblLoading.setText(bundle.getString("SUCCESS_QR_CODES_SCANNED") + ": " + (new Integer(addedQRCodes).toString()));
+        lblLoading.setText(bundle.getString("SUCCESS_QR_CODES_SCANNED") + ": " + (Integer.valueOf(addedQRCodes).toString()));
         closeCamera();
         return;
       }
