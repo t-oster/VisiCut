@@ -122,7 +122,7 @@ public class DashedShape implements Shape {
      * The iterator that generates the dashed segments in a streaming fashion
      * @author Andrea Aime - OpenGeo
      */
-    public class DashedIterator implements PathIterator {
+    public static class DashedIterator implements PathIterator {
         static final float EPS = 1e-3f;
 
         /**

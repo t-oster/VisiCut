@@ -52,7 +52,7 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
   /**
    * This class is only for having entries like "Map by color"
    */
-  public class MapByPropertyEntry
+  public static class MapByPropertyEntry
   {
     public MapByPropertyEntry(String property)
     {

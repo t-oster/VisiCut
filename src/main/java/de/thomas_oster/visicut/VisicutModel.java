@@ -896,7 +896,7 @@ public class VisicutModel
     ROTATE
   }
   
-  public class Modification
+  public static class Modification
   {
     public ModificationEnum type = ModificationEnum.NONE;
     public double oldWidth = 0;
