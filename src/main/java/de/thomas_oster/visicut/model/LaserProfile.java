@@ -129,6 +129,12 @@ public abstract class LaserProfile implements ImageListable, Cloneable
     this.name = name;
   }
 
+  /**
+   * Get human-readable summary of the settings,
+   * e.g. "500 dpi, Floyd-Steinberg dithering".
+   */
+  public abstract String settingsToString();
+
   //this attribute is unused and only kept for compatibility
   //with old XML files
   private transient boolean temporaryCopy;

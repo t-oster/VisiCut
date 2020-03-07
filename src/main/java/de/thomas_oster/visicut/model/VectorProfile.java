@@ -34,6 +34,7 @@ import de.thomas_oster.visicut.model.graphicelements.lssupport.LaserScriptShape;
 import de.thomas_oster.visicut.model.graphicelements.lssupport.ScriptInterfaceLogUi;
 import de.thomas_oster.liblasercut.laserscript.ScriptInterpreter;
 import de.thomas_oster.liblasercut.laserscript.VectorPartScriptInterface;
+import de.thomas_oster.visicut.gui.EditVectorProfileDialog;
 import de.thomas_oster.visicut.managers.PreferencesManager;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
@@ -46,6 +47,7 @@ import java.awt.geom.PathIterator;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.script.ScriptException;
@@ -367,5 +369,12 @@ public class VectorProfile extends LaserProfile
       return false;
     }
     return super.equalsBase(obj);
+  }
+
+  @Override
+  public String settingsToString()
+  {
+    org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(de.thomas_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(EditVectorProfileDialog.class);
+    return (isUseOutline() ? resourceMap.getString("useOutline") + ", " : "") + resourceMap.getString("Optimization") + ": " + getOrderStrategy().toString();
   }
 }
