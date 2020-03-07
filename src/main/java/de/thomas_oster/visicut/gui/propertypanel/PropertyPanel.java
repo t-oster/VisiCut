@@ -21,6 +21,7 @@ package de.thomas_oster.visicut.gui.propertypanel;
 import de.thomas_oster.liblasercut.LaserProperty;
 import de.thomas_oster.uicomponents.EditableTableProvider;
 import de.thomas_oster.visicut.VisicutModel;
+import de.thomas_oster.visicut.gui.MainView;
 import de.thomas_oster.visicut.model.LaserDevice;
 import de.thomas_oster.visicut.model.LaserProfile;
 import de.thomas_oster.visicut.model.Raster3dProfile;
@@ -91,6 +92,7 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
     this.lp = m.getProfile();
     this.editableTablePanel1.setSaveButtonVisible(modified);
     this.jLabel1.setText(modified ? "<html><b>"+text+"*</b></html>" : "<html>"+text+"</html>");
+    this.jLabel2.setText(m.getProfile().settingsToString());
   }
   
   boolean modified = false;
@@ -147,11 +149,24 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
 
     jLabel1 = new javax.swing.JLabel();
     editableTablePanel1 = new de.thomas_oster.uicomponents.EditableTablePanel();
+    editMappingButton = new javax.swing.JButton();
+    jLabel2 = new javax.swing.JLabel();
 
     java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("de.thomas_oster/visicut/gui/resources/PropertyPanel"); // NOI18N
     jLabel1.setText(bundle.getString("PROPERTY_TITLE")); // NOI18N
 
     editableTablePanel1.setEditButtonVisible(false);
+
+    editMappingButton.setText("Edit");
+    editMappingButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        editMappingButtonActionPerformed(evt);
+      }
+    });
+
+    jLabel2.setText("<PROPERTY_PROFILE_SETTINGS>");
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
@@ -160,23 +175,43 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(editableTablePanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+          .addComponent(editableTablePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
-            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 388, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+            .addComponent(jLabel1)
+            .addGap(0, 0, Short.MAX_VALUE))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jLabel2)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(editMappingButton))))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
         .addComponent(jLabel1)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(editableTablePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 62, Short.MAX_VALUE))
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel2)
+          .addComponent(editMappingButton))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(editableTablePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
+
+    private void editMappingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMappingButtonActionPerformed
+      LaserProfile changedProfile = MainView.getInstance().editLaserProfile(lp);
+      if (changedProfile == null)
+      {
+        return;
+      }
+      lp = changedProfile;
+      // TODO save the result
+    }//GEN-LAST:event_editMappingButtonActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton editMappingButton;
   private de.thomas_oster.uicomponents.EditableTablePanel editableTablePanel1;
   private javax.swing.JLabel jLabel1;
+  private javax.swing.JLabel jLabel2;
   // End of variables declaration//GEN-END:variables
 
   public Object getNewInstance()

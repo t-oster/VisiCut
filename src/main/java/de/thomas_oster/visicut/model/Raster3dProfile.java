@@ -265,4 +265,11 @@ public class Raster3dProfile extends LaserProfile
     }
     return super.equalsBase(other);
   }
+
+  @Override
+  public String settingsToString()
+  {
+    // TODO I18N
+    return "" + getDPI() + " DPI, Brightness " + getColorShift() + (isInvertColors() ? ", Invert Colors" : "");
+  }
 }
