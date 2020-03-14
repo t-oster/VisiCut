@@ -1959,6 +1959,7 @@ public class MainView extends javax.swing.JFrame
       }
     }
     this.jTextFieldJobName.setText("");
+    this.exportGcodeMenuItem.setEnabled(execute);
     this.calculateTimeButton.setEnabled(execute);
     this.executeJobButton.setEnabled(execute);
     this.executeJobMenuItem.setEnabled(execute);
@@ -2046,35 +2047,12 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     {
       return;
     }
-
-    ProgressListener pl = new ProgressListener()
+    File selectedFile = chooseSaveFile(fileChooser);
+    if (selectedFile == null)
     {
-
-      public void progressChanged(Object o, int i)
-      {
-        ThreadUtils.assertInGUIThread();
-        MainView.this.progressBar.setValue(i);
-        MainView.this.progressBar.repaint();
-      }
-
-      public void taskChanged(Object o, String string)
-      {
-        ThreadUtils.assertInGUIThread();
-        MainView.this.progressBar.setString(string);
-      }
-    };
-    try
-    {
-      File selectedFile = chooseSaveFile(fileChooser);
-      if (selectedFile != null)
-      {
-        MainView.this.visicutModel1.saveJob(jobname, selectedFile, pl, cuttingSettings, warnings);
-      }
+      return;
     }
-    catch (Exception e3)
-    {
-      dialog.showErrorMessage(e3);
-    }
+    executeOrSaveJob(selectedFile);
   }
 
   private String getJobName()
@@ -2209,7 +2187,11 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     return jobname;
   }
   
-  private synchronized void executeJob()
+  /**
+   * execute the current laser job
+   * @param saveToFile if a file is given, don't send the job, but write the machine code to a file.
+   */
+  private synchronized void executeOrSaveJob(File saveToFile)
   {
     try
     {
@@ -2235,6 +2217,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
       progressBar.setStringPainted(true);
       executeJobButton.setEnabled(false);
       executeJobMenuItem.setEnabled(false);
+      exportGcodeMenuItem.setEnabled(false);
       warningPanel.removeAllWarnings();
       String jobname = generateJobName();
       ProgressListener pl = new ProgressListener()
@@ -2261,7 +2244,14 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
           try
           {
             List<String> warnings = new LinkedList<>();
-            MainView.this.visicutModel1.sendJob(jobname, pl, cuttingSettings, warnings);
+            if (saveToFile == null)
+            {
+              MainView.this.visicutModel1.sendJob(jobname, pl, cuttingSettings, warnings);
+            }
+            else
+            {
+              MainView.this.visicutModel1.saveJob(jobname, saveToFile, pl, cuttingSettings, warnings);
+            }
             
             String txt = MainView.this.visicutModel1.getSelectedLaserDevice()
               .getJobSentText()
@@ -2304,6 +2294,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             MainView.this.progressBar.setStringPainted(false);
             MainView.this.executeJobButton.setEnabled(true);
             MainView.this.executeJobMenuItem.setEnabled(true);
+            MainView.this.exportGcodeMenuItem.setEnabled(true);
             setLaserJobInProgress(false);
             laserJobStopped();
           });
@@ -2316,7 +2307,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
   }
 
 private void executeJobButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobButtonActionPerformed
-  this.executeJob();
+  this.executeOrSaveJob(null);
 }//GEN-LAST:event_executeJobButtonActionPerformed
 
 private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)//GEN-FIRST:event_filesDropSupport1PropertyChange
@@ -2542,7 +2533,7 @@ private void calibrateCameraMenuItemActionPerformed(java.awt.event.ActionEvent e
 }//GEN-LAST:event_calibrateCameraMenuItemActionPerformed
 
 private void executeJobMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeJobMenuItemActionPerformed
-  this.executeJob();
+  this.executeOrSaveJob(null);
 }//GEN-LAST:event_executeJobMenuItemActionPerformed
 
   public synchronized void captureImage()
