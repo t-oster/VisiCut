@@ -1779,13 +1779,17 @@ public class MainView extends javax.swing.JFrame
       text += "\n" + bundle.getString("CHANGED_TO") + String.format(FORMAT_XY, modification.newX, modification.newY);;
     }
 
-    if ((modification.oldWidth != modification.newWidth) || (modification.oldHeight != modification.newHeight))
+    if ((modification.type != VisicutModel.ModificationEnum.ROTATE) && ((modification.oldWidth != modification.newWidth) || (modification.oldHeight != modification.newHeight)))
     {
       final String FORMAT_WH = ": %.1f mm × %.1f mm";
       text += "\n" + bundle.getString("OLDWH") + String.format(FORMAT_WH, modification.oldWidth, modification.oldHeight);
       text += "\n" + bundle.getString("CHANGED_TO") + String.format(FORMAT_WH, modification.newWidth, modification.newHeight);
       int significantDigits = 6;
       int formatDigits = significantDigits - (int) Math.ceil(Math.log10(modification.factor * 100.));
+      if (formatDigits < 1)
+      {
+        formatDigits = 1;
+      }
       text += "\n" + bundle.getString("SCALED_DOWN_TO") + String.format(" %." + formatDigits + "f", modification.factor * 100.) + " %";
     }
 
