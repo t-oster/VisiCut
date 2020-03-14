@@ -2040,8 +2040,6 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   {
     JFileChooser fileChooser = new JFileChooser();
     fileChooser.setDialogTitle(bundle.getString("exportGcodeMenuItem.text"));
-    String jobname = getJobName();
-    List<String> warnings = new LinkedList<String>();
     final Map<LaserProfile, List<LaserProperty>> cuttingSettings = this.getPropertyMapForCurrentJob();
     if (cuttingSettings == null)
     {
@@ -2053,72 +2051,6 @@ private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
       return;
     }
     executeOrSaveJob(selectedFile);
-  }
-
-  private String getJobName()
-  {
-    ThreadUtils.assertInGUIThread();
-    String jobname = "(unnamed job)";
-    try
-    {
-      MainView.this.warningPanel.removeAllWarnings();
-      jobnumber++;
-      String nameprefix = MainView.this.jTextFieldJobName.getText();
-      //
-      // Most simplistic implementation of user editable job names:
-      //  - we just add a prefix, if any. (This is okay for Zing lasers that only display 16 chars.)
-      // Todo: Better compute the next proposed job name in e.g. refreshExecuteButtons() ahead of time
-      // and show it in jTextFieldJobName near the Execute button. When we come here, just retrieve the
-      // (possibly edited) name from there.
-      //
-      String prefix = MainView.this.visicutModel1.getSelectedLaserDevice().getJobPrefix();
-      jobname = nameprefix + prefix + jobnumber;
-      if (PreferencesManager.getInstance().getPreferences().isUseFilenamesForJobs())
-      {
-        //use filename of the PLF file or any part with a filename as job name
-        PlfFile plf = MainView.this.visicutModel1.getPlfFile();
-        List< PlfPart> plfParts = MainView.this.visicutModel1.getPlfFile().getPartsCopy();
-        File f = plf.getFile();
-        if (f == null)
-        {
-          for (PlfPart p : plfParts)
-          {
-            if (p.getSourceFile() != null)
-            {
-              f = p.getSourceFile();
-              break;
-            }
-          }
-        }
-        if (f != null)
-        {
-          jobname = nameprefix + f.getName();
-        }
-      }
-    }
-    catch (Exception ex)
-    {
-      if (ex instanceof IllegalJobException && ex.getMessage().startsWith("Illegal Focus value"))
-      {
-        dialog.showWarningMessage(bundle.getString(
-          "YOU MATERIAL IS TOO HIGH FOR AUTOMATIC FOCUSSING.PLEASE FOCUS MANUALLY AND SET THE TOTAL HEIGHT TO 0."));
-      }
-      else if (ex instanceof java.net.SocketTimeoutException)
-      {
-        dialog.showErrorMessage(ex,
-          bundle.getString("SOCKETTIMEOUT") + " " + bundle.getString("CHECKSWITCHEDON"));
-      }
-      else if (ex instanceof java.net.UnknownHostException)
-      {
-        dialog.showErrorMessage(ex,
-          bundle.getString("UNKNOWNHOST") + " " + bundle.getString("CHECKSWITCHEDON"));
-      }
-      else
-      {
-        dialog.showErrorMessage(ex);
-      }
-    }
-    return jobname;
   }
 
   private static void openWebpage(String urlString) {
