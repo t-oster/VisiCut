@@ -191,7 +191,7 @@ public class Homography {
     // choose the one that will lose the least pixels, make a proportional image based on that scale factor
     if (output == null || output.getWidth() != width || output.getHeight() != height) {
       // See NOTE above about _ARGB.
-      output = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+      output = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
     // for every point in output image, find sample from camera image
     final int inputWidth = input.getWidth();
@@ -209,7 +209,9 @@ public class Homography {
         if (px >=0 && px < inputWidth && py>=0 && py < inputHeight) {
           output.setRGB(x,y,input.getRGB(px,py));
         } else {
-          output.setRGB(x,y,0xFFFFFF);
+          // Unset output pixels (outside of the camera view) are left black.
+          // If this becomes a problem, we could switch to _ARGB above and add the following line:
+          // output.setRGB(x,y,0xFFFFFF);
         }
         sx += invScaleFactor;
       }
