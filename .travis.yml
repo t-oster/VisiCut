@@ -1,13 +1,24 @@
 language: java
+os: linux
+dist: xenial
+
 jdk:
   - openjdk11
-
-before_install:
-  - pushd LibLaserCut && mvn install && popd
-  # make sure we install legacy deps
-  - mvn initialize
+services:
+  - docker
 
 script: 
   - "./test.sh"
-  - "mvn test"
+  - mkdir /tmp/out
+  - chmod ugo+rwx /tmp/out
+  - docker run -v /tmp/out:/app/output registry.gitlab.com/t-oster/visicutbuildservice
+  - echo "Created out files:"
+  - ls /tmp/out
+  - ls /tmp/out/*
 
+deploy:
+  provider: releases
+  file: "/tmp/out/branch-master/**/*"
+  cleanup: false
+  on:
+    tags: true
