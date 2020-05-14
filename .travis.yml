@@ -19,3 +19,11 @@ script:
   - echo "Created out files:"
   - ls /tmp/out
   - ls /tmp/out/*
+
+deploy:
+  provider: releases
+  api_key: "GITHUB OAUTH TOKEN"
+  file: "/tmp/out/**/*"
+  skip_cleanup: true
+  on:
+    tags: true
