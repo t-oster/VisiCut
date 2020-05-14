@@ -13,7 +13,9 @@ script:
   - "./test.sh"
   - "mvn test"
   - mkdir /tmp/out
-  - docker run -v /tmp/out:/app/output -v /home/travis/build/t-oster/VisiCut/:/app/build/VisiCut -e VISICUT_UPDATE=false registry.gitlab.com/t-oster/visicutbuildservice
+  - echo "Current dir: " $(pwd)
+  - ls
+  - docker run -v /tmp/out:/app/output -v /home/travis/build/t-oster/VisiCut/:/app/build/VisiCut --user $UID -e VISICUT_UPDATE=false registry.gitlab.com/t-oster/visicutbuildservice
   - echo "Created out files:"
   - ls /tmp/out
   - ls /tmp/out/*
