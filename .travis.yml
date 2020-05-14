@@ -1,6 +1,8 @@
 language: java
 jdk:
   - openjdk11
+services:
+  - docker
 
 before_install:
   - pushd LibLaserCut && mvn install && popd
@@ -10,4 +12,7 @@ before_install:
 script: 
   - "./test.sh"
   - "mvn test"
-
+  - docker run -v /tmp/out:/app/output -v `pwd`:/app/build/VisiCut -e VISICUT_UPDATE=false registry.gitlab.com/t-oster/visicutbuildservice
+  - echo "Created out files:"
+  - ls /tmp/out
+  - ls /tmp/out/*
