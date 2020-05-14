@@ -1,13 +1,31 @@
 language: java
+os: linux
+dist: xenial
+
 jdk:
   - openjdk11
-
+services:
+  - docker
 before_install:
   - pushd LibLaserCut && mvn install && popd
   # make sure we install legacy deps
   - mvn initialize
-
 script: 
   - "./test.sh"
-  - "mvn test"
+  - if [ "$TRAVIS_TAG" = "" ]; then mvn test; fi
+  - OUT=`pwd`/out
+  - mkdir $OUT
+  - chmod ugo+rwx $OUT
+  - if [ "$TRAVIS_TAG" != "" ]; then docker run -v $OUT:/app/output registry.gitlab.com/t-oster/visicutbuildservice; fi
+  - echo "Artifacts:"
+  - ls $OUT/branch-master/**/*
 
+deploy:
+  provider: releases
+  file_glob: true
+  file: out/branch-master/**/*
+  token: $GITHUB_TOKEN
+  skip_cleanup: true
+  cleanup: false
+  on:
+    tags: true
