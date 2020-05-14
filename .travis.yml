@@ -24,7 +24,6 @@ script:
 
 deploy:
   provider: releases
-  token: $TRAVIS_CI_TOKEN
   file: "/tmp/out/branch-master/**/*"
   cleanup: false
   on:
