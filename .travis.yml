@@ -16,6 +16,7 @@ script:
   - "./test.sh"
   - "mvn test"
   - mkdir /tmp/out
+  - chmod ugo+rwx /tmp/out
   - docker run -v /tmp/out:/app/output registry.gitlab.com/t-oster/visicutbuildservice
   - echo "Created out files:"
   - ls /tmp/out
@@ -23,8 +24,8 @@ script:
 
 deploy:
   provider: releases
-  token: "GITHUB OAUTH TOKEN"
-  file: "/tmp/out/**/*"
+  token: $TRAVIS_CI_TOKEN
+  file: "/tmp/out/branch-master/**/*"
   cleanup: false
   on:
     tags: true
