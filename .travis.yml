@@ -7,14 +7,8 @@ jdk:
 services:
   - docker
 
-before_install:
-  - pushd LibLaserCut && mvn install && popd
-  # make sure we install legacy deps
-  - mvn initialize
-
 script: 
   - "./test.sh"
-  - "mvn test"
   - mkdir /tmp/out
   - chmod ugo+rwx /tmp/out
   - docker run -v /tmp/out:/app/output registry.gitlab.com/t-oster/visicutbuildservice
