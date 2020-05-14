@@ -1,4 +1,7 @@
 language: java
+os: linux
+dist: xenial
+
 jdk:
   - openjdk11
 services:
@@ -13,17 +16,15 @@ script:
   - "./test.sh"
   - "mvn test"
   - mkdir /tmp/out
-  - ls
-  - echo current dir `pwd`
-  - docker run -v /tmp/out:/app/output -v /home/travis/build/t-oster/VisiCut/:/app/build/VisiCut --user $UID -e VISICUT_UPDATE=false registry.gitlab.com/t-oster/visicutbuildservice
+  - docker run -v /tmp/out:/app/output registry.gitlab.com/t-oster/visicutbuildservice
   - echo "Created out files:"
   - ls /tmp/out
   - ls /tmp/out/*
 
 deploy:
   provider: releases
-  api_key: "GITHUB OAUTH TOKEN"
+  token: "GITHUB OAUTH TOKEN"
   file: "/tmp/out/**/*"
-  skip_cleanup: true
+  cleanup: false
   on:
     tags: true
