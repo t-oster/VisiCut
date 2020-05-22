@@ -195,9 +195,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
   public Homography getResultingHomography()
   {
     Point2D.Double[] ap = new Point2D.Double[confirmedImagePoints.length];
-    for (int i = 0; i < confirmedImagePoints.length; i++) {
-      ap[i] = alignmentPoints[i];
-    }
+    System.arraycopy(alignmentPoints, 0, ap, 0, confirmedImagePoints.length);
     return new Homography(ap, confirmedImagePoints);
   }
 

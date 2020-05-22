@@ -370,7 +370,7 @@ public class EditMaterialDialog extends javax.swing.JDialog implements EditableT
 
   public Object getNewInstance()
   {
-    return new Float(2f);
+    return 2f;
   }
 
   public Object editObject(Object o)

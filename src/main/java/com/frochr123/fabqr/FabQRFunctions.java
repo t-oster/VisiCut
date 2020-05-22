@@ -193,17 +193,17 @@ public class FabQRFunctions
       }
     }
     
-    String references = "";
+    StringBuilder references = new StringBuilder();
     
     for (String ref : referencesList)
     {
       // Add comma for non first entries
-      if (!references.isEmpty())
+      if (references.length() > 0)
       {
-        references = references + ",";
+        references.append(",");
       }
       
-      references = references + ref;
+      references.append(ref);
     }
 
     // Get bytes for PLF file
@@ -252,7 +252,7 @@ public class FabQRFunctions
     multipartEntityBuilder.addTextBody("location", location, contentType);
     multipartEntityBuilder.addTextBody("lasercutterName", lasercutterName, contentType);
     multipartEntityBuilder.addTextBody("lasercutterMaterial", lasercutterMaterial, contentType);
-    multipartEntityBuilder.addTextBody("references", references, contentType);
+    multipartEntityBuilder.addTextBody("references", references.toString(), contentType);
 
     // Assign entity to this post request
     HttpEntity httpEntity = multipartEntityBuilder.build();

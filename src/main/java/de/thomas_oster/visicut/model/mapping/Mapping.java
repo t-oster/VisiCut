@@ -62,10 +62,10 @@ public class Mapping extends Tuple<FilterSet,LaserProfile> implements Cloneable
   @Override
   public String toString()
   {
-    String fs = "";
+    StringBuilder fs = new StringBuilder();
     for (MappingFilter f:this.getA())
     {
-      fs+= fs.equals("") ? f.toString() : ","+f.toString();
+      fs.append(fs.toString().equals("") ? f.toString() : "," + f.toString());
     }
     return fs+"->"+this.getB();
   }

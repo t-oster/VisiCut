@@ -166,12 +166,12 @@ public class DialogHelper
     {
       return;
     }
-    String txt = "";
+    StringBuilder txt = new StringBuilder();
     for(String s : text)
     {
-      txt += s + "\n";
+      txt.append(s).append("\n");
     }
-    this.showWarningMessage(txt);
+    this.showWarningMessage(txt.toString());
   }
 
   public void showWarningMessage(String text)
@@ -233,29 +233,29 @@ public class DialogHelper
   public static String getHumanReadableErrorMessage(Throwable cause, String text, boolean alwaysShowStacktrace)
   {
     cause.printStackTrace();
-    String message = "";
+    StringBuilder message = new StringBuilder();
     if (text != null && text.length() > 0)
     {
-      message = text + "\n";
+      message = new StringBuilder(text + "\n");
     }
     // display the localized message (such as "No route to host") if there is one
     // otherwise show the class name
     if (cause.getLocalizedMessage() == null)
     {
-      message = message + cause.getClass().getSimpleName();
+      message.append(cause.getClass().getSimpleName());
     }
     else
     {
       if (cause instanceof java.net.SocketException)
       {
         // Network errors like "port not found" have meaningful error messages
-        message = message + cause.getLocalizedMessage();
+        message.append(cause.getLocalizedMessage());
       }
       else
       {
         // Most other exceptions are not easy to understand without the class name
         // (e.g. 'java.net.UnknownHostException: foo.example.com')
-        message = message + cause.getClass().getSimpleName() + ": " + cause.getLocalizedMessage();
+        message.append(cause.getClass().getSimpleName()).append(": ").append(cause.getLocalizedMessage());
       }
     }
     // for interesting exceptions, add the first few stack trace lines
@@ -269,10 +269,10 @@ public class DialogHelper
       StackTraceElement[] stackTrace = cause.getStackTrace();
       for (int i = 0; i < 2 && i < stackTrace.length; i++)
       {
-        message = message + "\n" + stackTrace[i].toString();
+        message.append("\n").append(stackTrace[i].toString());
       }
     }
-    return message;
+    return message.toString();
   }
 
   public static String getHumanReadableErrorMessage(Throwable cause) {

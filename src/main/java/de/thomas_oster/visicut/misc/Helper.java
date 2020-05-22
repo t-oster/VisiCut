@@ -18,6 +18,10 @@
  **/
 package de.thomas_oster.visicut.misc;
 
+import org.apache.commons.net.util.Base64;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -32,8 +36,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -49,9 +53,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import org.apache.commons.net.util.Base64;
 
 /**
  * This class contains frequently used conversion methods
@@ -317,7 +318,7 @@ public class Helper
 
   public static void installIllustratorScript() throws IOException
   {
-    String errors = "";
+    StringBuilder errors = new StringBuilder();
     for (File dir : new File[]{
       new File("/Applications/Adobe Illustrator CS3/Presets"),
       new File("/Applications/Adobe Illustrator CS4/Presets"),
@@ -350,14 +351,14 @@ public class Helper
           }
           catch (IOException ex)
           {
-            errors += "Can't copy to "+d.getAbsolutePath()+"\n";
+            errors.append("Can't copy to ").append(d.getAbsolutePath()).append("\n");
           }
         }
       }
     }
-    if (!"".equals(errors))
+    if (!"".equals(errors.toString()))
     {
-      throw new IOException(errors);
+      throw new IOException(errors.toString());
     }
   }
 
@@ -404,16 +405,15 @@ public class Helper
       return null;
     }
     File p = new File(path);
-    File bp = parent;
-    String result = p.getName();
+    StringBuilder result = new StringBuilder(p.getName());
     while (p.getParentFile() != null)
     {
       p = p.getParentFile();
-      if (p.getAbsolutePath().equals(bp.getAbsolutePath()))
+      if (p.getAbsolutePath().equals(parent.getAbsolutePath()))
       {
-        return result;
+        return result.toString();
       }
-      result = p.getName() + "/" + result;
+      result.insert(0, p.getName() + "/");
     }
     return path;
   }
@@ -739,19 +739,19 @@ public class Helper
    */
   public static String toPathName(String name)
   {
-    String result = "";
+    StringBuilder result = new StringBuilder();
     for (char c : name.toCharArray())
     {
       if (!allowedChars.contains(""+c))
       {
-        result += "_"+((int) c)+"_";
+        result.append("_").append((int) c).append("_");
       }
       else
       {
-        result += c;
+        result.append(c);
       }
     }
-    return result;
+    return result.toString();
   }
   
   /**
@@ -762,35 +762,35 @@ public class Helper
    */
   public static String fromPathName(String name)
   {
-    String result = "";
-    String index = null;
+    StringBuilder result = new StringBuilder();
+    StringBuilder index = null;
     for (char c : name.toCharArray())
     {
       if (index == null)
       {
         if (c == '_')
         {
-          index = "";
+          index = new StringBuilder();
         }
         else
         {
-          result += c;
+          result.append(c);
         }
       }
       else
       {
         if (c == '_')
         {
-          result += (char) Integer.parseInt(index);
+          result.append((char) Integer.parseInt(index.toString()));
           index = null;
         }
         else
         {
-          index += c;
+          index.append(c);
         }
       }
     }
-    return result;
+    return result.toString();
   }
   
   public static String getEncodedCredentials(String user, String password)

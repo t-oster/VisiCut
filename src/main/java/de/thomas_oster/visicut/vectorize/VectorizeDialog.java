@@ -306,21 +306,21 @@ public class VectorizeDialog extends javax.swing.JDialog
   {
     Runtime run = Runtime.getRuntime() ;
     Process pr = run.exec(cmd);
-    String error = "";
+    StringBuilder error = new StringBuilder();
     try
     {
       int r;
       while ((r = pr.getErrorStream().read()) >= 0)
       {
-        error += (char) r;
+        error.append((char) r);
       }
     }
     catch (IOException e)
     {
-      
+
     }
     pr.waitFor();
-    if (!"".equals(error))
+    if (!"".equals(error.toString()))
     {
       throw new IOException("Errors:"+error);
     }

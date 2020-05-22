@@ -21,12 +21,16 @@ package com.frochr123.fabqr.gui;
 import com.frochr123.fabqr.FabQRFunctions;
 import com.frochr123.helper.PreviewImageExport;
 import com.frochr123.icons.IconLoader;
-import de.thomas_oster.visicut.gui.MainView;
-import com.tur0kk.TakePhotoThread;
 import com.frochr123.periodictasks.RefreshProjectorThread;
+import com.tur0kk.TakePhotoThread;
 import de.thomas_oster.visicut.VisicutModel;
+import de.thomas_oster.visicut.gui.MainView;
 import de.thomas_oster.visicut.managers.PreferencesManager;
 import de.thomas_oster.visicut.model.PlfFile;
+import org.apache.http.client.ClientProtocolException;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JDialog;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -37,10 +41,6 @@ import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JDialog;
-
-import org.apache.http.client.ClientProtocolException;
 
 /**
  * FabQRUploadDialog.java, uploads project data to the configured FabQR instance
@@ -828,7 +828,7 @@ private void btnPhotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
             }
             
             float lasercutterMaterialThickness = VisicutModel.getInstance().getMaterialThickness();
-            lasercutterMaterial = lasercutterMaterialName + ", " + new Float(lasercutterMaterialThickness).toString() + " mm";
+            lasercutterMaterial = lasercutterMaterialName + ", " + Float.valueOf(lasercutterMaterialThickness).toString() + " mm";
           }
           
           // Get internal data: Location, FabLab name

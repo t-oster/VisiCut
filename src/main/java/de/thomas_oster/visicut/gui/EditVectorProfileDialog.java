@@ -145,8 +145,8 @@ public class EditVectorProfileDialog extends javax.swing.JDialog
         cbPPI.setEditable(true);
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${vectorProfile.DPI}"), cbPPI, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"), "ppi");
-        binding.setSourceNullValue(new Double(0));
-        binding.setSourceUnreadableValue(new Double(0));
+        binding.setSourceNullValue(0d);
+        binding.setSourceUnreadableValue(0d);
         bindingGroup.addBinding(binding);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);

@@ -18,24 +18,22 @@
  **/
 package de.thomas_oster.visicut.gui;
 
-import java.awt.desktop.AboutEvent;
-import java.awt.desktop.OpenFilesEvent;
-import java.awt.desktop.PreferencesEvent;
-import java.awt.desktop.QuitEvent;
-import java.awt.desktop.QuitResponse;
 import com.frochr123.fabqr.FabQRFunctions;
 import com.frochr123.fabqr.gui.FabQRUploadDialog;
 import com.frochr123.gui.QRWebcamScanDialog;
 import com.frochr123.helper.QRCodeInfo;
+import com.frochr123.periodictasks.RefreshCameraThread;
+import com.frochr123.periodictasks.RefreshProjectorThread;
+import com.frochr123.periodictasks.RefreshQRCodesTask;
 import de.thomas_oster.liblasercut.IllegalJobException;
 import de.thomas_oster.liblasercut.LaserCutter;
 import de.thomas_oster.liblasercut.LaserProperty;
 import de.thomas_oster.liblasercut.ProgressListener;
 import de.thomas_oster.liblasercut.platform.Util;
-import de.thomas_oster.visicut.misc.FileUtils;
 import de.thomas_oster.uicomponents.PlatformIcon;
 import de.thomas_oster.uicomponents.Ruler;
 import de.thomas_oster.uicomponents.warnings.Message;
+import de.thomas_oster.visicut.Preferences;
 import de.thomas_oster.visicut.VisicutModel;
 import de.thomas_oster.visicut.VisicutModel.Modification;
 import de.thomas_oster.visicut.gui.beans.CreateNewMaterialDialog;
@@ -49,7 +47,10 @@ import de.thomas_oster.visicut.managers.PreferencesManager;
 import de.thomas_oster.visicut.managers.ProfileManager;
 import de.thomas_oster.visicut.misc.DialogHelper;
 import de.thomas_oster.visicut.misc.ExtensionFilter;
+import de.thomas_oster.visicut.misc.FileUtils;
 import de.thomas_oster.visicut.misc.Helper;
+import de.thomas_oster.visicut.misc.Homography;
+import de.thomas_oster.visicut.misc.LabSettings;
 import de.thomas_oster.visicut.model.LaserDevice;
 import de.thomas_oster.visicut.model.LaserProfile;
 import de.thomas_oster.visicut.model.MaterialProfile;
@@ -60,17 +61,30 @@ import de.thomas_oster.visicut.model.RasterProfile;
 import de.thomas_oster.visicut.model.VectorProfile;
 import de.thomas_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import de.thomas_oster.visicut.model.mapping.MappingSet;
-import com.frochr123.periodictasks.RefreshCameraThread;
-import com.frochr123.periodictasks.RefreshProjectorThread;
-import com.frochr123.periodictasks.RefreshQRCodesTask;
-import de.thomas_oster.visicut.Preferences;
-import de.thomas_oster.visicut.misc.Homography;
-import de.thomas_oster.visicut.misc.LabSettings;
+import org.jdesktop.application.Action;
+
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+import javax.swing.filechooser.FileFilter;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.desktop.AboutEvent;
+import java.awt.desktop.OpenFilesEvent;
+import java.awt.desktop.PreferencesEvent;
+import java.awt.desktop.QuitEvent;
+import java.awt.desktop.QuitResponse;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -104,20 +118,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageInputStream;
-import javax.imageio.stream.MemoryCacheImageInputStream;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileFilter;
-import org.jdesktop.application.Action;
 
 /**
  *
@@ -1715,10 +1715,7 @@ public class MainView extends javax.swing.JFrame
     recent.add(0, file.getAbsolutePath());
     if (recent.size() > 5)
     {
-      for (int i = recent.size() - 1; i >= 5; i--)
-      {
-        recent.remove(i);
-      }
+      recent.subList(5, recent.size()).clear();
     }
     this.refreshRecentFilesMenu();
     try
@@ -2951,8 +2948,7 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   {//GEN-HEADEREND:event_jmManageLaserprofilesActionPerformed
     ThreadUtils.assertInGUIThread();
     EditProfilesDialog d = new EditProfilesDialog(this, true);
-    List<LaserProfile> profiles = new LinkedList<LaserProfile>();
-    profiles.addAll(ProfileManager.getInstance().getAll());
+    List<LaserProfile> profiles = new LinkedList<>(ProfileManager.getInstance().getAll());
     d.setProfiles(profiles);
     d.setVisible(true);
     List<LaserProfile> result = d.getProfiles();

@@ -18,6 +18,7 @@
  **/
 package de.thomas_oster.visicut.managers;
 
+import com.thoughtworks.xstream.XStream;
 import de.thomas_oster.liblasercut.LaserCutter;
 import de.thomas_oster.liblasercut.LibInfo;
 import de.thomas_oster.visicut.Preferences;
@@ -28,12 +29,12 @@ import de.thomas_oster.visicut.model.MaterialProfile;
 import de.thomas_oster.visicut.model.Raster3dProfile;
 import de.thomas_oster.visicut.model.RasterProfile;
 import de.thomas_oster.visicut.model.VectorProfile;
-import com.thoughtworks.xstream.XStream;
+
 import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -130,14 +131,14 @@ public final class PreferencesManager
       mp.setColor(Color.WHITE);
       mp.setCutColor(Color.RED);
       mp.setEngraveColor(Color.DARK_GRAY);
-      mp.setMaterialThicknesses(new LinkedList<Float>(Arrays.asList(new Float(1.0))));
+      mp.setMaterialThicknesses(new LinkedList<>(Collections.singletonList(1f)));
       MaterialManager.getInstance().add(mp);
       mp = new MaterialProfile();
       mp.setName("Acrylic");
       mp.setColor(Color.BLUE);
       mp.setCutColor(Color.RED);
       mp.setEngraveColor(Color.WHITE);
-      mp.setMaterialThicknesses(new LinkedList<Float>(Arrays.asList(new Float(1.0))));
+      mp.setMaterialThicknesses(new LinkedList<>(Collections.singletonList(1f)));
       MaterialManager.getInstance().add(mp);
       preferences.setLastMaterial(mp.getName());
     }

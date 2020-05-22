@@ -84,13 +84,13 @@ public class PSVGImporter extends ParametricSVGImporter
       else if ("default".equals(n.getNodeName()))
       {
         //evaluate expressions with help of previous parameters
-        String expression = "";
+        StringBuilder expression = new StringBuilder();
         for (Entry<String, Double> e:parameters.entrySet())
         {
-          expression += "var "+e.getKey()+"="+e.getValue()+";";
+          expression.append("var ").append(e.getKey()).append("=").append(e.getValue()).append(";");
         }
-        expression += n.getNodeValue().replace("$", "");
-        Double result = Helper.evaluateExpression(expression);
+        expression.append(n.getNodeValue().replace("$", ""));
+        Double result = Helper.evaluateExpression(expression.toString());
         String parameterName = parent.getAttributes().getNamedItem("param").getNodeValue().replace("$", "");
         parameters.put(parameterName, result);
         n.setNodeValue(""+result);
