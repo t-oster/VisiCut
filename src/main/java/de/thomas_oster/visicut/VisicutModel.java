@@ -107,7 +107,6 @@ public class VisicutModel
   /**
    * Duplicates the given PlfPart and adds it to the
    * current PlfFile
-   * @param p
    */
   public void duplicate(PlfPart p)
   {
@@ -435,8 +434,6 @@ public class VisicutModel
 
   /**
    * Add PropertyChangeListener.
-   *
-   * @param listener
    */
   public void addPropertyChangeListener(PropertyChangeListener listener)
   {
@@ -445,8 +442,6 @@ public class VisicutModel
 
   /**
    * Remove PropertyChangeListener.
-   *
-   * @param listener
    */
   public void removePropertyChangeListener(PropertyChangeListener listener)
   {
@@ -916,7 +911,6 @@ public class VisicutModel
    * Adjusts the Transform of the Graphic-Objects such that the Objects
    * fit into the current Laser-Bed.
    * If modification was necessary, it returns true.
-   * @return
    */
   public Modification fitObjectsIntoBed()
   {

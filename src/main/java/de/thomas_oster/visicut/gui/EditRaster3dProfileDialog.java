@@ -288,9 +288,6 @@ public class EditRaster3dProfileDialog extends javax.swing.JDialog
   {//GEN-HEADEREND:event_jButton3ActionPerformed
 
     this.setRasterProfile(this.getCurrentRasterProfile());     this.setVisible(false);   }//GEN-LAST:event_jButton3ActionPerformed
-  /**
-   * @param args the command line arguments
-   */
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JComboBox cbResolution;
   private javax.swing.JButton jButton3;

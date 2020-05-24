@@ -37,10 +37,6 @@ public interface Importer
    * be added to the warnings list (if not null).
    * They will be displayed to the user, but no
    * further action is taken
-   * @param inputFile
-   * @param warnings
-   * @return
-   * @throws ImportException 
    */
   PlfPart importFile(File inputFile, List<String> warnings) throws ImportException;
   

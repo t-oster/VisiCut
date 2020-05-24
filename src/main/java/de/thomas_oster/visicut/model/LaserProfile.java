@@ -149,8 +149,6 @@ public abstract class LaserProfile implements ImageListable, Cloneable
   /**
    * Decomposes a GraphicSet into disjoint paths which
    * have a distance bigger than the sum of their lengths
-   * @param set
-   * @return
    */
   public LinkedList<GraphicSet> decompose(GraphicSet set)
   {
@@ -219,7 +217,6 @@ public abstract class LaserProfile implements ImageListable, Cloneable
   /**
    * checks for equality of all properties of the base class LaserProfile
    * use this in equals() methods for subclasses
-   * @param obj
    * @return true when all general LaserProfile properties are equal
    */
   protected boolean equalsBase(Object obj)

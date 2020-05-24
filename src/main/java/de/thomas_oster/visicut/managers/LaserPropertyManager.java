@@ -65,8 +65,6 @@ public class LaserPropertyManager
   
   /**
    * Used to determine the path of propery files before VisiCut 1.5-99
-   * @param name
-   * @return 
    */
   private String oldToPathName(String name)
   {
@@ -75,8 +73,6 @@ public class LaserPropertyManager
   
   /**
    * Used to determine the path of propery files before VisiCut 1.5-99
-   * @param name
-   * @return 
    */
   private File getOldLaserPropertiesFile(LaserDevice ld, MaterialProfile mp, LaserProfile lp, float materialThickness)
   {

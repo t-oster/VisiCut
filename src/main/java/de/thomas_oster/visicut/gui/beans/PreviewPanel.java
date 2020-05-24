@@ -18,10 +18,10 @@
  **/
 package de.thomas_oster.visicut.gui.beans;
 
-import de.thomas_oster.uicomponents.ZoomablePanel;
 import de.thomas_oster.liblasercut.LaserCutter;
 import de.thomas_oster.liblasercut.ProgressListener;
 import de.thomas_oster.liblasercut.platform.Util;
+import de.thomas_oster.uicomponents.ZoomablePanel;
 import de.thomas_oster.visicut.VisicutModel;
 import de.thomas_oster.visicut.misc.Helper;
 import de.thomas_oster.visicut.model.LaserDevice;
@@ -36,6 +36,8 @@ import de.thomas_oster.visicut.model.graphicelements.GraphicSet;
 import de.thomas_oster.visicut.model.graphicelements.ShapeObject;
 import de.thomas_oster.visicut.model.mapping.Mapping;
 import de.thomas_oster.visicut.model.mapping.MappingSet;
+
+import javax.swing.JOptionPane;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -62,7 +64,6 @@ import java.util.LinkedHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 
 /**
  * This class implements the Panel which provides the Preview
@@ -187,7 +188,6 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
     /**
      * Returns the bounding box of this preview image IN pixels
      * in LASERCUTTER-space
-     * @return
      */
     public Rectangle getBoundingBox()
     {
@@ -270,7 +270,6 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
 
     /**
      * is the thread finished (was not cancelled early, and a result is available)?
-     * @return
      */
     public synchronized boolean isFinished()
     {
@@ -628,8 +627,6 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
 
   /**
    * Compute transformation from background (camera) image to screen pixels
-   * @param backgroundImage
-   * @return
    */
   protected AffineTransform updateBackgroundImageToPxTransform(BufferedImage backgroundImage) {
     AffineTransform img2px = new AffineTransform(this.getMmToPxTransform());

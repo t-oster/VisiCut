@@ -19,13 +19,14 @@
 package de.thomas_oster.uicomponents;
 
 import de.thomas_oster.liblasercut.platform.Util;
+
+import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import javax.swing.JPanel;
 
 /**
  * A JPanel with Support for rendering Graphic Objects.
@@ -161,8 +162,6 @@ public class ZoomablePanel extends JPanel implements MouseWheelListener
    * Pixels are the corrected pixels for the preview panel with the current zoom factor
    * Millimeters are real millimeters
    * Same scale value for width and height
-   * 
-   * @return
    */
   public AffineTransform getMmToPxTransform()
   {

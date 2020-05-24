@@ -55,7 +55,6 @@ public abstract class SVGObject implements GraphicObject
   /**
    * Returns a List of SVGElements representing the Path
    * from the current Decorated Element to the root Node
-   * @return 
    */
   public List<SVGElement> getPathToRoot()
   {
@@ -76,7 +75,6 @@ public abstract class SVGObject implements GraphicObject
    * applies all transformations in the Path of the SVGShape
    * and returns the Transformed Shape, which can be displayed
    * or printed on the position it appears in the original image.
-   * @return 
    */
   public AffineTransform getAbsoluteTransformation() throws SVGException
   {
@@ -210,8 +208,6 @@ public abstract class SVGObject implements GraphicObject
 
   /**
    * Returns the path from root to the given Element
-   * @param e
-   * @return 
    */
   protected List<SVGElement> getPath(SVGElement e)
   {

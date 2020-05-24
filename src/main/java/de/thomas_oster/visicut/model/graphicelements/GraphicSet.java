@@ -118,7 +118,6 @@ public class GraphicSet extends LinkedList<GraphicObject>
   /**
    * Returns the BoundingBox of this Set ignoring the Transform,
    * also ignoring the basicTransform
-   * @return 
    */
   public Rectangle2D getOriginalBoundingBox()
   {
@@ -144,7 +143,6 @@ public class GraphicSet extends LinkedList<GraphicObject>
   /**
    * Returns the BoundingBox of this Set when rendered with the current
    * Transformation.
-   * @return 
    */
   public Rectangle2D getBoundingBox()
   {
@@ -179,8 +177,6 @@ public class GraphicSet extends LinkedList<GraphicObject>
 
   /**
    * Add PropertyChangeListener.
-   *
-   * @param listener
    */
   public void addPropertyChangeListener(PropertyChangeListener listener)
   {
@@ -189,8 +185,6 @@ public class GraphicSet extends LinkedList<GraphicObject>
 
   /**
    * Remove PropertyChangeListener.
-   *
-   * @param listener
    */
   public void removePropertyChangeListener(PropertyChangeListener listener)
   {
@@ -352,7 +346,6 @@ public class GraphicSet extends LinkedList<GraphicObject>
   /**
    * Returns only those attributes, where at least two different
    * values are present
-   * @return 
    */
   public Iterable<String> getInterestingAttributes()
   {

@@ -19,19 +19,29 @@
 package de.thomas_oster.visicut.managers;
 
 import com.pmease.commons.xmt.VersionedDocument;
+import com.thoughtworks.xstream.XStream;
 import de.thomas_oster.visicut.misc.FileUtils;
 import de.thomas_oster.visicut.misc.Helper;
-import com.thoughtworks.xstream.XStream;
+import org.apache.commons.io.IOUtils;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
 
 /**
  * This class manages the available Material Profiles
@@ -284,7 +294,6 @@ public abstract class FilebasedManager<T>
    * @param f XML file
    * @param xStream XStream instance
    * @return deserialized Object
-   * @throws java.io.FileNotFoundException
    */
   public static Object readObjectFromXmlFile(File f, XStream xStream) throws FileNotFoundException {
     Object o = readObjectFromXmlStream(new FileInputStream(f), xStream, f.getPath());
@@ -333,7 +342,6 @@ public abstract class FilebasedManager<T>
    * @param obj object to be serialized
    * @param f File to which XML is written
    * @param xStream XStream instance for serialization
-   * @throws java.io.IOException
    */
   public static void writeObjectToXmlFile(Object obj, File f, XStream xStream) throws IOException {
     FileOutputStream out = new FileOutputStream(f);
@@ -357,7 +365,6 @@ public abstract class FilebasedManager<T>
   
   /**
    * Find an object with the given name
-   * @param string
    * @return object where (object.toString()==string), null if not found
    */
   public T getItemFromString(String string) {

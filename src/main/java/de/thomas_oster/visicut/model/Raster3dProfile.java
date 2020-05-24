@@ -166,10 +166,6 @@ public class Raster3dProfile extends LaserProfile
   /**
    * Returns the color between a and b depending on factor.
    * factor 0 means a, factor 1 means b
-   * @param a
-   * @param b
-   * @param factor
-   * @return 
    */
   private Color getColorBetween(Color a, Color b, double factor)
   {

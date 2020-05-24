@@ -59,8 +59,6 @@ public class EPSImporter extends AbstractImporter
   /**
    * Tries to read the BoundingBox out of the EPS file.
    * If not successful, it returns a default BoundingBox
-   * @param epsfile
-   * @return
    */
   private Rectangle2D getBoundingBox(File epsfile)
   {

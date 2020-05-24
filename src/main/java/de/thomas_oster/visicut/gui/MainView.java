@@ -210,8 +210,6 @@ public class MainView extends javax.swing.JFrame
    * Shows the according EditLaserProfile dialog for the given
    * laser-profile and returns the altered clone of the profile if ok
    * was pressed, and null else. The given LaserProfile is not touched
-   * @param lp
-   * @return 
    */
   public LaserProfile editLaserProfile(LaserProfile profile)
   {
@@ -621,7 +619,6 @@ public class MainView extends javax.swing.JFrame
 
   /**
    * update entries of objectComboBox, then update selection
-   * @param forceUpdate even update if the list of PlfParts has not changed
    * @throws RuntimeException if forceUpdate==false and PlfParts have not changed
    */
   public void refreshObjectComboBox()
@@ -1813,7 +1810,6 @@ public class MainView extends javax.swing.JFrame
   /**
    * Load file.
    * This method is safe to call also from non-GUI-Threads.
-   * @param file
    * @param discardCurrent true: replace old file
    */
   private void loadFileReal(File file, boolean discardCurrent)
@@ -2835,7 +2831,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
   /**
    * load settings from file and update the GUI
    * @param file : File or null for loading the default example settings
-   * @throws Exception 
    */
   private void importSettingsFromFile(File file) throws Exception
   {
@@ -2855,7 +2850,6 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
    * @param url HTTP(s) URL
    * @param labName Name of FabLab to be preselected when the dialog
    * "Download recommended settings" is opened the next time (may be empty).
-   * @throws Exception
    */
   private void importSettingsFromWeb(String url, String labName) throws Exception {
     if (!(url.startsWith("https://") || url.startsWith("http://")))
@@ -3239,7 +3233,6 @@ private void jmPreferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN
 
   /***
    * "Download recommended settings" menu item clicked
-   * @param evt
    */
 private void jmDownloadSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmDownloadSettingsActionPerformed
   warningPanel.removeAllWarnings();
@@ -3469,7 +3462,6 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
    *
    * @param reallyExecuting true if the laserjob is about to be sent, false if we are only calculating the time
    * @param mayShowEditDialog true if this function may open a LaserProperty edit dialog for unknown profiles, false if not.
-   * @return
    */
   private Map<LaserProfile, List<LaserProperty>> getPropertyMapForCurrentJob()
   {

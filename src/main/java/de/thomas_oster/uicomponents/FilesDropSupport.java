@@ -18,6 +18,7 @@
  **/
 package de.thomas_oster.uicomponents;
 
+import javax.swing.JComponent;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
@@ -35,7 +36,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
-import javax.swing.JComponent;
 
 /**
  * This class is a helper to create platform independant file
@@ -93,21 +93,11 @@ public class FilesDropSupport implements DropTargetListener
   }
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
-  /**
-   * Add PropertyChangeListener.
-   *
-   * @param listener
-   */
   public void addPropertyChangeListener(PropertyChangeListener listener)
   {
     propertyChangeSupport.addPropertyChangeListener(listener);
   }
 
-  /**
-   * Remove PropertyChangeListener.
-   *
-   * @param listener
-   */
   public void removePropertyChangeListener(PropertyChangeListener listener)
   {
     propertyChangeSupport.removePropertyChangeListener(listener);

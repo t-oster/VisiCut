@@ -98,7 +98,6 @@ public class PropertyPanel extends javax.swing.JPanel implements EditableTablePr
    * Changes THE APPEARANCE of this table so it will indicate to the user,
    * that the settings are modified. (i.e. a * will be appended to the title
    * and the save button will become visible)
-   * @param modified 
    */
   public void setModified(boolean modified)
   {

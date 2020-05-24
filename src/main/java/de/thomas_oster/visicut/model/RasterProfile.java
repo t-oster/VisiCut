@@ -193,9 +193,7 @@ public class RasterProfile extends LaserProfile
    * optionally substituting $engraveColor for black.
    *
    * This saves about 75% of memory.
-   * @param image
    * @param engraveColor the color which should be substituted for black (may be null)
-   * @return
    */
   public static BufferedImage convertToOneBitGrayscale(BufferedImage image, Color engraveColor) {
   // black and white

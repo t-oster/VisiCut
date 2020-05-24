@@ -435,8 +435,6 @@ public class Helper
    * If the given path is a successor of the parent-path,
    * only the relative path is given back.
    * Otherwise the path is not modified
-   * @param path
-   * @return
    */
   public static String removeBasePath(String path)
   {
@@ -445,9 +443,6 @@ public class Helper
 
   /**
    * If the given path is relative, the base-path is prepended
-   * @param parent
-   * @param path
-   * @return
    */
   public static String addBasePath(String path)
   {
@@ -457,7 +452,6 @@ public class Helper
   /**
    * Is basePath (the settings directory) controlled by a Version Control system
    * such as git?
-   * @return
    */
   public static boolean basePathIsVersionControlled()
   {
@@ -473,10 +467,6 @@ public class Helper
 
   /**
    * Generates an HTML img-Tag for the given file with given size
-   * @param f
-   * @param width
-   * @param height
-   * @return
    */
   public static String imgTag(URL u, int width, int height)
   {
@@ -486,10 +476,6 @@ public class Helper
 
   /**
    * Generates an HTML img-Tag for the given file with given size
-   * @param f
-   * @param width
-   * @param height
-   * @return
    */
   public static String imgTag(File f, int width, int height)
   {
@@ -508,9 +494,6 @@ public class Helper
   /**
    * Returns an AffineTransform, which transformes src to dest
    * and constists of a scale and translate component
-   * @param src
-   * @param dest
-   * @return
    */
   public static AffineTransform getTransform(Rectangle2D src, Rectangle2D dest)
   {
@@ -555,8 +538,6 @@ public class Helper
 
   /**
    * Returns the smalles BoundingBox, which contains a number of Poins
-   * @param points
-   * @return
    */
   public static Rectangle2D smallestBoundingBox(java.awt.Point.Double[] points)
   {
@@ -637,9 +618,6 @@ public class Helper
    * Returns a rectangle (parralel to x and y axis), which contains
    * the given rectangle after the given transform. If the transform
    * contains a rotation, the resulting rectangle is the smallest bounding-box
-   * @param src
-   * @param at
-   * @return
    */
   public static Rectangle2D transform(Rectangle2D src, AffineTransform at)
   {
@@ -664,7 +642,6 @@ public class Helper
 
   /**
    * Test if given path is empty (i.e., can be ignored for drawing or lasercutting)
-   * @param path
    * @return True if the path contains zero points or only MOVETO points, False otherwise.
    */
   public static boolean shapeIsEmpty(Shape path) {
@@ -697,8 +674,6 @@ public class Helper
 
   /**
    * Returns the given time in s as HH:MM:SS
-   * @param estimateTime
-   * @return
    */
   public static String toHHMMSS(int estimateTime)
   {
@@ -734,8 +709,6 @@ public class Helper
   
   /**
    * Converts a string into a valid path name
-   * @param name
-   * @return
    */
   public static String toPathName(String name)
   {
@@ -757,8 +730,6 @@ public class Helper
   /**
    * Converts a converted filename from toPathName()
    * back to the original string
-   * @param name
-   * @return 
    */
   public static String fromPathName(String name)
   {

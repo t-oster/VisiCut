@@ -219,7 +219,6 @@ public class Preferences
 
   /**
    * automatically update settings every 14 days?
-   * @return
    */
   public boolean isAutoUpdateSettings() {
     return !autoUpdateSettingsDisabled;

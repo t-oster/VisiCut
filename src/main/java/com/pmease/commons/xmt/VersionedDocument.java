@@ -18,18 +18,10 @@
  **/
 package com.pmease.commons.xmt;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.core.util.HierarchicalStreams;
+import com.thoughtworks.xstream.io.xml.Dom4JReader;
+import com.thoughtworks.xstream.io.xml.Dom4JWriter;
 import org.dom4j.Branch;
 import org.dom4j.Comment;
 import org.dom4j.Document;
@@ -48,10 +40,17 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.xml.sax.EntityResolver;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.core.util.HierarchicalStreams;
-import com.thoughtworks.xstream.io.xml.Dom4JReader;
-import com.thoughtworks.xstream.io.xml.Dom4JWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
 Copyright 2010 Robin Shen
@@ -425,7 +424,6 @@ public final class VersionedDocument implements Document, Serializable {
     
     /**
      * Convert the versioned document to UTF8 encoded XML.
-     * @return
      */
 	public String toXML() {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -446,7 +444,6 @@ public final class VersionedDocument implements Document, Serializable {
 	/**
 	 * Construct the document from a XML text.
 	 * @param xml UTF8 encoded XML text
-	 * @return
 	 */
 	public static VersionedDocument fromXML(String xml) {
 		synchronized (reader) {
@@ -472,8 +469,6 @@ public final class VersionedDocument implements Document, Serializable {
 	
 	/**
 	 * Construct the versioned document from specified bean object.
-	 * @param bean
-	 * @return
 	 */
 	public static VersionedDocument fromBean(Object bean) {
 		Document dom = DocumentHelper.createDocument();
@@ -488,7 +483,6 @@ public final class VersionedDocument implements Document, Serializable {
 	 * Convert this document to bean. Migration will performed if necessary.
 	 * During the migration, content of the document will also get updated 
 	 * to reflect current migration result.
-	 * @return
 	 */
 	public Object toBean() {
 		return toBean(null, null);
@@ -500,7 +494,6 @@ public final class VersionedDocument implements Document, Serializable {
 	 * to reflect current migration result.
 	 * @param listener the migration listener to receive migration events. Set to 
 	 * null if you do not want to receive migration events.
-	 * @return
 	 */
 	public Object toBean(MigrationListener listener) {
 		return toBean(listener, null);
@@ -512,7 +505,6 @@ public final class VersionedDocument implements Document, Serializable {
 	 * to reflect current migration result.
 	 * @param beanClass class of the bean. Class information in current document 
 	 * will be used if this param is set to null
-	 * @return
 	 */
 	public Object toBean(Class<?> beanClass) {
 		return toBean(null, beanClass);
@@ -526,7 +518,6 @@ public final class VersionedDocument implements Document, Serializable {
 	 * null if you do not want to receive migration events.
 	 * @param beanClass class of the bean. Class information in current document 
 	 * will be used if this param is set to null
-	 * @return
 	 */
 	public Object toBean(MigrationListener listener, Class<?> beanClass) {	
 		Dom4JReader domReader = new Dom4JReader(this);
