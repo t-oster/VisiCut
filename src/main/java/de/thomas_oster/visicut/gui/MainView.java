@@ -74,6 +74,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import java.awt.Desktop;
 import java.awt.Dimension;
