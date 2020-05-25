@@ -1,9 +1,7 @@
-language: java
+language: minimal
 os: linux
 dist: xenial
 
-jdk:
-  - openjdk11
 services:
   - docker
 
