@@ -93,7 +93,6 @@ public class MappingSet extends LinkedList<Mapping> implements ImageListable
   
   /**
    * check for equality of the mapping, ignore name differences
-   * @param obj
    * @return true if the mapping has the same effects
    */
   public boolean equalsInContent(Object obj) {

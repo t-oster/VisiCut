@@ -83,7 +83,6 @@ public class MappingManager extends FilebasedManager<MappingSet>
   /**
      * Generates an Everything=> Profile mapping for every
      * Occuring MaterialProfile
-     * @return
      */
   public List<MappingSet> generateDefaultMappings()
   {
@@ -173,7 +172,6 @@ public class MappingManager extends FilebasedManager<MappingSet>
  
     /**
    * Find a mapping with the given name
-   * @param name
    * @return object where (getName()==string), null if not found
    */
   public MappingSet getItemByName(String name) {

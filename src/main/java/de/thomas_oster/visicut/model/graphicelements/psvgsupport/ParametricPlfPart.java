@@ -53,8 +53,6 @@ public class ParametricPlfPart extends PlfPart
   
   /**
    * Saves the curent values of the given parameters to XML
-   * @param parameters
-   * @param out 
    */
   public static void serializeParameterValues(Map<String, Parameter> parameters, OutputStream out)
   {
@@ -67,7 +65,7 @@ public class ParametricPlfPart extends PlfPart
     FilebasedManager.writeObjectToXmlStream(values, out, xstream);
   }
 
-  /*
+  /**
    * Updates the current values of the given parameters from XML
    */
   static void unserializeParameterValues(Map<String, Parameter> parameters, FileInputStream in)

@@ -31,9 +31,7 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -47,13 +45,12 @@ import java.util.zip.ZipOutputStream;
 public class FileUtils
 {
 
-  private static int FILE_COPY_BUFFER_SIZE = 1024 * 1024 * 30;
+  private static final int FILE_COPY_BUFFER_SIZE = 1024 * 1024 * 30;
   public static final String FILE_VISICUT_TEMP_MARKER = "VisiCutTmp_";
 
   /**
    * Returns a file, which does not exist yet, should be writable
    * and ends with nameSuffix, by default treated as temporary file
-   * @param nameSuffix
    */
   public static File getNonexistingWritableFile(String nameSuffix)
   {
@@ -63,8 +60,6 @@ public class FileUtils
   /**
    * Returns a file, which does not exist yet, should be writable
    * and ends with nameSuffix, customizable if file is treated as temporary
-   * @param nameSuffix
-   * @param temporary
    */
   public static File getNonexistingWritableFile(String nameSuffix, boolean temporary)
   {
@@ -317,10 +312,6 @@ public class FileUtils
   /**
    * Reads a file into a String.
    * From http://stackoverflow.com/questions/326390/how-to-create-a-java-string-from-the-contents-of-a-file
-   * @param inputFile
-   * @return
-   * @throws FileNotFoundException
-   * @throws IOException 
    */
   public static String readFileToString(File inputFile) throws FileNotFoundException, IOException
   {
@@ -339,9 +330,6 @@ public class FileUtils
   
   /**
    * Write string to file
-   * @param str
-   * @param file
-   * @throws java.io.IOException
    */
   public static void writeStringToFile(String str, File file) throws IOException {
     Files.write(file.toPath(), str.getBytes("UTF-8"));
@@ -349,10 +337,6 @@ public class FileUtils
 
   /**
    * Download URL to file
-   * @param url
-   * @param file
-   * @throws MalformedURLException
-   * @throws IOException 
    */
   public static void downloadUrlToFile(String url, File file) throws MalformedURLException, IOException {
     // thanks to https://stackoverflow.com/questions/921262/how-to-download-and-save-a-file-from-internet-using-java
@@ -363,8 +347,6 @@ public class FileUtils
   
   /**
    * Update a file's modification time. Create it if it doesn't exist.
-   * @param file
-   * @throws java.io.IOException
    */
   public static void touchFile(File file) throws IOException {
     if (!file.exists()) {

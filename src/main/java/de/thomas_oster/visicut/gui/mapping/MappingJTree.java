@@ -81,7 +81,6 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
   /**
    * Selects the path which leads to the given filter set,
    * or clears the selection if the path is not in the tree
-   * @param fs 
    */
   public void representFilterSet(FilterSet fs)
   {

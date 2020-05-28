@@ -38,16 +38,11 @@ import de.thomas_oster.visicut.model.VectorProfile;
 import de.thomas_oster.uicomponents.PlatformIcon;
 import de.thomas_oster.visicut.misc.DialogHelper;
 import java.awt.event.MouseWheelEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
@@ -200,9 +195,7 @@ public class CamCalibrationDialog extends javax.swing.JDialog
   public Homography getResultingHomography()
   {
     Point2D.Double[] ap = new Point2D.Double[confirmedImagePoints.length];
-    for (int i = 0; i < confirmedImagePoints.length; i++) {
-      ap[i] = alignmentPoints[i];
-    }
+    System.arraycopy(alignmentPoints, 0, ap, 0, confirmedImagePoints.length);
     return new Homography(ap, confirmedImagePoints);
   }
 

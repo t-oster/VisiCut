@@ -117,8 +117,6 @@ public class MigrationHelper {
 
 	/**
 	 * Get version of specified migrator class.
-	 * @param migrator
-	 * @return
 	 */
 	public static String getVersion(Class<?> migrator) {
 		List<String> versionParts = new ArrayList<String>();
@@ -138,10 +136,7 @@ public class MigrationHelper {
 	/**
 	 * Migrate from specified version to current version using specified migrator with 
 	 * specified custom data. Custom data will be passed to various "migratexxx" methods.
-	 * @param fromVersion
-	 * @param migrator
-	 * @param customData
-	 * @return true if data is migrated; false if data is of current version and does not 
+	 * @return true if data is migrated; false if data is of current version and does not
 	 * need a migration.
 	 */
 	public static boolean migrate(String fromVersion, Class<?> migrator, 

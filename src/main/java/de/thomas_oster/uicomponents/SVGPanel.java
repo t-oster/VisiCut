@@ -18,7 +18,6 @@
  **/
 package de.thomas_oster.uicomponents;
 
-import com.kitfox.svg.SVGDiagram;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.SVGRoot;
 import com.kitfox.svg.SVGUniverse;
@@ -30,7 +29,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;

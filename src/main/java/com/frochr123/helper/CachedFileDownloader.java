@@ -19,7 +19,6 @@
 package com.frochr123.helper;
 
 import com.frochr123.fabqr.FabQRFunctions;
-import de.thomas_oster.visicut.VisicutModel;
 import de.thomas_oster.visicut.misc.FileUtils;
 import de.thomas_oster.visicut.misc.Helper;
 import java.io.IOException;

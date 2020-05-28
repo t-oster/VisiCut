@@ -175,7 +175,6 @@ public class PlfPart {
 
   /**
    * Returns all GraphicObjects, which are not matched by any existing filter
-   * @return 
    */
   public GraphicSet getUnmatchedObjects()
   {

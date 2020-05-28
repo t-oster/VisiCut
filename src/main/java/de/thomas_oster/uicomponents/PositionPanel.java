@@ -211,7 +211,6 @@ public class PositionPanel extends javax.swing.JPanel implements PropertyChangeL
   /**
    * Checks d if it's = NaN and
    * returns 0 in this case, else d
-   * @param d
    * @return d or 0 if d == NaN
    */
   private double checkNaN(double d)

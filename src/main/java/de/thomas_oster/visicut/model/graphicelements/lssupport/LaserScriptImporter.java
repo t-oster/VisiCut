@@ -82,7 +82,7 @@ public class LaserScriptImporter extends AbstractImporter
         
         public void move(double x, double y)
         {
-          if (x == Double.NaN || y == Double.NaN)
+          if (Double.isNaN(x) || Double.isNaN(y))
           {
             throw new IllegalArgumentException("Move called with ("+x+","+y+")");
           }
@@ -92,7 +92,7 @@ public class LaserScriptImporter extends AbstractImporter
 
         public void line(double x, double y)
         {
-          if (x == Double.NaN || y == Double.NaN)
+          if (Double.isNaN(x) || Double.isNaN(y))
           {
             throw new IllegalArgumentException("Line called with ("+x+","+y+")");
           }

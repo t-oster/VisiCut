@@ -20,13 +20,14 @@ package de.thomas_oster.visicut.model.graphicelements;
 
 import de.thomas_oster.visicut.misc.MultiFilter;
 import de.thomas_oster.visicut.model.PlfPart;
+
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.filechooser.FileFilter;
 
 /**
  * The Importer class Takes an InputFile and returns
@@ -42,7 +43,6 @@ public class GraphicFileImporter implements Importer
   /**
    * Tries to load all importerClasses and creates a GraphicFileImporter
    * which uses all given Importers to import files
-   * @param importerClasses 
    */
   public GraphicFileImporter(String[] importerClasses)
   {

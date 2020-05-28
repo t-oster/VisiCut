@@ -31,7 +31,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -52,7 +51,7 @@ public class PredefinedMappingBox extends javax.swing.JComboBox
   /**
    * This class is only for having entries like "Map by color"
    */
-  public class MapByPropertyEntry
+  public static class MapByPropertyEntry
   {
     public MapByPropertyEntry(String property)
     {

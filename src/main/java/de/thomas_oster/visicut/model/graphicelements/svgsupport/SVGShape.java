@@ -61,8 +61,6 @@ public class SVGShape extends SVGObject implements ShapeObject
   /**
    * Returns the first StyleAttribute with the given name in the
    * Path from the current Node to the Root node
-   * @param name
-   * @return 
    */
   private StyleAttribute getStyleAttributeRecursive(String name)
   {
@@ -243,7 +241,6 @@ public class SVGShape extends SVGObject implements ShapeObject
   
   /**
    * get bounding box in SVG pixels
-   * @return 
    */
   @Override
   public Rectangle2D getBoundingBox()

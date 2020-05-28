@@ -110,8 +110,6 @@ public class EditRectangle extends Rectangle2D.Double
   /**
    * Returns the Rectangle of the given Button
    * of an EditRectangle with the given Dimensions
-   * @param b
-   * @return
    */
   private Rectangle2D getButton(Button b, Rectangle2D r, double buttonSize)
   {
@@ -188,8 +186,6 @@ public class EditRectangle extends Rectangle2D.Double
    * Returns the Bounds of the textFields
    * displaying the given parameter
    * in Panel Coordinates
-   * @param pmf
-   * @return
    */
   public Rectangle getParameterFieldBounds(ParameterField pmf)
   {
@@ -209,8 +205,6 @@ public class EditRectangle extends Rectangle2D.Double
    * The Rectangle coordinates are transformed according
    * the current Transform in the graphics. The Stroke width
    * and Button size, however are always in pixel.
-   * @param gg
-   * @param transform
    */
   public void render(Graphics2D gg, AffineTransform mm2px, boolean full)
   {

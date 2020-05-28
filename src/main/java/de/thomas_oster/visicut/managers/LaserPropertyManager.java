@@ -28,11 +28,9 @@ import de.thomas_oster.visicut.model.Raster3dProfile;
 import de.thomas_oster.visicut.model.RasterProfile;
 import de.thomas_oster.visicut.model.VectorProfile;
 import com.thoughtworks.xstream.XStream;
-import java.beans.XMLDecoder;
+
 import java.io.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class manages the available Material Profiles
@@ -67,8 +65,6 @@ public class LaserPropertyManager
   
   /**
    * Used to determine the path of propery files before VisiCut 1.5-99
-   * @param name
-   * @return 
    */
   private String oldToPathName(String name)
   {
@@ -77,8 +73,6 @@ public class LaserPropertyManager
   
   /**
    * Used to determine the path of propery files before VisiCut 1.5-99
-   * @param name
-   * @return 
    */
   private File getOldLaserPropertiesFile(LaserDevice ld, MaterialProfile mp, LaserProfile lp, float materialThickness)
   {

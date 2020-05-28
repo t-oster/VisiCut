@@ -203,7 +203,7 @@ public class RefreshProjectorThread extends Thread
               // React to possible server side errors
               if (res.getStatusLine() == null || res.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
               {
-                throw new Exception("Server sent wrong HTTP status code: " + new Integer(res.getStatusLine().getStatusCode()).toString());
+                throw new Exception("Server sent wrong HTTP status code: " + Integer.valueOf(res.getStatusLine().getStatusCode()).toString());
               }
 
               // Close everything correctly

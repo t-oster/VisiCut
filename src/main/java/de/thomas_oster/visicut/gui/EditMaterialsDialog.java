@@ -26,7 +26,7 @@ package de.thomas_oster.visicut.gui;
 
 import de.thomas_oster.uicomponents.EditableTableProvider;
 import de.thomas_oster.visicut.model.*;
-import java.awt.Color;
+
 import java.util.LinkedList;
 import java.util.List;
 

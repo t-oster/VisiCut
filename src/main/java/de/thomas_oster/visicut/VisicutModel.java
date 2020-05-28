@@ -58,14 +58,6 @@ import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -115,7 +107,6 @@ public class VisicutModel
   /**
    * Duplicates the given PlfPart and adds it to the
    * current PlfFile
-   * @param p
    */
   public void duplicate(PlfPart p)
   {
@@ -443,8 +434,6 @@ public class VisicutModel
 
   /**
    * Add PropertyChangeListener.
-   *
-   * @param listener
    */
   public void addPropertyChangeListener(PropertyChangeListener listener)
   {
@@ -453,8 +442,6 @@ public class VisicutModel
 
   /**
    * Remove PropertyChangeListener.
-   *
-   * @param listener
    */
   public void removePropertyChangeListener(PropertyChangeListener listener)
   {
@@ -896,7 +883,7 @@ public class VisicutModel
     ROTATE
   }
   
-  public class Modification
+  public static class Modification
   {
     public ModificationEnum type = ModificationEnum.NONE;
     public double oldWidth = 0;
@@ -924,7 +911,6 @@ public class VisicutModel
    * Adjusts the Transform of the Graphic-Objects such that the Objects
    * fit into the current Laser-Bed.
    * If modification was necessary, it returns true.
-   * @return
    */
   public Modification fitObjectsIntoBed()
   {

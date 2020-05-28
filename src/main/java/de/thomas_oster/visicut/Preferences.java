@@ -18,6 +18,7 @@
  **/
 package de.thomas_oster.visicut;
 
+import de.thomas_oster.liblasercut.LaserCutter;
 import de.thomas_oster.liblasercut.LibInfo;
 import java.awt.Rectangle;
 import java.util.Arrays;
@@ -218,7 +219,6 @@ public class Preferences
 
   /**
    * automatically update settings every 14 days?
-   * @return
    */
   public boolean isAutoUpdateSettings() {
     return !autoUpdateSettingsDisabled;
@@ -388,7 +388,7 @@ public class Preferences
   public String[] getAvailableLasercutterDrivers()
   {
     Set<String> result = new LinkedHashSet<String>();
-    for (Class c : LibInfo.getSupportedDrivers())
+    for (Class<? extends LaserCutter> c : LibInfo.getSupportedDrivers())
     {
       result.add(c.getCanonicalName());
     }

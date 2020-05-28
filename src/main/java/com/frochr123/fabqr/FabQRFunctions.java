@@ -193,17 +193,17 @@ public class FabQRFunctions
       }
     }
     
-    String references = "";
+    StringBuilder references = new StringBuilder();
     
     for (String ref : referencesList)
     {
       // Add comma for non first entries
-      if (!references.isEmpty())
+      if (references.length() > 0)
       {
-        references = references + ",";
+        references.append(",");
       }
       
-      references = references + ref;
+      references.append(ref);
     }
 
     // Get bytes for PLF file
@@ -246,13 +246,13 @@ public class FabQRFunctions
     multipartEntityBuilder.addTextBody("name", name, contentType);
     multipartEntityBuilder.addTextBody("email", email, contentType);
     multipartEntityBuilder.addTextBody("projectName", projectName, contentType);
-    multipartEntityBuilder.addTextBody("licenseIndex", new Integer(licenseIndex).toString(), contentType);
+    multipartEntityBuilder.addTextBody("licenseIndex", Integer.valueOf(licenseIndex).toString(), contentType);
     multipartEntityBuilder.addTextBody("tools", tools, contentType);
     multipartEntityBuilder.addTextBody("description", description, contentType);
     multipartEntityBuilder.addTextBody("location", location, contentType);
     multipartEntityBuilder.addTextBody("lasercutterName", lasercutterName, contentType);
     multipartEntityBuilder.addTextBody("lasercutterMaterial", lasercutterMaterial, contentType);
-    multipartEntityBuilder.addTextBody("references", references, contentType);
+    multipartEntityBuilder.addTextBody("references", references.toString(), contentType);
 
     // Assign entity to this post request
     HttpEntity httpEntity = multipartEntityBuilder.build();
@@ -271,7 +271,7 @@ public class FabQRFunctions
     // React to possible server side errors
     if (res.getStatusLine() == null || res.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
     {
-      throw new Exception("FabQR upload exception: Server sent wrong HTTP status code: " + new Integer(res.getStatusLine().getStatusCode()).toString());
+      throw new Exception("FabQR upload exception: Server sent wrong HTTP status code: " + Integer.valueOf(res.getStatusLine().getStatusCode()).toString());
     }
 
     // Close everything correctly

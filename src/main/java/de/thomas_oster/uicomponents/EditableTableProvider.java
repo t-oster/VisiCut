@@ -30,8 +30,6 @@ public interface EditableTableProvider
   /**
    * Edits the Object and returns the new Object
    * if editing shall be saved, null otherwise
-   * @param o
-   * @return
    */
   public Object editObject(Object o);
 }

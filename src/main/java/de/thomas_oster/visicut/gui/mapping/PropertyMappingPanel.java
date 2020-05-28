@@ -40,7 +40,6 @@ public class PropertyMappingPanel extends javax.swing.JPanel implements Property
   /**
    * Checks if the mapping is a property-mapping (like Color=red->A,Color=green->B) and
    * returns the Property (Color in this case). Null otherwise
-   * @param ms
    * @return The property for this mapping or null if it is not a property mapping
    */
   public static String getPropertyMappingProperty(MappingSet ms)

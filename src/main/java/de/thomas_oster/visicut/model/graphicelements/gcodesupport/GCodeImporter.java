@@ -82,8 +82,6 @@ public class GCodeImporter extends AbstractImporter
    * returns the coordinate e.g. from X or Y commands
    * assumes the first character to be the control
    * character
-   * @param command
-   * @return 
    */
   private double getCoordinate(String cmd)
   {

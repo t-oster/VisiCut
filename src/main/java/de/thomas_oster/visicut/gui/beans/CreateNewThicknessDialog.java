@@ -18,9 +18,7 @@
  **/
 package de.thomas_oster.visicut.gui.beans;
 
-import java.text.NumberFormat;
 import java.util.List;
-import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 
 /**

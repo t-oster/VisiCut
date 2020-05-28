@@ -360,9 +360,6 @@ private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
       }
     }
 }//GEN-LAST:event_jComboBox1ActionPerformed
-  /**
-   * @param args the command line arguments
-   */
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox cbInvertColors;
     private javax.swing.JComboBox cbResolution;

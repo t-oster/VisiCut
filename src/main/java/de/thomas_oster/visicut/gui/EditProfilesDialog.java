@@ -78,7 +78,7 @@ public class EditProfilesDialog extends javax.swing.JDialog implements EditableT
   /**
    * Set the value of materials
    *
-   * @param profile new value of materials
+   * @param profiles new value of materials
    */
   public void setProfiles(List<LaserProfile> profiles)
   {

@@ -161,8 +161,6 @@ public class SVGImporter extends AbstractImporter
   /**
    * Calculates the size in mm (with repolution dpi)
    * of a NumberWithUnits element (SVG-Element)
-   * @param n
-   * @param dpi
    */
   public static double numberWithUnitsToMm(NumberWithUnits n, double dpi)
   {
@@ -187,9 +185,6 @@ public class SVGImporter extends AbstractImporter
   /**
    * Since different programs have a different idea of the reference resolution
    * in SVG, this method tries to determine it.
-   * @param root
-   * @param f
-   * @return
    */
   public double determineResolution(File f, List<String> warnings)
   {
