@@ -2176,7 +2176,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             }
             else
             {
-              MainView.this.visicutModel1.saveJob(jobname, saveToFile, pl, cuttingSettings, warnings);
+              MainView.this.visicutModel1.saveJob(jobname, saveToFile, pl, cuttingSettings);
             }
             
             String txt = MainView.this.visicutModel1.getSelectedLaserDevice()

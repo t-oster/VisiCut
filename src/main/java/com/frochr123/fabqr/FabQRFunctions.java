@@ -209,7 +209,7 @@ public class FabQRFunctions
     // Get bytes for PLF file
     byte[] plfFileBytes = null;
     ByteArrayOutputStream plfFileOutputStream = new ByteArrayOutputStream();
-    VisicutModel.getInstance().savePlfToStream(MaterialManager.getInstance(), MappingManager.getInstance(), plfFileOutputStream);
+    VisicutModel.getInstance().savePlfToStream(MappingManager.getInstance(), plfFileOutputStream);
     plfFileBytes = plfFileOutputStream.toByteArray();
     
     if (plfFileBytes == null)

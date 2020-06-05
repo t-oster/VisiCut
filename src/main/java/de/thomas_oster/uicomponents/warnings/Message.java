@@ -18,13 +18,13 @@
  **/
 package de.thomas_oster.uicomponents.warnings;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.Timer;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  *
@@ -32,6 +32,7 @@ import javax.swing.Timer;
  */
 public class Message extends javax.swing.JPanel
 {
+  private Type type = null;
 
   /**
    * Creates new form Message
@@ -54,7 +55,6 @@ public class Message extends javax.swing.JPanel
     SUCCESS
   }
   
-  private Type type = null;
 
   /**
    * Get the value of type
@@ -141,13 +141,7 @@ public class Message extends javax.swing.JPanel
     this.setActions(actions);
     if (timeout > 0)
     {
-      new Timer(timeout, new ActionListener()
-        {
-          public void actionPerformed(ActionEvent ae)
-          {
-            Message.this.btCloseActionPerformed(ae);
-          }
-        }).start();
+      new Timer(timeout, Message.this::btCloseActionPerformed).start();
     }
   }
   
@@ -290,11 +284,6 @@ public class Message extends javax.swing.JPanel
     }
   }
 
-  public boolean isCloseButtonVisible()
-  {
-    return btClose.isVisible();
-  }
-  
   public void setCloseButtonVisible(boolean visible)
   {
     btClose.setVisible(visible);
