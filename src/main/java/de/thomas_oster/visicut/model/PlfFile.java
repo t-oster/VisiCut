@@ -29,7 +29,7 @@ import java.util.List;
  * @author Thomas Oster <thomas.oster@rwth-aachen.de>
  */
 public class PlfFile implements Iterable<PlfPart> {
-  private List<PlfPart> parts = new LinkedList<PlfPart>();
+  private final List<PlfPart> parts = new LinkedList<PlfPart>();
   private File file = null;
 
   public File getFile()
@@ -52,58 +52,38 @@ public class PlfFile implements Iterable<PlfPart> {
     return parts.iterator();
   }
 
-  public int size()
+  public synchronized int size()
   {
-    synchronized (this)
-    {    
       return parts.size();
-    }
   }
 
-  public boolean isEmpty()
+  public synchronized boolean isEmpty()
   {
-    synchronized (this)
-    {
       return parts.isEmpty();
-    }
   }
 
-  public boolean contains(PlfPart o)
+  public synchronized boolean contains(PlfPart o)
   {
-    synchronized (this)
-    {
       return parts.contains(o);
-    }
   }
 
-  public PlfPart get(int i)
+  public synchronized PlfPart get(int i)
   {
-    synchronized (this)
-    {
       return parts.get(i);
-    }
   }
   
-  public boolean add(PlfPart e)
+  public synchronized boolean add(PlfPart e)
   {
-    synchronized (this)
-    {
       return parts.add(e);
-    }
   }
 
-  public void clear()
+  public synchronized void clear()
   {
-    synchronized (this)
-    {
       parts.clear();
-    }
   }
 
-  public boolean remove(PlfPart o)
+  public synchronized boolean remove(PlfPart o)
   {
-    synchronized (this)
-    {
       if (o.getSourceFile() != null && o.getSourceFile().getName() != null && !o.getSourceFile().getName().isEmpty())
       {
         // If part from PLF file with temp marker in filename is deleted, try to delete corresponding file from disk
@@ -123,18 +103,14 @@ public class PlfFile implements Iterable<PlfPart> {
       }
 
       return parts.remove(o);
-    }
   }
   
   // Use copy constructor to create a copy of the original list
   // Just interested in a consistent state of references in the list
   // References might be frequently added or removed from list (QR code loading)
   // Do not need an actual copy of the contained elements
-  public List<PlfPart> getPartsCopy()
+  public synchronized List<PlfPart> getPartsCopy()
   {
-    synchronized (this)
-    {
-      return new LinkedList<PlfPart>(parts);
-    }
+      return new LinkedList<>(parts);
   }
 }

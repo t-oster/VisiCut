@@ -87,7 +87,43 @@ import java.util.zip.ZipOutputStream;
  */
 public class VisicutModel
 {
-  
+  public static final String PROP_PLF_FILE_CHANGED = "plf file changed";
+  public static final String PROP_PLF_PART_ADDED = "plf part added";
+  public static final String PROP_PLF_PART_REMOVED = "plf part removed";
+  public static final String PROP_PLF_PART_UPDATED = "plf part updated";
+
+  private Point2D.Double startPoint = null;
+  public static final String PROP_STARTPOINT = "startPoint";
+
+  private PlfPart selectedPart = null;
+  public static final String PROP_SELECTEDPART = "selectedPart";
+
+  private PlfFile plfFile = new PlfFile();
+
+  protected float materialThickness = 0;
+  public static final String PROP_MATERIALTHICKNESS = "materialThickness";
+
+  protected boolean useThicknessAsFocusOffset = true;
+  public static final String PROP_USETHICKNESSASFOCUSOFFSET = "useThicknessAsFocusOffset";
+
+  protected boolean autoFocusEnabled = true;
+  public static final String PROP_AUTOFOCUSENABLED = "autoFocusEnabled";
+
+  public static final FileFilter PLFFilter = new ExtensionFilter(".plf", "VisiCut Portable Laser Format (*.plf)");
+
+  private static VisicutModel instance;
+
+  protected Preferences preferences = new Preferences();
+  public static final String PROP_PREFERENCES = "preferences";
+
+  protected LaserDevice selectedLaserDevice = null;
+  public static final String PROP_SELECTEDLASERDEVICE = "selectedLaserDevice";
+
+  protected MaterialProfile material = null;
+  public static final String PROP_MATERIAL = "material";
+
+  private GraphicFileImporter graphicFileImporter = null;
+
   public void addScreenshotOfBackgroundImage(Rectangle crop, Rectangle2D target) throws IOException, ImportException
   {
     File tmp = FileUtils.getNonexistingWritableFile("screenshot.png");
@@ -126,9 +162,6 @@ public class VisicutModel
     this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_ADDED, null, dup);
   }
 
-  private Point2D.Double startPoint = null;
-  public static final String PROP_STARTPOINT = "startPoint";
-
   public Point2D.Double getStartPoint()
   {
     return startPoint;
@@ -140,9 +173,6 @@ public class VisicutModel
     this.startPoint = startPoint;
     propertyChangeSupport.firePropertyChange(PROP_STARTPOINT, oldStartPoint, startPoint);
   }
-
-  private PlfPart selectedPart = null;
-  public static final String PROP_SELECTEDPART = "selectedPart";
 
   /**
    * Get the value of selectedPart
@@ -189,8 +219,6 @@ public class VisicutModel
     propertyChangeSupport.firePropertyChange(PROP_SELECTEDPART, oldSelectedPart, selectedPart);
   }
 
-  private PlfFile plfFile = new PlfFile();
-
   /**
    * Get the value of plfFile
    *
@@ -200,9 +228,6 @@ public class VisicutModel
   {
     return plfFile;
   }
-
-  protected float materialThickness = 0;
-  public static final String PROP_MATERIALTHICKNESS = "materialThickness";
 
   /**
    * Get the value of materialThickness
@@ -226,9 +251,6 @@ public class VisicutModel
     propertyChangeSupport.firePropertyChange(PROP_MATERIALTHICKNESS, oldMaterialThickness, materialThickness);
   }
 
-  protected boolean useThicknessAsFocusOffset = true;
-  public static final String PROP_USETHICKNESSASFOCUSOFFSET = "useThicknessAsFocusOffset";
-
   /**
    * Set the value of useThicknessAsFocusOffset
    *
@@ -240,9 +262,6 @@ public class VisicutModel
     this.useThicknessAsFocusOffset = useThicknessAsFocusOffset;
     propertyChangeSupport.firePropertyChange(PROP_USETHICKNESSASFOCUSOFFSET, oldUseThicknessAsFocusOffset, useThicknessAsFocusOffset);
   }
-
-  protected boolean autoFocusEnabled = true;
-  public static final String PROP_AUTOFOCUSENABLED = "autoFocusEnabled";
 
   /**
    * Get the value of autoFocusEnabled.  Only meaningful on cutters that support it.
@@ -256,18 +275,11 @@ public class VisicutModel
 
   /**
    * Set the value of autoFocusEnabled.  Only meaningful on cutters that support it.
-   *
-   * @param autoFocusEnabeled new value of autoFocusEnabled.
    */
   public void setAutoFocusEnabled(boolean autoFocusEnabled)
   {
     this.autoFocusEnabled = autoFocusEnabled;
   }
-
-
-  public static final FileFilter PLFFilter = new ExtensionFilter(".plf", "VisiCut Portable Laser Format (*.plf)");
-
-  private static VisicutModel instance;
 
   public static VisicutModel getInstance()
   {
@@ -289,8 +301,7 @@ public class VisicutModel
     }
   }
 
-  protected LaserDevice selectedLaserDevice = null;
-  public static final String PROP_SELECTEDLASERDEVICE = "selectedLaserDevice";
+
 
   /**
    * Get the value of selectedLaserDevice
@@ -339,8 +350,6 @@ public class VisicutModel
     // event being fired, so send null as the old value to force an event.
     propertyChangeSupport.firePropertyChange(PROP_BACKGROUNDIMAGE, null, backgroundImage);
   }
-  protected Preferences preferences = new Preferences();
-  public static final String PROP_PREFERENCES = "preferences";
 
   /**
    * Get the value of preferences
@@ -578,7 +587,7 @@ public class VisicutModel
     return resultingFile;
   }
 
-  public void saveToFile(MaterialManager pm, MappingManager mm, File f) throws IOException
+  public void saveToFile(MappingManager mm, File f) throws IOException
   {
     FileOutputStream outputStream = new FileOutputStream(f);
     savePlfToStream(mm, outputStream);
@@ -596,12 +605,8 @@ public class VisicutModel
     ZipOutputStream out = new ZipOutputStream(outputStream);
     //find temporary file for xml
     int k = 0;
-    File tmp;
-    do
-    {
-      tmp = new File(Helper.getBasePath(), "tmp" + (k++) + ".xml");
-    }
-    while (tmp.exists());
+    File tmp = File.createTempFile("tmp", ".xml", Helper.getBasePath());
+    tmp.deleteOnExit();
     for(int i = 0; i < plf.size(); i++)
     {
       // Add source GraphicsFile to the Zip File
@@ -674,10 +679,7 @@ public class VisicutModel
     }
     // Complete the ZIP file
     out.close();
-    // Delete the tmp file
-    tmp.delete();
   }
-  private GraphicFileImporter graphicFileImporter = null;
 
   public GraphicFileImporter getGraphicFileImporter()
   {
@@ -692,8 +694,7 @@ public class VisicutModel
   {
     return this.getGraphicFileImporter().importFile(f, warnings);
   }
-  protected MaterialProfile material = null;
-  public static final String PROP_MATERIAL = "material";
+
 
   /**
    * Get the value of material
@@ -791,8 +792,7 @@ public class VisicutModel
     fileOutputStream.close();
   }
 
-  public int estimateTime(Map<LaserProfile, List<LaserProperty>> propmap) throws IOException
-  {
+  public int estimateTime(Map<LaserProfile, List<LaserProperty>> propmap) {
     LaserCutter lc = this.getSelectedLaserDevice().getLaserCutter();
     LaserJob job = this.prepareJob("calc", propmap);
     return lc.estimateJobDuration(job);
@@ -986,11 +986,6 @@ public class VisicutModel
     }
     return result;
   }
-
-  public static final String PROP_PLF_FILE_CHANGED = "plf file changed";
-  public static final String PROP_PLF_PART_ADDED = "plf part added";
-  public static final String PROP_PLF_PART_REMOVED = "plf part removed";
-  public static final String PROP_PLF_PART_UPDATED = "plf part updated";
 
   private void setPlfFile(PlfFile resultingFile)
   {
