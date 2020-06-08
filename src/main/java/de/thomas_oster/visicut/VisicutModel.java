@@ -18,7 +18,6 @@
  **/
 package de.thomas_oster.visicut;
 
-import de.thomas_oster.liblasercut.IllegalJobException;
 import de.thomas_oster.liblasercut.LaserCutter;
 import de.thomas_oster.liblasercut.LaserJob;
 import de.thomas_oster.liblasercut.LaserProperty;
@@ -44,6 +43,10 @@ import de.thomas_oster.visicut.model.graphicelements.ImportException;
 import de.thomas_oster.visicut.model.graphicelements.psvgsupport.ParametricPlfPart;
 import de.thomas_oster.visicut.model.mapping.Mapping;
 import de.thomas_oster.visicut.model.mapping.MappingSet;
+
+import javax.imageio.ImageIO;
+import javax.swing.event.SwingPropertyChangeSupport;
+import javax.swing.filechooser.FileFilter;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
@@ -57,8 +60,13 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
-import java.io.*;
-import java.net.SocketTimeoutException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -70,9 +78,6 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
-import javax.imageio.ImageIO;
-import javax.swing.event.SwingPropertyChangeSupport;
-import javax.swing.filechooser.FileFilter;
 
 /**
  * This class contains the state and business logic of the
@@ -82,8 +87,44 @@ import javax.swing.filechooser.FileFilter;
  */
 public class VisicutModel
 {
-  
-  public void addScreenshotOfBackgroundImage(Rectangle crop, Rectangle2D target) throws IOException, FileNotFoundException, ImportException
+  public static final String PROP_PLF_FILE_CHANGED = "plf file changed";
+  public static final String PROP_PLF_PART_ADDED = "plf part added";
+  public static final String PROP_PLF_PART_REMOVED = "plf part removed";
+  public static final String PROP_PLF_PART_UPDATED = "plf part updated";
+
+  private Point2D.Double startPoint = null;
+  public static final String PROP_STARTPOINT = "startPoint";
+
+  private PlfPart selectedPart = null;
+  public static final String PROP_SELECTEDPART = "selectedPart";
+
+  private PlfFile plfFile = new PlfFile();
+
+  protected float materialThickness = 0;
+  public static final String PROP_MATERIALTHICKNESS = "materialThickness";
+
+  protected boolean useThicknessAsFocusOffset = true;
+  public static final String PROP_USETHICKNESSASFOCUSOFFSET = "useThicknessAsFocusOffset";
+
+  protected boolean autoFocusEnabled = true;
+  public static final String PROP_AUTOFOCUSENABLED = "autoFocusEnabled";
+
+  public static final FileFilter PLFFilter = new ExtensionFilter(".plf", "VisiCut Portable Laser Format (*.plf)");
+
+  private static VisicutModel instance;
+
+  protected Preferences preferences = new Preferences();
+  public static final String PROP_PREFERENCES = "preferences";
+
+  protected LaserDevice selectedLaserDevice = null;
+  public static final String PROP_SELECTEDLASERDEVICE = "selectedLaserDevice";
+
+  protected MaterialProfile material = null;
+  public static final String PROP_MATERIAL = "material";
+
+  private GraphicFileImporter graphicFileImporter = null;
+
+  public void addScreenshotOfBackgroundImage(Rectangle crop, Rectangle2D target) throws IOException, ImportException
   {
     File tmp = FileUtils.getNonexistingWritableFile("screenshot.png");
     tmp.deleteOnExit();
@@ -94,7 +135,7 @@ public class VisicutModel
     Graphics2D g = cut.createGraphics();
     g.drawImage(backgroundImage, AffineTransform.getTranslateInstance(-crop.x, -crop.y), null);
     ImageIO.write(cut, "png", tmp);
-    PlfPart p = this.loadGraphicFile(tmp, new LinkedList<String>());
+    PlfPart p = this.loadGraphicFile(tmp, new LinkedList<>());
     if (target != null)
     {
       p.getGraphicObjects().setTransform(Helper.getTransform(p.getGraphicObjects().getOriginalBoundingBox(), target));
@@ -111,7 +152,7 @@ public class VisicutModel
   public void duplicate(PlfPart p)
   {
     PlfPart dup = new PlfPart();
-    dup.setSourceFile(p.getSourceFile() != null ? p.getSourceFile() : null);
+    dup.setSourceFile(p.getSourceFile());
     dup.setMapping(p.getMapping() != null ? p.getMapping().clone() : null);
     if (p.getGraphicObjects() != null)
     {
@@ -120,9 +161,6 @@ public class VisicutModel
     this.plfFile.add(dup);
     this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_ADDED, null, dup);
   }
-
-  private Point2D.Double startPoint = null;
-  public static final String PROP_STARTPOINT = "startPoint";
 
   public Point2D.Double getStartPoint()
   {
@@ -136,9 +174,6 @@ public class VisicutModel
     propertyChangeSupport.firePropertyChange(PROP_STARTPOINT, oldStartPoint, startPoint);
   }
 
-  private PlfPart selectedPart = null;
-  public static final String PROP_SELECTEDPART = "selectedPart";
-
   /**
    * Get the value of selectedPart
    *
@@ -151,7 +186,7 @@ public class VisicutModel
 
   public FileFilter getAllFileFilter()
   {
-    List<FileFilter> filters = new LinkedList<FileFilter>();
+    List<FileFilter> filters = new LinkedList<>();
     filters.add(PLFFilter);
     filters.addAll(Arrays.asList(this.getGraphicFileImporter().getFileFilters()));
     return new MultiFilter(filters);
@@ -184,8 +219,6 @@ public class VisicutModel
     propertyChangeSupport.firePropertyChange(PROP_SELECTEDPART, oldSelectedPart, selectedPart);
   }
 
-  private PlfFile plfFile = new PlfFile();
-
   /**
    * Get the value of plfFile
    *
@@ -195,9 +228,6 @@ public class VisicutModel
   {
     return plfFile;
   }
-
-  protected float materialThickness = 0;
-  public static final String PROP_MATERIALTHICKNESS = "materialThickness";
 
   /**
    * Get the value of materialThickness
@@ -221,19 +251,6 @@ public class VisicutModel
     propertyChangeSupport.firePropertyChange(PROP_MATERIALTHICKNESS, oldMaterialThickness, materialThickness);
   }
 
-  protected boolean useThicknessAsFocusOffset = true;
-  public static final String PROP_USETHICKNESSASFOCUSOFFSET = "useThicknessAsFocusOffset";
-
-  /**
-   * Get the value of useThicknessAsFocusOffset
-   *
-   * @return the value of useThicknessAsFocusOffset
-   */
-  public boolean isUseThicknessAsFocusOffset()
-  {
-    return useThicknessAsFocusOffset;
-  }
-
   /**
    * Set the value of useThicknessAsFocusOffset
    *
@@ -245,9 +262,6 @@ public class VisicutModel
     this.useThicknessAsFocusOffset = useThicknessAsFocusOffset;
     propertyChangeSupport.firePropertyChange(PROP_USETHICKNESSASFOCUSOFFSET, oldUseThicknessAsFocusOffset, useThicknessAsFocusOffset);
   }
-
-  protected boolean autoFocusEnabled = true;
-  public static final String PROP_AUTOFOCUSENABLED = "autoFocusEnabled";
 
   /**
    * Get the value of autoFocusEnabled.  Only meaningful on cutters that support it.
@@ -261,18 +275,11 @@ public class VisicutModel
 
   /**
    * Set the value of autoFocusEnabled.  Only meaningful on cutters that support it.
-   *
-   * @param autoFocusEnabeled new value of autoFocusEnabled.
    */
   public void setAutoFocusEnabled(boolean autoFocusEnabled)
   {
     this.autoFocusEnabled = autoFocusEnabled;
   }
-
-
-  public static final FileFilter PLFFilter = new ExtensionFilter(".plf", "VisiCut Portable Laser Format (*.plf)");
-
-  private static VisicutModel instance;
 
   public static VisicutModel getInstance()
   {
@@ -294,8 +301,7 @@ public class VisicutModel
     }
   }
 
-  protected LaserDevice selectedLaserDevice = null;
-  public static final String PROP_SELECTEDLASERDEVICE = "selectedLaserDevice";
+
 
   /**
    * Get the value of selectedLaserDevice
@@ -344,8 +350,6 @@ public class VisicutModel
     // event being fired, so send null as the old value to force an event.
     propertyChangeSupport.firePropertyChange(PROP_BACKGROUNDIMAGE, null, backgroundImage);
   }
-  protected Preferences preferences = new Preferences();
-  public static final String PROP_PREFERENCES = "preferences";
 
   /**
    * Get the value of preferences
@@ -421,7 +425,7 @@ public class VisicutModel
     }
   }
 
-  private PropertyChangeSupport propertyChangeSupport = new SwingPropertyChangeSupport(this, true);
+  private final PropertyChangeSupport propertyChangeSupport = new SwingPropertyChangeSupport(this, true);
 
   /**
    * Get PropertyChangeSupport.
@@ -440,15 +444,7 @@ public class VisicutModel
     propertyChangeSupport.addPropertyChangeListener(listener);
   }
 
-  /**
-   * Remove PropertyChangeListener.
-   */
-  public void removePropertyChangeListener(PropertyChangeListener listener)
-  {
-    propertyChangeSupport.removePropertyChangeListener(listener);
-  }
-  
-  public void loadFile(MappingManager mm, File file, List<String> warnings, boolean discardCurrent) throws FileNotFoundException, IOException, ImportException
+  public void loadFile(MappingManager mm, File file, List<String> warnings, boolean discardCurrent) throws IOException, ImportException
   {
     if (PLFFilter.accept(file))
     {
@@ -499,19 +495,18 @@ public class VisicutModel
     }
   }
   
-  public PlfFile loadPlfFile(MappingManager mm, File f, List<String> warnings) throws FileNotFoundException, IOException, ImportException
-  {
+  public PlfFile loadPlfFile(MappingManager mm, File f, List<String> warnings) throws IOException {
     ZipFile zip = new ZipFile(f);
     PlfFile resultingFile = new PlfFile();
     resultingFile.setFile(f);
     //Collect for each part the transform,mapping and sourceFile
-    Map<Integer,AffineTransform> transforms = new LinkedHashMap<Integer,AffineTransform>();
-    Map<Integer,MappingSet> mappings = new LinkedHashMap<Integer, MappingSet>();
-    Map<Integer,File> sourceFiles = new LinkedHashMap<Integer, File>();
-    Enumeration entries = zip.entries();
+    Map<Integer,AffineTransform> transforms = new LinkedHashMap<>();
+    Map<Integer,MappingSet> mappings = new LinkedHashMap<>();
+    Map<Integer,File> sourceFiles = new LinkedHashMap<>();
+    Enumeration<? extends ZipEntry> entries = zip.entries();
     while (entries.hasMoreElements())
     {
-      ZipEntry entry = (ZipEntry) entries.nextElement();
+      ZipEntry entry = entries.nextElement();
       String name = entry.getName();
       Integer i = name.matches("[0-9]+/.*") ? Integer.parseInt(name.split("/")[0]) : 0;
       if (name.equals((i > 0 ? i+"/" : "")+"transform.xml"))
@@ -592,15 +587,15 @@ public class VisicutModel
     return resultingFile;
   }
 
-  public void saveToFile(MaterialManager pm, MappingManager mm, File f) throws FileNotFoundException, IOException
+  public void saveToFile(MappingManager mm, File f) throws IOException
   {
     FileOutputStream outputStream = new FileOutputStream(f);
-    savePlfToStream(pm, mm, outputStream);
+    savePlfToStream(mm, outputStream);
     this.getPlfFile().setFile(f);
     this.setPlfFile(this.getPlfFile()); // fire property change events
   }
 
-  public void savePlfToStream(MaterialManager pm, MappingManager mm, OutputStream outputStream) throws FileNotFoundException, IOException
+  public void savePlfToStream(MappingManager mm, OutputStream outputStream) throws IOException
   {
     List<PlfPart> plf = this.getPlfFile().getPartsCopy();
     FileInputStream in;
@@ -610,12 +605,8 @@ public class VisicutModel
     ZipOutputStream out = new ZipOutputStream(outputStream);
     //find temporary file for xml
     int k = 0;
-    File tmp = null;
-    do
-    {
-      tmp = new File(Helper.getBasePath(), "tmp" + (k++) + ".xml");
-    }
-    while (tmp.exists());
+    File tmp = File.createTempFile("tmp", ".xml", Helper.getBasePath());
+    tmp.deleteOnExit();
     for(int i = 0; i < plf.size(); i++)
     {
       // Add source GraphicsFile to the Zip File
@@ -688,10 +679,7 @@ public class VisicutModel
     }
     // Complete the ZIP file
     out.close();
-    // Delete the tmp file
-    tmp.delete();
   }
-  private GraphicFileImporter graphicFileImporter = null;
 
   public GraphicFileImporter getGraphicFileImporter()
   {
@@ -706,8 +694,7 @@ public class VisicutModel
   {
     return this.getGraphicFileImporter().importFile(f, warnings);
   }
-  protected MaterialProfile material = null;
-  public static final String PROP_MATERIAL = "material";
+
 
   /**
    * Get the value of material
@@ -731,8 +718,7 @@ public class VisicutModel
     propertyChangeSupport.firePropertyChange(PROP_MATERIAL, oldMaterial, material);
   }
 
-  private LaserJob prepareJob(String name, Map<LaserProfile, List<LaserProperty>> propmap) throws FileNotFoundException, IOException
-  {
+  private LaserJob prepareJob(String name, Map<LaserProfile, List<LaserProperty>> propmap) {
     LaserJob job = new LaserJob(name, name, "visicut");
     if (this.startPoint != null)
     {
@@ -768,7 +754,7 @@ public class VisicutModel
     return job;
   }
 
-  public void sendJob(String name, ProgressListener pl, Map<LaserProfile, List<LaserProperty>> props, List<String> warnings) throws IllegalJobException, SocketTimeoutException, Exception
+  public void sendJob(String name, ProgressListener pl, Map<LaserProfile, List<LaserProperty>> props, List<String> warnings) throws Exception
   {
     LaserCutter lasercutter = this.getSelectedLaserDevice().getLaserCutter();
     if (pl != null)
@@ -787,7 +773,7 @@ public class VisicutModel
     }
   }
 
-  public void saveJob( String name, File saveFile, ProgressListener pl, Map<LaserProfile, List<LaserProperty>> props, List<String> warnings ) throws IllegalJobException, SocketTimeoutException, Exception{
+  public void saveJob(String name, File saveFile, ProgressListener pl, Map<LaserProfile, List<LaserProperty>> props) throws Exception{
 	  LaserCutter lasercutter = this.getSelectedLaserDevice().getLaserCutter();
 
 
@@ -801,17 +787,12 @@ public class VisicutModel
 	  if (pl != null)
 	  {
 		  pl.taskChanged(this, "sending job");
-		  lasercutter.saveJob(fileOutputStream, job);
-	  }
-	  else
-	  {
-		  lasercutter.saveJob(fileOutputStream, job);
-	  }
+      }
+    lasercutter.saveJob(fileOutputStream, job);
     fileOutputStream.close();
   }
 
-  public int estimateTime(Map<LaserProfile, List<LaserProperty>> propmap) throws FileNotFoundException, IOException
-  {
+  public int estimateTime(Map<LaserProfile, List<LaserProperty>> propmap) {
     LaserCutter lc = this.getSelectedLaserDevice().getLaserCutter();
     LaserJob job = this.prepareJob("calc", propmap);
     return lc.estimateJobDuration(job);
@@ -823,14 +804,14 @@ public class VisicutModel
     {
       return props;
     }
-    List<LaserProperty> result = new LinkedList<LaserProperty>();
+    List<LaserProperty> result = new LinkedList<>();
     for(LaserProperty p:props)
     {
       LaserProperty c = p.clone();
       Object foc = c.getProperty("focus");
       if (foc instanceof Integer)
       {
-        c.setProperty("focus", (Integer) (((Integer) foc)+ (int) focusOffset));
+        c.setProperty("focus", ((Integer) foc)+ (int) focusOffset);
       }
       else if (foc instanceof Float)
       {
@@ -838,7 +819,7 @@ public class VisicutModel
       }
       else if (foc instanceof Double)
       {
-        c.setProperty("focus", (Double) (((Double) foc)+ (double) focusOffset));
+        c.setProperty("focus", ((Double) foc)+ (double) focusOffset);
       }
       result.add(c);
     }
@@ -864,13 +845,7 @@ public class VisicutModel
       part.moveto((int) p.x, (int) p.y);
       job.addPart(part);
       lasercutter.sendJob(job);
-    }
-    catch (IllegalJobException ex)
-    {
-      Logger.getLogger(VisicutModel.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    catch (Exception ex)
-    {
+    } catch (Exception ex) {
       Logger.getLogger(VisicutModel.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
@@ -885,7 +860,7 @@ public class VisicutModel
   
   public static class Modification
   {
-    public ModificationEnum type = ModificationEnum.NONE;
+    public ModificationEnum type;
     public double oldWidth = 0;
     public double oldHeight = 0;
     
@@ -1011,11 +986,6 @@ public class VisicutModel
     }
     return result;
   }
-
-  public static final String PROP_PLF_FILE_CHANGED = "plf file changed";
-  public static final String PROP_PLF_PART_ADDED = "plf part added";
-  public static final String PROP_PLF_PART_REMOVED = "plf part removed";
-  public static final String PROP_PLF_PART_UPDATED = "plf part updated";
 
   private void setPlfFile(PlfFile resultingFile)
   {

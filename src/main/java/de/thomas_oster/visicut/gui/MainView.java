@@ -2176,7 +2176,7 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             }
             else
             {
-              MainView.this.visicutModel1.saveJob(jobname, saveToFile, pl, cuttingSettings, warnings);
+              MainView.this.visicutModel1.saveJob(jobname, saveToFile, pl, cuttingSettings);
             }
             
             String txt = MainView.this.visicutModel1.getSelectedLaserDevice()
@@ -2303,7 +2303,7 @@ private void filesDropSupport1PropertyChange(java.beans.PropertyChangeEvent evt)
       }
       try
       {
-        this.visicutModel1.saveToFile(MaterialManager.getInstance(), MappingManager.getInstance(), file);
+        this.visicutModel1.saveToFile(MappingManager.getInstance(), file);
       }
       catch (Exception ex)
       {
@@ -2411,7 +2411,7 @@ private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   {
     try
     {
-      this.visicutModel1.saveToFile(MaterialManager.getInstance(), MappingManager.getInstance(), this.visicutModel1.getPlfFile().getFile());
+      this.visicutModel1.saveToFile(MappingManager.getInstance(), this.visicutModel1.getPlfFile().getFile());
     }
     catch (Exception ex)
     {
