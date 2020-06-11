@@ -22,6 +22,7 @@ import de.thomas_oster.liblasercut.LaserCutter;
 import de.thomas_oster.liblasercut.LaserJob;
 import de.thomas_oster.liblasercut.LaserProperty;
 import de.thomas_oster.liblasercut.ProgressListener;
+import de.thomas_oster.liblasercut.ProgressListenerDummy;
 import de.thomas_oster.liblasercut.VectorPart;
 import de.thomas_oster.liblasercut.platform.Util;
 import de.thomas_oster.visicut.managers.LaserDeviceManager;
@@ -66,7 +67,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -531,16 +531,16 @@ public class VisicutModel
         //source files get extracted
         File tempFile = FileUtils.getNonexistingWritableFile(name.replace("/","_"));
         byte[] buf = new byte[1024];
-        InputStream in = zip.getInputStream(entry);
-        FileOutputStream out = new FileOutputStream(tempFile);
-        // Transfer bytes from the file to the ZIP file
-        int len;
-        while ((len = in.read(buf)) > 0)
+        try (InputStream in = zip.getInputStream(entry);
+          FileOutputStream out = new FileOutputStream(tempFile))
         {
-          out.write(buf, 0, len);
+          // Transfer bytes from the file to the ZIP file
+          int len;
+          while ((len = in.read(buf)) > 0)
+          {
+            out.write(buf, 0, len);
+          }
         }
-        out.close();
-        in.close();
         tempFile.deleteOnExit();
         //Parameter files for parametric svg files are just extracted next
         //to the svg, but not counted as source file
@@ -775,21 +775,17 @@ public class VisicutModel
 
   public void saveJob(String name, File saveFile, ProgressListener pl, Map<LaserProfile, List<LaserProperty>> props) throws Exception{
 	  LaserCutter lasercutter = this.getSelectedLaserDevice().getLaserCutter();
-
-
-	  if (pl != null)
-	  {
-		  pl.taskChanged(this, "preparing job");
-	  }
-
-	  java.io.PrintStream fileOutputStream = new PrintStream(saveFile);
-	  LaserJob job = this.prepareJob(name, props);
-	  if (pl != null)
-	  {
-		  pl.taskChanged(this, "sending job");
-      }
-    lasercutter.saveJob(fileOutputStream, job);
-    fileOutputStream.close();
+    if (pl == null)
+    {
+      pl = new ProgressListenerDummy();
+    }
+    pl.taskChanged(this, "preparing job");
+    try (OutputStream fileOutputStream = new FileOutputStream(saveFile))
+    {
+      LaserJob job = this.prepareJob(name, props);
+      pl.taskChanged(this, "saving job");
+      lasercutter.saveJob(fileOutputStream, job);
+    }
   }
 
   public int estimateTime(Map<LaserProfile, List<LaserProperty>> propmap) {
