@@ -160,6 +160,7 @@ public class VisicutModel
     }
     this.plfFile.add(dup);
     this.propertyChangeSupport.firePropertyChange(PROP_PLF_PART_ADDED, null, dup);
+    this.setSelectedPart(dup);
   }
 
   public Point2D.Double getStartPoint()

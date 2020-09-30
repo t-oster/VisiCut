@@ -301,7 +301,7 @@ public class GraphicSet extends LinkedList<GraphicObject>
   {
     GraphicSet result = new GraphicSet();
     result.addAll(this);
-    result.setTransform(this.getTransform());
+    result.setTransform(new AffineTransform(this.getTransform()));
     result.boundingBoxCache = boundingBoxCache;
     result.originalBoundingBoxCache = originalBoundingBoxCache;
     result.basicTransform = basicTransform;
