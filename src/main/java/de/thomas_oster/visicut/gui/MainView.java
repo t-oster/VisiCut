@@ -723,6 +723,10 @@ public class MainView extends javax.swing.JFrame
     mappingPanel = new de.thomas_oster.visicut.gui.mapping.MappingPanel();
     positionPanel = new de.thomas_oster.uicomponents.PositionPanel();
     propertiesPanel = new de.thomas_oster.visicut.gui.propertypanel.PropertiesPanel();
+    rotaryAxisCheckBox = new javax.swing.JCheckBox();
+    rotaryAxisDiameterTextField = new javax.swing.JFormattedTextField();
+    rotaryAxisDiameterLabel = new javax.swing.JLabel();
+    rotaryAxisDiameterLabelMm = new javax.swing.JLabel();
     jPanel5 = new javax.swing.JPanel();
     jLabelJobName = new javax.swing.JLabel();
     jTextFieldJobName = new javax.swing.JTextField();
@@ -983,13 +987,9 @@ public class MainView extends javax.swing.JFrame
     jCheckBoxAutoFocus.setText(resourceMap.getString("jCheckBoxAutoFocus.text")); // NOI18N
     jCheckBoxAutoFocus.setToolTipText(resourceMap.getString("jCheckBoxAutoFocus.toolTipText")); // NOI18N
     jCheckBoxAutoFocus.setName("jCheckBoxAutoFocus"); // NOI18N
-    jCheckBoxAutoFocus.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        jCheckBoxAutoFocusActionPerformed(evt);
-      }
-    });
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${autoFocusEnabled}"), jCheckBoxAutoFocus, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+    bindingGroup.addBinding(binding);
 
     objectComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
     objectComboBox.setName("objectComboBox"); // NOI18N
@@ -1036,6 +1036,28 @@ public class MainView extends javax.swing.JFrame
     propertiesPanel.setLayout(new javax.swing.BoxLayout(propertiesPanel, javax.swing.BoxLayout.Y_AXIS));
     mappingTabbedPane.addTab(resourceMap.getString("propertyPanelContainer.TabConstraints.tabTitle"), propertiesPanel); // NOI18N
 
+    rotaryAxisCheckBox.setText(resourceMap.getString("rotaryAxisCheckBox.text")); // NOI18N
+    rotaryAxisCheckBox.setName("rotaryAxisCheckBox"); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${rotaryAxisEnabled}"), rotaryAxisCheckBox, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+    bindingGroup.addBinding(binding);
+
+    // this is set via "customize code" of rotaryAxisDiameterTextField
+    javax.swing.text.NumberFormatter doubleFormatter = new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.0"));
+    doubleFormatter.setValueClass(Double.class);
+    rotaryAxisDiameterTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(doubleFormatter));
+    rotaryAxisDiameterTextField.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+    rotaryAxisDiameterTextField.setName("rotaryAxisDiameterTextField"); // NOI18N
+
+    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, visicutModel1, org.jdesktop.beansbinding.ELProperty.create("${rotaryAxisDiameterMm}"), rotaryAxisDiameterTextField, org.jdesktop.beansbinding.BeanProperty.create("value"));
+    bindingGroup.addBinding(binding);
+
+    rotaryAxisDiameterLabel.setText(resourceMap.getString("rotaryAxisDiameterLabel.text")); // NOI18N
+    rotaryAxisDiameterLabel.setName("rotaryAxisDiameterLabel"); // NOI18N
+
+    rotaryAxisDiameterLabelMm.setText(resourceMap.getString("rotaryAxisDiameterLabelMm.text")); // NOI18N
+    rotaryAxisDiameterLabelMm.setName("rotaryAxisDiameterLabelMm"); // NOI18N
+
     javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
     jPanel2.setLayout(jPanel2Layout);
     jPanel2Layout.setHorizontalGroup(
@@ -1072,7 +1094,15 @@ public class MainView extends javax.swing.JFrame
           .addGroup(jPanel2Layout.createSequentialGroup()
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jLabel9)
-              .addComponent(jLabel1))
+              .addComponent(jLabel1)
+              .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(rotaryAxisCheckBox)
+                .addGap(18, 18, 18)
+                .addComponent(rotaryAxisDiameterLabel)
+                .addGap(6, 6, 6)
+                .addComponent(rotaryAxisDiameterTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(rotaryAxisDiameterLabelMm)))
             .addGap(0, 0, Short.MAX_VALUE)))
         .addGap(26, 26, 26))
     );
@@ -1099,6 +1129,12 @@ public class MainView extends javax.swing.JFrame
               .addComponent(btAddMaterialThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
           .addComponent(jCheckBoxAutoFocus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(rotaryAxisCheckBox)
+          .addComponent(rotaryAxisDiameterTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(rotaryAxisDiameterLabel)
+          .addComponent(rotaryAxisDiameterLabelMm))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1905,13 +1941,11 @@ public class MainView extends javax.swing.JFrame
           }
         }
       }
-      if (lc.isAutoFocus()) {
-        // Display the autofocus setting as retained in VisicutModel
-        this.jCheckBoxAutoFocus.setSelected(visicutModel1.isAutoFocusEnabled());
-        this.jCheckBoxAutoFocus.setVisible(true);
-      } else {
-        this.jCheckBoxAutoFocus.setVisible(false);
-      }
+      this.jCheckBoxAutoFocus.setVisible(lc.isAutoFocus());
+      this.rotaryAxisCheckBox.setVisible(lc.isRotaryAxisSupported());
+      this.rotaryAxisDiameterTextField.setVisible(lc.isRotaryAxisSupported() && visicutModel1.isRotaryAxisEnabled());
+      this.rotaryAxisDiameterLabel.setVisible(lc.isRotaryAxisSupported() && visicutModel1.isRotaryAxisEnabled());
+      this.rotaryAxisDiameterLabelMm.setVisible(lc.isRotaryAxisSupported() && visicutModel1.isRotaryAxisEnabled());
     }
     if (!focusSupported || (MaterialManager.getInstance().getAll().size() == 1 && MaterialManager.getInstance().getAll().get(0).getMaterialThicknesses().size() == 1))
     {
@@ -2373,7 +2407,7 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
         }
       }
     }
-    else if (evt.getPropertyName().equals(VisicutModel.PROP_MATERIAL))
+    else if (evt.getPropertyName().equals(VisicutModel.PROP_MATERIAL) || evt.getPropertyName().equals(VisicutModel.PROP_ROTARYAXIS))
     {
       MainView.this.timeLabel.setText("");
       this.refreshMaterialThicknessesComboBox();
@@ -3337,11 +3371,6 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     qrWebcamScanDialog.setVisible(true);
   }//GEN-LAST:event_webcamQRCodeMenuItemActionPerformed
 
-  private void jCheckBoxAutoFocusActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jCheckBoxAutoFocusActionPerformed
-  {//GEN-HEADEREND:event_jCheckBoxAutoFocusActionPerformed
-    visicutModel1.setAutoFocusEnabled(jCheckBoxAutoFocus.isSelected());
-  }//GEN-LAST:event_jCheckBoxAutoFocusActionPerformed
-
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
   private javax.swing.JMenu actionsMenu;
@@ -3423,6 +3452,10 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   private javax.swing.JCheckBoxMenuItem projectorActiveMenuItem;
   private de.thomas_oster.visicut.gui.propertypanel.PropertiesPanel propertiesPanel;
   private javax.swing.JMenu recentFilesMenu;
+  private javax.swing.JCheckBox rotaryAxisCheckBox;
+  private javax.swing.JLabel rotaryAxisDiameterLabel;
+  private javax.swing.JLabel rotaryAxisDiameterLabelMm;
+  private javax.swing.JFormattedTextField rotaryAxisDiameterTextField;
   private javax.swing.JMenuItem saveAsMenuItem;
   private javax.swing.JFileChooser saveFileChooser;
   private javax.swing.JMenuItem saveMenuItem;
