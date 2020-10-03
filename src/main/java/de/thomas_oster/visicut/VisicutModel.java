@@ -760,6 +760,7 @@ public class VisicutModel extends Component // FIXME: "extends Component" isn't 
         }
       }
     }
+    job.removeEmptyParts();
     return job;
   }
 
