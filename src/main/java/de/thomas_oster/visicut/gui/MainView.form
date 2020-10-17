@@ -764,6 +764,15 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="rotaryAxisCheckBox" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="rotaryAxisDiameterLabel" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                                          <Component id="rotaryAxisDiameterTextField" min="-2" pref="78" max="-2" attributes="0"/>
+                                          <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
+                                          <Component id="rotaryAxisDiameterLabelMm" min="-2" max="-2" attributes="0"/>
+                                      </Group>
                                   </Group>
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
@@ -798,6 +807,13 @@
                               </Group>
                               <Component id="jCheckBoxAutoFocus" min="-2" max="-2" attributes="1"/>
                               <Component id="jCheckBox1" alignment="0" pref="0" max="32767" attributes="1"/>
+                          </Group>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="rotaryAxisCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="rotaryAxisDiameterTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="rotaryAxisDiameterLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="rotaryAxisDiameterLabelMm" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Component id="jSeparator1" min="-2" pref="8" max="-2" attributes="0"/>
@@ -909,9 +925,9 @@
                     <Property name="toolTipText" type="java.lang.String" resourceKey="jCheckBoxAutoFocus.toolTipText"/>
                     <Property name="name" type="java.lang.String" value="jCheckBoxAutoFocus" noResource="true"/>
                   </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jCheckBoxAutoFocusActionPerformed"/>
-                  </Events>
+                  <BindingProperties>
+                    <BindingProperty name="selected" source="visicutModel1" sourcePath="${autoFocusEnabled}" target="jCheckBoxAutoFocus" targetPath="selected" updateStrategy="0" immediately="false"/>
+                  </BindingProperties>
                 </Component>
                 <Component class="javax.swing.JComboBox" name="objectComboBox">
                   <Properties>
@@ -1008,6 +1024,39 @@
                     </Container>
                   </SubComponents>
                 </Container>
+                <Component class="javax.swing.JCheckBox" name="rotaryAxisCheckBox">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="rotaryAxisCheckBox.text"/>
+                    <Property name="name" type="java.lang.String" value="rotaryAxisCheckBox" noResource="true"/>
+                  </Properties>
+                  <BindingProperties>
+                    <BindingProperty name="selected" source="visicutModel1" sourcePath="${rotaryAxisEnabled}" target="rotaryAxisCheckBox" targetPath="selected" updateStrategy="0" immediately="false"/>
+                  </BindingProperties>
+                </Component>
+                <Component class="javax.swing.JFormattedTextField" name="rotaryAxisDiameterTextField">
+                  <Properties>
+                    <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.RADConnectionPropertyEditor" preCode="// this is set via &quot;customize code&quot; of rotaryAxisDiameterTextField&#xa;javax.swing.text.NumberFormatter doubleFormatter = new javax.swing.text.NumberFormatter(new java.text.DecimalFormat(&quot;#0.0&quot;));&#xa;doubleFormatter.setValueClass(Double.class);">
+                      <Connection code="new javax.swing.text.DefaultFormatterFactory(doubleFormatter)" type="code"/>
+                    </Property>
+                    <Property name="horizontalAlignment" type="int" value="11"/>
+                    <Property name="name" type="java.lang.String" value="rotaryAxisDiameterTextField" noResource="true"/>
+                  </Properties>
+                  <BindingProperties>
+                    <BindingProperty name="value" source="visicutModel1" sourcePath="${rotaryAxisDiameterMm}" target="rotaryAxisDiameterTextField" targetPath="value" updateStrategy="0" immediately="false"/>
+                  </BindingProperties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="rotaryAxisDiameterLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="rotaryAxisDiameterLabel.text"/>
+                    <Property name="name" type="java.lang.String" value="rotaryAxisDiameterLabel" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="rotaryAxisDiameterLabelMm">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="rotaryAxisDiameterLabelMm.text"/>
+                    <Property name="name" type="java.lang.String" value="rotaryAxisDiameterLabelMm" noResource="true"/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
           </SubComponents>
