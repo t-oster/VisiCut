@@ -720,12 +720,10 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
           // cache is up to date -- use cached scaled-down background image
         }
         AffineTransform oldTransform = gg.getTransform();
-        System.out.println(oldTransform);
         // switch to drawing raw pixels, even on high-dpi screens.
         // Round the translation to whole pixels to avoid expensive interpolation.
         AffineTransform drawImageTransform = AffineTransform.getTranslateInstance(Math.floor(oldTransform.getTranslateX() + oldTransform.getScaleX() * r.x), Math.floor(oldTransform.getTranslateY() + oldTransform.getScaleY() * r.y));
         gg.setTransform(drawImageTransform);
-        System.out.println(drawImageTransform);
         gg.drawRenderedImage(scaledBackgroundCacheImage, null);
         // restore original transformation
         gg.setTransform(oldTransform);
