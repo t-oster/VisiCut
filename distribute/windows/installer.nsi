@@ -92,7 +92,7 @@ File /r "stream\"
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ShortName}" "NoModify" "1"
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ShortName}" "NoRepair" "1"
 
-  ; instert visicut to path
+  ; insert visicut to path
   Push $0
   Push $1
   ; string length check taken from CMake/Modules/NSIS.template.in
@@ -103,7 +103,7 @@ File /r "stream\"
   StrLen $1 $0
   IntCmp $1 0 CheckPathLength_ShowPathWarning CheckPathLength_Done CheckPathLength_Done
     CheckPathLength_ShowPathWarning:
-    Messagebox MB_OK|MB_ICONEXCLAMATION "Warning: The PATH envirnoment variable is too long, the installer is unable to modify it! If you install VisiCut to the default directory, everything will still work."
+    Messagebox MB_OK|MB_ICONEXCLAMATION "Warning: The PATH environment variable is too long, the installer is unable to modify it! If you install VisiCut to the default directory, everything will still work."
     Goto AddToPath_done
   CheckPathLength_Done:
   ; update path if it is safe:

@@ -9,7 +9,7 @@ then
 else
    COMPILE=1
 fi
-echo "Determining Version (may be overriden with environment variable VERSION):"
+echo "Determining Version (may be overridden with environment variable VERSION):"
 # VisiCutBuilder writes the setting in that file:
 VERSION=${VERSION:-$(cat ../src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties |grep Application.version)}
 # remove "Application.version =   " prefix which comes from the VisiCutApp.properties file

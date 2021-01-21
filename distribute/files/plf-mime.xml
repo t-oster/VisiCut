@@ -2,7 +2,7 @@
  <mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
    <mime-type type="application/x-plf">  
    <comment>A VisiCut Portable Laser File</comment>
-   <comment xml:lang="de">Eine Protable Laser Datei für VisiCut</comment>
+   <comment xml:lang="de">Eine Portable Laser Datei für VisiCut</comment>
    <glob pattern="*.plf"/>
   </mime-type>
  </mime-info>
