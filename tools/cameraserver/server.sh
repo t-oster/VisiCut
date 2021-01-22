@@ -51,7 +51,7 @@ echo "Starting Webserver. Listening on http://localhost:$PORT"
 echo ""
 echo "VisiCut Users: Please set your Camera URL to http://localhost:$PORT/visicam.jpg"
 echo ""
-echo "Pleas press Ctrl+C to exit the server"
+echo "Please press Ctrl+C to exit the server"
 shutdown()
 {
 	echo "Caught SIGTERM"

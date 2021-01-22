@@ -72,7 +72,7 @@ def get_single_instance_port():
 VISICUTDIR = ""
 INKSCAPEDIR = ""
 
-# wether to add (true) or replace (false) current visicut's content
+# whether to add (true) or replace (false) current visicut's content
 IMPORT = True
 # Store the IDs of selected Elements
 elements = []
