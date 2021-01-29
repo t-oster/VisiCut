@@ -17,7 +17,7 @@ options=()
 install=install
 source=(plf-mime.xml ls-mime.xml)
 noextract=()
-md5sums=('023d09901b9075e86821a23953e82710'
+md5sums=('dfca285ea96139f0016f7558f4f2b867'
 'daeabc0ae9054e49f0154f5d2f57a700')
 
 _gitroot=../../../
