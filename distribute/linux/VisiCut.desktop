@@ -1,6 +1,7 @@
 [Desktop Entry]
 Name=VisiCut
 Comment=A userfriendly tool to create, save and send Jobs to a Lasercutter
+Comment[de]=Ein benutzerfreundliches Tool zum Erstellen, Speichern und Senden von Jobs an einen Lasercutter
 Icon=visicut
 Exec=visicut %F
 Terminal=false
