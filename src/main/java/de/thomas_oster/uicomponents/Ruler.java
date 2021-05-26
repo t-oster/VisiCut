@@ -108,28 +108,23 @@ public class Ruler extends JPanel implements PropertyChangeListener, ComponentLi
       double dst = mm2px.getScaleY();
       for (int mm = 0; mm < target.getAreaSize().y; mm+= dst > 5 ? 1 : dst > 2 ? 5 : 10)
       {
-          if (mm < g.getClipBounds().getMinY() / dst)
-          {
-            // Workaround arithmetic overflow in Java.Graphics2D
-            // (drawing on very large coordinates is not correctly clipped.)
-            // -> Skip drawing if the path is outside of the clipping area.
-            continue;
-          }
         boolean drawText = mm % (dst > 3 ? 10 : 100) == 0;
         double y = (dst*mm);
         if (originBottom) {
           y = dst*bedHeight - y;
+        }
+        if (y < g.getClipBounds().getMinY() || y > g.getClipBounds().getMaxY())
+        {
+          // Workaround arithmetic overflow in Java.Graphics2D
+          // (drawing on very large coordinates is not correctly clipped.)
+          // -> Skip drawing if the path is outside of the clipping area.
+          continue;
         }
         g.drawLine((drawText ? 5 : 6)*size/8, (int) y, size, (int) y);
         if (drawText && mm != 0)
         {
           int h = g.getFontMetrics().getHeight();
           g.drawString(""+mm/10, 0, (int) y+h/2);
-          if (dst * mm  > g.getClipBounds().getMaxY() + h)
-          {
-            // stop drawing at the bottom border.
-            break;
-          }
         }
       }
     }
