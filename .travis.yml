@@ -20,3 +20,7 @@ deploy:
   cleanup: false
   on:
     tags: true
+
+cache:
+  directories:
+  - $HOME/.m2
