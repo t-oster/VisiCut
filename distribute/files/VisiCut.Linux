@@ -1,9 +1,50 @@
 #!/bin/bash
 # VisiCut Linux Starter
-script="`readlink -f "${BASH_SOURCE[0]}"`"
-DIR="`dirname "$script"`"
+set -e
+set -o pipefail
+
+script="$(readlink -f "${BASH_SOURCE[0]}")"
+DIR="$(dirname "$script")"
+
+JAVA=java
 
 # Print and check java version
-java -version 2>&1 | tee /dev/stderr | egrep -q '"[1-9][0-9]\..*"' || echo "Warning: Your Java version may be too old. We recommend Java 11 or newer. Trying anyway."
+# is_java_version_ok( java_bin )
+function is_java_version_ok()
+{
+	if ! java_version=$($1 -version 2>&1 | head -n1); then
+		echo "Java at $1 is broken"
+		return 1;
+	fi
+	echo "Java at $1 has version: $java_version"
+	if echo "$java_version" | grep -Eq 'version \"11\.'; then
+		echo "-> OK"
+		return 0
+	else
+		echo "-> wrong version"
+		return 1
+	fi
+}
 
-java -Xms256m -Xmx2048m -jar "$DIR/Visicut.jar" "$@"
+
+shopt -s nullglob
+# Try to determine a java of the right version.
+# Can be overridden by environment variable VISICUT_JAVA=/my_path/bin/java
+JAVA=java
+for javabin in $(command -v java) /usr/lib/jvm/java-11-openjdk*/bin/java; do
+	if is_java_version_ok "$javabin"; then
+		JAVA="$javabin"
+		break
+	fi
+done
+if [[ $JAVA == "java" ]]; then
+	echo "WARNING: Could not find the correct Java version. Trying anyway."
+fi
+if [ ! -z "$VISICUT_JAVA" ]; then
+	echo "Overriding java path because VISICUT_JAVA is set."
+	JAVA="$VISICUT_JAVA"
+fi
+echo "Using Java at $JAVA"
+
+
+$JAVA -Xms256m -Xmx2048m -jar "$DIR/Visicut.jar" "$@"
