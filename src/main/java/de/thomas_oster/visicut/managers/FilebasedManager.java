@@ -280,40 +280,19 @@ public abstract class FilebasedManager<T>
       VersionedDocument.xstream = xStream;
       return VersionedDocument.fromXML(IOUtils.toString(in, StandardCharsets.UTF_8)).toBean();
     } catch (Exception e) {
-        Logger.getLogger(FilebasedManager.class.getName()).log(Level.WARNING, "Failed to load object from XML: " + humanReadableName + " : " + e.toString());
+        Logger.getLogger(FilebasedManager.class.getName()).log(Level.SEVERE, "Failed to load object from XML. Please report this issue. File: " + humanReadableName + " : " + e.toString());
         return null;
     }
   }
   
     /**
    * Convert serialized XML file to Object
-   * Unlike readObjectFromXmlStream(), this function is backwards-compatible to the old format used before 2012.
    * @param f XML file
    * @param xStream XStream instance
    * @return deserialized Object
    */
   public static Object readObjectFromXmlFile(File f, XStream xStream) throws FileNotFoundException {
-    Object o = readObjectFromXmlStream(new FileInputStream(f), xStream, f.getPath());
-    if (o != null) {
-      return o;
-    }
-    
-    // TODO: Does anything actually still use the old format???
-    // Format was changed 2012.
-    Logger.getLogger(FilebasedManager.class.getName()).log(Level.WARNING, "Could not load object in current XML format, retrying with old format from 2012:");
-    
-    try
-    {
-      XMLDecoder dec = new XMLDecoder(new FileInputStream(f));
-      Object result = dec.readObject();
-      dec.close();
-      return result;
-    }
-    catch (Exception e)
-    {
-      Logger.getLogger(FilebasedManager.class.getName()).log(Level.SEVERE, "Failed to load object from XML in old format.");
-      return null;
-    }
+    return readObjectFromXmlStream(new FileInputStream(f), xStream, f.getPath());
   }
   
   /**
