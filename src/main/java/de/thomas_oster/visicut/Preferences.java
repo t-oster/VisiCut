@@ -377,7 +377,8 @@ public class Preferences
     this.lastLaserDevice = lastLaserDevice;
   }
 
-  protected String[] availableLasercutterDrivers = null;
+  // Deprecated. Just not removed in order to keep old XML files working
+  @Deprecated protected transient String[] availableLasercutterDrivers = null;
 
   /**
    * Get the value of availableLasercutterDrivers
@@ -392,23 +393,9 @@ public class Preferences
     {
       result.add(c.getCanonicalName());
     }
-    if (availableLasercutterDrivers!=null)
-    {
-      result.addAll(Arrays.asList(availableLasercutterDrivers));
-    }
     return result.toArray(new String[0]);
   }
 
-  /**
-   * Set the value of availableLasercutterDrivers
-   *
-   * @param availableLasercutterDrivers new value of availableLasercutterDrivers
-   */
-  public void setAvailableLasercutterDrivers(String[] availableLasercutterDrivers)
-  {
-    this.availableLasercutterDrivers = availableLasercutterDrivers;
-  }
-  
   protected static String[] builtinImporters = new String[]{
     "de.thomas_oster.visicut.model.graphicelements.psvgsupport.ParametricSVGImporter",
     "de.thomas_oster.visicut.model.graphicelements.psvgsupport.PSVGImporter",
@@ -419,80 +406,34 @@ public class Preferences
     "de.thomas_oster.visicut.model.graphicelements.lssupport.LaserScriptImporter",
     "de.thomas_oster.visicut.model.graphicelements.gcodesupport.GCodeImporter"
   };
-  
-  protected String[] availableImporters = new String[0];
+
+  //Deprecated. Just not removed in order to keep old XML files working
+  @Deprecated protected transient String[] availableImporters = new String[0];
 
   /**
-   * Get the value of availableImporters
+   * Get the list of available importers
    *
-   * @return the value of availableImporters
+   * @return class names of available importers
    */
   public String[] getAvailableImporters()
   {
     Set<String> allImporters = new LinkedHashSet<String>();
     allImporters.addAll(Arrays.asList(builtinImporters));
-    allImporters.addAll(Arrays.asList(availableImporters));
     return allImporters.toArray(new String[0]);
-  }
-  
-  /**
-   * Set the value of availableImporters
-   *
-   * @param availableImporters new value of availableImporters
-   */
-  public void setAvailableImporters(String[] availableImporters)
-  {
-    if (availableImporters != null)
-    {
-      this.availableImporters = availableImporters;
-    }
   }
 
   //Deprecated. Just not removed in order to keep old XML files working
-  private boolean editSettingsBeforeExecuting = false;
-
-  /**
-   * Get the value of editSettingsBeforeExecuting
-   *
-   * @return the value of editSettingsBeforeExecuting
-   */
-  public boolean isEditSettingsBeforeExecuting()
-  {
-    return editSettingsBeforeExecuting;
-  }
-
-  /**
-   * Set the value of editSettingsBeforeExecuting
-   *
-   * @param editSettingsBeforeExecuting new value of editSettingsBeforeExecuting
-   */
-  public void setEditSettingsBeforeExecuting(boolean editSettingsBeforeExecuting)
-  {
-    this.editSettingsBeforeExecuting = editSettingsBeforeExecuting;
-  }
-  
-  // unused, keep only for compatibility with old settings
-  private String fabLabLocationFacebookId = "UNUSED";
-  private String laserCutterTags = "UNUSED";
-  private String supportedExtensions = "UNUSED";
+  @Deprecated private transient boolean editSettingsBeforeExecuting = false;
+  @Deprecated private transient String fabLabLocationFacebookId = "UNUSED";
+  @Deprecated private transient String laserCutterTags = "UNUSED";
+  @Deprecated private transient String supportedExtensions = "UNUSED";
 
   @Override
   public Preferences clone()
   {
     Preferences result = new Preferences();
-    if (availableImporters != null)
-    {
-      result.availableImporters = new String[availableImporters.length];
-      System.arraycopy(availableImporters, 0, result.availableImporters, 0, availableImporters.length);
-    }
-    if (availableLasercutterDrivers != null)
-    {
-      result.availableLasercutterDrivers = new String[availableLasercutterDrivers.length];
-      System.arraycopy(availableLasercutterDrivers, 0, result.availableLasercutterDrivers, 0, availableLasercutterDrivers.length);
-    }
     result.defaultMapping = defaultMapping;
     result.disableSandbox = disableSandbox;
-    result.editSettingsBeforeExecuting = editSettingsBeforeExecuting;
     result.lastLaserDevice = lastLaserDevice;
     result.lastMaterial = lastMaterial;
     result.mkbitmapPath = mkbitmapPath;
@@ -510,9 +451,6 @@ public class Preferences
     result.fabqrPublicURL = fabqrPublicURL;
     result.fabqrPrivateUser = fabqrPrivateUser;
     result.fabqrPrivatePassword = fabqrPrivatePassword;
-    result.fabLabLocationFacebookId = fabLabLocationFacebookId;
-    result.supportedExtensions = supportedExtensions;
-    result.laserCutterTags = laserCutterTags;
     result.autoUpdateSettingsDisabled = autoUpdateSettingsDisabled;
     result.lastAutoUpdateLabName = lastAutoUpdateLabName;
     result.lastAutoUpdateTime = lastAutoUpdateTime;
