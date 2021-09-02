@@ -47,4 +47,4 @@ fi
 echo "Using Java at $JAVA"
 
 
-$JAVA -Xms256m -Xmx2048m -jar "$DIR/Visicut.jar" "$@"
+$JAVA --illegal-access=permit -Xms256m -Xmx2048m -jar "$DIR/Visicut.jar" "$@"
