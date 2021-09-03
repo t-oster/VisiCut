@@ -439,7 +439,7 @@ public class Preferences
     result.mkbitmapPath = mkbitmapPath;
     result.potracePath = potracePath;
     result.recentFiles = new LinkedList<String>();
-    result.recentFiles.addAll(recentFiles);
+    result.recentFiles.addAll(getRecentFiles());
     result.useThicknessAsFocusOffset = useThicknessAsFocusOffset;
     result.windowBounds = windowBounds;
     result.useFilenamesForJobs = useFilenamesForJobs;
