@@ -19,7 +19,9 @@ script:
 deploy:
   provider: releases
   file: "/tmp/out/branch-master/**/*"
-  cleanup: false
+  api_key:
+    secure: "TMAImpk182KQFEWmOnqsr/HZyH2OrDTFvh/XAxs+yWJLODcZn5ZUUnTF84mveeGkmv+GsxSIELpCZzKK6fDraVZF/lGzVxPdTMkBFfJiPNj1OaLhJuzDt3yNoolCeH54nxFqE3UdiAHuN+5RQ3mzLC1HEqZdc0kk0/Ji5vKBQ80="
+  skip_cleanup: true
   on:
     tags: true
 
