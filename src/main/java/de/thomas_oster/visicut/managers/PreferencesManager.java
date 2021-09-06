@@ -363,7 +363,7 @@ public final class PreferencesManager
   {
     if (xstream == null)
     {
-      xstream = new XStream();
+      xstream = new VisiCutXStream();
       xstream.alias("visicutPreferences", Preferences.class);
     }
     return xstream;

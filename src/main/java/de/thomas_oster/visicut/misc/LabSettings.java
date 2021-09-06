@@ -63,12 +63,10 @@ public class LabSettings
     // if you have a local domain name in your network or a wifi SSID, you can add them too, so if you are in your lab
     // your settings will be suggested
     // The list is sorted alphabetically.
-    result.add(new LabSettings("China, Hong Kong: Renaissance College Hong Kong", "https://github.com/RCHK-DT/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("France, Chemillé en Anjou : FabLab le Boc@l", "https://github.com/bocal-chemille/Visicut/raw/master/config_laser_bocal.vcsettings"));
     result.add(new LabSettings("France, Le Mans: HAUM Hackerspace", "https://github.com/haum/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Aachen: FabLab RWTH Aachen", "https://github.com/renebohne/zing6030-visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Berlin: Fab Lab Berlin", "https://github.com/FabLabBerlin/visicut-settings/archive/master.zip"));
-    result.add(new LabSettings("Germany, Bremen: FabLab Bremen e.V.", "http://www.fablab-bremen.org/FabLab_Bremen.vcsettings"));
     result.add(new LabSettings("Germany, Dresden: Konglomerat e.V.", "https://github.com/konglomerat/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Dresden: Makerspace Dresden", "https://github.com/Makerspace-Dresden/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Erlangen: FAU FabLab", "https://github.com/fau-fablab/visicut-settings/archive/master.zip", new String[]{".fau.de", ".uni-erlangen.de"}, null));
@@ -80,7 +78,6 @@ public class LabSettings
     result.add(new LabSettings("Netherlands, Amersfoort: FabLab", "https://github.com/Fablab-Amersfoort/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Netherlands, Enschede: TkkrLab", "https://github.com/TkkrLab/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("United Kingdom, Leeds: Hackspace", "https://github.com/leedshackspace/visicut-settings/archive/master.zip"));
-    result.add(new LabSettings("United Kingdom, Manchester: Hackspace", "https://github.com/hacmanchester/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("United States, Seattle: Fremont Hangar", "https://github.com/hghile/visicut-settings/archive/master.zip", null, new String[]{"WL-seattle-maker-space"}));
     return result;
   }

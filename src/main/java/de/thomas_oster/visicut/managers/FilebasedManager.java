@@ -70,15 +70,12 @@ public abstract class FilebasedManager<T>
     
   protected XStream createXStream(boolean forReading)
   {
+    XStream xs = new VisiCutXStream();
     if (forReading) {
-        XStream xs = new XStream();
         //fix old class references
         xs.aliasPackage("com.t_oster", "de.thomas_oster");
-        return xs;
     }
-    else {
-        return new XStream();
-    }
+    return xs;
   }
   
   protected List<T> objects = null;
@@ -242,7 +239,7 @@ public abstract class FilebasedManager<T>
     fin.close();
     if (result == null)
     {
-      System.err.println("Error reading: "+f.getAbsolutePath()+". Invalid File Format (created with old VisiCut version?)");    
+      System.err.println("Error reading: "+f.getAbsolutePath()+". Invalid File Format (created with old VisiCut version? Or class not allowed in VisiCutXStream.java?)");
     }
     else
     {
@@ -283,40 +280,19 @@ public abstract class FilebasedManager<T>
       VersionedDocument.xstream = xStream;
       return VersionedDocument.fromXML(IOUtils.toString(in, StandardCharsets.UTF_8)).toBean();
     } catch (Exception e) {
-        Logger.getLogger(FilebasedManager.class.getName()).log(Level.WARNING, "Failed to load object from XML: " + humanReadableName);
+        Logger.getLogger(FilebasedManager.class.getName()).log(Level.SEVERE, "Failed to load object from XML. Please report this issue. File: " + humanReadableName + " : " + e.toString());
         return null;
     }
   }
   
     /**
    * Convert serialized XML file to Object
-   * Unlike readObjectFromXmlStream(), this function is backwards-compatible to the old format used before 2012.
    * @param f XML file
    * @param xStream XStream instance
    * @return deserialized Object
    */
   public static Object readObjectFromXmlFile(File f, XStream xStream) throws FileNotFoundException {
-    Object o = readObjectFromXmlStream(new FileInputStream(f), xStream, f.getPath());
-    if (o != null) {
-      return o;
-    }
-    
-    // TODO: Does anything actually still use the old format???
-    // Format was changed 2012.
-    Logger.getLogger(FilebasedManager.class.getName()).log(Level.WARNING, "Could not load object in current XML format, retrying with old format from 2012:");
-    
-    try
-    {
-      XMLDecoder dec = new XMLDecoder(new FileInputStream(f));
-      Object result = dec.readObject();
-      dec.close();
-      return result;
-    }
-    catch (Exception e)
-    {
-      Logger.getLogger(FilebasedManager.class.getName()).log(Level.SEVERE, "Failed to load object from XML in old format.");
-      return null;
-    }
+    return readObjectFromXmlStream(new FileInputStream(f), xStream, f.getPath());
   }
   
   /**
