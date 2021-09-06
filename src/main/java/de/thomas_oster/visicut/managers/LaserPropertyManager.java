@@ -165,7 +165,7 @@ public class LaserPropertyManager
   {
     if (xstream == null)
     {
-      xstream = new XStream();
+      xstream = new VisiCutXStream();
       //fix old class references
       xstream.aliasPackage("com.t_oster", "de.thomas_oster");
       xstream.alias("LaosCutterProperty", de.thomas_oster.liblasercut.drivers.LaosCutterProperty.class);

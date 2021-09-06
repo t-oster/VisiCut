@@ -70,15 +70,12 @@ public abstract class FilebasedManager<T>
     
   protected XStream createXStream(boolean forReading)
   {
+    XStream xs = new VisiCutXStream();
     if (forReading) {
-        XStream xs = new XStream();
         //fix old class references
         xs.aliasPackage("com.t_oster", "de.thomas_oster");
-        return xs;
     }
-    else {
-        return new XStream();
-    }
+    return xs;
   }
   
   protected List<T> objects = null;
@@ -242,7 +239,7 @@ public abstract class FilebasedManager<T>
     fin.close();
     if (result == null)
     {
-      System.err.println("Error reading: "+f.getAbsolutePath()+". Invalid File Format (created with old VisiCut version?)");    
+      System.err.println("Error reading: "+f.getAbsolutePath()+". Invalid File Format (created with old VisiCut version? Or class not allowed in VisiCutXStream.java?)");
     }
     else
     {
@@ -283,7 +280,7 @@ public abstract class FilebasedManager<T>
       VersionedDocument.xstream = xStream;
       return VersionedDocument.fromXML(IOUtils.toString(in, StandardCharsets.UTF_8)).toBean();
     } catch (Exception e) {
-        Logger.getLogger(FilebasedManager.class.getName()).log(Level.WARNING, "Failed to load object from XML: " + humanReadableName);
+        Logger.getLogger(FilebasedManager.class.getName()).log(Level.WARNING, "Failed to load object from XML: " + humanReadableName + " : " + e.toString());
         return null;
     }
   }
