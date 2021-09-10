@@ -43,6 +43,8 @@
   !ifndef Un${StrFuncName}_INCLUDED
     ${Un${StrFuncName}}
   !endif
+  ; fix for unterminated string parsing from stackoverflow:
+  ; https://stackoverflow.com/questions/62081765/how-to-debug-nsis-script-3-05-2-gives-error-error-unterminated-string-parsing
   !define un.${StrFuncName} '${Un${StrFuncName}}'
 !macroend
 
