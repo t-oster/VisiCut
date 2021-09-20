@@ -275,6 +275,9 @@ public class Helper
       {
         trg = new File(System.getenv("AppData"));
       }
+      else if (isMacOS()) {
+        trg = new File(FileUtils.getUserDirectory(), "Library/Application Support/org.inkscape.inkscape/config");
+      }
       else
       {
         trg = new File(FileUtils.getUserDirectory(), ".config");
