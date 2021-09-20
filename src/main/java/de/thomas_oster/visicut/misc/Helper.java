@@ -374,28 +374,24 @@ public class Helper
       {
         return null;
       }
-      Logger.getLogger(Helper.class.getName()).log(Level.INFO, "Path: " + path);
       String decodedPath = URLDecoder.decode(path, "UTF-8");
       File folder = new File(decodedPath);
 
       if (!folder.isDirectory()) {
         folder = folder.getParentFile();
       }
-      Logger.getLogger(Helper.class.getName()).log(Level.INFO, "Folder: " + folder);
       
-      // detect the path in which the example folder exists, because folder structure on MacOS is different from other OS
+      // detect and return the path in which the example folder exists, because folder structure on MacOS is different from other OS
       File examplesFolder = new File(folder, "examples");
-      Logger.getLogger(Helper.class.getName()).log(Level.INFO, "examples exists: " + examplesFolder.exists() + examplesFolder);
       if (examplesFolder.exists())
       {
         return folder;
       } else {
         File macosExamplesFolder = new File(folder.getParentFile(), "Resources/Java/examples");
         if (macosExamplesFolder.exists()) {
-          Logger.getLogger(Helper.class.getName()).log(Level.INFO, "macosexamples: " + macosExamplesFolder.toString());
           return macosExamplesFolder.getParentFile();
         } else {
-          Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, "macosexamples: " + macosExamplesFolder.toString(), "Could not detect visicut directory. Please report this bug.");
+          Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, "Path: " + macosExamplesFolder.toString(), "Could not detect visicut directory. Please report this bug.");
         }
       }
     }
@@ -405,26 +401,6 @@ public class Helper
     }
     return null;
   }
-
-/*   public static File getVisiCutFolder()
-  {
-    try
-    {
-      String path = Helper.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-      if (path == null)
-      {
-        return null;
-      }
-      String decodedPath = URLDecoder.decode(path, "UTF-8");
-      File folder = new File(decodedPath);
-      return folder.isDirectory() ? folder : folder.getParentFile();
-    }
-    catch (UnsupportedEncodingException ex)
-    {
-      Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    return null;
-  } */
 
   protected static File basePath;
 
