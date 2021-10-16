@@ -14,7 +14,7 @@ script:
   - ls /tmp/out
   - ls /tmp/out/*
   - echo "Triggering build on download.visicut.org"
-  - wget "https://vctrigger.thomas-oster.de/" -O-
+  - wget --no-check-certificate "https://vctrigger.thomas-oster.de/" -O-
 
 deploy:
   provider: releases
