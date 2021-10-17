@@ -275,6 +275,9 @@ public class Helper
       {
         trg = new File(System.getenv("AppData"));
       }
+      else if (isMacOS()) {
+        trg = new File(FileUtils.getUserDirectory(), "Library/Application Support/org.inkscape.inkscape/config");
+      }
       else
       {
         trg = new File(FileUtils.getUserDirectory(), ".config");
@@ -373,11 +376,28 @@ public class Helper
       }
       String decodedPath = URLDecoder.decode(path, "UTF-8");
       File folder = new File(decodedPath);
-      return folder.isDirectory() ? folder : folder.getParentFile();
+
+      if (!folder.isDirectory()) {
+        folder = folder.getParentFile();
+      }
+      
+      // detect and return the path in which the example folder exists, because folder structure on MacOS is different from other OS
+      File examplesFolder = new File(folder, "examples");
+      if (examplesFolder.exists())
+      {
+        return folder;
+      } else {
+        File macosExamplesFolder = new File(folder.getParentFile(), "Resources/Java/examples");
+        if (macosExamplesFolder.exists()) {
+          return macosExamplesFolder.getParentFile();
+        } else {
+          Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, "Path: " + macosExamplesFolder.toString(), "Could not detect visicut directory. Please report this bug.");
+        }
+      }
     }
     catch (UnsupportedEncodingException ex)
     {
-      Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, "Unsupported Encoding Exception", ex);
     }
     return null;
   }
