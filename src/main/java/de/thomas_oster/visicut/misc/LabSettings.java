@@ -70,6 +70,7 @@ public class LabSettings
     result.add(new LabSettings("Germany, Dresden: Konglomerat e.V.", "https://github.com/konglomerat/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Dresden: Makerspace Dresden", "https://github.com/Makerspace-Dresden/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Erlangen: FAU FabLab", "https://github.com/fau-fablab/visicut-settings/archive/master.zip", new String[]{".fau.de", ".uni-erlangen.de"}, null));
+    result.add(new LabSettings("Germany, Erlangen: ZAM", "https://github.com/zam-haus/visicut-settings/archive/refs/heads/main.zip", null, new String[]{"ZAM"}));
     result.add(new LabSettings("Germany, Hamburg: Fab Lab Fabulous St. Pauli", "https://github.com/Fab-Lab-Fabulous-St-Pauli/visicut-settings/archive/main.zip", new String[]{".fablab-hamburg.org"}, null));
     result.add(new LabSettings("Germany, Heidelberg: Heidelberg Makerspace", "https://github.com/heidelberg-makerspace/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Nuremberg: Fab lab Region Nürnberg e.V.", "https://github.com/fablabnbg/visicut-settings/archive/master.zip"));
