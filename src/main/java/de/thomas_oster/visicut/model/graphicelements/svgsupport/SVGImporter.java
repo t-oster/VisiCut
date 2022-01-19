@@ -112,7 +112,7 @@ public class SVGImporter extends AbstractImporter
     }
   }
 
-  public GraphicSet importSetFromFile(InputStream in, String name, double svgResolution, final List<String> warnings) throws Exception
+  public GraphicSet importSetFromFile(InputStream in, String name, double svgResolution, boolean originIsBottomLeft, double bedHeightInMm, final List<String> warnings) throws Exception
   {
     Handler svgImportLoggerHandler = new Handler()
     {
@@ -137,7 +137,7 @@ public class SVGImporter extends AbstractImporter
       URI svg = u.loadSVG(in, Helper.toPathName(name));   
       root = u.getDiagram(svg).getRoot();
       GraphicSet result = new GraphicSet();
-      result.setBasicTransform(determineTransformation(root, svgResolution));
+      result.setBasicTransform(determineTransformation(root, svgResolution, originIsBottomLeft, bedHeightInMm));
 
       // The resulting transformation is the mapping of "SVG pixels" to real millimeters.
       // If viewBox, width and height are set, this scaling can be different from
@@ -312,7 +312,7 @@ public class SVGImporter extends AbstractImporter
    * SVG default is 90, but AI generates 72??
    * Since inkscape 0.92 SVG default is 96 DPI.
    */
-  private AffineTransform determineTransformation(SVGRoot root, double svgResolution)
+  private AffineTransform determineTransformation(SVGRoot root, double svgResolution, boolean originBottomLeft, double bedHeightInMm)
   {
     try
     {
@@ -348,6 +348,13 @@ public class SVGImporter extends AbstractImporter
       if (width != 0 && height != 0 && root.getPres(sty.setName("viewBox")))
       {
         float[] coords = sty.getFloatList();
+        /**
+         * https://github.com/t-oster/VisiCut/issues/633 If origin is bottom left
+         * and a viewbox is given, use the bottom-left corner for placement.
+         */
+        if (originBottomLeft && height < bedHeightInMm) {
+          y += bedHeightInMm - height;
+        }
         Rectangle2D coordinateBox = new Rectangle2D.Double(x,y,width,height);
         Rectangle2D viewBox = new Rectangle2D.Float(coords[0], coords[1], coords[2], coords[3]);
         return Helper.getTransform(viewBox, coordinateBox);
@@ -362,12 +369,12 @@ public class SVGImporter extends AbstractImporter
   }
 
   @Override
-  public GraphicSet importSetFromFile(File inputFile, List<String> warnings) throws ImportException
+  public GraphicSet importSetFromFile(File inputFile, boolean originIsBottomLeft, double bedHeightInMm, List<String> warnings) throws ImportException
   {
     try
     {
       double svgResolution = determineResolution(inputFile, warnings);
-      GraphicSet result = this.importSetFromFile(new FileInputStream(inputFile), inputFile.getName(), svgResolution, warnings);
+      GraphicSet result = this.importSetFromFile(new FileInputStream(inputFile), inputFile.getName(), svgResolution, originIsBottomLeft, bedHeightInMm, warnings);
       return result;
     }
     catch (Exception ex)

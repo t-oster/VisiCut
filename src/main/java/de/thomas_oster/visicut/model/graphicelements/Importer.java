@@ -38,6 +38,6 @@ public interface Importer
    * They will be displayed to the user, but no
    * further action is taken
    */
-  PlfPart importFile(File inputFile, List<String> warnings) throws ImportException;
+  PlfPart importFile(File inputFile, boolean originIsBottomLeft, double bedHeightInMm, List<String> warnings) throws ImportException;
   
 }
