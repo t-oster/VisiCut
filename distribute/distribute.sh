@@ -112,6 +112,14 @@ echo "Compressing content..."
 [ -f VisiCut-$VERSION.zip ] && rm VisiCut-$VERSION.zip
 zip -r VisiCut-$VERSION.zip visicut/  > /dev/null || exit 1
 
+echo "Building flatpak"
+pushd flatpak
+cp ../linux/VisiCut.desktop .
+cp ../VisiCut-$VERSION.zip VisiCut.zip
+flatpak-builder --user --install --force-clean build-dir de.thomas_oster.VisiCut.json
+popd
+
+
 echo ""
 echo "****************************************************************"
 echo "Mac OS Version: Building the Mac OS Version should work on all platforms"
