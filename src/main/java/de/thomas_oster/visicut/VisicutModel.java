@@ -270,6 +270,10 @@ public class VisicutModel extends Component // FIXME: "extends Component" isn't 
     propertyChangeSupport.firePropertyChange(PROP_USETHICKNESSASFOCUSOFFSET, oldUseThicknessAsFocusOffset, useThicknessAsFocusOffset);
   }
 
+  public boolean isUseThicknessAsFocusOffset() {
+    return this.useThicknessAsFocusOffset;
+  }
+  
   /**
    * Get the value of autoFocusEnabled.  Only meaningful on cutters that support it.
    *
