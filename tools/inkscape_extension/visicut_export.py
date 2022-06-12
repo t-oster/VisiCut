@@ -34,6 +34,12 @@ import unicodedata
 import codecs
 import random
 import string
+import socket
+
+try:
+    from os import fsencode
+except ImportError:
+    fsencode = lambda x: x.encode(sys.getfilesystemencoding())
 
 DEVNULL = open(os.devnull, 'w')
 
@@ -318,20 +324,19 @@ stripSVG_inkscape(src=filename, dest=dest_filename, elements=elements)
 # Try to connect to running VisiCut instance
 # Note: this step may be omitted, as VisiCut will do the same.
 # However, doing it here saves 2-3 seconds of waiting time on Windows.
+s = socket.socket()
 try:
-    import socket
-    s = socket.socket()
     s.connect(("localhost", get_single_instance_port()))
-    if IMPORT:
-        s.send("@" + dest_filename + "\n")
-    else:
-        s.send(dest_filename + "\n")
-    s.close()
-    sys.exit(0)
-except SystemExit as e:
-    sys.exit(e)
-except:
+except socket.error:
     pass
+else:
+    if IMPORT:
+        s.send(b"@" + fsencode(dest_filename) + b"\n")
+    else:
+        s.send(fsencode(dest_filename) + b"\n")
+    sys.exit(0)
+finally:
+    s.close()
 
 # Try to start own VisiCut instance
 try:
