@@ -1,15 +1,9 @@
 #!/bin/bash
 DIR="$( cd -P "$( dirname "$0" )" && pwd )"
-if [ test -e "$DIR/Visicut.jar" -eq 0 ]
+if [ -e "$DIR/Visicut.jar" ]
 then
     java -version 2>&1 | tee /dev/stderr | egrep -q '"[1-9][0-9]\..*"' || echo "Warning: Your Java version may be too old. We recommend Java 11 or newer. Trying anyway."
     java -Xms256m -Xmx2048m -jar "$DIR/Visicut.jar" "$@"
 else
-    bundle_identifier="$(osascript -e 'id of app "VisiCut"')"
-    if [ $? -eq 0 ] 
-    then
-        open -b "$bundle_identifier" --args "$@"
-    else
-        echo "Error: Could not find or access VisiCut App on your System."
-    fi
+    open -a VisiCut --args "$@"
 fi
