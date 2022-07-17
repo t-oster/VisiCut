@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 '''
 This extension strips everything which is not selected from
@@ -6,7 +6,7 @@ the current svg, saves it and
 calls VisiCut on it.
 
 Copyright (C) 2012 Thomas Oster, thomas.oster@rwth-aachen.de
-Copyright (C) 2014-2018 Max Gaukler, development@maxgaukler.de
+Copyright (C) 2014-2022 Max Gaukler, development@maxgaukler.de
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -32,6 +32,8 @@ import traceback
 import tempfile
 import unicodedata
 import codecs
+import random
+import string
 
 DEVNULL = open(os.devnull, 'w')
 
@@ -123,13 +125,13 @@ def which(program, extraPaths=[]):
 
 
 def inkscape_version():
-    """determine if Inkscape is version 0 or 1"""
+    """Return Inkscape version number as float, e.g. version "0.92.4" --> return: float 0.92"""
     version = subprocess.check_output([INKSCAPEBIN, "--version"],  stderr=DEVNULL).decode('ASCII', 'ignore')
     assert version.startswith("Inkscape ")
-    if version.startswith("Inkscape 0"):
-        return 0
-    else:
-        return 1
+    match = re.match("Inkscape ([0-9]+\.[0-9]+).*", version)
+    assert match is not None
+    version_float = float(match.group(1))
+    return version_float
     
 
 
@@ -151,7 +153,7 @@ def stripSVG_inkscape(src, dest, elements):
     shutil.copyfile(src, tmpfile)
 
 
-    if version == 0:
+    if version < 1:
         # inkscape 0.92 long-term-support release. Will be in Linux distributions until 2025 or so
         # Selection commands: select items, invert selection, delete
         selection = []
@@ -169,8 +171,8 @@ def stripSVG_inkscape(src, dest, elements):
         hidegui = []
 
         command = [INKSCAPEBIN] + hidegui + [tmpfile, "--verb=UnlockAllInAllLayers", "--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers", "--verb=EditUnlinkClone", "--verb=ObjectToPath", "--verb=FileSave", "--verb=FileQuit"]
-    else:
-        # Inkscape 1.0, to be released ca 2020
+    elif version < 1.2:
+        # Inkscape 1.0 (released ca 2020) or 1.1
         # inkscape --select=... --verbs=...
         # (see inkscape --help, inkscape --verb-list)
         command = [INKSCAPEBIN, tmpfile, "--batch-process"]
@@ -192,6 +194,46 @@ def stripSVG_inkscape(src, dest, elements):
                 verb_list = [line.split(":")[0] for line in subprocess.check_output([INKSCAPEBIN, "--verb-list"], stderr=DEVNULL).split("\n")]
                 if verb not in verb_list:
                     sys.stderr.write("Inkscape does not have the verb '{}'. Please report this as a VisiCut bug.".format(verb))
+    else:
+        # Inkscape 1.2 (released 2022)
+        # inkscape --export-overwrite --actions=action1;action2...
+        # (see inkscape --help, inkscape --action-list)
+        # (for debugging, you can look at the intermediate state by running inkscape --with-gui --actions=... my_filename.svg)
+        # Note that it is (almost?) impossible to find a sequence that works in all cases.
+        # Cases to consider:
+        # - selecting whole groups
+        # - selecting objects within a group
+        # - selecting across groups/layers (e.g., enter group, select something, then Shift-click to select things from other layers)
+        # Difficulties with Inkscape:
+        # - "invert selection" does not behave as expected in all these cases,
+        #   for example if a group is selected then inverting can select the elements within.
+        # - Inkscape has a wonderful --export-id commandline switch, but it only works correctly with one ID
+
+        # Solution:
+        actions = ["unlock-all"]
+        if elements:
+            # something was selected when calling the plugin.
+            # -> Recreate that selection
+            # - select objects
+            actions += ["select-by-id:" + ",".join(elements)]
+        else:
+            # - select all
+            actions += ["select-all:all"]
+        # - convert to path
+        actions +=  ["clone-unlink", "object-to-path"]
+        if elements:
+            # ensure that only the selection is exported:
+            # - create group of selection
+            actions += ["selection-group"]
+            # - set group ID to a known value. Use a pseudo-random value to avoid collisions
+            target_group_id = "TARGET-GROUP-" + "".join(random.sample(string.ascii_lowercase, 20))
+            actions += ["object-set-attribute:id," + target_group_id]
+            # - set export options: use only the target group ID, nothing else
+            actions += ["export-id-only:true", "export-id:" + target_group_id]
+        # - do export (keep position on page)
+        actions += ["export-area-page"]
+
+        command = [INKSCAPEBIN, tmpfile, "--export-overwrite", "--actions=" + ";".join(actions)]
         
     inkscape_output = "(not yet run)"
     try:
