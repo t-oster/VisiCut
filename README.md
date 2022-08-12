@@ -10,7 +10,7 @@ For more information please look at the [project page](https://www.visicut.org).
 
 -   [Latest stable releases](http://download.visicut.org)
 -   [Development builds](http://download.visicut.org/develop)
--   [All builds on Github](https://github.com/t-oster/VisiCut/releases)
+-   [Some older versions on Github](https://github.com/t-oster/VisiCut/releases)
 
 ## Compiling and Hacking
 
