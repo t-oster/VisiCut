@@ -80,6 +80,7 @@ public class LabSettings
     result.add(new LabSettings("Netherlands, Amersfoort: FabLab", "https://github.com/Fablab-Amersfoort/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Netherlands, Enschede: TkkrLab", "https://github.com/TkkrLab/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("United Kingdom, Leeds: Hackspace", "https://github.com/leedshackspace/visicut-settings/archive/master.zip"));
+    result.add(new LabSettings("United Kingdom, Manchester: HacMan", "https://github.com/HACManchester/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("United States, Seattle: Fremont Hangar", "https://github.com/hghile/visicut-settings/archive/master.zip", null, new String[]{"WL-seattle-maker-space"}));
     result.add(new LabSettings("United States, Seattle: SLU Makerspace", "https://github.com/hghile/visicut-settings-slu/archive/master.zip", null, new String[]{"WL-slu-makerspace"})); 
     return result;
