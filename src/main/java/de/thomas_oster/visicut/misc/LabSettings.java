@@ -65,6 +65,7 @@ public class LabSettings
     // The list is sorted alphabetically.
     result.add(new LabSettings("France, Chemillé en Anjou : FabLab le Boc@l", "https://github.com/bocal-chemille/Visicut/raw/master/config_laser_bocal.vcsettings"));
     result.add(new LabSettings("France, Le Mans: HAUM Hackerspace", "https://github.com/haum/visicut-settings/archive/master.zip"));
+    result.add(new LabSettings("France, Roche aux Fées: FabLabs La Fabrique", "https://github.com/LaFabrique35/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Aachen: FabLab RWTH Aachen", "https://github.com/renebohne/zing6030-visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Berlin: Fab Lab Berlin", "https://github.com/FabLabBerlin/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Dresden: Konglomerat e.V.", "https://github.com/konglomerat/visicut-settings/archive/master.zip"));
