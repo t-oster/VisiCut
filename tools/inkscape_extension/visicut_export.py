@@ -34,6 +34,12 @@ import unicodedata
 import codecs
 import random
 import string
+import socket
+
+try:
+    from os import fsencode
+except ImportError:
+    fsencode = lambda x: x.encode(sys.getfilesystemencoding())
 
 DEVNULL = open(os.devnull, 'w')
 
@@ -235,16 +241,12 @@ def stripSVG_inkscape(src, dest, elements):
 
         command = [INKSCAPEBIN, tmpfile, "--export-overwrite", "--actions=" + ";".join(actions)]
         
-    inkscape_output = "(not yet run)"
     try:
         #sys.stderr.write(" ".join(command))
         # run inkscape, buffer output
-        inkscape = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        inkscape_output = inkscape.communicate()[0]
-        if inkscape.returncode != 0:
-            sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect.\nInkscape's output was:\n" + inkscape_output)
-    except:
-        sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect. Exception information: \n" + str(sys.exc_info()[0]) + "Inkscape's output was:\n" + inkscape_output)
+        subprocess.check_output(command, stderr=subprocess.STDOUT, universal_newlines=True)
+    except subprocess.CalledProcessError as e:
+        sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect.\nInkscape's output was:\n" + e.output)
 
     # move output to the intended destination filename
     os.rename(tmpfile, dest)
@@ -318,20 +320,19 @@ stripSVG_inkscape(src=filename, dest=dest_filename, elements=elements)
 # Try to connect to running VisiCut instance
 # Note: this step may be omitted, as VisiCut will do the same.
 # However, doing it here saves 2-3 seconds of waiting time on Windows.
+s = socket.socket()
 try:
-    import socket
-    s = socket.socket()
     s.connect(("localhost", get_single_instance_port()))
-    if IMPORT:
-        s.send("@" + dest_filename + "\n")
-    else:
-        s.send(dest_filename + "\n")
-    s.close()
-    sys.exit(0)
-except SystemExit as e:
-    sys.exit(e)
-except:
+except socket.error:
     pass
+else:
+    if IMPORT:
+        s.send(b"@" + fsencode(dest_filename) + b"\n")
+    else:
+        s.send(fsencode(dest_filename) + b"\n")
+    sys.exit(0)
+finally:
+    s.close()
 
 # Try to start own VisiCut instance
 try:
