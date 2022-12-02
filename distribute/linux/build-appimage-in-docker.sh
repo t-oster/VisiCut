@@ -17,5 +17,6 @@ docker build -t "$image" -f "$dockerfile" $(dirname "$dockerfile")
 docker run --rm -i -v "$project_root":/ws "$image" sh -x <<EOF
 cd /ws
 export APPIMAGE_EXTRACT_AND_RUN=1
+git config --global --add safe.directory /ws
 appimagecraft
 EOF
