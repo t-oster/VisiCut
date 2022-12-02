@@ -23,7 +23,7 @@ scripts:
       set -x
       cat > "$BUILD_DIR"/AppRun.sh <<\EOF
       #! /bin/bash
-      export APPDIR=${APPDIR:-$(readlink -f $(dirname "$0"))}
+      export APPDIR="${APPDIR:-"$(readlink -f "$(dirname "$0")")"}"
       exec "$APPDIR"/usr/jre/bin/java -jar "$APPDIR"/usr/bin/visicut.jar
       EOF
       cat "$BUILD_DIR"/AppRun.sh
