@@ -31,4 +31,4 @@ scripts:
 
 appimage:
   linuxdeploy:
-    extra_args: -i "$PROJECT_ROOT"/build/classes/com/t_oster/visicut/gui/resources/visicut.png -d "$PROJECT_ROOT"/distribute/linux/VisiCut.desktop --custom-apprun "$BUILD_DIR"/AppRun.sh
+    extra_args: -i "$PROJECT_ROOT"/src/main/resources/de/thomas_oster/visicut/gui/resources/visicut.png -d "$PROJECT_ROOT"/distribute/linux/VisiCut.desktop --custom-apprun "$BUILD_DIR"/AppRun.sh
