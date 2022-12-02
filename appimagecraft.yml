@@ -16,7 +16,7 @@ scripts:
     - popd
     - |2
       mkdir -p AppDir/usr/{bin,jre}
-      wget -O- https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.6%2B10/OpenJDK11U-jre_x64_linux_hotspot_11.0.6_10.tar.gz | \
+      wget -O- https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9_openj9-0.26.0/OpenJDK16U-jre_x64_linux_openj9_16.0.1_9_openj9-0.26.0.tar.gz | \
           tar xz --strip-components=1 -C AppDir/usr/jre
       cp "$PROJECT_ROOT"/target/visicut-*-full.jar AppDir/usr/bin/visicut.jar
     - |2
