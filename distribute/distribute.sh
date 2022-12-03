@@ -55,9 +55,9 @@ function check_sha256() {
 
 # URL and hash of the OpenJRE ZIP file for Windows.
 # You can override this with environment variables.
-# The distribution by Oracle has evil license terms, so we use the OpenJDK JRE from https://adoptopenjdk.net/
-WINDOWS_JRE_URL=${WINDOWS_JRE_URL:-"https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.4%2B11/OpenJDK11U-jre_x64_windows_hotspot_11.0.4_11.zip"}
-WINDOWS_JRE_SHA256=${WINDOWS_JRE_SHA256:-"be88c679fd24194bee71237f92f7a2a71c88f71a853a56a7c05742b0e158c1be"}
+# The distribution by Oracle has evil license terms, so we use the OpenJDK JRE from https://adoptium.net/
+WINDOWS_JRE_URL=${WINDOWS_JRE_URL:-"https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.5%2B8/OpenJDK17U-jre_x64_windows_hotspot_17.0.5_8.zip"}
+WINDOWS_JRE_SHA256=${WINDOWS_JRE_SHA256:-"d25a2d44c1bd9c57d49c5e98de274cd40970ab057fe304b52eb459de4ee5d8a5"}
 
 if which makensis > /dev/null
 then
