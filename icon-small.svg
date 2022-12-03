@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="45mm"
+   height="45mm"
+   version="1.1"
+   viewBox="0 0 45 45"
+   id="svg2742"
+   sodipodi:docname="icon-small.svg"
+   inkscape:export-xdpi="27.09"
+   inkscape:export-ydpi="27.09"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15)">
+  <defs
+     id="defs2746" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1015"
+     id="namedview2744"
+     showgrid="false"
+     inkscape:zoom="0.30637161"
+     inkscape:cx="-940.70837"
+     inkscape:cy="-173.70716"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2742" />
+  <metadata
+     id="metadata2714">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(81.411 -20.052)"
+     id="g2740">
+    <rect
+       x="-4.4708"
+       y="19.058"
+       width="174.12"
+       height="44.484"
+       fill="#4d4d4d"
+       stop-color="#000000"
+       stroke-linecap="round"
+       stroke-opacity=".14421"
+       stroke-width="4.6257"
+       style="paint-order:stroke markers fill"
+       id="rect2716" />
+    <g
+       id="g2738">
+      <path
+         d="m-81.411 20.052v36.954c14.405-9.9637 38.025-0.17383 42.689 1.6796l-0.0577 1.0523c-12.723-2.7675-31.36-7.1773-42.632 3.6897v1.6241h45v-45z"
+         fill="#4d4d4d"
+         id="path2718" />
+      <g
+         id="g2736">
+        <g
+           transform="translate(-438.42 -105.03)"
+           stroke-width=".82348"
+           aria-label="VC"
+           id="g2724">
+          <path
+             d="m381.41 130.81-7.9465 22.971h-4.4076l-7.9465-22.971h4.2145l4.6328 14.059q0.19303 0.5791 0.4504 1.5121 0.25738 0.90081 0.48258 1.866 0.25738 0.96516 0.38606 1.6729 0.0965-0.70778 0.32172-1.6729 0.22521-0.96516 0.48258-1.866 0.25738-0.93298 0.48258-1.5121l4.6328-14.059z"
+             fill="#f2f2f2"
+             id="path2720" />
+          <path
+             d="m391.31 133.96q-3.1528 0-4.8901 2.252-1.7051 2.252-1.7051 6.1127 0 3.8928 1.6086 6.1127 1.6086 2.1877 4.9545 2.1877 1.4477 0 2.8311-0.28955 1.3834-0.32171 2.8955-0.83646v3.5067q-1.4156 0.5791-2.8633 0.83647-1.4156 0.25738-3.2815 0.25738-3.5389 0-5.8553-1.4477-2.3164-1.4799-3.4424-4.118-1.126-2.6703-1.126-6.2414 0-3.4746 1.2547-6.1127 1.2547-2.6703 3.6676-4.1824 2.4451-1.5121 5.9518-1.5121 1.7373 0 3.4102 0.41824 1.7051 0.38606 3.185 1.0938l-1.4156 3.378q-1.2225-0.54692-2.5416-0.96516-1.2869-0.4504-2.6381-0.4504z"
+             fill="#fcb857"
+             id="path2722" />
+        </g>
+        <text
+           x="48.240891"
+           y="47.980755"
+           fill="#f2f2f2"
+           font-family="sans-serif"
+           font-size="32.939px"
+           letter-spacing="0px"
+           stroke-width=".82348"
+           word-spacing="0px"
+           style="line-height:1.25"
+           xml:space="preserve"
+           id="text2730"><tspan
+             x="48.240891"
+             y="47.980755"
+             dx="0 -2.868335"
+             fill="#f2f2f2"
+             font-family="'Noto Sans'"
+             font-size="32.172px"
+             font-weight="600"
+             stroke-width=".82348"
+             id="tspan2728">V<tspan
+   fill="#fcb857"
+   stroke-width=".82348"
+   id="tspan2726">C</tspan></tspan></text>
+        <text
+           x="-10.11272"
+           y="4.9917417"
+           fill="#000000"
+           font-family="sans-serif"
+           font-size="10.583px"
+           letter-spacing="0px"
+           stroke-width=".26458"
+           word-spacing="0px"
+           style="line-height:1.25"
+           xml:space="preserve"
+           id="text2734"><tspan
+             x="-10.11272"
+             y="4.9917417"
+             stroke-width=".26458"
+             id="tspan2732">Original font: Noto Sans Semibold</tspan></text>
+      </g>
+    </g>
+  </g>
+</svg>

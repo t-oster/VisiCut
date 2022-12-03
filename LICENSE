@@ -5,7 +5,6 @@ However, it contains some 3rd Party files, which are listed below.
 3rd Party files:
 - The Camera Icon src/com/t_oster/visicut/gui/ressources/camera.png is from the Token Icon Set of EVAN BROOKS (http://brsev.com/). Its licensed under "Creative Commons Attribution Non-commercial (by-nc)"
 - The Zoom Icons src/com/t_oster/visicut/gui/ressources/magnifier-*.png are from the "fugue icon set" from http://p.yusukekamiyamane.com and licensed under "Commercial Use Allowed, Back Link Required"
-- The VisiCut Icon "icon.png" is from the icon pack "Pry System" by "Jonas Rask Design" and licensed under "Freeware Non-commercial"
 
 3rd Party libraries:
 
