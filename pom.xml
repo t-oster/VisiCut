@@ -216,6 +216,17 @@
                         </manifest>
                         <manifestEntries>
                             <SplashScreen-Image>de/thomas_oster/visicut/gui/resources/splash.png</SplashScreen-Image>
+                            <!-- Avoid "Illegal reflective access" errors, see https://stackoverflow.com/a/62629201 for how to find the module and package names corresponding to a certain error message. See https://stackoverflow.com/questions/70196098/how-can-i-specify-add-opens-from-a-project-level-and-make-sure-it-is-taken-int for further discussion. -->
+                            <Add-Opens>
+                                <!-- for org.dom4j.... (on Java11 only, not on Java 17?)"-->
+                                java.xml/com.sun.org.apache.xerces.internal.parsers
+                                <!-- loading of GTK icons on Linux (PlatformIcon class) -->
+                                java.desktop/sun.awt
+                                <!-- XStream (load/save settings)-->
+                                java.base/java.util java.desktop/java.awt.geom <!-- definitely needed to save/read settings on all platforms -->
+                                java.desktop/java.awt <!-- definitely needed to save settings.private.xml on Windows (and others?) -->
+                                java.base/java.lang java.base/java.io java.base/java.text java.base/java.time java.base/java.time.chrono java.base/java.util java.base/java.util.concurrent <!-- snake-oil, just to be sure, from https://github.com/x-stream/xstream/issues/262#issuecomment-1247342505 -->
+                            </Add-Opens>
                         </manifestEntries>
                     </archive>
                 </configuration>

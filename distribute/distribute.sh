@@ -165,7 +165,7 @@ then
   # hide doc directory from checkinstall
   # mv doc doctmp
   test -f /usr/bin/visicut && { echo "error: please first uninstall visicut"; exit 1; }
-  fakeroot checkinstall --fstrans --reset-uid --type debian --install=no -y --pkgname visicut --pkgversion $VERSION --arch all --pkglicense LGPL --pkggroup other --pkgsource "http://visicut.org" --pkgaltsource "https://github.com/t-oster/VisiCut" --pakdir distribute/ --maintainer "'Thomas Oster <thomas.oster@rwth-aachen.de>'" --requires "bash,openjdk-11-jre,potrace" make install -e PREFIX=/usr > /dev/null || { echo "error"; exit 1; }
+  fakeroot checkinstall --fstrans --reset-uid --type debian --install=no -y --pkgname visicut --pkgversion $VERSION --arch all --pkglicense LGPL --pkggroup other --pkgsource "http://visicut.org" --pkgaltsource "https://github.com/t-oster/VisiCut" --pakdir distribute/ --maintainer "'Thomas Oster <thomas.oster@rwth-aachen.de>'" --requires 'bash,openjdk-11-jre\|openjdk-17-jre,potrace' make install -e PREFIX=/usr > /dev/null || { echo "error"; exit 1; }
   rm -rf *-pak
   # mv doctmp doc
   popd > /dev/null

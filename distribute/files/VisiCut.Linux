@@ -3,6 +3,14 @@
 set -e
 set -o pipefail
 
+#####
+# Configuration
+#####
+# Desired Java version (regexp)
+TARGET_VERSION="1[17]"
+#####
+
+
 script="$(readlink -f "${BASH_SOURCE[0]}")"
 DIR="$(dirname "$script")"
 
@@ -17,7 +25,7 @@ function is_java_version_ok()
 		return 1;
 	fi
 	echo "Java at $1 has version: $java_version"
-	if echo "$java_version" | grep -Eq 'version \"11\.'; then
+	if echo "$java_version" | grep -Eq "version \"${TARGET_VERSION}\."; then
 		echo "-> OK"
 		return 0
 	else
@@ -31,7 +39,7 @@ shopt -s nullglob
 # Try to determine a java of the right version.
 # Can be overridden by environment variable VISICUT_JAVA=/my_path/bin/java
 JAVA=java
-for javabin in $(command -v java) /usr/lib/jvm/java-11-openjdk*/bin/java; do
+for javabin in $(command -v java) /usr/lib/jvm/java-*-openjdk*/bin/java; do
 	if is_java_version_ok "$javabin"; then
 		JAVA="$javabin"
 		break
@@ -40,11 +48,22 @@ done
 if [[ $JAVA == "java" ]]; then
 	echo "WARNING: Could not find the correct Java version. Trying anyway."
 fi
-if [ ! -z "$VISICUT_JAVA" ]; then
+if [ -n "$VISICUT_JAVA" ]; then
 	echo "Overriding java path because VISICUT_JAVA is set."
 	JAVA="$VISICUT_JAVA"
 fi
 echo "Using Java at $JAVA"
 
+JAVAOPTS=""
 
-$JAVA --illegal-access=permit -Xms256m -Xmx2048m -jar "$DIR/Visicut.jar" "$@"
+# For debugging 'Illegal reflective access' errors, you can add exceptions here. Note that these should later be moved to pom.xml so that they are used on all platforms.
+# See pom.xml for details.
+# JAVAOPTS="$JAVAOPTS --add-opens java.xml/com.sun.org.apache.xerces.internal.parsers=ALL-UNNAMED"
+
+# For Java < 17, you can also add a general exception:
+# JAVAOPTS="$JAVAOPTS --illegal-access=warn"
+
+# set RAM limits
+JAVAOPTS="$JAVAOPTS -Xms256m -Xmx2048m"
+
+$JAVA $JAVAOPTS -jar "$DIR/Visicut.jar" "$@"
