@@ -86,17 +86,27 @@ public class PlatformIcon
     {
       return null;
     }
+
+    Icon icon = null;
+
+    // 1. Try loading GTK system icon (Linux only)
     try
     {
       if (Helper.isLinux() && gtkIconNames.containsKey(type))
       {
-        return loadGtkIcon(gtkIconNames.get(type));
+        icon = loadGtkIcon(gtkIconNames.get(type));
       }
     }
     catch (Exception e)
     {
       Logger.getLogger(PlatformIcon.class.getName()).log(Level.SEVERE, null, e);
     }
+    if (icon != null)
+    {
+      return icon;
+    }
+
+    // 2. Fall back to file
     try
     {
       return new ImageIcon(ImageIO.read(PlatformIcon.class.getResource("platformicons/"+type+".png")));
@@ -113,10 +123,13 @@ public class PlatformIcon
     {
       Logger.getLogger(PlatformIcon.class.getName()).log(Level.SEVERE, null, e);
     }
+
+    // 3. give up, return null
     return null;
   }
   
   private static Icon loadGtkIcon(String id) {
+    // Load GTK icon (Linux standard icons). This may fail in certain Java environments because it uses "illegal reflective access". We do our best to work around and allow such access, see pom.xml.
     try
     {
       int widgetType = -1; // Go with the default 
