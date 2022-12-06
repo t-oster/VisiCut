@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
@@ -10,6 +10,7 @@
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="2"/>
@@ -51,7 +52,7 @@
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="appTitleLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="appDescLabel" pref="333" max="32767" attributes="0"/>
+                          <Component id="appDescLabel" pref="357" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="homepageLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -113,7 +114,7 @@
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace pref="21" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -134,7 +135,9 @@
             <Font bold="true" component="appTitleLabel" property="font" relativeSize="true" size="4"/>
           </FontInfo>
         </Property>
-        <Property name="text" type="java.lang.String" resourceKey="Application.title"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="de/thomas_oster/visicut/gui/resources/VisicutApp.properties" key="Application.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
         <Property name="name" type="java.lang.String" value="appTitleLabel" noResource="true"/>
       </Properties>
       <AuxValues>
@@ -159,7 +162,9 @@
     </Component>
     <Component class="javax.swing.JLabel" name="appVersionLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="Application.version"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="de/thomas_oster/visicut/gui/resources/VisicutApp.properties" key="Application.version" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
         <Property name="name" type="java.lang.String" value="appVersionLabel" noResource="true"/>
       </Properties>
       <AuxValues>
@@ -184,7 +189,9 @@
     </Component>
     <Component class="javax.swing.JLabel" name="appVendorLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="Application.vendor"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="de/thomas_oster/visicut/gui/resources/VisicutApp.properties" key="Application.vendor" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
         <Property name="name" type="java.lang.String" value="appVendorLabel" noResource="true"/>
       </Properties>
       <AuxValues>
@@ -219,7 +226,9 @@
     </Component>
     <Component class="javax.swing.JLabel" name="imageLabel">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" resourceKey="imageLabel.icon"/>
+        <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/de/thomas_oster/visicut/gui/resources/icon.png"/>
+        </Property>
         <Property name="name" type="java.lang.String" value="imageLabel" noResource="true"/>
       </Properties>
       <AuxValues>
@@ -254,21 +263,23 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="jLabel1.text"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;a href=&quot;https://visicut.org&quot;&gt;visicut.org&lt;/a&gt;&lt;/html&gt;" noResource="true"/>
         <Property name="name" type="java.lang.String" value="jLabel1" noResource="true"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" resourceKey="jLabel2.icon"/>
-        <Property name="text" type="java.lang.String" resourceKey="jLabel2.text"/>
+        <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/de/thomas_oster/visicut/gui/resources/logo_mcg.png"/>
+        </Property>
         <Property name="name" type="java.lang.String" value="jLabel2" noResource="true"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" resourceKey="jLabel3.icon"/>
-        <Property name="text" type="java.lang.String" resourceKey="jLabel3.text"/>
+        <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/de/thomas_oster/visicut/gui/resources/rwth2.png"/>
+        </Property>
         <Property name="name" type="java.lang.String" value="jLabel3" noResource="true"/>
       </Properties>
     </Component>

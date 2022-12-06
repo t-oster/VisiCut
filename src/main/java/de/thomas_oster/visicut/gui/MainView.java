@@ -246,7 +246,7 @@ public class MainView extends javax.swing.JFrame
   {
     try
     {
-      Image i = ImageIO.read(this.getClass().getResourceAsStream("resources/visicut.png"));
+      Image i = ImageIO.read(this.getClass().getResourceAsStream("resources/icon.png"));
       this.setIconImage(i);
     }
     catch (Exception e)
