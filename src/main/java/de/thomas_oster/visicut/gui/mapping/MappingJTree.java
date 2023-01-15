@@ -148,10 +148,19 @@ public class MappingJTree extends JTree implements TreeModel, TreeSelectionListe
         this.clearSelection();
       }
     }
+    // To make the UI more discoverable, ensure that all relevant selection options are expanded.
+    // Expand "Everything" node
+    this.expandPath(new TreePath(new Object[]{dummyRoot, root}));
+    // Expand current selection
+    this.expandPath(this.getSelectionPath());
   }
   
   public void valueChanged(TreeSelectionEvent evt)
   {
+    // Expand current selection to make the UI more discoverable
+    this.expandPath(this.getSelectionPath());
+
+    // Update filter set from UI selection
     if (evt.getNewLeadSelectionPath() != null && evt.getNewLeadSelectionPath().getPathCount() >= 1)
     {
       Object selected = evt.getNewLeadSelectionPath().getLastPathComponent();
