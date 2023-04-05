@@ -1,0 +1,38 @@
+{
+  "id" : "de.thomas_oster.VisiCut",
+  "branch" : "1.0",
+  "runtime" : "org.freedesktop.Platform",
+  "runtime-version" : "21.08",
+  "sdk" : "org.freedesktop.Sdk",
+  "sdk-extensions" : [ "org.freedesktop.Sdk.Extension.openjdk11" ],
+  "command": "/app/VisiCut.Linux",
+  "modules" : [ {
+    "name" : "openjdk",
+    "buildsystem" : "simple",
+    "build-commands" : [ "/usr/lib/sdk/openjdk11/install.sh" ]
+  }, {
+    "name" : "visicut",
+    "buildsystem" : "simple",
+    "build-commands": [ 
+	    "unzip VisiCut.zip",
+	    "mv visicut/* /app/" ],
+    "sources": [
+        {
+            "type": "file",
+            "path": "VisiCut.zip"
+        },
+	{
+	     "type": "file",
+	     "path": "../linux/VisiCut.desktop"
+	}
+
+    ]
+  } ],
+  "finish-args" : [ 
+	  "--env=PATH=/app/jre/bin:/usr/bin",
+	  "--socket=x11",
+	  "--share=ipc",
+	  "--filesystem=home",
+	  "--share=network"
+ 	 ]
+}
