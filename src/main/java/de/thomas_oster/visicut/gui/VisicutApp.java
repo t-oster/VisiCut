@@ -40,6 +40,7 @@ import de.thomas_oster.visicut.model.PlfPart;
 import de.thomas_oster.visicut.model.mapping.Mapping;
 import java.awt.AWTEvent;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -160,6 +161,20 @@ public class VisicutApp extends SingleFrameApplication
       {
         if (Helper.isWindows())
         {
+          // Fix font size on Windows 2022 / Win11 in certain rare conditions
+          // https://github.com/t-oster/VisiCut/issues/668
+          // https://stackoverflow.com/a/72089786
+          java.util.Enumeration<Object> keys = UIManager.getDefaults().keys();
+          while (keys.hasMoreElements()) {
+              Object key = keys.nextElement();
+              Object value = UIManager.get(key);
+              if (value instanceof javax.swing.plaf.FontUIResource) {
+                  var cast_value = (javax.swing.plaf.FontUIResource) value;
+                  javax.swing.plaf.FontUIResource f = new javax.swing.plaf.FontUIResource(new Font("Segoe UI", Font.PLAIN, cast_value.getSize()));
+                  UIManager.put(key, f);
+              }
+          }
+
           UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         }
         else if (Helper.isLinux())
