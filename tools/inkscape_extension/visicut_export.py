@@ -77,6 +77,8 @@ def get_single_instance_port():
 # INKSCAPEDIR="C:/Program Files (x86)/Inkscape/"
 VISICUTDIR = ""
 INKSCAPEDIR = ""
+# for the AppImage, we just insert the AppImage here and treat it like the visicut binary
+VISICUTBIN = ""
 
 # whether to add (true) or replace (false) current visicut's content
 IMPORT = True
@@ -300,13 +302,14 @@ def get_original_filename(filename):
     return docname
 
 # find executable paths
-import platform
-if platform.system() == 'Darwin':
-    VISICUTBIN = which("VisiCut.MacOS", [VISICUTDIR])
-elif "nt" in os.name:  # Windows
-    VISICUTBIN = which("VisiCut.exe", [VISICUTDIR])
-else:
-    VISICUTBIN = which("VisiCut.Linux", [VISICUTDIR, "/usr/share/visicut"])
+if not VISICUTBIN:
+    import platform
+    if platform.system() == 'Darwin':
+        VISICUTBIN = which("VisiCut.MacOS", [VISICUTDIR])
+    elif "nt" in os.name:  # Windows
+        VISICUTBIN = which("VisiCut.exe", [VISICUTDIR])
+    else:
+        VISICUTBIN = which("VisiCut.Linux", [VISICUTDIR, "/usr/share/visicut"])
 INKSCAPEBIN = which("inkscape", [INKSCAPEDIR])
 
 tmpdir = tempfile.mkdtemp(prefix='temp-visicut-')

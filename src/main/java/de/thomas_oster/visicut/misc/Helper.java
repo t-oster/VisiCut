@@ -264,6 +264,10 @@ public class Helper
       profile_path = System.getenv("INKSCAPE_PROFILE_DIR");
     }
 
+    // if we're in the AppImage, we need to tell the plugin script that it can treat this like a VisiCut binary
+    // inside the visicut directory on any other platform
+    final String appImagePath = System.getenv("APPIMAGE");
+
     File trg;
 
     if (profile_path != null)
@@ -301,6 +305,10 @@ public class Helper
         String line = r.readLine();
         while (line != null)
         {
+          if (appImagePath != null && line.equals("VISICUTBIN = \"\"")) {
+            System.err.println("APPIMAGE=" + appImagePath);
+            line = "VISICUTBIN = r\""+appImagePath+"\"";
+          }
           if ("VISICUTDIR = \"\"".equals(line))
           {
             line = "VISICUTDIR = r\""+getVisiCutFolder().getAbsolutePath()+"\"";
