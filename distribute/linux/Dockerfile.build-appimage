@@ -8,3 +8,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y openjdk-16-jdk git wget shellcheck bash make maven python3-minimal python3-pip && \
     python3 -m pip install git+https://github.com/TheAssassin/appimagecraft.git#egg=appimagecraft
+
+# create fake home directory so that maven can create a ~/.m2 directory
+RUN mkdir /fakehome && \
+    chmod 777 /fakehome
+ENV HOME=/fakehome
