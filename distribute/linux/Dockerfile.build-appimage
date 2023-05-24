@@ -1,7 +1,10 @@
-FROM alpine:latest
+FROM ubuntu:focal
 
-SHELL ["sh", "-x", "-c"]
+SHELL ["bash", "-x", "-c"]
 
-RUN apk add --no-cache libc6-compat gcompat openjdk16 git wget python3 shellcheck bash make maven && \
-    python3 -m ensurepip && \
+ENV DEBIAN_FRONTEND=noninteractive
+
+# note: don't build with OpenJDK > 16, as this is the runtime we ship
+RUN apt-get update && \
+    apt-get install -y openjdk-16-jdk git wget shellcheck bash make maven python3-minimal python3-pip && \
     python3 -m pip install git+https://github.com/TheAssassin/appimagecraft.git#egg=appimagecraft
