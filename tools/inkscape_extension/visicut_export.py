@@ -27,8 +27,6 @@ import sys
 import os
 import re
 import subprocess
-from subprocess import Popen
-import traceback
 import tempfile
 import unicodedata
 import codecs
@@ -71,7 +69,7 @@ def get_single_instance_port():
                 sys.stderr.write("Warning: Cannot determine session ID. please report this.\n")
     return port
 
-# if Visicut or Inkscape cannot be found, change these lines here to VISICUTDIR="C:/Programs/Visicut" or wherever you installed it.
+# if Visicut or Inkscape cannot be found in PATH, change these lines here to VISICUTDIR="C:/Programs/Visicut" or wherever you installed it.
 # please use forward slashes (/), not backslashes (\).
 #
 # example:
@@ -336,21 +334,38 @@ finally:
 
 # Try to start own VisiCut instance
 try:
-    creationflags = 0
-    close_fds = False
     if os.name == "nt":
         DETACHED_PROCESS = 8  # start as "daemon"
         creationflags = DETACHED_PROCESS
         close_fds = True
+
+        cmd = [VISICUTBIN] + arguments + [dest_filename]
+        subprocess.Popen(cmd, creationflags=DETACHED_PROCESS, close_fds=True)
+
     else:
-        try:
-            import daemonize
-            daemonize.createDaemon()
-        except:
-            sys.stderr.write("Could not daemonize. Sorry, but Inkscape was blocked until VisiCut is closed")
-    cmd = [VISICUTBIN] + arguments + [dest_filename]
-    Popen(cmd, creationflags=creationflags, close_fds=close_fds)
-except:
-    sys.stderr.write("Can not start VisiCut (" + str(sys.exc_info()[0]) + "). Please start manually or change the VISICUTDIR variable in the Inkscape-Extension script\n")
+        # on POSIX-compliant OSes (Linux, macOS etc.) we can detach from the parent process using the classic double
+        # fork approach
+        pid = os.fork()
+        if pid > 0:
+            sys.exit(0)
+
+        # subprocess.run(...) internally calls fork(), so this can be considered the second fork
+        # note that we need to detach from the parent's stdout/stderr, otherwise the process won't detach properly from
+        # its parent
+        subprocess.Popen(
+            [VISICUTBIN, *arguments, dest_filename],
+            cwd="/",
+            start_new_session=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+
+except Exception as e:
+    print(
+        f"Can not start VisiCut ({repr(e)}). Please start manually or change the VISICUTDIR or VISICUTBINvariables in"
+        f"the Inkscape extension script\n",
+        file=sys.stderr,
+    )
+    sys.exit(1)
 
 # TODO (complicated, probably WONTFIX): cleanup temporary directories -- this is really difficult because we need to make sure that visicut no longer needs the file, even for reloading!
