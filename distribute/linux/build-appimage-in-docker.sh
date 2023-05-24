@@ -14,8 +14,7 @@ image=visicut-appimage-build
 dockerfile=distribute/linux/Dockerfile.build-appimage
 docker build -t "$image" -f "$dockerfile" $(dirname "$dockerfile")
 
-docker run --rm -i -v "$project_root":/ws "$image" sh -x <<EOF
-cd /ws
+docker run --rm -i --user "$(id -u)" -v "$project_root":/ws --workdir /ws "$image" sh -x <<EOF
 export APPIMAGE_EXTRACT_AND_RUN=1
 git config --global --add safe.directory /ws
 appimagecraft
