@@ -367,39 +367,48 @@ public class Helper
 
   public static File getVisiCutFolder()
   {
+    Logger logger = Logger.getLogger(Helper.class.getName());
+
+    // being pessimistic and assuming the directory can't be found
+    // rest of this function, please feel free to prove the opposite!
+    File visicutDir = null;
+
     try
     {
-      String path = Helper.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-      if (path == null)
-      {
-        return null;
-      }
-      String decodedPath = URLDecoder.decode(path, "UTF-8");
-      File folder = new File(decodedPath);
+      // otherwise, we can try to find the location relative to the classes directory resp. the built JAR file
+      // (in a development environment)
+      File classPath = new File(Helper.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+      visicutDir = new File(classPath.getParent(), "../distribute/files");
 
-      if (!folder.isDirectory()) {
-        folder = folder.getParentFile();
+      // TODO: it is unknown why we need to decode the path
+      String decodedPath = URLDecoder.decode(visicutDir.getPath(), "UTF-8");
+      visicutDir = new File(decodedPath);
+
+      if (!visicutDir.isDirectory()) {
+        visicutDir = visicutDir.getParentFile();
       }
-      
-      // detect and return the path in which the example folder exists, because folder structure on MacOS is different from other OS
-      File examplesFolder = new File(folder, "examples");
-      if (examplesFolder.exists())
-      {
-        return folder;
-      } else {
-        File macosExamplesFolder = new File(folder.getParentFile(), "Resources/Java/examples");
+
+      // detect and return the path in which the example folder exists
+      File examplesFolder = new File(visicutDir, "examples");
+
+      // if it can't be found, it likely means we're on macOS, so we try that path next
+      if (!examplesFolder.exists()) {
+        File macosExamplesFolder = new File(visicutDir.getParentFile(), "Resources/Java/examples");
         if (macosExamplesFolder.exists()) {
-          return macosExamplesFolder.getParentFile();
-        } else {
-          Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, "Path: " + macosExamplesFolder.toString(), "Could not detect visicut directory. Please report this bug.");
+          visicutDir = macosExamplesFolder.getParentFile();
         }
       }
     }
     catch (UnsupportedEncodingException ex)
     {
-      Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, "Unsupported Encoding Exception", ex);
+      logger.log(Level.SEVERE, "Unsupported Encoding Exception", ex);
     }
-    return null;
+
+    if (visicutDir == null) {
+      logger.log(Level.SEVERE, "Could not detect visicut directory. Please report this bug.");
+    }
+
+    return visicutDir;
   }
 
   protected static File basePath;
