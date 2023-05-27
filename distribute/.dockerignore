@@ -1,0 +1,11 @@
+# AppImage builds
+.appimagecraft-build*/
+*.AppImage
+squashfs-root/
+
+# zipped bundles
+*.zip
+*.tar*
+
+# NSIS installer
+*.exe
