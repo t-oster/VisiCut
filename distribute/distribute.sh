@@ -45,7 +45,9 @@ project_root_dir="$(readlink -f "$distribute_dir"/..)"
 if [[ "${VERSION:-}" != "" ]]; then
     log "Using user-provided version \$VERSION=$VERSION"
 else
-    properties="$project_root_dir"/src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties
+    pushd "$project_root_dir"
+
+    properties=src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties
     VERSION="$(grep Application.version < "$properties" | cut -d= -f2 | tr -d ' ')"
 
     # usually, distribute.sh doesn't create the properties file, so we implement a Git based fallback
@@ -54,6 +56,8 @@ else
     else
         VERSION="$(git describe --tags || echo unknown)+devel"
     fi
+
+    popd
 fi
 
 export VERSION
