@@ -26,7 +26,7 @@ if [[ "${1:-}" == "" ]]; then
     log "    - macos-bundle"
     log "    - linux-appimage"
     log "    - linux-checkinstall"
-    log "    - linux-archlinux"
+    log "    - linux-makepkg"
     echo
     log "Available environment variables:"
     log "    - \$BUILD=[...]: if set to any string, $0 will build VisiCut's JAR first (not set by default)"
@@ -221,10 +221,11 @@ EOF
             # create bundle
             zip -r bundle.zip VisiCut.app/
 
-            popd
-
+            # build final filename
             filename_prefix="VisiCutMac-$VERSION"
-            mv "$build_dir"/bundle.zip "$filename_prefix".zip
+            mv bundle.zip "$old_cwd"/"$filename_prefix".zip
+
+            popd
             ;;
 
         linux-appimage)
@@ -247,7 +248,7 @@ EOF
             cp "$distribute_dir"/linux/appimagecraft.yml .
             appimagecraft
 
-            mv VisiCut*.AppImage "$old_cwd"
+            mv -v ./VisiCut*.AppImage* "$old_cwd"
 
             popd
             ;;
@@ -256,7 +257,7 @@ EOF
             pushd "$build_dir"
 
             # copy helper scripts
-            cp "$distribute_dir/linux/*-pak" .
+            cp "$distribute_dir"/linux/*-pak .
 
             test -f /usr/bin/visicut && { echo "error: please first uninstall visicut"; exit 1; }
 
@@ -268,16 +269,18 @@ EOF
                 --requires 'bash,openjdk-11-jre\|openjdk-17-jre,potrace' \
                 make install -e PREFIX=/usr
 
+            mv -v ./*.deb "$old_cwd"
+
             popd
             ;;
 
-        linux-archlinux)
+        linux-makepkg)
             ARCHVERSION=${VERSION//-/_}
             pushd "$build_dir"
             cp "$distribute_dir"/linux/* .
             sed -i "s#pkgver=VERSION#pkgver=$ARCHVERSION#g" PKGBUILD
             makepkg -p PKGBUILD
-            mv *.pkg.tar.xz "$old_cwd"
+            mv ./*.pkg.tar.xz "$old_cwd"
             popd
             ;;
 
