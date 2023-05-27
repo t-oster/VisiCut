@@ -4,7 +4,7 @@
 ; Credit given to so many people of the NSIS forum.
  
 !define AppName "VisiCut"
-!define AppVersion "VISICUTVERSION"
+!define AppVersion "$%VERSION%"
 !define ShortName "VisiCut"
 !define Vendor "RWTH Aachen University"
  
@@ -33,7 +33,7 @@
 ;Pages
  
   ; License page
-  !insertmacro MUI_PAGE_LICENSE "stream\license-with-jre.txt"
+  !insertmacro MUI_PAGE_LICENSE "license-with-jre.txt"
   !insertmacro MUI_PAGE_INSTFILES
   !define MUI_INSTFILESPAGE_FINISHHEADER_TEXT "Installation complete"
   !define MUI_PAGE_HEADER_TEXT "Installing"
@@ -80,10 +80,13 @@
 ;Installer Sections
  
 Section "Installation of ${AppName}" SecAppFiles
-  SectionIn 1 RO	; Full install, cannot be unselected
-			; If you add more sections be sure to add them here as well
+  ; Full install, cannot be unselected
+  ; If you add more sections be sure to add them here as well
+  SectionIn 1 RO
+
   SetOutPath $INSTDIR
-File /r "stream\"
+  File /r "visicut\"
+
   ;Store install folder
   WriteRegStr HKLM "SOFTWARE\${Vendor}\${ShortName}" "" $INSTDIR
  
@@ -95,6 +98,7 @@ File /r "stream\"
   ; insert visicut to path
   Push $0
   Push $1
+
   ; string length check taken from CMake/Modules/NSIS.template.in
   ; if the path is too long for a NSIS variable NSIS will return a 0
   ; length string.  If we find that, then warn and skip any path

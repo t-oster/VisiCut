@@ -1,0 +1,50 @@
+version: 1
+
+project:
+  name: org.visicut.visicut
+  version_command: echo "$VERSION"
+
+build:
+  null:
+
+scripts:
+  post_build:
+    # set up AppDir's basic layout and copy visicut dir into it
+    - mkdir -p "$BUILD_DIR"/AppDir/usr/lib/
+
+    # we expect the distribute.sh script to put the visicut dir next to the appimagecraft script
+    - cp -Rv "$PROJECT_ROOT"/visicut "$BUILD_DIR"/AppDir/usr/lib/
+
+    # also, we expect distribute.sh to put a JVM next to appimagecraft.yml
+    # we don't put it into usr/lib/ because that would cause linuxdeploy to try and deploy dependencies
+    # the JVM should already be a portable bundle
+    - cp -Rv "$PROJECT_ROOT"/jre "$BUILD_DIR"/AppDir/usr/
+
+    # now that that's fixed, let's generate the launcher script
+    # we are going to recycle VisiCut.Linux, however we need to tell it some basic information, e.g., the java binary
+    # we want it to use
+    - |2
+      set -x
+
+      cat > "$BUILD_DIR"/AppRun.sh <<\EOF
+      #! /bin/bash
+      set -exuo pipefail
+
+      export APPDIR="${APPDIR:-"$(readlink -f "$(dirname "$0")")"}"
+
+      # improve font rendering
+      export _JAVA_OPTIONS="-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"
+
+      export VISICUT_JAVA="$APPDIR"/usr/jre/bin/java
+
+      exec "$APPDIR"/usr/lib/visicut/VisiCut.Linux "$@"
+      EOF
+
+      # debugging
+      cat "$BUILD_DIR"/AppRun.sh
+
+      chmod +x "$BUILD_DIR"/AppRun.sh
+
+appimage:
+  linuxdeploy:
+    extra_args: -i "$PROJECT_ROOT"/visicut.png -d "$PROJECT_ROOT"/VisiCut.desktop --custom-apprun "$BUILD_DIR"/AppRun.sh
