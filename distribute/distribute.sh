@@ -278,16 +278,6 @@ EOF
             popd
             ;;
 
-        linux-makepkg)
-            ARCHVERSION=${VERSION//-/_}
-            pushd "$build_dir"
-            cp "$distribute_dir"/linux/* .
-            sed -i "s#pkgver=VERSION#pkgver=$ARCHVERSION#g" PKGBUILD
-            makepkg -p PKGBUILD
-            mv ./*.pkg.tar.xz "$old_cwd"
-            popd
-            ;;
-
         *)
             log "Unknown target $target, skipping"
             continue
