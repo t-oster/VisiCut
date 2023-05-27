@@ -48,6 +48,7 @@ import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -373,35 +374,44 @@ public class Helper
     // rest of this function, please feel free to prove the opposite!
     File visicutDir = null;
 
-    try
-    {
-      // otherwise, we can try to find the location relative to the classes directory resp. the built JAR file
-      // (in a development environment)
-      File classPath = new File(Helper.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-      visicutDir = new File(classPath.getParent(), "../distribute/files");
+    // we support the resources in multiple locations to cover development, testing and distribution
+    File classPath = new File(Helper.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+    List<File> visicutDirsToTest = new LinkedList<>();
+    // first, let's check if this is a deployment situation, i.e., the JAR is located in a visicut dir somewhere on
+    // some filesystem
+    visicutDirsToTest.add(classPath);
+    // otherwise, we can try to find the location relative to the classes directory resp. the built JAR file
+    // (in a development environment)
+    visicutDirsToTest.add(new File(classPath.getParent(), "../distribute/files"));
 
+    for (File visicutDirToTest : visicutDirsToTest) {
       // TODO: it is unknown why we need to decode the path
-      String decodedPath = URLDecoder.decode(visicutDir.getPath(), "UTF-8");
-      visicutDir = new File(decodedPath);
+      String decodedPath = URLDecoder.decode(visicutDirToTest.getPath(), StandardCharsets.UTF_8);
+      visicutDirToTest = new File(decodedPath);
 
-      if (!visicutDir.isDirectory()) {
-        visicutDir = visicutDir.getParentFile();
+      if (!visicutDirToTest.isDirectory()) {
+        visicutDirToTest = visicutDirToTest.getParentFile();
       }
 
+      assert(visicutDirToTest != null);
+
       // detect and return the path in which the example folder exists
-      File examplesFolder = new File(visicutDir, "examples");
+      File examplesFolder = new File(visicutDirToTest, "examples");
 
       // if it can't be found, it likely means we're on macOS, so we try that path next
       if (!examplesFolder.exists()) {
-        File macosExamplesFolder = new File(visicutDir.getParentFile(), "Resources/Java/examples");
+        File macosExamplesFolder = new File(visicutDirToTest.getParentFile(), "Resources/Java/examples");
         if (macosExamplesFolder.exists()) {
-          visicutDir = macosExamplesFolder.getParentFile();
+          visicutDirToTest = macosExamplesFolder.getParentFile();
         }
       }
-    }
-    catch (UnsupportedEncodingException ex)
-    {
-      logger.log(Level.SEVERE, "Unsupported Encoding Exception", ex);
+
+      if (visicutDirToTest.exists()) {
+        visicutDir = visicutDirToTest;
+        break;
+      } else {
+        visicutDir = null;
+      }
     }
 
     if (visicutDir == null) {
