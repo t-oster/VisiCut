@@ -95,6 +95,31 @@ mkdir -p "$visicut_dir"/{inkscape_extension,illustrator_script}
 cp -v "$project_root_dir"/tools/inkscape_extension/{*.py,*.inx} "$visicut_dir"/inkscape_extension/
 cp -v "$project_root_dir"/tools/illustrator_script/*.scpt "$visicut_dir"/illustrator_script/
 
+download_and_extract_jdk() {
+    local url="$1"
+    local hash="$2"
+
+    pushd "$build_dir"
+
+    wget --content-disposition "$url"
+    downloaded_file="$(find . -iname '*.zip' -or -iname '*.tar*' -type f | head -n1)"
+    echo "$hash  $downloaded_file" | sha256sum -c
+
+    if [[ "$downloaded_file" == *.zip ]]; then
+        unzip ./*.zip
+    elif [[ "$downloaded_file" == ./*.tar* ]]; then
+        tar -xvf ./*.tar*
+    else
+        # should never happen
+        log "Unknown archive type"
+        exit 4
+    fi
+
+    mv ./*jre/ jre
+
+    popd
+}
+
 # now that the visicut directory has been set up, we can perform platform-specific bundling
 for target in "$@"; do
     log "Building for target $target"
@@ -104,32 +129,6 @@ for target in "$@"; do
         [[ -d "$build_dir" ]] && rm -rf "${build_dir:?}"/
     }
     trap cleanup EXIT
-
-    download_and_extract_jdk() {
-        local url="$1"
-        local hash="$2"
-
-        pushd "$build_dir"
-
-        wget --content-disposition "$url"
-        downloaded_file="$(find . -iname '*.zip' -or -iname '*.tar*' -type f | head -n1)"
-        echo "$hash  $downloaded_file" | sha256sum -c
-
-        # -bb1 displays a list of extracted files
-        if [[ "$downloaded_file" == *.zip ]]; then
-            unzip ./*.zip
-        elif [[ "$downloaded_file" == ./*.tar* ]]; then
-            tar -xvf ./*.tar*
-        else
-            # should never happen
-            log "Unknown archive type"
-            exit 4
-        fi
-
-        mv ./*jre/ jre
-
-        popd
-    }
 
     build_windows_launcher() {
         # build launcher
