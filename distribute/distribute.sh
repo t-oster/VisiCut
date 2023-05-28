@@ -26,7 +26,6 @@ if [[ "${1:-}" == "" ]]; then
     log "    - macos-bundle"
     log "    - linux-appimage"
     log "    - linux-checkinstall"
-    log "    - linux-makepkg"
     echo
     log "Available environment variables:"
     log "    - \$NO_BUILD=[...]: if set to any string, $0 won't build a JAR (saves build time if the script ran already)"
