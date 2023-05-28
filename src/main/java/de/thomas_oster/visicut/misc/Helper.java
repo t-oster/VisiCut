@@ -306,7 +306,6 @@ public class Helper
         while (line != null)
         {
           if (appImagePath != null && line.equals("VISICUTBIN = \"\"")) {
-            System.err.println("APPIMAGE=" + appImagePath);
             line = "VISICUTBIN = r\""+appImagePath+"\"";
           }
           if ("VISICUTDIR = \"\"".equals(line))
