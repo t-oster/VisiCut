@@ -18,7 +18,7 @@ log() {
 # targets to be built need to be passed on the commandline
 # if no targets are provided, we display a help text
 if [[ "${1:-}" == "" ]]; then
-    log "Usage: [env BUILD=1] $0 <targets>"
+    log "Usage: [env NO_BUILD=1] $0 <targets>"
     echo
     log "Available targets:"
     log "    - zip"
@@ -29,7 +29,7 @@ if [[ "${1:-}" == "" ]]; then
     log "    - linux-makepkg"
     echo
     log "Available environment variables:"
-    log "    - \$BUILD=[...]: if set to any string, $0 will build VisiCut's JAR first (not set by default)"
+    log "    - \$NO_BUILD=[...]: if set to any string, $0 won't build a JAR (saves build time if the script ran already)"
     exit 2
 fi
 
@@ -62,7 +62,7 @@ fi
 
 export VERSION
 
-if [ "${BUILD:-}" != "" ]; then
+if [ "${NO_BUILD:-}" == "" ]; then
     log "Building VisiCut JAR"
     # TODO: make out-of-source builds possible
 	pushd "$project_root_dir"
