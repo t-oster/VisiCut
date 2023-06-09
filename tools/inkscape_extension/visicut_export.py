@@ -338,10 +338,8 @@ finally:
 # Try to start own VisiCut instance
 try:
     if os.name == "nt":
-        DETACHED_PROCESS = 8  # start as "daemon"
-        creationflags = DETACHED_PROCESS
-        close_fds = True
-
+        # start as "daemon"
+        DETACHED_PROCESS = 8
         cmd = [VISICUTBIN] + arguments + [dest_filename]
         subprocess.Popen(cmd, creationflags=DETACHED_PROCESS, close_fds=True)
 
@@ -365,7 +363,7 @@ try:
 
 except Exception as e:
     print(
-        f"Can not start VisiCut ({repr(e)}). Please start manually or change the VISICUTDIR or VISICUTBINvariables in"
+        f"Can not start VisiCut ({repr(e)}). Please start manually or change the VISICUTDIR or VISICUTBIN variables in"
         f"the Inkscape extension script\n",
         file=sys.stderr,
     )

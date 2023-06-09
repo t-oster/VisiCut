@@ -18,7 +18,7 @@ log() {
 # targets to be built need to be passed on the commandline
 # if no targets are provided, we display a help text
 if [[ "${1:-}" == "" ]]; then
-    log "Usage: [env BUILD=1] $0 <targets>"
+    log "Usage: [env NO_BUILD=1] $0 <targets>"
     echo
     log "Available targets:"
     log "    - zip"
@@ -26,10 +26,9 @@ if [[ "${1:-}" == "" ]]; then
     log "    - macos-bundle"
     log "    - linux-appimage"
     log "    - linux-checkinstall"
-    log "    - linux-makepkg"
     echo
     log "Available environment variables:"
-    log "    - \$BUILD=[...]: if set to any string, $0 will build VisiCut's JAR first (not set by default)"
+    log "    - \$NO_BUILD=[...]: if set to any string, $0 won't build a JAR (saves build time if the script ran already)"
     exit 2
 fi
 
@@ -62,7 +61,7 @@ fi
 
 export VERSION
 
-if [ "${BUILD:-}" != "" ]; then
+if [ "${NO_BUILD:-}" == "" ]; then
     log "Building VisiCut JAR"
     # TODO: make out-of-source builds possible
 	pushd "$project_root_dir"
@@ -96,6 +95,31 @@ mkdir -p "$visicut_dir"/{inkscape_extension,illustrator_script}
 cp -v "$project_root_dir"/tools/inkscape_extension/{*.py,*.inx} "$visicut_dir"/inkscape_extension/
 cp -v "$project_root_dir"/tools/illustrator_script/*.scpt "$visicut_dir"/illustrator_script/
 
+download_and_extract_jdk() {
+    local url="$1"
+    local hash="$2"
+
+    pushd "$build_dir"
+
+    wget --content-disposition "$url"
+    downloaded_file="$(find . -iname '*.zip' -or -iname '*.tar*' -type f | head -n1)"
+    echo "$hash  $downloaded_file" | sha256sum -c
+
+    if [[ "$downloaded_file" == *.zip ]]; then
+        unzip ./*.zip
+    elif [[ "$downloaded_file" == ./*.tar* ]]; then
+        tar -xvf ./*.tar*
+    else
+        # should never happen
+        log "Unknown archive type"
+        exit 4
+    fi
+
+    mv ./*jre/ jre
+
+    popd
+}
+
 # now that the visicut directory has been set up, we can perform platform-specific bundling
 for target in "$@"; do
     log "Building for target $target"
@@ -105,32 +129,6 @@ for target in "$@"; do
         [[ -d "$build_dir" ]] && rm -rf "${build_dir:?}"/
     }
     trap cleanup EXIT
-
-    download_and_extract_jdk() {
-        local url="$1"
-        local hash="$2"
-
-        pushd "$build_dir"
-
-        wget --content-disposition "$url"
-        downloaded_file="$(find . -iname '*.zip' -or -iname '*.tar*' -type f | head -n1)"
-        echo "$hash  $downloaded_file" | sha256sum -c
-
-        # -bb1 displays a list of extracted files
-        if [[ "$downloaded_file" == *.zip ]]; then
-            unzip ./*.zip
-        elif [[ "$downloaded_file" == ./*.tar* ]]; then
-            tar -xvf ./*.tar*
-        else
-            # should never happen
-            log "Unknown archive type"
-            exit 4
-        fi
-
-        mv ./*jre/ jre
-
-        popd
-    }
 
     build_windows_launcher() {
         # build launcher

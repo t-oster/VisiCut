@@ -12,8 +12,6 @@ RUN apt-get update && \
         nsis zip libfuse2 checkinstall makepkg && \
     python3 -m pip install git+https://github.com/TheAssassin/appimagecraft.git#egg=appimagecraft
 
-# note: makepkg is contained in universe only, so we need to add that repository
-
 # create fake home directory so that maven can create a ~/.m2 directory
 RUN mkdir /fakehome && \
     chmod 777 /fakehome
