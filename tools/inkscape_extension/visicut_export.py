@@ -41,6 +41,14 @@ except ImportError:
 
 DEVNULL = open(os.devnull, 'w')
 
+
+# work around Inkscape 1.3 failing to start when it "calls itself" (Inkscape -> Extension -> Inkscape):
+# https://gitlab.com/inkscape/inkscape/-/issues/4163
+# https://gitlab.com/inkscape/extensions/-/merge_requests/534
+# TODO: Rewrite most parts of this extension using the inkex python module. This removes the need for such workarounds but may break compatibility with Inkscape < 1.2 (?).
+os.environ["SELF_CALL"] = "true"
+
+
 def get_single_instance_port():
     """
     get the single instance port used by VisiCut.
@@ -247,7 +255,13 @@ def stripSVG_inkscape(src, dest, elements):
         subprocess.check_output(command, stderr=subprocess.STDOUT, universal_newlines=True)
     except subprocess.CalledProcessError as e:
         sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect.\nInkscape's output was:\n" + e.output)
-
+    # --- begin workaround
+    # workaround for a bug in Inkscape 1.3-beta0: --export-overwrite of file.svg creates file.svg.svg.
+    # https://gitlab.com/inkscape/inkscape/-/issues/4352
+    # Can be removed if the above issue is fixed before Inkscape 1.3 is released.
+    if os.path.isfile(tmpfile + ".svg"):
+        os.replace(tmpfile + ".svg", tmpfile)
+    # --- end workaround
     # move output to the intended destination filename
     os.rename(tmpfile, dest)
 
