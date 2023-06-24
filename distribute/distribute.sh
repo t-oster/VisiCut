@@ -4,15 +4,20 @@ set -euo pipefail
 
 # small optimization: if a RAM disk is available, use it for building
 # saving writes on an SSD will extend its life, after all!
-if [[ "${TMPDIR:-}" == "" ]] && [[ -d /dev/shm ]]; then
-    export TMPDIR=/dev/shm
-fi
+# FIXME: disabled because it is not guaranteed that this will be large enough to build VisiCut.
+#if [[ "${TMPDIR:-}" == "" ]] && [[ -d /dev/shm ]]; then
+#    export TMPDIR=/dev/shm
+#fi
 
 log() {
-    [[ -t 0 ]] && tput setaf 2
-    [[ -t 0 ]] && tput bold
+    if [[ -t 0 ]]; then
+        tput setaf 2
+        tput bold
+    fi
     echo "== $* =="
-    [[ -t 0 ]] && tput sgr0
+    if [[ -t 0 ]]; then
+        tput sgr0
+    fi
 }
 
 # targets to be built need to be passed on the commandline
@@ -126,7 +131,9 @@ for target in "$@"; do
 
     build_dir="$(mktemp -d -t visicut-build-$target-XXXXXX)"
     cleanup() {
-        [[ -d "$build_dir" ]] && rm -rf "${build_dir:?}"/
+        if [[ -d "$build_dir" ]]; then
+            rm -rf "${build_dir:?}"/
+        fi
     }
     trap cleanup EXIT
 
@@ -189,6 +196,7 @@ EOF
 
             filename_prefix="VisiCut-$VERSION-Windows-Installer"
             mv "$build_dir"/setup.exe "$filename_prefix".exe
+            echo "Success: Built Windows EXE Installer in $(pwd)/${filename_prefix}.exe"
             ;;
 
         macos-bundle)
@@ -260,6 +268,8 @@ EOF
 
             # copy helper scripts
             cp "$distribute_dir"/linux/*-pak .
+            # copy the whole source tree
+            cp -r "$project_root_dir"/*  "$build_dir"
 
             test -f /usr/bin/visicut && { echo "error: please first uninstall visicut"; exit 1; }
 
@@ -271,14 +281,14 @@ EOF
                 --requires 'bash,openjdk-11-jre\|openjdk-17-jre,potrace' \
                 make install -e PREFIX=/usr
 
-            mv -v ./*.deb "$old_cwd"
+            mv -v ./distribute/*.deb "$old_cwd"
 
             popd
             ;;
 
         *)
-            log "Unknown target $target, skipping"
-            continue
+            log "Unknown target $target. Exiting."
+            exit 1
             ;;
     esac
 

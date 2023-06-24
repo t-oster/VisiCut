@@ -1,5 +1,5 @@
 # list all targets which are not actual files:
-.PHONY: all help jar run libLaserCut clean dist install uninstall prop2po po2prop
+.PHONY: all help jar splash run libLaserCut clean dist install uninstall prop2po po2prop
 
 PREFIX?=/usr
 
@@ -13,14 +13,14 @@ help:
 	make dist: build setup files (in ./distribute subdirectory)\n\
 	make clean: remove all compiled files\n\
 	"
-# Note: If you override the splash screen version with $VERSION, you must run 'make clean' because 'make' doesn't understand the dependency on environment variables.
-src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png: splashsource.svg src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties
+splash:
 	./generatesplash.sh
-jar: src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png libLaserCut
+jar: splash libLaserCut
 	mvn initialize
 	mvn package
 dist:
-	./distribute/distribute.sh
+	./distribute/distribute.sh zip
+	echo "Successfully built the Platform independent ZIP file. For other build variants, please run ./distribute/distribute.sh"
 run: jar
 	java -Xmx2048m -Xms256m -jar target/visicut*full.jar
 libLaserCut:
