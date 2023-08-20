@@ -84,6 +84,8 @@ Section "Installation of ${AppName}" SecAppFiles
   ; If you add more sections be sure to add them here as well
   SectionIn 1 RO
 
+  SetShellVarContext all ; Start menu (etc.) is changed for all users
+
   SetOutPath $INSTDIR
   File /r "visicut\"
 
@@ -130,6 +132,9 @@ SectionEnd
  
 Section "Start menu shortcuts" SecCreateShortcut
   SectionIn 1	; Can be unselected
+
+  SetShellVarContext all ; Start menu (etc.) is changed for all users
+
   CreateDirectory "$SMPROGRAMS\${AppName}"
   CreateShortCut "$SMPROGRAMS\${AppName}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
   CreateShortCut "$SMPROGRAMS\${AppName}\${AppName}.lnk" "$INSTDIR\${AppName}.exe" "" "$INSTDIR\${AppName}.exe" 0
@@ -179,6 +184,10 @@ Section "Uninstall"
   ; remove visicut from path
   Push $0
   Push $1
+
+  SetShellVarContext all ; Start menu (etc.) is changed for all users
+
+
   ; string length check taken from CMake/Modules/NSIS.template.in
   ; if the path is too long for a NSIS variable NSIS will return a 0
   ; length string.  If we find that, then warn and skip any path
@@ -206,7 +215,7 @@ Section "Uninstall"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ShortName}"
   DeleteRegKey HKLM  "SOFTWARE\${Vendor}\${AppName}"
   ; remove shortcuts, if any.
-  Delete "$SMPROGRAMS\${AppName}\*.*"
+  RMDir /r "$SMPROGRAMS\${AppName}"
 
   ; remove files
   RMDir /r "$INSTDIR"
