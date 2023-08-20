@@ -84,6 +84,14 @@ Section "Installation of ${AppName}" SecAppFiles
   ; If you add more sections be sure to add them here as well
   SectionIn 1 RO
 
+  ; Try to run uninstaller of previous version
+  ; This ensures that if the new installer installs other files or at a new location, then the old files still work properls.
+  ; Assumption: The installation path is the same as before. (Without this assumption, the code would be much more complicated.)
+  ; from: https://nsis.sourceforge.io/When_I_use_ExecWait_uninstaller.exe_it_doesn%27t_wait_for_the_uninstaller
+  Push $0
+  ExecWait '"$INSTDIR\uninstall.exe" /S _?=$INSTDIR' $0
+  Pop $0
+
   SetShellVarContext all ; Start menu (etc.) is changed for all users
 
   SetOutPath $INSTDIR
