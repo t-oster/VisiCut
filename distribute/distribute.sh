@@ -156,8 +156,10 @@ for target in "$@"; do
             cp -Rv "$visicut_dir" visicut
             build_windows_launcher
             zip -r visicut.zip visicut
-            mv visicut.zip "$old_cwd"
+            destination="$old_cwd/VisiCut-$VERSION.zip"
+            mv visicut.zip "$destination"
             popd
+            echo "Success: Created ZIP at $destination"
             ;;
 
         windows-nsis)
