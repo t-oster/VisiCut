@@ -97,6 +97,16 @@ Section "Installation of ${AppName}" SecAppFiles
   SetOutPath $INSTDIR
   File /r "visicut\"
 
+  ; if Inkscape is installed in standard location (not Portable App etc.)
+  IfFileExists "C:\Program Files\Inkscape\share\inkscape\extensions\README.md" install_extension done_install_extension
+  ; then:
+  install_extension:
+    ; install the extension system-wide
+    SetOutPath "C:\Program Files\Inkscape\share\inkscape\extensions\visicut"
+    File /r "visicut\inkscape_extension"
+  done_install_extension:
+  ; end if.
+
   ;Store install folder
   WriteRegStr HKLM "SOFTWARE\${Vendor}\${ShortName}" "" $INSTDIR
  
