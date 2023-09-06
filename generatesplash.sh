@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 echo "Checking for rsvg..."
-if which rsvg-convert >/dev/null 2>&1
+if command -v rsvg-convert >/dev/null 2>&1
 then
 	echo "found rsvg-convert."
 else
