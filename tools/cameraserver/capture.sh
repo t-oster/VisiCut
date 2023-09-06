@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # This file is part of VisiCut.
 # Copyright (C) 2011 Thomas Oster <thomas.oster@rwth-aachen.de>

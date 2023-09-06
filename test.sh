@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Performs some sanity and code cleanness tests. Intended to be run before every commit
 
 echo "Checking for copryight header"

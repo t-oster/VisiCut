@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # This file is part of VisiCut.
 # Copyright (C) 2011 Thomas Oster <thomas.oster@rwth-aachen.de>
@@ -65,10 +65,10 @@ trap 'shutdown' SIGTERM SIGINT
 while :
 do 
 	echo "Waiting for Connection..."
-	if [ -x "$(which netcat)" ]
+	if [ -x "$(command -v netcat)" ]
 	then
 		netcat -l -p $PORT < fifo | ./capture.sh > fifo
-	elif [ -x "$(which nc)" ]
+	elif [ -x "$(command -v nc)" ]
 	then
 		nc -l $PORT < fifo | ./capture.sh > fifo
 	else

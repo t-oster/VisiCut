@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 echo "This will install the inkscape-extension for VisiCut"
 echo "Do you want to continue? (y/n)"
 read answ
