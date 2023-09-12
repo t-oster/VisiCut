@@ -228,7 +228,7 @@ EOF
 
             # deploy jre
             mkdir -p VisiCut.app/Contents/Plugins/
-            mv jre/* VisiCut.app/Contents/Plugins/
+            mv jre/ VisiCut.app/Contents/Plugins/JRE/
 
             # create bundle
             zip -r bundle.zip VisiCut.app/
