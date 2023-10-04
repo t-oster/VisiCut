@@ -75,6 +75,7 @@ public class LabSettings
     result.add(new LabSettings("Germany, Gunzenhausen: FabLab Altmühlfranken", "https://git.fablab-altmuehlfranken.de/fablab/visicut-settings/archive/main.zip"));
     result.add(new LabSettings("Germany, Hamburg: Fab Lab Fabulous St. Pauli", "https://github.com/Fab-Lab-Fabulous-St-Pauli/visicut-settings/archive/main.zip", new String[]{".fablab-hamburg.org"}, null));
     result.add(new LabSettings("Germany, Heidelberg: Heidelberg Makerspace", "https://github.com/heidelberg-makerspace/visicut-settings/archive/master.zip"));
+	result.add(new LabSettings("Germany, Karlsruhe: SPE Innovationswerkstatt", "https://github.com/spe-khe/visicut_settings/archive/main.zip"));
     result.add(new LabSettings("Germany, Nuremberg: Fab lab Region Nürnberg e.V.", "https://github.com/fablabnbg/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Paderborn: FabLab Paderborn e.V.", "https://github.com/fablab-paderborn/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Reutlingen: INNOPORT / MakeRTreff", "https://github.com/InnoportReutlingen/VisiCut-Settings/archive/main.zip"));
