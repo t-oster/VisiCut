@@ -2115,12 +2115,12 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     if (nameprefix.length() > 0)
     {
       nameprefix = nameprefix + " ";	// insert a whitespace after prefix to make it look nicer.
-    } 
+    }
     //
     // Most simplistic implementation of user editable job names:
     //  - we just add a prefix, if any. (This is okay for Zing lasers that only display 16 chars.)
-    // Todo: Better compute the next proposed job name in e.g. refreshExecuteButtons() ahead of time 
-    // and show it in jTextFieldJobName near the Execute button. When we come here, just retrieve the 
+    // Todo: Better compute the next proposed job name in e.g. refreshExecuteButtons() ahead of time
+    // and show it in jTextFieldJobName near the Execute button. When we come here, just retrieve the
     // (possibly edited) name from there.
     //
     String prefix = visicutModel1.getSelectedLaserDevice().getJobPrefix();
