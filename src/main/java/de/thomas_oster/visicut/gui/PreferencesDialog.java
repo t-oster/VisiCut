@@ -107,24 +107,8 @@ public class PreferencesDialog extends javax.swing.JDialog
     cbSandboxLaserScript1 = new javax.swing.JCheckBox();
     jTextFieldLabName = new javax.swing.JTextField();
     jLabel3 = new javax.swing.JLabel();
-    lbEnableQRCodes = new javax.swing.JLabel();
-    lbFastQRCodes = new javax.swing.JLabel();
-    cbEnableQRCodes = new javax.swing.JCheckBox();
-    cbFastQRCodes = new javax.swing.JCheckBox();
     lbAutoUpdateSettings = new javax.swing.JLabel();
     cbAutoUpdateSettings = new javax.swing.JCheckBox();
-    pnlFabqr = new javax.swing.JPanel();
-    cbFabqrActive = new javax.swing.JCheckBox();
-    lblFabqrHint = new javax.swing.JLabel();
-    lblFabqrExample = new javax.swing.JLabel();
-    lblFabqrPublicURL = new javax.swing.JLabel();
-    txtFabqrPublicURL = new javax.swing.JTextField();
-    lblFabqrPrivateURL = new javax.swing.JLabel();
-    txtFabqrPrivateURL = new javax.swing.JTextField();
-    lblFabqrPrivateUser = new javax.swing.JLabel();
-    txtFabqrPrivateUser = new javax.swing.JTextField();
-    lblFabqrPrivatePassword = new javax.swing.JLabel();
-    passFabqrPrivatePassword = new javax.swing.JPasswordField();
     btOk = new javax.swing.JButton();
     btCancel = new javax.swing.JButton();
 
@@ -170,18 +154,6 @@ public class PreferencesDialog extends javax.swing.JDialog
     jLabel3.setText(resourceMap.getString("LAB_NAME")); // NOI18N
     jLabel3.setToolTipText(resourceMap.getString("LAB_NAME_TOOLTIP")); // NOI18N
 
-    lbEnableQRCodes.setText(resourceMap.getString("ENABLE_QR_CODES_TEXT")); // NOI18N
-    lbEnableQRCodes.setToolTipText(resourceMap.getString("ENABLE_QR_CODES_TOOLTIP")); // NOI18N
-
-    lbFastQRCodes.setText(resourceMap.getString("FAST_QR_CODES_TEXT")); // NOI18N
-    lbFastQRCodes.setToolTipText(resourceMap.getString("FAST_QR_CODES_TOOLTIP")); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.enableQRCodes}"), cbEnableQRCodes, org.jdesktop.beansbinding.BeanProperty.create("selected"));
-    bindingGroup.addBinding(binding);
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fastQRCodes}"), cbFastQRCodes, org.jdesktop.beansbinding.BeanProperty.create("selected"));
-    bindingGroup.addBinding(binding);
-
     lbAutoUpdateSettings.setText(resourceMap.getString("AUTO_UPDATE_SETTINGS")); // NOI18N
 
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.autoUpdateSettings}"), cbAutoUpdateSettings, org.jdesktop.beansbinding.BeanProperty.create("selected"));
@@ -198,8 +170,6 @@ public class PreferencesDialog extends javax.swing.JDialog
           .addComponent(jLabel1)
           .addComponent(lbFilenamesForJobs)
           .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(lbEnableQRCodes)
-          .addComponent(lbFastQRCodes)
           .addComponent(lbAutoUpdateSettings))
         .addGap(47, 47, 47)
         .addGroup(pnlGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -209,8 +179,6 @@ public class PreferencesDialog extends javax.swing.JDialog
             .addGroup(pnlGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(cbSandboxLaserScript1)
               .addComponent(cbSandboxLaserScript)
-              .addComponent(cbEnableQRCodes)
-              .addComponent(cbFastQRCodes)
               .addComponent(cbAutoUpdateSettings))
             .addGap(0, 0, Short.MAX_VALUE)))
         .addContainerGap())
@@ -236,118 +204,12 @@ public class PreferencesDialog extends javax.swing.JDialog
           .addComponent(jLabel3))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(pnlGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(lbEnableQRCodes)
-          .addComponent(cbEnableQRCodes))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addGroup(pnlGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(lbFastQRCodes)
-          .addComponent(cbFastQRCodes))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addGroup(pnlGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(lbAutoUpdateSettings)
           .addComponent(cbAutoUpdateSettings))
         .addGap(9, 9, 9))
     );
 
     tpSettings.addTab("General", pnlGeneral);
-
-    pnlFabqr.setToolTipText(""); // NOI18N
-
-    cbFabqrActive.setText("FabQR active");
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabqrActive}"), cbFabqrActive, org.jdesktop.beansbinding.BeanProperty.create("selected"));
-    bindingGroup.addBinding(binding);
-
-    lblFabqrHint.setText("Insert full URLs to the public and private part of the FabQR system, must end with slash.");
-
-    lblFabqrExample.setText("Example: http://my-public-fabqr.net:8090/");
-
-    lblFabqrPublicURL.setText("FabQR Public URL:");
-
-    txtFabqrPublicURL.setToolTipText(""); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabqrPublicURL}"), txtFabqrPublicURL, org.jdesktop.beansbinding.BeanProperty.create("text"));
-    bindingGroup.addBinding(binding);
-
-    lblFabqrPrivateURL.setText("FabQR Private URL:");
-
-    txtFabqrPrivateURL.setToolTipText(""); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabqrPrivateURL}"), txtFabqrPrivateURL, org.jdesktop.beansbinding.BeanProperty.create("text"));
-    bindingGroup.addBinding(binding);
-
-    lblFabqrPrivateUser.setText("FabQR Private User:");
-
-    txtFabqrPrivateUser.setToolTipText(""); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabqrPrivateUser}"), txtFabqrPrivateUser, org.jdesktop.beansbinding.BeanProperty.create("text"));
-    bindingGroup.addBinding(binding);
-
-    lblFabqrPrivatePassword.setText("FabQR Private Password:");
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${preferences.fabqrPrivatePassword}"), passFabqrPrivatePassword, org.jdesktop.beansbinding.BeanProperty.create("text"));
-    bindingGroup.addBinding(binding);
-
-    javax.swing.GroupLayout pnlFabqrLayout = new javax.swing.GroupLayout(pnlFabqr);
-    pnlFabqr.setLayout(pnlFabqrLayout);
-    pnlFabqrLayout.setHorizontalGroup(
-      pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(pnlFabqrLayout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(pnlFabqrLayout.createSequentialGroup()
-            .addComponent(cbFabqrActive)
-            .addGap(363, 363, 363))
-          .addGroup(pnlFabqrLayout.createSequentialGroup()
-            .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(pnlFabqrLayout.createSequentialGroup()
-                .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                  .addComponent(lblFabqrHint)
-                  .addComponent(lblFabqrExample, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
-              .addGroup(pnlFabqrLayout.createSequentialGroup()
-                .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                  .addComponent(lblFabqrPublicURL)
-                  .addComponent(lblFabqrPrivateUser)
-                  .addComponent(lblFabqrPrivatePassword)
-                  .addComponent(lblFabqrPrivateURL))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                  .addComponent(txtFabqrPrivateURL, javax.swing.GroupLayout.Alignment.TRAILING)
-                  .addComponent(txtFabqrPrivateUser, javax.swing.GroupLayout.Alignment.TRAILING)
-                  .addComponent(passFabqrPrivatePassword, javax.swing.GroupLayout.Alignment.TRAILING)
-                  .addComponent(txtFabqrPublicURL, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE))))
-            .addContainerGap())))
-    );
-    pnlFabqrLayout.setVerticalGroup(
-      pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(pnlFabqrLayout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(cbFabqrActive)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(lblFabqrHint)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(lblFabqrExample)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(txtFabqrPublicURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(lblFabqrPublicURL))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(txtFabqrPrivateURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(lblFabqrPrivateURL))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(lblFabqrPrivateUser)
-          .addComponent(txtFabqrPrivateUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(pnlFabqrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(lblFabqrPrivatePassword)
-          .addComponent(passFabqrPrivatePassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-    );
-
-    tpSettings.addTab("FabQR", pnlFabqr);
 
     btOk.setText("OK");
     btOk.addActionListener(new java.awt.event.ActionListener()
@@ -408,10 +270,9 @@ public class PreferencesDialog extends javax.swing.JDialog
     this.setVisible(false);
   }//GEN-LAST:event_btOkActionPerformed
 
-  private void jTextFieldLabNameActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jTextFieldLabNameActionPerformed
-  {//GEN-HEADEREND:event_jTextFieldLabNameActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_jTextFieldLabNameActionPerformed
+    private void jTextFieldLabNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldLabNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldLabNameActionPerformed
 
   
   // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -419,9 +280,6 @@ public class PreferencesDialog extends javax.swing.JDialog
   private javax.swing.JButton btOk;
   private javax.swing.JCheckBox cbAutoUpdateSettings;
   private javax.swing.JComboBox cbDefaultMapping;
-  private javax.swing.JCheckBox cbEnableQRCodes;
-  private javax.swing.JCheckBox cbFabqrActive;
-  private javax.swing.JCheckBox cbFastQRCodes;
   private javax.swing.JCheckBox cbSandboxLaserScript;
   private javax.swing.JCheckBox cbSandboxLaserScript1;
   private javax.swing.JLabel jLabel1;
@@ -429,22 +287,9 @@ public class PreferencesDialog extends javax.swing.JDialog
   private javax.swing.JLabel jLabel3;
   private javax.swing.JTextField jTextFieldLabName;
   private javax.swing.JLabel lbAutoUpdateSettings;
-  private javax.swing.JLabel lbEnableQRCodes;
-  private javax.swing.JLabel lbFastQRCodes;
   private javax.swing.JLabel lbFilenamesForJobs;
-  private javax.swing.JLabel lblFabqrExample;
-  private javax.swing.JLabel lblFabqrHint;
-  private javax.swing.JLabel lblFabqrPrivatePassword;
-  private javax.swing.JLabel lblFabqrPrivateURL;
-  private javax.swing.JLabel lblFabqrPrivateUser;
-  private javax.swing.JLabel lblFabqrPublicURL;
-  private javax.swing.JPasswordField passFabqrPrivatePassword;
-  private javax.swing.JPanel pnlFabqr;
   private javax.swing.JPanel pnlGeneral;
   private javax.swing.JTabbedPane tpSettings;
-  private javax.swing.JTextField txtFabqrPrivateURL;
-  private javax.swing.JTextField txtFabqrPrivateUser;
-  private javax.swing.JTextField txtFabqrPublicURL;
   private org.jdesktop.beansbinding.BindingGroup bindingGroup;
   // End of variables declaration//GEN-END:variables
 }

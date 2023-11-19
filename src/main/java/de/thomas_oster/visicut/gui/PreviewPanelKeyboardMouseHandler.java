@@ -555,12 +555,6 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
 
   public void mouseClicked(MouseEvent me)
   {
-    // Do not allow clicks while GUI is diables for QR code editing
-    if (MainView.getInstance() != null && MainView.getInstance().isEditGuiForQRCodesDisabled())
-    {
-      return;
-    }
-      
     if (currentAction == MouseAction.selectingScreenshot)
     {
       currentAction = null;
@@ -677,12 +671,6 @@ public class PreviewPanelKeyboardMouseHandler extends EditRectangleController im
       return;
     }
     currentAction = MouseAction.movingViewport;
-    
-    // Only allow movingViewport while GUI is diables for QR code editing
-    if (MainView.getInstance() != null && MainView.getInstance().isEditGuiForQRCodesDisabled())
-    {
-      return;
-    }
 
     if (VisicutModel.getInstance().getStartPoint() != null)
     {
