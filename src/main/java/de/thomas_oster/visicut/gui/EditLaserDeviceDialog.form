@@ -296,56 +296,32 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
+                      <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="jSpinner5" min="-2" pref="70" max="-2" attributes="0"/>
+                      <EmptySpace pref="234" max="32767" attributes="0"/>
+                  </Group>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jLabel12" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="cameraUrlLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="urlUserLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="urlPasswordLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="projectorUrlLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" alignment="1" attributes="0">
-                                          <Component id="cameraUrlTextField" min="-2" pref="214" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="searchCameraButton" max="32767" attributes="0"/>
-                                      </Group>
-                                      <Component id="urlUserTextField" alignment="0" max="32767" attributes="1"/>
-                                      <Component id="urlPasswordField" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="projectorUrlTextField" alignment="0" max="32767" attributes="0"/>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Group type="103" groupAlignment="1" attributes="0">
-                                              <Component id="jSpinner5" min="-2" pref="70" max="-2" attributes="0"/>
-                                              <Component id="jSpinner3" alignment="1" min="-2" pref="70" max="-2" attributes="0"/>
-                                          </Group>
-                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                          <Group type="103" groupAlignment="0" attributes="0">
-                                              <Component id="jLabel13" min="-2" max="-2" attributes="0"/>
-                                              <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          </Group>
-                                          <EmptySpace min="-2" pref="70" max="-2" attributes="0"/>
-                                          <Group type="103" groupAlignment="0" attributes="0">
-                                              <Group type="102" alignment="0" attributes="0">
-                                                  <Component id="jSpinner2" min="-2" pref="70" max="-2" attributes="0"/>
-                                                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                                                  <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
-                                              </Group>
-                                              <Group type="102" alignment="0" attributes="0">
-                                                  <Component id="jSpinner4" min="-2" pref="70" max="-2" attributes="0"/>
-                                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                                  <Component id="jLabel14" min="-2" max="-2" attributes="0"/>
-                                              </Group>
-                                          </Group>
-                                      </Group>
-                                  </Group>
+                              <Component id="cameraUrlLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="urlUserLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="urlPasswordLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="1" attributes="0">
+                                  <Component id="cameraUrlTextField" min="-2" pref="214" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="searchCameraButton" max="32767" attributes="0"/>
                               </Group>
+                              <Component id="urlUserTextField" alignment="0" max="32767" attributes="1"/>
+                              <Component id="urlPasswordField" alignment="0" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -354,7 +330,15 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="108" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jSpinner5" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace pref="156" max="32767" attributes="0"/>
+                  </Group>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
@@ -373,28 +357,7 @@
                               <Component id="urlPasswordLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="urlPasswordField" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="projectorUrlLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="projectorUrlTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace min="-2" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jLabel12" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jSpinner4" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jSpinner3" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jLabel13" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jLabel14" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace min="-2" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jSpinner2" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jSpinner5" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace pref="194" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -459,61 +422,6 @@
                 <BindingProperty name="text" source="Form" sourcePath="${currentLaserDevice.URLPassword}" target="urlPasswordField" targetPath="text" updateStrategy="0" immediately="false"/>
               </BindingProperties>
             </Component>
-            <Component class="javax.swing.JLabel" name="projectorUrlLabel">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="projectorUrlLabel.text"/>
-                <Property name="name" type="java.lang.String" value="projectorUrlLabel" noResource="true"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JTextField" name="projectorUrlTextField">
-              <Properties>
-                <Property name="toolTipText" type="java.lang.String" resourceKey="projectorUrlTextField.toolTipText"/>
-                <Property name="name" type="java.lang.String" value="projectorUrlTextField" noResource="true"/>
-              </Properties>
-              <BindingProperties>
-                <BindingProperty name="text" source="Form" sourcePath="${currentLaserDevice.projectorURL}" target="projectorUrlTextField" targetPath="text" updateStrategy="0" immediately="false"/>
-              </BindingProperties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel12">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="jLabel12.text"/>
-                <Property name="name" type="java.lang.String" value="jLabel12" noResource="true"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JSpinner" name="jSpinner3">
-              <Properties>
-                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                  <SpinnerModel initial="1280" maximum="4000" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
-                </Property>
-                <Property name="name" type="java.lang.String" value="jSpinner3" noResource="true"/>
-              </Properties>
-              <BindingProperties>
-                <BindingProperty name="value" source="Form" sourcePath="${currentLaserDevice.projectorWidth}" target="jSpinner3" targetPath="value" updateStrategy="0" immediately="false"/>
-              </BindingProperties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel13">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="jLabel13.text"/>
-                <Property name="name" type="java.lang.String" value="jLabel13" noResource="true"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JSpinner" name="jSpinner4">
-              <Properties>
-                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                  <SpinnerModel initial="720" maximum="4000" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
-                </Property>
-                <Property name="name" type="java.lang.String" value="jSpinner4" noResource="true"/>
-              </Properties>
-              <BindingProperties>
-                <BindingProperty name="value" source="Form" sourcePath="${currentLaserDevice.projectorHeight}" target="jSpinner4" targetPath="value" updateStrategy="0" immediately="false"/>
-              </BindingProperties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel14">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="jLabel14.text"/>
-                <Property name="name" type="java.lang.String" value="jLabel14" noResource="true"/>
-              </Properties>
-            </Component>
             <Component class="javax.swing.JLabel" name="jLabel8">
               <Properties>
                 <Property name="text" type="java.lang.String" resourceKey="jLabel8.text"/>
@@ -535,23 +443,6 @@
               <Properties>
                 <Property name="text" type="java.lang.String" resourceKey="jLabel9.text"/>
                 <Property name="name" type="java.lang.String" value="jLabel9" noResource="true"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JSpinner" name="jSpinner2">
-              <Properties>
-                <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                  <SpinnerModel initial="50" maximum="300000" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
-                </Property>
-                <Property name="name" type="java.lang.String" value="jSpinner2" noResource="true"/>
-              </Properties>
-              <BindingProperties>
-                <BindingProperty name="value" source="Form" sourcePath="${currentLaserDevice.projectorTiming}" target="jSpinner2" targetPath="value" updateStrategy="0" immediately="false"/>
-              </BindingProperties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel10">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="jLabel10.text"/>
-                <Property name="name" type="java.lang.String" value="jLabel10" noResource="true"/>
               </Properties>
             </Component>
           </SubComponents>
