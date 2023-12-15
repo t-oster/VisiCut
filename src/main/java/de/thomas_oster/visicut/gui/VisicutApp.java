@@ -371,21 +371,24 @@ public class VisicutApp extends SingleFrameApplication
       ApplicationInstanceManager.setApplicationInstanceListener(new ApplicationInstanceListener()
       {
 
-        public void newInstanceCreated(String message)
+        @Override
+        public void newInstanceCreated(final String message)
         {
-          if (message != null && !"".equals(message))
+          ThreadUtils.runInGUIThread(() ->
           {
-            if (message.startsWith("@"))
+            if (message != null && !"".equals(message))
             {
-              message = message.substring(1);
-              VisicutApp.this.mainView.loadFile(new File(message), false);
+              if (message.startsWith("@"))
+              {
+                VisicutApp.this.mainView.loadFile(new File(message.substring(1)), false);
+              }
+              else
+              {
+                VisicutApp.this.mainView.loadFile(new File(message), true);
+              }
             }
-            else
-            {
-              VisicutApp.this.mainView.loadFile(new File(message), true);
-            }
-          }
-          VisicutApp.this.mainView.requestFocus();
+            VisicutApp.this.mainView.requestFocus();
+          });
         }
       });
     }
