@@ -93,6 +93,7 @@ public class MappingPanel extends javax.swing.JPanel
     private void initComponents() {
 
         predefinedMappingBox = new de.thomas_oster.visicut.gui.mapping.PredefinedMappingBox();
+        predefinedMappingBox.setMaximumRowCount(20);
         btProfileSettings = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         propertyMappingPanel = new de.thomas_oster.visicut.gui.mapping.PropertyMappingPanel();
