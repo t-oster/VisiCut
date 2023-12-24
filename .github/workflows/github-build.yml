@@ -1,0 +1,24 @@
+name: Build
+run-name: ${{ github.actor }} builds using docker. The output is currently ignored
+on:
+  push:
+    branches_ignore:
+     - gh-pages
+  pull_request:
+    branches_ignore:
+     - gh-pages
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    container: 'docker://registry.gitlab.com/t-oster/visicutbuildservice'
+    steps:
+      - name: Setup directories
+        run: mkdir -p /app/build /app/output
+      - name: Run build
+        run: /app/build.sh
+      - name: Archive built files
+        uses: actions/upload-artifact@v3
+        with:
+          name: output binaries
+          path: |
+            /app/output/**

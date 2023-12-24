@@ -1,5 +1,5 @@
 name: Trigger Buildserver
-run-name: ${{ github.actor }} triggers buildserver
+run-name: ${{ github.actor }} triggers the external buildserver to update download.visicut.org
 on:
   push:
     branches:
