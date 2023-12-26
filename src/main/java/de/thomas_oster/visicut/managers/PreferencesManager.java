@@ -333,6 +333,10 @@ public final class PreferencesManager
   
   public void savePreferences() throws FileNotFoundException, IOException
   {
+    if (preferences == null)
+    {
+      preferences = new Preferences();
+    }
     File target = this.getPreferencesPath();
     File settingsDir = target.getParentFile();
     if (settingsDir.isDirectory() || settingsDir.mkdirs())
@@ -343,7 +347,7 @@ public final class PreferencesManager
       this.savePreferences(anonymizedPreferences, target);
 
       // save full preferences file (settings.private.xml), including sensitive information (e.g., recent files)
-      // Note that this must be after saving the first file so that the modification date is newer.
+      // Note that this must be after saving the first file so that the modification date is newer (or same).
       this.savePreferences(preferences, getPrivatePreferencesPath());
     }
     else
