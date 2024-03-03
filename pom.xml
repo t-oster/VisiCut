@@ -217,6 +217,7 @@
                         <manifestEntries>
                             <SplashScreen-Image>de/thomas_oster/visicut/gui/resources/splash.png</SplashScreen-Image>
                             <!-- Avoid "Illegal reflective access" errors, see https://stackoverflow.com/a/62629201 for how to find the module and package names corresponding to a certain error message. See https://stackoverflow.com/questions/70196098/how-can-i-specify-add-opens-from-a-project-level-and-make-sure-it-is-taken-int for further discussion. -->
+                            <!-- CAUTION: Any changes to Add-Opens here must be copied and adapted in all places in nbactions.xml (search for "add-opens" there). -->
                             <Add-Opens>
                                 <!-- for org.dom4j.... (on Java11 only, not on Java 17?)"-->
                                 java.xml/com.sun.org.apache.xerces.internal.parsers
