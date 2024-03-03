@@ -37,6 +37,9 @@ import de.thomas_oster.visicut.model.LaserDevice;
 import de.thomas_oster.visicut.model.LaserProfile;
 import de.thomas_oster.visicut.model.MaterialProfile;
 import de.thomas_oster.visicut.model.PlfPart;
+import de.thomas_oster.visicut.model.Raster3dProfile;
+import de.thomas_oster.visicut.model.RasterProfile;
+import de.thomas_oster.visicut.model.VectorProfile;
 import de.thomas_oster.visicut.model.mapping.Mapping;
 import java.awt.AWTEvent;
 import java.awt.EventQueue;
@@ -288,14 +291,19 @@ public class VisicutApp extends SingleFrameApplication
             System.out.println(" --add (do not replace old file if VisiCut is already running)");
             System.out.println(" --material <materialname e.g. \"Acrylic Glass 2mm\">");
             System.out.println(" --laserdevice <laserdevice e.g. \"Epilog ZING @ Miltons Office\">");
-            System.out.println(" --mapping <mapping e.g. \"Cut\">");
-            System.out.println(" --total-height <Height in mm e.g. \"2.5\"> (only valid with --execute)");
+            System.out.println(" --mapping:  <saved mapping e.g. \"Cut red\">");
+            System.out.println(" --thickness <Material thickness in mm e.g. \"2.5\"> (only valid with --execute)");
             System.out.println(" --singleinstanceport <port> (Set port to check for running instances -- 0 to disable)");
             System.out.println(" --basepath <path> \t Sets VisiCuts settings directory (default is $HOME/.visicut)");
             System.out.println(" --gtkfilechooser (experimental)");
             System.exit(0);
           }
-          else if ("--total-height".equals(s))
+          else if ("--mapping".equals(s))
+          {
+            System.err.println("--mapping is not yet supported! https://github.com/t-oster/VisiCut/issues/704");
+            System.exit(1);
+          }
+          else if ("--thickness".equals(s))
           {
             height = Float.parseFloat(args[++i]);
           }
@@ -427,7 +435,7 @@ public class VisicutApp extends SingleFrameApplication
     {
       if (!execute)
       {
-        System.err.append("Total-height parameter takes only effect with --execute");
+        System.err.append("thickness parameter takes only effect with --execute");
       }
       model.setMaterialThickness(height);
     }
@@ -486,8 +494,34 @@ public class VisicutApp extends SingleFrameApplication
           List<LaserProperty> list = LaserPropertyManager.getInstance().getLaserProperties(model.getSelectedLaserDevice(), model.getMaterial(), ms.getProfile(), model.getMaterialThickness());
           if (list == null)
           {
-            System.err.println("Combination of Laserdevice, Material and Mapping is not supported");
-            System.exit(1);
+            // There are no saved laser settings for this device-material-thickness combination for this profile.
+            // Generate a dummy entry so that the driver doesn't crash.
+            // We only give a warning and not a fatal error because this warning
+            // can also be a "false positive":
+            // Example: If
+            // - your mapping contains engrave and cut
+            // - and the file only matches engrave
+            // - and you have no laserprofile (power/speed settings) for cut
+            //   for this combination of material, device and thickness
+            // then you will get a warning about missing cut settings although
+            // this doesn't matter for your job.
+            System.err.println("Warning: Combination of Laserdevice (" + model.getSelectedLaserDevice() + "), Material (" + model.getMaterial() + "), thickness (" + model.getMaterialThickness() + ") and profile (" + ms.getProfile() + ") [from mapping] has no laser settings yet. If your file needs this, then please load the file in the VisiCut GUI and set and save the laser settings (speed, power, ...) for this combination.");
+            // TODO: deduplicate the following code with PropertiesPanel.getPropertyMap
+            list = new LinkedList<>();
+            if (p instanceof VectorProfile)
+            {
+              list.add(model.getSelectedLaserDevice().getLaserCutter().getLaserPropertyForVectorPart());
+            }
+            else if (p instanceof RasterProfile)
+            {
+              list.add(model.getSelectedLaserDevice().getLaserCutter().getLaserPropertyForRasterPart());
+            }
+            else if (p instanceof Raster3dProfile)
+            {
+              list.add(model.getSelectedLaserDevice().getLaserCutter().getLaserPropertyForRaster3dPart());
+            } else {
+              throw new RuntimeException("invalid profile type");
+            }
           }
           propmap.put(p, list);
         }
@@ -515,7 +549,7 @@ public class VisicutApp extends SingleFrameApplication
       catch (Exception ex)
       {
         Logger.getLogger(VisicutApp.class.getName()).log(Level.SEVERE, null, ex);
-        System.err.println("Job could not be executed: "+ex.getMessage());
+        System.err.println("Job could not be executed: "+ DialogHelper.getHumanReadableErrorMessage(ex));
         System.exit(1);
       }
       System.out.println("Job was sucessfully sent.");
