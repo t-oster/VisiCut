@@ -18,7 +18,6 @@
  **/
 package de.thomas_oster.visicut.model;
 
-import com.frochr123.helper.QRCodeInfo;
 import de.thomas_oster.liblasercut.platform.Util;
 import de.thomas_oster.visicut.model.graphicelements.GraphicSet;
 import de.thomas_oster.visicut.model.mapping.Mapping;
@@ -36,20 +35,9 @@ public class PlfPart {
   private File sourceFile;
   private GraphicSet graphicObjects;
   private MappingSet mapping;
-  private QRCodeInfo qrCodeInfo = null;
   private boolean isFileSourcePLF = false;
   private boolean isMappingEnabled = true;
 
-  public QRCodeInfo getQRCodeInfo()
-  {
-    return qrCodeInfo;
-  }
-
-  public void setQRCodeInfo(QRCodeInfo qrCodeInfo)
-  {
-    this.qrCodeInfo = qrCodeInfo;
-  }
-  
   public boolean isMappingEnabled()
   {
     return isMappingEnabled;

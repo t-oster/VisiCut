@@ -133,18 +133,9 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     urlUserTextField = new javax.swing.JTextField();
     urlPasswordLabel = new javax.swing.JLabel();
     urlPasswordField = new javax.swing.JPasswordField();
-    projectorUrlLabel = new javax.swing.JLabel();
-    projectorUrlTextField = new javax.swing.JTextField();
-    jLabel12 = new javax.swing.JLabel();
-    jSpinner3 = new javax.swing.JSpinner();
-    jLabel13 = new javax.swing.JLabel();
-    jSpinner4 = new javax.swing.JSpinner();
-    jLabel14 = new javax.swing.JLabel();
     jLabel8 = new javax.swing.JLabel();
     jSpinner5 = new javax.swing.JSpinner();
     jLabel9 = new javax.swing.JLabel();
-    jSpinner2 = new javax.swing.JSpinner();
-    jLabel10 = new javax.swing.JLabel();
     jobPanel = new javax.swing.JPanel();
     jLabel6 = new javax.swing.JLabel();
     tfJobPrefix = new javax.swing.JTextField();
@@ -162,7 +153,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.thumbnailPath}"), selectThumbnailButton1, org.jdesktop.beansbinding.BeanProperty.create("thumbnailPath"), "thumbnailbutton");
     bindingGroup.addBinding(binding);
 
-    org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(de.thomas_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(EditLaserDeviceDialog.class);
+    org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance().getContext().getResourceMap(EditLaserDeviceDialog.class);
     jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
     jLabel1.setName("jLabel1"); // NOI18N
 
@@ -247,7 +238,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
       .addGroup(driverPanelLayout.createSequentialGroup()
         .addContainerGap()
         .addGroup(driverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
+          .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE)
           .addGroup(driverPanelLayout.createSequentialGroup()
             .addComponent(driverLabel)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -313,36 +304,6 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.URLPassword}"), urlPasswordField, org.jdesktop.beansbinding.BeanProperty.create("text"));
     bindingGroup.addBinding(binding);
 
-    projectorUrlLabel.setText(resourceMap.getString("projectorUrlLabel.text")); // NOI18N
-    projectorUrlLabel.setName("projectorUrlLabel"); // NOI18N
-
-    projectorUrlTextField.setToolTipText(resourceMap.getString("projectorUrlTextField.toolTipText")); // NOI18N
-    projectorUrlTextField.setName("projectorUrlTextField"); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.projectorURL}"), projectorUrlTextField, org.jdesktop.beansbinding.BeanProperty.create("text"));
-    bindingGroup.addBinding(binding);
-
-    jLabel12.setText(resourceMap.getString("jLabel12.text")); // NOI18N
-    jLabel12.setName("jLabel12"); // NOI18N
-
-    jSpinner3.setModel(new javax.swing.SpinnerNumberModel(1280, 0, 4000, 1));
-    jSpinner3.setName("jSpinner3"); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.projectorWidth}"), jSpinner3, org.jdesktop.beansbinding.BeanProperty.create("value"));
-    bindingGroup.addBinding(binding);
-
-    jLabel13.setText(resourceMap.getString("jLabel13.text")); // NOI18N
-    jLabel13.setName("jLabel13"); // NOI18N
-
-    jSpinner4.setModel(new javax.swing.SpinnerNumberModel(720, 0, 4000, 1));
-    jSpinner4.setName("jSpinner4"); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.projectorHeight}"), jSpinner4, org.jdesktop.beansbinding.BeanProperty.create("value"));
-    bindingGroup.addBinding(binding);
-
-    jLabel14.setText(resourceMap.getString("jLabel14.text")); // NOI18N
-    jLabel14.setName("jLabel14"); // NOI18N
-
     jLabel8.setText(resourceMap.getString("jLabel8.text")); // NOI18N
     jLabel8.setName("jLabel8"); // NOI18N
 
@@ -355,98 +316,54 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     jLabel9.setText(resourceMap.getString("jLabel9.text")); // NOI18N
     jLabel9.setName("jLabel9"); // NOI18N
 
-    jSpinner2.setModel(new javax.swing.SpinnerNumberModel(50, 0, 300000, 1));
-    jSpinner2.setName("jSpinner2"); // NOI18N
-
-    binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentLaserDevice.projectorTiming}"), jSpinner2, org.jdesktop.beansbinding.BeanProperty.create("value"));
-    bindingGroup.addBinding(binding);
-
-    jLabel10.setText(resourceMap.getString("jLabel10.text")); // NOI18N
-    jLabel10.setName("jLabel10"); // NOI18N
-
     javax.swing.GroupLayout cameraPanelLayout = new javax.swing.GroupLayout(cameraPanel);
     cameraPanel.setLayout(cameraPanelLayout);
     cameraPanelLayout.setHorizontalGroup(
       cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 0, Short.MAX_VALUE)
-      .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(cameraPanelLayout.createSequentialGroup()
-          .addContainerGap()
-          .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel12)
-            .addComponent(jLabel8)
-            .addGroup(cameraPanelLayout.createSequentialGroup()
-              .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(cameraUrlLabel)
-                .addComponent(urlUserLabel)
-                .addComponent(urlPasswordLabel)
-                .addComponent(projectorUrlLabel))
-              .addGap(22, 22, 22)
-              .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, cameraPanelLayout.createSequentialGroup()
-                  .addComponent(cameraUrlTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(searchCameraButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addComponent(urlUserTextField)
-                .addComponent(urlPasswordField)
-                .addComponent(projectorUrlTextField)
-                .addGroup(cameraPanelLayout.createSequentialGroup()
-                  .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jSpinner5, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                  .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel13)
-                    .addComponent(jLabel9))
-                  .addGap(70, 70, 70)
-                  .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(cameraPanelLayout.createSequentialGroup()
-                      .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                      .addComponent(jLabel10))
-                    .addGroup(cameraPanelLayout.createSequentialGroup()
-                      .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                      .addComponent(jLabel14)))))))
-          .addContainerGap()))
+      .addGroup(cameraPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(jLabel8)
+          .addComponent(cameraUrlLabel)
+          .addComponent(urlUserLabel)
+          .addComponent(urlPasswordLabel))
+        .addGap(23, 23, 23)
+        .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(cameraPanelLayout.createSequentialGroup()
+            .addComponent(jLabel9)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jSpinner5, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(0, 319, Short.MAX_VALUE))
+          .addComponent(urlUserTextField)
+          .addGroup(cameraPanelLayout.createSequentialGroup()
+            .addComponent(cameraUrlTextField)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(searchCameraButton, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(urlPasswordField))
+        .addContainerGap())
     );
     cameraPanelLayout.setVerticalGroup(
       cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 0, Short.MAX_VALUE)
-      .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(cameraPanelLayout.createSequentialGroup()
-          .addContainerGap()
-          .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(cameraUrlLabel)
-            .addComponent(cameraUrlTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(searchCameraButton))
-          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-          .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(urlUserLabel)
-            .addComponent(urlUserTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-          .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(urlPasswordLabel)
-            .addComponent(urlPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-          .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(projectorUrlLabel)
-            .addComponent(projectorUrlTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-          .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(jLabel12)
-            .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jLabel13)
-            .addComponent(jLabel14))
-          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-          .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(jLabel8)
-            .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jLabel9)
-            .addComponent(jSpinner5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jLabel10))
-          .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+      .addGroup(cameraPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(cameraUrlLabel)
+          .addComponent(cameraUrlTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(searchCameraButton))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(urlUserTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(urlUserLabel))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(urlPasswordLabel)
+          .addComponent(urlPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(cameraPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel8)
+          .addComponent(jSpinner5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel9))
+        .addContainerGap(150, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab(resourceMap.getString("cameraPanel.TabConstraints.tabTitle"), cameraPanel); // NOI18N
@@ -482,35 +399,33 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
     jobPanel.setLayout(jobPanelLayout);
     jobPanelLayout.setHorizontalGroup(
       jobPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 0, Short.MAX_VALUE)
-      .addGroup(jobPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jobPanelLayout.createSequentialGroup()
-          .addContainerGap()
-          .addGroup(jobPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jobPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jobPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(jobPanelLayout.createSequentialGroup()
+            .addComponent(jLabel6)
+            .addGap(38, 38, 38)
+            .addComponent(tfJobPrefix, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE))
+          .addGroup(jobPanelLayout.createSequentialGroup()
             .addComponent(jLabel7)
-            .addComponent(jLabel6))
-          .addGap(22, 22, 22)
-          .addGroup(jobPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(tfJobPrefix, javax.swing.GroupLayout.Alignment.TRAILING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
-          .addContainerGap()))
+            .addGap(22, 22, 22)
+            .addComponent(jScrollPane2)))
+        .addContainerGap())
     );
     jobPanelLayout.setVerticalGroup(
       jobPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 283, Short.MAX_VALUE)
-      .addGroup(jobPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jobPanelLayout.createSequentialGroup()
-          .addContainerGap()
-          .addGroup(jobPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(tfJobPrefix, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jLabel6))
-          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-          .addGroup(jobPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jobPanelLayout.createSequentialGroup()
-              .addComponent(jLabel7)
-              .addGap(0, 211, Short.MAX_VALUE))
-            .addComponent(jScrollPane2))
-          .addContainerGap()))
+      .addGroup(jobPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jobPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel6)
+          .addComponent(tfJobPrefix, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(jobPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(jobPanelLayout.createSequentialGroup()
+            .addComponent(jLabel7)
+            .addGap(0, 0, Short.MAX_VALUE))
+          .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE))
+        .addContainerGap())
     );
 
     jTabbedPane1.addTab(resourceMap.getString("jobPanel.TabConstraints.tabTitle"), jobPanel); // NOI18N
@@ -537,7 +452,7 @@ public class EditLaserDeviceDialog extends javax.swing.JDialog
             .addComponent(jButton2)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(jButton1))
-          .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING))
+          .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -618,10 +533,6 @@ private void searchCameraButtonActionPerformed(java.awt.event.ActionEvent evt) {
   private javax.swing.JCheckBox jCheckBox1;
   private javax.swing.JTextField jDescriptionTextField;
   private javax.swing.JLabel jLabel1;
-  private javax.swing.JLabel jLabel10;
-  private javax.swing.JLabel jLabel12;
-  private javax.swing.JLabel jLabel13;
-  private javax.swing.JLabel jLabel14;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel6;
   private javax.swing.JLabel jLabel7;
@@ -630,15 +541,10 @@ private void searchCameraButtonActionPerformed(java.awt.event.ActionEvent evt) {
   private javax.swing.JTextField jNameField;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
-  private javax.swing.JSpinner jSpinner2;
-  private javax.swing.JSpinner jSpinner3;
-  private javax.swing.JSpinner jSpinner4;
   private javax.swing.JSpinner jSpinner5;
   private javax.swing.JTabbedPane jTabbedPane1;
   private javax.swing.JTextArea jTextArea1;
   private javax.swing.JPanel jobPanel;
-  private javax.swing.JLabel projectorUrlLabel;
-  private javax.swing.JTextField projectorUrlTextField;
   private javax.swing.JButton searchCameraButton;
   private de.thomas_oster.uicomponents.SelectThumbnailButton selectThumbnailButton1;
   private javax.swing.JTable settingsTable;

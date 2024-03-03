@@ -18,13 +18,7 @@
  **/
 package de.thomas_oster.visicut.gui;
 
-import com.frochr123.fabqr.FabQRFunctions;
-import com.frochr123.fabqr.gui.FabQRUploadDialog;
-import com.frochr123.gui.QRWebcamScanDialog;
-import com.frochr123.helper.QRCodeInfo;
 import com.frochr123.periodictasks.RefreshCameraThread;
-import com.frochr123.periodictasks.RefreshProjectorThread;
-import com.frochr123.periodictasks.RefreshQRCodesTask;
 import de.thomas_oster.liblasercut.IllegalJobException;
 import de.thomas_oster.liblasercut.LaserCutter;
 import de.thomas_oster.liblasercut.LaserProperty;
@@ -134,12 +128,7 @@ public class MainView extends javax.swing.JFrame
   private volatile boolean cameraCapturing = false;
   private volatile String cameraCapturingError = "";
   private RefreshCameraThread cameraThread = null;
-  private boolean projectorActive = false;
-  private RefreshProjectorThread projectorThread = null;
-  private RefreshQRCodesTask qrCodesTask = null;
-  private boolean editGuiForQRCodesDisabled = false;
   private boolean laserJobInProgress = false;
-  private boolean isFabqrUploadDialogOpened = false;
   private BufferedImage correctedBackgroundImage = null;
 
   public static MainView getInstance()
@@ -666,13 +655,7 @@ public class MainView extends javax.swing.JFrame
       this.jLabel2.setText(this.bundle.getString("jLabel2.text") + (files == 1 && !selected ? " " + this.bundle.getString("(nothing selected)") : ""));
     }
 
-    // Avoid some frequent visible changes if GUI is disabled for QR code detection
-    // Once this mode turns on / off again, the correct state is restored
-    if (!isEditGuiForQRCodesDisabled())
-    {
       this.objectComboBox.setVisible(files > 1);
-    }
-
     this.btRemoveObject.setVisible(files > 0 && selected);
     this.ignoreObjectComboBoxEvents = false;
   }
@@ -698,7 +681,6 @@ public class MainView extends javax.swing.JFrame
     btFitScreen = new javax.swing.JButton();
     bt1to1 = new javax.swing.JButton();
     filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(35, 35), new java.awt.Dimension(35, 35));
-    btQRWebcamScan = new javax.swing.JButton();
     jPanel3 = new javax.swing.JPanel();
     progressBar = new javax.swing.JProgressBar();
     jPanel4 = new javax.swing.JPanel();
@@ -760,11 +742,8 @@ public class MainView extends javax.swing.JFrame
     zoomRealMenuItem = new javax.swing.JMenuItem();
     jSeparator2 = new javax.swing.JPopupMenu.Separator();
     cameraActiveMenuItem = new javax.swing.JCheckBoxMenuItem();
-    projectorActiveMenuItem = new javax.swing.JCheckBoxMenuItem();
     jSeparator7 = new javax.swing.JPopupMenu.Separator();
     showGridMenuItem = new javax.swing.JCheckBoxMenuItem();
-    actionsMenu = new javax.swing.JMenu();
-    webcamQRCodeMenuItem = new javax.swing.JMenuItem();
     optionsMenu = new javax.swing.JMenu();
     calibrateCameraMenuItem = new javax.swing.JMenuItem();
     jSeparator9 = new javax.swing.JPopupMenu.Separator();
@@ -884,21 +863,6 @@ public class MainView extends javax.swing.JFrame
 
     filler2.setName("filler2"); // NOI18N
     jPanel1.add(filler2);
-
-    btQRWebcamScan.setIcon(com.frochr123.icons.IconLoader.loadIcon(com.frochr123.icons.IconLoader.ICON_QRCODE));
-    btQRWebcamScan.setToolTipText(resourceMap.getString("btQRWebcamScan.toolTipText")); // NOI18N
-    btQRWebcamScan.setMaximumSize(new java.awt.Dimension(35, 35));
-    btQRWebcamScan.setMinimumSize(new java.awt.Dimension(35, 35));
-    btQRWebcamScan.setName("btQRWebcamScan"); // NOI18N
-    btQRWebcamScan.setPreferredSize(new java.awt.Dimension(35, 35));
-    btQRWebcamScan.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        btQRWebcamScanActionPerformed(evt);
-      }
-    });
-    jPanel1.add(btQRWebcamScan);
 
     jPanel3.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     jPanel3.setName("jPanel3"); // NOI18N
@@ -1460,18 +1424,6 @@ public class MainView extends javax.swing.JFrame
     });
     viewMenu.add(cameraActiveMenuItem);
 
-    projectorActiveMenuItem.setText(resourceMap.getString("projectorActiveMenuItem.text")); // NOI18N
-    projectorActiveMenuItem.setToolTipText(resourceMap.getString("projectorActiveMenuItem.toolTipText")); // NOI18N
-    projectorActiveMenuItem.setName("projectorActiveMenuItem"); // NOI18N
-    projectorActiveMenuItem.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        projectorActiveMenuItemActionPerformed(evt);
-      }
-    });
-    viewMenu.add(projectorActiveMenuItem);
-
     jSeparator7.setName("jSeparator7"); // NOI18N
     viewMenu.add(jSeparator7);
 
@@ -1484,22 +1436,6 @@ public class MainView extends javax.swing.JFrame
     viewMenu.add(showGridMenuItem);
 
     menuBar.add(viewMenu);
-
-    actionsMenu.setText(resourceMap.getString("actionsMenu.text")); // NOI18N
-    actionsMenu.setName("actionsMenu"); // NOI18N
-
-    webcamQRCodeMenuItem.setText(resourceMap.getString("webcamQRCodeMenuItem.text")); // NOI18N
-    webcamQRCodeMenuItem.setName("webcamQRCodeMenuItem"); // NOI18N
-    webcamQRCodeMenuItem.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        webcamQRCodeMenuItemActionPerformed(evt);
-      }
-    });
-    actionsMenu.add(webcamQRCodeMenuItem);
-
-    menuBar.add(actionsMenu);
 
     optionsMenu.setText(resourceMap.getString("optionsMenu.text")); // NOI18N
     optionsMenu.setName("optionsMenu"); // NOI18N
@@ -1902,7 +1838,6 @@ public class MainView extends javax.swing.JFrame
     if (action != null && action.equals(VisicutModel.PROP_SELECTEDLASERDEVICE))
     {
       boolean cam = (!getVisiCam().isEmpty());
-      boolean projector = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getProjectorURL() != null && !this.visicutModel1.getSelectedLaserDevice().getProjectorURL().isEmpty();
 
       this.calibrateCameraMenuItem.setEnabled(cam);
       this.cameraActiveMenuItem.setEnabled(cam);
@@ -1910,9 +1845,6 @@ public class MainView extends javax.swing.JFrame
       MainView.this.visicutModel1.setBackgroundImage(null); // hide camera image until a new one has been fetched
       previewPanel.setShowBackgroundImage(cam);
       setCameraActive(cam);
-
-      this.projectorActiveMenuItem.setEnabled(projector);
-      setProjectorActive(projector);
     }
 
     boolean estimateSupported = this.visicutModel1.getSelectedLaserDevice() != null && this.visicutModel1.getSelectedLaserDevice().getLaserCutter().canEstimateJobDuration();
@@ -1960,16 +1892,15 @@ public class MainView extends javax.swing.JFrame
       this.jSeparator1.setVisible(true);
     }
 
-    refreshExecuteButtons(false);
+    refreshExecuteButtons();
   }
 
-  public void refreshExecuteButtons(boolean skipLockCheck)
+  public void refreshExecuteButtons()
   {
     ThreadUtils.assertInGUIThread();
     boolean execute = this.visicutModel1.getMaterial() != null
       && this.visicutModel1.getSelectedLaserDevice() != null
-      && this.visicutModel1.getPlfFile().size() > 0
-      && (skipLockCheck || !isEditGuiForQRCodesDisabled());
+      && this.visicutModel1.getPlfFile().size() > 0;
     if (execute)
     {
       boolean jobEmpty = true;
@@ -2119,8 +2050,8 @@ private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     //
     // Most simplistic implementation of user editable job names:
     //  - we just add a prefix, if any. (This is okay for Zing lasers that only display 16 chars.)
-    // Todo: Better compute the next proposed job name in e.g. refreshExecuteButtons() ahead of time
-    // and show it in jTextFieldJobName near the Execute button. When we come here, just retrieve the
+    // Todo: Better compute the next proposed job name in e.g. refreshExecuteButtons() ahead of time 
+    // and show it in jTextFieldJobName near the Execute button. When we come here, just retrieve the 
     // (possibly edited) name from there.
     //
     String prefix = visicutModel1.getSelectedLaserDevice().getJobPrefix();
@@ -2428,12 +2359,6 @@ private void visicutModel1PropertyChange(java.beans.PropertyChangeEvent evt) {//
       else if (PreferencesManager.getInstance() != null && PreferencesManager.getInstance().getPreferences() != null)
       {
         p = PreferencesManager.getInstance().getPreferences();
-      }
-
-      if (p != null)
-      {
-        btQRWebcamScan.setVisible(p.isEnableQRCodes());
-        webcamQRCodeMenuItem.setVisible(p.isEnableQRCodes());
       }
     }
   });
@@ -2833,13 +2758,10 @@ private void materialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     File file = null;
 
     // Show warning if passwords are exported
-    boolean fabqrPrivatePasswordSet = (PreferencesManager.getInstance() != null && PreferencesManager.getInstance().getPreferences() != null
-      && PreferencesManager.getInstance().getPreferences().getFabqrPrivatePassword() != null && !PreferencesManager.getInstance().getPreferences().getFabqrPrivatePassword().isEmpty());
-
     boolean urlPasswordSet = (VisicutModel.getInstance() != null && VisicutModel.getInstance().getSelectedLaserDevice() != null
       && VisicutModel.getInstance().getSelectedLaserDevice().getURLPassword() != null && !VisicutModel.getInstance().getSelectedLaserDevice().getURLPassword().isEmpty());
 
-    if (fabqrPrivatePasswordSet || urlPasswordSet)
+    if (urlPasswordSet)
     {
       if (!dialog.showYesNoQuestion(bundle.getString("DIALOG_QUESTION_EXPORT_PASSWORD")))
       {
@@ -3356,33 +3278,13 @@ private void cameraActiveMenuItemActionPerformed(java.awt.event.ActionEvent evt)
   setCameraActive(cam);
 }//GEN-LAST:event_cameraActiveMenuItemActionPerformed
 
-private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_projectorActiveMenuItemActionPerformed
-  setProjectorActive(!isProjectorActive());
-}//GEN-LAST:event_projectorActiveMenuItemActionPerformed
-
-  private void btQRWebcamScanActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btQRWebcamScanActionPerformed
-  {//GEN-HEADEREND:event_btQRWebcamScanActionPerformed
-    QRWebcamScanDialog qrWebcamScanDialog = new QRWebcamScanDialog(this, true);
-    qrWebcamScanDialog.setLocationRelativeTo(null);
-    qrWebcamScanDialog.setVisible(true);
-  }//GEN-LAST:event_btQRWebcamScanActionPerformed
-
-  private void webcamQRCodeMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_webcamQRCodeMenuItemActionPerformed
-  {//GEN-HEADEREND:event_webcamQRCodeMenuItemActionPerformed
-    QRWebcamScanDialog qrWebcamScanDialog = new QRWebcamScanDialog(this, true);
-    qrWebcamScanDialog.setLocationRelativeTo(null);
-    qrWebcamScanDialog.setVisible(true);
-  }//GEN-LAST:event_webcamQRCodeMenuItemActionPerformed
-
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
-  private javax.swing.JMenu actionsMenu;
   private javax.swing.JButton bt1to1;
   private javax.swing.JButton btAddMaterial;
   private javax.swing.JButton btAddMaterialThickness;
   private javax.swing.JButton btAddObject;
   private javax.swing.JButton btFitScreen;
-  private javax.swing.JButton btQRWebcamScan;
   private javax.swing.JButton btRemoveObject;
   private javax.swing.ButtonGroup buttonGroup1;
   private javax.swing.JButton calculateTimeButton;
@@ -3452,7 +3354,6 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   private de.thomas_oster.uicomponents.PositionPanel positionPanel;
   private de.thomas_oster.visicut.gui.beans.PreviewPanel previewPanel;
   private javax.swing.JProgressBar progressBar;
-  private javax.swing.JCheckBoxMenuItem projectorActiveMenuItem;
   private de.thomas_oster.visicut.gui.propertypanel.PropertiesPanel propertiesPanel;
   private javax.swing.JMenu recentFilesMenu;
   private javax.swing.JCheckBox rotaryAxisCheckBox;
@@ -3467,7 +3368,6 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   private javax.swing.JMenu viewMenu;
   private de.thomas_oster.visicut.VisicutModel visicutModel1;
   private de.thomas_oster.uicomponents.warnings.WarningPanel warningPanel;
-  private javax.swing.JMenuItem webcamQRCodeMenuItem;
   private javax.swing.JMenuItem wikiMenuItem;
   private javax.swing.JMenuItem zoomInMenuItem;
   private javax.swing.JMenuItem zoomOutMenuItem;
@@ -3563,26 +3463,13 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
 
     // Set correct states on UI elements and manage threads
     // Visibility and enabled are already handled in other code places
-    if (cameraActive)
-    {
-      if (cameraThread == null)
+    if (cameraActive && cameraThread == null)
       {
         cameraThread = new RefreshCameraThread();
         cameraThread.start();
       }
 
-      if (qrCodesTask == null)
-      {
-        qrCodesTask = new RefreshQRCodesTask();
-        qrCodesTask.startOrContinueScan();
-      }
-
-      cameraActiveMenuItem.setSelected(true);
-    }
-    else
-    {
-      cameraActiveMenuItem.setSelected(false);
-    }
+    cameraActiveMenuItem.setSelected(cameraActive);
   }
 
   /**
@@ -3599,142 +3486,7 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
   public void resetCameraCapturingError()
   {
     cameraCapturingError = null;
-  }
-
-  public boolean isProjectorActive()
-  {
-    return projectorActive;
-  }
-
-  public void setProjectorActive(boolean projectorActive)
-  {
-    this.projectorActive = projectorActive;
-
-    // Set correct states on UI elements and manage threads
-    // Visibility and enabled are already handled in other code places
-    if (projectorActive)
-    {
-      if (projectorThread == null)
-      {
-        projectorThread = new RefreshProjectorThread();
-        projectorThread.start();
-      }
-
-      projectorActiveMenuItem.setSelected(true);
     }
-    else
-    {
-      if (projectorThread != null)
-      {
-        projectorThread.startShutdown();
-      }
-
-      projectorActiveMenuItem.setSelected(false);
-    }
-  }
-
-  public boolean isEditGuiForQRCodesDisabled()
-  {
-    return editGuiForQRCodesDisabled;
-  }
-
-  public synchronized void disableEditGuiForQRCodes(boolean disable)
-  {
-    // No state change at all, return
-    if ((isEditGuiForQRCodesDisabled() && disable) || (!isEditGuiForQRCodesDisabled() && !disable))
-    {
-      return;
-    }
-
-    // Avoid adding the message multiple times on QR code detection fails or remove if not needed anymore
-    warningPanel.removeMessageWithId("QR_CODE_DETECTION_GUI_DISABLE");
-
-    if (disable)
-    {
-      objectComboBox.setVisible(false);
-
-      executeJobButton.setEnabled(!disable);
-      executeJobMenuItem.setEnabled(!disable);
-      calculateTimeButton.setEnabled(!disable);
-      // jTextFieldJobName.setText("");
-
-      // Message is automatically removed and closed, therefore no close button
-      Message m = new Message("Info", bundle.getString("QR_CODE_DETECTION_GUI_DISABLE_TEXT"), Message.Type.INFO, new de.thomas_oster.uicomponents.warnings.Action[]
-        {
-          new de.thomas_oster.uicomponents.warnings.Action(bundle.getString("QR_CODE_DETECTION_GUI_DISABLE_BUTTON"))
-          {
-
-            @Override
-            public boolean clicked()
-            {
-              if (qrCodesTask != null)
-              {
-                if (!qrCodesTask.isStorePositions())
-                {
-                  qrCodesTask.setStorePositions(true);
-                }
-              }
-              return true;
-            }
-          }
-        });
-      m.setCloseButtonVisible(false);
-      m.setCloseListener(new ActionListener()
-      {
-
-        public void actionPerformed(ActionEvent ae)
-        {
-        }
-      });
-      warningPanel.addMessageOnce(m, "QR_CODE_DETECTION_GUI_DISABLE");
-    }
-    else
-    {
-      if (visicutModel1 != null && visicutModel1.getPlfFile() != null)
-      {
-        objectComboBox.setVisible(visicutModel1.getPlfFile().size() > 1);
-        LinkedList<PlfPart> removePlfParts = new LinkedList<PlfPart>();
-
-        // Iterate over elements in PLF file, remove preview loaded QR code objects, which were not stored yet
-        for (PlfPart part : visicutModel1.getPlfFile())
-        {
-          QRCodeInfo qrCodePartInfo = part.getQRCodeInfo();
-
-          if (qrCodePartInfo != null)
-          {
-            // Check if this part was loaded by preview QR code scanning and is not position stored
-            if (qrCodePartInfo.isPreviewQRCodeSource() && !qrCodePartInfo.isPreviewPositionQRStored())
-            {
-              removePlfParts.add(part);
-            }
-          }
-        }
-
-        // Delete stored elements
-        for (PlfPart part : removePlfParts)
-        {
-          visicutModel1.removePlfPart(part);
-        }
-      }
-
-      refreshExecuteButtons(true);
-    }
-
-    // Handle GUI settings, disable most of the elements, which could cause some trouble
-    // No need to deactivate those actions strictly, but they could cause some exceptions
-    newMenuItem.setEnabled(!disable);
-    openMenuItem.setEnabled(!disable);
-    exportGcodeMenuItem.setEnabled(!disable);
-    importMenuItem.setEnabled(!disable);
-    recentFilesMenu.setEnabled(!disable);
-    jmExamples.setEnabled(!disable);
-    btAddObject.setEnabled(!disable);
-    btRemoveObject.setEnabled(!disable);
-    objectComboBox.setEnabled(!disable);
-
-    // State changed
-    editGuiForQRCodesDisabled = disable;
-  }
 
   public boolean isLaserJobInProgress()
   {
@@ -3753,28 +3505,6 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     {
       return;
     }
-
-    // Ask user for FabQR upload, if FabQR is enabled and available
-    if (MainView.getInstance() != null && FabQRFunctions.isFabqrActive()
-      && FabQRFunctions.getFabqrPrivateURL() != null && !FabQRFunctions.getFabqrPrivateURL().isEmpty() && !isFabqrUploadDialogOpened())
-    {
-      if (dialog.showYesNoQuestion(bundle.getString("DIALOG_QUESTION_FABQR_UPLOAD")))
-      {
-        setFabqrUploadDialogOpened(true);
-
-        new Thread()
-        {
-
-          @Override
-          public void run()
-          {
-            FabQRUploadDialog fabqrUploadDialg = new FabQRUploadDialog(MainView.getInstance(), true);
-            fabqrUploadDialg.setLocationRelativeTo(null);
-            fabqrUploadDialg.setVisible(true);
-          }
-        }.start();
-      }
-    }
   }
 
   private void laserJobStopped()
@@ -3784,15 +3514,5 @@ private void projectorActiveMenuItemActionPerformed(java.awt.event.ActionEvent e
     {
       return;
     }
-  }
-
-  public boolean isFabqrUploadDialogOpened()
-  {
-    return isFabqrUploadDialogOpened;
-  }
-
-  public void setFabqrUploadDialogOpened(boolean isFabqrUploadDialogOpened)
-  {
-    this.isFabqrUploadDialogOpened = isFabqrUploadDialogOpened;
   }
 }

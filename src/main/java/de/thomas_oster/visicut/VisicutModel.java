@@ -908,11 +908,6 @@ public class VisicutModel extends Component // FIXME: "extends Component" isn't 
     
     for(PlfPart p : this.plfFile)
     {
-      // Do not apply to preview QR loaded parts
-      if (p.getQRCodeInfo() != null && p.getQRCodeInfo().isPreviewQRCodeSource())
-      {
-        continue;
-      }
 
       boolean modified = false;
       Rectangle2D bb = p.getGraphicObjects().getBoundingBox();

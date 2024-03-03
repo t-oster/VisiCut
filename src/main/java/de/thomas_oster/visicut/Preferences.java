@@ -45,6 +45,15 @@ public class Preferences
     setWindowBounds(null);
     lastAutoUpdateTime=0;
     setLastAutoUpdateLabName(null);
+    // Also clear deprecated/unused preferences variables
+    labName = null;
+    enableQRCodes = false;
+    fastQRCodes = false;
+    fabqrActive = false;
+    fabqrPrivateURL = null;
+    fabqrPublicURL = null;
+    fabqrPrivateUser = null;
+    fabqrPrivatePassword = null;
   }
 
   private String defaultMapping = null;
@@ -83,105 +92,16 @@ public class Preferences
     this.useFilenamesForJobs = useFilenamesForJobs;
   }
   
-  private String labName = null;
   
-  public String getLabName()
-  {
-    if(labName == null)
-    {
-      labName = "unknown lab";
-    }
-    return labName;
-  }
-  
-  public void setLabName(String labName)
-  {
-    this.labName = labName;
-  }
-  
-  private boolean enableQRCodes = false;
-
-  public boolean isEnableQRCodes()
-  {
-    return enableQRCodes;
-  }
-
-  public void setEnableQRCodes(boolean enableQRCodes)
-  {
-    this.enableQRCodes = enableQRCodes;
-  }
-  
-  private boolean fastQRCodes = false;
-
-  public boolean isFastQRCodes()
-  {
-    return fastQRCodes;
-  }
-
-  public void setFastQRCodes(boolean fastQRCodes)
-  {
-    this.fastQRCodes = fastQRCodes;
-  }
-  
-  private boolean fabqrActive = false;
-
-  public boolean isFabqrActive()
-  {
-    return fabqrActive;
-  }
-
-  public void setFabqrActive(boolean fabqrActive)
-  {
-    this.fabqrActive = fabqrActive;
-  }
-  
-  private String fabqrPrivateURL = "";
-  
-  public String getFabqrPrivateURL()
-  {
-    return fabqrPrivateURL;
-  }
-
-  public void setFabqrPrivateURL(String fabqrPrivateURL)
-  {
-    this.fabqrPrivateURL = fabqrPrivateURL;
-  }
-  
-  private String fabqrPublicURL = "";
-  
-  public String getFabqrPublicURL()
-  {
-    return fabqrPublicURL;
-  }
-
-  public void setFabqrPublicURL(String fabqrPublicURL)
-  {
-    this.fabqrPublicURL = fabqrPublicURL;
-  }
-  
-  private String fabqrPrivateUser = "";
-  
-  public String getFabqrPrivateUser()
-  {
-    return fabqrPrivateUser;
-  }
-
-  public void setFabqrPrivateUser(String fabqrPrivateUser)
-  {
-    this.fabqrPrivateUser = fabqrPrivateUser;
-  }
-  
-  private String fabqrPrivatePassword = "";
-  
-  public String getFabqrPrivatePassword()
-  {
-    return fabqrPrivatePassword;
-  }
-
-  public void setFabqrPrivatePassword(String fabqrPrivatePassword)
-  {
-    this.fabqrPrivatePassword = fabqrPrivatePassword;
-  }
+  // Preferences from the removed FabQR feature. Keep here for compatibility with old preferences files.
+  @Deprecated private transient String labName = null;
+  @Deprecated private transient boolean enableQRCodes = false;
+  @Deprecated private transient boolean fastQRCodes = false;
+  @Deprecated private transient boolean fabqrActive = false;
+  @Deprecated private transient String fabqrPrivateURL = "";
+  @Deprecated private transient String fabqrPublicURL = "";
+  @Deprecated private transient String fabqrPrivateUser = "";
+  @Deprecated private transient String fabqrPrivatePassword = "";
   
   private String potracePath = null;
 

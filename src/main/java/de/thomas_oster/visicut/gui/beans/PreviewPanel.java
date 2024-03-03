@@ -763,75 +763,8 @@ public class PreviewPanel extends ZoomablePanel implements PropertyChangeListene
           MappingSet mappingsToDraw = part.getMapping();
           if (VisicutModel.getInstance().getMaterial() == null || mappingsToDraw == null || mappingsToDraw.isEmpty())
           {
-            if (part.getQRCodeInfo() != null && part.getQRCodeInfo().isPreviewQRCodeSource() && !part.getQRCodeInfo().isPreviewPositionQRStored() && part.getGraphicObjects() != null)
-            {
-              GraphicSet graphicSet = part.getGraphicObjects();
-              Stroke originalStroke = gg.getStroke();
-              Color originalColor = gg.getColor();
-
-              float strokeWidth = 1.1f;
-              Color strokeColor = Color.GREEN;
-              Stroke stroke = new BasicStroke(strokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-              gg.setColor(strokeColor);
-              gg.setStroke(stroke);
-
-              for (GraphicObject graphicObject : graphicSet)
-              {
-                // Shape measured in mm
-                Shape shape = (graphicObject instanceof ShapeObject) ? ((ShapeObject)graphicObject).getShape() : graphicObject.getBoundingBox();
-
-                if (graphicSet.getTransform() != null)
-                {
-                  shape = graphicSet.getTransform().createTransformedShape(shape);
-                }
-
-                // Transform shape from mm to pixel
-                shape = this.getMmToPxTransform().createTransformedShape(shape);
-
-                if (shape != null)
-                {
-                  PathIterator iter = shape.getPathIterator(null, 1);
-                  int startx = 0;
-                  int starty = 0;
-                  int lastx = 0;
-                  int lasty = 0;
-
-                  while (!iter.isDone())
-                  {
-                    double[] test = new double[8];
-                    int result = iter.currentSegment(test);
-                    //transform coordinates to preview-coordinates
-                    //laserPx2PreviewPx.transform(test, 0, test, 0, 1);
-                    if (result == PathIterator.SEG_MOVETO)
-                    {
-                      startx = (int) test[0];
-                      starty = (int) test[1];
-                      lastx = (int) test[0];
-                      lasty = (int) test[1];
-                    }
-                    else if (result == PathIterator.SEG_LINETO)
-                    {
-                      gg.drawLine(lastx, lasty, (int)test[0], (int)test[1]);
-                      lastx = (int) test[0];
-                      lasty = (int) test[1];
-                    }
-                    else if (result == PathIterator.SEG_CLOSE)
-                    {
-                      gg.drawLine(lastx, lasty, startx, starty);
-                    }
-                    iter.next();
-                  }
-                }
-              }
-              
-              gg.setColor(originalColor);
-              gg.setStroke(originalStroke);
-            }
-            else
-            {
-              //Just draw the original Image
-              this.renderOriginalImage(gg, null, part, this.fastPreview && selected);
-            }
+            //Just draw the original Image
+            this.renderOriginalImage(gg, null, part, this.fastPreview && selected);
           }
           else
           {

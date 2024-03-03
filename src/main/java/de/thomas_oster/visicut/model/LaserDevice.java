@@ -228,94 +228,13 @@ public class LaserDevice implements ImageListable
     this.cameraTiming = cameraTiming;
   }
 
-  protected String projectorURL = null;
-
-  /**
-   * Get the value of projectorURL
-   *
-   * @return the value of projectorURL
-   */
-  public String getProjectorURL()
-  {
-    return projectorURL;
-  }
-
-  /**
-   * Set the value of projectorURL
-   *
-   * @param cameraURL new value of projectorURL
-   */
-  public void setProjectorURL(String projectorURL)
-  {
-    this.projectorURL = projectorURL;
-  }
+  // Removed options. Keep here for compatibility with old XML files.
+  @Deprecated protected transient String projectorURL = null;
+  @Deprecated protected transient int projectorTiming = 0;
+  @Deprecated protected transient int projectorWidth = 0;
+  @Deprecated protected transient int projectorHeight = 0;
   
-  protected int projectorTiming = 0;
-
-  /**
-   * Get the value of projector timing
-   *
-   * @return the value of projector timing
-   */
-  public int getProjectorTiming()
-  {
-    return projectorTiming;
-  }
-
-  /**
-   * Set the value of projector timing
-   *
-   * @param cameraTiming new value of projector timing
-   */
-  public void setProjectorTiming(int projectorTiming)
-  {
-    this.projectorTiming = projectorTiming;
-  }
   
-  protected int projectorWidth = 0;
-  
-  /**
-   * Get the value of projector width
-   *
-   * @return the value of projector width
-   */
-  public int getProjectorWidth()
-  {
-    return projectorWidth;
-  }
-
-  /**
-   * Set the value of projector width
-   *
-   * @param cameraTiming new value of projector width
-   */
-  public void setProjectorWidth(int projectorWidth)
-  {
-    this.projectorWidth = projectorWidth;
-  }
-  
-  protected int projectorHeight = 0;
-  
-  /**
-   * Get the value of projector height
-   *
-   * @return the value of projector height
-   */
-  public int getProjectorHeight()
-  {
-    return projectorHeight;
-  }
-
-  /**
-   * Set the value of projector height
-   *
-   * @param cameraTiming new value of projector height
-   */
-  public void setProjectorHeight(int projectorHeight)
-  {
-    this.projectorHeight = projectorHeight;
-  }
-
   protected String thumbnailPath = null;
 
   /**
