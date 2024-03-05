@@ -69,9 +69,9 @@ export VERSION
 if [ "${NO_BUILD:-}" == "" ]; then
     log "Building VisiCut JAR"
     # TODO: make out-of-source builds possible
-	pushd "$project_root_dir"
-	make clean jar
-	popd
+    pushd "$project_root_dir"
+    make clean jar
+    popd
 fi
 
 # we "ab"use the deployment directory to create the "visicut directory"
@@ -143,7 +143,8 @@ for target in "$@"; do
         # need to copy the NSIS files to the build dir, since relative paths are relative to the config directory
         cp -Rv "$distribute_dir"/windows "$build_dir"/windows-launcher
         pushd windows-launcher
-        makensis launcher.nsi
+        # force charset to UTF8, otherwise the combined license file will cause conversion errors ("unable to convert to codepage 0")
+        makensis -INPUTCHARSET UTF8 launcher.nsi
         popd
         mv -v windows-launcher/VisiCut.exe visicut/
         rm -rf windows-launcher/

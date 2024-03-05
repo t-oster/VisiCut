@@ -1,5 +1,5 @@
 name: Build
-run-name: ${{ github.actor }} builds using docker. The output is currently ignored
+
 on:
   push:
     branches_ignore:
@@ -7,10 +7,12 @@ on:
   pull_request:
     branches_ignore:
      - gh-pages
+  workflow_dispatch:
+
 jobs:
-  Build:
+  build:
     runs-on: ubuntu-latest
-    container: 'docker://registry.gitlab.com/t-oster/visicutbuildservice'
+    container: 'registry.gitlab.com/t-oster/visicutbuildservice'
     steps:
       - name: Setup directories
         run: mkdir -p /app/build /app/output
@@ -22,3 +24,58 @@ jobs:
           name: output binaries
           path: |
             /app/output/**
+
+  distribute:
+    strategy:
+      fail-fast: false
+
+      matrix:
+        target:
+          - zip
+          - windows-nsis
+          - macos-bundle
+          - linux-appimage
+          - linux-checkinstall
+
+    name: Distribute ${{ matrix.target }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+          fetch-depth: 0
+
+      - name: Build distribution
+        run: |
+          # we use a separate directory called output to "collect" all the build artifacts
+          # this makes uploading the artifacts a *lot* easier
+          mkdir output
+          pushd output
+          bash ../distribute/distribute-docker.sh ${{ matrix.target }}
+
+      - name: Archive built files
+        uses: actions/upload-artifact@v3
+        with:
+          name: output binaries
+          path: |
+            output/*
+
+  upload:
+    name: Create release and upload artifacts
+    needs:
+      - distribute
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+      - name: Inspect directory after downloading artifacts
+        run: ls -alFR
+      - name: Create release and upload artifacts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            url="$(curl -s https://api.github.com/repos/TheAssassin/pyuploadtool/releases/latest | grep browser_download_url | grep AppImage | cut -d'"' -f4)"
+            wget "$url"
+            chmod +x pyuploadtool-x86_64.AppImage
+            ./pyuploadtool-x86_64.AppImage "output binaries"/*.*

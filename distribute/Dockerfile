@@ -12,10 +12,11 @@ RUN apt-get update && \
         nsis zip libfuse2 checkinstall makepkg && \
     python3 -m pip install git+https://github.com/TheAssassin/appimagecraft.git#egg=appimagecraft
 
-# create fake home directory so that maven can create a ~/.m2 directory
-RUN mkdir /fakehome && \
-    chmod 777 /fakehome
-ENV HOME=/fakehome
+# we don't have a defined $HOME, but we need Maven to write the libLaserCut artifact somewhere
+COPY docker/maven-settings.xml /usr/share/maven/conf/settings.xml
 
 # we shouldn't expect FUSE to work within Docker
 ENV APPIMAGE_EXTRACT_AND_RUN=1
+
+VOLUME /visicut
+RUN git config --global --add safe.directory /visicut
