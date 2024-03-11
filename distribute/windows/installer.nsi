@@ -33,7 +33,7 @@
 ;Pages
  
   ; License page
-;  !insertmacro MUI_PAGE_LICENSE "license-with-jre.txt"
+  !insertmacro MUI_PAGE_LICENSE "license-with-jre.txt"
   !insertmacro MUI_PAGE_INSTFILES
   !define MUI_INSTFILESPAGE_FINISHHEADER_TEXT "Installation complete"
   !define MUI_PAGE_HEADER_TEXT "Installing"
