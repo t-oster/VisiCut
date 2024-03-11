@@ -5,14 +5,14 @@ set -euxo pipefail
 # make it easier to work from the script
 distribute_dir="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
 
+image_name="visicut-distribution"
+
+docker build -t "$image_name" -f "$distribute_dir"/Dockerfile "$distribute_dir"
+
 extra_args=()
 if [[ -t 0 ]]; then
     extra_args+=("-t")
 fi
-
-# we use VisicutBuilder to ensure compatibility with it
-# for instance, it provides a specific NSIS version which is the only one the project can be built with
-image_name="registry.gitlab.com/t-oster/visicutbuildservice"
 
 # mount current working directory as /cwd so that the resulting artifacts show up in it
 # also mount distribute/'s parent directory so that distribute.sh has access to all the necessary files
@@ -29,6 +29,5 @@ docker run \
     -v "$distribute_dir/..":/visicut \
     --user "$(id -u)" \
     --tmpfs "/ramdisk:uid=$(id -u),gid=$(id -g),exec" \
-    --entrypoint bash \
     "$image_name" \
     /visicut/distribute/distribute.sh "$@"
