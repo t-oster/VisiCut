@@ -6,6 +6,9 @@ SHELL ["bash", "-x", "-c"]
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# workaround nsis bug: https://sourceforge.net/p/nsis/bugs/1180/
+ENV LANG C.UTF-8
+
 # note: don't build with OpenJDK > 16, as this is the runtime we ship
 RUN apt-get update && \
     apt-get install -y openjdk-11-jdk git wget shellcheck bash make maven python3-minimal python3-pip \
