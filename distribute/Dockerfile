@@ -12,7 +12,7 @@ ENV LANG C.UTF-8
 # note: don't build with OpenJDK > 16, as this is the runtime we ship
 RUN apt-get update && \
     apt-get install -y openjdk-11-jdk git wget shellcheck bash make maven python3-minimal python3-pip \
-        nsis zip libfuse2 checkinstall makepkg && \
+        nsis zip libfuse2 checkinstall makepkg fonts-noto-extra potrace sudo && \
     python3 -m pip install git+https://github.com/TheAssassin/appimagecraft.git#egg=appimagecraft
 
 # we don't have a defined $HOME, but we need Maven to write the libLaserCut artifact somewhere
