@@ -60,7 +60,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-            url="$(curl -s https://api.github.com/repos/TheAssassin/pyuploadtool/releases/latest | grep browser_download_url | grep AppImage | cut -d'"' -f4)"
-            wget "$url"
+            wget https://github.com/TheAssassin/pyuploadtool/releases/download/20231223-1/pyuploadtool-x86_64.AppImage
             chmod +x pyuploadtool-x86_64.AppImage
             ./pyuploadtool-x86_64.AppImage "output binaries"/*.*

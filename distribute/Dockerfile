@@ -13,7 +13,7 @@ ENV LANG C.UTF-8
 RUN apt-get update && \
     apt-get install -y openjdk-11-jdk git wget shellcheck bash make maven python3-minimal python3-pip \
         nsis zip libfuse2 checkinstall makepkg fonts-noto-extra potrace sudo && \
-    python3 -m pip install git+https://github.com/TheAssassin/appimagecraft.git#egg=appimagecraft
+    python3 -m pip install git+https://github.com/TheAssassin/appimagecraft.git@6b36fda#egg=appimagecraft
 
 # we don't have a defined $HOME, but we need Maven to write the libLaserCut artifact somewhere
 COPY docker/maven-settings.xml /usr/share/maven/conf/settings.xml
