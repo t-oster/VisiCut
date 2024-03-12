@@ -10,21 +10,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    container: 'registry.gitlab.com/t-oster/visicutbuildservice'
-    steps:
-      - name: Setup directories
-        run: mkdir -p /app/build /app/output
-      - name: Run build
-        run: /app/build.sh
-      - name: Archive built files
-        uses: actions/upload-artifact@v3
-        with:
-          name: output binaries
-          path: |
-            /app/output/**
-
   distribute:
     strategy:
       fail-fast: false
