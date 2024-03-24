@@ -9,15 +9,21 @@ image_name="visicut-distribution"
 
 docker build -t "$image_name" -f "$distribute_dir"/Dockerfile "$distribute_dir"
 
+extra_args=()
+if [[ -t 0 ]]; then
+    extra_args+=("-t")
+fi
+
 # mount current working directory as /cwd so that the resulting artifacts show up in it
 # also mount distribute/'s parent directory so that distribute.sh has access to all the necessary files
 # the reason is that we cannot predict where this script is called from but want to avoid any difference in executing
 # this script instead of distribute.sh directly
 docker run \
+    "${extra_args[@]}" \
     --rm \
     -e BUILD \
     -e TMPDIR=/ramdisk \
-    -it \
+    -i \
     -w /cwd \
     -v "$PWD":/cwd \
     -v "$distribute_dir/..":/visicut \
