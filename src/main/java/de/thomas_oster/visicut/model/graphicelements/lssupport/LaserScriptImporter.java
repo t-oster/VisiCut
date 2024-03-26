@@ -64,7 +64,7 @@ public class LaserScriptImporter extends AbstractImporter
     };
   }
 
-  public GraphicSet importSetFromFile(File inputFile, List<String> warnings) throws ImportException
+  public GraphicSet importSetFromFile(File inputFile, boolean originIsBottomLeft, double bedHeightInMm, List<String> warnings) throws ImportException
   {
     GraphicSet result = new GraphicSet();
     result.setBasicTransform(new AffineTransform());
