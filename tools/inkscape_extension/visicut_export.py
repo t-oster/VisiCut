@@ -337,13 +337,13 @@ INKSCAPEBIN = which("inkscape", [INKSCAPEDIR])
 # We detect this by checking for an AppRun file, in one of the parent folders of our INKSCAPEBIN.
 # If so, replace INKSCAPEBIN with AppRun, as this is the only safe way to call inkscape.
 # (a direct call mixes libraries from the host system with the appimage, may or may not work.)
-dir = os.path.split(INKSCAPEBIN)[0]
+dir = os.path.dirname(INKSCAPEBIN)
 while dir != '/':
-    if os.path.exists(os.path.join(dir, "AppRun")):
-        INKSCAPEBIN = os.path.join(dir, "AppRun")
+    apprun_path = os.path.join(dir, "AppRun")
+    if os.path.exists(apprun_path):
+        INKSCAPEBIN = apprun_path
         break
-    dir = os.path.split(dir)[0]
-
+    dir = os.path.dirname(dir)
 tmpdir = tempfile.mkdtemp(prefix='temp-visicut-')
 dest_filename = os.path.join(tmpdir, get_original_filename(filename))
 
