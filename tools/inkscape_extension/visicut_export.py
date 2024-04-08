@@ -402,4 +402,4 @@ except Exception as e:
     sys.exit(1)
 
 # TODO (complicated, probably WONTFIX): cleanup temporary directories -- this is really difficult because we need to make sure that visicut no longer needs the file, even for reloading!
-# - maybe add the PID od the running visicut, then we can detect orphaned temp direcories.
+# - Maybe add the PID od the running visicut, then we can detect orphaned temp direcories.
