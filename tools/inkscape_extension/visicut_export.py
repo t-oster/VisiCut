@@ -140,17 +140,14 @@ def which(program, extraPaths=[]):
 
 def inkscape_version():
     """Return Inkscape version number as float, e.g. version "0.92.4" --> return: float 0.92"""
-    version = subprocess.check_output([INKSCAPEBIN, "--version"],  stderr=DEVNULL).decode('ASCII', 'ignore')
-    if not version.startswith("Inkscape "):
-        ## When inkscape lives in an appimage, AppRun may pollute stdout with extra information.
-        # Go through all the lines, and find the one that starts with Inkscape
-        lines = version.splitlines()
-        for version in lines:
-            if version.startswith("Inkscape "):
-                break
-    assert version.startswith("Inkscape ")
-    match = re.match("Inkscape ([0-9]+\.[0-9]+).*", version)
-    assert match is not None
+    version_raw = subprocess.check_output([INKSCAPEBIN, "--version"],  stderr=DEVNULL).decode('ASCII', 'ignore')
+    ## When inkscape lives in an appimage, AppRun may pollute stdout with extra information.
+    # Go through all the lines, and find the one that starts with Inkscape
+    lines = version_raw.splitlines()
+    version = [line for line in lines if line.startswith("Inkscape ")]
+    assert len(version) == 1, "inkscape --version did not return a version number: " + version_raw
+    match = re.match("Inkscape ([0-9]+\.[0-9]+).*", version[0])
+    assert match is not None, "failed to parse version number from " + version[0]
     version_float = float(match.group(1))
     return version_float
 
