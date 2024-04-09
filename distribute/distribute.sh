@@ -58,7 +58,13 @@ else
     if [[ "$VERSION" != "" ]]; then
         log "Using properties-provided version $VERSION"
     else
-        VERSION="$(git describe --tags || echo unknown)+devel"
+        # as the GitHub actions workflow creates a continuous tag on the main branch's HEAD to create prereleases for every push, we must ignore those tags
+        # we need to ignore this tag to get a proper version number
+        # if the command fails, we must abort at this point, as we cannot fall back to some generic name like "unknown" without breaking at least the Debian package build
+        if ! VERSION="$(git describe --tags --exclude 'continuous')+devel"; then
+            echo "Error: could not fetch proper version number with git, try git fetch -a"
+            exit 2
+        fi
     fi
 
     popd
