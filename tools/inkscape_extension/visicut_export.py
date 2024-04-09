@@ -33,6 +33,7 @@ import codecs
 import random
 import string
 import socket
+from pathlib import Path
 
 try:
     from os import fsencode
@@ -334,13 +335,12 @@ INKSCAPEBIN = which("inkscape", [INKSCAPEDIR])
 # We detect this by checking for an AppRun file, in one of the parent folders of our INKSCAPEBIN.
 # If so, replace INKSCAPEBIN with AppRun, as this is the only safe way to call inkscape.
 # (a direct call mixes libraries from the host system with the appimage, may or may not work.)
-dir = os.path.dirname(INKSCAPEBIN)
-while dir != '/':
-    apprun_path = os.path.join(dir, "AppRun")
-    if os.path.exists(apprun_path):
-        INKSCAPEBIN = apprun_path
+for parent in Path(INKSCAPEBIN).parents:
+    apprun = parent / "AppRun"
+    if apprun.is_file() and os.access(apprun, os.X_OK):
+        INKSCAPEBIN = apprun
         break
-    dir = os.path.dirname(dir)
+
 tmpdir = tempfile.mkdtemp(prefix='temp-visicut-')
 dest_filename = os.path.join(tmpdir, get_original_filename(filename))
 
