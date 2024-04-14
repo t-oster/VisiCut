@@ -18,8 +18,10 @@
  **/
 package de.thomas_oster.visicut.managers;
 
-import de.thomas_oster.liblasercut.LaserProperty;
-import de.thomas_oster.liblasercut.PowerSpeedFocusProperty;
+import de.thomas_oster.liblasercut.properties.LaserProperty;
+import de.thomas_oster.liblasercut.properties.PowerSpeedFocusProperty;
+import de.thomas_oster.liblasercut.properties.FloatPowerSpeedFocusFrequencyProperty;
+import de.thomas_oster.liblasercut.properties.PowerSpeedFocusFrequencyProperty;
 import de.thomas_oster.visicut.misc.Helper;
 import de.thomas_oster.visicut.model.LaserDevice;
 import de.thomas_oster.visicut.model.LaserProfile;
@@ -169,9 +171,9 @@ public class LaserPropertyManager
       //fix old class references
       xstream.aliasPackage("com.t_oster", "de.thomas_oster");
       xstream.alias("LaosCutterProperty", de.thomas_oster.liblasercut.drivers.LaosCutterProperty.class);
-      xstream.alias("FloatPowerSpeedFocusFrequencyProperty", de.thomas_oster.liblasercut.FloatPowerSpeedFocusFrequencyProperty.class);
-      xstream.alias("PowerSpeedFocusFrequencyProperty", de.thomas_oster.liblasercut.PowerSpeedFocusFrequencyProperty.class);
-      xstream.alias("PowerSpeedFocusProperty", de.thomas_oster.liblasercut.PowerSpeedFocusProperty.class);
+      xstream.alias("FloatPowerSpeedFocusFrequencyProperty", FloatPowerSpeedFocusFrequencyProperty.class);
+      xstream.alias("PowerSpeedFocusFrequencyProperty", PowerSpeedFocusFrequencyProperty.class);
+      xstream.alias("PowerSpeedFocusProperty", PowerSpeedFocusProperty.class);
     }
     return xstream;
   }

@@ -19,7 +19,7 @@
 package de.thomas_oster.visicut.gui;
 
 import de.thomas_oster.liblasercut.LaserCutter;
-import de.thomas_oster.liblasercut.LaserProperty;
+import de.thomas_oster.liblasercut.properties.LaserProperty;
 import de.thomas_oster.liblasercut.LibInfo;
 import de.thomas_oster.liblasercut.ProgressListener;
 import de.thomas_oster.visicut.VisicutModel;
