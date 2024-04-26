@@ -20,7 +20,7 @@ package de.thomas_oster.visicut.model;
 
 import de.thomas_oster.liblasercut.LaserCutter;
 import de.thomas_oster.liblasercut.LaserJob;
-import de.thomas_oster.liblasercut.LaserProperty;
+import de.thomas_oster.liblasercut.properties.LaserProperty;
 import de.thomas_oster.liblasercut.platform.Util;
 import de.thomas_oster.uicomponents.ImageListable;
 import de.thomas_oster.visicut.misc.Helper;
