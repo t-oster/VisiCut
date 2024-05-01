@@ -50,9 +50,9 @@
             <version>2.1.6.RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>guru.nidi.com.kitfox</groupId>
+            <groupId>com.formdev</groupId>
             <artifactId>svgSalamander</artifactId>
-            <version>1.1.2</version>
+            <version>1.1.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
