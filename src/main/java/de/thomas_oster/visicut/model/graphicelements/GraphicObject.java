@@ -28,6 +28,19 @@ import java.util.List;
  */
 public interface GraphicObject
 {
+  /**
+   * Get bounding box.
+   *
+   * The stroke width of lines is included in the bounding box (at least for SVG;
+   * the implementation status for other formats is unclear.)
+   * This may be done as a simplified approximation by adding half the stroke width at every boundary,
+   * even if the rendered path behaves differently (e.g., ignoring the SVG stroke-linejoin setting).
+   *
+   * TODO: add a parameter to include/exclude stroke width in the bounding box calculation
+   * (stroke width should be included for engrave but excluded for cutting)
+   *
+   * @return bounding rectangle in raw units (e.g., SVG pixels)
+   */
   public Rectangle2D getBoundingBox();
   /**
    * Returns a list of attribute values for the given
