@@ -31,11 +31,6 @@ jobs:
           submodules: "recursive"
           fetch-depth: 0
 
-      # continuous tag confuses git describe --tags, happens here specifically due to us fetching the entirety of the repository
-      - name: Delete continuous tag
-        run: |
-          git tag -d continuous || true
-
       - name: Build distribution
         run: |
           # we use a separate directory called output to "collect" all the build artifacts
