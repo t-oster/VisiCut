@@ -18,17 +18,7 @@
  **/
 package de.thomas_oster.visicut.model.graphicelements.svgsupport;
 
-import com.kitfox.svg.Defs;
-import com.kitfox.svg.Gradient;
-import com.kitfox.svg.Group;
-import com.kitfox.svg.ImageSVG;
-import com.kitfox.svg.PatternSVG;
-import com.kitfox.svg.SVGConst;
-import com.kitfox.svg.SVGElement;
-import com.kitfox.svg.SVGException;
-import com.kitfox.svg.SVGRoot;
-import com.kitfox.svg.SVGUniverse;
-import com.kitfox.svg.ShapeElement;
+import com.kitfox.svg.*;
 import com.kitfox.svg.xml.NumberWithUnits;
 import com.kitfox.svg.xml.StyleAttribute;
 import de.thomas_oster.liblasercut.platform.Util;
@@ -105,6 +95,10 @@ public class SVGImporter extends AbstractImporter
       {
         result.add(new SVGImage((ImageSVG) e));
       }
+    }
+    //Do not import tspan children
+    if (e instanceof Text) {
+      return;
     }
     for (int i = 0; i < e.getNumChildren(); i++)
     {
