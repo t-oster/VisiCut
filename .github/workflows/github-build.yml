@@ -40,9 +40,9 @@ jobs:
           bash ../distribute/distribute-docker.sh ${{ matrix.target }}
 
       - name: Archive built files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.4.3
         with:
-          name: output binaries
+          name: output binaries ${{ matrix.target }}
           path: |
             output/*
 
@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.8
       - name: Inspect directory after downloading artifacts
         run: ls -alFR
       - name: Create release and upload artifacts
@@ -62,4 +62,4 @@ jobs:
         run: |
             wget https://github.com/TheAssassin/pyuploadtool/releases/download/20231223-1/pyuploadtool-x86_64.AppImage
             chmod +x pyuploadtool-x86_64.AppImage
-            ./pyuploadtool-x86_64.AppImage "output binaries"/*.*
+            ./pyuploadtool-x86_64.AppImage "output binaries"*/*.*
