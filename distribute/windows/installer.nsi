@@ -18,7 +18,7 @@
  
   ;General
   Name "${AppName}"
-  OutFile "setup.exe"
+  OutFile "vcsetup.exe"
  
   ;Folder selection page
   InstallDir "$PROGRAMFILES\${SHORTNAME}"
