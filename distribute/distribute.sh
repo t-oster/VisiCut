@@ -23,7 +23,7 @@ log() {
 # targets to be built need to be passed on the commandline
 # if no targets are provided, we display a help text
 if [[ "${1:-}" == "" ]]; then
-    log "Usage: [env NO_BUILD=1] $0 <targets>"
+    log "Usage: [env NO_BUILD=1 VERSION=1.2.3-mystuff] $0 <targets>"
     echo
     log "Available targets:"
     log "    - zip"
@@ -34,6 +34,7 @@ if [[ "${1:-}" == "" ]]; then
     echo
     log "Available environment variables:"
     log "    - \$NO_BUILD=[...]: if set to any string, $0 won't build a JAR (saves build time if the script ran already)"
+    log "    - \$VERSION=[...]: if set to any string, will overwrite the version number"
     exit 2
 fi
 
@@ -61,7 +62,7 @@ else
         # as the GitHub actions workflow creates a continuous tag on the main branch's HEAD to create prereleases for every push, we must ignore those tags
         # we need to ignore this tag to get a proper version number
         # if the command fails, we must abort at this point, as we cannot fall back to some generic name like "unknown" without breaking at least the Debian package build
-        if ! VERSION="$(git describe --tags --exclude 'continuous')+devel"; then
+        if ! VERSION="$(git describe --tags --exclude 'continuous')"; then
             echo "Error: could not fetch proper version number with git, try git fetch -a"
             exit 2
         fi
