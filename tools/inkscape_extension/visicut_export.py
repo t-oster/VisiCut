@@ -142,7 +142,7 @@ def inkscape_version():
     """Return Inkscape version number as float, e.g. version "0.92.4" --> return: float 0.92"""
     version = subprocess.check_output([INKSCAPEBIN, "--version"],  stderr=DEVNULL).decode('ASCII', 'ignore')
     assert version.startswith("Inkscape ")
-    match = re.match("Inkscape ([0-9]+\.[0-9]+).*", version)
+    match = re.match(r"Inkscape ([0-9]+\.[0-9]+).*", version)
     assert match is not None
     version_float = float(match.group(1))
     return version_float
