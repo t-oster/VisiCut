@@ -51,7 +51,7 @@ import org.xml.sax.SAXException;
 public class DXFImporter extends AbstractImporter
 {
 
-  public GraphicSet importSetFromFile(File inputFile, List<String> warnings) throws ImportException
+  public GraphicSet importSetFromFile(File inputFile, boolean originIsBottomLeft, double bedHeightInMm, List<String> warnings) throws ImportException
   {
     GraphicSet result = new GraphicSet();
     try
@@ -92,7 +92,7 @@ public class DXFImporter extends AbstractImporter
         }).start();
       SVGImporter svgimp = new SVGImporter();
       //TODO Check which resolution it exports and adapt it to mm
-      result = svgimp.importSetFromFile(in, inputFile.getName(), 1/Util.mm2inch(1), warnings);
+      result = svgimp.importSetFromFile(in, inputFile.getName(), 1/Util.mm2inch(1), originIsBottomLeft, bedHeightInMm, warnings);
     }
     catch (Exception ex)
     {
