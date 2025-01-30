@@ -26,7 +26,6 @@ import org.apache.commons.io.IOUtils;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.beans.XMLDecoder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
