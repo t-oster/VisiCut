@@ -30,10 +30,7 @@ import de.thomas_oster.visicut.managers.LaserDeviceManager;
 import de.thomas_oster.visicut.managers.MappingManager;
 import de.thomas_oster.visicut.managers.MaterialManager;
 import de.thomas_oster.visicut.managers.PreferencesManager;
-import de.thomas_oster.visicut.misc.ExtensionFilter;
-import de.thomas_oster.visicut.misc.FileUtils;
-import de.thomas_oster.visicut.misc.Helper;
-import de.thomas_oster.visicut.misc.MultiFilter;
+import de.thomas_oster.visicut.misc.*;
 import de.thomas_oster.visicut.model.LaserDevice;
 import de.thomas_oster.visicut.model.LaserProfile;
 import de.thomas_oster.visicut.model.MaterialProfile;
@@ -56,19 +53,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.beans.Encoder;
-import java.beans.Expression;
-import java.beans.PersistenceDelegate;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -522,8 +509,7 @@ public class VisicutModel extends Component // FIXME: "extends Component" isn't 
       Integer i = name.matches("[0-9]+/.*") ? Integer.parseInt(name.split("/")[0]) : 0;
       if (name.equals((i > 0 ? i+"/" : "")+"transform.xml"))
       {
-        XMLDecoder decoder = new XMLDecoder(zip.getInputStream(entry));
-        transforms.put(i, (AffineTransform) decoder.readObject());
+        transforms.put(i, AffineTransformXMLEncoderDecoder.decodeAffineTransfrom(zip.getInputStream(entry).readAllBytes()));
       }
       else if (name.equals((i > 0 ? i+"/" : "")+"mappings.xml"))
       {
@@ -615,7 +601,6 @@ public class VisicutModel extends Component // FIXME: "extends Component" isn't 
     // Create the ZIP file
     ZipOutputStream out = new ZipOutputStream(outputStream);
     //find temporary file for xml
-    int k = 0;
     File tmp = File.createTempFile("tmp", ".xml", Helper.getBasePath());
     tmp.deleteOnExit();
     for(int i = 0; i < plf.size(); i++)
@@ -644,34 +629,7 @@ public class VisicutModel extends Component // FIXME: "extends Component" isn't 
       if (at != null)
       {
         out.putNextEntry(new ZipEntry((i > 0 ? i+"/" : "")+"transform.xml"));
-        //Write xml to temp file
-        //TODO: Why not directly write to zip output stream?
-        XMLEncoder encoder = new XMLEncoder(new FileOutputStream(tmp));
-        encoder.setPersistenceDelegate(AffineTransform.class, new PersistenceDelegate()
-        {//Fix for older java versions
-          protected Expression instantiate(Object oldInstance, Encoder out)
-          {
-            AffineTransform tx = (AffineTransform) oldInstance;
-            double[] coeffs = new double[6];
-            tx.getMatrix(coeffs);
-            return new Expression(oldInstance,
-              oldInstance.getClass(),
-              "new",
-              new Object[]
-              {
-                coeffs
-              });
-          }
-        });
-        encoder.writeObject(at);
-        encoder.close();
-        in = new FileInputStream(tmp);
-        // Transfer bytes from the file to the ZIP file
-        while ((len = in.read(buf)) > 0)
-        {
-          out.write(buf, 0, len);
-        }
-        in.close();
+        out.write(AffineTransformXMLEncoderDecoder.encodeAffineTransform(at));
         out.closeEntry();
       }
       if (plf.get(i).getMapping() != null)
