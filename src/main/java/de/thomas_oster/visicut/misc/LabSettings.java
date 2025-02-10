@@ -63,23 +63,24 @@ public class LabSettings
     // if you have a local domain name in your network or a wifi SSID, you can add them too, so if you are in your lab
     // your settings will be suggested
     // The list is sorted alphabetically.
-    result.add(new LabSettings("France, Chemillé en Anjou : FabLab le Boc@l", "https://github.com/bocal-chemille/Visicut/raw/master/config_laser_bocal.vcsettings"));
+    result.add(new LabSettings("France, Chemill?? en Anjou : FabLab le Boc@l", "https://github.com/bocal-chemille/Visicut/raw/master/config_laser_bocal.vcsettings"));
     result.add(new LabSettings("France, Le Mans: HAUM Hackerspace", "https://github.com/haum/visicut-settings/archive/master.zip"));
-    result.add(new LabSettings("France, Roche aux Fées: FabLabs La Fabrique", "https://github.com/LaFabrique35/visicut-settings/archive/master.zip"));
+    result.add(new LabSettings("France, Roche aux F??es: FabLabs La Fabrique", "https://github.com/LaFabrique35/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Aachen: FabLab RWTH Aachen", "https://github.com/renebohne/zing6030-visicut-settings/archive/master.zip"));
+    result.add(new LabSettings("Germany, Berlin: xHain Hack+Makespace", "https://github.com/xHain-hackspace/visicut-settings/raw/refs/heads/main/xhain-laser-settings.vcsettings"));
     result.add(new LabSettings("Germany, Berlin: Fab Lab Berlin", "https://github.com/FabLabBerlin/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Dresden: Konglomerat e.V.", "https://github.com/konglomerat/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Dresden: Makerspace Dresden", "https://github.com/Makerspace-Dresden/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Erlangen: FAU FabLab", "https://github.com/fau-fablab/visicut-settings/archive/master.zip", new String[]{".fau.de", ".uni-erlangen.de"}, null));
     result.add(new LabSettings("Germany, Erlangen: ZAM", "https://github.com/zam-haus/visicut-settings/archive/refs/heads/main.zip", null, new String[]{"ZAM"}));
-    result.add(new LabSettings("Germany, Gunzenhausen: FabLab Altmühlfranken", "https://git.fablab-altmuehlfranken.de/fablab/visicut-settings/archive/main.zip"));
+    result.add(new LabSettings("Germany, Gunzenhausen: FabLab Altm??hlfranken", "https://git.fablab-altmuehlfranken.de/fablab/visicut-settings/archive/main.zip"));
     result.add(new LabSettings("Germany, Hamburg: Fab Lab Fabulous St. Pauli", "https://github.com/Fab-Lab-Fabulous-St-Pauli/visicut-settings/archive/main.zip", new String[]{".fablab-hamburg.org"}, null));
     result.add(new LabSettings("Germany, Heidelberg: Heidelberg Makerspace", "https://github.com/heidelberg-makerspace/visicut-settings/archive/master.zip"));
 	result.add(new LabSettings("Germany, Karlsruhe: SPE Innovationswerkstatt", "https://github.com/spe-khe/visicut_settings/archive/main.zip"));
-    result.add(new LabSettings("Germany, Nuremberg: Fab lab Region Nürnberg e.V.", "https://github.com/fablabnbg/visicut-settings/archive/master.zip"));
+    result.add(new LabSettings("Germany, Nuremberg: Fab lab Region N??rnberg e.V.", "https://github.com/fablabnbg/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Paderborn: FabLab Paderborn e.V.", "https://github.com/fablab-paderborn/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Germany, Reutlingen: INNOPORT / MakeRTreff", "https://github.com/InnoportReutlingen/VisiCut-Settings/archive/main.zip"));
-    result.add(new LabSettings("Germany, Veitsbronn: FabLab Landkreis Fürth e.V.", "https://github.com/falafue/visicut-settings/archive/master.zip"));
+    result.add(new LabSettings("Germany, Veitsbronn: FabLab Landkreis F??rth e.V.", "https://github.com/falafue/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("India, Bangalore: Makerspace BLR", "https://github.com/pallavagarwal07/Makerspace-BLR-Visicut-Settings/archive/master.zip"));
     result.add(new LabSettings("Netherlands, Amersfoort: FabLab", "https://github.com/Fablab-Amersfoort/visicut-settings/archive/master.zip"));
     result.add(new LabSettings("Netherlands, Enschede: TkkrLab", "https://github.com/TkkrLab/visicut-settings/archive/master.zip"));
