@@ -68,11 +68,6 @@
     <key>JVMRuntimePath</key>
     <string></string>
     -->
-    <key>LSEnvironment</key>
-    <dict>
-        <key>JAVA_HOME</key>
-        <string>Contents/Plugins/JRE/Contents/Home/</string>
-    </dict>
     <key>JVMMainClassName</key>
     <string>de.thomas_oster.visicut.gui.VisicutApp</string>
     <key>JVMClassPaths</key>
