@@ -115,7 +115,10 @@ public class SVGShape extends SVGObject implements ShapeObject
       //   example: <path transform="scale(123)" style="stroke-width:4">
       //            --> effective stroke width is 123 * 4
       // see https://github.com/t-oster/VisiCut/issues/720
-      t.concatenate(this.getDecoratee().getXForm());
+      AffineTransform currentShapeTransform = this.getDecoratee().getXForm();
+      if (currentShapeTransform != null) {
+        t.concatenate(currentShapeTransform);
+      }
       width *= (Math.abs(t.getScaleX()) + Math.abs(t.getScaleY())) / 2;
     }
     catch (SVGException ex)
