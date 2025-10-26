@@ -9,13 +9,9 @@ else
 	rm -f src/main/resources/de/thomas_oster/visicut/gui/resources/splash@{2,3}x.png
 	exit
 fi
-echo "Determining Version (may be overridden with environment variable VERSION)"
 cd "$(dirname $0)"
-VERSION=${VERSION:-$(cat ./src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties |grep Application.version)}
-VERSION=${VERSION#*=}
-VERSION=${VERSION// /}
-echo "Version is: \"$VERSION\""
-echo "Version is: $VERSION"
+VERSION=$(./versionnumber.sh)
+echo "Version is: \"$VERSION\" (override with VERSION environment variable)"
 echo "Generating SVG"
 cat splashsource.svg|sed s#insert#$VERSION#g# > splash.svg
 echo "Converting to png"

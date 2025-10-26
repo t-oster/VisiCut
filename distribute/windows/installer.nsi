@@ -18,7 +18,7 @@
  
   ;General
   Name "${AppName}"
-  OutFile "setup.exe"
+  OutFile "vcsetup.exe"
  
   ;Folder selection page
   InstallDir "$PROGRAMFILES\${SHORTNAME}"
@@ -40,8 +40,6 @@
   !define MUI_PAGE_HEADER_SUBTEXT "Please wait while ${AppName} is being installed."
 ; Uncomment the next line if you want optional components to be selectable
 ;  !insertmacro MUI_PAGE_COMPONENTS
-  !define MUI_PAGE_CUSTOMFUNCTION_PRE myPreInstfiles
-  !define MUI_PAGE_CUSTOMFUNCTION_LEAVE RestoreSections
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_PAGE_FINISH
@@ -170,29 +168,8 @@ SectionEnd
 ;Installer Functions
  
 Function .onInit
- 
-  ;Extract InstallOptions INI Files
-  Call SetupSections
- 
 FunctionEnd
- 
-Function myPreInstfiles
- 
-  Call RestoreSections
-  SetAutoClose true
- 
-FunctionEnd
- 
-Function RestoreSections
-  !insertmacro SelectSection ${SecAppFiles}
-  !insertmacro SelectSection ${SecCreateShortcut}
- 
-FunctionEnd
- 
-Function SetupSections
-  !insertmacro UnselectSection ${SecAppFiles}
-  !insertmacro UnselectSection ${SecCreateShortcut}
-FunctionEnd
+
  
 ;--------------------------------
 ;Uninstaller Section

@@ -20,7 +20,7 @@ package de.thomas_oster.visicut.model;
 
 import de.thomas_oster.liblasercut.LaserCutter;
 import de.thomas_oster.liblasercut.LaserJob;
-import de.thomas_oster.liblasercut.LaserProperty;
+import de.thomas_oster.liblasercut.properties.LaserProperty;
 import de.thomas_oster.liblasercut.ProgressListener;
 import de.thomas_oster.liblasercut.Raster3dPart;
 import de.thomas_oster.liblasercut.platform.Point;

@@ -23,7 +23,7 @@ log() {
 # targets to be built need to be passed on the commandline
 # if no targets are provided, we display a help text
 if [[ "${1:-}" == "" ]]; then
-    log "Usage: [env NO_BUILD=1] $0 <targets>"
+    log "Usage: [env NO_BUILD=1 VERSION=1.2.3-mystuff] $0 <targets>"
     echo
     log "Available targets:"
     log "    - zip"
@@ -34,6 +34,7 @@ if [[ "${1:-}" == "" ]]; then
     echo
     log "Available environment variables:"
     log "    - \$NO_BUILD=[...]: if set to any string, $0 won't build a JAR (saves build time if the script ran already)"
+    log "    - \$VERSION=[...]: if set to any string, will overwrite the version number"
     exit 2
 fi
 
@@ -46,25 +47,13 @@ distribute_dir="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
 # we assume the distribute directory is a direct subdirectory of the project root directory (i.e., the Git repository)
 project_root_dir="$(readlink -f "$distribute_dir"/..)"
 
-if [[ "${VERSION:-}" != "" ]]; then
-    log "Using user-provided version \$VERSION=$VERSION"
-else
-    pushd "$project_root_dir"
-
-    properties=src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties
-    VERSION="$(grep Application.version < "$properties" | cut -d= -f2 | tr -d ' ')"
-
-    # usually, distribute.sh doesn't create the properties file, so we implement a Git based fallback
-    if [[ "$VERSION" != "" ]]; then
-        log "Using properties-provided version $VERSION"
-    else
-        VERSION="$(git describe --tags || echo unknown)+devel"
-    fi
-
-    popd
-fi
+pushd "$project_root_dir"
+VERSION="$(./versionnumber.sh)"
+popd
 
 export VERSION
+log "Determined version: $VERSION"
+
 
 if [ "${NO_BUILD:-}" == "" ]; then
     log "Building VisiCut JAR"
@@ -198,7 +187,7 @@ EOF
             popd
 
             filename_prefix="VisiCut-$VERSION-Windows-Installer"
-            mv "$build_dir"/setup.exe "$filename_prefix".exe
+            mv "$build_dir"/vcsetup.exe "$filename_prefix".exe
             echo "Success: Built Windows EXE Installer in $(pwd)/${filename_prefix}.exe"
             ;;
 

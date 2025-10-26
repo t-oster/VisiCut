@@ -86,7 +86,7 @@ public class SVGShape extends SVGObject implements ShapeObject
    *
    * @return stroke width or 0 if the stroke is disabled.
    */
-  private double getEffectiveStrokeWidthMm()
+  public double getEffectiveStrokeWidthMm()
   {
     // If "stroke:none" is set, the stroke is disabled regardless of stroke-width.
     StyleAttribute strokeStyle = this.getStyleAttributeRecursive("stroke");
@@ -109,7 +109,16 @@ public class SVGShape extends SVGObject implements ShapeObject
     double width = SVGImporter.numberWithUnitsToMm(strokeWidth, this.svgResolution);
     try
     {
+      // 1. transformation of the group(s) that the shape is inside
       AffineTransform t = this.getAbsoluteTransformation();
+      // 2. transform attribute of the shape itself
+      //   example: <path transform="scale(123)" style="stroke-width:4">
+      //            --> effective stroke width is 123 * 4
+      // see https://github.com/t-oster/VisiCut/issues/720
+      AffineTransform currentShapeTransform = this.getDecoratee().getXForm();
+      if (currentShapeTransform != null) {
+        t.concatenate(currentShapeTransform);
+      }
       width *= (Math.abs(t.getScaleX()) + Math.abs(t.getScaleY())) / 2;
     }
     catch (SVGException ex)
@@ -241,6 +250,8 @@ public class SVGShape extends SVGObject implements ShapeObject
   
   /**
    * get bounding box in SVG pixels
+   *
+   * stroke width is included in a simplified approximation
    */
   @Override
   public Rectangle2D getBoundingBox()

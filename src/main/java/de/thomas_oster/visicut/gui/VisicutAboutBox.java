@@ -21,6 +21,9 @@
  */
 package de.thomas_oster.visicut.gui;
 
+import java.awt.Component;
+import java.util.MissingResourceException;
+import java.util.logging.Logger;
 import org.jdesktop.application.Action;
 
 public class VisicutAboutBox extends javax.swing.JDialog
@@ -31,6 +34,7 @@ public class VisicutAboutBox extends javax.swing.JDialog
     super(parent);
     initComponents();
     getRootPane().setDefaultButton(closeButton);
+    appVersionLabel.setText(VisicutApp.getVersion());
   }
 
   @Action
@@ -51,7 +55,7 @@ public class VisicutAboutBox extends javax.swing.JDialog
     closeButton = new javax.swing.JButton();
     javax.swing.JLabel appTitleLabel = new javax.swing.JLabel();
     javax.swing.JLabel versionLabel = new javax.swing.JLabel();
-    javax.swing.JLabel appVersionLabel = new javax.swing.JLabel();
+    appVersionLabel = new javax.swing.JLabel();
     javax.swing.JLabel vendorLabel = new javax.swing.JLabel();
     javax.swing.JLabel appVendorLabel = new javax.swing.JLabel();
     javax.swing.JLabel homepageLabel = new javax.swing.JLabel();
@@ -83,7 +87,7 @@ public class VisicutAboutBox extends javax.swing.JDialog
     versionLabel.setText(resourceMap.getString("versionLabel.text")); // NOI18N
     versionLabel.setName("versionLabel"); // NOI18N
 
-    appVersionLabel.setText(bundle.getString("Application.version")); // NOI18N
+    appVersionLabel.setText("version_replaced_at_startup"); // NOI18N
     appVersionLabel.setName("appVersionLabel"); // NOI18N
 
     vendorLabel.setFont(vendorLabel.getFont().deriveFont(vendorLabel.getFont().getStyle() | java.awt.Font.BOLD));
@@ -196,6 +200,7 @@ public class VisicutAboutBox extends javax.swing.JDialog
     pack();
   }// </editor-fold>//GEN-END:initComponents
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JLabel appVersionLabel;
   private javax.swing.JButton closeButton;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;

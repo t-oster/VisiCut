@@ -21,7 +21,7 @@ package de.thomas_oster.visicut.gui;
 import com.frochr123.periodictasks.RefreshCameraThread;
 import de.thomas_oster.liblasercut.IllegalJobException;
 import de.thomas_oster.liblasercut.LaserCutter;
-import de.thomas_oster.liblasercut.LaserProperty;
+import de.thomas_oster.liblasercut.properties.LaserProperty;
 import de.thomas_oster.liblasercut.ProgressListener;
 import de.thomas_oster.liblasercut.platform.Util;
 import de.thomas_oster.uicomponents.PlatformIcon;
