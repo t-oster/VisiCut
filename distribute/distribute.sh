@@ -47,31 +47,13 @@ distribute_dir="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
 # we assume the distribute directory is a direct subdirectory of the project root directory (i.e., the Git repository)
 project_root_dir="$(readlink -f "$distribute_dir"/..)"
 
-if [[ "${VERSION:-}" != "" ]]; then
-    log "Using user-provided version \$VERSION=$VERSION"
-else
-    pushd "$project_root_dir"
-
-    properties=src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutApp.properties
-    VERSION="$(grep Application.version < "$properties" | cut -d= -f2 | tr -d ' ')"
-
-    # usually, distribute.sh doesn't create the properties file, so we implement a Git based fallback
-    if [[ "$VERSION" != "" ]]; then
-        log "Using properties-provided version $VERSION"
-    else
-        # as the GitHub actions workflow creates a continuous tag on the main branch's HEAD to create prereleases for every push, we must ignore those tags
-        # we need to ignore this tag to get a proper version number
-        # if the command fails, we must abort at this point, as we cannot fall back to some generic name like "unknown" without breaking at least the Debian package build
-        if ! VERSION="$(git describe --tags --exclude 'continuous')"; then
-            echo "Error: could not fetch proper version number with git, try git fetch -a"
-            exit 2
-        fi
-    fi
-
-    popd
-fi
+pushd "$project_root_dir"
+VERSION="$(./versionnumber.sh)"
+popd
 
 export VERSION
+log "Determined version: $VERSION"
+
 
 if [ "${NO_BUILD:-}" == "" ]; then
     log "Building VisiCut JAR"

@@ -52,6 +52,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -67,6 +68,21 @@ public class VisicutApp extends SingleFrameApplication
 {
 
   public static Level GLOBAL_LOG_LEVEL = Level.SEVERE;
+
+  static String getVersion()
+  {
+    // Read the version number from the file
+    // src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutAppVersion.properties
+    // that is created by distribute/distribute.sh .
+    // Fall back if the file does not exist (when building directly via 'ant')
+    try {
+      var bundle = java.util.ResourceBundle.getBundle("de/thomas_oster/visicut/gui/resources/VisicutAppVersion"); // NOI18N
+      return bundle.getString("Version");
+    } catch (MissingResourceException e) {
+      Logger.getLogger("VisiCutApp").warning("Missing VisiCutAppVersion.properties. Can not determine version number. For development builds, this is expected. For release builds, use 'distribute.sh' or 'make' to generate the version number file.");
+      return "Development Build"; // NOI18N
+    }
+  }
 
   private MainView mainView;
   private File loadedFile;
@@ -269,8 +285,7 @@ public class VisicutApp extends SingleFrameApplication
           }
           else if ("--version".equals(s) || "-v".equals(s))
           {
-            org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(de.thomas_oster.visicut.gui.VisicutApp.class).getContext().getResourceMap(VisicutApp.class);
-            System.out.println(resourceMap.getString("Application.title")+"\t\t Version: "+resourceMap.getString("Application.version"));
+            System.out.println("VisiCut\t\t Version: "+getVersion());
             System.out.println(""
               + "LibLaserCut\t Version: "+LibInfo.getVersion());
             System.out.println("\n\tSupported Drivers:");

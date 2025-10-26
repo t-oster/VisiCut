@@ -16,6 +16,9 @@ help:
 splash:
 	./generatesplash.sh
 jar: splash libLaserCut
+	# Write version into properties file (used by Help-About screen).
+	./versionnumber.sh
+	echo "Version = $(shell ./versionnumber.sh)" > src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutAppVersion.properties
 	mvn initialize
 	mvn package
 dist:
@@ -29,6 +32,7 @@ libLaserCut:
 	cd ..
 clean:
 	rm -f src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png
+	rm -f src/main/resources/de/thomas_oster/visicut/gui/resources/VisicutAppVersion.properties
 	mvn clean
 install:
 	mkdir -p $(DESTDIR)$(PREFIX)/share/visicut
