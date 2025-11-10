@@ -33,6 +33,7 @@ import codecs
 import random
 import string
 import socket
+from pathlib import Path
 
 try:
     from os import fsencode
@@ -140,13 +141,17 @@ def which(program, extraPaths=[]):
 
 def inkscape_version():
     """Return Inkscape version number as float, e.g. version "0.92.4" --> return: float 0.92"""
-    version = subprocess.check_output([INKSCAPEBIN, "--version"],  stderr=DEVNULL).decode('ASCII', 'ignore')
-    assert version.startswith("Inkscape ")
-    match = re.match(r"Inkscape ([0-9]+\.[0-9]+).*", version)
-    assert match is not None
+    version_raw = subprocess.check_output([INKSCAPEBIN, "--version"],  stderr=DEVNULL).decode('ASCII', 'ignore')
+    ## When inkscape lives in an appimage, AppRun may pollute stdout with extra information.
+    # Go through all the lines, and find the one that starts with Inkscape
+    lines = version_raw.splitlines()
+    version = [line for line in lines if line.startswith("Inkscape ")]
+    assert len(version) == 1, "inkscape --version did not return a version number: " + version_raw
+    match = re.match(r"Inkscape ([0-9]+\.[0-9]+).*", version[0])
+    assert match is not None, "failed to parse version number from " + version[0]
     version_float = float(match.group(1))
     return version_float
-    
+
 
 
 # Strip SVG to only contain selected elements, convert objects to paths, unlink clones
@@ -157,7 +162,7 @@ def inkscape_version():
 # The idea is similar to http://bazaar.launchpad.net/~nikitakit/inkscape/svg2sif/view/head:/share/extensions/synfig_prepare.py#L181 , but more primitive - there is no need for more complicated preprocessing here
 def stripSVG_inkscape(src, dest, elements):
     version = inkscape_version()
-    
+
     # create temporary file for opening with inkscape.
     # delete this file later so that it will disappear from the "recently opened" list.
     tmpfile = tempfile.NamedTemporaryFile(delete=False, prefix='temp-visicut-', suffix='.svg')
@@ -199,8 +204,8 @@ def stripSVG_inkscape(src, dest, elements):
         verbs += ["UnhideAllInAllLayers", "EditInvertInAllLayers", "EditDelete", "EditSelectAllInAllLayers", "EditUnlinkClone", "ObjectToPath", "FileSave"]
         # --verb=action1;action2;...
         command += ["--verb=" + ";".join(verbs)]
-        
-        
+
+
         DEBUG = False
         if DEBUG:
             # Inkscape sometimes silently ignores wrong verbs, so we need to double-check that everything's right
@@ -248,7 +253,7 @@ def stripSVG_inkscape(src, dest, elements):
         actions += ["export-area-page"]
 
         command = [INKSCAPEBIN, tmpfile, "--export-overwrite", "--actions=" + ";".join(actions)]
-        
+
     try:
         #sys.stderr.write(" ".join(command))
         # run inkscape, buffer output
@@ -326,6 +331,16 @@ if not VISICUTBIN:
         VISICUTBIN = which("VisiCut.Linux", [VISICUTDIR, "/usr/share/visicut"])
 INKSCAPEBIN = which("inkscape", [INKSCAPEDIR])
 
+## Test if this inkscape is in an appimage.
+# We detect this by checking for an AppRun file, in one of the parent folders of our INKSCAPEBIN.
+# If so, replace INKSCAPEBIN with AppRun, as this is the only safe way to call inkscape.
+# (a direct call mixes libraries from the host system with the appimage, may or may not work.)
+for parent in Path(INKSCAPEBIN).parents:
+    apprun = parent / "AppRun"
+    if apprun.is_file() and os.access(apprun, os.X_OK):
+        INKSCAPEBIN = apprun
+        break
+
 tmpdir = tempfile.mkdtemp(prefix='temp-visicut-')
 dest_filename = os.path.join(tmpdir, get_original_filename(filename))
 
@@ -384,3 +399,4 @@ except Exception as e:
     sys.exit(1)
 
 # TODO (complicated, probably WONTFIX): cleanup temporary directories -- this is really difficult because we need to make sure that visicut no longer needs the file, even for reloading!
+# - Maybe add the PID od the running visicut, then we can detect orphaned temp direcories.
