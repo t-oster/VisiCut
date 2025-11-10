@@ -147,7 +147,7 @@ def inkscape_version():
     lines = version_raw.splitlines()
     version = [line for line in lines if line.startswith("Inkscape ")]
     assert len(version) == 1, "inkscape --version did not return a version number: " + version_raw
-    match = re.match("Inkscape ([0-9]+\.[0-9]+).*", version[0])
+    match = re.match(r"Inkscape ([0-9]+\.[0-9]+).*", version[0])
     assert match is not None, "failed to parse version number from " + version[0]
     version_float = float(match.group(1))
     return version_float
