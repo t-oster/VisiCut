@@ -96,7 +96,7 @@ public class EPSImporter extends AbstractImporter
     return result;
   }
 
-  public GraphicSet importSetFromFile(File inputFile, List<String> warnings) throws ImportException
+  public GraphicSet importSetFromFile(File inputFile, boolean originIsBottomLeft, double bedHeightInMm, List<String> warnings) throws ImportException
   {
     Writer out = null;
     try
@@ -123,7 +123,7 @@ public class EPSImporter extends AbstractImporter
       File tmp = File.createTempFile("temp", "svg");
       tmp.deleteOnExit();
       svgGenerator.stream(new FileWriter(tmp));
-      GraphicSet result = new SVGImporter().importSetFromFile(tmp, warnings);
+      GraphicSet result = new SVGImporter().importSetFromFile(tmp, originIsBottomLeft, bedHeightInMm, warnings);
       //Assume the EPS has been created with 72DPI (from Inkscape)
       double px2mm = Util.inch2mm(1d/72d);
       result.setBasicTransform(AffineTransform.getScaleInstance(px2mm, px2mm));
