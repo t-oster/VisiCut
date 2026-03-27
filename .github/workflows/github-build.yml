@@ -20,13 +20,13 @@ jobs:
         target:
           - zip
           - windows-nsis
-          - macos-bundle
           - linux-appimage
           - linux-checkinstall
         include:
           - os: macos-latest
             target: macos-dmg
-          
+          - os: macos-latest-intel
+            target: macos-dmg
 
     name: Distribute ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
