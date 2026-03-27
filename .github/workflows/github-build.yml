@@ -28,7 +28,7 @@ jobs:
           - os: macos-latest-intel
             target: macos-dmg
 
-    name: Distribute ${{ matrix.target }}
+    name: Distribute ${{ matrix.target }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     steps:
