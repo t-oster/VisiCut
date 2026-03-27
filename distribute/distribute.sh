@@ -67,6 +67,7 @@ fi
 # this directory contains all of VisiCut's binaries and resources
 # consider it a semi-portable bundle (a JVM is needed to make it complete)
 # the resulting directory can then be put into various types of packages
+mkdir -p "$distribute_dir"/visicut
 visicut_dir="$(readlink -f "$distribute_dir"/visicut)"
 
 if [[ -d "$visicut_dir" ]]; then
