@@ -210,46 +210,33 @@ EOF
 
             # TODO add rest of options from info.plist
             popd
+            mv "$build_dir"/VisiCut-$VERSION.dmg VisiCut-$(arch)-$VERSION.dmg 
         ;; 
 
         macos-bundle)
-            jre_url="https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_mac_hotspot_11.0.5_10.tar.gz"
-            jre_hash="dfd212023321ebb41bce8cced15b4668001e86ecff6bffdd4f2591ccaae41566"
-            download_and_extract_jdk "$jre_url" "$jre_hash"
-
-            # prepare bundle directory
             pushd "$build_dir"
 
-            # copy app template directory
-            cp -R "$distribute_dir"/mac/VisiCut.app .
+            jpackage \
+                -n VisiCut \
+                --type app-image \
+                --app-version $VERSION \
+                --icon "$distribute_dir"/mac/MacIcon.icns \
+                -i "$visicut_dir"/ \
+                --main-jar Visicut.jar \
+                --main-class de.thomas_oster.visicut.gui.VisicutApp \
+                --java-options -Dapple.laf.useScreenMenuBar=true \
+                --java-options -Xdock:name=VisiCut \
+                --java-options -Xms128m \
+                --java-options -Xmx1048m \
+                --java-options -splash:splash.png
 
-            # copy visicut directory contents into macOS style location
-            mkdir -p VisiCut.app/Contents/Resources/Java/
-            cp -Rv "$visicut_dir"/* VisiCut.app/Contents/Resources/Java/
+            # TODO add rest of options from info.plist
 
-            # however, the JAR needs to be put into another location
-            mkdir -p VisiCut.app/Contents/Java
-            mv VisiCut.app/Contents/Resources/Java/Visicut.jar VisiCut.app/Contents/Java/
-
-            cp "$project_root_dir"/src/main/resources/de/thomas_oster/visicut/gui/resources/splash*.png VisiCut.app/Contents/Resources/Java
-
-            # update version
-            # unfortunately, this is the most elegant way we can use the file as a template
-            sed -i s#VISICUTVERSION#"$VERSION"#g VisiCut.app/Contents/Info.plist
-
-            # deploy jre
-            mkdir -p VisiCut.app/Contents/Plugins/
-            mv jre/ VisiCut.app/Contents/Plugins/JRE/
-
-            # create bundle
-            zip -r bundle.zip VisiCut.app/
-
-            # build final filename
-            filename_prefix="VisiCutMac-$VERSION"
-            mv bundle.zip "$old_cwd"/"$filename_prefix".zip
+            zip -r VisiCutMac-$(arch)-$VERSION.zip VisiCut.app/ 
 
             popd
-            ;;
+            mv "$build_dir"/VisiCutMac-$(arch)-$VERSION.zip .
+        ;; 
 
         linux-appimage)
             pushd "$build_dir"
