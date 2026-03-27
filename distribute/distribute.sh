@@ -143,8 +143,6 @@ for target in "$@"; do
 
     mac_jpackage() {
         # Run jpackage tool with macOS-specific options.
-
-        # TODO add rest of options from info.plist if necessary
         jpackage \
             -n VisiCut \
             --app-version $VERSION \
@@ -159,6 +157,8 @@ for target in "$@"; do
             --java-options -splash:splash.png \
             --mac-package-identifier de.thomas-oster.visicut.gui.VisicutApp \
             --file-associations "$distribute_dir"/mac/plf_file_association.properties \
+            --copyright "Copyright © 2019, Thomas Oster, Media Computing Group, RWTH Aachen University. This Software is licensed under the GNU Lesser Public License (LGPL) version 3." \
+            --description "A userfriendly tool to create, save and send Jobs to a Lasercutter" \
             "$@"
     }
 
