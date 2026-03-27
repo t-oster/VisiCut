@@ -43,8 +43,9 @@ jobs:
           # this makes uploading the artifacts a *lot* easier
           mkdir output
           pushd output
-          if [ "${{ matrix.os }}" == "macos-latest" ]; then
-            bash ../distribute/distribute.sh ${{ matrix.target }}
+          
+          if [ "$(uname)" == "Darwin" ]; then
+            bash -x ../distribute/distribute.sh ${{ matrix.target }}
           else
             bash ../distribute/distribute-docker.sh ${{ matrix.target }}
           fi
