@@ -54,7 +54,7 @@ jobs:
       - name: Archive built files
         uses: actions/upload-artifact@v4.4.3
         with:
-          name: output binaries ${{ matrix.target }}
+          name: "output binaries ${{ matrix.target }}-${{ matrix.os }}"
           path: |
             output/*
 
