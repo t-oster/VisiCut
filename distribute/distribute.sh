@@ -141,6 +141,27 @@ for target in "$@"; do
         popd
     }
 
+    mac_jpackage() {
+        # Run jpackage tool with macOS-specific options.
+
+        # TODO add rest of options from info.plist if necessary
+        jpackage \
+            -n VisiCut \
+            --app-version $VERSION \
+            --icon "$distribute_dir"/mac/MacIcon.icns \
+            -i "$visicut_dir"/ \
+            --main-jar Visicut.jar \
+            --main-class de.thomas_oster.visicut.gui.VisicutApp \
+            --java-options -Dapple.laf.useScreenMenuBar=true \
+            --java-options -Xdock:name=VisiCut \
+            --java-options -Xms128m \
+            --java-options -Xmx1048m \
+            --java-options -splash:splash.png \
+            --mac-package-identifier de.thomas-oster.visicut.gui.VisicutApp \
+            --file-associations "$distribute_dir"/mac/plf_file_association.properties \
+            "$@"
+    }
+
     case "$target" in
         zip)
             pushd "$build_dir"
@@ -195,22 +216,9 @@ EOF
         macos-dmg)
             pushd "$build_dir"
 
-            jpackage \
-                -n VisiCut \
-                --type dmg \
-                --app-version $VERSION \
-                --icon "$distribute_dir"/mac/MacIcon.icns \
-                -i "$visicut_dir"/ \
-                --main-jar Visicut.jar \
-                --main-class de.thomas_oster.visicut.gui.VisicutApp \
-                --java-options -Dapple.laf.useScreenMenuBar=true \
-                --java-options -Xdock:name=VisiCut \
-                --java-options -Xms128m \
-                --java-options -Xmx1048m \
-                --java-options -splash:splash.png \
-                --mac-package-identifier de.thomas-oster.visicut.gui.VisicutApp
+            mac_jpackage \
+                --type dmg
 
-            # TODO add rest of options from info.plist
             popd
             mv "$build_dir"/VisiCut-$VERSION.dmg VisiCut-$(arch)-$VERSION.dmg 
         ;; 
@@ -218,22 +226,8 @@ EOF
         macos-bundle)
             pushd "$build_dir"
 
-            jpackage \
-                -n VisiCut \
-                --type app-image \
-                --app-version $VERSION \
-                --icon "$distribute_dir"/mac/MacIcon.icns \
-                -i "$visicut_dir"/ \
-                --main-jar Visicut.jar \
-                --main-class de.thomas_oster.visicut.gui.VisicutApp \
-                --java-options -Dapple.laf.useScreenMenuBar=true \
-                --java-options -Xdock:name=VisiCut \
-                --java-options -Xms128m \
-                --java-options -Xmx1048m \
-                --java-options -splash:splash.png \
-                --mac-package-identifier de.thomas-oster.visicut.gui.VisicutApp
-
-            # TODO add rest of options from info.plist
+            mac_jpackage \
+                --type app-image
 
             zip -r VisiCutMac-$(arch)-$VERSION.zip VisiCut.app/ 
 
