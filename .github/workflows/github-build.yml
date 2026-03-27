@@ -23,9 +23,9 @@ jobs:
           - linux-appimage
           - linux-checkinstall
         include:
-          - os: macos-latest
+          - os: macos-15
             target: macos-dmg
-          - os: macos-latest-intel
+          - os: macos-15-intel
             target: macos-dmg
 
     name: Distribute ${{ matrix.target }} on ${{ matrix.os }}
