@@ -208,7 +208,7 @@ EOF
                 --java-options -Xms128m \
                 --java-options -Xmx1048m \
                 --java-options -splash:splash.png \
-                --mac-package-identifier de.thomas_oster.visicut.gui.VisicutApp
+                --mac-package-identifier de.thomas-oster.visicut.gui.VisicutApp
 
             # TODO add rest of options from info.plist
             popd
@@ -231,7 +231,7 @@ EOF
                 --java-options -Xms128m \
                 --java-options -Xmx1048m \
                 --java-options -splash:splash.png \
-                --mac-package-identifier de.thomas_oster.visicut.gui.VisicutApp
+                --mac-package-identifier de.thomas-oster.visicut.gui.VisicutApp
 
             # TODO add rest of options from info.plist
 
