@@ -191,6 +191,27 @@ EOF
             echo "Success: Built Windows EXE Installer in $(pwd)/${filename_prefix}.exe"
             ;;
 
+        macos-dmg)
+            pushd "$build_dir"
+
+            jpackage \
+                -n VisiCut \
+                --type dmg \
+                --app-version $VERSION \
+                --icon "$distribute_dir"/mac/MacIcon.icns \
+                -i "$visicut_dir"/ \
+                --main-jar Visicut.jar \
+                --main-class de.thomas_oster.visicut.gui.VisicutApp \
+                --java-options -Dapple.laf.useScreenMenuBar=true \
+                --java-options -Xdock:name=VisiCut \
+                --java-options -Xms128m \
+                --java-options -Xmx1048m \
+                --java-options -splash:splash.png
+
+            # TODO add rest of options from info.plist
+            popd
+        ;; 
+
         macos-bundle)
             jre_url="https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_mac_hotspot_11.0.5_10.tar.gz"
             jre_hash="dfd212023321ebb41bce8cced15b4668001e86ecff6bffdd4f2591ccaae41566"
