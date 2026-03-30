@@ -142,6 +142,11 @@ for target in "$@"; do
     }
 
     mac_jpackage() {
+        if [ "$(uname)" != "Darwin" ]; then
+            echo "Error: to build macOS .app bundle and .dmg disk image this script must run on macOS".
+            exit 1
+        fi
+
         # Run jpackage tool with macOS-specific options.
         jpackage \
             -n VisiCut \
