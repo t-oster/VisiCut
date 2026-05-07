@@ -36,6 +36,7 @@ jobs:
         with:
           submodules: "recursive"
           fetch-depth: 0
+          fetch-tags: true
 
       - name: Build distribution
         run: |
