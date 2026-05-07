@@ -141,16 +141,27 @@ for target in "$@"; do
         popd
     }
 
+    sanitize_mac_version() {
+        # macOS package bundle version parameter must match MAJOR.MINOR.RELEASE, all digits.
+        SANITIZED=$(echo "$1" | sed 's/^\([0-9]*\.[0-9]*\.[0-9]*\).*$/\1/g')
+
+        echo $SANITIZED
+    }
+
     mac_jpackage() {
         if [ "$(uname)" != "Darwin" ]; then
             echo "Error: to build macOS .app bundle and .dmg disk image this script must run on macOS".
             exit 1
         fi
 
+        MACOS_APP_VER=$(sanitize_mac_version $VERSION)
+        if [ "$MACOS_APP_VER" != "$VERSION" ]; then
+            echo "Warning: $MACOS_APP_VER will be used as macOS app bundle version (shortened from $VERSION)" >&2
+        fi
         # Run jpackage tool with macOS-specific options.
         jpackage \
             -n VisiCut \
-            --app-version $VERSION \
+            --app-version $MACOS_APP_VER \
             --icon "$distribute_dir"/mac/MacIcon.icns \
             -i "$visicut_dir"/ \
             --main-jar Visicut.jar \
@@ -225,7 +236,9 @@ EOF
                 --type dmg
 
             popd
-            mv "$build_dir"/VisiCut-$VERSION.dmg VisiCut-$(arch)-$VERSION.dmg 
+            MACOS_APP_VER=$(sanitize_mac_version $VERSION)
+
+            mv "$build_dir"/VisiCut-$MACOS_APP_VER.dmg VisiCut-$(arch)-$VERSION.dmg 
         ;; 
 
         macos-bundle)
@@ -237,6 +250,7 @@ EOF
             zip -r VisiCutMac-$(arch)-$VERSION.zip VisiCut.app/ 
 
             popd
+
             mv "$build_dir"/VisiCutMac-$(arch)-$VERSION.zip .
         ;; 
 
