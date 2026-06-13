@@ -143,7 +143,7 @@ for target in "$@"; do
 
     sanitize_mac_version() {
         # macOS package bundle version parameter must match MAJOR.MINOR.RELEASE, all digits.
-        SANITIZED=$(echo "$1" | sed 's/^\([0-9]*\.[0-9]*\.[0-9]*\).*$/\1/g')
+        SANITIZED=$(echo "$1" | tr -s ".-" "." | cut -d"." -f1,2,3 )
 
         echo $SANITIZED
     }
