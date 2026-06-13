@@ -13,7 +13,7 @@ cd "$(dirname $0)"
 VERSION=$(./versionnumber.sh)
 echo "Version is: \"$VERSION\" (override with VERSION environment variable)"
 echo "Generating SVG"
-cat splashsource.svg|sed s#insert#$VERSION#g# > splash.svg
+cat splashsource.svg | sed "s/insert/$VERSION/g/" > splash.svg
 echo "Converting to png"
 rsvg-convert -w 514 -h 444 splash.svg > src/main/resources/de/thomas_oster/visicut/gui/resources/splash.png
 # high-dpi variants (see https://docs.oracle.com/javase/10/docs/api/java/awt/SplashScreen.html )

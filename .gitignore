@@ -38,3 +38,6 @@ squashfs-root/
 
 # NSIS installer
 *.exe
+
+.DS_Store
+.vscode/

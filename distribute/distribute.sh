@@ -67,6 +67,7 @@ fi
 # this directory contains all of VisiCut's binaries and resources
 # consider it a semi-portable bundle (a JVM is needed to make it complete)
 # the resulting directory can then be put into various types of packages
+mkdir -p "$distribute_dir"/visicut
 visicut_dir="$(readlink -f "$distribute_dir"/visicut)"
 
 if [[ -d "$visicut_dir" ]]; then
@@ -140,6 +141,43 @@ for target in "$@"; do
         popd
     }
 
+    sanitize_mac_version() {
+        # macOS package bundle version parameter must match MAJOR.MINOR.RELEASE, all digits.
+        SANITIZED=$(echo "$1" | tr -s ".-" "." | cut -d"." -f1,2,3 )
+
+        echo $SANITIZED
+    }
+
+    mac_jpackage() {
+        if [ "$(uname)" != "Darwin" ]; then
+            echo "Error: to build macOS .app bundle and .dmg disk image this script must run on macOS".
+            exit 1
+        fi
+
+        MACOS_APP_VER=$(sanitize_mac_version $VERSION)
+        if [ "$MACOS_APP_VER" != "$VERSION" ]; then
+            echo "Warning: $MACOS_APP_VER will be used as macOS app bundle version (shortened from $VERSION)" >&2
+        fi
+        # Run jpackage tool with macOS-specific options.
+        jpackage \
+            -n VisiCut \
+            --app-version $MACOS_APP_VER \
+            --icon "$distribute_dir"/mac/MacIcon.icns \
+            -i "$visicut_dir"/ \
+            --main-jar Visicut.jar \
+            --main-class de.thomas_oster.visicut.gui.VisicutApp \
+            --java-options -Dapple.laf.useScreenMenuBar=true \
+            --java-options -Xdock:name=VisiCut \
+            --java-options -Xms128m \
+            --java-options -Xmx1048m \
+            --java-options -splash:splash.png \
+            --mac-package-identifier de.thomas-oster.visicut.gui.VisicutApp \
+            --file-associations "$distribute_dir"/mac/plf_file_association.properties \
+            --copyright "Copyright © 2019, Thomas Oster, Media Computing Group, RWTH Aachen University. This Software is licensed under the GNU Lesser Public License (LGPL) version 3." \
+            --description "A userfriendly tool to create, save and send Jobs to a Lasercutter" \
+            "$@"
+    }
+
     case "$target" in
         zip)
             pushd "$build_dir"
@@ -191,44 +229,30 @@ EOF
             echo "Success: Built Windows EXE Installer in $(pwd)/${filename_prefix}.exe"
             ;;
 
-        macos-bundle)
-            jre_url="https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_mac_hotspot_11.0.5_10.tar.gz"
-            jre_hash="dfd212023321ebb41bce8cced15b4668001e86ecff6bffdd4f2591ccaae41566"
-            download_and_extract_jdk "$jre_url" "$jre_hash"
-
-            # prepare bundle directory
+        macos-dmg)
             pushd "$build_dir"
 
-            # copy app template directory
-            cp -R "$distribute_dir"/mac/VisiCut.app .
-
-            # copy visicut directory contents into macOS style location
-            mkdir -p VisiCut.app/Contents/Resources/Java/
-            cp -Rv "$visicut_dir"/* VisiCut.app/Contents/Resources/Java/
-
-            # however, the JAR needs to be put into another location
-            mkdir -p VisiCut.app/Contents/Java
-            mv VisiCut.app/Contents/Resources/Java/Visicut.jar VisiCut.app/Contents/Java/
-
-            cp "$project_root_dir"/src/main/resources/de/thomas_oster/visicut/gui/resources/splash*.png VisiCut.app/Contents/Resources/Java
-
-            # update version
-            # unfortunately, this is the most elegant way we can use the file as a template
-            sed -i s#VISICUTVERSION#"$VERSION"#g VisiCut.app/Contents/Info.plist
-
-            # deploy jre
-            mkdir -p VisiCut.app/Contents/Plugins/
-            mv jre/ VisiCut.app/Contents/Plugins/JRE/
-
-            # create bundle
-            zip -r bundle.zip VisiCut.app/
-
-            # build final filename
-            filename_prefix="VisiCutMac-$VERSION"
-            mv bundle.zip "$old_cwd"/"$filename_prefix".zip
+            mac_jpackage \
+                --type dmg
 
             popd
-            ;;
+            MACOS_APP_VER=$(sanitize_mac_version $VERSION)
+
+            mv "$build_dir"/VisiCut-$MACOS_APP_VER.dmg VisiCut-$(arch)-$VERSION.dmg 
+        ;; 
+
+        macos-bundle)
+            pushd "$build_dir"
+
+            mac_jpackage \
+                --type app-image
+
+            zip -r VisiCutMac-$(arch)-$VERSION.zip VisiCut.app/ 
+
+            popd
+
+            mv "$build_dir"/VisiCutMac-$(arch)-$VERSION.zip .
+        ;; 
 
         linux-appimage)
             pushd "$build_dir"
