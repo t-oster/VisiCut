@@ -355,16 +355,15 @@ fn append_part(
                     || !point[1].is_finite()
                     || point[0] < 0.0
                     || point[1] < 0.0
-                    || point[0] > BED_WIDTH as f32
-                    || point[1] > BED_HEIGHT as f32
+                    || point[0] > BED_WIDTH
+                    || point[1] > BED_HEIGHT
                 {
                     return Err(
                         "SVG-Pfad liegt außerhalb des tatsächlichen LTT-Arbeitsbetts".into(),
                     );
                 }
             }
-            bounds = Bounds::of_points(paths.iter().flatten().map(|p| [p[0] as f64, p[1] as f64]))
-                .ok_or("Keine Vektorpfade zum Bearbeiten")?;
+
             out.extend([0x1b, 0x56]); // vector mode
             out.extend([0x1b, 0x45, 0, 0, 0, 0, 0, 0, 0]); // pulse mode off
             out.extend([0x1b, 0x4e, 1]); // colour code red
@@ -389,24 +388,28 @@ fn append_part(
                     });
                 }
             }
-            let px_point = |p: &geometry::Point| {
-                [
-                    p[0] as f64 * RASTER_DPI / 25.4,
-                    p[1] as f64 * RASTER_DPI / 25.4,
-                ]
-            };
+            // The shapes in pixels as VisiCut's ShapeConverter adds them.
+            let shapes: Vec<([f64; 2], Vec<[f64; 2]>)> = paths
+                .iter()
+                .filter_map(|path| shape_converter(path))
+                .collect();
             let elements: Vec<order::Element> = (0..keys.len())
                 .flat_map(|set| {
-                    paths
-                        .iter()
-                        .filter(|path| path.len() > 1)
-                        .map(move |path| order::Element {
-                            set,
-                            start: px_point(&path[0]),
-                            moves: path[1..].iter().map(px_point).collect(),
-                        })
+                    shapes.iter().map(move |(start, moves)| order::Element {
+                        set,
+                        start: *start,
+                        moves: moves.clone(),
+                    })
                 })
                 .collect();
+            // LaserJob.getBoundingBox: extent of the commands, px2mm per point.
+            bounds = Bounds::of_points(
+                shapes
+                    .iter()
+                    .flat_map(|(start, moves)| std::iter::once(start).chain(moves))
+                    .map(|p| [p[0] / RASTER_DPI * 25.4, p[1] / RASTER_DPI * 25.4]),
+            )
+            .ok_or("Keine Vektorpfade zum Bearbeiten")?;
             let ordered = order::inner_first(elements, &keys);
             // Java prescales Y only while generating the commands.
             let scale_y = axis.prescale();
@@ -546,6 +549,29 @@ impl Bounds {
             max: [self.max[0].max(other.max[0]), self.max[1].max(other.max[1])],
         }
     }
+}
+
+/// `ShapeConverter.addShape` for one contour in mm: points in 500-DPI pixels
+/// (`mm × dpi2dpmm(500)`), dropping line ends whose truncated pixel equals that
+/// of the last kept point. The closing segment of a closed contour (Java
+/// `SEG_CLOSE`) is always kept. `None` when no line remains.
+fn shape_converter(path: &[geometry::Point]) -> Option<([f64; 2], Vec<[f64; 2]>)> {
+    let px = |p: &geometry::Point| [p[0] * geometry::PX_PER_MM, p[1] * geometry::PX_PER_MM];
+    let start = px(path.first()?);
+    let closed = path.len() > 2 && path.first() == path.last();
+    let truncated = |p: [f64; 2]| (p[0] as i32, p[1] as i32);
+    let mut last = truncated(start);
+    let mut moves = Vec::new();
+    for (i, point) in path.iter().enumerate().skip(1) {
+        let point = px(point);
+        if closed && i == path.len() - 1 {
+            moves.push(start);
+        } else if truncated(point) != last {
+            moves.push(point);
+            last = truncated(point);
+        }
+    }
+    (!moves.is_empty()).then_some((start, moves))
 }
 
 fn operation_color(operation: Operation) -> [u8; 3] {

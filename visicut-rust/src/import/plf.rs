@@ -714,7 +714,7 @@ mod tests {
         }
     }
 
-    fn bounds(svg: &str) -> [f32; 4] {
+    fn bounds(svg: &str) -> [f64; 4] {
         let preview = crate::svg::render(svg).unwrap();
         let project = Project {
             svg: svg.into(),
@@ -725,7 +725,7 @@ mod tests {
             ..Project::default()
         };
         let contours = crate::geometry::contours(&project).unwrap();
-        let mut b = [f32::MAX, f32::MAX, f32::MIN, f32::MIN];
+        let mut b = [f64::MAX, f64::MAX, f64::MIN, f64::MIN];
         for point in contours.iter().flatten() {
             b = [
                 b[0].min(point[0]),
@@ -737,7 +737,7 @@ mod tests {
         b
     }
 
-    fn contour_bounds(svg: &str) -> Vec<[f32; 4]> {
+    fn contour_bounds(svg: &str) -> Vec<[f64; 4]> {
         let preview = crate::svg::render(svg).unwrap();
         let project = Project {
             svg: svg.into(),
@@ -752,7 +752,7 @@ mod tests {
             .iter()
             .map(|c| {
                 c.iter()
-                    .fold([f32::MAX, f32::MAX, f32::MIN, f32::MIN], |b, p| {
+                    .fold([f64::MAX, f64::MAX, f64::MIN, f64::MIN], |b, p| {
                         [
                             b[0].min(p[0]),
                             b[1].min(p[1]),
@@ -764,7 +764,7 @@ mod tests {
             .collect()
     }
 
-    fn close(a: [f32; 4], b: [f32; 4]) -> bool {
+    fn close(a: [f64; 4], b: [f64; 4]) -> bool {
         a.iter().zip(b).all(|(x, y)| (x - y).abs() < 0.01)
     }
 

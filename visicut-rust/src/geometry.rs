@@ -2,8 +2,18 @@ use crate::project::Project;
 use resvg::{tiny_skia, usvg};
 use std::sync::{Arc, Mutex};
 
-pub type Point = [f32; 2];
+/// Point on the bed in mm. f64 like Java's geometry, so the driver's integer
+/// truncations see the same values (tests/java_parity).
+pub type Point = [f64; 2];
 pub type Contour = Vec<Point>;
+
+/// Pixels per mm of the 500-DPI vector profile (`Util.dpi2dpmm(500)`).
+pub const PX_PER_MM: f64 = 500.0 / 25.4;
+/// Flatness of curve flattening in pixels: the LTT driver's
+/// `getRequiredCurvePrecision` with tangent curves.
+const CURVE_FLATNESS_PX: f64 = 0.2;
+/// Subdivision limit of Java's `FlatteningPathIterator`.
+const CURVE_LIMIT: u32 = 10;
 
 pub fn contours(project: &Project) -> Result<Vec<Contour>, String> {
     contours_with_fonts(project, crate::svg::fonts())
@@ -135,7 +145,7 @@ struct ClipShape {
     /// Closed rings in mm, last point equal to the first.
     rings: Vec<Contour>,
     even_odd: bool,
-    bbox: [f32; 4],
+    bbox: [f64; 4],
 }
 
 impl ClipShape {
@@ -143,7 +153,7 @@ impl ClipShape {
         let bbox = rings
             .iter()
             .flatten()
-            .fold([f32::MAX, f32::MAX, f32::MIN, f32::MIN], |b, p| {
+            .fold([f64::MAX, f64::MAX, f64::MIN, f64::MIN], |b, p| {
                 [
                     b[0].min(p[0]),
                     b[1].min(p[1]),
@@ -195,11 +205,6 @@ impl Clip {
 
 /// Positive when `p` lies left of the directed edge `a` → `b`.
 fn side(a: Point, b: Point, p: Point) -> f64 {
-    let (a, b, p) = (
-        [f64::from(a[0]), f64::from(a[1])],
-        [f64::from(b[0]), f64::from(b[1])],
-        [f64::from(p[0]), f64::from(p[1])],
-    );
     (b[0] - a[0]) * (p[1] - a[1]) - (p[0] - a[0]) * (b[1] - a[1])
 }
 
@@ -207,7 +212,7 @@ fn side(a: Point, b: Point, p: Point) -> f64 {
 /// lies strictly inside the segment. Parallel edges are not reported; midpoint tests
 /// decide those pieces.
 fn crossing(a: Point, b: Point, c: Point, d: Point) -> Option<f64> {
-    let p = |q: Point| (f64::from(q[0]), f64::from(q[1]));
+    let p = |q: Point| (q[0], q[1]);
     let ((ax, ay), (bx, by), (cx, cy), (dx, dy)) = (p(a), p(b), p(c), p(d));
     let r = (bx - ax, by - ay);
     let s = (dx - cx, dy - cy);
@@ -222,10 +227,7 @@ fn crossing(a: Point, b: Point, c: Point, d: Point) -> Option<f64> {
 }
 
 fn point_at(a: Point, b: Point, t: f64) -> Point {
-    [
-        (f64::from(a[0]) + (f64::from(b[0]) - f64::from(a[0])) * t) as f32,
-        (f64::from(a[1]) + (f64::from(b[1]) - f64::from(a[1])) * t) as f32,
-    ]
+    [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]
 }
 
 /// Work limit for clipping: contour segments times clip edges.
@@ -490,12 +492,17 @@ fn flatten_path(
     project: &Project,
     size: usvg::Size,
 ) -> Vec<(Contour, bool)> {
+    // Java: translate(x, y) · scale(document → mm), applied in double.
+    let (sx, sy) = (
+        f64::from(project.width_mm) / f64::from(size.width()),
+        f64::from(project.height_mm) / f64::from(size.height()),
+    );
     let map = |point: tiny_skia::Point| {
         let mut point = point;
         transform.map_point(&mut point);
         [
-            project.x_mm + point.x * project.width_mm / size.width(),
-            project.y_mm + point.y * project.height_mm / size.height(),
+            sx * f64::from(point.x) + f64::from(project.x_mm),
+            sy * f64::from(point.y) + f64::from(project.y_mm),
         ]
     };
     let mut subpaths = Vec::new();
@@ -520,16 +527,13 @@ fn flatten_path(
                 contour.push(current);
             }
             tiny_skia::PathSegment::QuadTo(a, end) => {
-                let a = map(a);
                 let end = map(end);
-                let c1 = mix(current, a, 2.0 / 3.0);
-                let c2 = mix(end, a, 2.0 / 3.0);
-                flatten([current, c1, c2, end], 0, &mut contour);
+                flatten_curve(&[current, map(a), end], &mut contour);
                 current = end;
             }
             tiny_skia::PathSegment::CubicTo(a, b, end) => {
                 let end = map(end);
-                flatten([current, map(a), map(b), end], 0, &mut contour);
+                flatten_curve(&[current, map(a), map(b), end], &mut contour);
                 current = end;
             }
             tiny_skia::PathSegment::Close => {
@@ -640,7 +644,7 @@ fn dash_contour(
         let mut t = 0.0;
         while length - t > remaining + epsilon {
             t += remaining;
-            let point = mix(a, b, (t / length) as f32);
+            let point = mix(a, b, t / length);
             if dash.last() != Some(&point) {
                 dash.push(point);
             }
@@ -666,32 +670,90 @@ fn dash_contour(
     Ok(())
 }
 
-fn mix(a: Point, b: Point, t: f32) -> Point {
+fn mix(a: Point, b: Point, t: f64) -> Point {
     [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]
 }
 
-fn flatten(p: [Point; 4], depth: u32, out: &mut Contour) {
-    // Control-polygon excess catches loops as well as curves along a straight chord.
-    let distance = |a: Point, b: Point| (a[0] - b[0]).hypot(a[1] - b[1]);
-    let excess =
-        distance(p[0], p[1]) + distance(p[1], p[2]) + distance(p[2], p[3]) - distance(p[0], p[3]);
-    let chord_distance = |a: Point| {
-        let dx = p[3][0] - p[0][0];
-        let dy = p[3][1] - p[0][1];
-        ((a[0] - p[0][0]) * dy - (a[1] - p[0][1]) * dx).abs() / dx.hypot(dy).max(1e-9)
+/// Flattens a quadratic (3 points) or cubic (4 points) Bézier curve given in
+/// mm like Java's `FlatteningPathIterator` on the 500-DPI laser shape: in
+/// pixels, flatness 0.2 px, at most 10 subdivision levels. Appends the end
+/// points of the line segments, the curve end last.
+fn flatten_curve(points: &[Point], out: &mut Contour) {
+    let mut coords: Vec<f64> = points
+        .iter()
+        .flat_map(|p| [p[0] * PX_PER_MM, p[1] * PX_PER_MM])
+        .collect();
+    let mut px = Vec::new();
+    subdivide_flat(&mut coords, 0, &mut px);
+    out.extend(px.into_iter().map(|[x, y]| [x / PX_PER_MM, y / PX_PER_MM]));
+}
+
+fn subdivide_flat(curve: &mut [f64], level: u32, out: &mut Vec<[f64; 2]>) {
+    let flatness_sq = if curve.len() == 6 {
+        // QuadCurve2D.getFlatnessSq
+        pt_seg_dist_sq(curve[0], curve[1], curve[4], curve[5], curve[2], curve[3])
+    } else {
+        // CubicCurve2D.getFlatnessSq
+        pt_seg_dist_sq(curve[0], curve[1], curve[6], curve[7], curve[2], curve[3]).max(
+            pt_seg_dist_sq(curve[0], curve[1], curve[6], curve[7], curve[4], curve[5]),
+        )
     };
-    if depth >= 16 || (excess <= 0.025 && chord_distance(p[1]).max(chord_distance(p[2])) <= 0.025) {
-        out.push(p[3]);
+    if level >= CURVE_LIMIT || flatness_sq < CURVE_FLATNESS_PX * CURVE_FLATNESS_PX {
+        let n = curve.len();
+        out.push([curve[n - 2], curve[n - 1]]);
         return;
     }
-    let a = mix(p[0], p[1], 0.5);
-    let b = mix(p[1], p[2], 0.5);
-    let c = mix(p[2], p[3], 0.5);
-    let d = mix(a, b, 0.5);
-    let e = mix(b, c, 0.5);
-    let f = mix(d, e, 0.5);
-    flatten([p[0], a, d, f], depth + 1, out);
-    flatten([f, e, c, p[3]], depth + 1, out);
+    let (mut left, mut right) = if curve.len() == 6 {
+        subdivide_quad(curve)
+    } else {
+        subdivide_cubic(curve)
+    };
+    subdivide_flat(&mut left, level + 1, out);
+    subdivide_flat(&mut right, level + 1, out);
+}
+
+/// `Line2D.ptSegDistSq`.
+fn pt_seg_dist_sq(x1: f64, y1: f64, x2: f64, y2: f64, px: f64, py: f64) -> f64 {
+    let (x2, y2) = (x2 - x1, y2 - y1);
+    let (mut px, mut py) = (px - x1, py - y1);
+    let mut dot = px * x2 + py * y2;
+    let projected_sq = if dot <= 0.0 {
+        0.0
+    } else {
+        px = x2 - px;
+        py = y2 - py;
+        dot = px * x2 + py * y2;
+        if dot <= 0.0 {
+            0.0
+        } else {
+            dot * dot / (x2 * x2 + y2 * y2)
+        }
+    };
+    (px * px + py * py - projected_sq).max(0.0)
+}
+
+/// `QuadCurve2D.subdivide`.
+fn subdivide_quad(c: &[f64]) -> (Vec<f64>, Vec<f64>) {
+    let (x1, y1, cx, cy, x2, y2) = (c[0], c[1], c[2], c[3], c[4], c[5]);
+    let (lx, ly) = ((x1 + cx) / 2.0, (y1 + cy) / 2.0);
+    let (rx, ry) = ((x2 + cx) / 2.0, (y2 + cy) / 2.0);
+    let (mx, my) = ((lx + rx) / 2.0, (ly + ry) / 2.0);
+    (vec![x1, y1, lx, ly, mx, my], vec![mx, my, rx, ry, x2, y2])
+}
+
+/// `CubicCurve2D.subdivide`.
+fn subdivide_cubic(c: &[f64]) -> (Vec<f64>, Vec<f64>) {
+    let (x1, y1, c1x, c1y, c2x, c2y, x2, y2) = (c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]);
+    let (ax, ay) = ((x1 + c1x) / 2.0, (y1 + c1y) / 2.0);
+    let (bx, by) = ((x2 + c2x) / 2.0, (y2 + c2y) / 2.0);
+    let (centre_x, centre_y) = ((c1x + c2x) / 2.0, (c1y + c2y) / 2.0);
+    let (d1x, d1y) = ((ax + centre_x) / 2.0, (ay + centre_y) / 2.0);
+    let (d2x, d2y) = ((bx + centre_x) / 2.0, (by + centre_y) / 2.0);
+    let (mx, my) = ((d1x + d2x) / 2.0, (d1y + d2y) / 2.0);
+    (
+        vec![x1, y1, ax, ay, d1x, d1y, mx, my],
+        vec![mx, my, d2x, d2y, bx, by, x2, y2],
+    )
 }
 
 #[cfg(test)]
@@ -713,14 +775,14 @@ mod dash_tests {
         })
     }
 
-    fn length(contour: &Contour) -> f32 {
+    fn length(contour: &Contour) -> f64 {
         contour
             .windows(2)
             .map(|w| (w[1][0] - w[0][0]).hypot(w[1][1] - w[0][1]))
             .sum()
     }
 
-    fn assert_dashes(paths: &[Contour], expected: &[(f32, f32)]) {
+    fn assert_dashes(paths: &[Contour], expected: &[(f64, f64)]) {
         assert_eq!(paths.len(), expected.len(), "{paths:?}");
         for (path, &(start, len)) in paths.iter().zip(expected) {
             assert!((path[0][0] - 10.0 - start).abs() < 1e-3, "{paths:?}");
@@ -891,10 +953,10 @@ mod tests {
         assert!(!glyph.is_empty());
         let (min_x, max_x) = glyph
             .iter()
-            .fold((f32::MAX, f32::MIN), |(a, b), p| (a.min(p[0]), b.max(p[0])));
+            .fold((f64::MAX, f64::MIN), |(a, b), p| (a.min(p[0]), b.max(p[0])));
         let (min_y, max_y) = glyph
             .iter()
-            .fold((f32::MAX, f32::MIN), |(a, b), p| (a.min(p[1]), b.max(p[1])));
+            .fold((f64::MAX, f64::MIN), |(a, b), p| (a.min(p[1]), b.max(p[1])));
         // A 20 mm "H" sits on the baseline at y = 30 mm, starting at x = 20 mm.
         assert!(min_x >= 20.0 && max_x < 40.0, "x {min_x}..{max_x}");
         assert!(max_y <= 30.5 && max_y > 29.0, "y max {max_y}");
@@ -952,7 +1014,7 @@ mod clip_tests {
         })
     }
 
-    fn length(contour: &Contour) -> f32 {
+    fn length(contour: &Contour) -> f64 {
         contour
             .windows(2)
             .map(|w| (w[1][0] - w[0][0]).hypot(w[1][1] - w[0][1]))

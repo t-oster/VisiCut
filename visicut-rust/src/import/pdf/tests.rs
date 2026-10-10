@@ -99,10 +99,16 @@ fn converts_vector_page_with_physical_size_and_colours() {
         .iter()
         .find(|c| c.len() == 5)
         .expect("closed rectangle");
-    let min_x = rect.iter().map(|p| p[0]).fold(f32::MAX, f32::min) - project.x_mm;
-    let max_y = rect.iter().map(|p| p[1]).fold(f32::MIN, f32::max) - project.y_mm;
-    assert!((min_x - 20.0 * MM_PER_PT).abs() < 0.01, "{min_x}");
-    assert!((max_y - (50.0 - 20.0 * MM_PER_PT)).abs() < 0.01, "{max_y}");
+    let min_x = rect.iter().map(|p| p[0]).fold(f64::MAX, f64::min) - f64::from(project.x_mm);
+    let max_y = rect.iter().map(|p| p[1]).fold(f64::MIN, f64::max) - f64::from(project.y_mm);
+    assert!(
+        (min_x - 20.0 * f64::from(MM_PER_PT)).abs() < 0.01,
+        "{min_x}"
+    );
+    assert!(
+        (max_y - (50.0 - 20.0 * f64::from(MM_PER_PT))).abs() < 0.01,
+        "{max_y}"
+    );
 }
 
 #[test]
