@@ -1,5 +1,6 @@
 mod devices_ui;
 mod jobs_ui;
+mod preview_ui;
 
 use eframe::egui::{self, Color32, Pos2, Rect, Sense, Stroke, Vec2};
 use std::path::{Path, PathBuf};
@@ -21,6 +22,7 @@ struct VisiCutRust {
     send_result: Option<std::sync::mpsc::Receiver<Result<Vec<String>, String>>>,
     devices: devices_ui::DeviceUi,
     jobs: jobs_ui::JobUi,
+    preview: preview_ui::PreviewUi,
     #[cfg(feature = "screenshot")]
     capture: Option<(PathBuf, u32)>,
 }
@@ -42,6 +44,7 @@ impl VisiCutRust {
             send_result: None,
             devices,
             jobs,
+            preview: Default::default(),
             #[cfg(feature = "screenshot")]
             capture: None,
         };
@@ -386,6 +389,7 @@ impl VisiCutRust {
                 Rect::from_min_max(Pos2::ZERO, Pos2::new(1.0, 1.0)),
                 Color32::WHITE,
             );
+            self.preview.overlay(&painter, motif);
             painter.rect_stroke(
                 motif,
                 0.0,
@@ -540,6 +544,23 @@ impl eframe::App for VisiCutRust {
                 });
         }
         self.jobs.windows(ctx, &mut self.status);
+        let send_enabled = self.send_result.is_none();
+        match self
+            .preview
+            .windows(ctx, &self.project, &mut self.status, send_enabled)
+        {
+            Some(preview_ui::Action::Send) => {
+                if let Err(e) = self.send_job() {
+                    self.status = e;
+                }
+            }
+            Some(preview_ui::Action::Export) => {
+                if let Err(e) = self.export_job() {
+                    self.status = e;
+                }
+            }
+            None => {}
+        }
         if let Some(devices_ui::Action::CalibrationPage(points)) =
             self.devices
                 .windows(ctx, &mut self.project, &mut self.status)
@@ -605,6 +626,8 @@ impl eframe::App for VisiCutRust {
                     if self.dirty {
                         ui.label("• geändert");
                     }
+                    ui.separator();
+                    self.preview.toolbar(ui, &self.project, &mut self.status);
                 });
                 ui.add_space(6.0);
             });
