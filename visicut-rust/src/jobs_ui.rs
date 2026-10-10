@@ -749,6 +749,13 @@ impl JobUi {
             }
         }
         if ui.button("Materialbibliothek …").clicked() {
+            self.open_library();
+        }
+    }
+
+    /// Opens the material library editor (also from the menu, Ctrl+Shift+M).
+    pub fn open_library(&mut self) {
+        if self.editor.is_none() {
             self.editor = Some(Editor {
                 draft: self.library.materials.clone(),
                 selected: 0,

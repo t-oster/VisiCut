@@ -505,8 +505,7 @@ impl VisiCutRust {
     /// Hook für die Materialbibliothek aus jobs_ui.rs: Dort fehlt noch eine
     /// öffentliche Methode zum Öffnen des Editors (z. B. `open_library()`).
     fn open_material_library(&mut self) {
-        self.status =
-            "Materialbibliothek über „Materialbibliothek …“ in der Seitenleiste öffnen".into();
+        self.jobs.open_library();
     }
 
     fn enabled(&self, command: Command) -> bool {
@@ -746,7 +745,7 @@ impl VisiCutRust {
         } else {
             match self.project.validate() {
                 Ok(()) => {
-                    ui.colored_label(OK, "✔ Motiv passt auf das Arbeitsbett");
+                    ui.colored_label(OK, "Motiv passt auf das Arbeitsbett");
                 }
                 Err(e) => {
                     ui.colored_label(WARNING, format!("⚠ {e}"));

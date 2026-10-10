@@ -31,11 +31,12 @@ notarisiert.
 
 ## Windows, Linux und GitHub Actions
 
-Der Rust-Kern und die egui-Entwicklungsoberfläche bauen auch auf Windows und
-Linux. Die vollständige AppKit-/SwiftUI-Oberfläche mit Einzelzuordnung und
-Zeitslider ist macOS-spezifisch. Windows/Linux verwenden den gemeinsamen
-SVG-/LTT-Kern und können gespeicherte `.vcr`-Projekte öffnen, haben aber noch
-nicht dieselben Bedienfunktionen.
+macOS hat eine native AppKit-/SwiftUI-Oberfläche, Windows und Linux eine
+egui-Oberfläche im üblichen Stil der Plattform (Kürzel mit Strg statt ⌘).
+Beide nutzen denselben Rust-Kern und bieten dieselben Funktionen:
+Menüleiste, Zoom und Lineale, Einzel- und Regelzuordnung mit Wertvorschlägen,
+Materialbibliothek, Parametersätze, Bitmap-Vektorisierung, Schnittreihenfolge,
+Vorschau mit Zeitschätzung und Zeitslider, Geräte, Drehachse und Kamera.
 
 Der Workflow **VisiCutRust releases** baut drei native Ziele auf GitHub-gehosteten Runnern:
 
@@ -134,7 +135,11 @@ lokal nach einem Build für die jeweilige Host-Architektur.
    Konturen mit eigenen Parametern ab; ohne Markierprofil startet die Leistung
    bei 0 % und muss vor der Vorbereitung eingestellt werden.
    **Schneiden** bearbeitet Pfadkonturen als Tangentialkurven und Kreisbefehle
-   wie der Java-Treiber, innere Konturen vor den äußeren. **Gravieren**
+   wie der Java-Treiber, innere Konturen vor den äußeren.
+   **Schnittreihenfolge** „Wie VisiCut“ (Standard, byte-gleich mit Java) oder
+   „Kürzeste Leerfahrten (experimentell)“: weiterhin innen zuerst, dann
+   jeweils der nächstgelegene Pfad; deutlich weniger Leerfahrt, aber am Gerät
+   noch nicht erprobt, daher mit Hinweis. **Gravieren**
    rastert mit 500 DPI und wählbarem Verfahren (Standard „Halbton
    aufgehellt“ wie im FAU-Profil, außerdem
    Floyd-Steinberg, Halbton, Geordnet, Mittelwert, Raster, Zufall, Schwellwert),
@@ -247,10 +252,9 @@ Die Auswahl im Inspektor bestimmt Ziel und verfügbare Funktionen.
   (`--port`, `--rotate 90`). Er liegt in `VisiCutRust.app/Contents/MacOS`
   bzw. neben der Windows-/Linux-Programmdatei.
 
-Windows und Linux bieten Geräteauswahl, -verwaltung, Drehachse, Kamerabild,
-Kalibrierung, Materialbibliothek, Regel-Zuordnung mit Vorlagen,
-Parametersätze, 3D-Gravur und Rasteroptionen in der egui-Oberfläche.
-Die native Menüleiste bietet Ablage, Bearbeiten, Darstellung und Job.
+Windows und Linux bieten dieselben Funktionen in der egui-Oberfläche mit
+Menüleiste Datei, Bearbeiten, Darstellung und Job.
+Die native macOS-Menüleiste bietet Ablage, Bearbeiten, Darstellung und Job.
 Die Oberfläche verwendet Systemschrift, Systemfarben, native Werkzeugleiste,
 Systemdialoge und automatische Hell-/Dunkel-Darstellung.
 
