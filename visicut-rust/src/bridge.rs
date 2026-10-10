@@ -110,15 +110,18 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
         "demo" | "import" => {
             let mut project = get_project(request)?;
             let mut warnings = Vec::new();
+            let mut steps = Vec::new();
             project.svg = if request["action"] == "demo" {
                 include_str!("../examples/demo.svg").into()
             } else {
                 let path = request["path"].as_str().ok_or("Dateipfad fehlt")?;
                 let imported = crate::import::read_file(std::path::Path::new(path))?;
                 warnings = imported.warnings;
+                steps = imported.steps;
                 imported.svg
             };
-            project.steps.clear();
+            // Every import replaces the mappings; PLF files bring their own.
+            project.steps = steps;
             let image = preview(&project.svg)?;
             project.width_mm = image["width_mm"].as_f64().unwrap() as f32;
             project.height_mm = image["height_mm"].as_f64().unwrap() as f32;

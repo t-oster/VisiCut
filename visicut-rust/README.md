@@ -194,8 +194,18 @@ Entwürfe können auch ohne Motiv oder mit einer noch unpassenden Position
 gesichert werden; das Senden prüft strengere Bedingungen.
 VisiCut-Projekte (`.plf`) werden importiert: Alle Teile erscheinen als
 benannte Gruppen an ihrer gespeicherten Position und Größe auf dem
-Arbeitsbett. Zuordnungen und Laser-Einstellungen der PLF-Datei werden nicht
-übernommen (Hinweis beim Öffnen); sie werden in VisiCutRust neu gewählt.
+Arbeitsbett. Die Zuordnungen der SVG-Teile werden als Bearbeitungsschritte
+übernommen: Bedingungen nach Farbe, Linien- und Füllfarbe, Linienstärke, Typ,
+ID und Gruppe (auch negiert), Rest und Ignorieren, Verfahren Schneiden,
+Markieren, Gravieren (mit Rasterverfahren, Invertierung und
+Helligkeitsverschiebung) und 3D-Gravieren. Laser-Einstellungen stehen nicht in
+der PLF-Datei, sondern lokal in VisiCut pro Gerät, Material und Stärke. Die
+übernommenen Schritte verwenden deshalb 20 % Leistung, 100 % Geschwindigkeit
+und einen Durchgang und sind vor dem Senden anzupassen. Nicht übernommen
+werden Konturversatz, Sortierungen außer nach Verschachtelung, Auflösungen
+außer 500 DPI sowie Zuordnungen von Teilen, die nicht SVG sind (PNG, JPG,
+DXF, G-Code, PDF); ihre Objekte werden dann nicht bearbeitet. Der Hinweis beim
+Öffnen nennt jeden dieser Fälle und jeden Filter, der unbekannt ist.
 Parametrische SVG (`.parametric.svg`, `.psvg`) werden mit den Standardwerten
 ihrer Parameter bzw. den in der PLF gespeicherten Werten erzeugt; der Hinweis
 nennt die verwendeten Werte. LaserScript-Dateien (`.ls`) laufen in einer

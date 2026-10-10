@@ -166,9 +166,11 @@ Wiederholung nach Fehlern.
   VisiCut-Einstellungen, beim FAU-Gerät „Autofokus machen, Druckluft an“).
 - SVG und `.vcr` werden unterstützt. Version 0.2 ergänzt eine native
   AppKit-/SwiftUI-Oberfläche und eine Auswahl der FAU-LTT-Materialprofile.
-  VisiCut-PLF-Dateien werden nur mit ihrer Geometrie übernommen (ohne
-  Zuordnungen und Laser-Einstellungen); parametrische SVG nur mit Standard-
-  bzw. gespeicherten Parameterwerten. Allgemeiner Materialbibliothek-Import
+  VisiCut-PLF-Dateien werden mit Geometrie und den Zuordnungen der SVG-Teile
+  übernommen (`src/import/plf/mappings.rs`). Die Laser-Einstellungen fehlen,
+  weil VisiCut sie lokal pro Gerät, Material und Stärke speichert; die Schritte
+  erhalten die Standardwerte. Parametrische SVG nur mit Standard- bzw.
+  gespeicherten Parameterwerten. Allgemeiner Materialbibliothek-Import
   und andere Gerätetreiber fehlen. Nur der LTT iLaser 4000
   (1000 × 600 mm, 4000 DPI) wird unterstützt; andere Geräte werden beim
   Import abgewiesen.
@@ -240,7 +242,16 @@ und Gravurschritt, mit nullbasierten SVG-Objektindizes und eigenen Parametern.
 Ein fehlendes oder leeres `steps` behält die bisherige Ganzmotiv-Bearbeitung bei.
 Leere Objektauswahlen innerhalb expliziter Schritte werden übersprungen;
 bei vollständig leerem Auftrag, doppelten oder ungültigen Objektindizes wird
-kein Job erzeugt. Ein neuer SVG-Import verwirft vorhandene Zuordnungen.
+kein Job erzeugt. Jeder Import ersetzt vorhandene Zuordnungen; eine PLF-Datei
+bringt ihre eigenen mit.
+
+PLF-Zuordnungen werden je Teil nach VisiCuts Regeln übersetzt: Filter werden
+gegen die Objekte des eigenen Teils ausgewertet. Die Bedingungen bleiben als
+Regel erhalten, wenn sie im ganzen Motiv genau diese Objekte treffen; sonst
+übernimmt der Import die Objekte fest. Der Rest eines Teils und die Ignorier-
+Einträge werden ebenfalls als feste Objektliste übernommen. Ein Teil ohne
+lesbare Zuordnung erhält keinen Schritt. Ohne übernommenen Schritt entsteht
+ein leerer Schritt, damit nicht das ganze Motiv bearbeitet wird.
 
 Der Zeitslider verwendet Bewegungen aus der Erzeugung der tatsächlichen
 LTT-Daten. Jeder Vektorschritt wird nach 500-DPI-Quantisierung erfasst,

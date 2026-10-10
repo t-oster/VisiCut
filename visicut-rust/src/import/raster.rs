@@ -91,7 +91,11 @@ fn from_bytes(data: Vec<u8>) -> Result<Imported, String> {
     ));
     base64::engine::general_purpose::STANDARD.encode_string(&bytes, &mut svg);
     svg.push_str("\"/></svg>");
-    Ok(Imported { svg, warnings })
+    Ok(Imported {
+        svg,
+        warnings,
+        ..Default::default()
+    })
 }
 
 /// Re-encodes photos as JPEG (quality 95) and everything else losslessly as PNG.

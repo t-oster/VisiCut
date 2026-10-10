@@ -104,6 +104,8 @@ impl VisiCutRust {
             let imported = import::read_file(path)?;
             let name = path.file_stem().unwrap_or_default().to_string_lossy();
             self.import(ctx, imported.svg, name.into())?;
+            // Every import replaces the mappings; PLF files bring their own.
+            self.project.steps = imported.steps;
             for warning in imported.warnings {
                 self.status = format!("{} · {warning}", self.status);
             }

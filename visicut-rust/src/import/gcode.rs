@@ -318,6 +318,7 @@ impl Converter {
         Ok(Imported {
             svg,
             warnings: self.warnings,
+            ..Default::default()
         })
     }
 }
