@@ -6,7 +6,7 @@ mod vector;
 
 use crate::{
     geometry,
-    project::{Operation, ParameterSet, Project},
+    project::{CutOrder, Operation, ParameterSet, Project},
     raster::{Raster, RasterSettings},
     timeline::{MotionKind, Program, Timeline},
 };
@@ -235,6 +235,14 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
              kollisionsfrei fahren können (inklusive Bremsweg)."
         ));
     }
+    if project.cut_order == CutOrder::ShortestTravel
+        && parts.iter().any(|p| !p.operation.is_raster())
+    {
+        warnings.push(
+            "Experimentelle Schnittreihenfolge „Kürzeste Leerfahrten“: weicht von VisiCut ab und ist am Gerät nicht erprobt; den ersten Auftrag beaufsichtigen"
+                .into(),
+        );
+    }
     // Finishing operations first, cutting last; one LTT file per operation
     // holding its steps in order.
     for operation in Operation::ALL {
@@ -247,18 +255,28 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
             .iter()
             .flat_map(|p| p.sets.iter().map(|s| overscan(operation, s.speed_percent)))
             .fold(0.0, f32::max);
-        let mut out = header(project, overscan, &name);
+        // The header holds the bounds of the actual content (LaserJob
+        // .getBoundingBox in Java), so it is written after the parts.
+        let mut body = Vec::new();
+        let mut bounds: Option<Bounds> = None;
+        let mut state = DeviceState::default();
         for (index, part) in group.iter().enumerate() {
-            steps.push(append_part(
-                &mut out,
+            let (step, part_bounds) = append_part(
+                &mut body,
+                &mut state,
+                &mut warnings,
                 project,
                 part,
                 index == 0,
                 &name,
                 &mut preview,
                 &mut timeline,
-            )?);
+            )?;
+            steps.push(step);
+            bounds = Some(bounds.map_or(part_bounds, |b| b.union(part_bounds)));
         }
+        let mut out = header(project, overscan, &name, bounds.unwrap_or_default());
+        out.extend(body);
         finish(&mut out)?;
         total_bytes = total_bytes.saturating_add(out.len());
         if total_bytes > 256 * 1024 * 1024 {
@@ -310,15 +328,51 @@ fn finish(out: &mut Vec<u8>) -> Result<(), String> {
     Ok(())
 }
 
+/// Speed and power last sent in a job; the Java driver resets them to -1 at
+/// the start of a job and sends each only when it changes.
+#[derive(Clone, Copy)]
+struct DeviceState {
+    speed: f32,
+    power: f32,
+}
+
+impl Default for DeviceState {
+    fn default() -> Self {
+        Self {
+            speed: -1.0,
+            power: -1.0,
+        }
+    }
+}
+
+impl DeviceState {
+    /// setCurrentProperty: speed, then power, each only when changed.
+    fn set(&mut self, out: &mut Vec<u8>, speed: f32, power: f32) {
+        if speed != self.speed {
+            out.extend([0x1b, 0x53]);
+            word(out, ((speed * 10.0) as i32).clamp(1, 1000) as u16);
+            self.speed = speed;
+        }
+        if power != self.power {
+            out.extend([0x1b, 0x4a]);
+            word(out, ((power * 10.0) as i32).clamp(1, 1000) as u16);
+            self.power = power;
+        }
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
 fn append_part(
     out: &mut Vec<u8>,
+    state: &mut DeviceState,
+    warnings: &mut Vec<String>,
     project: &Project,
     part: &Part,
     first_in_file: bool,
     name: &str,
     preview: &mut tiny_skia::Pixmap,
     timeline: &mut Timeline,
-) -> Result<PreparedStep, String> {
+) -> Result<(PreparedStep, Bounds), String> {
     if part.sets.iter().any(|s| s.power_percent < 0.1) {
         return Err("Leistung für einen LTT-Job muss mindestens 0,1 % sein".into());
     }
@@ -328,6 +382,7 @@ fn append_part(
     let axis = Axis::of(project);
     let mut estimated = 0.0;
     let description;
+    let bounds;
     match part.operation {
         Operation::Cut | Operation::Mark => {
             let paths = geometry::contours(&source)?;
@@ -347,15 +402,15 @@ fn append_part(
                     || !point[1].is_finite()
                     || point[0] < 0.0
                     || point[1] < 0.0
-                    || point[0] > BED_WIDTH as f32
-                    || point[1] > BED_HEIGHT as f32
+                    || point[0] > BED_WIDTH
+                    || point[1] > BED_HEIGHT
                 {
                     return Err(
                         "SVG-Pfad liegt außerhalb des tatsächlichen LTT-Arbeitsbetts".into(),
                     );
                 }
             }
-            let paths = order::inner_first(paths);
+
             out.extend([0x1b, 0x56]); // vector mode
             out.extend([0x1b, 0x45, 0, 0, 0, 0, 0, 0, 0]); // pulse mode off
             out.extend([0x1b, 0x4e, 1]); // colour code red
@@ -366,42 +421,88 @@ fn append_part(
             } else {
                 MotionKind::Cut
             };
-            let scale_y = axis.prescale();
-            let polylines: Vec<Vec<(f64, f64)>> = paths
+            // As in VisiCut's VectorProfile, the shapes are added once per
+            // LaserProperty and every pass is one more property; the optimizer
+            // then orders all of them together (see order::inner_first).
+            // VisiCut adds the material thickness to the focus of each property.
+            let mut keys = Vec::new();
+            for set in &part.sets {
+                for _ in 0..set.passes {
+                    keys.push(order::SetKey {
+                        power: set.power_percent,
+                        speed: set.speed_percent,
+                        focus: project.thickness_mm,
+                    });
+                }
+            }
+            // The shapes in pixels as VisiCut's ShapeConverter adds them.
+            let shapes: Vec<([f64; 2], Vec<[f64; 2]>)> = paths
                 .iter()
-                .map(|path| {
-                    path.iter()
-                        .map(|p| {
-                            (
-                                p[0] as f64 * RASTER_DPI / 25.4,
-                                p[1] as f64 * RASTER_DPI / 25.4 * scale_y,
-                            )
-                        })
-                        .collect()
+                .filter_map(|path| shape_converter(path))
+                .collect();
+            let elements: Vec<order::Element> = (0..keys.len())
+                .flat_map(|set| {
+                    shapes.iter().map(move |(start, moves)| order::Element {
+                        set,
+                        start: *start,
+                        moves: moves.clone(),
+                    })
                 })
                 .collect();
-            let (mut circles, mut curves) = (0, 0);
-            for set in &part.sets {
-                let mut program = Program::new(part.operation);
-                {
-                    let mut encoder =
-                        vector::Encoder::new(out, axis, -1.0, -1.0, Some(&mut program), kind);
-                    encoder.set_speed(set.speed_percent);
-                    encoder.set_power(set.power_percent);
-                    for pass in 0..set.passes {
-                        // Repeated passes share the geometry in the timeline.
-                        encoder.recording = pass == 0;
-                        for polyline in &polylines {
-                            encoder.move_to(polyline[0].0, polyline[0].1);
-                            encoder.polyline(&polyline[1..])?;
-                        }
+            // LaserJob.getBoundingBox: extent of the commands, px2mm per point.
+            bounds = Bounds::of_points(
+                shapes
+                    .iter()
+                    .flat_map(|(start, moves)| std::iter::once(start).chain(moves))
+                    .map(|p| [p[0] / RASTER_DPI * 25.4, p[1] / RASTER_DPI * 25.4]),
+            )
+            .ok_or("Keine Vektorpfade zum Bearbeiten")?;
+            let ordered = order::inner_first(elements, &keys);
+            let ordered = match project.cut_order {
+                CutOrder::VisiCut => ordered,
+                CutOrder::ShortestTravel => order::shortest_travel(ordered).unwrap_or_else(|o| {
+                    warnings.push(
+                        "Zu viele Vektorpfade für „Kürzeste Leerfahrten“; dieser Schritt nutzt die VisiCut-Reihenfolge"
+                            .into(),
+                    );
+                    o
+                }),
+            };
+            // Java prescales Y only while generating the commands.
+            let scale_y = axis.prescale();
+            let mut program = Program::new(part.operation);
+            let (circles, curves) = {
+                let mut encoder = vector::Encoder::new(
+                    out,
+                    axis,
+                    state.speed,
+                    state.power,
+                    Some(&mut program),
+                    kind,
+                );
+                let mut current: Option<order::SetKey> = None;
+                for element in &ordered {
+                    let key = keys[element.set];
+                    if !current.is_some_and(|c| c.same(key)) {
+                        encoder.set_speed(key.speed);
+                        encoder.set_power(key.power);
+                        current = Some(key);
                     }
-                    encoder.finish();
-                    circles += encoder.circles;
-                    curves += encoder.curves;
+                    let polyline: Vec<(f64, f64)> = element
+                        .moves
+                        .iter()
+                        .map(|p| (p[0], p[1] * scale_y))
+                        .collect();
+                    encoder.move_to(element.start[0], element.start[1] * scale_y);
+                    encoder.polyline(&polyline)?;
                 }
-                estimated += timeline.append(program, set.passes);
-            }
+                encoder.finish();
+                (state.speed, state.power) = (encoder.speed, encoder.power);
+                (encoder.circles, encoder.curves)
+            };
+            // Passes are interleaved per path like in Java, so the timeline
+            // holds the whole sequence once.
+            estimated += timeline.append(program, 1);
             let mut text = format!(
                 "{} Vektorpfade · {} Durchgänge",
                 paths.len(),
@@ -413,7 +514,16 @@ fn append_part(
             description = text;
         }
         Operation::Engrave | Operation::Engrave3d => {
-            let pixmap = render_raster(&source)?;
+            let (pixmap, area) = render_raster(&source, part.operation)?;
+            // RasterizableJobPart: start point plus image size, px2mm.
+            let mm = |px: i32| px as f64 / RASTER_DPI * 25.4;
+            bounds = Bounds {
+                min: [mm(area.x), mm(area.y)],
+                max: [
+                    mm(area.x + pixmap.width() as i32),
+                    mm(area.y + pixmap.height() as i32),
+                ],
+            };
             let raster = if part.operation == Operation::Engrave3d {
                 Raster::engrave_3d(&pixmap, &part.raster)
             } else {
@@ -421,7 +531,7 @@ fn append_part(
             };
             drop(pixmap);
             let color = operation_color(part.operation);
-            draw_raster(preview, &raster, color);
+            draw_raster(preview, project, &raster, area, color);
             let raster_png = raster_preview(&raster, color)?;
             if first_in_file && raster.bits_per_pixel == 8 {
                 // Job mode: eight bits per pixel ("engrave 3D").
@@ -430,22 +540,28 @@ fn append_part(
             }
             let mut lines = 0;
             for set in &part.sets {
-                out.extend([0x1b, 0x4e, 0]); // colour code black
-                settings(out, set.power_percent, set.speed_percent);
                 let mut program = Program::new(part.operation);
-                lines = raster_code(
-                    out,
+                let encoded;
+                (encoded, lines) = raster_code(
                     project,
+                    area,
                     part.operation,
                     &raster,
                     &part.raster,
                     set,
                     &mut program,
                 )?;
+                // Java adds one RasterPart per pass; each sends the colour
+                // code and its settings and starts again to the right.
+                for _ in 0..set.passes {
+                    out.extend([0x1b, 0x4e, 0]); // colour code black
+                    state.set(out, set.speed_percent, set.power_percent);
+                    out.extend(&encoded);
+                }
                 program.raster_preview_png = raster_png.clone();
                 program.raster_bounds_mm = Some([
-                    px(project.x_mm as f64) as f64 * 25.4 / RASTER_DPI,
-                    px(project.y_mm as f64) as f64 * 25.4 / RASTER_DPI,
+                    mm(area.x),
+                    mm(area.y),
                     raster.width as f64 * 25.4 / RASTER_DPI,
                     raster.height as f64 * 25.4 / RASTER_DPI,
                 ]);
@@ -471,7 +587,7 @@ fn append_part(
         }
     }
     let first = &part.sets[0];
-    Ok(PreparedStep {
+    let step = PreparedStep {
         operation: part.operation,
         name: name.to_string(),
         description,
@@ -480,7 +596,54 @@ fn append_part(
         speed_percent: first.speed_percent,
         passes: first.passes,
         parameter_sets: part.sets.len(),
-    })
+    };
+    Ok((step, bounds))
+}
+
+/// Area of the job content on the bed in mm, Y downwards.
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+struct Bounds {
+    min: [f64; 2],
+    max: [f64; 2],
+}
+
+impl Bounds {
+    fn of_points(points: impl IntoIterator<Item = [f64; 2]>) -> Option<Self> {
+        points.into_iter().fold(None, |b: Option<Self>, p| {
+            Some(b.map_or(Self { min: p, max: p }, |b| {
+                b.union(Self { min: p, max: p })
+            }))
+        })
+    }
+    fn union(self, other: Self) -> Self {
+        Self {
+            min: [self.min[0].min(other.min[0]), self.min[1].min(other.min[1])],
+            max: [self.max[0].max(other.max[0]), self.max[1].max(other.max[1])],
+        }
+    }
+}
+
+/// `ShapeConverter.addShape` for one contour in mm: points in 500-DPI pixels
+/// (`mm × dpi2dpmm(500)`), dropping line ends whose truncated pixel equals that
+/// of the last kept point. The closing segment of a closed contour (Java
+/// `SEG_CLOSE`) is always kept. `None` when no line remains.
+fn shape_converter(path: &[geometry::Point]) -> Option<([f64; 2], Vec<[f64; 2]>)> {
+    let px = |p: &geometry::Point| [p[0] * geometry::PX_PER_MM, p[1] * geometry::PX_PER_MM];
+    let start = px(path.first()?);
+    let closed = path.len() > 2 && path.first() == path.last();
+    let truncated = |p: [f64; 2]| (p[0] as i32, p[1] as i32);
+    let mut last = truncated(start);
+    let mut moves = Vec::new();
+    for (i, point) in path.iter().enumerate().skip(1) {
+        let point = px(point);
+        if closed && i == path.len() - 1 {
+            moves.push(start);
+        } else if truncated(point) != last {
+            moves.push(point);
+            last = truncated(point);
+        }
+    }
+    (!moves.is_empty()).then_some((start, moves))
 }
 
 fn operation_color(operation: Operation) -> [u8; 3] {
@@ -510,13 +673,26 @@ fn raster_pixmap(raster: &Raster, color: [u8; 3]) -> Result<tiny_skia::Pixmap, S
     Ok(mask)
 }
 
-fn draw_raster(preview: &mut tiny_skia::Pixmap, raster: &Raster, color: [u8; 3]) {
+fn draw_raster(
+    preview: &mut tiny_skia::Pixmap,
+    project: &Project,
+    raster: &Raster,
+    area: RasterArea,
+    color: [u8; 3],
+) {
     let Ok(mask) = raster_pixmap(raster, color) else {
         return;
     };
-    let transform = tiny_skia::Transform::from_scale(
-        preview.width() as f32 / mask.width() as f32,
-        preview.height() as f32 / mask.height() as f32,
+    // Raster pixels → mm on the bed → preview pixels of the motif.
+    let scale_x = preview.width() as f64 / project.width_mm as f64 / geometry::PX_PER_MM;
+    let scale_y = preview.height() as f64 / project.height_mm as f64 / geometry::PX_PER_MM;
+    let transform = tiny_skia::Transform::from_row(
+        scale_x as f32,
+        0.0,
+        0.0,
+        scale_y as f32,
+        ((area.x as f64 - project.x_mm as f64 * geometry::PX_PER_MM) * scale_x) as f32,
+        ((area.y as f64 - project.y_mm as f64 * geometry::PX_PER_MM) * scale_y) as f32,
     );
     preview.draw_pixmap(
         0,
@@ -567,8 +743,8 @@ fn draw_contours(
     for path in paths {
         let mut builder = tiny_skia::PathBuilder::new();
         for (i, point) in path.iter().enumerate() {
-            let x = (px(point[0] as f64) as f32 * 25.4 / RASTER_DPI as f32 - project.x_mm) * sx;
-            let y = (px(point[1] as f64) as f32 * 25.4 / RASTER_DPI as f32 - project.y_mm) * sy;
+            let x = (px(point[0]) as f32 * 25.4 / RASTER_DPI as f32 - project.x_mm) * sx;
+            let y = (px(point[1]) as f32 * 25.4 / RASTER_DPI as f32 - project.y_mm) * sy;
             if i == 0 {
                 builder.move_to(x, y);
             } else {
@@ -590,6 +766,7 @@ fn draw_contours(
     }
 }
 
+#[cfg(test)]
 fn settings(out: &mut Vec<u8>, power: f32, speed: f32) {
     out.extend([0x1b, 0x53]);
     word(out, (speed * 10.0).clamp(1.0, 1000.0) as u16);
@@ -597,7 +774,7 @@ fn settings(out: &mut Vec<u8>, power: f32, speed: f32) {
     word(out, (power * 10.0).clamp(1.0, 1000.0) as u16);
 }
 
-fn header(project: &Project, overscan: f32, name: &str) -> Vec<u8> {
+fn header(project: &Project, overscan: f32, name: &str, bounds: Bounds) -> Vec<u8> {
     let mut out = b"LTT\x1bv\x01\x01\x02\x1bF".to_vec();
     // Prefix is part of the actual controller name, within its 15-byte limit.
     out.push(name.len() as u8);
@@ -611,11 +788,11 @@ fn header(project: &Project, overscan: f32, name: &str) -> Vec<u8> {
         out.extend([0x1b, 0x4d, 0]); // XY, one bit per raster pixel
     }
     out.extend([0x1b, 0x6c]);
-    for margin in [0.0, overscan] {
-        let xmin = (project.x_mm - margin).max(0.0) as f64;
-        let xmax = (project.x_mm + project.width_mm + margin).min(BED_WIDTH as f32) as f64;
-        let ymin = project.y_mm as f64;
-        let ymax = (project.y_mm + project.height_mm) as f64;
+    // Content bounds, then with engrave overscan as in Java setBoundingBox.
+    for margin in [0.0, overscan as f64] {
+        let xmin = (bounds.min[0] - margin).max(0.0);
+        let xmax = (bounds.max[0] + margin).min(BED_WIDTH);
+        let [ymin, ymax] = [bounds.min[1], bounds.max[1]];
         dword(&mut out, raw(xmin));
         dword(&mut out, axis.bounding(ymin));
         dword(&mut out, raw(xmax) - raw(xmin));
@@ -639,26 +816,110 @@ fn header(project: &Project, overscan: f32, name: &str) -> Vec<u8> {
     out
 }
 
-fn render_raster(project: &Project) -> Result<tiny_skia::Pixmap, String> {
-    let width = px(project.width_mm as f64).max(1) as u32;
-    let height = px(project.height_mm as f64).max(1) as u32;
+/// Raster area of an engraving in 500-DPI pixels on the bed.
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct RasterArea {
+    x: i32,
+    y: i32,
+}
+
+/// Renders the objects like VisiCut's RasterProfile/Raster3dProfile: only
+/// their bounding box including strokes (`Helper.toRect`, which truncates x,
+/// y, width and height separately), on white, without anti-aliasing for
+/// engraving and with it for 3D engraving.
+fn render_raster(
+    project: &Project,
+    operation: Operation,
+) -> Result<(tiny_skia::Pixmap, RasterArea), String> {
+    let smooth = operation == Operation::Engrave3d;
+    let options = usvg::Options {
+        shape_rendering: if smooth {
+            usvg::ShapeRendering::GeometricPrecision
+        } else {
+            usvg::ShapeRendering::CrispEdges
+        },
+        text_rendering: if smooth {
+            usvg::TextRendering::GeometricPrecision
+        } else {
+            usvg::TextRendering::OptimizeSpeed
+        },
+        // Java2D draws images with nearest-neighbour interpolation.
+        image_rendering: usvg::ImageRendering::OptimizeSpeed,
+        ..crate::svg::options()
+    };
+    let tree = usvg::Tree::from_str(&project.svg, &options).map_err(|e| e.to_string())?;
+    let size = tree.size();
+    let sx = f64::from(project.width_mm) / f64::from(size.width());
+    let sy = f64::from(project.height_mm) / f64::from(size.height());
+    let f = geometry::PX_PER_MM;
+    let to_px_x = |u: f32| (sx * f64::from(u) + f64::from(project.x_mm)) * f;
+    let to_px_y = |u: f32| (sy * f64::from(u) + f64::from(project.y_mm)) * f;
+    let bbox = content_bounds(tree.root()).ok_or("SVG enthält keine dunklen Gravurpixel")?;
+    let (x0, y0) = (to_px_x(bbox.left()), to_px_y(bbox.top()));
+    let (x1, y1) = (to_px_x(bbox.right()), to_px_y(bbox.bottom()));
+    let area = RasterArea {
+        x: x0 as i32,
+        y: y0 as i32,
+    };
+    let (width, height) = ((x1 - x0) as i32, (y1 - y0) as i32);
+    if width <= 0 || height <= 0 {
+        return Err("SVG enthält keine dunklen Gravurpixel".into());
+    }
     if width as u64 * height as u64 > 40_000_000 {
         return Err("Gravur ist größer als 40 Millionen Pixel; Motiv verkleinern".into());
     }
-    let tree =
-        usvg::Tree::from_str(&project.svg, &crate::svg::options()).map_err(|e| e.to_string())?;
-    let mut pixmap =
-        tiny_skia::Pixmap::new(width, height).ok_or("Gravur konnte nicht gerendert werden")?;
+    let mut pixmap = tiny_skia::Pixmap::new(width as u32, height as u32)
+        .ok_or("Gravur konnte nicht gerendert werden")?;
     pixmap.fill(tiny_skia::Color::WHITE);
+    // translate(-bb) · mm2laserPx · (translate(x, y) · scale(document → mm))
     resvg::render(
         &tree,
-        tiny_skia::Transform::from_scale(
-            width as f32 / tree.size().width(),
-            height as f32 / tree.size().height(),
+        tiny_skia::Transform::from_row(
+            (sx * f) as f32,
+            0.0,
+            0.0,
+            (sy * f) as f32,
+            (f64::from(project.x_mm) * f - f64::from(area.x)) as f32,
+            (f64::from(project.y_mm) * f - f64::from(area.y)) as f32,
         ),
         &mut pixmap.as_mut(),
     );
-    Ok(pixmap)
+    Ok((pixmap, area))
+}
+
+/// Union of the objects' bounding boxes with strokes in document units, like
+/// VisiCut's GraphicSet.getBoundingBox. usvg counts the position of an image
+/// twice in its bounding box, so images use their size and transform.
+fn content_bounds(group: &usvg::Group) -> Option<tiny_skia::Rect> {
+    let mut bounds: Option<tiny_skia::Rect> = None;
+    let mut add = |rect: Option<tiny_skia::Rect>| {
+        if let Some(rect) = rect {
+            bounds = Some(match bounds {
+                Some(b) => tiny_skia::Rect::from_ltrb(
+                    b.left().min(rect.left()),
+                    b.top().min(rect.top()),
+                    b.right().max(rect.right()),
+                    b.bottom().max(rect.bottom()),
+                )
+                .unwrap_or(b),
+                None => rect,
+            });
+        }
+    };
+    for node in group.children() {
+        match node {
+            usvg::Node::Group(group) => add(content_bounds(group)),
+            usvg::Node::Image(image) => add(tiny_skia::Rect::from_xywh(
+                0.0,
+                0.0,
+                image.size().width(),
+                image.size().height(),
+            )
+            .and_then(|r| r.transform(image.abs_transform()))),
+            node => add(Some(node.abs_stroke_bounding_box())),
+        }
+    }
+    bounds
 }
 
 /// getEngraveShiftPixels: line offset in raster pixels for the given speed.
@@ -675,15 +936,16 @@ fn engrave_shift_pixels(speed: f32) -> f64 {
     value as f64 * RASTER_DPI / MACHINE_DPI + 0.5
 }
 
+/// The raster lines of one RasterPart and their count.
 fn raster_code(
-    out: &mut Vec<u8>,
     project: &Project,
+    area: RasterArea,
     operation: Operation,
     raster: &Raster,
     options: &RasterSettings,
     set: &ParameterSet,
     program: &mut Program,
-) -> Result<usize, String> {
+) -> Result<(Vec<u8>, usize), String> {
     let speed = set.speed_percent;
     let offset = engrave_shift_pixels(speed);
     let per_byte = (8 / raster.bits_per_pixel) as i32;
@@ -691,8 +953,7 @@ fn raster_code(
     // 1-bit rows this equals the Java driver's bit shift.
     let shift = (-offset) as usize * raster.bits_per_pixel as usize;
     let spare = offset.abs().ceil() as i32;
-    let origin_x = px(project.x_mm as f64);
-    let origin_y = px(project.y_mm as f64);
+    let (origin_x, origin_y) = (area.x, area.y);
     let max_x = px(BED_WIDTH);
     let overscan_bytes = (px(overscan(operation, speed) as f64) + per_byte - 1) / per_byte;
     let axis = Axis::of(project);
@@ -767,10 +1028,7 @@ fn raster_code(
     if encoded.len().saturating_mul(set.passes as usize) > 256 * 1024 * 1024 {
         return Err("Gravurjob ist größer als 256 MB".into());
     }
-    for _ in 0..set.passes {
-        out.extend(&encoded);
-    }
-    Ok(count)
+    Ok((encoded, count))
 }
 
 /// ByteArrayList.leftShiftBits: shift towards the start, filling with zeros.
@@ -934,6 +1192,79 @@ mod tests {
         }
     }
 
+    #[test]
+    fn parameter_sets_of_a_cut_step_share_one_cutting_order() {
+        use crate::project::JobStep;
+        let mut cut = JobStep {
+            objects: vec![0, 1],
+            power_percent: 50.0,
+            speed_percent: 8.0,
+            ..JobStep::new(Operation::Cut)
+        };
+        cut.additional.push(ParameterSet {
+            power_percent: 20.0,
+            speed_percent: 30.0,
+            passes: 1,
+        });
+        let project = Project {
+            width_mm: 30.0,
+            height_mm: 20.0,
+            svg: r#"<svg xmlns="http://www.w3.org/2000/svg" width="30mm" height="20mm" viewBox="0 0 30 20"><rect x="1" y="1" width="28" height="18" fill="none" stroke="red"/><rect x="5" y="5" width="8" height="5" fill="none" stroke="red"/></svg>"#.into(),
+            steps: vec![cut],
+            ..Default::default()
+        };
+        let job = prepare(&project).unwrap();
+        // The inner rectangle is cut first, with both sets, then the outline with both sets.
+        let speeds: Vec<u16> = job.jobs[0]
+            .bytes
+            .windows(4)
+            .filter(|w| w[..2] == [0x1b, 0x53])
+            .map(|w| u16::from_be_bytes([w[2], w[3]]))
+            .collect();
+        // (50 %, 8 %) comes first because of the HashMap order of the Java
+        // properties (bucket 4 before 12), not because it is the first set.
+        assert_eq!(speeds, vec![80, 300, 80, 300]);
+        assert_eq!(job.timeline.programs.len(), 1);
+        assert_eq!(job.steps[0].parameter_sets, 2);
+    }
+
+    #[test]
+    fn shortest_travel_is_opt_in_and_reduces_time() {
+        // Parts at alternating heights: the inner-first sweep zigzags across.
+        let mut body = String::new();
+        for i in 0..6 {
+            let (x, y) = (5 + i * 90, if i % 2 == 0 { 5 } else { 150 });
+            body += &format!(
+                r#"<rect x="{x}" y="{y}" width="40" height="40" fill="none" stroke="red"/><circle cx="{}" cy="{}" r="8" fill="none" stroke="red"/>"#,
+                x + 20,
+                y + 20
+            );
+        }
+        let visicut = Project {
+            width_mm: 600.0,
+            height_mm: 200.0,
+            svg: format!(
+                r#"<svg xmlns="http://www.w3.org/2000/svg" width="600mm" height="200mm" viewBox="0 0 600 200">{body}</svg>"#
+            ),
+            ..Default::default()
+        };
+        let default_job = prepare(&visicut).unwrap();
+        assert!(default_job.warnings.is_empty());
+        let nearest = Project {
+            cut_order: CutOrder::ShortestTravel,
+            ..visicut
+        };
+        let job = prepare(&nearest).unwrap();
+        assert!(job.warnings[0].contains("Experimentelle Schnittreihenfolge"));
+        assert!(
+            job.estimated_seconds < default_job.estimated_seconds * 0.9,
+            "{} vs {}",
+            job.estimated_seconds,
+            default_job.estimated_seconds
+        );
+        assert_framing(&job.jobs[0].bytes);
+    }
+
     fn three_modes() -> Project {
         let mut p = mixed();
         p.name = "Muster mit sehr langem Namen äöü".into();
@@ -975,7 +1306,9 @@ mod tests {
                 .any(|b| b == [0x1b, 0x4a, 0, 50])
         );
         assert_eq!(job.timeline.programs.len(), 3);
-        assert_eq!(job.timeline.runs.len(), 5);
+        // Engrave, mark and cut once each: vector passes are interleaved per
+        // path like in Java and belong to the single run of their program.
+        assert_eq!(job.timeline.runs.len(), 3);
         assert_eq!(job.timeline.programs[1].operation, Operation::Mark);
         assert!(
             job.timeline.programs[1]
@@ -1089,8 +1422,11 @@ mod tests {
         p.speed_percent = 20.0;
         let faster = prepare(&p).unwrap().estimated_seconds;
         assert!((faster - expected(67.7354)).abs() < 0.003, "{faster}");
+        // Java joins the line and its second pass into one path there and
+        // back: no travel in between, the reversal is a corner.
         p.passes = 2;
-        assert!(prepare(&p).unwrap().estimated_seconds > faster * 2.0); // return travel
+        let twice = prepare(&p).unwrap().estimated_seconds;
+        assert!((twice - 2.0 * faster).abs() < 0.003, "{twice}");
     }
 
     #[test]
@@ -1228,12 +1564,17 @@ mod tests {
         assert!(has(bytes, &[0x1b, 0x61, 0x15, 0x1b, 0x4d, 0x10]));
         // Radius 50 mm in 0.01 mm.
         assert!(has(bytes, &[0x1b, 0x52, 0x13, 0x88]));
-        // Bounding box y = 10 mm and height 60 mm on a 314.16 mm circumference.
+        // Bounding box of the contours; Y as rotation steps on a 314.16 mm
+        // circumference instead of 4000-DPI machine units.
+        let b =
+            Bounds::of_points(geometry::contours(&p).unwrap().iter().flatten().copied()).unwrap();
+        let axis = Axis::of(&p);
+        assert!(axis.bounding(b.max[1]) < raw(b.max[1]));
         let mut bbox = vec![0x1b, 0x6c];
-        dword(&mut bbox, raw(10.0));
-        dword(&mut bbox, 204);
-        dword(&mut bbox, raw(110.0) - raw(10.0));
-        dword(&mut bbox, 1426 - 204);
+        dword(&mut bbox, raw(b.min[0]));
+        dword(&mut bbox, axis.bounding(b.min[1]));
+        dword(&mut bbox, raw(b.max[0]) - raw(b.min[0]));
+        dword(&mut bbox, axis.bounding(b.max[1]) - axis.bounding(b.min[1]));
         assert!(has(bytes, &bbox));
         let mut absolute = Vec::new();
         pair(&mut absolute, Axis::of(&p), 100, 500);

@@ -318,6 +318,7 @@ impl Converter {
         Ok(Imported {
             svg,
             warnings: self.warnings,
+            ..Default::default()
         })
     }
 }
@@ -354,11 +355,11 @@ mod tests {
         (preview.width_mm, preview.height_mm)
     }
 
-    fn near(a: [f32; 2], b: [f32; 2]) -> bool {
+    fn near(a: [f64; 2], b: [f64; 2]) -> bool {
         (a[0] - b[0]).abs() < 0.01 && (a[1] - b[1]).abs() < 0.01
     }
 
-    fn assert_points(contour: &Contour, expected: &[[f32; 2]]) {
+    fn assert_points(contour: &Contour, expected: &[[f64; 2]]) {
         for point in expected {
             assert!(
                 contour.iter().any(|p| near(*p, *point)),
@@ -367,22 +368,22 @@ mod tests {
         }
     }
 
-    fn assert_extent(contour: &Contour, min: [f32; 2], max: [f32; 2]) {
+    fn assert_extent(contour: &Contour, min: [f64; 2], max: [f64; 2]) {
         let low = contour
             .iter()
-            .fold([f32::MAX; 2], |a, p| [a[0].min(p[0]), a[1].min(p[1])]);
+            .fold([f64::MAX; 2], |a, p| [a[0].min(p[0]), a[1].min(p[1])]);
         let high = contour
             .iter()
-            .fold([f32::MIN; 2], |a, p| [a[0].max(p[0]), a[1].max(p[1])]);
+            .fold([f64::MIN; 2], |a, p| [a[0].max(p[0]), a[1].max(p[1])]);
         let close =
-            |a: [f32; 2], b: [f32; 2]| (a[0] - b[0]).abs() < 0.02 && (a[1] - b[1]).abs() < 0.02;
+            |a: [f64; 2], b: [f64; 2]| (a[0] - b[0]).abs() < 0.02 && (a[1] - b[1]).abs() < 0.02;
         assert!(
             close(low, min) && close(high, max),
             "extent {low:?}..{high:?}"
         );
     }
 
-    fn assert_on_circle(contour: &Contour, center: [f32; 2], radius: f32) {
+    fn assert_on_circle(contour: &Contour, center: [f64; 2], radius: f64) {
         for p in contour {
             let distance = (p[0] - center[0]).hypot(p[1] - center[1]);
             assert!((distance - radius).abs() < 0.05, "{p:?} off circle");

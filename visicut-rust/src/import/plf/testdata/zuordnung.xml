@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<com.t_oster.visicut.model.mapping.MappingSet serialization="custom">
+  <unserializable-parents/>
+  <linked-list>
+    <default/>
+    <int>2</int>
+    <mapping>
+      <a class="filters" serialization="custom">
+        <unserializable-parents/>
+        <linked-list>
+          <default/>
+          <int>1</int>
+          <filter>
+            <inverted>false</inverted>
+            <attribute>Stroke Color</attribute>
+            <value class="awt-color">
+              <red>255</red>
+              <green>0</green>
+              <blue>0</blue>
+              <alpha>255</alpha>
+            </value>
+          </filter>
+        </linked-list>
+      </a>
+      <b class="vectorProfile">
+        <DPI>500.0</DPI>
+        <description>Schneiden</description>
+        <name>cut</name>
+        <orderStrategy>INNER_FIRST</orderStrategy>
+        <useOutline>false</useOutline>
+        <isCut>true</isCut>
+        <width>1.0</width>
+      </b>
+    </mapping>
+    <mapping>
+      <a class="filters" serialization="custom">
+        <unserializable-parents/>
+        <linked-list>
+          <default/>
+          <int>1</int>
+          <filter>
+            <inverted>false</inverted>
+            <attribute>Gravur-Ebene</attribute>
+            <value class="string">Gravur</value>
+          </filter>
+        </linked-list>
+      </a>
+      <b class="vectorProfile">
+        <DPI>500.0</DPI>
+        <description>Markieren</description>
+        <name>mark</name>
+        <orderStrategy>INNER_FIRST</orderStrategy>
+        <useOutline>false</useOutline>
+        <isCut>false</isCut>
+        <width>0.3</width>
+      </b>
+    </mapping>
+  </linked-list>
+  <name>Minimal</name>
+</com.t_oster.visicut.model.mapping.MappingSet>

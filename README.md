@@ -47,8 +47,8 @@ The tag must match the version in `visicut-rust/Cargo.toml`.
 To publish the current version from a clean checkout of `master`:
 
 ```sh
-git tag v0.3.0
-git push origin v0.3.0
+git tag v0.5.0
+git push origin v0.5.0
 ```
 
 For subsequent releases, update `Cargo.toml` and `Cargo.lock`, commit and push,

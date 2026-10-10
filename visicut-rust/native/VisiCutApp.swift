@@ -82,12 +82,23 @@ struct Project: Codable, Equatable {
     var rotary_diameter_mm: Double
     var raster: RasterSettings
     var ignore_filters: [[Filter]]
+    /// Rust serialisiert das Feld immer und setzt beim Laden älterer Dateien den Standard.
+    var cut_order: CutOrder
 
     var hasArtwork: Bool { !svg.isEmpty }
     var fitsBed: Bool {
         x_mm.isFinite && y_mm.isFinite && width_mm.isFinite && height_mm.isFinite &&
         x_mm >= 0 && y_mm >= 0 && width_mm > 0 && height_mm > 0 &&
         x_mm + width_mm <= bed_width_mm + 0.001 && y_mm + height_mm <= bed_height_mm + 0.001
+    }
+}
+
+/// Reihenfolge der Vektorpfade (visicut_core::project::CutOrder).
+enum CutOrder: String, Codable, CaseIterable, Identifiable {
+    case visiCut = "VisiCut", shortestTravel = "ShortestTravel"
+    var id: String { rawValue }
+    var title: String {
+        switch self { case .visiCut: return "Wie VisiCut"; case .shortestTravel: return "Kürzeste Leerfahrten (experimentell)" }
     }
 }
 
@@ -188,6 +199,7 @@ final class AppModel: ObservableObject {
     @Published var materialsCustom = false
     @Published var mapping: MappingInfo?
     @Published var mappingError: String?
+    @Published var vectorizeSource: BitmapSource?
     var materialSource = ""
     var mappingScheduled = false
     var projectURL: URL?
@@ -622,6 +634,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
         file.addItem(menuItem("Neues Projekt", action: #selector(newProject), key: "n"))
         file.addItem(menuItem("Öffnen …", action: #selector(openFile), key: "o"))
         file.addItem(menuItem("Beispiel öffnen", action: #selector(openDemo)))
+        file.addItem(menuItem("Bitmap vektorisieren …", action: #selector(vectorizeBitmap)))
         file.addItem(.separator())
         file.addItem(menuItem("Sichern", action: #selector(saveProject), key: "s"))
         file.addItem(menuItem("Sichern unter …", action: #selector(saveAs), key: "s", modifiers: [.command, .shift]))
@@ -665,6 +678,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
         case #selector(toggleCamera): item.state = model.showCamera ? .on : .off; return !model.device.camera_url.isEmpty
         case #selector(refreshCamera): return model.showCamera && !model.cameraLoading
         case #selector(openFile), #selector(openDemo), #selector(newProject), #selector(showSettings): return !model.busy
+        case #selector(vectorizeBitmap): return !model.busy && !model.showJobPreview && model.vectorizeSource == nil
         default: return true
         }
     }
@@ -675,6 +689,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
     @objc func newProject() { showWorkspace(); model.newProject() }
     @objc func openFile() { showWorkspace(); model.chooseFile() }
     @objc func openDemo() { showWorkspace(); model.demo() }
+    @objc func vectorizeBitmap() { showWorkspace(); model.chooseBitmap() }
     @objc func saveProject() { model.save() }
     @objc func saveAs() { model.save(asCopy: true) }
     @objc func exportJob() { model.export() }
@@ -799,6 +814,7 @@ struct Workspace: View {
                                 .foregroundStyle(.secondary).multilineTextAlignment(.center)
                             Button("SVG importieren …") { model.chooseFile() }.buttonStyle(.borderedProminent)
                             Button("Beispiel öffnen") { model.demo() }.buttonStyle(.link)
+                            Button("Bitmap vektorisieren …") { model.chooseBitmap() }.buttonStyle(.link)
                         }.padding(40)
                     }
                 }
@@ -811,6 +827,7 @@ struct Workspace: View {
                 }.padding(.horizontal, 16).padding(.vertical, 10)
             }
             .frame(minWidth: 560, minHeight: 640)
+            .sheet(item: $model.vectorizeSource) { source in VectorizeSheet(model: model, source: source) }
         }
         .navigationTitle(model.project.name)
         .sheet(isPresented: $model.showJobPreview) { JobPreview(model: model) }
@@ -906,6 +923,19 @@ struct Inspector: View {
                 }
                 if model.assignmentMode != .whole {
                     Text("Ein LTT-Auftrag je Verfahren: Engrav → Eng3D → Mark → Cut").font(.caption).foregroundStyle(.secondary)
+                }
+                LabeledContent("Schnittreihenfolge") {
+                    NativePopup(options: CutOrder.allCases.map { PopupOption($0.rawValue, $0.title) },
+                        selection: Binding(get: { model.project.cut_order.rawValue }, set: {
+                            if let order = CutOrder(rawValue: $0) { model.project.cut_order = order }
+                        }), identifier: "cutOrderPicker")
+                        .frame(width: 180)
+                }
+                if model.project.cut_order == .shortestTravel {
+                    Text("Experimentell: Die Reihenfolge der Schnitt- und Markierpfade weicht von VisiCut ab und ist am Gerät nicht erprobt. Den Auftrag am Gerät beaufsichtigen.")
+                        .font(.caption).foregroundStyle(.orange)
+                } else {
+                    Text("Innere Konturen zuerst, Reihenfolge wie VisiCut.").font(.caption).foregroundStyle(.secondary)
                 }
             }
             if model.assignmentMode == .rules { RulesSection(model: model) }
@@ -1427,6 +1457,23 @@ func runUITest(_ model: AppModel) {
               loaded.project.operation == .cut, loaded.project.power_percent == 100,
               abs(loaded.project.speed_percent - model.project.speed_percent) < 0.001,
               loaded.preview != nil else { throw CoreError("Rust lädt Materialauswahl nicht korrekt") }
+        guard loaded.project.cut_order == .visiCut else { throw CoreError("Standard-Schnittreihenfolge nicht VisiCut") }
+        model.project.cut_order = .shortestTravel
+        guard model.save() else { throw CoreError("Schnittreihenfolge konnte nicht gesichert werden") }
+        let ordered: ProjectResponse = try RustCore.decode("load", path: temporary.path)
+        let orderedJob: PreparedJob = try RustCore.decode("prepare", project: model.project)
+        guard ordered.project.cut_order == .shortestTravel,
+              orderedJob.warnings.contains(where: { $0.contains("Kürzeste Leerfahrten") })
+        else { throw CoreError("Schnittreihenfolge geht beim Sichern/Laden verloren") }
+        // Ältere Projektdateien ohne das Feld laden mit der VisiCut-Reihenfolge.
+        guard var legacy = try JSONSerialization.jsonObject(with: Data(contentsOf: temporary)) as? [String: Any]
+        else { throw CoreError("Gesichertes Projekt ist kein JSON-Objekt") }
+        legacy.removeValue(forKey: "cut_order")
+        try JSONSerialization.data(withJSONObject: legacy).write(to: temporary, options: .atomic)
+        let legacyLoaded: ProjectResponse = try RustCore.decode("load", path: temporary.path)
+        guard legacyLoaded.project.cut_order == .visiCut else { throw CoreError("Ältere Projektdatei ohne Schnittreihenfolge nicht geladen") }
+        model.project.cut_order = .visiCut
+        try testVectorize(model)
         model.projectURL = nil
         let oldWidth = model.project.width_mm, oldHeight = model.project.height_mm
         model.changeWidth(oldWidth * 2)
@@ -1471,7 +1518,7 @@ func runUITest(_ model: AppModel) {
         model.jobImage = nil
         model.previewJob()
         model.dirty = false
-        print("Native UI state tests passed: material, thickness, operation, presets, proportional scaling, native save / Rust reload, Rust export, object assignments, mixed job preview and estimate, stale preview invalidation, devices, rotary axis, camera background and calibration, rule mapping, 3D engraving, dithering, parameter sets, material library")
+        print("Native UI state tests passed: material, thickness, operation, presets, proportional scaling, native save / Rust reload, cut order and legacy files, bitmap vectorization, Rust export, object assignments, mixed job preview and estimate, stale preview invalidation, devices, rotary axis, camera background and calibration, rule mapping, 3D engraving, dithering, parameter sets, material library")
     } catch {
         fputs("Native UI tests failed: \(error)\n", stderr)
         exit(1)

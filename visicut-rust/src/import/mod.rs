@@ -4,6 +4,7 @@
 //! physical size (width/height in mm) matches the source file, like VisiCut's
 //! Java `GraphicFileImporter` does by converting to its own graphic model.
 mod dxf;
+mod eps;
 mod gcode;
 mod pdf;
 mod plf;

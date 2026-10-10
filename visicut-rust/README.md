@@ -7,7 +7,7 @@ Erster Ziel-Lasercutter: LTT iLaser 4000 des FAU FabLabs.
 ## Starten
 
 Die lokal gebaute App befindet sich in `dist/VisiCutRust.app`.
-Version 0.3.0 benötigt macOS 14 oder neuer, weder Java noch Maven.
+Version 0.5.0 benötigt macOS 14 oder neuer, weder Java noch Maven.
 Die macOS-App wird nur für Apple Silicon
 gebaut und veröffentlicht; Intel-Macs werden nicht unterstützt.
 
@@ -93,11 +93,13 @@ lokal nach einem Build für die jeweilige Host-Architektur.
    Linienfarben und Linienstärken, Text wird als Glyphenkontur übernommen,
    Rasterbilder werden eingebettet; die Größe stammt aus der Crop-/MediaBox
    (1 pt = 25,4/72 mm). Haarlinien (Linienstärke 0) erhalten 0,1 mm.
-   Verschlüsselte PDFs werden mit Hinweis abgelehnt. **EPS/PS** wird über ein
-   installiertes Ghostscript (`gs`, unter Windows `gswin64c`) in PDF
-   umgewandelt und dann genauso importiert; die Größe folgt der BoundingBox.
-   Ohne Ghostscript erscheint ein Hinweis, die Datei als SVG oder PDF zu
-   speichern.
+   Verschlüsselte PDFs werden mit Hinweis abgelehnt. **EPS/PS** wird ohne
+   Zusatzprogramm von einem eingebauten PostScript-Interpreter gelesen (Pfade,
+   Farben, Linienstärken, Prozeduren und Schleifen; die Größe folgt der
+   BoundingBox). Text, Schriften, Bilder und andere Operatoren, die er nicht
+   kennt, übergibt er an ein installiertes Ghostscript (`gs`, unter Windows
+   `gswin64c`). Ohne Ghostscript erscheint ein Hinweis mit dem betroffenen
+   Operator; dann hilft nur, die Datei als SVG oder PDF zu speichern.
    DXF-Dateien (ASCII oder binär) werden in Millimetern übernommen
    (`$INSUNITS`, ohne Angabe Millimeter); DXF-Ebenen und -Farben bleiben als
    Ebenen und Linienfarben für die Zuordnung erhalten.
@@ -192,8 +194,18 @@ Entwürfe können auch ohne Motiv oder mit einer noch unpassenden Position
 gesichert werden; das Senden prüft strengere Bedingungen.
 VisiCut-Projekte (`.plf`) werden importiert: Alle Teile erscheinen als
 benannte Gruppen an ihrer gespeicherten Position und Größe auf dem
-Arbeitsbett. Zuordnungen und Laser-Einstellungen der PLF-Datei werden nicht
-übernommen (Hinweis beim Öffnen); sie werden in VisiCutRust neu gewählt.
+Arbeitsbett. Die Zuordnungen der SVG-Teile werden als Bearbeitungsschritte
+übernommen: Bedingungen nach Farbe, Linien- und Füllfarbe, Linienstärke, Typ,
+ID und Gruppe (auch negiert), Rest und Ignorieren, Verfahren Schneiden,
+Markieren, Gravieren (mit Rasterverfahren, Invertierung und
+Helligkeitsverschiebung) und 3D-Gravieren. Laser-Einstellungen stehen nicht in
+der PLF-Datei, sondern lokal in VisiCut pro Gerät, Material und Stärke. Die
+übernommenen Schritte verwenden deshalb 20 % Leistung, 100 % Geschwindigkeit
+und einen Durchgang und sind vor dem Senden anzupassen. Nicht übernommen
+werden Konturversatz, Sortierungen außer nach Verschachtelung, Auflösungen
+außer 500 DPI sowie Zuordnungen von Teilen, die nicht SVG sind (PNG, JPG,
+DXF, G-Code, PDF); ihre Objekte werden dann nicht bearbeitet. Der Hinweis beim
+Öffnen nennt jeden dieser Fälle und jeden Filter, der unbekannt ist.
 Parametrische SVG (`.parametric.svg`, `.psvg`) werden mit den Standardwerten
 ihrer Parameter bzw. den in der PLF gespeicherten Werten erzeugt; der Hinweis
 nennt die verwendeten Werte. LaserScript-Dateien (`.ls`) laufen in einer
@@ -268,6 +280,10 @@ bewegt den echten nativen Slider vorwärts/rückwärts und prüft Interpolation,
 Durchgangswechsel, Ende der Wiedergabe sowie drei getrennte Aufträge.
 Er prüft außerdem Regel-Zuordnung mit Rest und Ignorierregeln, 3D-Gravur, Rasterverfahren, Parametersätze und die Materialbibliothek (Sichern, doppelte Einträge, Wiederherstellen). Außerdem prüft er Geräteliste und Gerätewechsel in einem temporären Einstellungsordner, Drehachsen-Aufträge, Kamerahintergrund aus einer lokalen Bilddatei und die Kalibrierseite. Rust-Tests prüfen drei unabhängige TCP-Verbindungen ausschließlich lokal. Er sendet keinen
 Job an den Lasercutter. Der normale Start enthält keinen Selbsttest.
+
+`tests/java_parity.rs` vergleicht die erzeugten LTT-Aufträge Byte für Byte
+mit Referenzen aus dem originalen Java-VisiCut; neu erzeugt werden sie mit
+`scripts/java-parity/generate.sh` (siehe `scripts/java-parity/README.md`).
 
 Die Materialdaten sind in `resources/materials.json` eingebettet.
 Originaldateien liegen unter `reference/fau-settings`.

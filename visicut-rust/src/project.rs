@@ -36,6 +36,20 @@ pub struct Project {
     /// (VisiCut mappings to "ignore").
     #[serde(default)]
     pub ignore_filters: Vec<Vec<Filter>>,
+    /// Order of vector paths; anything but the default is experimental.
+    #[serde(default)]
+    pub cut_order: CutOrder,
+}
+
+/// Order of the vector paths of a step.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub enum CutOrder {
+    /// VisiCut's "inner first", byte for byte like Java (tests/java_parity).
+    #[default]
+    VisiCut,
+    /// Experimental: still inner first, but always on to the nearest allowed
+    /// path; closed contours may start at any vertex.
+    ShortestTravel,
 }
 
 /// Further power/speed settings applied to the same objects afterwards
@@ -145,6 +159,8 @@ struct ProjectFile {
     raster: RasterSettings,
     #[serde(default)]
     ignore_filters: Vec<Vec<Filter>>,
+    #[serde(default)]
+    cut_order: CutOrder,
 }
 
 impl TryFrom<ProjectFile> for Project {
@@ -189,6 +205,7 @@ impl TryFrom<ProjectFile> for Project {
             rotary_diameter_mm: file.rotary_diameter_mm,
             raster: file.raster,
             ignore_filters: file.ignore_filters,
+            cut_order: file.cut_order,
         })
     }
 }
@@ -261,6 +278,7 @@ impl Default for Project {
             rotary_diameter_mm: default_rotary_diameter(),
             raster: RasterSettings::default(),
             ignore_filters: Vec::new(),
+            cut_order: CutOrder::VisiCut,
         }
     }
 }

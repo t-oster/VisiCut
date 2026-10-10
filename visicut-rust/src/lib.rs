@@ -12,3 +12,4 @@ pub mod selection;
 pub mod svg;
 pub mod svg_import;
 pub mod timeline;
+pub mod vectorize;

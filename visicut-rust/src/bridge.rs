@@ -59,6 +59,84 @@ fn merge_devices(request: &Value, devices: Vec<LaserDevice>) -> Result<Value, St
     Ok(json!({"store": store, "imported": imported}))
 }
 
+fn file_stem(path: &std::path::Path) -> String {
+    path.file_stem()
+        .unwrap_or_default()
+        .to_string_lossy()
+        .into_owned()
+}
+
+/// Every new motif replaces the mappings (`steps`) and the size of the project.
+fn replace_artwork(
+    mut project: Project,
+    svg: String,
+    steps: Vec<crate::project::JobStep>,
+    warnings: Vec<String>,
+    name: String,
+) -> Result<Value, String> {
+    project.svg = svg;
+    project.steps = steps;
+    let image = preview(&project.svg)?;
+    project.width_mm = image["width_mm"].as_f64().unwrap() as f32;
+    project.height_mm = image["height_mm"].as_f64().unwrap() as f32;
+    project.name = name;
+    Ok(
+        json!({"project": project, "preview": image, "objects": crate::selection::objects(&project.svg)?, "warnings": warnings}),
+    )
+}
+
+/// Bitmap vektorisieren (wie `vectorize_ui` der egui-Oberfläche). Ohne `apply`
+/// nur die Vorschau mit Pfadanzahl und Größe; mit `apply: true` zusätzlich das
+/// neue Projekt wie bei `import`. `width_mm` fehlt oder ist null: 72 DPI.
+fn vectorize(request: &Value) -> Result<Value, String> {
+    use crate::vectorize::{Bitmap, Options, Size};
+    let path = std::path::Path::new(path(request)?);
+    let size = std::fs::metadata(path).map_err(|e| e.to_string())?.len();
+    if size > crate::import::MAX_FILE_BYTES {
+        return Err("Datei ist größer als 25 MB".into());
+    }
+    let bitmap = Bitmap::decode(&std::fs::read(path).map_err(|e| e.to_string())?)?;
+    let threshold = match &request["threshold"] {
+        Value::Null => Options::default().threshold,
+        value => value
+            .as_u64()
+            .and_then(|v| u8::try_from(v).ok())
+            .ok_or("Schwellwert muss zwischen 0 und 255 liegen")?,
+    };
+    let size = match &request["width_mm"] {
+        Value::Null => Size::Dpi(72.0),
+        value => Size::WidthMm(value.as_f64().ok_or("Breite muss eine Zahl sein")?),
+    };
+    let options = Options {
+        threshold,
+        invert: request["invert"].as_bool().unwrap_or(false),
+        size,
+        ..Options::default()
+    };
+    let result = bitmap.vectorize(&options)?;
+    let (width_px, height_px) = bitmap.dimensions();
+    let mut response = if request["apply"].as_bool().unwrap_or(false) {
+        if result.paths == 0 {
+            return Err("Keine Kontur gefunden; Schwellwert anpassen".into());
+        }
+        replace_artwork(
+            get_project(request)?,
+            result.svg,
+            Vec::new(),
+            Vec::new(),
+            file_stem(path),
+        )?
+    } else {
+        json!({"preview": preview(&result.svg)?})
+    };
+    response["paths"] = json!(result.paths);
+    response["width_mm"] = json!(result.width_mm);
+    response["height_mm"] = json!(result.height_mm);
+    response["width_px"] = json!(width_px);
+    response["height_px"] = json!(height_px);
+    Ok(response)
+}
+
 pub(crate) fn execute(request: &Value) -> Result<Value, String> {
     match request["action"].as_str().unwrap_or("") {
         "default" => Ok(json!({"project": Project::default()})),
@@ -107,34 +185,26 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
                 .collect();
             Ok(json!({"selections": selections, "values": values, "predefined": predefined}))
         }
-        "demo" | "import" => {
-            let mut project = get_project(request)?;
-            let mut warnings = Vec::new();
-            project.svg = if request["action"] == "demo" {
-                include_str!("../examples/demo.svg").into()
-            } else {
-                let path = request["path"].as_str().ok_or("Dateipfad fehlt")?;
-                let imported = crate::import::read_file(std::path::Path::new(path))?;
-                warnings = imported.warnings;
-                imported.svg
-            };
-            project.steps.clear();
-            let image = preview(&project.svg)?;
-            project.width_mm = image["width_mm"].as_f64().unwrap() as f32;
-            project.height_mm = image["height_mm"].as_f64().unwrap() as f32;
-            project.name = if request["action"] == "demo" {
-                "Beispiel".into()
-            } else {
-                std::path::Path::new(request["path"].as_str().unwrap())
-                    .file_stem()
-                    .unwrap_or_default()
-                    .to_string_lossy()
-                    .into()
-            };
-            Ok(
-                json!({"project": project, "preview": image, "objects": crate::selection::objects(&project.svg)?, "warnings": warnings}),
+        "demo" => replace_artwork(
+            get_project(request)?,
+            include_str!("../examples/demo.svg").into(),
+            Vec::new(),
+            Vec::new(),
+            "Beispiel".into(),
+        ),
+        "import" => {
+            let path = std::path::Path::new(path(request)?);
+            let imported = crate::import::read_file(path)?;
+            // PLF files bring their own mappings.
+            replace_artwork(
+                get_project(request)?,
+                imported.svg,
+                imported.steps,
+                imported.warnings,
+                file_stem(path),
             )
         }
+        "vectorize" => vectorize(request),
         "load" => {
             let source = read(request["path"].as_str().ok_or("Dateipfad fehlt")?)?;
             let project: Project = serde_json::from_str(&source).map_err(|e| e.to_string())?;
@@ -333,6 +403,74 @@ mod tests {
         let result = execute(&json!({"action": "demo", "project": p})).unwrap();
         assert_eq!(result["objects"].as_array().unwrap().len(), 3);
         assert!(result["project"]["steps"].as_array().unwrap().is_empty());
+    }
+
+    #[test]
+    fn vectorize_previews_and_replaces_artwork_like_an_import() {
+        let dir =
+            std::env::temp_dir().join(format!("visicut-bridge-vectorize-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("Logo.png");
+        // Dunkles Quadrat mit hellem Loch auf weißem Grund, 20 × 10 Pixel.
+        image::GrayImage::from_fn(20, 10, |x, y| {
+            let square = (2..8).contains(&x) && (2..8).contains(&y);
+            let hole = (4..6).contains(&x) && (4..6).contains(&y);
+            image::Luma([if square && !hole { 0 } else { 255 }])
+        })
+        .save(&path)
+        .unwrap();
+        let mut old = Project::default();
+        old.steps
+            .push(crate::project::JobStep::new(crate::project::Operation::Cut));
+        let preview = execute(&json!({"action": "vectorize", "project": old, "path": path}));
+        let inverted = execute(&json!({"action": "vectorize", "path": path, "invert": true,
+            "threshold": 128, "width_mm": 40.0}));
+        let empty = execute(&json!({"action": "vectorize", "project": old, "path": path,
+            "threshold": 0, "apply": true}));
+        let bad = execute(&json!({"action": "vectorize", "path": path, "threshold": 300}));
+        let applied = execute(&json!({"action": "vectorize", "project": old, "path": path,
+            "threshold": 128, "invert": false, "width_mm": 40.0, "apply": true}));
+        std::fs::remove_dir_all(&dir).unwrap();
+
+        // Ohne Breite 72 DPI wie beim Bildimport; nur Vorschau, kein Projekt.
+        let preview = preview.unwrap();
+        assert_eq!(preview["paths"], 2);
+        assert_eq!(preview["width_px"], 20);
+        assert!((preview["width_mm"].as_f64().unwrap() - 20.0 * 25.4 / 72.0).abs() < 1e-9);
+        assert!(preview["project"].is_null());
+        let png: Vec<u8> = serde_json::from_value(preview["preview"]["png"].clone()).unwrap();
+        assert!(resvg::tiny_skia::Pixmap::decode_png(&png).is_ok());
+        // Invertiert: heller Rand (mit Quadrat als Loch) und das helle Loch.
+        assert_eq!(inverted.unwrap()["paths"], 3);
+        assert!(empty.unwrap_err().contains("Keine Kontur"));
+        assert!(bad.unwrap_err().contains("Schwellwert"));
+
+        let applied = applied.unwrap();
+        assert_eq!(applied["paths"], 2);
+        let project: Project = serde_json::from_value(applied["project"].clone()).unwrap();
+        assert_eq!(project.name, "Logo");
+        assert!(project.steps.is_empty());
+        assert!((project.width_mm - 40.0).abs() < 1e-3);
+        assert!((project.height_mm - 20.0).abs() < 1e-3);
+        assert_eq!(applied["objects"].as_array().unwrap().len(), 1);
+        assert!(applied["warnings"].as_array().unwrap().is_empty());
+        assert!(ltt::prepare(&project).is_ok());
+    }
+
+    #[test]
+    fn cut_order_survives_the_bridge_and_defaults_for_old_files() {
+        let mut project = Project::default();
+        project.cut_order = crate::project::CutOrder::ShortestTravel;
+        let result = execute(&json!({"action": "demo", "project": project})).unwrap();
+        assert_eq!(result["project"]["cut_order"], "ShortestTravel");
+        let mut old = serde_json::to_value(Project::default()).unwrap();
+        old.as_object_mut().unwrap().remove("cut_order");
+        let path =
+            std::env::temp_dir().join(format!("visicut-bridge-old-{}.vcr", std::process::id()));
+        std::fs::write(&path, old.to_string()).unwrap();
+        let loaded = execute(&json!({"action": "load", "path": path}));
+        std::fs::remove_file(&path).unwrap();
+        assert_eq!(loaded.unwrap()["project"]["cut_order"], "VisiCut");
     }
 
     #[test]

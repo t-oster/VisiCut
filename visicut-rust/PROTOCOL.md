@@ -42,8 +42,13 @@ Wiederholung nach Fehlern.
 
 ## Bewusste Einschränkungen
 
-- Vektorpfade werden adaptiv in Geraden zerlegt (0,025 mm Toleranz) und wie
-  im Java-Treiber (`curveOrLine`) an Ecken geteilt. Flache Abschnitte gehen
+- Kurven werden wie Java2Ds `FlatteningPathIterator` in Geraden zerlegt: in
+  500-DPI-Pixeln mit der Flachheit 0,2 px (`getRequiredCurvePrecision` bei
+  Tangentialkurven), höchstens zehn Halbierungen. Wie VisiCuts
+  `ShapeConverter` entfallen Linienenden, deren abgeschnittenes Pixel dem des
+  letzten Punkts gleicht; die Schließlinie bleibt immer. Konturpunkte sind
+  `f64` wie in Java. Die Pfade werden wie im Java-Treiber (`curveOrLine`) an
+  Ecken geteilt. Flache Abschnitte gehen
   als verbundene Tangentialkurve (`PJ … PE <Tempo> PR … PF`) mit
   Geschwindigkeitsplanung bis 2000 mm/s² hinaus (`curve`,
   `curveWithKnownSpeed`, Neuinterpolation 0,9 mm, zehn Aufwärmrunden).
@@ -59,16 +64,25 @@ Wiederholung nach Fehlern.
   skalieren mit Transformationen und viewBox; das Muster beginnt in jedem
   Teilpfad neu und läuft bei geschlossenen Formen über den Startpunkt
   hinweg. Reine Füllformen bleiben durchgehend.
-- Schnittreihenfolge wie VisiCuts Standard „innen zuerst“
-  (`InnerFirstVectorOptimizer`): Offene Pfade, deren Enden ohne Abzweigung
-  aufeinandertreffen (0,9 Pixel bei 500 DPI, Manhattan-Abstand), werden zu
-  einem Pfad verbunden. Danach werden alle Pfade je Schritt stabil nach
-  Begrenzungsrahmen sortiert: unterer Rand aufsteigend, oberer absteigend,
-  rechter aufsteigend, linker absteigend. Ein Pfad, dessen Rahmen in einem
-  anderen liegt, wird also vorher geschnitten; Löcher fallen nicht nach dem
-  Außenumriss heraus. Gleiche Rahmen (z. B. Kreis im Quadrat) werden nicht
-  unterschieden. Außer beim Verbinden werden Pfade nicht umgedreht. Abweichung: Java sortiert
-  mehrere Parametersätze gemeinsam, Rust jeden Parametersatz für sich.
+- Schnittreihenfolge wie VisiCuts Standard „innen zuerst“: wörtliche
+  Portierung von `VectorOptimizer`, `OptimizerUtils.joinContiguousLoopElements`
+  und `InnerFirstVectorOptimizer` in 500-DPI-Pixeln. Wie in VisiCuts
+  `VectorProfile` werden die Formen einmal je `LaserProperty` hinzugefügt;
+  jeder Durchgang ist eine weitere gleiche Eigenschaft. Elemente gleicher
+  Werte (Leistung, Geschwindigkeit, Fokus = Materialstärke wie VisiCuts
+  `useThicknessAsFocusOffset`) bilden eine Gruppe; die Gruppen folgen der
+  Reihenfolge von Javas `HashMap` (Bucket des `LaosCutterProperty`-Hashs,
+  `computeIfAbsent` fügt neue Schlüssel am Bucket-Anfang ein). Je Gruppe
+  kommen erst die geschlossenen Pfade, dann offene Pfade, die verbunden
+  werden, wo genau ein anderes Ende innerhalb von 0,9 px (Manhattan-Abstand)
+  liegt, auch über Durchgänge hinweg (eine doppelt geschnittene Linie wird
+  Hin- und Rückweg). Danach folgt die stabile Sortierung nach
+  Begrenzungsrahmen: unterer Rand aufsteigend, oberer absteigend, rechter
+  aufsteigend, linker absteigend. Löcher kommen so vor dem Außenumriss, und
+  die Durchgänge einer Kontur folgen direkt aufeinander. Gleiche Rahmen werden
+  nicht unterschieden. Ein Teil wird mit einem Encoder erzeugt; Leistung und
+  Geschwindigkeit gehen wie im Treiber nur bei Änderung hinaus.
+  Nicht nachgebildet: Baum-Buckets der `HashMap` ab acht gleichen Buckets.
 - Zuordnung wie VisiCuts Mappings: Schritte wählen Objekte einzeln, über
   Bedingungen (Farbe, Linien-/Füllfarbe, Linienstärke in mm mit „=“ oder „≤“,
   Gruppe/Inkscape-Ebene, Typ, ID; jeweils auch negiert) oder als Rest.
@@ -80,8 +94,24 @@ Wiederholung nach Fehlern.
   Engrav → Eng3D → Mark → Cut, mit jeweils eigener TCP-Verbindung.
   Text wird beim Schneiden und Markieren als Glyphenumriss bearbeitet
   (Systemschriften, Ersatz Ubuntu Light/Hack aus egui); fehlt für ein
-  Zeichen jede Schrift, wird der Auftrag abgewiesen. Rasterbilder, Masken,
-  Clipping und Filter werden beim Schneiden abgewiesen.
+  Zeichen jede Schrift, wird der Auftrag abgewiesen. Rasterbilder werden beim
+  Schneiden abgewiesen, weil Raster beim Schneiden nicht definiert ist.
+  Clip-Pfade (`clipPath`) schneiden die Konturen als Schnittmenge mit der
+  Vereinigung der Clip-Formen; jede Form zählt nach ihrer Füllregel (`clip-rule`).
+  Offene Konturen werden an den Clip-Kanten geteilt und nur innen geschnitten;
+  geschlossene Konturen, die ganz innen liegen, bleiben unverändert, und Teile,
+  die am Startpunkt zusammenhängen, werden wieder verbunden. Die Schnittpunkte
+  liegen auf Segmenten, nicht auf Eckpunkten; Teilstücke werden per Mittelpunkt-
+  test innen oder außen zugeordnet. Parallel verlaufende Clip-Kanten und Konturen
+  erzeugen keine Schnittpunkte; dort entscheidet allein der Mittelpunkttest. Ein Pfad
+  vollständig außerhalb liefert nichts. Ein leerer Clip, ein fehlender Ziel-
+  verweis oder ein Ziel, das kein Clip-Pfad ist, werden mit Meldung abgewiesen,
+  ebenso verschachtelte Clips. Die Grenze liegt bei 10⁸ Segment-Kanten-Prüfungen
+  je Kontur; darüber wird mit Hinweis abgebrochen. Masken und Filter werden
+  beim Schneiden abgewiesen, mit Meldung zum Grund: Masken legen nur Transparenz
+  fest, Filter verändern nur ein Pixelbild, beides ergibt keine Schnittlinie.
+  Text und Rasterbilder innerhalb eines Clip-Pfads werden abgewiesen. Am Gerät
+  wurde das Clipping nicht geprüft.
 - Gravur mit den LibLaserCut-Rasterverfahren Floyd-Steinberg, Mittelwert,
   Zufall, Geordnet, Raster, Halbton und Halbton aufgehellt (FAU-Standard) sowie
   dem früheren Schwellwert 128 (ältere Projekte). Graustufen nach
@@ -89,8 +119,17 @@ Wiederholung nach Fehlern.
   Invertierung wie im Rasterprofil. Bidirektional (`ESC 1`, Zeile gespiegelt)
   und von unten nach oben wie `LaosEngraveProperty`. Die Zeilenverschiebung
   folgt `getEngraveShiftPixels` einschließlich +0,5 Pixel.
+  Wie VisiCuts `RasterProfile` wird nur die Bounding Box der Objekte
+  (mit halber Strichbreite) gerastert, `Helper.toRect` schneidet x, y, Breite
+  und Höhe einzeln ab; Rasterursprung ist deren Ecke. Gravur ohne, 3D-Gravur
+  mit Antialiasing, Bilder mit Nächster-Nachbar-Interpolation. Jeder Durchgang
+  ist ein eigener Rasterteil mit Farbcode, Einstellungen bei Änderung und
+  Beginn nach rechts.
   Abweichungen: Die geordnete Matrix nutzt 255 statt 256, damit reines Weiß
-  nicht gepunktet wird; „Zufall“ ist reproduzierbar statt ungeseedet.
+  nicht gepunktet wird; „Zufall“ ist reproduzierbar statt ungeseedet. Kanten,
+  die nicht auf ganzen Pixeln liegen, rastern Java2D und tiny-skia
+  unterschiedlich (Pixelmitte bzw. Teilabdeckung); einzelne Randpixel können
+  daher abweichen.
 - 3D-Gravur: eigener Auftrag, Job-Modus 8 Bit je Pixel (`ESC M 0x02`),
   Leistung je Pixel = Dunkelheit (wie der Java-Treiber nach `invertBits`).
   Abweichungen: Leere Ränder werden bei Leistung 0 (weiß) statt bei Grauwert 0
@@ -140,9 +179,11 @@ Wiederholung nach Fehlern.
   VisiCut-Einstellungen, beim FAU-Gerät „Autofokus machen, Druckluft an“).
 - SVG und `.vcr` werden unterstützt. Version 0.2 ergänzt eine native
   AppKit-/SwiftUI-Oberfläche und eine Auswahl der FAU-LTT-Materialprofile.
-  VisiCut-PLF-Dateien werden nur mit ihrer Geometrie übernommen (ohne
-  Zuordnungen und Laser-Einstellungen); parametrische SVG nur mit Standard-
-  bzw. gespeicherten Parameterwerten. Allgemeiner Materialbibliothek-Import
+  VisiCut-PLF-Dateien werden mit Geometrie und den Zuordnungen der SVG-Teile
+  übernommen (`src/import/plf/mappings.rs`). Die Laser-Einstellungen fehlen,
+  weil VisiCut sie lokal pro Gerät, Material und Stärke speichert; die Schritte
+  erhalten die Standardwerte. Parametrische SVG nur mit Standard- bzw.
+  gespeicherten Parameterwerten. Allgemeiner Materialbibliothek-Import
   und andere Gerätetreiber fehlen. Nur der LTT iLaser 4000
   (1000 × 600 mm, 4000 DPI) wird unterstützt; andere Geräte werden beim
   Import abgewiesen.
@@ -150,17 +191,38 @@ Wiederholung nach Fehlern.
   mit `hayro-svg` (reines Rust, MIT/Apache-2.0) in SVG umgewandelt; Pfade,
   Farben, Linienstärken und eingebettete Bilder bleiben erhalten, Text wird zu
   Glyphenkonturen. Größe aus der CropBox in pt (× 25,4/72 mm). Linienstärke 0
-  (PDF: dünnste Linie) wird zu 0,1 mm. Nicht seitenfüllende Clip-Pfade und
-  Soft-Masks bleiben für die Vorschau erhalten, verhindern aber das Schneiden
-  (Hinweis beim Import).
-- EPS/PS: Java-VisiCut nutzt einen eingebauten PostScript-Interpreter
-  (`EPSImporter`, BoundingBox, 72 DPI). Die Rust-Version ruft stattdessen
-  Ghostscript auf (`-sDEVICE=pdfwrite -dEPSCrop -dSAFER -dNoOutputFonts`,
-  60 s Zeitlimit, temporäre Datei im Temp-Ordner) und importiert das Ergebnis
-  als PDF. Gesucht wird im `PATH`, unter macOS zusätzlich in
-  `/opt/homebrew/bin` und `/usr/local/bin`, unter Windows in
-  `Programme\gs\*\bin`. Ohne Ghostscript wird der Import mit Hinweis
-  abgelehnt.
+  (PDF: dünnste Linie) wird zu 0,1 mm. Clip-Pfade bleiben erhalten und werden
+  beim Schneiden berücksichtigt; Soft-Masks bleiben für die Vorschau erhalten,
+  verhindern aber das Schneiden (Hinweis beim Import).
+- EPS/PS: Wie Java-VisiCut (`EPSImporter`) liest ein eingebauter, bewusst
+  begrenzter PostScript-Interpreter (`src/import/eps/`) die Datei ohne
+  Zusatzprogramm und gibt SVG aus. Größe aus `%%BoundingBox:` (sonst
+  `%%PageBoundingBox:`, Zeilen mit `(atend)` werden übersprungen; ohne Angabe
+  800 × 600 pt mit Hinweis), 1 pt = 25,4/72 mm. Der viewBox ist in pt, der
+  Ursprung liegt links unten in der BoundingBox, y zeigt nach unten (wie bei
+  der Ghostscript-Umwandlung). Unterstützt:
+  - Operand- und Dictionary-Stack: `pop exch dup copy index roll`, `def load`
+    (nur das Benutzerwörterbuch, kein `begin`/`end`)
+  - Arithmetik und Vergleiche: `add sub mul div neg abs sqrt sin cos`,
+    `eq ne lt le gt ge not true false`
+  - Prozeduren und Schleifen: `{ }`, `exec if ifelse repeat for`
+  - Pfade: `newpath moveto rmoveto lineto rlineto curveto rcurveto closepath
+    arc arcn rect`; Malen: `fill eofill stroke`
+  - Farben (nach RGB): `setrgbcolor setgray setcmykcolor`; `setlinewidth`
+    (0 wird zu 0,1 mm)
+  - Matrizen: `gsave grestore translate scale rotate concat matrix setmatrix`
+  - ohne Wirkung: `showpage bind`
+
+  Nicht unterstützt sind Text (`show` usw.), Schriften (`findfont`,
+  `setfont` usw.), Bilder (`image`, `colorimage`), Clipping, `[ ]`-Arrays,
+  `<< >>`-Dictionaries, `loop`, `exit` und Binär-EPS mit DOS-Header. Trifft
+  der Interpreter auf einen solchen Operator, wird die Datei mit Ghostscript
+  (`-sDEVICE=pdfwrite -dEPSCrop -dSAFER -dNoOutputFonts`, 60 s Zeitlimit,
+  temporäre Datei im Temp-Ordner) in PDF umgewandelt und wie PDF importiert.
+  Gesucht wird im `PATH`, unter macOS zusätzlich in `/opt/homebrew/bin` und
+  `/usr/local/bin`, unter Windows in `Programme\gs\*\bin`. Ohne Ghostscript
+  scheitert der Import mit einer Meldung, die den Operator nennt (z. B.
+  „Text-Operator „show“ wird nicht unterstützt“) und auf Ghostscript verweist.
 - DXF (ASCII und binär, R12 bis aktuell) wird mit einem eigenen Parser in eine
   SVG in Millimetern umgewandelt (`src/import/dxf.rs`). Anders als VisiCuts
   kabeja-Import wird `$INSUNITS` beachtet; Zeichnungen ohne Einheit gelten wie
@@ -193,15 +255,30 @@ und Gravurschritt, mit nullbasierten SVG-Objektindizes und eigenen Parametern.
 Ein fehlendes oder leeres `steps` behält die bisherige Ganzmotiv-Bearbeitung bei.
 Leere Objektauswahlen innerhalb expliziter Schritte werden übersprungen;
 bei vollständig leerem Auftrag, doppelten oder ungültigen Objektindizes wird
-kein Job erzeugt. Ein neuer SVG-Import verwirft vorhandene Zuordnungen.
+kein Job erzeugt. Jeder Import ersetzt vorhandene Zuordnungen; eine PLF-Datei
+bringt ihre eigenen mit.
+
+PLF-Zuordnungen werden je Teil nach VisiCuts Regeln übersetzt: Filter werden
+gegen die Objekte des eigenen Teils ausgewertet. Die Bedingungen bleiben als
+Regel erhalten, wenn sie im ganzen Motiv genau diese Objekte treffen; sonst
+übernimmt der Import die Objekte fest. Der Rest eines Teils und die Ignorier-
+Einträge werden ebenfalls als feste Objektliste übernommen. Ein Teil ohne
+lesbare Zuordnung erhält keinen Schritt. Ohne übernommenen Schritt entsteht
+ein leerer Schritt, damit nicht das ganze Motiv bearbeitet wird.
 
 Der Zeitslider verwendet Bewegungen aus der Erzeugung der tatsächlichen
 LTT-Daten. Jeder Vektorschritt wird nach 500-DPI-Quantisierung erfasst,
-Rasterzeilen einschließlich Overscan und Leerfahrten. Wiederholte Durchgänge
-teilen die gespeicherte Geometrie; Zeitabschnitte bilden die Reihenfolge ab.
+Rasterzeilen einschließlich Overscan und Leerfahrten. Wiederholte
+Rasterdurchgänge teilen die gespeicherte Geometrie. Vektordurchgänge sind wie
+in Java je Kontur verschränkt und bilden daher einen Ablauf ohne getrennte
+Durchgänge; Zeitabschnitte bilden die Reihenfolge ab.
 Die erste Anfahrt wird ab (0,0) geschätzt; danach wird die letzte Position
 fortgeschrieben. Tatsächliche Kopfposition und Pausen zwischen den getrennt
 zu startenden Gerätejobs sind nicht bekannt. Die Simulation sendet keine Daten.
+
+Die Bounding Box im Header ist wie `LaserJob.getBoundingBox` die des
+tatsächlichen Inhalts (Vektorpunkte bzw. Rasterbereich), nicht die der
+SVG-Seite.
 
 Gerätenamen beginnen direkt mit `Cut_`, `Engrav_` bzw. `Mark_`, ohne zusätzlichen
 VC-Präfix, und werden auf 15 ASCII-Zeichen begrenzt. Der Präfix bleibt beim
@@ -210,3 +287,52 @@ Jeder hat eigenen Header, BYE, Prüfsumme, Länge und deaktivierten Autostart.
 Bei einer fehlgeschlagenen Übertragung stoppt die Folge; die Fehlermeldung
 nennt den betroffenen und bereits übertragenen Teil. Es gibt weder eine
 Gerätequittung noch automatisches Fortsetzen oder eine automatische Wiederholung.
+
+## Byte-Vergleich mit Java
+
+`tests/java_parity.rs` vergleicht die Rust-Ausgabe Byte für Byte mit
+Referenzaufträgen des originalen Java-VisiCut (LibLaserCut-LTT-Treiber,
+FAU-Gerät, `scripts/java-parity`). Jeder Fall in `tests/java_parity/` enthält
+die SVG, die Einstellungen (`case.properties`) und `expected.ltt`. Abgedeckt
+sind Rechteck, Kreisbefehl, Bézierkurven, verschachtelte und offene Konturen,
+Durchgänge, mehrere Parametersätze, Markieren sowie Gravur mit
+Floyd-Steinberg, Halbton, Halbton aufgehellt (einseitig, von unten), Geordnet,
+Mittelwert (Helligkeit, Invertierung) und Raster einschließlich eines
+eingebetteten Graustufenbilds. Die Rasterfälle liegen auf ganzen Pixeln, weil
+Java2D und tiny-skia schräge oder gebrochene Kanten verschieden rastern. Der
+Fall „Geordnet“ enthält kein reines Weiß, und bei der 3D-Gravur wird nur der
+Header verglichen; beides sind die oben beschriebenen bewussten Abweichungen.
+Rust schickt pro Verfahren einen eigenen Auftrag; die Fälle enthalten daher je
+ein Verfahren. Neu erzeugen:
+`bash scripts/java-parity/generate.sh` (Java 17+, Maven, Submodul LibLaserCut).
+
+## Hinweise aus dem Herstellertreiber iLaser 3000
+
+Ausgewertet wurde der Windows-Druckertreiber „iLASER-3000_S“ 6.19.0 von LTT
+(10. Januar 2023): Konfigurationsdateien und die Befehlsfolgen der
+Treiber-DLL. Aus dem Paket ist nichts im Repository; festgehalten sind nur
+Protokollfakten. Sie gelten für den iLaser 3000 und sind für den iLaser 4000
+**nicht bestätigt**. VisiCutRust sendet keinen der folgenden Befehle.
+
+- Befehlsvorrat des Treibers: `ESC v`, `ESC F`, `ESC a`, `ESC M`, `ESC l`,
+  `ESC n`, `ESC O`, `ESC Q`, `ESC D`, `ESC R`, `ESC C`, `ESC T`, `ESC N`,
+  `ESC V`, `ESC E`, `ESC J`, `ESC S`, `ESC P`, `ESC 0`/`ESC 1` (Rasterzeile
+  mit Länge + 8), `ESC BYE` mit additiver 16-Bit-Prüfsumme und Länge sowie
+  `PS PD PU PA PR PJ PE PF` – deckungsgleich mit LibLaserCut. Zusätzlich:
+  `ESC A`, `ZA`, `ESC f`, `ESC K`, `ESC I`.
+- Druckluft `ESC A <Byte>`: nur wenn der Treiber-Schalter `AirBlow` = 1 ist;
+  das Byte kommt aus `AirBlowFlag` und gilt je Stift/Parametersatz. Es folgt
+  auf `ESC J` (Leistung), `ESC S` (Geschwindigkeit) und `ESC P` (PPI) des
+  Satzes. Vor `ESC BYE` sendet der Treiber `ESC A 00`.
+- Z-Achse `ZA <int32>`: nur bei `ZaxisMode` = 1, an derselben Stelle vor
+  `ESC A`. Wert = `ZaxisOffset / 100 / (ZaxisPitch × 10⁻⁸)`, also ein Offset
+  je Satz in Motorschritten; vor `ESC BYE` folgt `ZA 0`.
+- Für Absaugung gibt es keinen Befehl.
+- In der mitgelieferten Konfiguration sind `AirBlow` und `ZaxisMode` nicht
+  gesetzt und `ZaxisPitch` fehlt; der Treiber sendet beides dort also nicht.
+- Weitere Werte des 3000 (700 × 500 mm): `RotaryRDPI=663`, Beschleunigung
+  1260 mm/s², Höchstgeschwindigkeit 400 mm/s, Gravur-Überlauf 3,5–35 mm
+  (wie LibLaserCut), eigene Gravurverschiebung je Geschwindigkeit.
+
+Vor einer Nutzung am iLaser 4000 muss ein beaufsichtigter Test zeigen, ob
+das Gerät `ESC A` bzw. `ZA` versteht; besser ist der Treiber des 4000.

@@ -1,6 +1,7 @@
 mod devices_ui;
 mod jobs_ui;
 mod preview_ui;
+mod vectorize_ui;
 
 use eframe::egui::{self, Color32, Pos2, Rect, Sense, Stroke, Vec2};
 use std::path::{Path, PathBuf};
@@ -23,6 +24,7 @@ struct VisiCutRust {
     devices: devices_ui::DeviceUi,
     jobs: jobs_ui::JobUi,
     preview: preview_ui::PreviewUi,
+    vectorize: vectorize_ui::VectorizeUi,
     #[cfg(feature = "screenshot")]
     capture: Option<(PathBuf, u32)>,
 }
@@ -45,6 +47,7 @@ impl VisiCutRust {
             devices,
             jobs,
             preview: Default::default(),
+            vectorize: vectorize_ui::VectorizeUi::default(),
             #[cfg(feature = "screenshot")]
             capture: None,
         };
@@ -104,6 +107,8 @@ impl VisiCutRust {
             let imported = import::read_file(path)?;
             let name = path.file_stem().unwrap_or_default().to_string_lossy();
             self.import(ctx, imported.svg, name.into())?;
+            // Every import replaces the mappings; PLF files bring their own.
+            self.project.steps = imported.steps;
             for warning in imported.warnings {
                 self.status = format!("{} · {warning}", self.status);
             }
@@ -561,6 +566,12 @@ impl eframe::App for VisiCutRust {
             }
             None => {}
         }
+        if let Some((svg, name)) = self.vectorize.windows(ctx, self.dirty, &mut self.status) {
+            // Vektorisierte Bitmaps laufen über denselben Importpfad wie SVG-Dateien.
+            if let Err(e) = self.import(ctx, svg, name) {
+                self.status = e;
+            }
+        }
         if let Some(devices_ui::Action::CalibrationPage(points)) =
             self.devices
                 .windows(ctx, &mut self.project, &mut self.status)
@@ -622,6 +633,9 @@ impl eframe::App for VisiCutRust {
                         )
                     {
                         self.status = e;
+                    }
+                    if ui.button("Bitmap vektorisieren …").clicked() {
+                        self.vectorize.pick(&mut self.status);
                     }
                     if self.dirty {
                         ui.label("• geändert");

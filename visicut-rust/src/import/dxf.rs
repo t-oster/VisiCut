@@ -50,7 +50,11 @@ fn from_bytes(bytes: &[u8]) -> Result<Imported, String> {
             num(height)
         ));
     }
-    Ok(Imported { svg, warnings })
+    Ok(Imported {
+        svg,
+        warnings,
+        ..Default::default()
+    })
 }
 
 /// Millimetres per drawing unit for a `$INSUNITS` code.
