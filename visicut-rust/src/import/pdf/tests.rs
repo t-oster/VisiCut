@@ -143,12 +143,15 @@ fn converts_text_to_cuttable_outlines() {
 }
 
 #[test]
-fn warns_about_clip_paths() {
-    let clipped = "q 50 50 m 100 50 l 75 100 l h W n 0 0 0 rg 0 0 100 100 re f Q";
+fn clip_paths_are_cut_without_warning() {
+    // The clip crosses the right edge of the square: the outline is cut to the parts
+    // inside x 50..110 (top, bottom and right edge).
+    let clipped = "q 50 -10 60 120 re W n 0 0 0 rg 0 0 100 100 re f Q";
     let imported = convert(pdf(&[clipped], [0.0, 0.0, 100.0, 100.0], "")).unwrap();
     assert!(imported.svg.contains("clip-path"));
-    assert_eq!(imported.warnings.len(), 1);
-    assert!(imported.warnings[0].contains("Beschneidungspfade"));
+    assert!(imported.warnings.is_empty(), "{:?}", imported.warnings);
+    let paths = crate::geometry::contours(&project(&imported.svg)).unwrap();
+    assert!(!paths.is_empty());
     // A clip that only covers the page is dropped and stays cuttable.
     let page_clip = "q 0 0 100 100 re W n 1 0 0 RG 10 10 50 50 re S Q";
     let imported = convert(pdf(&[page_clip], [0.0, 0.0, 100.0, 100.0], "")).unwrap();

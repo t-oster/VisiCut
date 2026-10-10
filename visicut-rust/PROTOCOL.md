@@ -90,8 +90,24 @@ Wiederholung nach Fehlern.
   Engrav → Eng3D → Mark → Cut, mit jeweils eigener TCP-Verbindung.
   Text wird beim Schneiden und Markieren als Glyphenumriss bearbeitet
   (Systemschriften, Ersatz Ubuntu Light/Hack aus egui); fehlt für ein
-  Zeichen jede Schrift, wird der Auftrag abgewiesen. Rasterbilder, Masken,
-  Clipping und Filter werden beim Schneiden abgewiesen.
+  Zeichen jede Schrift, wird der Auftrag abgewiesen. Rasterbilder werden beim
+  Schneiden abgewiesen, weil Raster beim Schneiden nicht definiert ist.
+  Clip-Pfade (`clipPath`) schneiden die Konturen als Schnittmenge mit der
+  Vereinigung der Clip-Formen; jede Form zählt nach ihrer Füllregel (`clip-rule`).
+  Offene Konturen werden an den Clip-Kanten geteilt und nur innen geschnitten;
+  geschlossene Konturen, die ganz innen liegen, bleiben unverändert, und Teile,
+  die am Startpunkt zusammenhängen, werden wieder verbunden. Die Schnittpunkte
+  liegen auf Segmenten, nicht auf Eckpunkten; Teilstücke werden per Mittelpunkt-
+  test innen oder außen zugeordnet. Parallel verlaufende Clip-Kanten und Konturen
+  erzeugen keine Schnittpunkte; dort entscheidet allein der Mittelpunkttest. Ein Pfad
+  vollständig außerhalb liefert nichts. Ein leerer Clip, ein fehlender Ziel-
+  verweis oder ein Ziel, das kein Clip-Pfad ist, werden mit Meldung abgewiesen,
+  ebenso verschachtelte Clips. Die Grenze liegt bei 10⁸ Segment-Kanten-Prüfungen
+  je Kontur; darüber wird mit Hinweis abgebrochen. Masken und Filter werden
+  beim Schneiden abgewiesen, mit Meldung zum Grund: Masken legen nur Transparenz
+  fest, Filter verändern nur ein Pixelbild, beides ergibt keine Schnittlinie.
+  Text und Rasterbilder innerhalb eines Clip-Pfads werden abgewiesen. Am Gerät
+  wurde das Clipping nicht geprüft.
 - Gravur mit den LibLaserCut-Rasterverfahren Floyd-Steinberg, Mittelwert,
   Zufall, Geordnet, Raster, Halbton und Halbton aufgehellt (FAU-Standard) sowie
   dem früheren Schwellwert 128 (ältere Projekte). Graustufen nach
@@ -160,9 +176,9 @@ Wiederholung nach Fehlern.
   mit `hayro-svg` (reines Rust, MIT/Apache-2.0) in SVG umgewandelt; Pfade,
   Farben, Linienstärken und eingebettete Bilder bleiben erhalten, Text wird zu
   Glyphenkonturen. Größe aus der CropBox in pt (× 25,4/72 mm). Linienstärke 0
-  (PDF: dünnste Linie) wird zu 0,1 mm. Nicht seitenfüllende Clip-Pfade und
-  Soft-Masks bleiben für die Vorschau erhalten, verhindern aber das Schneiden
-  (Hinweis beim Import).
+  (PDF: dünnste Linie) wird zu 0,1 mm. Clip-Pfade bleiben erhalten und werden
+  beim Schneiden berücksichtigt; Soft-Masks bleiben für die Vorschau erhalten,
+  verhindern aber das Schneiden (Hinweis beim Import).
 - EPS/PS: Java-VisiCut nutzt einen eingebauten PostScript-Interpreter
   (`EPSImporter`, BoundingBox, 72 DPI). Die Rust-Version ruft stattdessen
   Ghostscript auf (`-sDEVICE=pdfwrite -dEPSCrop -dSAFER -dNoOutputFonts`,

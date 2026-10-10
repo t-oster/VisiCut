@@ -93,11 +93,11 @@ fn convert_unchecked(data: Vec<u8>) -> Result<Imported, String> {
     {
         warnings.push("Ein Bild im PDF konnte nicht dekodiert werden und fehlt".into());
     }
-    // Clips that just cover the page are dropped by hayro; the others keep the
-    // preview exact but cannot be cut (see `geometry::contours`).
-    if svg.contains("clip-path=\"url(") || svg.contains("mask=\"url(") {
+    // Clip paths are cut as the intersection of the outlines (see
+    // `geometry::contours`); masks cannot be cut.
+    if svg.contains("mask=\"url(") {
         warnings.push(
-            "PDF enthält Beschneidungspfade oder Masken; zum Schneiden diese \
+            "PDF enthält Masken; Masken lassen sich nicht schneiden, zum Schneiden \
              vorher in echte Pfade umwandeln"
                 .into(),
         );
