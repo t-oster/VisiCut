@@ -341,6 +341,84 @@ fn join_contiguous(group: Vec<Element>) -> Vec<Element> {
     result
 }
 
+/// Upper limits for [`shortest_travel`]: the search is quadratic, so larger
+/// jobs keep VisiCut's order.
+const NEAREST_MAX_PATHS: usize = 5_000;
+const NEAREST_MAX_POINTS: usize = 400_000;
+
+/// Experimental order with less travel: starting at the origin, always the
+/// nearest path whose bounding box strictly contains no path still to cut, so
+/// inner contours still come first. Closed paths may start at any vertex,
+/// open paths in either direction. Ties keep the inner-first order.
+/// Returns the paths unchanged as `Err` when the job exceeds the size limits.
+pub fn shortest_travel(elements: Vec<Element>) -> Result<Vec<Element>, Vec<Element>> {
+    let points: usize = elements.iter().map(|e| e.moves.len() + 1).sum();
+    if elements.len() > NEAREST_MAX_PATHS || points > NEAREST_MAX_POINTS {
+        return Err(elements);
+    }
+    let boxes: Vec<[f64; 4]> = elements.iter().map(Element::bounds).collect();
+    let strictly_inside =
+        |o: [f64; 4], i: [f64; 4]| o[0] < i[0] && o[1] < i[1] && o[2] > i[2] && o[3] > i[3];
+    // Number of paths still to cut inside each path's box.
+    let mut inner: Vec<usize> = (0..elements.len())
+        .map(|i| {
+            (0..elements.len())
+                .filter(|&j| j != i && strictly_inside(boxes[i], boxes[j]))
+                .count()
+        })
+        .collect();
+    let mut slots: Vec<Option<Element>> = elements.into_iter().map(Some).collect();
+    let mut result = Vec::with_capacity(slots.len());
+    let mut at = [0.0, 0.0];
+    let distance = |a: [f64; 2], b: [f64; 2]| (a[0] - b[0]).hypot(a[1] - b[1]);
+    while result.len() < slots.len() {
+        // (distance, path, start vertex, reversed)
+        let mut best: Option<(f64, usize, usize, bool)> = None;
+        for (i, slot) in slots.iter().enumerate() {
+            let Some(e) = slot else { continue };
+            if inner[i] > 0 {
+                continue;
+            }
+            let mut consider = |d: f64, start: usize, reversed: bool| {
+                if best.is_none_or(|b| d < b.0) {
+                    best = Some((d, i, start, reversed));
+                }
+            };
+            if e.is_closed() {
+                consider(distance(at, e.start), 0, false);
+                for (k, p) in e.moves[..e.moves.len() - 1].iter().enumerate() {
+                    consider(distance(at, *p), k + 1, false);
+                }
+            } else {
+                consider(distance(at, e.start), 0, false);
+                consider(distance(at, e.end()), 0, true);
+            }
+        }
+        // Some path is always free: the one with the smallest box.
+        let (_, i, start, reversed) = best.expect("a path without inner paths");
+        let mut e = slots[i].take().unwrap();
+        if reversed {
+            e.invert();
+        } else if start > 0 {
+            // Ring without the closing point, rotated to begin at `start`.
+            let mut ring: Vec<[f64; 2]> = std::iter::once(e.start)
+                .chain(e.moves[..e.moves.len() - 1].iter().copied())
+                .collect();
+            ring.rotate_left(start);
+            e.start = ring[0];
+            e.moves = ring[1..].iter().copied().chain([ring[0]]).collect();
+        }
+        at = e.end();
+        for (j, slot) in slots.iter().enumerate() {
+            if slot.is_some() && strictly_inside(boxes[j], boxes[i]) {
+                inner[j] -= 1;
+            }
+        }
+        result.push(e);
+    }
+    Ok(result)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -501,6 +579,66 @@ mod tests {
         let groups = java_groups(vec![p(0), p(1), p(0)], &[a, b]);
         assert_eq!(groups.iter().map(Vec::len).sum::<usize>(), 3);
         assert!(groups.iter().all(|g| g.iter().all(|e| e.set == g[0].set)));
+    }
+
+    #[test]
+    fn shortest_travel_keeps_holes_first_and_cuts_travel() {
+        // Two parts, each a square with a hole, far apart and listed so that
+        // the inner-first sweep jumps back and forth.
+        let a = square(0.0, 0.0, 100.0);
+        let a_hole = square(40.0, 40.0, 10.0);
+        let b = square(1000.0, 0.0, 100.0);
+        let b_hole = square(1040.0, 40.0, 10.0);
+        let elements = vec![a.clone(), b.clone(), a_hole.clone(), b_hole.clone()];
+        let result = shortest_travel(elements).unwrap();
+        let bounds: Vec<[f64; 4]> = result.iter().map(Element::bounds).collect();
+        assert_eq!(
+            bounds,
+            vec![a_hole.bounds(), a.bounds(), b_hole.bounds(), b.bounds()]
+        );
+        assert!(result.iter().all(Element::is_closed));
+    }
+
+    #[test]
+    fn shortest_travel_rotates_closed_and_reverses_open_paths() {
+        // From the origin the square comes first; the line is then entered at
+        // its nearer end and therefore reversed.
+        let result = shortest_travel(vec![
+            path(&[[500.0, 0.0], [120.0, 0.0]]),
+            square(0.0, 0.0, 100.0),
+        ])
+        .unwrap();
+        assert_eq!(result[0].start, [0.0, 0.0]);
+        assert_eq!(result[1].start, [120.0, 0.0]);
+        assert_eq!(result[1].end(), [500.0, 0.0]);
+
+        // After the line the square starts at its vertex nearest to the line's
+        // end and returns there.
+        let result = shortest_travel(vec![
+            path(&[[0.0, 0.0], [160.0, 90.0]]),
+            square(100.0, 100.0, 50.0),
+        ])
+        .unwrap();
+        assert_eq!(result[1].start, [150.0, 100.0]);
+        assert_eq!(result[1].end(), [150.0, 100.0]);
+        assert_eq!(result[1].moves.len(), 4);
+
+        // A path whose box contains another waits for it, even if it is nearer.
+        let result = shortest_travel(vec![
+            path(&[[0.0, 0.0], [160.0, 160.0]]),
+            square(100.0, 100.0, 50.0),
+        ])
+        .unwrap();
+        assert_eq!(result[0].bounds(), [100.0, 100.0, 150.0, 150.0]);
+        assert_eq!(result[1].start, [160.0, 160.0]);
+    }
+
+    #[test]
+    fn shortest_travel_gives_up_on_huge_jobs() {
+        let many: Vec<Element> = (0..NEAREST_MAX_PATHS + 1)
+            .map(|i| square(i as f64, 0.0, 1.0))
+            .collect();
+        assert!(shortest_travel(many).is_err());
     }
 
     #[test]

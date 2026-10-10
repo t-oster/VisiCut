@@ -6,7 +6,7 @@ mod vector;
 
 use crate::{
     geometry,
-    project::{Operation, ParameterSet, Project},
+    project::{CutOrder, Operation, ParameterSet, Project},
     raster::{Raster, RasterSettings},
     timeline::{MotionKind, Program, Timeline},
 };
@@ -235,6 +235,14 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
              kollisionsfrei fahren können (inklusive Bremsweg)."
         ));
     }
+    if project.cut_order == CutOrder::ShortestTravel
+        && parts.iter().any(|p| !p.operation.is_raster())
+    {
+        warnings.push(
+            "Experimentelle Schnittreihenfolge „Kürzeste Leerfahrten“: weicht von VisiCut ab und ist am Gerät nicht erprobt; den ersten Auftrag beaufsichtigen"
+                .into(),
+        );
+    }
     // Finishing operations first, cutting last; one LTT file per operation
     // holding its steps in order.
     for operation in Operation::ALL {
@@ -256,6 +264,7 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
             let (step, part_bounds) = append_part(
                 &mut body,
                 &mut state,
+                &mut warnings,
                 project,
                 part,
                 index == 0,
@@ -356,6 +365,7 @@ impl DeviceState {
 fn append_part(
     out: &mut Vec<u8>,
     state: &mut DeviceState,
+    warnings: &mut Vec<String>,
     project: &Project,
     part: &Part,
     first_in_file: bool,
@@ -448,6 +458,16 @@ fn append_part(
             )
             .ok_or("Keine Vektorpfade zum Bearbeiten")?;
             let ordered = order::inner_first(elements, &keys);
+            let ordered = match project.cut_order {
+                CutOrder::VisiCut => ordered,
+                CutOrder::ShortestTravel => order::shortest_travel(ordered).unwrap_or_else(|o| {
+                    warnings.push(
+                        "Zu viele Vektorpfade für „Kürzeste Leerfahrten“; dieser Schritt nutzt die VisiCut-Reihenfolge"
+                            .into(),
+                    );
+                    o
+                }),
+            };
             // Java prescales Y only while generating the commands.
             let scale_y = axis.prescale();
             let mut program = Program::new(part.operation);
@@ -1206,6 +1226,43 @@ mod tests {
         assert_eq!(speeds, vec![80, 300, 80, 300]);
         assert_eq!(job.timeline.programs.len(), 1);
         assert_eq!(job.steps[0].parameter_sets, 2);
+    }
+
+    #[test]
+    fn shortest_travel_is_opt_in_and_reduces_time() {
+        // Parts at alternating heights: the inner-first sweep zigzags across.
+        let mut body = String::new();
+        for i in 0..6 {
+            let (x, y) = (5 + i * 90, if i % 2 == 0 { 5 } else { 150 });
+            body += &format!(
+                r#"<rect x="{x}" y="{y}" width="40" height="40" fill="none" stroke="red"/><circle cx="{}" cy="{}" r="8" fill="none" stroke="red"/>"#,
+                x + 20,
+                y + 20
+            );
+        }
+        let visicut = Project {
+            width_mm: 600.0,
+            height_mm: 200.0,
+            svg: format!(
+                r#"<svg xmlns="http://www.w3.org/2000/svg" width="600mm" height="200mm" viewBox="0 0 600 200">{body}</svg>"#
+            ),
+            ..Default::default()
+        };
+        let default_job = prepare(&visicut).unwrap();
+        assert!(default_job.warnings.is_empty());
+        let nearest = Project {
+            cut_order: CutOrder::ShortestTravel,
+            ..visicut
+        };
+        let job = prepare(&nearest).unwrap();
+        assert!(job.warnings[0].contains("Experimentelle Schnittreihenfolge"));
+        assert!(
+            job.estimated_seconds < default_job.estimated_seconds * 0.9,
+            "{} vs {}",
+            job.estimated_seconds,
+            default_job.estimated_seconds
+        );
+        assert_framing(&job.jobs[0].bytes);
     }
 
     fn three_modes() -> Project {
