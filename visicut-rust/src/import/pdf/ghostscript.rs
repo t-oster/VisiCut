@@ -1,4 +1,5 @@
 //! Converts EPS and PostScript files to PDF with an installed Ghostscript.
+//! Used as fallback for what the built-in interpreter does not support.
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
@@ -7,7 +8,7 @@ use std::time::{Duration, Instant};
 /// Longest a single Ghostscript conversion may take.
 const TIMEOUT: Duration = Duration::from_secs(60);
 
-const MISSING: &str = "Für EPS/PS-Dateien wird Ghostscript benötigt, es wurde aber nicht gefunden. \
+pub const MISSING: &str = "Für EPS/PS-Dateien wird Ghostscript benötigt, es wurde aber nicht gefunden. \
      Bitte Ghostscript installieren (https://ghostscript.com) oder die Datei als SVG oder PDF speichern";
 
 /// Runs `gs -sDEVICE=pdfwrite` on `path` and returns the PDF bytes.

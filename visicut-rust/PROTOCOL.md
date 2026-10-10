@@ -153,14 +153,35 @@ Wiederholung nach Fehlern.
   (PDF: dünnste Linie) wird zu 0,1 mm. Nicht seitenfüllende Clip-Pfade und
   Soft-Masks bleiben für die Vorschau erhalten, verhindern aber das Schneiden
   (Hinweis beim Import).
-- EPS/PS: Java-VisiCut nutzt einen eingebauten PostScript-Interpreter
-  (`EPSImporter`, BoundingBox, 72 DPI). Die Rust-Version ruft stattdessen
-  Ghostscript auf (`-sDEVICE=pdfwrite -dEPSCrop -dSAFER -dNoOutputFonts`,
-  60 s Zeitlimit, temporäre Datei im Temp-Ordner) und importiert das Ergebnis
-  als PDF. Gesucht wird im `PATH`, unter macOS zusätzlich in
-  `/opt/homebrew/bin` und `/usr/local/bin`, unter Windows in
-  `Programme\gs\*\bin`. Ohne Ghostscript wird der Import mit Hinweis
-  abgelehnt.
+- EPS/PS: Wie Java-VisiCut (`EPSImporter`) liest ein eingebauter, bewusst
+  begrenzter PostScript-Interpreter (`src/import/eps/`) die Datei ohne
+  Zusatzprogramm und gibt SVG aus. Größe aus `%%BoundingBox:` (sonst
+  `%%PageBoundingBox:`, Zeilen mit `(atend)` werden übersprungen; ohne Angabe
+  800 × 600 pt mit Hinweis), 1 pt = 25,4/72 mm. Der viewBox ist in pt, der
+  Ursprung liegt links unten in der BoundingBox, y zeigt nach unten (wie bei
+  der Ghostscript-Umwandlung). Unterstützt:
+  - Operand- und Dictionary-Stack: `pop exch dup copy index roll`, `def load`
+    (nur das Benutzerwörterbuch, kein `begin`/`end`)
+  - Arithmetik und Vergleiche: `add sub mul div neg abs sqrt sin cos`,
+    `eq ne lt le gt ge not true false`
+  - Prozeduren und Schleifen: `{ }`, `exec if ifelse repeat for`
+  - Pfade: `newpath moveto rmoveto lineto rlineto curveto rcurveto closepath
+    arc arcn rect`; Malen: `fill eofill stroke`
+  - Farben (nach RGB): `setrgbcolor setgray setcmykcolor`; `setlinewidth`
+    (0 wird zu 0,1 mm)
+  - Matrizen: `gsave grestore translate scale rotate concat matrix setmatrix`
+  - ohne Wirkung: `showpage bind`
+
+  Nicht unterstützt sind Text (`show` usw.), Schriften (`findfont`,
+  `setfont` usw.), Bilder (`image`, `colorimage`), Clipping, `[ ]`-Arrays,
+  `<< >>`-Dictionaries, `loop`, `exit` und Binär-EPS mit DOS-Header. Trifft
+  der Interpreter auf einen solchen Operator, wird die Datei mit Ghostscript
+  (`-sDEVICE=pdfwrite -dEPSCrop -dSAFER -dNoOutputFonts`, 60 s Zeitlimit,
+  temporäre Datei im Temp-Ordner) in PDF umgewandelt und wie PDF importiert.
+  Gesucht wird im `PATH`, unter macOS zusätzlich in `/opt/homebrew/bin` und
+  `/usr/local/bin`, unter Windows in `Programme\gs\*\bin`. Ohne Ghostscript
+  scheitert der Import mit einer Meldung, die den Operator nennt (z. B.
+  „Text-Operator „show“ wird nicht unterstützt“) und auf Ghostscript verweist.
 - DXF (ASCII und binär, R12 bis aktuell) wird mit einem eigenen Parser in eine
   SVG in Millimetern umgewandelt (`src/import/dxf.rs`). Anders als VisiCuts
   kabeja-Import wird `$INSUNITS` beachtet; Zeichnungen ohne Einheit gelten wie

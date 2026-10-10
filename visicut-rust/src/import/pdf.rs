@@ -6,12 +6,14 @@
 //! PNG `data:` URIs. Java VisiCut has no PDF importer; this follows its EPS
 //! importer instead and maps 1 pt to 25.4 / 72 mm.
 //!
-//! EPS and PS files are converted to PDF by Ghostscript (if installed) and then
-//! imported like a PDF, which replaces Java VisiCut's built-in PostScript
-//! interpreter. `-dEPSCrop` makes the page match the EPS BoundingBox.
+//! EPS and PS files are read by the built-in PostScript interpreter in `eps`,
+//! which covers paths, colours and loops. Text, images, fonts and other
+//! operators fall back to Ghostscript (if installed), which converts the file
+//! to PDF that is then imported like a PDF. `-dEPSCrop` makes the page match
+//! the EPS BoundingBox.
 mod ghostscript;
 
-use super::Imported;
+use super::{Imported, eps};
 use hayro_svg::hayro_interpret::{InterpreterSettings, InterpreterWarning};
 use hayro_svg::hayro_syntax::{LoadPdfError, Pdf, PdfData};
 use std::path::Path;
@@ -28,9 +30,21 @@ pub fn read_pdf(path: &Path) -> Result<Imported, String> {
     convert(data)
 }
 
+/// Reads an EPS or PS file. If the built-in interpreter cannot handle it, the
+/// file goes to Ghostscript; without Ghostscript the message names the
+/// operator that stopped the interpreter.
 pub fn read_postscript(path: &Path) -> Result<Imported, String> {
-    let pdf = ghostscript::to_pdf(path)?;
-    convert(pdf)
+    let data = std::fs::read(path)
+        .map_err(|e| format!("EPS/PS-Datei konnte nicht gelesen werden: {e}"))?;
+    match eps::interpret(&data) {
+        Ok(imported) => Ok(imported),
+        Err(reason) => {
+            if ghostscript::find().is_none() {
+                return Err(format!("{reason}. {}", ghostscript::MISSING));
+            }
+            convert(ghostscript::to_pdf(path)?)
+        }
+    }
 }
 
 /// Converts the first page of a PDF document into an SVG sized in millimetres.

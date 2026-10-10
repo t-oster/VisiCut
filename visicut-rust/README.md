@@ -93,11 +93,13 @@ lokal nach einem Build für die jeweilige Host-Architektur.
    Linienfarben und Linienstärken, Text wird als Glyphenkontur übernommen,
    Rasterbilder werden eingebettet; die Größe stammt aus der Crop-/MediaBox
    (1 pt = 25,4/72 mm). Haarlinien (Linienstärke 0) erhalten 0,1 mm.
-   Verschlüsselte PDFs werden mit Hinweis abgelehnt. **EPS/PS** wird über ein
-   installiertes Ghostscript (`gs`, unter Windows `gswin64c`) in PDF
-   umgewandelt und dann genauso importiert; die Größe folgt der BoundingBox.
-   Ohne Ghostscript erscheint ein Hinweis, die Datei als SVG oder PDF zu
-   speichern.
+   Verschlüsselte PDFs werden mit Hinweis abgelehnt. **EPS/PS** wird ohne
+   Zusatzprogramm von einem eingebauten PostScript-Interpreter gelesen (Pfade,
+   Farben, Linienstärken, Prozeduren und Schleifen; die Größe folgt der
+   BoundingBox). Text, Schriften, Bilder und andere Operatoren, die er nicht
+   kennt, übergibt er an ein installiertes Ghostscript (`gs`, unter Windows
+   `gswin64c`). Ohne Ghostscript erscheint ein Hinweis mit dem betroffenen
+   Operator; dann hilft nur, die Datei als SVG oder PDF zu speichern.
    DXF-Dateien (ASCII oder binär) werden in Millimetern übernommen
    (`$INSUNITS`, ohne Angabe Millimeter); DXF-Ebenen und -Farben bleiben als
    Ebenen und Linienfarben für die Zuordnung erhalten.

@@ -300,3 +300,34 @@ fn reports_ghostscript_errors() {
     let error = crate::import::read_file(&path.0).err().unwrap();
     assert!(error.contains("Ghostscript"), "{error}");
 }
+
+#[test]
+fn imports_simple_eps_with_builtin_interpreter() {
+    // Path-only EPS files need no Ghostscript.
+    let eps = "%!PS-Adobe-3.0 EPSF-3.0\n%%BoundingBox: 0 0 72 36\n\
+        1 0 0 setrgbcolor 0 0 moveto 72 0 lineto 72 36 lineto closepath fill\n";
+    let path = TempPath(
+        std::env::temp_dir().join(format!("visicut-eps-builtin-{}.eps", std::process::id())),
+    );
+    std::fs::write(&path.0, eps).unwrap();
+    let imported = crate::import::read_file(&path.0).unwrap();
+    assert!(imported.svg.contains("#ff0000"), "{}", imported.svg);
+    assert!(imported.svg.contains("width=\"25.4"), "{}", imported.svg);
+}
+
+#[test]
+fn unsupported_text_without_ghostscript_names_the_operator() {
+    if ghostscript::find().is_some() {
+        return;
+    }
+    let path =
+        TempPath(std::env::temp_dir().join(format!("visicut-eps-text-{}.eps", std::process::id())));
+    std::fs::write(
+        &path.0,
+        "%!PS\n%%BoundingBox: 0 0 100 100\n10 10 moveto (Hi) show\n",
+    )
+    .unwrap();
+    let error = crate::import::read_file(&path.0).err().unwrap();
+    assert!(error.contains("„show“"), "{error}");
+    assert!(error.contains("Ghostscript"), "{error}");
+}
