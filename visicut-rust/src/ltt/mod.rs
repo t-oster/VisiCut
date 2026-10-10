@@ -247,18 +247,25 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
             .iter()
             .flat_map(|p| p.sets.iter().map(|s| overscan(operation, s.speed_percent)))
             .fold(0.0, f32::max);
-        let mut out = header(project, overscan, &name);
+        // The header holds the bounds of the actual content (LaserJob
+        // .getBoundingBox in Java), so it is written after the parts.
+        let mut body = Vec::new();
+        let mut bounds: Option<Bounds> = None;
         for (index, part) in group.iter().enumerate() {
-            steps.push(append_part(
-                &mut out,
+            let (step, part_bounds) = append_part(
+                &mut body,
                 project,
                 part,
                 index == 0,
                 &name,
                 &mut preview,
                 &mut timeline,
-            )?);
+            )?;
+            steps.push(step);
+            bounds = Some(bounds.map_or(part_bounds, |b| b.union(part_bounds)));
         }
+        let mut out = header(project, overscan, &name, bounds.unwrap_or_default());
+        out.extend(body);
         finish(&mut out)?;
         total_bytes = total_bytes.saturating_add(out.len());
         if total_bytes > 256 * 1024 * 1024 {
@@ -318,7 +325,7 @@ fn append_part(
     name: &str,
     preview: &mut tiny_skia::Pixmap,
     timeline: &mut Timeline,
-) -> Result<PreparedStep, String> {
+) -> Result<(PreparedStep, Bounds), String> {
     if part.sets.iter().any(|s| s.power_percent < 0.1) {
         return Err("Leistung für einen LTT-Job muss mindestens 0,1 % sein".into());
     }
@@ -328,6 +335,7 @@ fn append_part(
     let axis = Axis::of(project);
     let mut estimated = 0.0;
     let description;
+    let bounds;
     match part.operation {
         Operation::Cut | Operation::Mark => {
             let paths = geometry::contours(&source)?;
@@ -355,8 +363,8 @@ fn append_part(
                     );
                 }
             }
-            // All parameter sets share one cutting order (see order::inner_first_sets).
-            let (paths, sequence) = order::inner_first_sets(paths, part.sets.len());
+            bounds = Bounds::of_points(paths.iter().flatten().map(|p| [p[0] as f64, p[1] as f64]))
+                .ok_or("Keine Vektorpfade zum Bearbeiten")?;
             out.extend([0x1b, 0x56]); // vector mode
             out.extend([0x1b, 0x45, 0, 0, 0, 0, 0, 0, 0]); // pulse mode off
             out.extend([0x1b, 0x4e, 1]); // colour code red
@@ -367,54 +375,67 @@ fn append_part(
             } else {
                 MotionKind::Cut
             };
-            let scale_y = axis.prescale();
-            let polylines: Vec<Vec<(f64, f64)>> = paths
-                .iter()
-                .map(|path| {
-                    path.iter()
-                        .map(|p| {
-                            (
-                                p[0] as f64 * RASTER_DPI / 25.4,
-                                p[1] as f64 * RASTER_DPI / 25.4 * scale_y,
-                            )
+            // As in VisiCut's VectorProfile, the shapes are added once per
+            // LaserProperty and every pass is one more property; the optimizer
+            // then orders all of them together (see order::inner_first).
+            // VisiCut adds the material thickness to the focus of each property.
+            let mut keys = Vec::new();
+            for set in &part.sets {
+                for _ in 0..set.passes {
+                    keys.push(order::SetKey {
+                        power: set.power_percent,
+                        speed: set.speed_percent,
+                        focus: project.thickness_mm,
+                    });
+                }
+            }
+            let px_point = |p: &geometry::Point| {
+                [
+                    p[0] as f64 * RASTER_DPI / 25.4,
+                    p[1] as f64 * RASTER_DPI / 25.4,
+                ]
+            };
+            let elements: Vec<order::Element> = (0..keys.len())
+                .flat_map(|set| {
+                    paths
+                        .iter()
+                        .filter(|path| path.len() > 1)
+                        .map(move |path| order::Element {
+                            set,
+                            start: px_point(&path[0]),
+                            moves: path[1..].iter().map(px_point).collect(),
                         })
-                        .collect()
                 })
                 .collect();
-            // Consecutive entries of one parameter set form a block with its own
-            // settings and timeline program. With a single set the whole sequence
-            // is one block, so its output is unchanged.
-            let mut blocks: Vec<(usize, Vec<usize>)> = Vec::new();
-            for (set, index) in sequence {
-                match blocks.last_mut() {
-                    Some((last, indices)) if *last == set => indices.push(index),
-                    _ => blocks.push((set, vec![index])),
-                }
-            }
-            let (mut circles, mut curves) = (0, 0);
-            for (set_index, indices) in blocks {
-                let set = &part.sets[set_index];
-                let mut program = Program::new(part.operation);
-                {
-                    let mut encoder =
-                        vector::Encoder::new(out, axis, -1.0, -1.0, Some(&mut program), kind);
-                    encoder.set_speed(set.speed_percent);
-                    encoder.set_power(set.power_percent);
-                    for pass in 0..set.passes {
-                        // Repeated passes share the geometry in the timeline.
-                        encoder.recording = pass == 0;
-                        for &index in &indices {
-                            let polyline = &polylines[index];
-                            encoder.move_to(polyline[0].0, polyline[0].1);
-                            encoder.polyline(&polyline[1..])?;
-                        }
+            let ordered = order::inner_first(elements, &keys);
+            // Java prescales Y only while generating the commands.
+            let scale_y = axis.prescale();
+            let mut program = Program::new(part.operation);
+            let (circles, curves) = {
+                let mut encoder =
+                    vector::Encoder::new(out, axis, -1.0, -1.0, Some(&mut program), kind);
+                let mut current: Option<order::SetKey> = None;
+                for element in &ordered {
+                    let key = keys[element.set];
+                    if !current.is_some_and(|c| c.same(key)) {
+                        encoder.set_speed(key.speed);
+                        encoder.set_power(key.power);
+                        current = Some(key);
                     }
-                    encoder.finish();
-                    circles += encoder.circles;
-                    curves += encoder.curves;
+                    let polyline: Vec<(f64, f64)> = element
+                        .moves
+                        .iter()
+                        .map(|p| (p[0], p[1] * scale_y))
+                        .collect();
+                    encoder.move_to(element.start[0], element.start[1] * scale_y);
+                    encoder.polyline(&polyline)?;
                 }
-                estimated += timeline.append(program, set.passes);
-            }
+                encoder.finish();
+                (encoder.circles, encoder.curves)
+            };
+            // Passes are interleaved per path like in Java, so the timeline
+            // holds the whole sequence once.
+            estimated += timeline.append(program, 1);
             let mut text = format!(
                 "{} Vektorpfade · {} Durchgänge",
                 paths.len(),
@@ -426,6 +447,13 @@ fn append_part(
             description = text;
         }
         Operation::Engrave | Operation::Engrave3d => {
+            bounds = Bounds {
+                min: [project.x_mm as f64, project.y_mm as f64],
+                max: [
+                    (project.x_mm + project.width_mm) as f64,
+                    (project.y_mm + project.height_mm) as f64,
+                ],
+            };
             let pixmap = render_raster(&source)?;
             let raster = if part.operation == Operation::Engrave3d {
                 Raster::engrave_3d(&pixmap, &part.raster)
@@ -484,7 +512,7 @@ fn append_part(
         }
     }
     let first = &part.sets[0];
-    Ok(PreparedStep {
+    let step = PreparedStep {
         operation: part.operation,
         name: name.to_string(),
         description,
@@ -493,7 +521,31 @@ fn append_part(
         speed_percent: first.speed_percent,
         passes: first.passes,
         parameter_sets: part.sets.len(),
-    })
+    };
+    Ok((step, bounds))
+}
+
+/// Area of the job content on the bed in mm, Y downwards.
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+struct Bounds {
+    min: [f64; 2],
+    max: [f64; 2],
+}
+
+impl Bounds {
+    fn of_points(points: impl IntoIterator<Item = [f64; 2]>) -> Option<Self> {
+        points.into_iter().fold(None, |b: Option<Self>, p| {
+            Some(b.map_or(Self { min: p, max: p }, |b| {
+                b.union(Self { min: p, max: p })
+            }))
+        })
+    }
+    fn union(self, other: Self) -> Self {
+        Self {
+            min: [self.min[0].min(other.min[0]), self.min[1].min(other.min[1])],
+            max: [self.max[0].max(other.max[0]), self.max[1].max(other.max[1])],
+        }
+    }
 }
 
 fn operation_color(operation: Operation) -> [u8; 3] {
@@ -610,7 +662,7 @@ fn settings(out: &mut Vec<u8>, power: f32, speed: f32) {
     word(out, (power * 10.0).clamp(1.0, 1000.0) as u16);
 }
 
-fn header(project: &Project, overscan: f32, name: &str) -> Vec<u8> {
+fn header(project: &Project, overscan: f32, name: &str, bounds: Bounds) -> Vec<u8> {
     let mut out = b"LTT\x1bv\x01\x01\x02\x1bF".to_vec();
     // Prefix is part of the actual controller name, within its 15-byte limit.
     out.push(name.len() as u8);
@@ -624,11 +676,11 @@ fn header(project: &Project, overscan: f32, name: &str) -> Vec<u8> {
         out.extend([0x1b, 0x4d, 0]); // XY, one bit per raster pixel
     }
     out.extend([0x1b, 0x6c]);
-    for margin in [0.0, overscan] {
-        let xmin = (project.x_mm - margin).max(0.0) as f64;
-        let xmax = (project.x_mm + project.width_mm + margin).min(BED_WIDTH as f32) as f64;
-        let ymin = project.y_mm as f64;
-        let ymax = (project.y_mm + project.height_mm) as f64;
+    // Content bounds, then with engrave overscan as in Java setBoundingBox.
+    for margin in [0.0, overscan as f64] {
+        let xmin = (bounds.min[0] - margin).max(0.0);
+        let xmax = (bounds.max[0] + margin).min(BED_WIDTH);
+        let [ymin, ymax] = [bounds.min[1], bounds.max[1]];
         dword(&mut out, raw(xmin));
         dword(&mut out, axis.bounding(ymin));
         dword(&mut out, raw(xmax) - raw(xmin));
@@ -976,8 +1028,10 @@ mod tests {
             .filter(|w| w[..2] == [0x1b, 0x53])
             .map(|w| u16::from_be_bytes([w[2], w[3]]))
             .collect();
+        // (50 %, 8 %) comes first because of the HashMap order of the Java
+        // properties (bucket 4 before 12), not because it is the first set.
         assert_eq!(speeds, vec![80, 300, 80, 300]);
-        assert_eq!(job.timeline.programs.len(), 4);
+        assert_eq!(job.timeline.programs.len(), 1);
         assert_eq!(job.steps[0].parameter_sets, 2);
     }
 
@@ -1022,7 +1076,9 @@ mod tests {
                 .any(|b| b == [0x1b, 0x4a, 0, 50])
         );
         assert_eq!(job.timeline.programs.len(), 3);
-        assert_eq!(job.timeline.runs.len(), 5);
+        // Engrave, mark and cut once each: vector passes are interleaved per
+        // path like in Java and belong to the single run of their program.
+        assert_eq!(job.timeline.runs.len(), 3);
         assert_eq!(job.timeline.programs[1].operation, Operation::Mark);
         assert!(
             job.timeline.programs[1]
@@ -1136,8 +1192,11 @@ mod tests {
         p.speed_percent = 20.0;
         let faster = prepare(&p).unwrap().estimated_seconds;
         assert!((faster - expected(67.7354)).abs() < 0.003, "{faster}");
+        // Java joins the line and its second pass into one path there and
+        // back: no travel in between, the reversal is a corner.
         p.passes = 2;
-        assert!(prepare(&p).unwrap().estimated_seconds > faster * 2.0); // return travel
+        let twice = prepare(&p).unwrap().estimated_seconds;
+        assert!((twice - 2.0 * faster).abs() < 0.003, "{twice}");
     }
 
     #[test]
@@ -1275,12 +1334,23 @@ mod tests {
         assert!(has(bytes, &[0x1b, 0x61, 0x15, 0x1b, 0x4d, 0x10]));
         // Radius 50 mm in 0.01 mm.
         assert!(has(bytes, &[0x1b, 0x52, 0x13, 0x88]));
-        // Bounding box y = 10 mm and height 60 mm on a 314.16 mm circumference.
+        // Bounding box of the contours; Y as rotation steps on a 314.16 mm
+        // circumference instead of 4000-DPI machine units.
+        let b = Bounds::of_points(
+            geometry::contours(&p)
+                .unwrap()
+                .iter()
+                .flatten()
+                .map(|q| [q[0] as f64, q[1] as f64]),
+        )
+        .unwrap();
+        let axis = Axis::of(&p);
+        assert!(axis.bounding(b.max[1]) < raw(b.max[1]));
         let mut bbox = vec![0x1b, 0x6c];
-        dword(&mut bbox, raw(10.0));
-        dword(&mut bbox, 204);
-        dword(&mut bbox, raw(110.0) - raw(10.0));
-        dword(&mut bbox, 1426 - 204);
+        dword(&mut bbox, raw(b.min[0]));
+        dword(&mut bbox, axis.bounding(b.min[1]));
+        dword(&mut bbox, raw(b.max[0]) - raw(b.min[0]));
+        dword(&mut bbox, axis.bounding(b.max[1]) - axis.bounding(b.min[1]));
         assert!(has(bytes, &bbox));
         let mut absolute = Vec::new();
         pair(&mut absolute, Axis::of(&p), 100, 500);
