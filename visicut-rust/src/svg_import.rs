@@ -18,10 +18,13 @@ const SVG_NS: &str = "http://www.w3.org/2000/svg";
 const XLINK_NS: &str = "http://www.w3.org/1999/xlink";
 const SODIPODI_NS: &str = "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd";
 
+#[derive(Default)]
 pub struct Imported {
     pub svg: String,
     /// German, user-facing notes about images that were not embedded.
     pub warnings: Vec<String>,
+    /// Processing steps from the mappings of a VisiCut project (PLF); empty otherwise.
+    pub steps: Vec<crate::project::JobStep>,
 }
 
 /// Reads an SVG file (≤ 25 MB) and embeds its external images.
@@ -50,6 +53,7 @@ pub fn embed_external_images(source: &str, base_dir: &Path) -> Imported {
         return Imported {
             svg: source.to_owned(),
             warnings,
+            ..Default::default()
         };
     };
     let mut cache: HashMap<PathBuf, Result<String, String>> = HashMap::new();
@@ -127,7 +131,11 @@ pub fn embed_external_images(source: &str, base_dir: &Path) -> Imported {
         position = range.end;
     }
     svg.push_str(&source[position..]);
-    Imported { svg, warnings }
+    Imported {
+        svg,
+        warnings,
+        ..Default::default()
+    }
 }
 
 enum Href {

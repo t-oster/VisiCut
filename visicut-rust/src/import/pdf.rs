@@ -102,7 +102,11 @@ fn convert_unchecked(data: Vec<u8>) -> Result<Imported, String> {
                 .into(),
         );
     }
-    Ok(Imported { svg, warnings })
+    Ok(Imported {
+        svg,
+        warnings,
+        ..Default::default()
+    })
 }
 
 /// Gives the SVG its physical size and makes zero-width strokes visible.
