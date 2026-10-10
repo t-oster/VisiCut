@@ -51,7 +51,11 @@ pub(super) fn interpret(data: &[u8]) -> Result<Imported, String> {
     if svg.len() > MAX_SVG_BYTES {
         return Err("EPS-Datei ist zu komplex (SVG größer als 20 MB)".into());
     }
-    Ok(Imported { svg, warnings })
+    Ok(Imported {
+        svg,
+        warnings,
+        ..Default::default()
+    })
 }
 
 /// The first `%%BoundingBox:` or `%%PageBoundingBox:` comment with four
