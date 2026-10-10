@@ -8,6 +8,11 @@ use visicut_core::{
 };
 
 type Pending = Receiver<Result<image::RgbaImage, String>>;
+type Download = Receiver<Result<Vec<LaserDevice>, String>>;
+
+/// Arbeitsbett des LTT iLaser 4000 in mm. Die Geräteimporte lehnen andere
+/// Maße ab, deshalb legt das Gerät die Bettgröße fest (wie macOS).
+pub const BED_MM: [f32; 2] = [1000.0, 600.0];
 
 fn spawn(work: impl FnOnce() -> Result<image::RgbaImage, String> + Send + 'static) -> Pending {
     let (tx, rx) = channel();
@@ -63,6 +68,8 @@ pub struct DeviceUi {
     camera: Option<egui::TextureHandle>,
     camera_loading: Option<Pending>,
     calibration: Option<Calibration>,
+    /// Laufender Download von Labor-Einstellungen (Laborname, Ergebnis).
+    download: Option<(String, Download)>,
 }
 
 impl DeviceUi {
@@ -81,6 +88,7 @@ impl DeviceUi {
             camera: None,
             camera_loading: None,
             calibration: None,
+            download: None,
         };
         (ui, error)
     }
@@ -89,16 +97,48 @@ impl DeviceUi {
         &self.store.devices[self.store.selected]
     }
 
-    /// The selected device defines the job target and rotary availability.
+    /// The selected device defines the job target, the bed and rotary availability.
     pub fn apply(&self, project: &mut Project) -> bool {
         let device = self.device();
         let changed = project.hostname != device.hostname
             || project.port != device.port
+            || [project.bed_width_mm, project.bed_height_mm] != BED_MM
             || (project.rotary_axis && !device.rotary_axis);
         project.hostname = device.hostname.clone();
         project.port = device.port;
+        [project.bed_width_mm, project.bed_height_mm] = BED_MM;
         project.rotary_axis &= device.rotary_axis;
         changed
+    }
+
+    /// Öffnet die Lasercutter-Verwaltung (oder lässt sie offen).
+    pub fn open_manager(&mut self) {
+        if self.draft.is_none() {
+            self.draft = Some((self.store.clone(), self.store.selected));
+        }
+    }
+
+    pub fn has_camera(&self) -> bool {
+        !self.device().camera_url.is_empty()
+    }
+
+    pub fn camera_shown(&self) -> bool {
+        self.show_camera
+    }
+
+    pub fn camera_loading(&self) -> bool {
+        self.camera_loading.is_some()
+    }
+
+    /// Kamerabild ein- oder ausblenden; lädt es beim ersten Einblenden.
+    pub fn toggle_camera(&mut self, project: &Project) {
+        if !self.has_camera() {
+            return;
+        }
+        self.show_camera = !self.show_camera;
+        if self.show_camera && self.camera.is_none() {
+            self.refresh_camera(project);
+        }
     }
 
     fn save(&mut self, store: DeviceStore, project: &mut Project, status: &mut String) -> bool {
@@ -125,8 +165,8 @@ impl DeviceUi {
         true
     }
 
-    fn refresh_camera(&mut self, project: &Project) {
-        if self.camera_loading.is_some() {
+    pub fn refresh_camera(&mut self, project: &Project) {
+        if self.camera_loading.is_some() || !self.has_camera() {
             return;
         }
         let device = self.device().clone();
@@ -141,7 +181,7 @@ impl DeviceUi {
         dirty: &mut bool,
         status: &mut String,
     ) {
-        ui.label("Lasercutter (LTT iLaser 4000)");
+        ui.label("Lasercutter");
         let mut selected = self.store.selected;
         egui::ComboBox::from_id_salt("device")
             .width(200.0)
@@ -160,7 +200,7 @@ impl DeviceUi {
         }
         ui.small(format!("{}:{}", self.device().hostname, self.device().port));
         if ui.button("Lasercutter verwalten …").clicked() {
-            self.draft = Some((self.store.clone(), self.store.selected));
+            self.open_manager();
         }
         if self.device().rotary_axis {
             *dirty |= ui
@@ -230,6 +270,7 @@ impl DeviceUi {
             }
             None => {}
         }
+        self.poll_download(ctx, status);
         let mut action = None;
         self.manager(ctx, project, status);
         if let Some(calibration) = &mut self.calibration {
@@ -255,6 +296,48 @@ impl DeviceUi {
         action
     }
 
+    fn start_download(&mut self, name: &str, url: &'static str, status: &mut String) {
+        if self.download.is_some() {
+            return;
+        }
+        let (tx, rx) = channel();
+        std::thread::spawn(move || {
+            let _ = tx.send(device::download(url));
+        });
+        self.download = Some((name.to_owned(), rx));
+        *status = format!("Einstellungen von „{name}“ werden heruntergeladen …");
+    }
+
+    /// Übernimmt fertige Downloads in den Entwurf der Verwaltung.
+    fn poll_download(&mut self, ctx: &egui::Context, status: &mut String) {
+        let Some((name, receiver)) = &self.download else {
+            return;
+        };
+        let result = match receiver.try_recv() {
+            Ok(result) => result,
+            Err(TryRecvError::Empty) => {
+                ctx.request_repaint_after(std::time::Duration::from_millis(100));
+                return;
+            }
+            Err(TryRecvError::Disconnected) => Err("Download unerwartet abgebrochen".into()),
+        };
+        let name = name.clone();
+        self.download = None;
+        match result {
+            Ok(devices) => {
+                self.open_manager();
+                if let Some((draft, editing)) = &mut self.draft {
+                    let added = draft.merge(devices);
+                    *editing = draft.devices.len() - 1;
+                    *status = format!(
+                        "{added} LTT iLaser 4000 von „{name}“ importiert · zum Übernehmen sichern"
+                    );
+                }
+            }
+            Err(e) => *status = format!("Download von „{name}“ fehlgeschlagen: {e}"),
+        }
+    }
+
     fn manager(&mut self, ctx: &egui::Context, project: &mut Project, status: &mut String) {
         let Some((mut draft, mut editing)) = self.draft.take() else {
             return;
@@ -262,6 +345,8 @@ impl DeviceUi {
         let mut open = true;
         let mut save = false;
         let mut calibrate = false;
+        let mut download = None;
+        let downloading = self.download.as_ref().map(|(name, _)| name.clone());
         egui::Window::new("Lasercutter verwalten")
             .open(&mut open)
             .default_size([640.0, 420.0])
@@ -374,24 +459,20 @@ impl DeviceUi {
                             Err(e) => *status = e,
                         }
                     }
-                    egui::ComboBox::from_id_salt("labs")
-                        .selected_text("Herunterladen")
-                        .show_ui(ui, |ui| {
-                            for (name, url) in device::LAB_SETTINGS {
-                                if ui.selectable_label(false, *name).clicked() {
-                                    match device::download(url) {
-                                        Ok(devices) => {
-                                            *status = format!(
-                                                "{} LTT iLaser 4000 importiert",
-                                                draft.merge(devices)
-                                            );
-                                            editing = draft.devices.len() - 1;
-                                        }
-                                        Err(e) => *status = e,
+                    ui.add_enabled_ui(downloading.is_none(), |ui| {
+                        egui::ComboBox::from_id_salt("labs")
+                            .selected_text("Herunterladen")
+                            .show_ui(ui, |ui| {
+                                for (name, url) in device::LAB_SETTINGS {
+                                    if ui.selectable_label(false, *name).clicked() {
+                                        download = Some((*name, *url));
                                     }
                                 }
-                            }
-                        });
+                            });
+                    });
+                    if let Some(name) = &downloading {
+                        ui.spinner().on_hover_text(format!("Lädt „{name}“ …"));
+                    }
                     if ui.button("Exportieren …").clicked()
                         && let Some(path) = rfd::FileDialog::new()
                             .add_filter("VisiCutRust-Lasercutter", &["vcrdevices"])
@@ -412,8 +493,17 @@ impl DeviceUi {
                     {
                         draft.selected = editing;
                     }
+                    let changed = draft != self.store;
+                    if ui
+                        .add_enabled(changed, egui::Button::new("Verwerfen"))
+                        .on_hover_text("Ungesicherte Änderungen an der Geräteliste verwerfen")
+                        .clicked()
+                    {
+                        draft = self.store.clone();
+                        editing = editing.min(draft.devices.len() - 1);
+                    }
                     save = ui
-                        .add_enabled(draft != self.store, egui::Button::new("Sichern"))
+                        .add_enabled(changed, egui::Button::new("Sichern"))
                         .clicked();
                 });
             });
@@ -440,6 +530,9 @@ impl DeviceUi {
                 selected: 0,
                 problem: None,
             });
+        }
+        if let Some((name, url)) = download {
+            self.start_download(name, url, status);
         }
         if save {
             self.save(draft.clone(), project, status);
