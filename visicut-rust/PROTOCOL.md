@@ -305,3 +305,34 @@ Header verglichen; beides sind die oben beschriebenen bewussten Abweichungen.
 Rust schickt pro Verfahren einen eigenen Auftrag; die Fälle enthalten daher je
 ein Verfahren. Neu erzeugen:
 `bash scripts/java-parity/generate.sh` (Java 17+, Maven, Submodul LibLaserCut).
+
+## Hinweise aus dem Herstellertreiber iLaser 3000
+
+Ausgewertet wurde der Windows-Druckertreiber „iLASER-3000_S“ 6.19.0 von LTT
+(10. Januar 2023): Konfigurationsdateien und die Befehlsfolgen der
+Treiber-DLL. Aus dem Paket ist nichts im Repository; festgehalten sind nur
+Protokollfakten. Sie gelten für den iLaser 3000 und sind für den iLaser 4000
+**nicht bestätigt**. VisiCutRust sendet keinen der folgenden Befehle.
+
+- Befehlsvorrat des Treibers: `ESC v`, `ESC F`, `ESC a`, `ESC M`, `ESC l`,
+  `ESC n`, `ESC O`, `ESC Q`, `ESC D`, `ESC R`, `ESC C`, `ESC T`, `ESC N`,
+  `ESC V`, `ESC E`, `ESC J`, `ESC S`, `ESC P`, `ESC 0`/`ESC 1` (Rasterzeile
+  mit Länge + 8), `ESC BYE` mit additiver 16-Bit-Prüfsumme und Länge sowie
+  `PS PD PU PA PR PJ PE PF` – deckungsgleich mit LibLaserCut. Zusätzlich:
+  `ESC A`, `ZA`, `ESC f`, `ESC K`, `ESC I`.
+- Druckluft `ESC A <Byte>`: nur wenn der Treiber-Schalter `AirBlow` = 1 ist;
+  das Byte kommt aus `AirBlowFlag` und gilt je Stift/Parametersatz. Es folgt
+  auf `ESC J` (Leistung), `ESC S` (Geschwindigkeit) und `ESC P` (PPI) des
+  Satzes. Vor `ESC BYE` sendet der Treiber `ESC A 00`.
+- Z-Achse `ZA <int32>`: nur bei `ZaxisMode` = 1, an derselben Stelle vor
+  `ESC A`. Wert = `ZaxisOffset / 100 / (ZaxisPitch × 10⁻⁸)`, also ein Offset
+  je Satz in Motorschritten; vor `ESC BYE` folgt `ZA 0`.
+- Für Absaugung gibt es keinen Befehl.
+- In der mitgelieferten Konfiguration sind `AirBlow` und `ZaxisMode` nicht
+  gesetzt und `ZaxisPitch` fehlt; der Treiber sendet beides dort also nicht.
+- Weitere Werte des 3000 (700 × 500 mm): `RotaryRDPI=663`, Beschleunigung
+  1260 mm/s², Höchstgeschwindigkeit 400 mm/s, Gravur-Überlauf 3,5–35 mm
+  (wie LibLaserCut), eigene Gravurverschiebung je Geschwindigkeit.
+
+Vor einer Nutzung am iLaser 4000 muss ein beaufsichtigter Test zeigen, ob
+das Gerät `ESC A` bzw. `ZA` versteht; besser ist der Treiber des 4000.
