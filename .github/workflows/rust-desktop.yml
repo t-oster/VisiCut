@@ -160,7 +160,7 @@ jobs:
           REF_NAME: ${{ github.ref_name }}
           RUN_NUMBER: ${{ github.run_number }}
         run: |
-          # Archive names carry the Cargo version, e.g. VisiCutRust-0.3.0-….zip.
+          # Archive names carry the Cargo version, e.g. VisiCutRust-0.5.0-….zip.
           version=$(ls VisiCutRust-*-x86_64-pc-windows-msvc.zip | sed -E 's/^VisiCutRust-(.*)-x86_64-pc-windows-msvc\.zip$/\1/')
           if [[ "$REF_TYPE" == tag ]]; then
             tag="$REF_NAME"

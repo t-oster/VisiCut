@@ -7,7 +7,7 @@ Erster Ziel-Lasercutter: LTT iLaser 4000 des FAU FabLabs.
 ## Starten
 
 Die lokal gebaute App befindet sich in `dist/VisiCutRust.app`.
-Version 0.3.0 benötigt macOS 14 oder neuer, weder Java noch Maven.
+Version 0.5.0 benötigt macOS 14 oder neuer, weder Java noch Maven.
 Die macOS-App wird nur für Apple Silicon
 gebaut und veröffentlicht; Intel-Macs werden nicht unterstützt.
 
