@@ -1,5 +1,6 @@
 mod devices_ui;
 mod jobs_ui;
+mod vectorize_ui;
 
 use eframe::egui::{self, Color32, Pos2, Rect, Sense, Stroke, Vec2};
 use std::path::{Path, PathBuf};
@@ -21,6 +22,7 @@ struct VisiCutRust {
     send_result: Option<std::sync::mpsc::Receiver<Result<Vec<String>, String>>>,
     devices: devices_ui::DeviceUi,
     jobs: jobs_ui::JobUi,
+    vectorize: vectorize_ui::VectorizeUi,
     #[cfg(feature = "screenshot")]
     capture: Option<(PathBuf, u32)>,
 }
@@ -42,6 +44,7 @@ impl VisiCutRust {
             send_result: None,
             devices,
             jobs,
+            vectorize: vectorize_ui::VectorizeUi::default(),
             #[cfg(feature = "screenshot")]
             capture: None,
         };
@@ -540,6 +543,12 @@ impl eframe::App for VisiCutRust {
                 });
         }
         self.jobs.windows(ctx, &mut self.status);
+        if let Some((svg, name)) = self.vectorize.windows(ctx, self.dirty, &mut self.status) {
+            // Vektorisierte Bitmaps laufen über denselben Importpfad wie SVG-Dateien.
+            if let Err(e) = self.import(ctx, svg, name) {
+                self.status = e;
+            }
+        }
         if let Some(devices_ui::Action::CalibrationPage(points)) =
             self.devices
                 .windows(ctx, &mut self.project, &mut self.status)
@@ -601,6 +610,9 @@ impl eframe::App for VisiCutRust {
                         )
                     {
                         self.status = e;
+                    }
+                    if ui.button("Bitmap vektorisieren …").clicked() {
+                        self.vectorize.pick(&mut self.status);
                     }
                     if self.dirty {
                         ui.label("• geändert");
