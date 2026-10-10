@@ -281,6 +281,10 @@ Durchgangswechsel, Ende der Wiedergabe sowie drei getrennte Aufträge.
 Er prüft außerdem Regel-Zuordnung mit Rest und Ignorierregeln, 3D-Gravur, Rasterverfahren, Parametersätze und die Materialbibliothek (Sichern, doppelte Einträge, Wiederherstellen). Außerdem prüft er Geräteliste und Gerätewechsel in einem temporären Einstellungsordner, Drehachsen-Aufträge, Kamerahintergrund aus einer lokalen Bilddatei und die Kalibrierseite. Rust-Tests prüfen drei unabhängige TCP-Verbindungen ausschließlich lokal. Er sendet keinen
 Job an den Lasercutter. Der normale Start enthält keinen Selbsttest.
 
+`tests/java_parity.rs` vergleicht die erzeugten LTT-Aufträge Byte für Byte
+mit Referenzen aus dem originalen Java-VisiCut; neu erzeugt werden sie mit
+`scripts/java-parity/generate.sh` (siehe `scripts/java-parity/README.md`).
+
 Die Materialdaten sind in `resources/materials.json` eingebettet.
 Originaldateien liegen unter `reference/fau-settings`.
 Der Import lässt sich mit `scripts/import-fau-materials.py` aus einem

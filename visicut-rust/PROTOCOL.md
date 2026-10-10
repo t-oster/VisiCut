@@ -42,8 +42,13 @@ Wiederholung nach Fehlern.
 
 ## Bewusste Einschränkungen
 
-- Vektorpfade werden adaptiv in Geraden zerlegt (0,025 mm Toleranz) und wie
-  im Java-Treiber (`curveOrLine`) an Ecken geteilt. Flache Abschnitte gehen
+- Kurven werden wie Java2Ds `FlatteningPathIterator` in Geraden zerlegt: in
+  500-DPI-Pixeln mit der Flachheit 0,2 px (`getRequiredCurvePrecision` bei
+  Tangentialkurven), höchstens zehn Halbierungen. Wie VisiCuts
+  `ShapeConverter` entfallen Linienenden, deren abgeschnittenes Pixel dem des
+  letzten Punkts gleicht; die Schließlinie bleibt immer. Konturpunkte sind
+  `f64` wie in Java. Die Pfade werden wie im Java-Treiber (`curveOrLine`) an
+  Ecken geteilt. Flache Abschnitte gehen
   als verbundene Tangentialkurve (`PJ … PE <Tempo> PR … PF`) mit
   Geschwindigkeitsplanung bis 2000 mm/s² hinaus (`curve`,
   `curveWithKnownSpeed`, Neuinterpolation 0,9 mm, zehn Aufwärmrunden).
@@ -59,26 +64,25 @@ Wiederholung nach Fehlern.
   skalieren mit Transformationen und viewBox; das Muster beginnt in jedem
   Teilpfad neu und läuft bei geschlossenen Formen über den Startpunkt
   hinweg. Reine Füllformen bleiben durchgehend.
-- Schnittreihenfolge wie VisiCuts Standard „innen zuerst“
-  (`InnerFirstVectorOptimizer`): Offene Pfade, deren Enden ohne Abzweigung
-  aufeinandertreffen (0,9 Pixel bei 500 DPI, Manhattan-Abstand), werden zu
-  einem Pfad verbunden. Danach werden alle Pfade eines Schritts zusammen mit
-  allen seinen Parametersätzen stabil nach Begrenzungsrahmen sortiert, wie
-  Java-VisiCut einen Teil je Verfahren optimiert: unterer Rand aufsteigend,
-  oberer absteigend, rechter aufsteigend, linker absteigend. Ein Pfad, dessen
-  Rahmen in einem anderen liegt, wird also vorher geschnitten; Löcher fallen
-  nicht nach dem Außenumriss heraus. Gleiche Rahmen (z. B. Kreis im Quadrat)
-  werden nicht unterschieden. Die Sätze desselben Pfads haben denselben Rahmen
-  und folgen daher direkt aufeinander (Pfad A mit Satz 1 und 2, dann Pfad B),
-  solange kein anderer Pfad denselben Rahmen hat.
-  Das Verbinden erfolgt einmal, weil alle Sätze dieselben Konturen schneiden.
-  Außer beim Verbinden werden Pfade nicht umgedreht. Aufeinanderfolgende
-  Einträge desselben Satzes bilden einen Block mit eigenen Leistungs- und
-  Geschwindigkeitsbefehlen und eigenem Zeitleisten-Abschnitt; Durchgänge gelten
-  je Block. Ein einzelner Satz ergibt weiterhin einen Block mit allen Pfaden in
-  der bisherigen Reihenfolge. Abweichung: Die Durchgänge sind im Java-Treiber
-  nicht enthalten (LibLaserCut liegt nicht im Repo); ob Java sie pro Pfad oder
-  pro Satz wiederholt, ist daher nicht geprüft.
+- Schnittreihenfolge wie VisiCuts Standard „innen zuerst“: wörtliche
+  Portierung von `VectorOptimizer`, `OptimizerUtils.joinContiguousLoopElements`
+  und `InnerFirstVectorOptimizer` in 500-DPI-Pixeln. Wie in VisiCuts
+  `VectorProfile` werden die Formen einmal je `LaserProperty` hinzugefügt;
+  jeder Durchgang ist eine weitere gleiche Eigenschaft. Elemente gleicher
+  Werte (Leistung, Geschwindigkeit, Fokus = Materialstärke wie VisiCuts
+  `useThicknessAsFocusOffset`) bilden eine Gruppe; die Gruppen folgen der
+  Reihenfolge von Javas `HashMap` (Bucket des `LaosCutterProperty`-Hashs,
+  `computeIfAbsent` fügt neue Schlüssel am Bucket-Anfang ein). Je Gruppe
+  kommen erst die geschlossenen Pfade, dann offene Pfade, die verbunden
+  werden, wo genau ein anderes Ende innerhalb von 0,9 px (Manhattan-Abstand)
+  liegt, auch über Durchgänge hinweg (eine doppelt geschnittene Linie wird
+  Hin- und Rückweg). Danach folgt die stabile Sortierung nach
+  Begrenzungsrahmen: unterer Rand aufsteigend, oberer absteigend, rechter
+  aufsteigend, linker absteigend. Löcher kommen so vor dem Außenumriss, und
+  die Durchgänge einer Kontur folgen direkt aufeinander. Gleiche Rahmen werden
+  nicht unterschieden. Ein Teil wird mit einem Encoder erzeugt; Leistung und
+  Geschwindigkeit gehen wie im Treiber nur bei Änderung hinaus.
+  Nicht nachgebildet: Baum-Buckets der `HashMap` ab acht gleichen Buckets.
 - Zuordnung wie VisiCuts Mappings: Schritte wählen Objekte einzeln, über
   Bedingungen (Farbe, Linien-/Füllfarbe, Linienstärke in mm mit „=“ oder „≤“,
   Gruppe/Inkscape-Ebene, Typ, ID; jeweils auch negiert) oder als Rest.
@@ -115,8 +119,17 @@ Wiederholung nach Fehlern.
   Invertierung wie im Rasterprofil. Bidirektional (`ESC 1`, Zeile gespiegelt)
   und von unten nach oben wie `LaosEngraveProperty`. Die Zeilenverschiebung
   folgt `getEngraveShiftPixels` einschließlich +0,5 Pixel.
+  Wie VisiCuts `RasterProfile` wird nur die Bounding Box der Objekte
+  (mit halber Strichbreite) gerastert, `Helper.toRect` schneidet x, y, Breite
+  und Höhe einzeln ab; Rasterursprung ist deren Ecke. Gravur ohne, 3D-Gravur
+  mit Antialiasing, Bilder mit Nächster-Nachbar-Interpolation. Jeder Durchgang
+  ist ein eigener Rasterteil mit Farbcode, Einstellungen bei Änderung und
+  Beginn nach rechts.
   Abweichungen: Die geordnete Matrix nutzt 255 statt 256, damit reines Weiß
-  nicht gepunktet wird; „Zufall“ ist reproduzierbar statt ungeseedet.
+  nicht gepunktet wird; „Zufall“ ist reproduzierbar statt ungeseedet. Kanten,
+  die nicht auf ganzen Pixeln liegen, rastern Java2D und tiny-skia
+  unterschiedlich (Pixelmitte bzw. Teilabdeckung); einzelne Randpixel können
+  daher abweichen.
 - 3D-Gravur: eigener Auftrag, Job-Modus 8 Bit je Pixel (`ESC M 0x02`),
   Leistung je Pixel = Dunkelheit (wie der Java-Treiber nach `invertBits`).
   Abweichungen: Leere Ränder werden bei Leistung 0 (weiß) statt bei Grauwert 0
@@ -255,11 +268,17 @@ ein leerer Schritt, damit nicht das ganze Motiv bearbeitet wird.
 
 Der Zeitslider verwendet Bewegungen aus der Erzeugung der tatsächlichen
 LTT-Daten. Jeder Vektorschritt wird nach 500-DPI-Quantisierung erfasst,
-Rasterzeilen einschließlich Overscan und Leerfahrten. Wiederholte Durchgänge
-teilen die gespeicherte Geometrie; Zeitabschnitte bilden die Reihenfolge ab.
+Rasterzeilen einschließlich Overscan und Leerfahrten. Wiederholte
+Rasterdurchgänge teilen die gespeicherte Geometrie. Vektordurchgänge sind wie
+in Java je Kontur verschränkt und bilden daher einen Ablauf ohne getrennte
+Durchgänge; Zeitabschnitte bilden die Reihenfolge ab.
 Die erste Anfahrt wird ab (0,0) geschätzt; danach wird die letzte Position
 fortgeschrieben. Tatsächliche Kopfposition und Pausen zwischen den getrennt
 zu startenden Gerätejobs sind nicht bekannt. Die Simulation sendet keine Daten.
+
+Die Bounding Box im Header ist wie `LaserJob.getBoundingBox` die des
+tatsächlichen Inhalts (Vektorpunkte bzw. Rasterbereich), nicht die der
+SVG-Seite.
 
 Gerätenamen beginnen direkt mit `Cut_`, `Engrav_` bzw. `Mark_`, ohne zusätzlichen
 VC-Präfix, und werden auf 15 ASCII-Zeichen begrenzt. Der Präfix bleibt beim
@@ -268,3 +287,21 @@ Jeder hat eigenen Header, BYE, Prüfsumme, Länge und deaktivierten Autostart.
 Bei einer fehlgeschlagenen Übertragung stoppt die Folge; die Fehlermeldung
 nennt den betroffenen und bereits übertragenen Teil. Es gibt weder eine
 Gerätequittung noch automatisches Fortsetzen oder eine automatische Wiederholung.
+
+## Byte-Vergleich mit Java
+
+`tests/java_parity.rs` vergleicht die Rust-Ausgabe Byte für Byte mit
+Referenzaufträgen des originalen Java-VisiCut (LibLaserCut-LTT-Treiber,
+FAU-Gerät, `scripts/java-parity`). Jeder Fall in `tests/java_parity/` enthält
+die SVG, die Einstellungen (`case.properties`) und `expected.ltt`. Abgedeckt
+sind Rechteck, Kreisbefehl, Bézierkurven, verschachtelte und offene Konturen,
+Durchgänge, mehrere Parametersätze, Markieren sowie Gravur mit
+Floyd-Steinberg, Halbton, Halbton aufgehellt (einseitig, von unten), Geordnet,
+Mittelwert (Helligkeit, Invertierung) und Raster einschließlich eines
+eingebetteten Graustufenbilds. Die Rasterfälle liegen auf ganzen Pixeln, weil
+Java2D und tiny-skia schräge oder gebrochene Kanten verschieden rastern. Der
+Fall „Geordnet“ enthält kein reines Weiß, und bei der 3D-Gravur wird nur der
+Header verglichen; beides sind die oben beschriebenen bewussten Abweichungen.
+Rust schickt pro Verfahren einen eigenen Auftrag; die Fälle enthalten daher je
+ein Verfahren. Neu erzeugen:
+`bash scripts/java-parity/generate.sh` (Java 17+, Maven, Submodul LibLaserCut).

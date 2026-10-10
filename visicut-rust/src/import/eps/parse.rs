@@ -142,10 +142,8 @@ fn token_object(text: &str) -> Obj {
         .bytes()
         .all(|b| b.is_ascii_digit() || matches!(b, b'+' | b'-' | b'.'))
         && text.bytes().any(|b| b.is_ascii_digit());
-    if numeric {
-        if let Ok(value) = text.parse::<f64>() {
-            return Obj::Num(value);
-        }
+    if numeric && let Ok(value) = text.parse::<f64>() {
+        return Obj::Num(value);
     }
     exec_name(text)
 }

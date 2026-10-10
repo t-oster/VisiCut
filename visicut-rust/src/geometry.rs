@@ -387,10 +387,10 @@ fn clip_shapes(
                 )
                 .into_iter()
                 .map(|(mut ring, _)| {
-                    if ring.first() != ring.last() {
-                        if let Some(first) = ring.first().copied() {
-                            ring.push(first);
-                        }
+                    if ring.first() != ring.last()
+                        && let Some(first) = ring.first().copied()
+                    {
+                        ring.push(first);
                     }
                     ring
                 })
@@ -588,8 +588,8 @@ fn user_length_metric(
 }
 
 fn user_distance(metric: &[f64; 4], a: Point, b: Point) -> f64 {
-    let dx = f64::from(b[0] - a[0]);
-    let dy = f64::from(b[1] - a[1]);
+    let dx = b[0] - a[0];
+    let dy = b[1] - a[1];
     (metric[0] * dx + metric[1] * dy).hypot(metric[2] * dx + metric[3] * dy)
 }
 

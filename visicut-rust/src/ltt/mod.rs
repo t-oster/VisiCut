@@ -251,9 +251,11 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
         // .getBoundingBox in Java), so it is written after the parts.
         let mut body = Vec::new();
         let mut bounds: Option<Bounds> = None;
+        let mut state = DeviceState::default();
         for (index, part) in group.iter().enumerate() {
             let (step, part_bounds) = append_part(
                 &mut body,
+                &mut state,
                 project,
                 part,
                 index == 0,
@@ -317,8 +319,43 @@ fn finish(out: &mut Vec<u8>) -> Result<(), String> {
     Ok(())
 }
 
+/// Speed and power last sent in a job; the Java driver resets them to -1 at
+/// the start of a job and sends each only when it changes.
+#[derive(Clone, Copy)]
+struct DeviceState {
+    speed: f32,
+    power: f32,
+}
+
+impl Default for DeviceState {
+    fn default() -> Self {
+        Self {
+            speed: -1.0,
+            power: -1.0,
+        }
+    }
+}
+
+impl DeviceState {
+    /// setCurrentProperty: speed, then power, each only when changed.
+    fn set(&mut self, out: &mut Vec<u8>, speed: f32, power: f32) {
+        if speed != self.speed {
+            out.extend([0x1b, 0x53]);
+            word(out, ((speed * 10.0) as i32).clamp(1, 1000) as u16);
+            self.speed = speed;
+        }
+        if power != self.power {
+            out.extend([0x1b, 0x4a]);
+            word(out, ((power * 10.0) as i32).clamp(1, 1000) as u16);
+            self.power = power;
+        }
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
 fn append_part(
     out: &mut Vec<u8>,
+    state: &mut DeviceState,
     project: &Project,
     part: &Part,
     first_in_file: bool,
@@ -415,8 +452,14 @@ fn append_part(
             let scale_y = axis.prescale();
             let mut program = Program::new(part.operation);
             let (circles, curves) = {
-                let mut encoder =
-                    vector::Encoder::new(out, axis, -1.0, -1.0, Some(&mut program), kind);
+                let mut encoder = vector::Encoder::new(
+                    out,
+                    axis,
+                    state.speed,
+                    state.power,
+                    Some(&mut program),
+                    kind,
+                );
                 let mut current: Option<order::SetKey> = None;
                 for element in &ordered {
                     let key = keys[element.set];
@@ -434,6 +477,7 @@ fn append_part(
                     encoder.polyline(&polyline)?;
                 }
                 encoder.finish();
+                (state.speed, state.power) = (encoder.speed, encoder.power);
                 (encoder.circles, encoder.curves)
             };
             // Passes are interleaved per path like in Java, so the timeline
@@ -450,14 +494,16 @@ fn append_part(
             description = text;
         }
         Operation::Engrave | Operation::Engrave3d => {
+            let (pixmap, area) = render_raster(&source, part.operation)?;
+            // RasterizableJobPart: start point plus image size, px2mm.
+            let mm = |px: i32| px as f64 / RASTER_DPI * 25.4;
             bounds = Bounds {
-                min: [project.x_mm as f64, project.y_mm as f64],
+                min: [mm(area.x), mm(area.y)],
                 max: [
-                    (project.x_mm + project.width_mm) as f64,
-                    (project.y_mm + project.height_mm) as f64,
+                    mm(area.x + pixmap.width() as i32),
+                    mm(area.y + pixmap.height() as i32),
                 ],
             };
-            let pixmap = render_raster(&source)?;
             let raster = if part.operation == Operation::Engrave3d {
                 Raster::engrave_3d(&pixmap, &part.raster)
             } else {
@@ -465,7 +511,7 @@ fn append_part(
             };
             drop(pixmap);
             let color = operation_color(part.operation);
-            draw_raster(preview, &raster, color);
+            draw_raster(preview, project, &raster, area, color);
             let raster_png = raster_preview(&raster, color)?;
             if first_in_file && raster.bits_per_pixel == 8 {
                 // Job mode: eight bits per pixel ("engrave 3D").
@@ -474,22 +520,28 @@ fn append_part(
             }
             let mut lines = 0;
             for set in &part.sets {
-                out.extend([0x1b, 0x4e, 0]); // colour code black
-                settings(out, set.power_percent, set.speed_percent);
                 let mut program = Program::new(part.operation);
-                lines = raster_code(
-                    out,
+                let encoded;
+                (encoded, lines) = raster_code(
                     project,
+                    area,
                     part.operation,
                     &raster,
                     &part.raster,
                     set,
                     &mut program,
                 )?;
+                // Java adds one RasterPart per pass; each sends the colour
+                // code and its settings and starts again to the right.
+                for _ in 0..set.passes {
+                    out.extend([0x1b, 0x4e, 0]); // colour code black
+                    state.set(out, set.speed_percent, set.power_percent);
+                    out.extend(&encoded);
+                }
                 program.raster_preview_png = raster_png.clone();
                 program.raster_bounds_mm = Some([
-                    px(project.x_mm as f64) as f64 * 25.4 / RASTER_DPI,
-                    px(project.y_mm as f64) as f64 * 25.4 / RASTER_DPI,
+                    mm(area.x),
+                    mm(area.y),
                     raster.width as f64 * 25.4 / RASTER_DPI,
                     raster.height as f64 * 25.4 / RASTER_DPI,
                 ]);
@@ -601,13 +653,26 @@ fn raster_pixmap(raster: &Raster, color: [u8; 3]) -> Result<tiny_skia::Pixmap, S
     Ok(mask)
 }
 
-fn draw_raster(preview: &mut tiny_skia::Pixmap, raster: &Raster, color: [u8; 3]) {
+fn draw_raster(
+    preview: &mut tiny_skia::Pixmap,
+    project: &Project,
+    raster: &Raster,
+    area: RasterArea,
+    color: [u8; 3],
+) {
     let Ok(mask) = raster_pixmap(raster, color) else {
         return;
     };
-    let transform = tiny_skia::Transform::from_scale(
-        preview.width() as f32 / mask.width() as f32,
-        preview.height() as f32 / mask.height() as f32,
+    // Raster pixels → mm on the bed → preview pixels of the motif.
+    let scale_x = preview.width() as f64 / project.width_mm as f64 / geometry::PX_PER_MM;
+    let scale_y = preview.height() as f64 / project.height_mm as f64 / geometry::PX_PER_MM;
+    let transform = tiny_skia::Transform::from_row(
+        scale_x as f32,
+        0.0,
+        0.0,
+        scale_y as f32,
+        ((area.x as f64 - project.x_mm as f64 * geometry::PX_PER_MM) * scale_x) as f32,
+        ((area.y as f64 - project.y_mm as f64 * geometry::PX_PER_MM) * scale_y) as f32,
     );
     preview.draw_pixmap(
         0,
@@ -658,8 +723,8 @@ fn draw_contours(
     for path in paths {
         let mut builder = tiny_skia::PathBuilder::new();
         for (i, point) in path.iter().enumerate() {
-            let x = (px(point[0] as f64) as f32 * 25.4 / RASTER_DPI as f32 - project.x_mm) * sx;
-            let y = (px(point[1] as f64) as f32 * 25.4 / RASTER_DPI as f32 - project.y_mm) * sy;
+            let x = (px(point[0]) as f32 * 25.4 / RASTER_DPI as f32 - project.x_mm) * sx;
+            let y = (px(point[1]) as f32 * 25.4 / RASTER_DPI as f32 - project.y_mm) * sy;
             if i == 0 {
                 builder.move_to(x, y);
             } else {
@@ -681,6 +746,7 @@ fn draw_contours(
     }
 }
 
+#[cfg(test)]
 fn settings(out: &mut Vec<u8>, power: f32, speed: f32) {
     out.extend([0x1b, 0x53]);
     word(out, (speed * 10.0).clamp(1.0, 1000.0) as u16);
@@ -730,26 +796,110 @@ fn header(project: &Project, overscan: f32, name: &str, bounds: Bounds) -> Vec<u
     out
 }
 
-fn render_raster(project: &Project) -> Result<tiny_skia::Pixmap, String> {
-    let width = px(project.width_mm as f64).max(1) as u32;
-    let height = px(project.height_mm as f64).max(1) as u32;
+/// Raster area of an engraving in 500-DPI pixels on the bed.
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct RasterArea {
+    x: i32,
+    y: i32,
+}
+
+/// Renders the objects like VisiCut's RasterProfile/Raster3dProfile: only
+/// their bounding box including strokes (`Helper.toRect`, which truncates x,
+/// y, width and height separately), on white, without anti-aliasing for
+/// engraving and with it for 3D engraving.
+fn render_raster(
+    project: &Project,
+    operation: Operation,
+) -> Result<(tiny_skia::Pixmap, RasterArea), String> {
+    let smooth = operation == Operation::Engrave3d;
+    let options = usvg::Options {
+        shape_rendering: if smooth {
+            usvg::ShapeRendering::GeometricPrecision
+        } else {
+            usvg::ShapeRendering::CrispEdges
+        },
+        text_rendering: if smooth {
+            usvg::TextRendering::GeometricPrecision
+        } else {
+            usvg::TextRendering::OptimizeSpeed
+        },
+        // Java2D draws images with nearest-neighbour interpolation.
+        image_rendering: usvg::ImageRendering::OptimizeSpeed,
+        ..crate::svg::options()
+    };
+    let tree = usvg::Tree::from_str(&project.svg, &options).map_err(|e| e.to_string())?;
+    let size = tree.size();
+    let sx = f64::from(project.width_mm) / f64::from(size.width());
+    let sy = f64::from(project.height_mm) / f64::from(size.height());
+    let f = geometry::PX_PER_MM;
+    let to_px_x = |u: f32| (sx * f64::from(u) + f64::from(project.x_mm)) * f;
+    let to_px_y = |u: f32| (sy * f64::from(u) + f64::from(project.y_mm)) * f;
+    let bbox = content_bounds(tree.root()).ok_or("SVG enthält keine dunklen Gravurpixel")?;
+    let (x0, y0) = (to_px_x(bbox.left()), to_px_y(bbox.top()));
+    let (x1, y1) = (to_px_x(bbox.right()), to_px_y(bbox.bottom()));
+    let area = RasterArea {
+        x: x0 as i32,
+        y: y0 as i32,
+    };
+    let (width, height) = ((x1 - x0) as i32, (y1 - y0) as i32);
+    if width <= 0 || height <= 0 {
+        return Err("SVG enthält keine dunklen Gravurpixel".into());
+    }
     if width as u64 * height as u64 > 40_000_000 {
         return Err("Gravur ist größer als 40 Millionen Pixel; Motiv verkleinern".into());
     }
-    let tree =
-        usvg::Tree::from_str(&project.svg, &crate::svg::options()).map_err(|e| e.to_string())?;
-    let mut pixmap =
-        tiny_skia::Pixmap::new(width, height).ok_or("Gravur konnte nicht gerendert werden")?;
+    let mut pixmap = tiny_skia::Pixmap::new(width as u32, height as u32)
+        .ok_or("Gravur konnte nicht gerendert werden")?;
     pixmap.fill(tiny_skia::Color::WHITE);
+    // translate(-bb) · mm2laserPx · (translate(x, y) · scale(document → mm))
     resvg::render(
         &tree,
-        tiny_skia::Transform::from_scale(
-            width as f32 / tree.size().width(),
-            height as f32 / tree.size().height(),
+        tiny_skia::Transform::from_row(
+            (sx * f) as f32,
+            0.0,
+            0.0,
+            (sy * f) as f32,
+            (f64::from(project.x_mm) * f - f64::from(area.x)) as f32,
+            (f64::from(project.y_mm) * f - f64::from(area.y)) as f32,
         ),
         &mut pixmap.as_mut(),
     );
-    Ok(pixmap)
+    Ok((pixmap, area))
+}
+
+/// Union of the objects' bounding boxes with strokes in document units, like
+/// VisiCut's GraphicSet.getBoundingBox. usvg counts the position of an image
+/// twice in its bounding box, so images use their size and transform.
+fn content_bounds(group: &usvg::Group) -> Option<tiny_skia::Rect> {
+    let mut bounds: Option<tiny_skia::Rect> = None;
+    let mut add = |rect: Option<tiny_skia::Rect>| {
+        if let Some(rect) = rect {
+            bounds = Some(match bounds {
+                Some(b) => tiny_skia::Rect::from_ltrb(
+                    b.left().min(rect.left()),
+                    b.top().min(rect.top()),
+                    b.right().max(rect.right()),
+                    b.bottom().max(rect.bottom()),
+                )
+                .unwrap_or(b),
+                None => rect,
+            });
+        }
+    };
+    for node in group.children() {
+        match node {
+            usvg::Node::Group(group) => add(content_bounds(group)),
+            usvg::Node::Image(image) => add(tiny_skia::Rect::from_xywh(
+                0.0,
+                0.0,
+                image.size().width(),
+                image.size().height(),
+            )
+            .and_then(|r| r.transform(image.abs_transform()))),
+            node => add(Some(node.abs_stroke_bounding_box())),
+        }
+    }
+    bounds
 }
 
 /// getEngraveShiftPixels: line offset in raster pixels for the given speed.
@@ -766,15 +916,16 @@ fn engrave_shift_pixels(speed: f32) -> f64 {
     value as f64 * RASTER_DPI / MACHINE_DPI + 0.5
 }
 
+/// The raster lines of one RasterPart and their count.
 fn raster_code(
-    out: &mut Vec<u8>,
     project: &Project,
+    area: RasterArea,
     operation: Operation,
     raster: &Raster,
     options: &RasterSettings,
     set: &ParameterSet,
     program: &mut Program,
-) -> Result<usize, String> {
+) -> Result<(Vec<u8>, usize), String> {
     let speed = set.speed_percent;
     let offset = engrave_shift_pixels(speed);
     let per_byte = (8 / raster.bits_per_pixel) as i32;
@@ -782,8 +933,7 @@ fn raster_code(
     // 1-bit rows this equals the Java driver's bit shift.
     let shift = (-offset) as usize * raster.bits_per_pixel as usize;
     let spare = offset.abs().ceil() as i32;
-    let origin_x = px(project.x_mm as f64);
-    let origin_y = px(project.y_mm as f64);
+    let (origin_x, origin_y) = (area.x, area.y);
     let max_x = px(BED_WIDTH);
     let overscan_bytes = (px(overscan(operation, speed) as f64) + per_byte - 1) / per_byte;
     let axis = Axis::of(project);
@@ -858,10 +1008,7 @@ fn raster_code(
     if encoded.len().saturating_mul(set.passes as usize) > 256 * 1024 * 1024 {
         return Err("Gravurjob ist größer als 256 MB".into());
     }
-    for _ in 0..set.passes {
-        out.extend(&encoded);
-    }
-    Ok(count)
+    Ok((encoded, count))
 }
 
 /// ByteArrayList.leftShiftBits: shift towards the start, filling with zeros.
@@ -1362,14 +1509,8 @@ mod tests {
         assert!(has(bytes, &[0x1b, 0x52, 0x13, 0x88]));
         // Bounding box of the contours; Y as rotation steps on a 314.16 mm
         // circumference instead of 4000-DPI machine units.
-        let b = Bounds::of_points(
-            geometry::contours(&p)
-                .unwrap()
-                .iter()
-                .flatten()
-                .map(|q| [q[0] as f64, q[1] as f64]),
-        )
-        .unwrap();
+        let b =
+            Bounds::of_points(geometry::contours(&p).unwrap().iter().flatten().copied()).unwrap();
         let axis = Axis::of(&p);
         assert!(axis.bounding(b.max[1]) < raw(b.max[1]));
         let mut bbox = vec![0x1b, 0x6c];

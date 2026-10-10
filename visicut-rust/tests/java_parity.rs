@@ -133,7 +133,7 @@ fn ltt_output_matches_java_byte_for_byte() {
     for dir in &dirs {
         let name = dir.file_name().unwrap().to_string_lossy().into_owned();
         let case = properties(&fs::read_to_string(dir.join("case.properties")).unwrap());
-        let expected = fs::read(dir.join("expected.ltt"))
+        let expected_file = fs::read(dir.join("expected.ltt"))
             .unwrap_or_else(|_| panic!("{name}: expected.ltt fehlt, generate.sh ausführen"));
         let prepared = match ltt::prepare(&project(dir, &case)) {
             Ok(prepared) => prepared,
@@ -146,8 +146,21 @@ fn ltt_output_matches_java_byte_for_byte() {
             failures.push(format!("{name}: {} Aufträge statt 1", prepared.jobs.len()));
             continue;
         }
-        let actual = &prepared.jobs[0].bytes;
-        if let Some(diff) = difference(actual, &expected) {
+        let mut actual = prepared.jobs[0].bytes.as_slice();
+        let mut expected = expected_file.as_slice();
+        // `compare=header`: only up to the first raster line, for documented
+        // deliberate differences in the lines (reason in case.properties).
+        if case.get("compare").is_some_and(|c| c == "header") {
+            let header = |bytes: &[u8]| {
+                bytes
+                    .windows(2)
+                    .position(|w| w == [0x1b, b'0'] || w == [0x1b, b'1'])
+                    .unwrap_or(bytes.len())
+            };
+            expected = &expected[..header(expected)];
+            actual = &actual[..header(actual).max(expected.len()).min(actual.len())];
+        }
+        if let Some(diff) = difference(actual, expected) {
             // Kept for inspection next to the build output.
             let path = Path::new(env!("CARGO_TARGET_TMPDIR")).join(format!("{name}.ltt"));
             fs::write(&path, actual).unwrap();
