@@ -6,22 +6,35 @@ use std::collections::HashMap;
 /// 0.9 px of the 500-DPI vector profile, Manhattan distance like Java.
 const JOIN_TOLERANCE: f32 = 0.9 * 25.4 / 500.0;
 
-/// VisiCut's default order "inner first": open paths meeting end to end
-/// without a fork are joined, then all paths are sorted stably by bounding box
-/// (max y ascending, min y descending, max x ascending, min x descending), so
-/// a path comes before every path whose box strictly contains its own.
-pub fn inner_first(contours: Vec<Contour>) -> Vec<Contour> {
-    let mut paths: Vec<([f32; 4], Contour)> = join(contours)
-        .into_iter()
-        .map(|path| (bbox(&path), path))
+/// VisiCut's default order "inner first" for all parameter sets of one step.
+///
+/// `contours` are cut by each of the `sets` parameter sets. As in Java, where
+/// one `VectorPart` holds the shapes of every set and the optimizer sorts that
+/// part once, all `(set, path)` entries are sorted together. Open paths meeting
+/// end to end without a fork are joined first; the joins are the same for every
+/// set because all sets cut the same contours. The sort is stable by bounding box
+/// (max y ascending, min y descending, max x ascending, min x descending), so a
+/// path comes before every path whose box strictly contains its own. Entries with
+/// equal boxes keep the set-major input order: set 0 before set 1, and so on.
+///
+/// Returns the joined paths and the cutting sequence as `(set, index)` into them.
+pub fn inner_first_sets(
+    contours: Vec<Contour>,
+    sets: usize,
+) -> (Vec<Contour>, Vec<(usize, usize)>) {
+    let paths = join(contours);
+    let boxes: Vec<[f32; 4]> = paths.iter().map(|path| bbox(path)).collect();
+    let mut order: Vec<(usize, usize)> = (0..sets)
+        .flat_map(|set| (0..paths.len()).map(move |index| (set, index)))
         .collect();
-    paths.sort_by(|(a, _), (b, _)| {
+    order.sort_by(|&(_, i), &(_, j)| {
+        let (a, b) = (boxes[i], boxes[j]);
         a[3].total_cmp(&b[3])
             .then(b[1].total_cmp(&a[1]))
             .then(a[2].total_cmp(&b[2]))
             .then(b[0].total_cmp(&a[0]))
     });
-    paths.into_iter().map(|(_, path)| path).collect()
+    (paths, order)
 }
 
 fn bbox(path: &[Point]) -> [f32; 4] {
@@ -149,6 +162,28 @@ mod tests {
             [x, y + size],
             [x, y],
         ]
+    }
+
+    /// Single parameter set: the paths in cutting order.
+    fn inner_first(contours: Vec<Contour>) -> Vec<Contour> {
+        let (paths, order) = inner_first_sets(contours, 1);
+        order.into_iter().map(|(_, i)| paths[i].clone()).collect()
+    }
+
+    #[test]
+    fn parameter_sets_of_one_step_are_sorted_together() {
+        let outer = square(10.0, 10.0, 100.0);
+        let hole = square(50.0, 50.0, 10.0);
+        let (paths, order) = inner_first_sets(vec![outer.clone(), hole.clone()], 2);
+        // The hole comes first with both sets, then the outline with both sets.
+        let cut: Vec<(Contour, usize)> = order
+            .into_iter()
+            .map(|(set, i)| (paths[i].clone(), set))
+            .collect();
+        assert_eq!(
+            cut,
+            vec![(hole.clone(), 0), (hole, 1), (outer.clone(), 0), (outer, 1)]
+        );
     }
 
     fn travel(paths: &[Contour]) -> f32 {

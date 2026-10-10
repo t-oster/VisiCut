@@ -62,13 +62,23 @@ Wiederholung nach Fehlern.
 - Schnittreihenfolge wie VisiCuts Standard „innen zuerst“
   (`InnerFirstVectorOptimizer`): Offene Pfade, deren Enden ohne Abzweigung
   aufeinandertreffen (0,9 Pixel bei 500 DPI, Manhattan-Abstand), werden zu
-  einem Pfad verbunden. Danach werden alle Pfade je Schritt stabil nach
-  Begrenzungsrahmen sortiert: unterer Rand aufsteigend, oberer absteigend,
-  rechter aufsteigend, linker absteigend. Ein Pfad, dessen Rahmen in einem
-  anderen liegt, wird also vorher geschnitten; Löcher fallen nicht nach dem
-  Außenumriss heraus. Gleiche Rahmen (z. B. Kreis im Quadrat) werden nicht
-  unterschieden. Außer beim Verbinden werden Pfade nicht umgedreht. Abweichung: Java sortiert
-  mehrere Parametersätze gemeinsam, Rust jeden Parametersatz für sich.
+  einem Pfad verbunden. Danach werden alle Pfade eines Schritts zusammen mit
+  allen seinen Parametersätzen stabil nach Begrenzungsrahmen sortiert, wie
+  Java-VisiCut einen Teil je Verfahren optimiert: unterer Rand aufsteigend,
+  oberer absteigend, rechter aufsteigend, linker absteigend. Ein Pfad, dessen
+  Rahmen in einem anderen liegt, wird also vorher geschnitten; Löcher fallen
+  nicht nach dem Außenumriss heraus. Gleiche Rahmen (z. B. Kreis im Quadrat)
+  werden nicht unterschieden. Die Sätze desselben Pfads haben denselben Rahmen
+  und folgen daher direkt aufeinander (Pfad A mit Satz 1 und 2, dann Pfad B),
+  solange kein anderer Pfad denselben Rahmen hat.
+  Das Verbinden erfolgt einmal, weil alle Sätze dieselben Konturen schneiden.
+  Außer beim Verbinden werden Pfade nicht umgedreht. Aufeinanderfolgende
+  Einträge desselben Satzes bilden einen Block mit eigenen Leistungs- und
+  Geschwindigkeitsbefehlen und eigenem Zeitleisten-Abschnitt; Durchgänge gelten
+  je Block. Ein einzelner Satz ergibt weiterhin einen Block mit allen Pfaden in
+  der bisherigen Reihenfolge. Abweichung: Die Durchgänge sind im Java-Treiber
+  nicht enthalten (LibLaserCut liegt nicht im Repo); ob Java sie pro Pfad oder
+  pro Satz wiederholt, ist daher nicht geprüft.
 - Zuordnung wie VisiCuts Mappings: Schritte wählen Objekte einzeln, über
   Bedingungen (Farbe, Linien-/Füllfarbe, Linienstärke in mm mit „=“ oder „≤“,
   Gruppe/Inkscape-Ebene, Typ, ID; jeweils auch negiert) oder als Rest.
@@ -80,8 +90,24 @@ Wiederholung nach Fehlern.
   Engrav → Eng3D → Mark → Cut, mit jeweils eigener TCP-Verbindung.
   Text wird beim Schneiden und Markieren als Glyphenumriss bearbeitet
   (Systemschriften, Ersatz Ubuntu Light/Hack aus egui); fehlt für ein
-  Zeichen jede Schrift, wird der Auftrag abgewiesen. Rasterbilder, Masken,
-  Clipping und Filter werden beim Schneiden abgewiesen.
+  Zeichen jede Schrift, wird der Auftrag abgewiesen. Rasterbilder werden beim
+  Schneiden abgewiesen, weil Raster beim Schneiden nicht definiert ist.
+  Clip-Pfade (`clipPath`) schneiden die Konturen als Schnittmenge mit der
+  Vereinigung der Clip-Formen; jede Form zählt nach ihrer Füllregel (`clip-rule`).
+  Offene Konturen werden an den Clip-Kanten geteilt und nur innen geschnitten;
+  geschlossene Konturen, die ganz innen liegen, bleiben unverändert, und Teile,
+  die am Startpunkt zusammenhängen, werden wieder verbunden. Die Schnittpunkte
+  liegen auf Segmenten, nicht auf Eckpunkten; Teilstücke werden per Mittelpunkt-
+  test innen oder außen zugeordnet. Parallel verlaufende Clip-Kanten und Konturen
+  erzeugen keine Schnittpunkte; dort entscheidet allein der Mittelpunkttest. Ein Pfad
+  vollständig außerhalb liefert nichts. Ein leerer Clip, ein fehlender Ziel-
+  verweis oder ein Ziel, das kein Clip-Pfad ist, werden mit Meldung abgewiesen,
+  ebenso verschachtelte Clips. Die Grenze liegt bei 10⁸ Segment-Kanten-Prüfungen
+  je Kontur; darüber wird mit Hinweis abgebrochen. Masken und Filter werden
+  beim Schneiden abgewiesen, mit Meldung zum Grund: Masken legen nur Transparenz
+  fest, Filter verändern nur ein Pixelbild, beides ergibt keine Schnittlinie.
+  Text und Rasterbilder innerhalb eines Clip-Pfads werden abgewiesen. Am Gerät
+  wurde das Clipping nicht geprüft.
 - Gravur mit den LibLaserCut-Rasterverfahren Floyd-Steinberg, Mittelwert,
   Zufall, Geordnet, Raster, Halbton und Halbton aufgehellt (FAU-Standard) sowie
   dem früheren Schwellwert 128 (ältere Projekte). Graustufen nach
@@ -150,9 +176,9 @@ Wiederholung nach Fehlern.
   mit `hayro-svg` (reines Rust, MIT/Apache-2.0) in SVG umgewandelt; Pfade,
   Farben, Linienstärken und eingebettete Bilder bleiben erhalten, Text wird zu
   Glyphenkonturen. Größe aus der CropBox in pt (× 25,4/72 mm). Linienstärke 0
-  (PDF: dünnste Linie) wird zu 0,1 mm. Nicht seitenfüllende Clip-Pfade und
-  Soft-Masks bleiben für die Vorschau erhalten, verhindern aber das Schneiden
-  (Hinweis beim Import).
+  (PDF: dünnste Linie) wird zu 0,1 mm. Clip-Pfade bleiben erhalten und werden
+  beim Schneiden berücksichtigt; Soft-Masks bleiben für die Vorschau erhalten,
+  verhindern aber das Schneiden (Hinweis beim Import).
 - EPS/PS: Wie Java-VisiCut (`EPSImporter`) liest ein eingebauter, bewusst
   begrenzter PostScript-Interpreter (`src/import/eps/`) die Datei ohne
   Zusatzprogramm und gibt SVG aus. Größe aus `%%BoundingBox:` (sonst
