@@ -355,7 +355,8 @@ fn append_part(
                     );
                 }
             }
-            let paths = order::inner_first(paths);
+            // All parameter sets share one cutting order (see order::inner_first_sets).
+            let (paths, sequence) = order::inner_first_sets(paths, part.sets.len());
             out.extend([0x1b, 0x56]); // vector mode
             out.extend([0x1b, 0x45, 0, 0, 0, 0, 0, 0, 0]); // pulse mode off
             out.extend([0x1b, 0x4e, 1]); // colour code red
@@ -380,8 +381,19 @@ fn append_part(
                         .collect()
                 })
                 .collect();
+            // Consecutive entries of one parameter set form a block with its own
+            // settings and timeline program. With a single set the whole sequence
+            // is one block, so its output is unchanged.
+            let mut blocks: Vec<(usize, Vec<usize>)> = Vec::new();
+            for (set, index) in sequence {
+                match blocks.last_mut() {
+                    Some((last, indices)) if *last == set => indices.push(index),
+                    _ => blocks.push((set, vec![index])),
+                }
+            }
             let (mut circles, mut curves) = (0, 0);
-            for set in &part.sets {
+            for (set_index, indices) in blocks {
+                let set = &part.sets[set_index];
                 let mut program = Program::new(part.operation);
                 {
                     let mut encoder =
@@ -391,7 +403,8 @@ fn append_part(
                     for pass in 0..set.passes {
                         // Repeated passes share the geometry in the timeline.
                         encoder.recording = pass == 0;
-                        for polyline in &polylines {
+                        for &index in &indices {
+                            let polyline = &polylines[index];
                             encoder.move_to(polyline[0].0, polyline[0].1);
                             encoder.polyline(&polyline[1..])?;
                         }
@@ -932,6 +945,40 @@ mod tests {
         for (a, b) in job.jobs.iter().zip(&reloaded.jobs) {
             assert_eq!(a.bytes, b.bytes);
         }
+    }
+
+    #[test]
+    fn parameter_sets_of_a_cut_step_share_one_cutting_order() {
+        use crate::project::JobStep;
+        let mut cut = JobStep {
+            objects: vec![0, 1],
+            power_percent: 50.0,
+            speed_percent: 8.0,
+            ..JobStep::new(Operation::Cut)
+        };
+        cut.additional.push(ParameterSet {
+            power_percent: 20.0,
+            speed_percent: 30.0,
+            passes: 1,
+        });
+        let project = Project {
+            width_mm: 30.0,
+            height_mm: 20.0,
+            svg: r#"<svg xmlns="http://www.w3.org/2000/svg" width="30mm" height="20mm" viewBox="0 0 30 20"><rect x="1" y="1" width="28" height="18" fill="none" stroke="red"/><rect x="5" y="5" width="8" height="5" fill="none" stroke="red"/></svg>"#.into(),
+            steps: vec![cut],
+            ..Default::default()
+        };
+        let job = prepare(&project).unwrap();
+        // The inner rectangle is cut first, with both sets, then the outline with both sets.
+        let speeds: Vec<u16> = job.jobs[0]
+            .bytes
+            .windows(4)
+            .filter(|w| w[..2] == [0x1b, 0x53])
+            .map(|w| u16::from_be_bytes([w[2], w[3]]))
+            .collect();
+        assert_eq!(speeds, vec![80, 300, 80, 300]);
+        assert_eq!(job.timeline.programs.len(), 4);
+        assert_eq!(job.steps[0].parameter_sets, 2);
     }
 
     fn three_modes() -> Project {

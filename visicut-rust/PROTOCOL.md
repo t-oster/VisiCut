@@ -62,13 +62,23 @@ Wiederholung nach Fehlern.
 - Schnittreihenfolge wie VisiCuts Standard „innen zuerst“
   (`InnerFirstVectorOptimizer`): Offene Pfade, deren Enden ohne Abzweigung
   aufeinandertreffen (0,9 Pixel bei 500 DPI, Manhattan-Abstand), werden zu
-  einem Pfad verbunden. Danach werden alle Pfade je Schritt stabil nach
-  Begrenzungsrahmen sortiert: unterer Rand aufsteigend, oberer absteigend,
-  rechter aufsteigend, linker absteigend. Ein Pfad, dessen Rahmen in einem
-  anderen liegt, wird also vorher geschnitten; Löcher fallen nicht nach dem
-  Außenumriss heraus. Gleiche Rahmen (z. B. Kreis im Quadrat) werden nicht
-  unterschieden. Außer beim Verbinden werden Pfade nicht umgedreht. Abweichung: Java sortiert
-  mehrere Parametersätze gemeinsam, Rust jeden Parametersatz für sich.
+  einem Pfad verbunden. Danach werden alle Pfade eines Schritts zusammen mit
+  allen seinen Parametersätzen stabil nach Begrenzungsrahmen sortiert, wie
+  Java-VisiCut einen Teil je Verfahren optimiert: unterer Rand aufsteigend,
+  oberer absteigend, rechter aufsteigend, linker absteigend. Ein Pfad, dessen
+  Rahmen in einem anderen liegt, wird also vorher geschnitten; Löcher fallen
+  nicht nach dem Außenumriss heraus. Gleiche Rahmen (z. B. Kreis im Quadrat)
+  werden nicht unterschieden. Die Sätze desselben Pfads haben denselben Rahmen
+  und folgen daher direkt aufeinander (Pfad A mit Satz 1 und 2, dann Pfad B),
+  solange kein anderer Pfad denselben Rahmen hat.
+  Das Verbinden erfolgt einmal, weil alle Sätze dieselben Konturen schneiden.
+  Außer beim Verbinden werden Pfade nicht umgedreht. Aufeinanderfolgende
+  Einträge desselben Satzes bilden einen Block mit eigenen Leistungs- und
+  Geschwindigkeitsbefehlen und eigenem Zeitleisten-Abschnitt; Durchgänge gelten
+  je Block. Ein einzelner Satz ergibt weiterhin einen Block mit allen Pfaden in
+  der bisherigen Reihenfolge. Abweichung: Die Durchgänge sind im Java-Treiber
+  nicht enthalten (LibLaserCut liegt nicht im Repo); ob Java sie pro Pfad oder
+  pro Satz wiederholt, ist daher nicht geprüft.
 - Zuordnung wie VisiCuts Mappings: Schritte wählen Objekte einzeln, über
   Bedingungen (Farbe, Linien-/Füllfarbe, Linienstärke in mm mit „=“ oder „≤“,
   Gruppe/Inkscape-Ebene, Typ, ID; jeweils auch negiert) oder als Rest.
