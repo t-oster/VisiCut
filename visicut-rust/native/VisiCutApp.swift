@@ -200,6 +200,10 @@ final class AppModel: ObservableObject {
     @Published var undoState: UndoState?
     weak var undoManager: UndoManager?
     @Published var zoom = 1.0
+    /// Verschiebung des Arbeitsbetts in Punkten (Trackpad-Scrollen beim Zoomen).
+    @Published var pan = CGSize.zero
+    func zoomBy(_ factor: Double) { zoom = min(8, max(0.5, zoom * factor)); if zoom <= 1 { pan = .zero } }
+    func fitZoom() { zoom = 1; pan = .zero }
     @Published var showGrid = true
     @Published var devices: DeviceStore
     @Published var showCamera = false
@@ -261,6 +265,18 @@ final class AppModel: ObservableObject {
                let first = material.thicknesses.first {
                 project.thickness_mm = first
             }
+            // Das Materialprofil ist der Standard.
+            applyPreset()
+        }
+    }
+    func selectThickness(_ thickness: Double) {
+        project.thickness_mm = thickness
+        applyPreset()
+    }
+    /// Materialprofil für ein Verfahren bei der aktuellen Stärke.
+    func stepPreset(_ operation: Operation) -> MaterialProfile? {
+        selectedMaterial?.profiles.first {
+            abs($0.thickness_mm - project.thickness_mm) < 0.0001 && $0.operation == operation && $0.power_percent > 0 && $0.speed_percent > 0
         }
     }
 
@@ -442,7 +458,9 @@ final class AppModel: ObservableObject {
     func selectOperation(_ operation: Operation) {
         guard operation != project.operation else { return }
         project.operation = operation
-        if operation == .mark {
+        if preset != nil {
+            applyPreset()
+        } else if operation == .mark {
             project.power_percent = 0
             project.speed_percent = 100
             project.passes = 1
@@ -695,7 +713,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
         view.addItem(menuItem("Kamerabild anzeigen", action: #selector(toggleCamera), key: "k"))
         view.addItem(menuItem("Kamerabild aktualisieren", action: #selector(refreshCamera), key: "k", modifiers: [.command, .shift]))
         let job = submenu("Job")
-        job.addItem(menuItem("Auf dem Arbeitsbett zentrieren", action: #selector(centerArtwork)))
         job.addItem(menuItem("FAU-Materialprofil übernehmen", action: #selector(applyProfile)))
         job.addItem(menuItem("Materialbibliothek …", action: #selector(showMaterials), key: "m", modifiers: [.command, .shift]))
         job.addItem(menuItem("Auftragsvorschau und Zeit …", action: #selector(previewJob), key: "p", modifiers: [.command, .shift]))
@@ -756,7 +773,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
     @objc func previewJob() { model.previewJob() }
     @objc func applyProfile() { model.applyPreset() }
     @objc func centerArtwork() { model.center() }
-    @objc func fitView() { model.zoom = 1 }
+    @objc func fitView() { model.fitZoom() }
     @objc func toggleGrid() { model.showGrid.toggle() }
     @objc func toggleCamera() { model.toggleCamera() }
     @objc func refreshCamera() { model.refreshCamera() }
@@ -829,7 +846,7 @@ struct Workspace: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(model.project.hasArtwork ? model.project.name : "Arbeitsbereich").font(.title2).fontWeight(.semibold)
-                        Text("\(model.device.name) · 1000 × 600 mm" + (model.project.rotary_axis ? " · Drehachse" : "")).foregroundStyle(.secondary)
+                        Text("\(model.device.name) · 1000 × 600 mm" + (model.project.rotary_axis ? " · Rotationseinheit" : "")).foregroundStyle(.secondary)
                     }
                     Spacer()
                     if !model.device.camera_url.isEmpty {
@@ -841,11 +858,20 @@ struct Workspace: View {
                             else { Button { model.refreshCamera() } label: { Image(systemName: "arrow.clockwise") }.help("Kamerabild aktualisieren") }
                         }
                     }
-                    Button { model.zoom = max(0.5, model.zoom - 0.25) } label: { Image(systemName: "minus.magnifyingglass") }.help("Verkleinern")
+                    Toggle(isOn: $model.showGrid) { Image(systemName: "grid") }
+                        .toggleStyle(.button).help("Raster anzeigen")
+                    Button { model.zoomBy(1 / 1.25) } label: { Image(systemName: "minus.magnifyingglass") }.help("Verkleinern")
                     Text("\(Int(model.zoom * 100)) %").monospacedDigit().frame(width: 48)
-                    Button { model.zoom = min(3, model.zoom + 0.25) } label: { Image(systemName: "plus.magnifyingglass") }.help("Vergrößern")
-                    Button("Einpassen") { model.zoom = 1 }
+                    Button { model.zoomBy(1.25) } label: { Image(systemName: "plus.magnifyingglass") }.help("Vergrößern")
+                    Button("Einpassen") { model.fitZoom() }
                 }.buttonStyle(.borderless).padding(20)
+                if model.project.hasArtwork && !model.project.fitsBed {
+                    Label("Das Motiv liegt außerhalb des Arbeitsbetts und kann so nicht gesendet werden.", systemImage: "exclamationmark.triangle.fill")
+                        .font(.callout).foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 20).padding(.vertical, 8)
+                        .background(Color.red)
+                }
                 Divider()
                 HStack {
                     Button("Vorschau & Zeit berechnen", systemImage: "eye") { model.previewJob() }
@@ -917,12 +943,12 @@ struct Inspector: View {
                     NativePopup(options: model.devices.devices.indices.map { PopupOption(String($0), model.devices.devices[$0].name) },
                         selection: Binding(get: { String(model.devices.selected) }, set: { if let index = Int($0) { model.selectDevice(index) } }),
                         identifier: "devicePicker")
-                        .frame(width: 180)
+                        .fixedSize()
                 }
             }
             if model.device.rotary_axis {
-                Section("Drehachse") {
-                    Toggle("Drehachse verwenden", isOn: $model.project.rotary_axis)
+                Section("Rotationseinheit") {
+                    Toggle("Rotationseinheit verwenden", isOn: $model.project.rotary_axis)
                     if model.project.rotary_axis {
                         NumberField("Durchmesser", value: $model.project.rotary_diameter_mm, unit: "mm")
                         Text("Y entspricht dem Umfang (\(format(Double.pi * model.project.rotary_diameter_mm)) mm). Gravur zentriert am Gerät ausrichten. Schritte je Umdrehung aus LibLaserCut, am Gerät nicht validiert.")
@@ -936,7 +962,7 @@ struct Inspector: View {
                         + model.materials.map { PopupOption($0.name, $0.name) }
                         + [.separator, PopupOption("__custom", "Eigenes Material …")],
                         selection: material, identifier: "materialPicker")
-                        .frame(width: 180)
+                        .fixedSize()
                 }
                 if model.materialSelection == "__custom" {
                     TextField("Bezeichnung", text: $model.project.material)
@@ -946,9 +972,9 @@ struct Inspector: View {
                         NativePopup(options: material.thicknesses.map {
                             PopupOption(String($0), $0 == 0 ? "Nicht festgelegt" : "\(format($0)) mm")
                         }, selection: Binding(get: { String(model.project.thickness_mm) }, set: {
-                            if let value = Double($0) { model.project.thickness_mm = value }
+                            if let value = Double($0) { model.selectThickness(value) }
                         }), identifier: "thicknessPicker")
-                        .frame(width: 140)
+                        .fixedSize()
                     }
                 } else {
                     NumberField("Stärke", value: $model.project.thickness_mm, unit: "mm")
@@ -960,9 +986,9 @@ struct Inspector: View {
                 }.pickerStyle(.segmented).disabled(!model.project.hasArtwork)
                     .accessibilityIdentifier("assignmentMode")
                 if model.assignmentMode == .whole {
-                    Text("Ein Verfahren für das gesamte Motiv.").font(.caption).foregroundStyle(.secondary)
+                    Text("Ein Verfahren für das gesamte Motiv. Für Zuordnungen nach Strichfarbe oder anderen Merkmalen „Regeln“ wählen.").font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 } else if model.assignmentMode == .rules {
-                    Text("Objekte nach Farbe, Linienstärke, Ebene, Typ oder ID zuordnen.").font(.caption).foregroundStyle(.secondary)
+                    Text("Regeln ordnen Objekte nach Merkmalen zu, z. B. nach Strichfarbe: Rot (#ff0000) → Schneiden, Blau (#0000ff) → Gravieren, Grün (#00ff00) → Markieren. Vorlage wählen oder Bedingungen (Farbe, Linienstärke, Ebene, Typ, ID) anpassen; „Rest“ erfasst alle übrigen Objekte.").font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 }
                 if model.assignmentMode == .objects {
                     Text("Schneiden, gravieren, markieren oder ignorieren.")
@@ -990,7 +1016,7 @@ struct Inspector: View {
                         selection: Binding(get: { model.project.cut_order.rawValue }, set: {
                             if let order = CutOrder(rawValue: $0) { model.project.cut_order = order }
                         }), identifier: "cutOrderPicker")
-                        .frame(width: 180)
+                        .fixedSize()
                 }
                 if model.project.cut_order == .shortestTravel {
                     Text("Experimentell: Die Reihenfolge der Schnitt- und Markierpfade weicht von VisiCut ab und ist am Gerät nicht erprobt. Den Auftrag am Gerät beaufsichtigen.")
@@ -1009,19 +1035,12 @@ struct Inspector: View {
                     Text("Konturen markieren. Eigene Leistung einstellen; kein Schnittprofil übernehmen.")
                         .font(.caption).foregroundStyle(.secondary)
                 }
-                if let preset = model.preset {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("FAU-Profil verfügbar", systemImage: "slider.horizontal.3").font(.callout).fontWeight(.medium)
-                        Text("\(format(preset.power_percent)) % Leistung · \(format(preset.speed_percent)) % Geschwindigkeit").font(.callout).foregroundStyle(.secondary)
-                        Button("Profil übernehmen") { model.applyPreset() }
-                            .accessibilityIdentifier("applyMaterialProfile")
-                    }.padding(.vertical, 4)
-                } else {
-                    Text(model.project.material.isEmpty ? "Wähle ein Material, um passende FAU-Profile zu sehen." : "Für diese Kombination ist kein FAU-Profil hinterlegt. Parameter manuell eingeben.")
+                if model.preset == nil {
+                    Text(model.project.material.isEmpty ? "Wähle ein Material, um sein Profil zu übernehmen." : "Für diese Kombination ist kein Profil hinterlegt. Parameter manuell eingeben.")
                         .font(.callout).foregroundStyle(.secondary)
                 }
-                NumberField("Leistung", value: $model.project.power_percent, unit: "%")
-                NumberField("Geschwindigkeit", value: $model.project.speed_percent, unit: "%")
+                NumberField("Leistung", value: $model.project.power_percent, unit: "%", profile: model.preset?.power_percent)
+                NumberField("Geschwindigkeit", value: $model.project.speed_percent, unit: "%", profile: model.preset?.speed_percent)
                 Stepper(value: $model.project.passes, in: 1...100) {
                     LabeledContent("Durchgänge", value: String(model.project.passes))
                 }
@@ -1048,14 +1067,6 @@ struct Inspector: View {
                 NumberField("Höhe", value: Binding(get: { model.project.height_mm }, set: { model.changeHeight($0) }), unit: "mm")
                 Toggle("Seitenverhältnis beibehalten", isOn: $model.keepProportions)
                 TransformControls(model: model)
-                Button("Auf dem Arbeitsbett zentrieren") { model.center() }.disabled(!model.project.hasArtwork)
-            }
-            Section {
-                Label(model.project.hasArtwork ? (model.project.fitsBed ? "Motiv passt auf das Arbeitsbett" : "Motiv liegt außerhalb des Arbeitsbetts") : "Noch kein Motiv importiert",
-                      systemImage: model.project.hasArtwork && model.project.fitsBed ? "checkmark.circle" : "exclamationmark.circle")
-                    .font(.callout)
-                    .foregroundStyle(model.project.hasArtwork && !model.project.fitsBed ? Color.orange : Color.secondary)
-                Text("Übertragung ohne Autostart. LTT-Treiber experimentell.").font(.caption).foregroundStyle(.secondary)
             }
         }
         .formStyle(.grouped)
@@ -1103,7 +1114,16 @@ struct AssignmentMenu: View {
 struct StepInspector: View {
     @ObservedObject var model: AppModel
     let index: Int
-    private var step: JobStep { model.project.steps[index] }
+    /// Stand beim Erzeugen der Zeile; hält die Ansicht stabil, falls der
+    /// Schritt beim Moduswechsel schon entfernt wurde.
+    let snapshot: JobStep
+    init(model: AppModel, index: Int) {
+        self.model = model; self.index = index
+        snapshot = model.project.steps.indices.contains(index) ? model.project.steps[index] : JobStep(operation: .cut, objects: [],
+            power_percent: 0, speed_percent: 100, passes: 1, filters: nil, rest: false, raster: .fau, additional: [])
+    }
+    private var binding: Binding<JobStep> { $model.project.steps.safe(index, default: snapshot) }
+    private var step: JobStep { binding.wrappedValue }
     var body: some View {
         Section {
             HStack {
@@ -1111,39 +1131,35 @@ struct StepInspector: View {
                     .fontWeight(.semibold).foregroundStyle(step.operation.color)
                 Spacer()
                 if step.isRule {
-                    Button { model.project.steps.remove(at: index) } label: { Image(systemName: "trash") }
+                    Button { if model.project.steps.indices.contains(index) { model.project.steps.remove(at: index) } } label: { Image(systemName: "trash") }
                         .buttonStyle(.borderless).help("Schritt entfernen")
                 }
             }
             Text("\(model.objectCount(index)) Objekte").foregroundStyle(.secondary)
             if step.isRule {
                 Toggle("Rest: alle übrigen Objekte", isOn: Binding(get: { step.rest }, set: {
-                    model.project.steps[index].rest = $0
-                    model.project.steps[index].filters = $0 ? nil : []
+                    binding.wrappedValue.rest = $0
+                    binding.wrappedValue.filters = $0 ? nil : []
                 }))
                 if !step.rest {
-                    FilterSetEditor(filters: Binding(get: { model.project.steps[index].filters ?? [] },
-                                                     set: { model.project.steps[index].filters = $0 }),
+                    FilterSetEditor(filters: Binding(get: { binding.wrappedValue.filters ?? [] },
+                                                     set: { binding.wrappedValue.filters = $0 }),
                                     mapping: model.mapping)
                 }
             }
-            if step.operation == .mark && step.power_percent == 0 {
-                Text("Zum Markieren zuerst eine eigene Leistung einstellen.").font(.caption).foregroundStyle(.secondary)
+            let profile = model.stepPreset(step.operation)
+            if step.operation == .mark && step.power_percent == 0 && profile == nil {
+                Text("Zum Markieren eine eigene Leistung einstellen.").font(.caption).foregroundStyle(.secondary)
             }
-            NumberField("Leistung", value: $model.project.steps[index].power_percent, unit: "%")
-            NumberField("Geschwindigkeit", value: $model.project.steps[index].speed_percent, unit: "%")
-            Stepper(value: $model.project.steps[index].passes, in: 1...100) {
+            NumberField("Leistung", value: binding.power_percent, unit: "%", profile: profile?.power_percent)
+            NumberField("Geschwindigkeit", value: binding.speed_percent, unit: "%", profile: profile?.speed_percent)
+            Stepper(value: binding.passes, in: 1...100) {
                 LabeledContent("Durchgänge", value: String(step.passes))
             }
-            Button("FAU-Profil übernehmen") { model.applyStepPreset(index) }
-                .disabled(!(model.selectedMaterial?.profiles.contains {
-                    abs($0.thickness_mm - model.project.thickness_mm) < 0.0001 &&
-                    $0.operation == step.operation && $0.power_percent > 0
-                } ?? false))
-            ParameterSets(sets: $model.project.steps[index].additional,
+            ParameterSets(sets: binding.additional,
                           first: ParameterSet(power_percent: step.power_percent, speed_percent: step.speed_percent, passes: step.passes))
             if step.operation.isRaster {
-                RasterOptions(settings: $model.project.steps[index].raster, operation: step.operation)
+                RasterOptions(settings: binding.raster, operation: step.operation)
             }
         }
     }
@@ -1226,6 +1242,9 @@ struct NativePopup: NSViewRepresentable {
     func makeCoordinator() -> Coordinator { Coordinator(selection: $selection) }
     func makeNSView(context: Context) -> NSPopUpButton {
         let button = NSPopUpButton(frame: .zero, pullsDown: false)
+        // Sichtbarer Rahmen mit Doppelpfeil, damit das Menü als solches erkennbar ist.
+        button.bezelStyle = .push
+        button.isBordered = true
         button.controlSize = .regular
         button.lineBreakMode = .byTruncatingTail
         button.setAccessibilityIdentifier(identifier)
@@ -1265,17 +1284,28 @@ struct NumberField: View {
     let title: String
     @Binding var value: Double
     let unit: String
-    init(_ title: String, value: Binding<Double>, unit: String) {
-        self.title = title; self._value = value; self.unit = unit
+    /// Wert des Materialprofils; weicht der Wert ab, wird er orange markiert
+    /// und lässt sich links vom Feld zurücksetzen.
+    let profile: Double?
+    init(_ title: String, value: Binding<Double>, unit: String, profile: Double? = nil) {
+        self.title = title; self._value = value; self.unit = unit; self.profile = profile
     }
+    private var deviates: Bool { profile.map { abs($0 - value) > 0.0001 } ?? false }
     var body: some View {
-        LabeledContent(title) {
+        LabeledContent {
             HStack(spacing: 6) {
+                if deviates, let profile {
+                    Button { value = profile } label: { Image(systemName: "arrow.counterclockwise") }
+                        .buttonStyle(.borderless).foregroundStyle(.orange)
+                        .help("Auf den Profilwert \(format(profile)) \(unit) zurücksetzen")
+                }
                 TextField(title, value: $value, format: .number.precision(.fractionLength(0...3)))
                     .multilineTextAlignment(.trailing).textFieldStyle(.roundedBorder)
                     .frame(width: 82).labelsHidden()
                 Text(unit).foregroundStyle(.secondary).fixedSize().frame(width: 40, alignment: .leading)
             }
+        } label: {
+            Text(title).foregroundStyle(deviates ? Color.orange : Color.primary)
         }
     }
 }
@@ -1300,7 +1330,35 @@ final class BedView: NSView {
             max(1, bounds.height - 42) / model.project.bed_height_mm) * model.zoom
     }
     private var bed: NSRect {
-        NSRect(x: 32, y: 30, width: model.project.bed_width_mm * scale, height: model.project.bed_height_mm * scale)
+        NSRect(x: 32 + model.pan.width, y: 30 + model.pan.height,
+               width: model.project.bed_width_mm * scale, height: model.project.bed_height_mm * scale)
+    }
+    /// Zoomt um den Punkt unter dem Mauszeiger.
+    private func zoom(by factor: Double, at point: NSPoint) {
+        let before = bed, oldScale = scale
+        let mm = CGPoint(x: (point.x - before.minX) / oldScale, y: (point.y - before.minY) / oldScale)
+        model.zoomBy(factor)
+        guard model.zoom > 1 else { needsDisplay = true; return }
+        let newScale = scale
+        model.pan = CGSize(width: point.x - mm.x * newScale - 32, height: point.y - mm.y * newScale - 30)
+        needsDisplay = true
+    }
+    override func scrollWheel(with event: NSEvent) {
+        let point = convert(event.locationInWindow, from: nil)
+        if event.hasPreciseScrollingDeltas && !event.modifierFlags.contains(.command) && model.zoom > 1 {
+            // Zwei Finger auf dem Trackpad verschieben das vergrößerte Bett.
+            model.pan.width += event.scrollingDeltaX
+            model.pan.height += event.scrollingDeltaY
+            needsDisplay = true
+        } else {
+            // Mausrad (oder ⌘ + Scrollen) zoomt.
+            let delta = event.hasPreciseScrollingDeltas ? event.scrollingDeltaY / 50 : event.scrollingDeltaY / 5
+            guard delta != 0 else { return }
+            zoom(by: pow(1.1, delta), at: point)
+        }
+    }
+    override func magnify(with event: NSEvent) {
+        zoom(by: 1 + event.magnification, at: convert(event.locationInWindow, from: nil))
     }
     private var motif: NSRect {
         let p = model.project
@@ -1392,8 +1450,6 @@ final class BedView: NSView {
         item("90° nach rechts drehen", #selector(rotateRight))
         item("Horizontal spiegeln", #selector(flipHorizontal))
         item("Vertikal spiegeln", #selector(flipVertical))
-        menu.addItem(.separator())
-        item("Auf dem Arbeitsbett zentrieren", #selector(centerArtwork))
         menu.addItem(.separator())
         item("Löschen", #selector(deleteArtwork))
         return menu

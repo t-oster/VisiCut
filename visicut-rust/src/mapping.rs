@@ -378,6 +378,16 @@ fn color(value: &str) -> Vec<Filter> {
 
 pub fn predefined() -> Vec<Predefined> {
     let mut list = vec![
+        // Reine RGB-Farben wie in vielen Laser-Workflows.
+        Predefined {
+            name: "Farben: Rot schneiden, Blau gravieren, Grün markieren",
+            rules: vec![
+                (Operation::Engrave, Some(color("#0000ff")), false),
+                (Operation::Mark, Some(color("#00ff00")), false),
+                (Operation::Cut, Some(color("#ff0000")), false),
+            ],
+            ignore: vec![],
+        },
         // fau-fablab/visicut-settings/mappings
         Predefined {
             name: "FAU: rot schneiden, grün markieren, blau ignorieren, Rest gravieren",
@@ -500,7 +510,11 @@ mod tests {
             svg: SVG.into(),
             ..Default::default()
         };
-        let fau = &predefined()[0];
+        let fau = predefined()
+            .into_iter()
+            .find(|p| p.name.starts_with("FAU: rot"))
+            .unwrap();
+        let fau = &fau;
         for (operation, filters, rest) in &fau.rules {
             project.steps.push(JobStep {
                 filters: filters.clone(),

@@ -342,25 +342,35 @@ struct ComposeSheet: View {
     }
 }
 
-/// 3 × 3 Bezugspunkte wie in Grafikprogrammen.
+/// Bezugspunkt wie in Grafikprogrammen: ein Rahmen, dessen acht Quadrate an
+/// Ecken und Seitenmitten über die Rahmenlinien verbunden sind, und ein
+/// freies Quadrat in der Mitte. Das gewählte Quadrat ist gefüllt.
 struct ReferencePointPicker: View {
     @Binding var x: Double
     @Binding var y: Double
+    private let size: CGFloat = 40
+    private let box: CGFloat = 8
     var body: some View {
-        Grid(horizontalSpacing: 2, verticalSpacing: 2) {
-            ForEach(0..<3, id: \.self) { row in
-                GridRow {
-                    ForEach(0..<3, id: \.self) { column in
-                        let fx = Double(column) / 2, fy = Double(row) / 2
-                        Button { x = fx; y = fy } label: {
-                            Image(systemName: x == fx && y == fy ? "square.fill" : "square")
-                                .font(.system(size: 9))
-                        }.buttonStyle(.plain)
-                    }
-                }
+        ZStack(alignment: .topLeading) {
+            // Rahmen durch die Mitten der äußeren Quadrate.
+            Path { path in
+                path.addRect(CGRect(x: box / 2, y: box / 2, width: size - box, height: size - box))
+            }.stroke(Color.secondary, lineWidth: 1)
+            ForEach(0..<9, id: \.self) { index in
+                let fx = Double(index % 3) / 2, fy = Double(index / 3) / 2
+                let selected = x == fx && y == fy
+                Rectangle()
+                    .fill(selected ? Color.primary : Color(nsColor: .controlBackgroundColor))
+                    .overlay(Rectangle().stroke(Color.secondary, lineWidth: 1))
+                    .frame(width: box, height: box)
+                    .offset(x: fx * (size - box), y: fy * (size - box))
+                    .contentShape(Rectangle().inset(by: -3))
+                    .onTapGesture { x = fx; y = fy }
             }
         }
+        .frame(width: size, height: size)
         .help("Bezugspunkt für X/Y und Größenänderungen")
+        .accessibilityLabel("Bezugspunkt")
     }
 }
 
@@ -395,6 +405,12 @@ struct TransformControls: View {
 func testComposeTools(_ model: AppModel) throws {
     let saved = model.project, savedObjects = model.objects, savedImage = model.image
     defer { model.project = saved; model.objects = savedObjects; model.image = savedImage; model.dirty = false }
+    // Moduswechsel mit Neuzeichnen: entfernte Schritte dürfen keine Ansicht
+    // mit veraltetem Index mehr abstürzen lassen.
+    for mode in [AssignmentMode.rules, .whole, .objects, .rules, .objects, .whole] {
+        model.setAssignmentMode(mode)
+        RunLoop.current.run(until: Date().addingTimeInterval(0.15))
+    }
     let fonts: FontList = try RustCore.decode("fonts")
     guard fonts.fonts.first == "sans-serif" else { throw CoreError("Schriftliste fehlt") }
     let empty: ProjectResponse = try RustCore.decode("default")

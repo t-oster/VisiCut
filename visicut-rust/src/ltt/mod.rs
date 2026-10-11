@@ -233,7 +233,7 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
         let right = project.width_mm / 2.0
             + overscan.min(BED_WIDTH as f32 - project.x_mm - project.width_mm);
         warnings.push(format!(
-            "Drehachse aktiv: Am Gerät mit „Adjust rotary temp“ die Mitte der Gravur einstellen. \
+            "Rotationseinheit aktiv: Am Gerät mit „Adjust rotary temp“ die Mitte der Gravur einstellen. \
              Der Laserkopf muss {left:.0} mm nach links und {right:.0} mm nach rechts \
              kollisionsfrei fahren können (inklusive Bremsweg)."
         ));
@@ -1795,7 +1795,11 @@ mod tests {
             height_mm: 20.0,
             ..Default::default()
         };
-        let fau = &crate::mapping::predefined()[0];
+        let fau = crate::mapping::predefined()
+            .into_iter()
+            .find(|p| p.name.starts_with("FAU: rot"))
+            .unwrap();
+        let fau = &fau;
         for (operation, filters, rest) in &fau.rules {
             p.steps.push(crate::project::JobStep {
                 filters: filters.clone(),

@@ -432,7 +432,9 @@ impl Project {
         if !self.rotary_diameter_mm.is_finite()
             || !(5.0..=1000.0).contains(&self.rotary_diameter_mm)
         {
-            return Err("Durchmesser für die Drehachse muss zwischen 5 und 1000 mm liegen".into());
+            return Err(
+                "Durchmesser für die Rotationseinheit muss zwischen 5 und 1000 mm liegen".into(),
+            );
         }
         if !self.x_mm.is_finite() || !self.y_mm.is_finite() {
             return Err("Position muss endlich sein".into());

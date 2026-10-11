@@ -458,9 +458,68 @@ fn raster_options(
     changed
 }
 
-fn parameters(ui: &mut egui::Ui, power: &mut f32, speed: &mut f32, passes: &mut u32) -> bool {
-    let mut changed = crate::number(ui, "Leistung", power, 0.0..=100.0, " %");
-    changed |= crate::number(ui, "Geschwindigkeit", speed, 0.1..=100.0, " %");
+/// Orange markiert, wenn der Wert vom Materialprofil abweicht; ⟲ links vom
+/// Feld setzt ihn zurück.
+fn profiled(
+    ui: &mut egui::Ui,
+    label: &str,
+    value: &mut f32,
+    range: std::ops::RangeInclusive<f32>,
+    profile: Option<f32>,
+) -> bool {
+    let deviates = profile.is_some_and(|p| (p - *value).abs() > 1e-4);
+    let mut changed = false;
+    ui.horizontal(|ui| {
+        if deviates {
+            ui.colored_label(PROFILE, label);
+        } else {
+            ui.label(label);
+        }
+        if let Some(p) = profile.filter(|_| deviates)
+            && ui
+                .add(egui::Button::new(egui::RichText::new("⟲").color(PROFILE)).small())
+                .on_hover_text(format!("Auf den Profilwert {p} % zurücksetzen"))
+                .clicked()
+        {
+            *value = p;
+            changed = true;
+        }
+        changed |= ui
+            .add(
+                egui::DragValue::new(value)
+                    .speed(0.1)
+                    .range(range)
+                    .suffix(" %"),
+            )
+            .changed();
+    });
+    changed
+}
+
+/// Farbe für Werte, die vom Materialprofil abweichen.
+const PROFILE: egui::Color32 = egui::Color32::from_rgb(214, 110, 40);
+
+fn parameters(
+    ui: &mut egui::Ui,
+    power: &mut f32,
+    speed: &mut f32,
+    passes: &mut u32,
+    profile: Option<&MaterialProfile>,
+) -> bool {
+    let mut changed = profiled(
+        ui,
+        "Leistung",
+        power,
+        0.0..=100.0,
+        profile.map(|p| p.power_percent),
+    );
+    changed |= profiled(
+        ui,
+        "Geschwindigkeit",
+        speed,
+        0.1..=100.0,
+        profile.map(|p| p.speed_percent),
+    );
     ui.horizontal(|ui| {
         ui.label("Durchgänge");
         changed |= ui
@@ -633,6 +692,7 @@ impl JobUi {
     }
 
     pub fn material(&mut self, ui: &mut egui::Ui, project: &mut Project, dirty: &mut bool) {
+        let before = (project.material.clone(), project.thickness_mm);
         let library_material = find_material(&self.library, &project.material).is_some();
         if library_material {
             self.own_material = false;
@@ -716,40 +776,17 @@ impl JobUi {
                     });
             });
         }
-        if project.steps.is_empty() {
-            if let Some(p) = preset(&self.library, project, project.operation) {
-                if ui
-                    .button(format!(
-                        "Profil übernehmen ({} % / {} %)",
-                        p.power_percent, p.speed_percent
-                    ))
-                    .on_hover_text("FAU-Profil für Material, Stärke und Verfahren")
-                    .clicked()
-                {
-                    *dirty |= apply_presets(&self.library, project) > 0;
-                }
-            } else if project.material.is_empty() {
-                ui.small("Material wählen, um passende FAU-Profile zu sehen.");
-            } else {
-                ui.small("Kein FAU-Profil für diese Kombination; Parameter manuell eingeben.");
-            }
-        } else {
-            let available = project
-                .steps
-                .iter()
-                .filter(|s| preset(&self.library, project, s.operation).is_some())
-                .count();
-            if ui
-                .add_enabled(
-                    available > 0,
-                    egui::Button::new("Profile für alle Schritte übernehmen"),
-                )
-                .on_hover_text("Verfügbare FAU-Profile für alle Verfahren übernehmen")
-                .on_disabled_hover_text("Kein FAU-Profil für die Verfahren der Schritte")
-                .clicked()
-            {
-                *dirty |= apply_presets(&self.library, project) > 0;
-            }
+        if (project.material.clone(), project.thickness_mm) != before {
+            // Das Materialprofil ist der Standard; Abweichungen zeigt die
+            // Bearbeitung orange an.
+            apply_presets(&self.library, project);
+        }
+        if project.material.is_empty() {
+            ui.small("Material wählen, um sein Profil zu übernehmen.");
+        } else if preset(&self.library, project, project.operation).is_none()
+            && project.steps.is_empty()
+        {
+            ui.small("Kein Profil für diese Kombination; Parameter manuell eingeben.");
         }
         if ui.button("Materialbibliothek …").clicked() {
             self.open_library();
@@ -798,18 +835,22 @@ impl JobUi {
         let mode = assignment_mode(project);
         match mode {
             AssignmentMode::Whole => {
-                ui.small("Ein Verfahren für das gesamte Motiv.");
-                *dirty |= operation_selector(ui, project);
-                if project.operation == Operation::Mark
-                    && preset(&self.library, project, Operation::Mark).is_none()
-                {
-                    ui.small("Konturen markieren. Eigene Leistung einstellen; kein Schnittprofil übernehmen.");
+                ui.small("Ein Verfahren für das gesamte Motiv. Für Zuordnungen nach Strichfarbe oder anderen Merkmalen „Regeln“ wählen.");
+                if operation_selector(ui, project) {
+                    // Das Materialprofil ist der Standard.
+                    apply_presets(&self.library, project);
+                    *dirty = true;
+                }
+                let profile = preset(&self.library, project, project.operation).cloned();
+                if project.operation == Operation::Mark && profile.is_none() {
+                    ui.small("Konturen markieren. Eigene Leistung einstellen.");
                 }
                 *dirty |= parameters(
                     ui,
                     &mut project.power_percent,
                     &mut project.speed_percent,
                     &mut project.passes,
+                    profile.as_ref(),
                 );
                 if project.operation.is_raster() {
                     *dirty |= raster_options(ui, "whole", &mut project.raster, project.operation);
@@ -820,7 +861,9 @@ impl JobUi {
                 self.objects(ui, project, dirty);
             }
             AssignmentMode::Rules => {
-                ui.small("Objekte nach Farbe, Linienstärke, Ebene, Typ oder ID zuordnen.");
+                ui.small(
+                    "Regeln ordnen Objekte nach Merkmalen zu, z. B. nach Strichfarbe: Rot (#ff0000) → Schneiden, Blau (#0000ff) → Gravieren, Grün (#00ff00) → Markieren. Vorlage wählen oder Bedingungen (Farbe, Linienstärke, Ebene, Typ, ID) anpassen; „Rest“ erfasst alle übrigen Objekte.",
+                );
                 self.rules_header(ui, project, dirty);
             }
         }
@@ -960,8 +1003,7 @@ impl JobUi {
                 Err(_) if !is_rule(&project.steps[i]) => project.steps[i].objects.len(),
                 Err(_) => 0,
             };
-            let has_preset = preset(&self.library, project, project.steps[i].operation).is_some();
-            let mut take_preset = false;
+            let profile = preset(&self.library, project, project.steps[i].operation).cloned();
             let step = &mut project.steps[i];
             egui::CollapsingHeader::new(format!(
                 "{}. {} · {} Objekte",
@@ -993,11 +1035,8 @@ impl JobUi {
                     &mut step.power_percent,
                     &mut step.speed_percent,
                     &mut step.passes,
+                    profile.as_ref(),
                 );
-                take_preset = ui
-                    .add_enabled(has_preset, egui::Button::new("FAU-Profil übernehmen"))
-                    .on_disabled_hover_text("Kein FAU-Profil für Material, Stärke und Verfahren")
-                    .clicked();
                 let first = ParameterSet {
                     power_percent: step.power_percent,
                     speed_percent: step.speed_percent,
@@ -1011,6 +1050,7 @@ impl JobUi {
                         &mut set.power_percent,
                         &mut set.speed_percent,
                         &mut set.passes,
+                        None,
                     );
                     if ui.small_button("Parametersatz entfernen").clicked() {
                         drop = Some(j);
@@ -1032,9 +1072,6 @@ impl JobUi {
                     remove = Some(i);
                 }
             });
-            if take_preset {
-                *dirty |= apply_step_preset(&self.library, project, i);
-            }
         }
         if let Some(i) = remove {
             project.steps.remove(i);
@@ -1425,8 +1462,9 @@ mod tests {
         let mut p = project();
         set_mode(&library, &mut p, AssignmentMode::Rules, 3);
         assert_eq!(assignment_mode(&p), AssignmentMode::Rules);
+        // The first template maps pure red, blue and green.
         assert_eq!(p.steps.len(), mapping::predefined()[0].rules.len());
-        assert!(!p.ignore_filters.is_empty());
+        assert!(mapping::predefined()[0].name.starts_with("Farben"));
         for step in &mut p.steps {
             (step.power_percent, step.speed_percent, step.passes) = (1.0, 1.0, 3);
         }

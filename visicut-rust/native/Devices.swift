@@ -242,7 +242,7 @@ struct DeviceSettings: View {
                         TextField("Beschreibung", text: current.description)
                         TextField("Hostname / IP", text: current.hostname)
                         TextField("Port", value: current.port, format: .number.grouping(.never))
-                        Toggle("Drehachse vorhanden", isOn: current.rotary_axis)
+                        Toggle("Rotationseinheit vorhanden", isOn: current.rotary_axis)
                     }
                     Section("Kamera") {
                         TextField("Kamera-URL", text: current.camera_url, prompt: Text("http://…/visicam.jpg"))

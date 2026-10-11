@@ -3,6 +3,28 @@
 Jede Version hat einen Abschnitt `## <Version> – <Datum>`; der Release-Workflow
 übernimmt ihn als Beschreibung des GitHub-Releases.
 
+## 0.10.0 – 11.10.2026
+
+- **Absturz behoben** beim Wechsel zwischen Gesamt, Einzeln und Regeln
+  (macOS): entfernte Schritte und Bedingungen werden nicht mehr über einen
+  veralteten Index gelesen.
+- **Nesting** funktioniert mit Kopien im Raster (z. B. 5 × 5 Kopien, 1 mm
+  Abstand): Teile werden nach ihren sichtbaren Umrissen angeordnet, und jedes
+  Teil wird nur einmal eingebettet statt mit dem ganzen Dokument.
+- **Materialprofil ist der Standard**: Es wird bei Material, Stärke und
+  Verfahren automatisch übernommen. Abweichende Werte sind orange markiert
+  und lassen sich links vom Feld zurücksetzen.
+- **Regeln** erklärt; neue erste Vorlage „Rot schneiden, Blau gravieren, Grün
+  markieren“ (#ff0000, #0000ff, #00ff00).
+- **Bezugspunkt** als Rahmen mit acht verbundenen Quadraten und freiem
+  Mittelpunkt.
+- **Arbeitsbett**: rote Warnung über dem Bett, wenn das Motiv nicht passt;
+  Rasterschalter auch auf macOS; Zoom mit Mausrad und Trackpad um den
+  Mauszeiger, Verschieben mit zwei Fingern.
+- Dropdowns rechtsbündig mit sichtbarem Menüpfeil; „Drehachse“ heißt jetzt
+  „Rotationseinheit“; „Auf dem Arbeitsbett zentrieren“ und die Hinweise am
+  Ende der Seitenleiste entfallen.
+
 ## 0.9.0 – 11.10.2026
 
 - **Transformieren** wie in Grafikprogrammen: Bezugspunkt (3 × 3) für X/Y
