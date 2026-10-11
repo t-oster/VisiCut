@@ -38,26 +38,34 @@ bash scripts/bundle-macos.sh
 ```
 
 [GitHub Actions](https://github.com/dbambus/VisiCutRust/actions/workflows/rust-desktop.yml)
-uses GitHub-hosted Windows, Linux, Intel Mac and Apple Silicon Mac runners.
-Pull requests, changes on `master`/`main`, and manual runs build downloadable
-artifacts. Pushing a `v*` tag also publishes a release after all four builds
-and tests pass. The two Mac builds are combined with `lipo` into one Universal
-application, signed again, and tested on both architectures before publishing.
-The tag must match the version in `visicut-rust/Cargo.toml`.
+uses GitHub-hosted Windows, Linux and Apple Silicon Mac runners. Pull
+requests, changes on `master`/`main`, and manual runs build downloadable
+artifacts.
 
-To publish the current version from a clean checkout of `master`:
+**Releases.** A push to `master` publishes a full GitHub release `v<version>`
+(not a pre-release, marked as latest) when the version in
+`visicut-rust/Cargo.toml` has no release yet; its description is the matching
+section of [`visicut-rust/CHANGELOG.md`](visicut-rust/CHANGELOG.md). Later
+pushes with the same version only build artifacts. To release, raise the
+version in `Cargo.toml`/`Cargo.lock`, add a `## <version> – <date>` section to
+the changelog and merge to `master`. Pushing a `v*` tag publishes or updates
+the release of that tag (tag and Cargo version must match; tags with a suffix
+such as `-rc.1` become pre-releases). Release archives include licenses and
+documentation; `SHA256SUMS.txt` is attached.
 
-```sh
-git tag v0.7.0
-git push origin v0.7.0
-```
+**macOS signing.** Without secrets the app is signed ad hoc. With these
+repository secrets it is signed with a Developer ID (hardened runtime) and,
+if the Apple ID values are present too, notarized and stapled:
 
-For subsequent releases, update `Cargo.toml` and `Cargo.lock`, commit and push,
-then push the matching new version tag. Tags must be pushed by a maintainer
-with write access. Release archives include licenses and documentation;
-`SHA256SUMS.txt` is attached to each release. Signing certificates and a
-self-hosted runner are not required. Native macOS UI checks also save a
-screenshot and log under the workflow artifacts.
+| Secret | Content |
+| --- | --- |
+| `MACOS_CERTIFICATE` | Developer ID Application certificate with private key as `.p12`, base64-encoded (`base64 -i cert.p12`) |
+| `MACOS_CERTIFICATE_PASSWORD` | Password of the `.p12` file |
+| `MACOS_SIGN_IDENTITY` | e.g. `Developer ID Application: Name (TEAMID)` |
+| `APPLE_ID`, `APPLE_TEAM_ID`, `APPLE_APP_PASSWORD` | Apple ID, team ID and an app-specific password for `notarytool` |
+
+Locally, `MACOS_SIGN_IDENTITY=… bash scripts/bundle-macos.sh` signs with a
+certificate from the login keychain.
 
 ## Original VisiCut
 

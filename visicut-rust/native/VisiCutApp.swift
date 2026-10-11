@@ -205,6 +205,7 @@ final class AppModel: ObservableObject {
     @Published var mapping: MappingInfo?
     @Published var mappingError: String?
     @Published var vectorizeSource: BitmapSource?
+    @Published var composeTool: ComposeTool?
     var materialSource = ""
     var mappingScheduled = false
     var projectURL: URL?
@@ -650,6 +651,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
         for (title, selector, key) in [("Widerrufen", "undo:", "z"), ("Ausschneiden", "cut:", "x"), ("Kopieren", "copy:", "c"), ("Einsetzen", "paste:", "v"), ("Alles auswählen", "selectAll:", "a")] {
             let item = menuItem(title, action: Selector(selector), key: key); item.target = nil; edit.addItem(item)
         }
+        let object = submenu("Objekt")
+        object.addItem(menuItem("Text …", action: #selector(insertText)))
+        object.addItem(menuItem("Form …", action: #selector(insertShape)))
+        object.addItem(menuItem("Schild …", action: #selector(insertSign)))
+        object.addItem(.separator())
+        object.addItem(menuItem("Kopien im Raster …", action: #selector(arrayCopies)))
+        object.addItem(menuItem("Teile verschachteln (Nesting) …", action: #selector(nestParts)))
         let view = submenu("Darstellung")
         view.addItem(menuItem("Ansicht einpassen", action: #selector(fitView), key: "0"))
         view.addItem(menuItem("Raster anzeigen", action: #selector(toggleGrid)))
@@ -684,6 +692,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
         case #selector(refreshCamera): return model.showCamera && !model.cameraLoading
         case #selector(openFile), #selector(openDemo), #selector(newProject), #selector(showSettings): return !model.busy
         case #selector(vectorizeBitmap): return !model.busy && !model.showJobPreview && model.vectorizeSource == nil
+        case #selector(insertText), #selector(insertShape), #selector(insertSign):
+            return !model.busy && !model.showJobPreview && model.composeTool == nil
+        case #selector(arrayCopies), #selector(nestParts):
+            return model.project.hasArtwork && !model.busy && !model.showJobPreview && model.composeTool == nil
         default: return true
         }
     }
@@ -695,6 +707,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
     @objc func openFile() { showWorkspace(); model.chooseFile() }
     @objc func openDemo() { showWorkspace(); model.demo() }
     @objc func vectorizeBitmap() { showWorkspace(); model.chooseBitmap() }
+    @objc func insertText() { showWorkspace(); model.composeTool = .text }
+    @objc func insertShape() { showWorkspace(); model.composeTool = .shape }
+    @objc func insertSign() { showWorkspace(); model.composeTool = .sign }
+    @objc func arrayCopies() { showWorkspace(); model.composeTool = .array }
+    @objc func nestParts() { showWorkspace(); model.composeTool = .nest }
     @objc func saveProject() { model.save() }
     @objc func saveAs() { model.save(asCopy: true) }
     @objc func exportJob() { model.export() }
@@ -833,6 +850,7 @@ struct Workspace: View {
             }
             .frame(minWidth: 560, minHeight: 640)
             .sheet(item: $model.vectorizeSource) { source in VectorizeSheet(model: model, source: source) }
+            .sheet(item: $model.composeTool) { tool in ComposeSheet(model: model, tool: tool) }
         }
         .navigationTitle(model.project.name)
         .sheet(isPresented: $model.showJobPreview) { JobPreview(model: model) }
@@ -1538,12 +1556,13 @@ func runUITest(_ model: AppModel) {
         model.jobImage = NSImage(data: Data(mixed.preview_png))
         try testDevicesRotaryAndCamera(model)
         try testRulesEngravingAndMaterials(model)
+        try testComposeTools(model)
         // Exercise the actual asynchronous preparation and sheet presentation.
         model.preparedJob = nil
         model.jobImage = nil
         model.previewJob()
         model.dirty = false
-        print("Native UI state tests passed: material, thickness, operation, presets, proportional scaling, native save / Rust reload, cut order and legacy files, bitmap vectorization, Rust export, object assignments, mixed job preview and estimate, stale preview invalidation, devices, rotary axis, camera background and calibration, rule mapping, 3D engraving, dithering, parameter sets, material library")
+        print("Native UI state tests passed: material, thickness, operation, presets, proportional scaling, native save / Rust reload, cut order and legacy files, bitmap vectorization, Rust export, object assignments, mixed job preview and estimate, stale preview invalidation, devices, rotary axis, camera background and calibration, rule mapping, 3D engraving, dithering, parameter sets, material library, text, sign, copies, nesting")
     } catch {
         fputs("Native UI tests failed: \(error)\n", stderr)
         exit(1)
