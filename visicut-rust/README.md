@@ -121,7 +121,7 @@ lokal nach einem Build für die jeweilige Host-Architektur.
    importiert/exportiert sie als JSON und stellt die FAU-Bibliothek wieder her;
    eigene Änderungen liegen im Einstellungsordner (siehe unten). Das Profil
    der gewählten Kombination wird automatisch übernommen. Weicht ein Wert
-   davon ab, ist er orange markiert; ⟲ links vom Feld setzt ihn zurück.
+   davon ab, ist er orange markiert; der Kreispfeil ⟳ links vom Feld setzt ihn zurück.
    Beide Werte werden in Prozent angezeigt und eingegeben. Geschwindigkeit
    wird direkt als LTT-Prozentwert übertragen (zulässig: 0,1–100 %).
    Bei fehlendem oder deaktiviertem Profil bleiben die Parameter manuell.

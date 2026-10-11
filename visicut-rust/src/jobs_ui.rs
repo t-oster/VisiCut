@@ -458,7 +458,7 @@ fn raster_options(
     changed
 }
 
-/// Orange markiert, wenn der Wert vom Materialprofil abweicht; ⟲ links vom
+/// Orange markiert, wenn der Wert vom Materialprofil abweicht; ⟳ links vom
 /// Feld setzt ihn zurück.
 fn profiled(
     ui: &mut egui::Ui,
@@ -477,7 +477,7 @@ fn profiled(
         }
         if let Some(p) = profile.filter(|_| deviates)
             && ui
-                .add(egui::Button::new(egui::RichText::new("⟲").color(PROFILE)).small())
+                .add(egui::Button::new(egui::RichText::new("⟳").color(PROFILE)).frame(false))
                 .on_hover_text(format!("Auf den Profilwert {p} % zurücksetzen"))
                 .clicked()
         {

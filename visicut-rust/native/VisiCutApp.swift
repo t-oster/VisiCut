@@ -1295,7 +1295,7 @@ struct NumberField: View {
         LabeledContent {
             HStack(spacing: 6) {
                 if deviates, let profile {
-                    Button { value = profile } label: { Image(systemName: "arrow.counterclockwise") }
+                    Button { value = profile } label: { Image(systemName: "arrow.clockwise") }
                         .buttonStyle(.borderless).foregroundStyle(.orange)
                         .help("Auf den Profilwert \(format(profile)) \(unit) zurücksetzen")
                 }
