@@ -3,6 +3,20 @@
 Jede Version hat einen Abschnitt `## <Version> – <Datum>`; der Release-Workflow
 übernimmt ihn als Beschreibung des GitHub-Releases.
 
+## 0.11.0 – 11.10.2026
+
+- **Mehrere Dateien per Drag-and-drop hinzufügen** (egui und macOS): Ist schon
+  ein Motiv geladen, kommen abgelegte Grafiken in Originalgröße rechts daneben
+  (sonst darunter) hinzu, statt das Motiv zu ersetzen. Ohne Motiv öffnet die
+  erste Datei, die übrigen werden angehängt. Bestehende Objekte behalten
+  Nummern und Zuordnungen; bei Einzelzuordnung nennt ein Hinweis die noch
+  nicht zugeordneten neuen Objekte. Gleichnamige IDs und CSS-Klassen (z. B.
+  `cls-1` aus Illustrator) werden umbenannt. Widerrufen nimmt das ganze
+  Ablegen zurück; nicht lesbare Dateien werden gemeldet.
+- **Profile anderer Lasercutter**: Dropdown „Profile“ über dem Material
+  wechselt zwischen den FAU-Profilen des LTT iLaser 4000 und des Epilog Zing
+  (42 Materialien, 128 Profile, nur lesbar, mit Hinweis zur Prüfung am LTT).
+
 ## 0.10.0 – 11.10.2026
 
 - **Absturz behoben** beim Wechsel zwischen Gesamt, Einzeln und Regeln
@@ -14,9 +28,6 @@ Jede Version hat einen Abschnitt `## <Version> – <Datum>`; der Release-Workflo
 - **Materialprofil ist der Standard**: Es wird bei Material, Stärke und
   Verfahren automatisch übernommen. Abweichende Werte sind orange markiert
   und lassen sich links vom Feld zurücksetzen.
-- **Profile anderer Lasercutter**: Dropdown „Profile“ über dem Material
-  wechselt zwischen den FAU-Profilen des LTT iLaser 4000 und des Epilog Zing
-  (42 Materialien, 128 Profile, nur lesbar, mit Hinweis zur Prüfung am LTT).
 - **Regeln** erklärt; neue erste Vorlage „Rot schneiden, Blau gravieren, Grün
   markieren“ (#ff0000, #0000ff, #00ff00).
 - **Bezugspunkt** als Rahmen mit acht verbundenen Quadraten und freiem

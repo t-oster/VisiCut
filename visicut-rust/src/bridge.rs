@@ -318,6 +318,11 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
             )?;
             composed(project, Vec::new())
         }
+        "append" => {
+            let paths: Vec<std::path::PathBuf> = get(request, "paths")?;
+            let (project, notes) = crate::compose::append_files(&get_project(request)?, &paths)?;
+            composed(project, notes)
+        }
         "duplicate" => composed(
             crate::compose::duplicate(&get_project(request)?, 5.0)?,
             Vec::new(),
@@ -541,6 +546,30 @@ mod tests {
         std::fs::remove_dir_all(&dir).unwrap();
         let warnings = result.unwrap()["warnings"].clone();
         assert!(warnings[0].as_str().unwrap().contains("missing.png"));
+    }
+    #[test]
+    fn append_adds_several_files_and_reports_unreadable_ones() {
+        let dir =
+            std::env::temp_dir().join(format!("visicut-bridge-append-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("teil.svg");
+        std::fs::write(
+            &path,
+            r#"<svg xmlns="http://www.w3.org/2000/svg" width="10mm" height="10mm" viewBox="0 0 10 10"><rect id="a" width="5" height="5"/></svg>"#,
+        )
+        .unwrap();
+        let start =
+            execute(&json!({"action": "import", "project": Project::default(), "path": path}))
+                .unwrap();
+        let result = execute(&json!({"action": "append", "project": start["project"],
+            "paths": [path, dir.join("fehlt.svg"), path]}));
+        std::fs::remove_dir_all(&dir).unwrap();
+        let result = result.unwrap();
+        assert_eq!(result["objects"].as_array().unwrap().len(), 3);
+        assert!((result["project"]["width_mm"].as_f64().unwrap() - 40.0).abs() < 1e-3);
+        let warnings = result["warnings"].as_array().unwrap();
+        assert_eq!(warnings.len(), 1);
+        assert!(warnings[0].as_str().unwrap().starts_with("fehlt.svg"));
     }
     #[test]
     fn new_artwork_resets_old_assignments_and_returns_object_list() {

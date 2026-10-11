@@ -369,6 +369,61 @@ impl VisiCutRust {
         }
     }
 
+    /// Abgelegte Dateien: Grafiken kommen zum vorhandenen Motiv hinzu (ohne
+    /// Motiv öffnet die erste), ein einzelnes Projekt wird geöffnet.
+    fn drop_files(&mut self, ctx: &egui::Context, mut paths: Vec<PathBuf>) {
+        if self.busy() {
+            self.status = "Bitte die laufende Übertragung abwarten".into();
+            return;
+        }
+        let (graphics, projects): (Vec<PathBuf>, Vec<PathBuf>) =
+            paths.drain(..).partition(|p| import::is_importable(p));
+        if graphics.is_empty() {
+            if let Some(path) = projects.into_iter().next() {
+                self.request(ctx, Replace::Open(path));
+            }
+            return;
+        }
+        let mut notes: Vec<String> = projects
+            .iter()
+            .map(|p| {
+                format!(
+                    "{}: Projekte lassen sich nicht hinzufügen, nur öffnen",
+                    p.file_name().unwrap_or_default().to_string_lossy()
+                )
+            })
+            .collect();
+        let mut rest = graphics.as_slice();
+        if self.project.svg.is_empty() {
+            if let Err(e) = self.open_path(ctx, &rest[0]) {
+                notes.insert(0, e);
+                return self.report(notes.join("\n"));
+            }
+            rest = &rest[1..];
+            if let Some(warnings) = self.alert.take() {
+                notes.insert(0, warnings);
+            }
+        }
+        if !rest.is_empty() {
+            match visicut_core::compose::append_files(&self.project, rest) {
+                Ok((project, more)) => {
+                    notes.extend(more);
+                    self.apply_composed(ctx, project, Vec::new());
+                    self.status = format!(
+                        "{} Datei(en) hinzugefügt · {:.0} × {:.0} mm · Bearbeiten → Widerrufen macht es rückgängig",
+                        graphics.len(),
+                        self.project.width_mm,
+                        self.project.height_mm
+                    );
+                }
+                Err(e) => notes.push(e),
+            }
+        }
+        if !notes.is_empty() {
+            self.alert = Some(notes.join("\n"));
+        }
+    }
+
     /// Sichert das Projekt; `false`, wenn der Dialog abgebrochen wurde.
     fn save(&mut self, as_copy: bool) -> Result<bool, String> {
         self.project.validate_document()?;
@@ -1237,7 +1292,11 @@ impl VisiCutRust {
             painter.text(
                 panel.center(),
                 egui::Align2::CENTER_CENTER,
-                "Loslassen zum Öffnen",
+                if self.project.svg.is_empty() {
+                    "Loslassen zum Öffnen"
+                } else {
+                    "Loslassen zum Hinzufügen"
+                },
                 egui::FontId::proportional(26.0),
                 Color32::from_rgb(30, 70, 110),
             );
@@ -1591,12 +1650,15 @@ impl eframe::App for VisiCutRust {
                 self.replace = Some(Replace::Quit);
             }
         }
-        // Aus dem Dateimanager gezogene Dateien öffnen (die erste zählt).
-        let dropped = ctx.input(|i| i.raw.dropped_files.iter().find_map(|f| f.path.clone()));
-        if let Some(path) = dropped
-            && !self.modal_open()
-        {
-            self.request(ctx, Replace::Open(path));
+        let dropped: Vec<PathBuf> = ctx.input(|i| {
+            i.raw
+                .dropped_files
+                .iter()
+                .filter_map(|f| f.path.clone())
+                .collect()
+        });
+        if !dropped.is_empty() && !self.modal_open() {
+            self.drop_files(ctx, dropped);
         }
         self.keyboard(ctx);
         self.jobs.windows(ctx, &mut self.status);

@@ -935,11 +935,20 @@ struct Workspace: View {
             Button("OK", role: .cancel) { model.error = nil }
         } message: { Text(model.error ?? "") }
         .onDrop(of: [.fileURL], isTargeted: nil) { providers in
-            guard !model.busy, let provider = providers.first else { return false }
-            provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, _ in
-                guard let data = item as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) else { return }
-                DispatchQueue.main.async { model.open(url) }
+            guard !model.busy, !providers.isEmpty else { return false }
+            var urls = [URL?](repeating: nil, count: providers.count)
+            let group = DispatchGroup()
+            for (index, provider) in providers.enumerated() {
+                group.enter()
+                provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, _ in
+                    let url = (item as? Data).flatMap { URL(dataRepresentation: $0, relativeTo: nil) }
+                    DispatchQueue.main.async {
+                        urls[index] = url
+                        group.leave()
+                    }
+                }
             }
+            group.notify(queue: .main) { model.dropFiles(urls.compactMap { $0 }) }
             return true
         }
     }

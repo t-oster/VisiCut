@@ -89,6 +89,11 @@ lokal nach einem Build für die jeweilige Host-Architektur.
 ## Workflow
 
 1. Eine SVG über **Öffnen** (⌘O) importieren oder **Beispiel** wählen.
+   Dateien lassen sich auch ins Fenster ziehen, mehrere auf einmal: Ist
+   schon ein Motiv geladen, kommen sie in Originalgröße rechts daneben (sonst
+   darunter) hinzu; gleichnamige IDs und CSS-Klassen werden umbenannt, damit
+   sich die Dateien nicht gegenseitig umfärben. Widerrufen nimmt das ganze
+   Ablegen zurück.
    Verknüpfte Bilddateien (PNG, JPEG, GIF, WebP, SVG) werden dabei relativ zur
    SVG geladen und in das Projekt eingebettet; Webadressen werden nicht
    abgerufen, fehlende Bilder werden als Hinweis gemeldet.
