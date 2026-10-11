@@ -7,7 +7,7 @@ Erster Ziel-Lasercutter: LTT iLaser 4000 des FAU FabLabs.
 ## Starten
 
 Die lokal gebaute App befindet sich in `dist/VisiCutRust.app`.
-Version 0.7.0 benötigt macOS 14 oder neuer, weder Java noch Maven.
+Version 0.8.0 benötigt macOS 14 oder neuer, weder Java noch Maven.
 Die macOS-App wird nur für Apple Silicon
 gebaut und veröffentlicht; Intel-Macs werden nicht unterstützt.
 
@@ -26,8 +26,10 @@ Das mitgelieferte `rust-toolchain.toml` wählt Rust 1.90.
 cargo test --lib --locked
 ```
 
-Das Bundle ist lokal ad hoc signiert, nicht für externe Verteilung
-notarisiert.
+Das Bundle ist lokal ad hoc signiert. Mit
+`MACOS_SIGN_IDENTITY="Developer ID Application: Name (TEAMID)"` signiert das
+Skript mit einer Developer ID (Hardened Runtime); die CI notarisiert dann
+auch, wenn die Secrets hinterlegt sind (siehe README im Hauptverzeichnis).
 
 ## Windows, Linux und GitHub Actions
 
@@ -36,6 +38,7 @@ egui-Oberfläche im üblichen Stil der Plattform (Kürzel mit Strg statt ⌘).
 Beide nutzen denselben Rust-Kern und bieten dieselben Funktionen:
 Menüleiste, Zoom und Lineale, Einzel- und Regelzuordnung mit Wertvorschlägen,
 Materialbibliothek, Parametersätze, Bitmap-Vektorisierung, Schnittreihenfolge,
+Text, Formen, Schilder, Kopien und Nesting,
 Vorschau mit Zeitschätzung und Zeitslider, Geräte mit Maschinenwerten und
 Zeilenversatz-Kalibrierung, Drehachse und Kamera.
 
@@ -52,18 +55,20 @@ allen drei Zielen. Linux prüft zusätzlich Formatierung und Clippy; das
 Mac-Ziel baut und signiert das Bundle und testet die native Oberfläche
 einschließlich Zeitslider. TCP-Tests verwenden ausschließlich localhost.
 Die Downloads und Mac-Testbilder liegen unter **Actions → VisiCutRust releases →
-Artifacts** (14 Tage Aufbewahrung). Jeder Push auf `master` veröffentlicht
-nach erfolgreichen Builds auf allen drei Zielen automatisch eine
-[GitHub Release](https://github.com/dbambus/VisiCutRust/releases) mit drei
-Archiven und `SHA256SUMS.txt`, getaggt als `v<Cargo-Version>-build.<Laufnummer>`
-am gebauten Commit. Tags im Format `v<Version>` veröffentlichen ebenfalls;
-dort müssen Tag und Cargo-Version übereinstimmen. Wird während eines Laufs
-erneut gepusht, entfällt das Release des älteren Laufs.
+Artifacts** (14 Tage Aufbewahrung). Ein Push auf `master` veröffentlicht
+nach erfolgreichen Builds auf allen drei Zielen ein vollständiges
+[GitHub Release](https://github.com/dbambus/VisiCutRust/releases)
+`v<Cargo-Version>` mit drei Archiven und `SHA256SUMS.txt`, sofern es für diese
+Version noch keines gibt; die Beschreibung ist der passende Abschnitt aus
+[CHANGELOG.md](CHANGELOG.md). Weitere Pushes mit derselben Version bauen nur
+Artefakte. Für ein neues Release Version in `Cargo.toml`/`Cargo.lock` erhöhen
+und einen Changelog-Abschnitt `## <Version> – <Datum>` ergänzen. Tags
+`v<Version>` veröffentlichen ebenfalls (Tag und Cargo-Version müssen
+übereinstimmen); nur Versionen mit Suffix wie `-rc.1` werden als Vorabversion
+markiert. Ein manueller Lauf auf einem Versionstag wiederholt die
+Veröffentlichung, auf einem Branch baut er nur Artefakte.
 Der macOS-Download heißt
 `VisiCutRust-<Version>-aarch64-apple-darwin.zip`.
-Versionen unter 1.0 sowie Versionen mit Suffix werden als Vorabversion markiert.
-Ein manueller Lauf auf einem Branch baut nur Artefakte; auf einem vorhandenen
-Versionstag kann er die Veröffentlichung wiederholen.
 Weitere Workflows gibt es nicht: Die alten Java-Distributionsbuilds und der
 Auslöser für den externen VisiCut-Buildserver wurden entfernt.
 
@@ -221,6 +226,34 @@ nennt die verwendeten Werte. LaserScript-Dateien (`.ls`) laufen in einer
 abgeschotteten JavaScript-Umgebung ohne Datei- und Netzzugriff mit
 Zeitlimit (5 s); `prompt`-Abfragen erhalten ihren Vorgabewert.
 
+## Text, Formen, Schilder, Kopien und Nesting
+
+Das Menü **Objekt** ergänzt das Motiv ohne Umweg über Inkscape:
+
+- **Text …**: eine oder mehrere Zeilen in einer Schrift der App (Liste aller
+  installierten und mitgelieferten Schriften), fett/kursiv, links/mittig/
+  rechts, Zeilenabstand. Der Text wird sofort in Umrisse umgewandelt und ist
+  danach nicht mehr editierbar, dafür auf jedem Rechner gleich.
+- **Form …**: Rechteck mit Eckenradius, Ellipse, Vieleck und Stern in mm.
+- **Schild …**: Platte mit Eckenradius, 0, 2 oder 4 Löcher, optional ein
+  markierter Rahmen und zentrierter Text – alles in einem Schritt.
+- Jedes neue Element wird je nach Wahl graviert (schwarz gefüllt), geschnitten
+  (rote Kontur) oder markiert (blaue Kontur). In der Einzelzuordnung landet es
+  im passenden Schritt; braucht die Gesamtbearbeitung ein zweites Verfahren,
+  wechselt das Projekt zur Einzelzuordnung und das bisherige Motiv behält seine
+  Werte. Neue Schritte erhalten das Materialprofil.
+- **Kopien im Raster …**: Spalten, Zeilen und Abstände; Zuordnungen gelten für
+  alle Kopien.
+- **Teile verschachteln (Nesting) …**: Die Objekte der obersten Ebene (bzw.
+  einer Inkscape-Ebene) werden in der gewünschten Anzahl nach ihren
+  Umrissrechtecken auf eine Fläche verteilt (größte zuerst, freie Rechtecke,
+  optional um 90° gedreht). Teile, die nicht passen, werden gemeldet. Echte
+  Konturverschachtelung ist nicht enthalten.
+
+Das bisherige Motiv bleibt dabei unverändert als eingebettetes SVG erhalten,
+Objektnummern und Regeln bleiben gültig. Ein SVG mit DTD-Entitäten
+(manche Illustrator-Dateien) lässt sich nicht erweitern.
+
 ## Lasercutter, Drehachse und Kamera
 
 **VisiCutRust → Lasercutter …** (⌘,) verwaltet mehrere LTT iLaser 4000:
@@ -293,7 +326,7 @@ und die automatische Ungültigkeit alter Vorschauen. Abschließend öffnet er
 die Auftragsvorschau über die reguläre asynchrone Vorbereitung. Der Test
 bewegt den echten nativen Slider vorwärts/rückwärts und prüft Interpolation,
 Durchgangswechsel, Ende der Wiedergabe sowie drei getrennte Aufträge.
-Er prüft außerdem Regel-Zuordnung mit Rest und Ignorierregeln, 3D-Gravur, Rasterverfahren, Parametersätze und die Materialbibliothek (Sichern, doppelte Einträge, Wiederherstellen). Außerdem prüft er Geräteliste und Gerätewechsel in einem temporären Einstellungsordner, Drehachsen-Aufträge, Kamerahintergrund aus einer lokalen Bilddatei, die Kalibrierseite, das Zeilenversatz-Testmuster mit Übernahme in die Tabelle und den Hinweis zur experimentellen Kurvenbeschleunigung. Rust-Tests prüfen drei unabhängige TCP-Verbindungen ausschließlich lokal. Er sendet keinen
+Er prüft außerdem Regel-Zuordnung mit Rest und Ignorierregeln, 3D-Gravur, Rasterverfahren, Parametersätze und die Materialbibliothek (Sichern, doppelte Einträge, Wiederherstellen). Außerdem prüft er Geräteliste und Gerätewechsel in einem temporären Einstellungsordner, Drehachsen-Aufträge, Kamerahintergrund aus einer lokalen Bilddatei, die Kalibrierseite, das Zeilenversatz-Testmuster mit Übernahme in die Tabelle, den Hinweis zur experimentellen Kurvenbeschleunigung sowie Schild, Text, Kopien und Nesting. Rust-Tests prüfen drei unabhängige TCP-Verbindungen ausschließlich lokal. Er sendet keinen
 Job an den Lasercutter. Der normale Start enthält keinen Selbsttest.
 
 `tests/java_parity.rs` vergleicht die erzeugten LTT-Aufträge Byte für Byte

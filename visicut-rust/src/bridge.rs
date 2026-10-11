@@ -46,6 +46,13 @@ fn get<T: serde::de::DeserializeOwned>(request: &Value, key: &str) -> Result<T, 
     serde_json::from_value(request[key].clone()).map_err(|e| format!("{key}: {e}"))
 }
 
+/// A composed project with its preview and object list for the native UI.
+fn composed(project: Project, warnings: Vec<String>) -> Result<Value, String> {
+    let image = preview(&project.svg)?;
+    let objects = crate::selection::objects(&project.svg)?;
+    Ok(json!({"project": project, "preview": image, "objects": objects, "warnings": warnings}))
+}
+
 fn path(request: &Value) -> Result<&str, String> {
     request["path"]
         .as_str()
@@ -290,6 +297,40 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
                 json!({"project": project, "preview": image, "objects": crate::selection::objects(&project.svg)?}),
             )
         }
+        "fonts" => Ok(json!({"fonts": crate::compose::font_families()})),
+        "add_objects" | "sign" => {
+            let project = get_project(request)?;
+            let objects: Vec<crate::compose::NewObject> = if request["action"] == "sign" {
+                crate::compose::sign(&get(request, "sign")?)?
+            } else {
+                get(request, "objects")?
+            };
+            let (project, _) = crate::compose::add_objects(&project, &objects)?;
+            composed(project, Vec::new())
+        }
+        "array" => {
+            let number = |key: &str| request[key].as_f64().ok_or(format!("{key} fehlt"));
+            let project = crate::compose::array(
+                &get_project(request)?,
+                number("columns")? as u32,
+                number("rows")? as u32,
+                number("gap_x_mm")?,
+                number("gap_y_mm")?,
+            )?;
+            composed(project, Vec::new())
+        }
+        "nest" => {
+            let nested = crate::compose::nest(&get_project(request)?, &get(request, "settings")?)?;
+            let mut warnings = Vec::new();
+            if nested.missing > 0 {
+                warnings.push(format!(
+                    "{} von {} Teilen passen nicht in die Fläche",
+                    nested.missing,
+                    nested.missing + nested.placed
+                ));
+            }
+            composed(nested.project, warnings)
+        }
         "shift_pattern" => {
             let power = request["power_percent"].as_f64().ok_or("Leistung fehlt")? as f32;
             if !(1.0..=100.0).contains(&power) {
@@ -411,6 +452,35 @@ mod tests {
             serde_json::from_value(result["machine"].clone()).unwrap();
         assert_eq!(new.engrave_shift[..9], machine.engrave_shift[..9]);
         assert_ne!(new.engrave_shift[9], machine.engrave_shift[9]);
+    }
+    #[test]
+    fn compose_commands_accept_the_native_json() {
+        let fonts = execute(&json!({"action": "fonts"})).unwrap();
+        assert_eq!(fonts["fonts"][0], "sans-serif");
+        let sign = execute(&json!({"action": "sign", "project": Project::default(),
+            "sign": {"text": "Werkstatt", "x_mm": 20.0, "y_mm": 20.0, "holes": 4}}))
+        .unwrap();
+        assert_eq!(sign["objects"].as_array().unwrap().len(), 6);
+        let project: Project = serde_json::from_value(sign["project"].clone()).unwrap();
+        let text = json!({"kind": "Text", "text": "Hallo", "font": "sans-serif", "size_mm": 8.0,
+            "bold": false, "italic": false, "align": "Left", "line_spacing": 1.2});
+        let added = execute(&json!({"action": "add_objects", "project": project,
+            "objects": [{"shape": text, "operation": "Mark", "x_mm": 200.0, "y_mm": 20.0}]}))
+        .unwrap();
+        let project: Project = serde_json::from_value(added["project"].clone()).unwrap();
+        let copies = execute(&json!({"action": "array", "project": project,
+            "columns": 2, "rows": 1, "gap_x_mm": 5.0, "gap_y_mm": 5.0}))
+        .unwrap();
+        assert_eq!(copies["objects"].as_array().unwrap().len(), 14);
+        let nested = execute(&json!({"action": "nest", "project": project,
+            "settings": {"area_mm": [0.0, 0.0, 300.0, 60.0], "quantity": 3}}))
+        .unwrap();
+        assert!(
+            nested["warnings"][0]
+                .as_str()
+                .unwrap()
+                .contains("passen nicht")
+        );
     }
     #[test]
     fn demo_bridge_produces_a_decodable_png() {

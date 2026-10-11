@@ -1,3 +1,4 @@
+mod compose_ui;
 mod devices_ui;
 mod jobs_ui;
 mod preview_ui;
@@ -41,6 +42,11 @@ enum Command {
     Materials,
     Preview,
     Send,
+    Text,
+    Shape,
+    Sign,
+    Array,
+    Nest,
 }
 
 const COMMAND_SHIFT: Modifiers = Modifiers::COMMAND.plus(Modifiers::SHIFT);
@@ -87,6 +93,11 @@ impl Command {
             Self::Materials => "Materialbibliothek …",
             Self::Preview => "Vorschau & Zeit …",
             Self::Send => "An Lasercutter senden …",
+            Self::Text => "Text …",
+            Self::Shape => "Form …",
+            Self::Sign => "Schild …",
+            Self::Array => "Kopien im Raster …",
+            Self::Nest => "Teile verschachteln (Nesting) …",
         }
     }
 
@@ -107,7 +118,15 @@ impl Command {
             Self::Materials => (COMMAND_SHIFT, Key::M),
             Self::Preview => (COMMAND_SHIFT, Key::P),
             Self::ToggleGrid => (Modifiers::COMMAND, Key::G),
-            Self::Demo | Self::Vectorize | Self::Center | Self::Send => return None,
+            Self::Demo
+            | Self::Vectorize
+            | Self::Center
+            | Self::Send
+            | Self::Text
+            | Self::Shape
+            | Self::Sign
+            | Self::Array
+            | Self::Nest => return None,
         };
         Some(KeyboardShortcut::new(modifiers, key))
     }
@@ -157,6 +176,7 @@ struct VisiCutRust {
     devices: devices_ui::DeviceUi,
     jobs: jobs_ui::JobUi,
     vectorize: vectorize_ui::VectorizeUi,
+    compose: compose_ui::ComposeUi,
     #[cfg(feature = "screenshot")]
     capture: Option<(PathBuf, u32)>,
 }
@@ -189,6 +209,7 @@ impl VisiCutRust {
             devices,
             jobs,
             vectorize: vectorize_ui::VectorizeUi::default(),
+            compose: compose_ui::ComposeUi::default(),
             #[cfg(feature = "screenshot")]
             capture: None,
         };
@@ -401,6 +422,39 @@ impl VisiCutRust {
         Ok(())
     }
 
+    /// Übernimmt das Ergebnis eines Objekt-Werkzeugs; neue Schritte erhalten
+    /// die Werte der Materialbibliothek.
+    fn apply_composed(&mut self, ctx: &egui::Context, project: Project, notes: Vec<String>) {
+        let preview = match svg::render(&project.svg) {
+            Ok(preview) => preview,
+            Err(e) => return self.report(e),
+        };
+        let old_steps = self.project.steps.len();
+        let old_objects = visicut_core::selection::objects(&self.project.svg)
+            .map(|o| o.len())
+            .unwrap_or(0);
+        self.project = project;
+        for index in old_steps..self.project.steps.len() {
+            // Steps of the existing motif keep its parameters.
+            if self.project.steps[index]
+                .objects
+                .iter()
+                .all(|o| *o >= old_objects)
+            {
+                self.jobs.apply_preset_to(&mut self.project, index);
+            }
+        }
+        self.texture = Some(ctx.load_texture("SVG", preview.image, egui::TextureOptions::LINEAR));
+        self.dirty = true;
+        self.status = format!(
+            "Motiv aktualisiert · {:.0} × {:.0} mm",
+            self.project.width_mm, self.project.height_mm
+        );
+        if !notes.is_empty() {
+            self.alert = Some(notes.join("\n"));
+        }
+    }
+
     /// Testmuster für den Zeilenversatz mit den Werten des aktiven Geräts.
     fn shift_pattern(&mut self, ctx: &egui::Context, power: f32) -> Result<(), String> {
         let pattern = visicut_core::shift_calibration::project(&self.project, power);
@@ -536,6 +590,8 @@ impl VisiCutRust {
             | Command::Vectorize
             | Command::Devices => !self.busy(),
             Command::Export | Command::Send | Command::Preview => self.sendable,
+            Command::Text | Command::Shape | Command::Sign => !self.busy(),
+            Command::Array | Command::Nest => self.texture.is_some() && !self.busy(),
             Command::Center => self.texture.is_some() && !self.busy(),
             Command::ToggleCamera => self.devices.has_camera(),
             Command::RefreshCamera => self.devices.camera_shown() && !self.devices.camera_loading(),
@@ -580,6 +636,11 @@ impl VisiCutRust {
             Command::Materials => self.open_material_library(),
             Command::Preview => self.show_preview = true,
             Command::Send => self.send(),
+            Command::Text => self.compose.open(compose_ui::Tool::Text, &self.project),
+            Command::Shape => self.compose.open(compose_ui::Tool::Shape, &self.project),
+            Command::Sign => self.compose.open(compose_ui::Tool::Sign, &self.project),
+            Command::Array => self.compose.open(compose_ui::Tool::Array, &self.project),
+            Command::Nest => self.compose.open(compose_ui::Tool::Nest, &self.project),
         }
     }
 
@@ -676,6 +737,15 @@ impl VisiCutRust {
                 .on_disabled_hover_text("1 mm je Tastendruck, mit Umschalt 10 mm");
                 ui.separator();
                 self.menu_item(ui, Command::Devices, &mut clicked);
+            });
+            ui.menu_button("Objekt", |ui| {
+                for command in [Command::Text, Command::Shape, Command::Sign] {
+                    self.menu_item(ui, command, &mut clicked);
+                }
+                ui.separator();
+                for command in [Command::Array, Command::Nest] {
+                    self.menu_item(ui, command, &mut clicked);
+                }
             });
             ui.menu_button("Darstellung", |ui| {
                 for command in [Command::ZoomIn, Command::ZoomOut, Command::ZoomFit] {
@@ -1264,6 +1334,11 @@ impl eframe::App for VisiCutRust {
         }
         self.keyboard(ctx);
         self.jobs.windows(ctx, &mut self.status);
+        match self.compose.windows(ctx, &self.project) {
+            Some(Ok((project, notes))) => self.apply_composed(ctx, project, notes),
+            Some(Err(e)) => self.report(e),
+            None => {}
+        }
         // Die Rückfrage bei ungesicherten Änderungen stellt `request`.
         if let Some((svg, name)) = self.vectorize.windows(ctx, false, &mut self.status) {
             self.request(ctx, Replace::Vectorized { svg, name });

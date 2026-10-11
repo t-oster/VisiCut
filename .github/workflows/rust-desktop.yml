@@ -1,7 +1,8 @@
 name: VisiCutRust releases
 
 on:
-  # Every push to master publishes a release; version tags do so as well.
+  # A push to master publishes a release when its Cargo version has none yet;
+  # version tags publish (or update) the release of that tag.
   push:
     branches: [master, main]
     tags: ["v*"]
@@ -99,8 +100,43 @@ jobs:
       - name: Build portable desktop application
         run: cargo build --locked --release --bins
 
+      - name: Prepare Developer ID signing
+        id: signing
+        if: runner.os == 'macOS'
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          MACOS_SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          # Without the secrets (forks, pull requests) the app is signed ad hoc.
+          if [[ -z "$MACOS_CERTIFICATE" || -z "$MACOS_SIGN_IDENTITY" ]]; then
+            echo "Developer-ID-Zertifikat nicht hinterlegt: Ad-hoc-Signatur"
+            exit 0
+          fi
+          keychain="$RUNNER_TEMP/signing.keychain-db"
+          keychain_password=$(openssl rand -hex 24)
+          echo "$MACOS_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/certificate.p12"
+          security create-keychain -p "$keychain_password" "$keychain"
+          security set-keychain-settings -lut 21600 "$keychain"
+          security unlock-keychain -p "$keychain_password" "$keychain"
+          security import "$RUNNER_TEMP/certificate.p12" -k "$keychain" \
+            -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s \
+            -k "$keychain_password" "$keychain" >/dev/null
+          security list-keychains -d user -s "$keychain" $(security list-keychains -d user | tr -d '"')
+          rm "$RUNNER_TEMP/certificate.p12"
+          echo "identity=$MACOS_SIGN_IDENTITY" >> "$GITHUB_OUTPUT"
+          if [[ -n "$APPLE_ID" && -n "$APPLE_TEAM_ID" && -n "$APPLE_APP_PASSWORD" ]]; then
+            echo "notarize=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build and sign native macOS application
         if: runner.os == 'macOS'
+        env:
+          MACOS_SIGN_IDENTITY: ${{ steps.signing.outputs.identity }}
         run: bash scripts/bundle-macos.sh
 
       - name: Test native macOS interface and timeline
@@ -109,6 +145,19 @@ jobs:
           "dist/VisiCutRust.app/Contents/MacOS/visicut-rust" \
             --ui-test --capture "$PWD/dist/native-preview.png" \
             2>&1 | tee dist/native-ui-test.log
+
+      - name: Notarize native macOS application
+        if: runner.os == 'macOS' && steps.signing.outputs.notarize == 'true'
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent dist/VisiCutRust.app "$RUNNER_TEMP/notarize.zip"
+          xcrun notarytool submit "$RUNNER_TEMP/notarize.zip" --apple-id "$APPLE_ID" \
+            --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_PASSWORD" --wait --timeout 30m
+          xcrun stapler staple dist/VisiCutRust.app
+          spctl --assess --type execute --verbose dist/VisiCutRust.app
 
       - name: Package desktop application
         env:
@@ -137,14 +186,23 @@ jobs:
   release:
     name: Publish GitHub release
     if: >-
-      github.repository == 'dbambus/VisiCutRust' && github.event_name == 'push' &&
-      (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+      github.repository == 'dbambus/VisiCutRust' &&
+      (startsWith(github.ref, 'refs/tags/v') ||
+      (github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')))
     needs: build
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: write
     steps:
+      - name: Check out release notes
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: visicut-rust/CHANGELOG.md
+          sparse-checkout-cone-mode: false
+          path: source
+
       - name: Download all release packages
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
@@ -156,22 +214,32 @@ jobs:
         id: tag
         working-directory: release
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
           REF_TYPE: ${{ github.ref_type }}
           REF_NAME: ${{ github.ref_name }}
-          RUN_NUMBER: ${{ github.run_number }}
         run: |
-          # Archive names carry the Cargo version, e.g. VisiCutRust-0.6.0-….zip.
+          # Archive names carry the Cargo version, e.g. VisiCutRust-0.8.0-….zip.
           version=$(ls VisiCutRust-*-x86_64-pc-windows-msvc.zip | sed -E 's/^VisiCutRust-(.*)-x86_64-pc-windows-msvc\.zip$/\1/')
           if [[ "$REF_TYPE" == tag ]]; then
             tag="$REF_NAME"
+            publish=true
           else
-            # Branch pushes: one release per run, tagged at the built commit.
-            tag="v$version-build.$RUN_NUMBER"
+            # Branch pushes publish each version once; later pushes with the
+            # same version only build artifacts.
+            tag="v$version"
+            publish=true
+            if gh release view "$tag" >/dev/null 2>&1; then
+              publish=false
+              echo "::notice::Release $tag existiert bereits. Für ein neues Release die Version in visicut-rust/Cargo.toml erhöhen."
+            fi
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "publish=$publish" >> "$GITHUB_OUTPUT"
 
       - name: Verify packages and create checksums
+        if: steps.tag.outputs.publish == 'true'
         working-directory: release
         env:
           version: ${{ steps.tag.outputs.version }}
@@ -182,48 +250,54 @@ jobs:
           test -s "VisiCutRust-$version-x86_64-unknown-linux-gnu.tar.gz"
           sha256sum VisiCutRust-* > SHA256SUMS.txt
 
-      - name: Publish complete release
+      - name: Publish release
+        if: steps.tag.outputs.publish == 'true'
         working-directory: release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ steps.tag.outputs.tag }}
+          VERSION: ${{ steps.tag.outputs.version }}
           REF_TYPE: ${{ github.ref_type }}
           COMMIT: ${{ github.sha }}
         run: |
-          cat > RELEASE_NOTES.md <<'NOTES'
-          VisiCutRust desktop builds for Windows, Linux and macOS. No Java required.
-
-          | Download | Platform |
-          | --- | --- |
-          | `x86_64-pc-windows-msvc.zip` | Windows x64; extract and run `visicut-rust.exe` |
-          | `x86_64-unknown-linux-gnu.tar.gz` | Linux x64, Ubuntu 24.04 or compatible; extract and run `visicut-rust` |
-          | `aarch64-apple-darwin.zip` | macOS 14+ on Apple Silicon; extract `VisiCutRust.app` |
-
-          Development release: macOS includes the native AppKit/SwiftUI interface,
-          object assignments and timeline. Windows/Linux have a simpler egui
-          interface sharing the Rust SVG/LTT core and saved `.vcr` projects.
-          Linux requires OpenGL/EGL, libxkbcommon and a desktop portal.
-          macOS apps are ad hoc signed, not notarized by Apple.
-          See the packaged README and PROTOCOL for hardware validation status.
-
-          All three native builds and Rust tests must pass before publication.
-          `SHA256SUMS.txt` contains the archive checksums.
-          NOTES
-          prerelease=false
-          if [[ "$RELEASE_TAG" == v0.* || "$RELEASE_TAG" == *-* ]]; then
-            prerelease=true
+          # Section "## <version>" of the changelog, without its heading.
+          awk -v version="$VERSION" '
+            /^## / { if (found) exit; found = ($2 == version) ; next }
+            found { print }
+          ' ../source/visicut-rust/CHANGELOG.md > RELEASE_NOTES.md
+          if [[ ! -s RELEASE_NOTES.md ]]; then
+            echo "::warning::CHANGELOG.md enthält keinen Abschnitt ## $VERSION"
+            echo "VisiCutRust $VERSION." > RELEASE_NOTES.md
           fi
-          echo "Built from commit $COMMIT." >> RELEASE_NOTES.md
+          cat >> RELEASE_NOTES.md <<'NOTES'
+
+          ## Downloads
+
+          | Datei | Plattform |
+          | --- | --- |
+          | `…-x86_64-pc-windows-msvc.zip` | Windows x64: entpacken, `visicut-rust.exe` starten |
+          | `…-x86_64-unknown-linux-gnu.tar.gz` | Linux x64 (Ubuntu 24.04 oder kompatibel): entpacken, `visicut-rust` starten |
+          | `…-aarch64-apple-darwin.zip` | macOS 14+ auf Apple Silicon: `VisiCutRust.app` entpacken |
+
+          Kein Java nötig. Alle drei Builds und Tests liefen vor der Veröffentlichung
+          durch; `SHA256SUMS.txt` enthält die Prüfsummen. Hardware-Status siehe
+          README und PROTOCOL im Paket.
+          NOTES
+          echo "" >> RELEASE_NOTES.md
+          echo "Gebaut aus Commit $COMMIT." >> RELEASE_NOTES.md
+          prerelease=false
+          latest=true
+          if [[ "$RELEASE_TAG" == *-* ]]; then
+            prerelease=true
+            latest=false
+          fi
           if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            if [[ "$REF_TYPE" == tag ]]; then
-              gh release create "$RELEASE_TAG" --verify-tag --draft \
-                --title "VisiCutRust $RELEASE_TAG" --notes-file RELEASE_NOTES.md
-            else
-              gh release create "$RELEASE_TAG" --target "$COMMIT" --draft \
-                --title "VisiCutRust $RELEASE_TAG" --notes-file RELEASE_NOTES.md
-            fi
+            target=()
+            if [[ "$REF_TYPE" == tag ]]; then target=(--verify-tag); else target=(--target "$COMMIT"); fi
+            gh release create "$RELEASE_TAG" "${target[@]}" --draft \
+              --title "VisiCutRust $VERSION" --notes-file RELEASE_NOTES.md
           fi
           gh release upload "$RELEASE_TAG" VisiCutRust-* SHA256SUMS.txt --clobber
-          gh release edit "$RELEASE_TAG" --draft=false --prerelease="$prerelease" \
-            --title "VisiCutRust $RELEASE_TAG" --notes-file RELEASE_NOTES.md
+          gh release edit "$RELEASE_TAG" --draft=false --prerelease="$prerelease" --latest="$latest" \
+            --title "VisiCutRust $VERSION" --notes-file RELEASE_NOTES.md

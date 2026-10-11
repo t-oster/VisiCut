@@ -1,0 +1,50 @@
+# Änderungen an VisiCutRust
+
+Jede Version hat einen Abschnitt `## <Version> – <Datum>`; der Release-Workflow
+übernimmt ihn als Beschreibung des GitHub-Releases.
+
+## 0.8.0 – 11.10.2026
+
+- **Text und Formen ohne Inkscape** (Menü „Objekt“): Text mit den Schriften
+  der App (fett, kursiv, mehrzeilig, Ausrichtung), Rechteck mit Eckenradius,
+  Ellipse, Vieleck und Stern, je zum Gravieren, Schneiden oder Markieren.
+  Text wird in Umrisse umgewandelt und daher überall gleich geschnitten.
+- **Schild-Assistent**: Platte mit Eckenradius, 0/2/4 Befestigungslöchern,
+  optionalem markiertem Rahmen und zentriertem Text in einem Schritt.
+- **Kopien im Raster**: Spalten, Zeilen und Abstände; Zuordnungen gelten für
+  alle Kopien.
+- **Einfaches Nesting**: Teile (Objekte der obersten Ebene bzw. einer
+  Inkscape-Ebene) in gewünschter Anzahl nach Umrissrechtecken auf eine
+  Fläche verteilt, größte zuerst, optional um 90° gedreht; nicht passende
+  Teile werden gemeldet.
+- Das bestehende Motiv bleibt dabei unverändert eingebettet; Objektnummern,
+  Einzelzuordnungen und Regeln bleiben gültig. Neue Schritte erhalten das
+  Materialprofil.
+- Releases: Jede neue Version auf `master` wird als vollständiges Release
+  (nicht als Vorabversion) mit diesem Abschnitt veröffentlicht. Die
+  macOS-App kann mit einer Developer ID signiert und notarisiert werden,
+  sobald die Zertifikats-Secrets hinterlegt sind.
+
+## 0.7.0 – 11.10.2026
+
+- Maschinenwerte je Lasercutter: Zeilenversatz-Tabelle, Kurvenbeschleunigung
+  und Verweilzeit am Konturstart; Import aus VisiCut-Gerätedateien.
+- Zeilenversatz-Testmuster mit Übernahme des besten Blocks in die Tabelle.
+- Experimentelle Kurvenplanung mit der Firmware-Rampe 0,1 g.
+- Genauere Zeitschätzung (Verweilzeit je Kontur, Gravurfaktor 6).
+- Firmware-Analyse des iLaser 4000 in PROTOCOL.md.
+
+## 0.6.0 – 11.10.2026
+
+- Gleicher Funktionsumfang in der macOS- und der Windows/Linux-Oberfläche:
+  Menüleiste, Vorschau mit Zeitslider, Materialbibliothek, Einzel- und
+  Regelzuordnung mit Wertvorschlägen.
+- Option „Doppelte Linien entfernen“.
+
+## 0.5.0 – 10.10.2026
+
+- Funktionsgleichheit mit VisiCut Java: Bitmap-Vektorisierung,
+  PLF-Zuordnungen, Clipping, Schnittreihenfolge „innen zuerst“,
+  eingebauter EPS-Interpreter.
+- Byte-genauer Vergleich mit LibLaserCut in 14 Testfällen.
+- Experimentelle Schnittreihenfolge „Kürzeste Leerfahrten“.

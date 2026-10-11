@@ -53,10 +53,10 @@ def main():
         (stage / "START-HERE.txt").write_text(
             "VisiCutRust - portable egui development interface\n\n"
             f"Start visicut-rust{suffix}. No Java is required.\n"
-            "The full native UI, object assignment controls, and timeline are macOS-only.\n"
-            "This build shares the Rust SVG/LTT core and can load saved .vcr projects.\n"
-            "It manages LTT iLaser 4000 devices, rotary jobs, and the calibrated camera\n"
-            f"background. visicut-cameraserver{suffix} serves photos from a capture command.\n"
+            "It offers the same features as the macOS app: object assignment, material\n"
+            "library, text/shape/sign tools, copies, nesting, job preview with timeline,\n"
+            "LTT iLaser 4000 devices, rotary jobs and the calibrated camera background.\n"
+            f"visicut-cameraserver{suffix} serves photos from a capture command.\n"
             "Linux requires a graphical X11/Wayland session, OpenGL/EGL, libxkbcommon,\n"
             "and a desktop portal for file dialogs. Built on Ubuntu 24.04 (glibc 2.39).\n"
             "See README.md and PROTOCOL.md for features and hardware validation status.\n",

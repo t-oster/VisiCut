@@ -754,6 +754,11 @@ impl JobUi {
     }
 
     /// Opens the material library editor (also from the menu, Ctrl+Shift+M).
+    /// Material profile for a new step, if the library has one.
+    pub fn apply_preset_to(&self, project: &mut Project, index: usize) {
+        apply_step_preset(&self.library, project, index);
+    }
+
     pub fn open_library(&mut self) {
         if self.editor.is_none() {
             self.editor = Some(Editor {

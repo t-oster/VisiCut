@@ -280,7 +280,10 @@ fn mime_type(data: &[u8]) -> Option<&'static str> {
 /// The value range of an attribute, without quotes. Derived from the full
 /// attribute range because roxmltree's value range is unreliable for very
 /// long names or spacing.
-fn value_range(source: &str, attribute: std::ops::Range<usize>) -> Option<std::ops::Range<usize>> {
+pub(crate) fn value_range(
+    source: &str,
+    attribute: std::ops::Range<usize>,
+) -> Option<std::ops::Range<usize>> {
     let text = source.get(attribute.clone())?;
     let equals = text.find('=')?;
     let quote = equals + 1 + text[equals + 1..].find(['"', '\''])?;
