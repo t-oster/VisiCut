@@ -39,6 +39,9 @@ pub struct Project {
     /// Order of vector paths; anything but the default is experimental.
     #[serde(default)]
     pub cut_order: CutOrder,
+    /// Cut lines that run along an earlier line of the same step only once.
+    #[serde(default)]
+    pub remove_duplicate_lines: bool,
 }
 
 /// Order of the vector paths of a step.
@@ -161,6 +164,8 @@ struct ProjectFile {
     ignore_filters: Vec<Vec<Filter>>,
     #[serde(default)]
     cut_order: CutOrder,
+    #[serde(default)]
+    remove_duplicate_lines: bool,
 }
 
 impl TryFrom<ProjectFile> for Project {
@@ -206,6 +211,7 @@ impl TryFrom<ProjectFile> for Project {
             raster: file.raster,
             ignore_filters: file.ignore_filters,
             cut_order: file.cut_order,
+            remove_duplicate_lines: file.remove_duplicate_lines,
         })
     }
 }
@@ -279,6 +285,7 @@ impl Default for Project {
             raster: RasterSettings::default(),
             ignore_filters: Vec::new(),
             cut_order: CutOrder::VisiCut,
+            remove_duplicate_lines: false,
         }
     }
 }

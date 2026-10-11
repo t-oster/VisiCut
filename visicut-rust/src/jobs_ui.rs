@@ -837,6 +837,16 @@ impl JobUi {
                  Den Auftrag am Gerät beaufsichtigen.",
             );
         }
+        *dirty |= ui
+            .checkbox(
+                &mut project.remove_duplicate_lines,
+                "Doppelte Linien entfernen",
+            )
+            .on_hover_text(
+                "Linien, die genau auf einer bereits geschnittenen Linie desselben Schritts \
+                 liegen (z. B. gemeinsame Kanten), nur einmal schneiden",
+            )
+            .changed();
     }
 
     /// Individual assignment: one row per SVG object.

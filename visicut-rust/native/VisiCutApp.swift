@@ -84,6 +84,7 @@ struct Project: Codable, Equatable {
     var ignore_filters: [[Filter]]
     /// Rust serialisiert das Feld immer und setzt beim Laden älterer Dateien den Standard.
     var cut_order: CutOrder
+    var remove_duplicate_lines: Bool
 
     var hasArtwork: Bool { !svg.isEmpty }
     var fitsBed: Bool {
@@ -937,6 +938,8 @@ struct Inspector: View {
                 } else {
                     Text("Innere Konturen zuerst, Reihenfolge wie VisiCut.").font(.caption).foregroundStyle(.secondary)
                 }
+                Toggle("Doppelte Linien entfernen", isOn: $model.project.remove_duplicate_lines)
+                    .help("Linien, die genau auf einer bereits geschnittenen Linie desselben Schritts liegen (z. B. gemeinsame Kanten), nur einmal schneiden")
             }
             if model.assignmentMode == .rules { RulesSection(model: model) }
             if model.project.steps.isEmpty {

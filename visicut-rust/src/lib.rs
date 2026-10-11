@@ -6,6 +6,7 @@ pub mod import;
 pub mod ltt;
 pub mod mapping;
 pub mod materials;
+pub mod overlap;
 pub mod project;
 pub mod raster;
 pub mod selection;

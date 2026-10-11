@@ -83,6 +83,15 @@ Wiederholung nach Fehlern.
   nicht unterschieden. Ein Teil wird mit einem Encoder erzeugt; Leistung und
   Geschwindigkeit gehen wie im Treiber nur bei Änderung hinaus.
   Nicht nachgebildet: Baum-Buckets der `HashMap` ab acht gleichen Buckets.
+- Doppelte Linien entfernen (Option, Standard aus; ohne Option bleibt die
+  Ausgabe byte-gleich mit VisiCut): Je Schritt werden die Konturen in
+  Reihenfolge der SVG geprüft. Teile eines Segments, die ein früheres Segment
+  kollinear überdeckt (alle Endpunkte innerhalb 0,02 mm der anderen Geraden,
+  auch gegenläufig), entfallen; Reste unter 0,04 mm ebenso. Die übrigen Teile
+  werden wieder zu Polylinien verbunden, geschlossene Konturen über ihren
+  Startpunkt hinweg. Konturen ohne Überdeckung behalten ihre Punkte exakt.
+  Durchgänge und weitere Parametersätze wiederholen weiterhin alles. Gekrümmte
+  Linien gelten nur als doppelt, wenn ihre zerlegten Geraden übereinanderliegen.
 - Zuordnung wie VisiCuts Mappings: Schritte wählen Objekte einzeln, über
   Bedingungen (Farbe, Linien-/Füllfarbe, Linienstärke in mm mit „=“ oder „≤“,
   Gruppe/Inkscape-Ebene, Typ, ID; jeweils auch negiert) oder als Rest.
