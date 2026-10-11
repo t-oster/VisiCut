@@ -7,7 +7,7 @@ Erster Ziel-Lasercutter: LTT iLaser 4000 des FAU FabLabs.
 ## Starten
 
 Die lokal gebaute App befindet sich in `dist/VisiCutRust.app`.
-Version 0.9.0 benötigt macOS 14 oder neuer, weder Java noch Maven.
+Version 0.10.0 benötigt macOS 14 oder neuer, weder Java noch Maven.
 Die macOS-App wird nur für Apple Silicon
 gebaut und veröffentlicht; Intel-Macs werden nicht unterstützt.
 
@@ -40,7 +40,7 @@ Menüleiste, Zoom und Lineale, Einzel- und Regelzuordnung mit Wertvorschlägen,
 Materialbibliothek, Parametersätze, Bitmap-Vektorisierung, Schnittreihenfolge,
 Text, Formen, Schilder, Kopien und Nesting,
 Vorschau mit Zeitschätzung und Zeitslider, Geräte mit Maschinenwerten und
-Zeilenversatz-Kalibrierung, Drehachse und Kamera.
+Zeilenversatz-Kalibrierung, Rotationseinheit und Kamera.
 
 Der Workflow **VisiCutRust releases** baut drei native Ziele auf GitHub-gehosteten Runnern:
 
@@ -110,14 +110,18 @@ lokal nach einem Build für die jeweilige Host-Architektur.
    DXF-Dateien (ASCII oder binär) werden in Millimetern übernommen
    (`$INSUNITS`, ohne Angabe Millimeter); DXF-Ebenen und -Farben bleiben als
    Ebenen und Linienfarben für die Zuordnung erhalten.
-2. Motiv positionieren, skalieren oder auf dem Arbeitsbett zentrieren.
+2. Motiv positionieren, skalieren, drehen oder spiegeln. Liegt es außerhalb
+   des Arbeitsbetts, erscheint eine rote Warnung über dem Bett. Mausrad und
+   Trackpad-Zoom (Aufziehen) vergrößern um den Mauszeiger, zwei Finger
+   verschieben das vergrößerte Bett.
 3. **Material** und **Stärke** aus den nativen Auswahlmenüs wählen.
    Die Bibliothek enthält 31 Materialien und 115 Schnitt-, Gravur-, Markier-
    und 3D-Profile aus den öffentlichen FAU-LTT-Einstellungen.
    **Job → Materialbibliothek …** (⇧⌘M) bearbeitet Materialien und Profile,
    importiert/exportiert sie als JSON und stellt die FAU-Bibliothek wieder her;
-   eigene Änderungen liegen im Einstellungsordner (siehe unten). **Profil übernehmen**
-   setzt Leistung und Geschwindigkeit für die gewählte Kombination.
+   eigene Änderungen liegen im Einstellungsordner (siehe unten). Das Profil
+   der gewählten Kombination wird automatisch übernommen. Weicht ein Wert
+   davon ab, ist er orange markiert; der Kreispfeil ⟳ links vom Feld setzt ihn zurück.
    Beide Werte werden in Prozent angezeigt und eingegeben. Geschwindigkeit
    wird direkt als LTT-Prozentwert übertragen (zulässig: 0,1–100 %).
    Bei fehlendem oder deaktiviertem Profil bleiben die Parameter manuell.
@@ -265,10 +269,10 @@ Das bisherige Motiv bleibt dabei unverändert als eingebettetes SVG erhalten,
 Objektnummern und Regeln bleiben gültig. Ein SVG mit DTD-Entitäten
 (manche Illustrator-Dateien) lässt sich nicht erweitern.
 
-## Lasercutter, Drehachse und Kamera
+## Lasercutter, Rotationseinheit und Kamera
 
 **VisiCutRust → Lasercutter …** (⌘,) verwaltet mehrere LTT iLaser 4000:
-Name, Hostname, Port, Drehachse, Kamera-URL, Kamerakalibrierung und den
+Name, Hostname, Port, Rotationseinheit, Kamera-URL, Kamerakalibrierung und den
 Hinweis nach dem Senden. Andere Lasercutter-Typen werden nicht unterstützt.
 Beim ersten Start ist das FAU-Gerät aus den VisiCut-Einstellungen eingerichtet.
 Die Auswahl im Inspektor bestimmt Ziel und verfügbare Funktionen.
@@ -287,7 +291,7 @@ Die Auswahl im Inspektor bestimmt Ziel und verfügbare Funktionen.
 - **Zeilenversatz kalibrieren**: Testmuster öffnen und gravieren, je
   Geschwindigkeit den Block mit den geradesten Kanten wählen und in die
   Tabelle übernehmen (siehe [PROTOCOL.md](PROTOCOL.md)).
-- **Drehachse**: Bei Geräten mit Drehachse lässt sie sich je Projekt mit
+- **Rotationseinheit**: Bei Geräten mit Rotationseinheit lässt sie sich je Projekt mit
   Werkstückdurchmesser einschalten (siehe [PROTOCOL.md](PROTOCOL.md)).
 - **Autofokus, Druckluft, Absaugung** steuert der LTT-Treiber nicht – auch
   nicht im Java-Original. Der Gerätehinweis erinnert nach dem Senden daran.
@@ -337,7 +341,7 @@ und die automatische Ungültigkeit alter Vorschauen. Abschließend öffnet er
 die Auftragsvorschau über die reguläre asynchrone Vorbereitung. Der Test
 bewegt den echten nativen Slider vorwärts/rückwärts und prüft Interpolation,
 Durchgangswechsel, Ende der Wiedergabe sowie drei getrennte Aufträge.
-Er prüft außerdem Regel-Zuordnung mit Rest und Ignorierregeln, 3D-Gravur, Rasterverfahren, Parametersätze und die Materialbibliothek (Sichern, doppelte Einträge, Wiederherstellen). Außerdem prüft er Geräteliste und Gerätewechsel in einem temporären Einstellungsordner, Drehachsen-Aufträge, Kamerahintergrund aus einer lokalen Bilddatei, die Kalibrierseite, das Zeilenversatz-Testmuster mit Übernahme in die Tabelle, den Hinweis zur experimentellen Kurvenbeschleunigung sowie Schild, Text, Kopien und Nesting. Rust-Tests prüfen drei unabhängige TCP-Verbindungen ausschließlich lokal. Er sendet keinen
+Er prüft außerdem Regel-Zuordnung mit Rest und Ignorierregeln, 3D-Gravur, Rasterverfahren, Parametersätze und die Materialbibliothek (Sichern, doppelte Einträge, Wiederherstellen). Außerdem prüft er Geräteliste und Gerätewechsel in einem temporären Einstellungsordner, Aufträge mit Rotationseinheit, Kamerahintergrund aus einer lokalen Bilddatei, die Kalibrierseite, das Zeilenversatz-Testmuster mit Übernahme in die Tabelle, den Hinweis zur experimentellen Kurvenbeschleunigung sowie Schild, Text, Kopien und Nesting. Rust-Tests prüfen drei unabhängige TCP-Verbindungen ausschließlich lokal. Er sendet keinen
 Job an den Lasercutter. Der normale Start enthält keinen Selbsttest.
 
 `tests/java_parity.rs` vergleicht die erzeugten LTT-Aufträge Byte für Byte

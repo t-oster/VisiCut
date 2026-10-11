@@ -132,6 +132,7 @@ extension AppModel {
     }
 
     func objectCount(_ index: Int) -> Int {
+        guard project.steps.indices.contains(index) else { return 0 }
         if project.steps[index].isRule {
             return mapping?.selections.indices.contains(index) == true ? mapping!.selections[index].count : 0
         }
@@ -248,13 +249,14 @@ struct ParameterSets: View {
                 HStack {
                     Text("Parametersatz \(index + 2)").font(.callout).fontWeight(.medium)
                     Spacer()
-                    Button { sets.remove(at: index) } label: { Image(systemName: "minus.circle") }
+                    Button { if sets.indices.contains(index) { sets.remove(at: index) } } label: { Image(systemName: "minus.circle") }
                         .buttonStyle(.borderless).help("Parametersatz entfernen")
                 }
-                NumberField("Leistung", value: $sets[index].power_percent, unit: "%")
-                NumberField("Geschwindigkeit", value: $sets[index].speed_percent, unit: "%")
-                Stepper(value: $sets[index].passes, in: 1...100) {
-                    LabeledContent("Durchgänge", value: String(sets[index].passes))
+                let set = $sets.safe(index, default: sets[index])
+                NumberField("Leistung", value: set.power_percent, unit: "%")
+                NumberField("Geschwindigkeit", value: set.speed_percent, unit: "%")
+                Stepper(value: set.passes, in: 1...100) {
+                    LabeledContent("Durchgänge", value: String(set.wrappedValue.passes))
                 }
             }
         }
@@ -274,8 +276,9 @@ struct FilterSetEditor: View {
             Text("Ohne Bedingung: alle Objekte").font(.caption).foregroundStyle(.secondary)
         }
         ForEach(filters.indices, id: \.self) { index in
-            FilterRow(filter: $filters[index], suggestions: mapping?.suggestions(filters[index].attribute) ?? []) {
-                filters.remove(at: index)
+            FilterRow(filter: $filters.safe(index, default: filters[index]),
+                      suggestions: mapping?.suggestions(filters[index].attribute) ?? []) {
+                if filters.indices.contains(index) { filters.remove(at: index) }
             }
         }
         Button("Bedingung hinzufügen", systemImage: "plus") {
@@ -362,10 +365,10 @@ struct RulesSection: View {
                 HStack {
                     Text("Regel \(index + 1)").font(.callout).fontWeight(.medium)
                     Spacer()
-                    Button { model.project.ignore_filters.remove(at: index) } label: { Image(systemName: "minus.circle") }
+                    Button { if model.project.ignore_filters.indices.contains(index) { model.project.ignore_filters.remove(at: index) } } label: { Image(systemName: "minus.circle") }
                         .buttonStyle(.borderless).help("Ignorierregel entfernen")
                 }
-                FilterSetEditor(filters: $model.project.ignore_filters[index], mapping: model.mapping)
+                FilterSetEditor(filters: $model.project.ignore_filters.safe(index, default: model.project.ignore_filters[index]), mapping: model.mapping)
                 }
             }
             Button("Ignorierregel hinzufügen", systemImage: "plus") {
@@ -499,5 +502,17 @@ struct MaterialProfilesEditor: View {
                 .multilineTextAlignment(.trailing).textFieldStyle(.roundedBorder)
             Text(unit).foregroundStyle(.secondary).font(.caption)
         }
+    }
+}
+
+
+extension Binding where Value: MutableCollection & RandomAccessCollection, Value.Index == Int {
+    /// Element binding that survives the element disappearing: SwiftUI can
+    /// render a removed row once more (e.g. when the assignment mode drops
+    /// steps), which must not index out of range.
+    func safe(_ index: Int, default fallback: Value.Element) -> Binding<Value.Element> {
+        Binding<Value.Element>(
+            get: { wrappedValue.indices.contains(index) ? wrappedValue[index] : fallback },
+            set: { if wrappedValue.indices.contains(index) { wrappedValue[index] = $0 } })
     }
 }

@@ -17,7 +17,6 @@ use visicut_core::{
 };
 
 const WARNING: Color32 = Color32::from_rgb(180, 75, 40);
-const OK: Color32 = Color32::from_rgb(34, 130, 85);
 
 /// Befehle aus Menü und Tastatur. `Modifiers::COMMAND` ist Strg unter
 /// Windows und Linux (⌘ unter macOS).
@@ -930,15 +929,6 @@ impl VisiCutRust {
         ui.label(egui::RichText::new("POSITION & GRÖSSE").strong().small());
         self.transform_panel(ui, &mut clicked);
         ui.checkbox(&mut self.proportional, "Seitenverhältnis beibehalten");
-        if ui
-            .add_enabled(
-                self.enabled(Command::Center),
-                egui::Button::new("Auf dem Bett zentrieren"),
-            )
-            .clicked()
-        {
-            clicked = Some(Command::Center);
-        }
         ui.separator();
         ui.label(
             egui::RichText::new("MATERIAL & BEARBEITUNG")
@@ -949,19 +939,6 @@ impl VisiCutRust {
         ui.separator();
         ui.label(egui::RichText::new("ZUORDNUNG").strong().small());
         self.jobs.processing(ui, &mut self.project, &mut self.dirty);
-        ui.add_space(16.0);
-        if self.project.svg.is_empty() {
-            ui.colored_label(Color32::from_gray(110), "Noch kein Motiv importiert");
-        } else {
-            match self.project.validate() {
-                Ok(()) => {
-                    ui.colored_label(OK, "Motiv passt auf das Arbeitsbett");
-                }
-                Err(e) => {
-                    ui.colored_label(WARNING, format!("⚠ {e}"));
-                }
-            }
-        }
         ui.add_space(10.0);
         ui.separator();
         for command in [Command::Preview, Command::Export, Command::Send] {
@@ -989,26 +966,7 @@ impl VisiCutRust {
         let proportional = self.proportional;
         let p = &mut self.project;
         ui.horizontal(|ui| {
-            // 3 × 3 Bezugspunkte.
-            egui::Grid::new("reference")
-                .spacing([2.0, 2.0])
-                .min_col_width(14.0)
-                .show(ui, |ui| {
-                    for row in 0..3 {
-                        for column in 0..3 {
-                            let point = [column as f32 / 2.0, row as f32 / 2.0];
-                            let text = if reference == point { "■" } else { "□" };
-                            if ui
-                                .add(egui::Button::new(text).small().frame(false))
-                                .on_hover_text("Bezugspunkt für X/Y und Größenänderungen")
-                                .clicked()
-                            {
-                                reference = point;
-                            }
-                        }
-                        ui.end_row();
-                    }
-                });
+            reference_picker(ui, &mut reference);
             let [fx, fy] = reference;
             ui.vertical(|ui| {
                 let mut x = p.x_mm + p.width_mm * fx;
@@ -1100,7 +1058,7 @@ impl VisiCutRust {
                     self.project.bed_width_mm,
                     self.project.bed_height_mm,
                     if self.project.rotary_axis {
-                        " · Drehachse"
+                        " · Rotationseinheit"
                     } else {
                         ""
                     }
@@ -1145,6 +1103,18 @@ impl VisiCutRust {
                 }
             });
         });
+        // Probleme mit der Lage des Motivs stehen rot über dem Arbeitsbett.
+        if !self.project.svg.is_empty()
+            && let Err(e) = self.project.validate()
+        {
+            egui::Frame::new()
+                .fill(Color32::from_rgb(200, 40, 40))
+                .inner_margin(6.0)
+                .show(ui, |ui| {
+                    ui.set_width(ui.available_width());
+                    ui.colored_label(Color32::WHITE, format!("⚠ {e}"));
+                });
+        }
         ui.separator();
         const RULER: f32 = 30.0;
         const MARGIN: f32 = 14.0;
@@ -1221,7 +1191,6 @@ impl VisiCutRust {
                             Command::FlipHorizontal,
                             Command::FlipVertical,
                         ],
-                        &[Command::Center],
                         &[Command::Delete],
                     ] {
                         for command in group {
@@ -1538,6 +1507,51 @@ impl VisiCutRust {
                 ctx.send_viewport_cmd(egui::ViewportCommand::Screenshot(Default::default()));
             }
             ctx.request_repaint_after(std::time::Duration::from_millis(50));
+        }
+    }
+}
+
+/// Bezugspunkt wie in Grafikprogrammen: acht Quadrate an Ecken und
+/// Seitenmitten, über den Rahmen verbunden, und ein freies in der Mitte.
+fn reference_picker(ui: &mut egui::Ui, reference: &mut [f32; 2]) {
+    const SIZE: f32 = 40.0;
+    const BOX: f32 = 8.0;
+    let (rect, response) = ui.allocate_exact_size(Vec2::splat(SIZE), Sense::click());
+    let response = response.on_hover_text("Bezugspunkt für X/Y und Größenänderungen");
+    let painter = ui.painter_at(rect.expand(1.0));
+    let line = ui.visuals().widgets.inactive.fg_stroke.color;
+    let outline = Rect::from_min_size(rect.min + Vec2::splat(BOX / 2.0), Vec2::splat(SIZE - BOX));
+    painter.rect_stroke(
+        outline,
+        0.0,
+        Stroke::new(1.0, line),
+        egui::StrokeKind::Middle,
+    );
+    for row in 0..3 {
+        for column in 0..3 {
+            let point = [column as f32 / 2.0, row as f32 / 2.0];
+            let min = rect.min + Vec2::new(point[0], point[1]) * (SIZE - BOX);
+            let square = Rect::from_min_size(min, Vec2::splat(BOX));
+            let selected = *reference == point;
+            let fill = if selected {
+                line
+            } else {
+                ui.visuals().extreme_bg_color
+            };
+            painter.rect_filled(square, 0.0, fill);
+            painter.rect_stroke(
+                square,
+                0.0,
+                Stroke::new(1.0, line),
+                egui::StrokeKind::Inside,
+            );
+            if response.clicked()
+                && response
+                    .interact_pointer_pos()
+                    .is_some_and(|p| square.expand(3.0).contains(p))
+            {
+                *reference = point;
+            }
         }
     }
 }

@@ -482,7 +482,8 @@ pub fn nest(project: &Project, settings: &NestSettings) -> Result<Nested, String
     if !settings.gap_mm.is_finite() || settings.gap_mm < 0.0 {
         return Err("Abstand darf nicht negativ sein".into());
     }
-    let parts = parts(project)?;
+    let shared = parts(project)?;
+    let parts = &shared.parts;
     if parts.is_empty() {
         return Err("Keine Teile im Motiv".into());
     }
@@ -541,8 +542,19 @@ pub fn nest(project: &Project, settings: &NestSettings) -> Result<Nested, String
     let mut bounds = None;
     let mut new_ids: Vec<Vec<usize>> = vec![Vec::new(); selection::objects(&project.svg)?.len()];
     let mut next = 0;
-    for (copy, (part, x, y, rotated)) in placements.iter().enumerate() {
-        let part = &parts[*part];
+    // The motif maps canvas pixels to the bed like `embed`.
+    let tree = usvg::Tree::from_str(&project.svg, &svg::options()).map_err(|e| e.to_string())?;
+    let size = tree.size();
+    let motif = format!(
+        "matrix({} 0 0 {} {} {})",
+        num(project.width_mm as f64 / size.width() as f64),
+        num(project.height_mm as f64 / size.height() as f64),
+        num(project.x_mm as f64),
+        num(project.y_mm as f64)
+    );
+    let mut previous_part = None;
+    for (copy, (index, x, y, rotated)) in placements.iter().enumerate() {
+        let part = &parts[*index];
         let [bx, by, w, h] = part.bounds;
         let transform = if *rotated {
             format!(
@@ -555,15 +567,25 @@ pub fn nest(project: &Project, settings: &NestSettings) -> Result<Nested, String
         } else {
             format!("translate({} {})", x - bx, y - by)
         };
+        // The first copy of each part keeps its ids (references point
+        // there); shared definitions come once, with the very first copy.
         let suffix = format!("-n{}", copy + 1);
+        let first_of_part = previous_part != Some(*index);
+        previous_part = Some(*index);
         write!(
             body,
-            r#"<g transform="{transform}">{}</g>"#,
-            embed(
-                project,
-                (copy > 0).then_some(suffix.as_str()),
-                Some(&part.objects)
-            )?
+            r#"<g transform="{transform}"><g transform="{motif}">{}{}{}</svg></g></g>"#,
+            shared.root_start,
+            if copy == 0 {
+                shared.globals.as_str()
+            } else {
+                ""
+            },
+            shared.text(
+                &project.svg,
+                part,
+                (!first_of_part).then_some(suffix.as_str())
+            )
         )
         .unwrap();
         check_size(&body)?;
@@ -585,54 +607,210 @@ pub fn nest(project: &Project, settings: &NestSettings) -> Result<Nested, String
     })
 }
 
-/// A nestable part: its selectable objects and bounds on the bed.
+/// A nestable part: its selectable objects, bounds on the bed and where its
+/// source text lies.
 struct Part {
     objects: Vec<usize>,
     bounds: [f64; 4],
+    /// Start tags of the groups between the root and the part, outermost
+    /// first, with their end tags.
+    opening: Vec<std::ops::Range<usize>>,
+    closing: Vec<String>,
+    body: std::ops::Range<usize>,
+    /// Ends of all id values in the opening tags and the body.
+    ids: Vec<usize>,
 }
 
-fn parts(project: &Project) -> Result<Vec<Part>, String> {
-    let doc = parse(&project.svg)?;
+/// Source pieces shared by all parts of a document.
+struct Parts {
+    /// Rewritten root start tag (canvas size in pixels).
+    root_start: String,
+    /// Definitions and other non-part content of the top levels.
+    globals: String,
+    parts: Vec<Part>,
+}
+
+impl Parts {
+    /// The part as text, ids suffixed when given.
+    fn text(&self, source: &str, part: &Part, suffix: Option<&str>) -> String {
+        let piece = |range: &std::ops::Range<usize>| {
+            let mut text = String::new();
+            let mut position = range.start;
+            if let Some(suffix) = suffix {
+                for id in part.ids.iter().filter(|i| range.contains(i)) {
+                    text.push_str(&source[position..*id]);
+                    text.push_str(suffix);
+                    position = *id;
+                }
+            }
+            text.push_str(&source[position..range.end]);
+            text
+        };
+        let mut text: String = part.opening.iter().map(piece).collect();
+        text += &piece(&part.body);
+        for closing in part.closing.iter().rev() {
+            text += closing;
+        }
+        text
+    }
+}
+
+/// Bounds of the visible content; empty groups do not count.
+fn content_bounds(group: &usvg::Group) -> Option<tiny_skia::Rect> {
+    let mut bounds: Option<tiny_skia::Rect> = None;
+    for node in group.children() {
+        let b = match node {
+            usvg::Node::Group(g) => content_bounds(g),
+            other => Some(other.abs_stroke_bounding_box()),
+        };
+        bounds = match (bounds, b) {
+            (Some(a), Some(b)) => tiny_skia::Rect::from_ltrb(
+                a.left().min(b.left()),
+                a.top().min(b.top()),
+                a.right().max(b.right()),
+                a.bottom().max(b.bottom()),
+            ),
+            (a, b) => a.or(b),
+        };
+    }
+    bounds
+}
+
+fn parts(project: &Project) -> Result<Parts, String> {
+    let source = &project.svg;
+    let doc = parse(source)?;
     let selectable = selection::selectable_nodes(&doc);
-    let mut roots = Vec::new();
-    for child in doc.root_element().children().filter(|n| n.is_element()) {
+    let root = doc.root_element();
+    let mut candidates = Vec::new();
+    for child in root.children().filter(|n| n.is_element()) {
         let layer = child.tag_name().name() == "g"
             && child.attribute(("http://www.inkscape.org/namespaces/inkscape", "groupmode"))
                 == Some("layer");
         if layer {
-            roots.extend(child.children().filter(|n| n.is_element()));
+            candidates.extend(child.children().filter(|n| n.is_element()));
         } else {
-            roots.push(child);
+            candidates.push(child);
         }
     }
-    let (sx, sy) = scale(project)?;
+    let tree = usvg::Tree::from_str(source, &svg::options())
+        .map_err(|e| format!("SVG konnte nicht gelesen werden: {e}"))?;
+    let size = tree.size();
+    let root_start = root_start(source, root, size)?;
+    let (sx, sy) = (
+        project.width_mm as f64 / size.width() as f64,
+        project.height_mm as f64 / size.height() as f64,
+    );
+    let mut globals = String::new();
     let mut parts = Vec::new();
-    for root in roots {
+    for node in candidates {
         let objects: Vec<usize> = selectable
             .iter()
             .enumerate()
-            .filter(|(_, n)| **n == root || n.ancestors().any(|a| a == root))
+            .filter(|(_, n)| **n == node || n.ancestors().any(|a| a == node))
             .map(|(i, _)| i)
             .collect();
         if objects.is_empty() {
+            globals.push_str(&source[node.range()]);
             continue;
         }
-        let only = selection::filter(&project.svg, &objects)?;
-        let tree = usvg::Tree::from_str(&only, &svg::options()).map_err(|e| e.to_string())?;
-        let Some(b) = tree.root().abs_stroke_bounding_box().to_non_zero_rect() else {
-            continue;
-        };
+        let mut opening = Vec::new();
+        let mut closing = Vec::new();
+        let ancestors: Vec<_> = node
+            .ancestors()
+            .skip(1)
+            .take_while(|a| *a != root)
+            .collect();
+        for ancestor in ancestors.iter().rev() {
+            let range = ancestor.range();
+            let end = start_tag_end(source, range.start).ok_or("SVG-Gruppe ist unvollständig")?;
+            opening.push(range.start..end);
+            let close = source[range.clone()].rfind("</").map(|i| range.start + i);
+            closing.push(close.map_or(String::new(), |c| source[c..range.end].to_string()));
+        }
+        let mut ids = Vec::new();
+        for n in ancestors.iter().copied().chain(node.descendants()) {
+            for attribute in n.attributes() {
+                if attribute.namespace().is_none()
+                    && attribute.name() == "id"
+                    && let Some(value) = value_range(source, attribute.range())
+                {
+                    ids.push(value.end);
+                }
+            }
+        }
+        ids.sort_unstable();
         parts.push(Part {
             objects,
-            bounds: [
-                project.x_mm as f64 + b.x() as f64 * sx,
-                project.y_mm as f64 + b.y() as f64 * sy,
-                b.width() as f64 * sx,
-                b.height() as f64 * sy,
-            ],
+            bounds: [0.0; 4],
+            opening,
+            closing,
+            body: node.range(),
+            ids,
         });
     }
-    Ok(parts)
+    let mut result = Parts {
+        root_start,
+        globals,
+        parts,
+    };
+    let mut kept = Vec::new();
+    for mut part in std::mem::take(&mut result.parts) {
+        let alone = format!(
+            "{}{}{}</svg>",
+            result.root_start,
+            result.globals,
+            result.text(source, &part, None)
+        );
+        let tree = usvg::Tree::from_str(&alone, &svg::options()).map_err(|e| e.to_string())?;
+        let Some(b) = content_bounds(tree.root()) else {
+            continue;
+        };
+        part.bounds = [
+            project.x_mm as f64 + b.x() as f64 * sx,
+            project.y_mm as f64 + b.y() as f64 * sy,
+            b.width() as f64 * sx,
+            b.height() as f64 * sy,
+        ];
+        kept.push(part);
+    }
+    result.parts = kept;
+    Ok(result)
+}
+
+/// The root start tag with the canvas size in pixels and visible overflow.
+fn root_start(source: &str, root: roxmltree::Node, size: usvg::Size) -> Result<String, String> {
+    let range = root.range();
+    let end = start_tag_end(source, range.start).ok_or("SVG-Wurzel ist unvollständig")?;
+    let mut text = String::new();
+    let mut position = range.start;
+    for attribute in root.attributes() {
+        if attribute.namespace().is_none()
+            && matches!(
+                attribute.name(),
+                "x" | "y" | "width" | "height" | "overflow"
+            )
+        {
+            let r = attribute.range();
+            let mut start = r.start;
+            while start > range.start && source.as_bytes()[start - 1].is_ascii_whitespace() {
+                start -= 1;
+            }
+            text.push_str(&source[position..start]);
+            position = r.end;
+        }
+    }
+    let close = if source[..end].ends_with("/>") {
+        end - 2
+    } else {
+        end - 1
+    };
+    text.push_str(&source[position..close]);
+    text += &format!(
+        r#" width="{}" height="{}" overflow="visible">"#,
+        num(size.width() as f64),
+        num(size.height() as f64)
+    );
+    Ok(text)
 }
 
 /// Splits the free rectangles around a used one and drops contained ones.
@@ -789,17 +967,6 @@ fn parse(source: &str) -> Result<roxmltree::Document<'_>, String> {
         ..Default::default()
     };
     roxmltree::Document::parse_with_options(source, options).map_err(|e| e.to_string())
-}
-
-/// Bed millimetres per SVG canvas pixel.
-fn scale(project: &Project) -> Result<(f64, f64), String> {
-    let tree = usvg::Tree::from_str(&project.svg, &svg::options())
-        .map_err(|e| format!("SVG konnte nicht gelesen werden: {e}"))?;
-    let size = tree.size();
-    Ok((
-        project.width_mm as f64 / size.width() as f64,
-        project.height_mm as f64 / size.height() as f64,
-    ))
 }
 
 /// The motif as it lies on the bed: its root `<svg>` sized in canvas pixels
@@ -1447,6 +1614,31 @@ mod tests {
         };
         let below = duplicate(&far, 5.0).unwrap();
         assert!((below.height_mm - 125.0).abs() < 1e-3);
+    }
+
+    #[test]
+    fn nesting_an_array_places_every_copy_compactly() {
+        let copies = array(&demo(), 5, 5, 5.0, 5.0).unwrap();
+        let settings = NestSettings {
+            gap_mm: 1.0,
+            ..NestSettings::default()
+        };
+        let nested = nest(&copies, &settings).unwrap();
+        assert_eq!((nested.placed, nested.missing), (25, 0));
+        let objects = selection::objects(&copies.svg).unwrap().len();
+        assert_eq!(
+            selection::objects(&nested.project.svg).unwrap().len(),
+            objects
+        );
+        // Each copy is embedded once, not the whole document per copy.
+        assert!(
+            nested.project.svg.len() < 2 * copies.svg.len(),
+            "{}",
+            nested.project.svg.len()
+        );
+        let p = &nested.project;
+        assert!(p.width_mm <= 990.0 + 1e-3 && p.height_mm <= 590.0 + 1e-3);
+        ltt::prepare(p).unwrap();
     }
 
     #[test]

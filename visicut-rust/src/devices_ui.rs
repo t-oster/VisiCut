@@ -221,7 +221,7 @@ impl DeviceUi {
         }
         if self.device().rotary_axis {
             *dirty |= ui
-                .checkbox(&mut project.rotary_axis, "Drehachse verwenden")
+                .checkbox(&mut project.rotary_axis, "Rotationseinheit verwenden")
                 .changed();
             if project.rotary_axis {
                 *dirty |= crate::number(
@@ -453,7 +453,7 @@ impl DeviceUi {
                             ui.label("Port");
                             ui.add(egui::DragValue::new(&mut device.port).range(1..=65535));
                             ui.end_row();
-                            ui.label("Drehachse");
+                            ui.label("Rotationseinheit");
                             ui.checkbox(&mut device.rotary_axis, "vorhanden");
                             ui.end_row();
                             ui.label("Kalibrierung");
