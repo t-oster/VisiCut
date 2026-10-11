@@ -70,7 +70,8 @@ fn cut(svg: &str) -> Vec<Contour> {
     .unwrap()
 }
 
-fn near(a: f32, b: f32) -> bool {
+fn near(a: impl Into<f64>, b: impl Into<f64>) -> bool {
+    let (a, b): (f64, f64) = (a.into(), b.into());
     (a - b).abs() < 0.01
 }
 

@@ -5,10 +5,13 @@
 // cuttingTimeForPxDistance) and LibLaserCut Circle.fromPointList.
 // LGPL-3.0-or-later; original author Maximilian Gaukler.
 use super::{Axis, NOMINAL_CUT_SPEED, RASTER_DPI, word};
+use crate::project::LIBLASERCUT_CURVE_ACCELERATION;
 use crate::timeline::{MotionKind, Program};
 
-/// FAU device configuration (tangentCurveMaxAcceleration, arc compensation on).
-const MAX_ACCELERATION: f64 = 2000.0;
+/// Acceleration of the time estimate for straight moves: the FAU device's
+/// tangentCurveMaxAcceleration as in Java (the controller ramps start/stop
+/// moves with vxacc/vyacc, 0.24 g on an iLaser 4000).
+const MAX_ACCELERATION: f64 = LIBLASERCUT_CURVE_ACCELERATION;
 const LENGTH_TOLERANCE_MM: f64 = 0.1;
 const ANGLE_TOLERANCE_SHORT: f64 = 40.0 * std::f64::consts::PI / 180.0;
 const ANGLE_TOLERANCE_LONG: f64 = 10.0 * std::f64::consts::PI / 180.0;
@@ -92,6 +95,13 @@ pub struct Encoder<'a> {
     kind: MotionKind,
     /// Record motions in the timeline (off for repeated passes).
     pub recording: bool,
+    /// Planning limit of joint curves and circles (mm/s²).
+    pub curve_acceleration: f64,
+    /// Controller dwell after reaching the start of a contour (s), only for
+    /// the time estimate.
+    pub pierce_delay: f64,
+    /// A move to a contour start happened since the laser was last switched on.
+    moved: bool,
 }
 
 impl<'a> Encoder<'a> {
@@ -118,6 +128,9 @@ impl<'a> Encoder<'a> {
             program,
             kind,
             recording: true,
+            curve_acceleration: LIBLASERCUT_CURVE_ACCELERATION,
+            pierce_delay: 0.0,
+            moved: false,
         }
     }
 
@@ -143,6 +156,14 @@ impl<'a> Encoder<'a> {
         if on != self.laser_on {
             self.out.extend(if on { b"PD" } else { b"PU" });
             self.laser_on = on;
+        }
+        if on && self.moved {
+            self.moved = false;
+            if self.recording
+                && let Some(program) = self.program.as_deref_mut()
+            {
+                program.dwell(self.pierce_delay);
+            }
         }
     }
 
@@ -193,6 +214,7 @@ impl<'a> Encoder<'a> {
             program.travel_timed(to, time);
         }
         self.go_to(x, y, false);
+        self.moved = true;
         time
     }
 
@@ -262,7 +284,8 @@ impl<'a> Encoder<'a> {
             return None;
         }
         // Constant speed on a circle: a = v² / r.
-        let max_speed = ((MAX_ACCELERATION * radius_mm).sqrt() / percent_to_mm_s(1.0)) as f32 * 0.7;
+        let max_speed =
+            ((self.curve_acceleration * radius_mm).sqrt() / percent_to_mm_s(1.0)) as f32 * 0.7;
         let (old_speed, old_power) = (self.speed, self.power);
         if self.speed > max_speed {
             self.set_speed(max_speed);
@@ -354,7 +377,7 @@ impl<'a> Encoder<'a> {
                     min_time = MAX_ACCEL_TIME;
                 }
                 let alpha = before.angle;
-                let c = MAX_ACCELERATION * optimism * min_time;
+                let c = self.curve_acceleration * optimism * min_time;
                 if before.speed * alpha.sin() > c {
                     points[i - 1].speed = safety * c / alpha;
                     changed = true;
@@ -440,12 +463,8 @@ impl<'a> Encoder<'a> {
             let ax = (new_vx - vx).abs() / time;
             let ay = (new_vy - vy).abs() / time;
             let tolerance = 1.00001;
-            if ax.is_nan()
-                || ax > MAX_ACCELERATION * tolerance
-                || ay.is_nan()
-                || ay > MAX_ACCELERATION * tolerance
-                || ax.hypot(ay) > MAX_ACCELERATION * tolerance
-            {
+            let limit = self.curve_acceleration * tolerance;
+            if ax.is_nan() || ax > limit || ay.is_nan() || ay > limit || ax.hypot(ay) > limit {
                 return Err(format!("Beschleunigung im Kurvensegment {i} zu hoch"));
             }
             (vx, vy, v) = (new_vx, new_vy, new_v);

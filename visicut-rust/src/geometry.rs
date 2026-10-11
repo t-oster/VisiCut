@@ -2,8 +2,18 @@ use crate::project::Project;
 use resvg::{tiny_skia, usvg};
 use std::sync::{Arc, Mutex};
 
-pub type Point = [f32; 2];
+/// Point on the bed in mm. f64 like Java's geometry, so the driver's integer
+/// truncations see the same values (tests/java_parity).
+pub type Point = [f64; 2];
 pub type Contour = Vec<Point>;
+
+/// Pixels per mm of the 500-DPI vector profile (`Util.dpi2dpmm(500)`).
+pub const PX_PER_MM: f64 = 500.0 / 25.4;
+/// Flatness of curve flattening in pixels: the LTT driver's
+/// `getRequiredCurvePrecision` with tangent curves.
+const CURVE_FLATNESS_PX: f64 = 0.2;
+/// Subdivision limit of Java's `FlatteningPathIterator`.
+const CURVE_LIMIT: u32 = 10;
 
 pub fn contours(project: &Project) -> Result<Vec<Contour>, String> {
     contours_with_fonts(project, crate::svg::fonts())
@@ -28,6 +38,7 @@ fn contours_with_fonts(
             );
         }
     }
+    check_clip_references(&document)?;
     // Text is cut along its glyph outlines, like the Java importer does. Glyphs
     // usvg cannot place would otherwise vanish silently, so they are reported.
     let missing = Mutex::new(Vec::new());
@@ -48,7 +59,7 @@ fn contours_with_fonts(
         tree = usvg::Tree::from_str(&flattened, &options).map_err(|e| e.to_string())?;
     }
     let mut result = Vec::new();
-    visit(tree.root(), project, tree.size(), &mut result)?;
+    visit(tree.root(), project, tree.size(), &[], &mut result)?;
     if result.is_empty() {
         return Err("Keine schneidbaren Vektorpfade in der SVG".into());
     }
@@ -102,21 +113,328 @@ fn contains_text(group: &usvg::Group) -> bool {
     })
 }
 
+/// Masks and filters cannot be cut: a mask only sets transparency and a filter
+/// changes the picture, so neither defines a cut line.
+const MASK_REJECTED: &str = "Masken können nicht geschnitten werden, weil sie nur Transparenz festlegen und keine Schnittlinie ergeben; Maske entfernen oder Objekt vorher in Pfade umwandeln";
+const FILTER_REJECTED: &str = "Filter wie Weichzeichnen oder Schlagschatten verändern das Motiv nur als Pixelbild und ergeben keine Schnittlinie; Filter entfernen oder Objekt vorher in Pfade umwandeln";
+const NESTED_CLIP: &str = "Verschachtelte Clip-Pfade (Clipping auf einem Clip-Pfad oder innerhalb eines Clip-Pfads) werden beim Schneiden nicht unterstützt";
+const EMPTY_CLIP: &str = "Clip-Pfad ist leer, daher bliebe nichts zu schneiden; Clip-Pfad mit Formen füllen oder Clipping entfernen";
+const CLIP_IMAGE: &str = "Rasterbild im Clip-Pfad: Schneiden unterstützt keine Rasterbilder; Clip-Pfad nur mit Vektorformen verwenden";
+const CLIP_TEXT: &str =
+    "Text im Clip-Pfad wird beim Schneiden nicht unterstützt; Text vorher in Pfade umwandeln";
+
+fn reject_effects(group: &usvg::Group) -> Result<(), String> {
+    if group.mask().is_some() {
+        return Err(MASK_REJECTED.into());
+    }
+    if !group.filters().is_empty() {
+        return Err(FILTER_REJECTED.into());
+    }
+    Ok(())
+}
+
+/// A clip region in mm: the union of the shapes of one clipPath. A point is
+/// inside the region when one of its shapes contains it.
+#[derive(Clone)]
+struct Clip {
+    shapes: Vec<ClipShape>,
+}
+
+#[derive(Clone)]
+struct ClipShape {
+    /// Closed rings in mm, last point equal to the first.
+    rings: Vec<Contour>,
+    even_odd: bool,
+    bbox: [f64; 4],
+}
+
+impl ClipShape {
+    fn new(rings: Vec<Contour>, even_odd: bool) -> Self {
+        let bbox = rings
+            .iter()
+            .flatten()
+            .fold([f64::MAX, f64::MAX, f64::MIN, f64::MIN], |b, p| {
+                [
+                    b[0].min(p[0]),
+                    b[1].min(p[1]),
+                    b[2].max(p[0]),
+                    b[3].max(p[1]),
+                ]
+            });
+        Self {
+            rings,
+            even_odd,
+            bbox,
+        }
+    }
+
+    /// Winding and crossing counts of a ray from `p` to the right, summed over all rings.
+    fn contains(&self, p: Point) -> bool {
+        let [x0, y0, x1, y1] = self.bbox;
+        if p[0] < x0 || p[0] > x1 || p[1] < y0 || p[1] > y1 {
+            return false;
+        }
+        let (mut winding, mut crossings) = (0i32, 0u32);
+        for ring in &self.rings {
+            for edge in ring.windows(2) {
+                let (a, b) = (edge[0], edge[1]);
+                if a[1] <= p[1] {
+                    if b[1] > p[1] && side(a, b, p) > 0.0 {
+                        winding += 1;
+                        crossings += 1;
+                    }
+                } else if b[1] <= p[1] && side(a, b, p) < 0.0 {
+                    winding -= 1;
+                    crossings += 1;
+                }
+            }
+        }
+        if self.even_odd {
+            crossings % 2 == 1
+        } else {
+            winding != 0
+        }
+    }
+}
+
+impl Clip {
+    fn contains(&self, p: Point) -> bool {
+        self.shapes.iter().any(|shape| shape.contains(p))
+    }
+}
+
+/// Positive when `p` lies left of the directed edge `a` → `b`.
+fn side(a: Point, b: Point, p: Point) -> f64 {
+    (b[0] - a[0]) * (p[1] - a[1]) - (p[0] - a[0]) * (b[1] - a[1])
+}
+
+/// Parameter `t` along `a` → `b` where it crosses the edge `c` → `d`, if the crossing
+/// lies strictly inside the segment. Parallel edges are not reported; midpoint tests
+/// decide those pieces.
+fn crossing(a: Point, b: Point, c: Point, d: Point) -> Option<f64> {
+    let p = |q: Point| (q[0], q[1]);
+    let ((ax, ay), (bx, by), (cx, cy), (dx, dy)) = (p(a), p(b), p(c), p(d));
+    let r = (bx - ax, by - ay);
+    let s = (dx - cx, dy - cy);
+    let denominator = r.0 * s.1 - r.1 * s.0;
+    if denominator.abs() < 1e-12 {
+        return None;
+    }
+    let qp = (cx - ax, cy - ay);
+    let t = (qp.0 * s.1 - qp.1 * s.0) / denominator;
+    let u = (qp.0 * r.1 - qp.1 * r.0) / denominator;
+    ((0.0..1.0).contains(&t) && (0.0..=1.0).contains(&u)).then_some(t)
+}
+
+fn point_at(a: Point, b: Point, t: f64) -> Point {
+    [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]
+}
+
+/// Work limit for clipping: contour segments times clip edges.
+const CLIP_WORK_LIMIT: usize = 100_000_000;
+
+/// The parts of an open or closed polyline that lie inside all clip regions.
+/// Each segment is split where it crosses a clip edge; the pieces between
+/// splits are kept when their midpoint is inside. A closed contour that stays
+/// inside as a whole is returned unchanged; pieces that meet at the start point
+/// of a closed contour are joined again.
+fn clip_contour(contour: &Contour, clips: &[Clip]) -> Result<Vec<Contour>, String> {
+    let edges: Vec<(Point, Point)> = clips
+        .iter()
+        .flat_map(|clip| &clip.shapes)
+        .flat_map(|shape| &shape.rings)
+        .flat_map(|ring| ring.windows(2).map(|w| (w[0], w[1])))
+        .collect();
+    if edges.len().saturating_mul(contour.len()) > CLIP_WORK_LIMIT {
+        return Err(
+            "Clip-Pfad ist zu komplex für die Schnittberechnung; Clip vereinfachen oder Objekt in Pfade umwandeln"
+                .into(),
+        );
+    }
+    let inside = |p: Point| clips.iter().all(|clip| clip.contains(p));
+    let mut pieces: Vec<Contour> = Vec::new();
+    let mut current: Option<Contour> = None;
+    for segment in contour.windows(2) {
+        let (a, b) = (segment[0], segment[1]);
+        let mut ts = vec![0.0, 1.0];
+        ts.extend(edges.iter().filter_map(|&(c, d)| crossing(a, b, c, d)));
+        ts.sort_by(f64::total_cmp);
+        ts.dedup();
+        for pair in ts.windows(2) {
+            let (t0, t1) = (pair[0], pair[1]);
+            if inside(point_at(a, b, (t0 + t1) / 2.0)) {
+                let end = if t1 == 1.0 { b } else { point_at(a, b, t1) };
+                if let Some(piece) = current.as_mut() {
+                    if piece.last() != Some(&end) {
+                        piece.push(end);
+                    }
+                } else {
+                    let start = if t0 == 0.0 { a } else { point_at(a, b, t0) };
+                    current = Some(vec![start, end]);
+                }
+            } else if let Some(piece) = current.take() {
+                pieces.push(piece);
+            }
+        }
+    }
+    pieces.extend(current);
+    if contour.len() > 1 && contour.first() == contour.last() && pieces.len() >= 2 {
+        let first_at_start = pieces.first().and_then(|piece| piece.first()) == contour.first();
+        let last_at_end = pieces.last().and_then(|piece| piece.last()) == contour.last();
+        if first_at_start && last_at_end {
+            let first = pieces.remove(0);
+            if let Some(last) = pieces.last_mut() {
+                last.extend(first.into_iter().skip(1));
+            }
+        }
+    }
+    pieces.retain(|piece| piece.len() >= 2);
+    Ok(pieces)
+}
+
+/// Rejects a `clipPath` reference whose target is missing, is not a clipPath or
+/// has no children. usvg would drop such elements silently, so this is checked
+/// on the XML before the tree is built.
+fn check_clip_references(document: &usvg::roxmltree::Document) -> Result<(), String> {
+    for node in document.descendants().filter(|n| n.is_element()) {
+        let Some(id) = clip_reference(node) else {
+            continue;
+        };
+        let target = document
+            .descendants()
+            .find(|n| n.is_element() && n.attribute("id") == Some(id.as_str()));
+        match target {
+            None => {
+                return Err(format!(
+                    "Clip-Pfad „#{id}“ ist nicht vorhanden; Clipping entfernen oder Objekt vorher in Pfade umwandeln"
+                ));
+            }
+            Some(target) if target.tag_name().name() != "clipPath" => {
+                return Err(format!("„#{id}“ ist kein Clip-Pfad"));
+            }
+            Some(target) if !target.children().any(|child| child.is_element()) => {
+                return Err(EMPTY_CLIP.into());
+            }
+            Some(_) => {}
+        }
+    }
+    Ok(())
+}
+
+/// Id of the element referenced by `clip-path`, as attribute or style property.
+fn clip_reference(node: usvg::roxmltree::Node) -> Option<String> {
+    let value = node.attribute("clip-path").or_else(|| {
+        node.attribute("style")?.split(';').find_map(|declaration| {
+            let (name, value) = declaration.split_once(':')?;
+            (name.trim() == "clip-path").then(|| value.trim())
+        })
+    })?;
+    let id = value
+        .strip_prefix("url(")?
+        .strip_suffix(')')?
+        .trim()
+        .trim_matches(|c| c == '\'' || c == '"')
+        .strip_prefix('#')?;
+    Some(id.to_string())
+}
+
+/// Region of a clipPath in mm; `base` maps the clipPath's user space (the
+/// referencing element's transform) to user units.
+fn clip_region(
+    clip: &usvg::ClipPath,
+    base: tiny_skia::Transform,
+    project: &Project,
+    size: usvg::Size,
+) -> Result<Clip, String> {
+    if clip.clip_path().is_some() {
+        return Err(NESTED_CLIP.into());
+    }
+    let mut shapes = Vec::new();
+    clip_shapes(
+        clip.root(),
+        base.pre_concat(clip.transform()),
+        project,
+        size,
+        &mut shapes,
+    )?;
+    if shapes.is_empty() {
+        return Err(EMPTY_CLIP.into());
+    }
+    Ok(Clip { shapes })
+}
+
+fn clip_shapes(
+    group: &usvg::Group,
+    base: tiny_skia::Transform,
+    project: &Project,
+    size: usvg::Size,
+    shapes: &mut Vec<ClipShape>,
+) -> Result<(), String> {
+    reject_effects(group)?;
+    if group.clip_path().is_some() {
+        return Err(NESTED_CLIP.into());
+    }
+    for node in group.children() {
+        match node {
+            usvg::Node::Group(group) => clip_shapes(group, base, project, size, shapes)?,
+            // The clip geometry counts whatever its fill or stroke, like SVG's clip-path.
+            usvg::Node::Path(path) if path.is_visible() => {
+                let rings: Vec<Contour> = flatten_path(
+                    path.data(),
+                    base.pre_concat(path.abs_transform()),
+                    project,
+                    size,
+                )
+                .into_iter()
+                .map(|(mut ring, _)| {
+                    if ring.first() != ring.last()
+                        && let Some(first) = ring.first().copied()
+                    {
+                        ring.push(first);
+                    }
+                    ring
+                })
+                .filter(|ring| ring.len() >= 4)
+                .collect();
+                if !rings.is_empty() {
+                    let even_odd = path
+                        .fill()
+                        .is_some_and(|fill| fill.rule() == usvg::FillRule::EvenOdd);
+                    shapes.push(ClipShape::new(rings, even_odd));
+                }
+            }
+            usvg::Node::Image(_) => return Err(CLIP_IMAGE.into()),
+            usvg::Node::Text(_) => return Err(CLIP_TEXT.into()),
+            _ => {}
+        }
+    }
+    Ok(())
+}
+
 fn visit(
     group: &usvg::Group,
     project: &Project,
     size: usvg::Size,
+    clips: &[Clip],
     result: &mut Vec<Contour>,
 ) -> Result<(), String> {
-    if group.clip_path().is_some() || group.mask().is_some() || !group.filters().is_empty() {
-        return Err("SVG-Clipping, Masken oder Filter zuerst in echte Pfade umwandeln".into());
-    }
+    reject_effects(group)?;
+    let stacked: Vec<Clip>;
+    let clips = match group.clip_path() {
+        Some(clip) => {
+            let mut all = clips.to_vec();
+            all.push(clip_region(clip, group.abs_transform(), project, size)?);
+            stacked = all;
+            stacked.as_slice()
+        }
+        None => clips,
+    };
     if group.opacity().get() == 0.0 {
         return Ok(());
     }
     for node in group.children() {
         match node {
-            usvg::Node::Group(group) => visit(group, project, size, result)?,
+            usvg::Node::Group(group) => visit(group, project, size, clips, result)?,
             usvg::Node::Path(path) if path.is_visible() => {
                 if path.fill().is_none_or(|fill| fill.opacity().get() == 0.0)
                     && path
@@ -125,56 +443,7 @@ fn visit(
                 {
                     continue;
                 }
-                let map = |point: tiny_skia::Point| {
-                    let mut point = point;
-                    path.abs_transform().map_point(&mut point);
-                    [
-                        project.x_mm + point.x * project.width_mm / size.width(),
-                        project.y_mm + point.y * project.height_mm / size.height(),
-                    ]
-                };
-                let mut subpaths = Vec::new();
-                let mut contour = Vec::new();
-                let mut closed = false;
-                let mut current = [0.0; 2];
-                let mut start = [0.0; 2];
-                for segment in path.data().segments() {
-                    if !matches!(segment, tiny_skia::PathSegment::MoveTo(_)) {
-                        closed = false;
-                    }
-                    match segment {
-                        tiny_skia::PathSegment::MoveTo(point) => {
-                            subpaths.push((std::mem::take(&mut contour), closed));
-                            closed = false;
-                            current = map(point);
-                            start = current;
-                            contour.push(current);
-                        }
-                        tiny_skia::PathSegment::LineTo(point) => {
-                            current = map(point);
-                            contour.push(current);
-                        }
-                        tiny_skia::PathSegment::QuadTo(a, end) => {
-                            let a = map(a);
-                            let end = map(end);
-                            let c1 = mix(current, a, 2.0 / 3.0);
-                            let c2 = mix(end, a, 2.0 / 3.0);
-                            flatten([current, c1, c2, end], 0, &mut contour);
-                            current = end;
-                        }
-                        tiny_skia::PathSegment::CubicTo(a, b, end) => {
-                            let end = map(end);
-                            flatten([current, map(a), map(b), end], 0, &mut contour);
-                            current = end;
-                        }
-                        tiny_skia::PathSegment::Close => {
-                            contour.push(start);
-                            current = start;
-                            closed = true;
-                        }
-                    }
-                }
-                subpaths.push((contour, closed));
+                let subpaths = flatten_path(path.data(), path.abs_transform(), project, size);
                 // Like Java's SVGShape/DashedShape: the dash pattern is applied in the path's
                 // user space, so it scales with the element's transform and the viewBox.
                 let dash = path.stroke().and_then(|stroke| {
@@ -182,6 +451,7 @@ fn visit(
                     let metric = user_length_metric(path.abs_transform(), project, size)?;
                     Some((pattern, f64::from(stroke.dashoffset()), metric))
                 });
+                let start = result.len();
                 for (contour, closed) in subpaths {
                     if contour.len() < 2 {
                         continue;
@@ -191,6 +461,11 @@ fn visit(
                             dash_contour(&contour, closed, pattern, *offset, metric, result)?
                         }
                         None => result.push(contour),
+                    }
+                }
+                if !clips.is_empty() {
+                    for piece in result.split_off(start) {
+                        result.extend(clip_contour(&piece, clips)?);
                     }
                 }
             }
@@ -207,6 +482,69 @@ fn visit(
         }
     }
     Ok(())
+}
+
+/// Flattens the subpaths of a path into mm contours, each with its closed flag.
+/// `transform` maps the path's coordinates to user units of the whole document.
+fn flatten_path(
+    data: &tiny_skia::Path,
+    transform: tiny_skia::Transform,
+    project: &Project,
+    size: usvg::Size,
+) -> Vec<(Contour, bool)> {
+    // Java: translate(x, y) · scale(document → mm), applied in double.
+    let (sx, sy) = (
+        f64::from(project.width_mm) / f64::from(size.width()),
+        f64::from(project.height_mm) / f64::from(size.height()),
+    );
+    let map = |point: tiny_skia::Point| {
+        let mut point = point;
+        transform.map_point(&mut point);
+        [
+            sx * f64::from(point.x) + f64::from(project.x_mm),
+            sy * f64::from(point.y) + f64::from(project.y_mm),
+        ]
+    };
+    let mut subpaths = Vec::new();
+    let mut contour = Vec::new();
+    let mut closed = false;
+    let mut current = [0.0; 2];
+    let mut start = [0.0; 2];
+    for segment in data.segments() {
+        if !matches!(segment, tiny_skia::PathSegment::MoveTo(_)) {
+            closed = false;
+        }
+        match segment {
+            tiny_skia::PathSegment::MoveTo(point) => {
+                subpaths.push((std::mem::take(&mut contour), closed));
+                closed = false;
+                current = map(point);
+                start = current;
+                contour.push(current);
+            }
+            tiny_skia::PathSegment::LineTo(point) => {
+                current = map(point);
+                contour.push(current);
+            }
+            tiny_skia::PathSegment::QuadTo(a, end) => {
+                let end = map(end);
+                flatten_curve(&[current, map(a), end], &mut contour);
+                current = end;
+            }
+            tiny_skia::PathSegment::CubicTo(a, b, end) => {
+                let end = map(end);
+                flatten_curve(&[current, map(a), map(b), end], &mut contour);
+                current = end;
+            }
+            tiny_skia::PathSegment::Close => {
+                contour.push(start);
+                current = start;
+                closed = true;
+            }
+        }
+    }
+    subpaths.push((contour, closed));
+    subpaths
 }
 
 /// Upper bound for contours a dash pattern may add; every contour has at least two
@@ -250,8 +588,8 @@ fn user_length_metric(
 }
 
 fn user_distance(metric: &[f64; 4], a: Point, b: Point) -> f64 {
-    let dx = f64::from(b[0] - a[0]);
-    let dy = f64::from(b[1] - a[1]);
+    let dx = b[0] - a[0];
+    let dy = b[1] - a[1];
     (metric[0] * dx + metric[1] * dy).hypot(metric[2] * dx + metric[3] * dy)
 }
 
@@ -306,7 +644,7 @@ fn dash_contour(
         let mut t = 0.0;
         while length - t > remaining + epsilon {
             t += remaining;
-            let point = mix(a, b, (t / length) as f32);
+            let point = mix(a, b, t / length);
             if dash.last() != Some(&point) {
                 dash.push(point);
             }
@@ -332,32 +670,90 @@ fn dash_contour(
     Ok(())
 }
 
-fn mix(a: Point, b: Point, t: f32) -> Point {
+fn mix(a: Point, b: Point, t: f64) -> Point {
     [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]
 }
 
-fn flatten(p: [Point; 4], depth: u32, out: &mut Contour) {
-    // Control-polygon excess catches loops as well as curves along a straight chord.
-    let distance = |a: Point, b: Point| (a[0] - b[0]).hypot(a[1] - b[1]);
-    let excess =
-        distance(p[0], p[1]) + distance(p[1], p[2]) + distance(p[2], p[3]) - distance(p[0], p[3]);
-    let chord_distance = |a: Point| {
-        let dx = p[3][0] - p[0][0];
-        let dy = p[3][1] - p[0][1];
-        ((a[0] - p[0][0]) * dy - (a[1] - p[0][1]) * dx).abs() / dx.hypot(dy).max(1e-9)
+/// Flattens a quadratic (3 points) or cubic (4 points) Bézier curve given in
+/// mm like Java's `FlatteningPathIterator` on the 500-DPI laser shape: in
+/// pixels, flatness 0.2 px, at most 10 subdivision levels. Appends the end
+/// points of the line segments, the curve end last.
+fn flatten_curve(points: &[Point], out: &mut Contour) {
+    let mut coords: Vec<f64> = points
+        .iter()
+        .flat_map(|p| [p[0] * PX_PER_MM, p[1] * PX_PER_MM])
+        .collect();
+    let mut px = Vec::new();
+    subdivide_flat(&mut coords, 0, &mut px);
+    out.extend(px.into_iter().map(|[x, y]| [x / PX_PER_MM, y / PX_PER_MM]));
+}
+
+fn subdivide_flat(curve: &mut [f64], level: u32, out: &mut Vec<[f64; 2]>) {
+    let flatness_sq = if curve.len() == 6 {
+        // QuadCurve2D.getFlatnessSq
+        pt_seg_dist_sq(curve[0], curve[1], curve[4], curve[5], curve[2], curve[3])
+    } else {
+        // CubicCurve2D.getFlatnessSq
+        pt_seg_dist_sq(curve[0], curve[1], curve[6], curve[7], curve[2], curve[3]).max(
+            pt_seg_dist_sq(curve[0], curve[1], curve[6], curve[7], curve[4], curve[5]),
+        )
     };
-    if depth >= 16 || (excess <= 0.025 && chord_distance(p[1]).max(chord_distance(p[2])) <= 0.025) {
-        out.push(p[3]);
+    if level >= CURVE_LIMIT || flatness_sq < CURVE_FLATNESS_PX * CURVE_FLATNESS_PX {
+        let n = curve.len();
+        out.push([curve[n - 2], curve[n - 1]]);
         return;
     }
-    let a = mix(p[0], p[1], 0.5);
-    let b = mix(p[1], p[2], 0.5);
-    let c = mix(p[2], p[3], 0.5);
-    let d = mix(a, b, 0.5);
-    let e = mix(b, c, 0.5);
-    let f = mix(d, e, 0.5);
-    flatten([p[0], a, d, f], depth + 1, out);
-    flatten([f, e, c, p[3]], depth + 1, out);
+    let (mut left, mut right) = if curve.len() == 6 {
+        subdivide_quad(curve)
+    } else {
+        subdivide_cubic(curve)
+    };
+    subdivide_flat(&mut left, level + 1, out);
+    subdivide_flat(&mut right, level + 1, out);
+}
+
+/// `Line2D.ptSegDistSq`.
+fn pt_seg_dist_sq(x1: f64, y1: f64, x2: f64, y2: f64, px: f64, py: f64) -> f64 {
+    let (x2, y2) = (x2 - x1, y2 - y1);
+    let (mut px, mut py) = (px - x1, py - y1);
+    let mut dot = px * x2 + py * y2;
+    let projected_sq = if dot <= 0.0 {
+        0.0
+    } else {
+        px = x2 - px;
+        py = y2 - py;
+        dot = px * x2 + py * y2;
+        if dot <= 0.0 {
+            0.0
+        } else {
+            dot * dot / (x2 * x2 + y2 * y2)
+        }
+    };
+    (px * px + py * py - projected_sq).max(0.0)
+}
+
+/// `QuadCurve2D.subdivide`.
+fn subdivide_quad(c: &[f64]) -> (Vec<f64>, Vec<f64>) {
+    let (x1, y1, cx, cy, x2, y2) = (c[0], c[1], c[2], c[3], c[4], c[5]);
+    let (lx, ly) = ((x1 + cx) / 2.0, (y1 + cy) / 2.0);
+    let (rx, ry) = ((x2 + cx) / 2.0, (y2 + cy) / 2.0);
+    let (mx, my) = ((lx + rx) / 2.0, (ly + ry) / 2.0);
+    (vec![x1, y1, lx, ly, mx, my], vec![mx, my, rx, ry, x2, y2])
+}
+
+/// `CubicCurve2D.subdivide`.
+fn subdivide_cubic(c: &[f64]) -> (Vec<f64>, Vec<f64>) {
+    let (x1, y1, c1x, c1y, c2x, c2y, x2, y2) = (c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]);
+    let (ax, ay) = ((x1 + c1x) / 2.0, (y1 + c1y) / 2.0);
+    let (bx, by) = ((x2 + c2x) / 2.0, (y2 + c2y) / 2.0);
+    let (centre_x, centre_y) = ((c1x + c2x) / 2.0, (c1y + c2y) / 2.0);
+    let (d1x, d1y) = ((ax + centre_x) / 2.0, (ay + centre_y) / 2.0);
+    let (d2x, d2y) = ((bx + centre_x) / 2.0, (by + centre_y) / 2.0);
+    let (mx, my) = ((d1x + d2x) / 2.0, (d1y + d2y) / 2.0);
+    (
+        vec![x1, y1, ax, ay, d1x, d1y, mx, my],
+        vec![mx, my, d2x, d2y, bx, by, x2, y2],
+    )
 }
 
 #[cfg(test)]
@@ -379,14 +775,14 @@ mod dash_tests {
         })
     }
 
-    fn length(contour: &Contour) -> f32 {
+    fn length(contour: &Contour) -> f64 {
         contour
             .windows(2)
             .map(|w| (w[1][0] - w[0][0]).hypot(w[1][1] - w[0][1]))
             .sum()
     }
 
-    fn assert_dashes(paths: &[Contour], expected: &[(f32, f32)]) {
+    fn assert_dashes(paths: &[Contour], expected: &[(f64, f64)]) {
         assert_eq!(paths.len(), expected.len(), "{paths:?}");
         for (path, &(start, len)) in paths.iter().zip(expected) {
             assert!((path[0][0] - 10.0 - start).abs() < 1e-3, "{paths:?}");
@@ -534,11 +930,6 @@ mod tests {
         assert_eq!(paths[1].first(), paths[1].last());
         assert!(paths.iter().flatten().all(|p| p[0] >= 10.0 && p[1] >= 10.0));
     }
-    #[test]
-    fn rejects_clipped_cut_paths() {
-        let project = Project { svg: r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><defs><clipPath id="c"><rect width="10" height="10"/></clipPath></defs><g clip-path="url(#c)"><rect width="100" height="100"/></g></svg>"#.into(), ..Default::default() };
-        assert!(contours(&project).is_err());
-    }
 
     #[test]
     fn applies_viewbox_and_parent_transform() {
@@ -562,10 +953,10 @@ mod tests {
         assert!(!glyph.is_empty());
         let (min_x, max_x) = glyph
             .iter()
-            .fold((f32::MAX, f32::MIN), |(a, b), p| (a.min(p[0]), b.max(p[0])));
+            .fold((f64::MAX, f64::MIN), |(a, b), p| (a.min(p[0]), b.max(p[0])));
         let (min_y, max_y) = glyph
             .iter()
-            .fold((f32::MAX, f32::MIN), |(a, b), p| (a.min(p[1]), b.max(p[1])));
+            .fold((f64::MAX, f64::MIN), |(a, b), p| (a.min(p[1]), b.max(p[1])));
         // A 20 mm "H" sits on the baseline at y = 30 mm, starting at x = 20 mm.
         assert!(min_x >= 20.0 && max_x < 40.0, "x {min_x}..{max_x}");
         assert!(max_y <= 30.5 && max_y > 29.0, "y max {max_y}");
@@ -606,5 +997,114 @@ mod tests {
             };
             assert!(fonts.query(&query).is_some(), "{family:?}");
         }
+    }
+}
+
+#[cfg(test)]
+mod clip_tests {
+    use super::*;
+
+    /// Default project: 100×60 user units at offset (10, 10) mm.
+    fn cut(body: &str) -> Result<Vec<Contour>, String> {
+        contours(&Project {
+            svg: format!(
+                r#"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="60">{body}</svg>"#
+            ),
+            ..Default::default()
+        })
+    }
+
+    fn length(contour: &Contour) -> f64 {
+        contour
+            .windows(2)
+            .map(|w| (w[1][0] - w[0][0]).hypot(w[1][1] - w[0][1]))
+            .sum()
+    }
+
+    /// Clip square covering user units 0..20, i.e. mm 10..30.
+    const CLIP: &str = r#"<defs><clipPath id="c"><rect width="20" height="20"/></clipPath></defs>"#;
+
+    #[test]
+    fn keeps_the_part_of_a_square_inside_the_clip() {
+        // The square spans mm 20..60; the clip covers mm 10..30 in both axes.
+        let paths = cut(&format!(
+            r#"{CLIP}<rect x="10" y="10" width="40" height="40" fill="none" stroke="black" clip-path="url(#c)"/>"#
+        ))
+        .unwrap();
+        // Top and left edge inside the clip, 10 mm each.
+        assert_eq!(paths.len(), 1, "{paths:?}");
+        assert!((length(&paths[0]) - 20.0).abs() < 1e-3, "{paths:?}");
+        assert!(
+            paths
+                .iter()
+                .flatten()
+                .all(|p| (19.99..=30.01).contains(&p[0]) && (19.99..=30.01).contains(&p[1]))
+        );
+    }
+
+    #[test]
+    fn keeps_closed_shapes_that_lie_inside_unchanged() {
+        // User 2..7 is mm 12..17: entirely inside, so the closed outline stays whole.
+        let paths = cut(&format!(
+            r#"{CLIP}<rect x="2" y="2" width="5" height="5" fill="none" stroke="black" clip-path="url(#c)"/>"#
+        ))
+        .unwrap();
+        assert_eq!(paths.len(), 1);
+        assert_eq!(paths[0].first(), paths[0].last());
+        assert!((length(&paths[0]) - 20.0).abs() < 1e-3);
+    }
+
+    #[test]
+    fn path_entirely_outside_the_clip_gives_nothing() {
+        // User 70..90 is mm 80..100, outside the clip.
+        let error = cut(&format!(
+            r#"{CLIP}<path d="M70 5H90" stroke="black" clip-path="url(#c)"/>"#
+        ))
+        .unwrap_err();
+        assert!(error.contains("Keine schneidbaren"), "{error}");
+
+        // Inside the group, the outside path is dropped and the inside one kept.
+        let paths = cut(&format!(
+            r#"{CLIP}<g clip-path="url(#c)"><path d="M70 5H90" stroke="black"/><path d="M5 5H15" stroke="black"/></g>"#
+        ))
+        .unwrap();
+        assert_eq!(paths.len(), 1);
+        assert!((length(&paths[0]) - 10.0).abs() < 1e-3);
+    }
+
+    #[test]
+    fn empty_clip_path_is_an_error() {
+        let error = cut(
+            r#"<defs><clipPath id="c"/></defs><rect width="10" height="10" clip-path="url(#c)"/>"#,
+        )
+        .unwrap_err();
+        assert!(error.contains("leer"), "{error}");
+    }
+
+    #[test]
+    fn missing_clip_path_is_an_error() {
+        let error = cut(r#"<rect width="10" height="10" clip-path="url(#missing)"/>"#).unwrap_err();
+        assert!(error.contains("nicht vorhanden"), "{error}");
+    }
+
+    #[test]
+    fn masks_and_filters_are_rejected_with_reasons() {
+        let mask = cut(
+            r#"<defs><mask id="m"><rect width="50" height="50" fill="white"/></mask></defs><rect width="10" height="10" mask="url(#m)"/>"#,
+        )
+        .unwrap_err();
+        assert!(
+            mask.contains("Masken") && mask.contains("Transparenz"),
+            "{mask}"
+        );
+
+        let filter = cut(
+            r#"<defs><filter id="f"><feGaussianBlur stdDeviation="2"/></filter></defs><rect width="10" height="10" filter="url(#f)"/>"#,
+        )
+        .unwrap_err();
+        assert!(
+            filter.contains("Filter") && filter.contains("Pixelbild"),
+            "{filter}"
+        );
     }
 }

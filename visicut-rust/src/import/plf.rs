@@ -14,13 +14,17 @@
 //!
 //! Material, thickness, laser settings and start point are not part of the
 //! format. The parts are composed into one SVG in millimetres at their
-//! positions on the bed; mappings are reported as not imported.
+//! positions on the bed. Mappings become processing steps (see `mappings`);
+//! their laser settings stay at the defaults, because VisiCut keeps those
+//! per device, material and thickness outside the PLF file.
 mod laserscript;
+mod mappings;
 mod parametric;
 mod script;
 mod xml;
 
 use super::{Imported, MAX_FILE_BYTES};
+use crate::mapping::attributes;
 use resvg::usvg;
 use std::collections::{BTreeMap, HashSet};
 use std::io::Read;
@@ -72,7 +76,7 @@ pub fn read_plf(path: &Path) -> Result<Imported, String> {
         if local == "transform.xml" {
             part.transform = Some(parse_transform(&bytes));
         } else if local == "mappings.xml" {
-            part.mapping = true;
+            part.mapping = Some(bytes);
         } else {
             let directory = temp.0.join(index.to_string());
             std::fs::create_dir_all(&directory).map_err(|e| e.to_string())?;
@@ -89,9 +93,10 @@ pub fn read_plf(path: &Path) -> Result<Imported, String> {
 
     let mut composer = Composer::default();
     let mut warnings = Vec::new();
-    let mut mappings = false;
+    let any_mapping = parts.values().any(|part| part.mapping.is_some());
+    let mut placed = Vec::new();
     for (index, part) in parts {
-        mappings |= part.mapping;
+        let mapping = part.mapping.map(|bytes| mappings::parse(&bytes));
         let Some((name, file)) = part.source else {
             warnings.push(format!(
                 "Teil {}: Grafikdatei fehlt in der PLF-Datei",
@@ -131,8 +136,15 @@ pub fn read_plf(path: &Path) -> Result<Imported, String> {
                 None
             }
         };
-        if let Err(error) = composer.add(&name, &file, &imported.svg, transform) {
-            warnings.push(format!("Teil „{name}“ übersprungen: {error}"));
+        match composer.add(&name, &file, &imported.svg, transform) {
+            Ok(()) => placed.push(mappings::Placed {
+                // Same source as the composer parses (without DOCTYPE), with the original ids.
+                objects: attributes(&xml::strip_doctype(&imported.svg)).ok(),
+                svg: is_svg(&file),
+                mapping,
+                name,
+            }),
+            Err(error) => warnings.push(format!("Teil „{name}“ übersprungen: {error}")),
         }
     }
     if composer.parts.is_empty() {
@@ -145,15 +157,26 @@ pub fn read_plf(path: &Path) -> Result<Imported, String> {
             )
         });
     }
-    if mappings {
-        warnings.push(
-            "Zuordnungen und Laser-Einstellungen der PLF-Datei wurden nicht übernommen; nur die Geometrie wurde importiert"
-                .into(),
-        );
-    }
     let (svg, more) = composer.finish()?;
     warnings.extend(more);
-    Ok(Imported { svg, warnings })
+    let translation = if any_mapping {
+        mappings::translate(&placed, attributes(&svg))
+    } else {
+        mappings::Translation::default()
+    };
+    warnings.extend(translation.warnings);
+    Ok(Imported {
+        svg,
+        warnings,
+        steps: translation.steps,
+    })
+}
+
+/// Parts that VisiCutRust knows as SVG; their objects have the attributes VisiCut uses.
+fn is_svg(file: &Path) -> bool {
+    file.extension()
+        .and_then(|e| e.to_str())
+        .is_some_and(|e| e.eq_ignore_ascii_case("svg") || e.eq_ignore_ascii_case("psvg"))
 }
 
 pub fn read_parametric_svg(path: &Path) -> Result<Imported, String> {
@@ -213,6 +236,7 @@ pub fn read_parametric_svg(path: &Path) -> Result<Imported, String> {
     Ok(Imported {
         svg: embedded.svg,
         warnings,
+        ..Default::default()
     })
 }
 
@@ -222,14 +246,19 @@ pub fn read_laser_script(path: &Path) -> Result<Imported, String> {
     let drawing = laserscript::run(source, script::TIME_LIMIT)?;
     let (svg, mut warnings) = laserscript::to_svg(&drawing)?;
     warnings.extend(drawing.messages);
-    Ok(Imported { svg, warnings })
+    Ok(Imported {
+        svg,
+        warnings,
+        ..Default::default()
+    })
 }
 
 #[derive(Default)]
 struct PartFiles {
     source: Option<(String, PathBuf)>,
     transform: Option<Result<Matrix, String>>,
-    mapping: bool,
+    /// Content of `mappings.xml`.
+    mapping: Option<Vec<u8>>,
 }
 
 /// `"3/x.svg"` → `(3, "x.svg")`; entries without a number belong to part 0
@@ -628,8 +657,12 @@ impl Drop for TempDir {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::project::Project;
+    use crate::mapping::{Attribute, Filter};
+    use crate::project::{Operation, Project};
     use std::io::Write;
+
+    /// Minimal VisiCut mapping: red → cut; an unknown filter attribute → skipped.
+    const MAPPINGS: &[u8] = include_bytes!("plf/testdata/zuordnung.xml");
 
     fn transform_xml(m: Matrix) -> String {
         let mut entries = String::new();
@@ -681,7 +714,7 @@ mod tests {
         }
     }
 
-    fn bounds(svg: &str) -> [f32; 4] {
+    fn bounds(svg: &str) -> [f64; 4] {
         let preview = crate::svg::render(svg).unwrap();
         let project = Project {
             svg: svg.into(),
@@ -692,7 +725,7 @@ mod tests {
             ..Project::default()
         };
         let contours = crate::geometry::contours(&project).unwrap();
-        let mut b = [f32::MAX, f32::MAX, f32::MIN, f32::MIN];
+        let mut b = [f64::MAX, f64::MAX, f64::MIN, f64::MIN];
         for point in contours.iter().flatten() {
             b = [
                 b[0].min(point[0]),
@@ -704,7 +737,7 @@ mod tests {
         b
     }
 
-    fn contour_bounds(svg: &str) -> Vec<[f32; 4]> {
+    fn contour_bounds(svg: &str) -> Vec<[f64; 4]> {
         let preview = crate::svg::render(svg).unwrap();
         let project = Project {
             svg: svg.into(),
@@ -719,7 +752,7 @@ mod tests {
             .iter()
             .map(|c| {
                 c.iter()
-                    .fold([f32::MAX, f32::MAX, f32::MIN, f32::MIN], |b, p| {
+                    .fold([f64::MAX, f64::MAX, f64::MIN, f64::MIN], |b, p| {
                         [
                             b[0].min(p[0]),
                             b[1].min(p[1]),
@@ -731,7 +764,7 @@ mod tests {
             .collect()
     }
 
-    fn close(a: [f32; 4], b: [f32; 4]) -> bool {
+    fn close(a: [f64; 4], b: [f64; 4]) -> bool {
         a.iter().zip(b).all(|(x, y)| (x - y).abs() < 0.01)
     }
 
@@ -757,14 +790,13 @@ mod tests {
         assert!(svg.contains("inkscape:label=\"Teil eins.svg\""), "{svg}");
         assert!(svg.contains("id=\"teil2-r\""), "{svg}");
         assert!(svg.contains("xlink:href=\"#teil2-r\""), "{svg}");
+        // `<mapping/>` is not a mapping set: reported, geometry unaffected.
         assert!(
-            imported
-                .warnings
-                .iter()
-                .any(|w| w.contains("nur die Geometrie")),
+            imported.warnings.iter().any(|w| w.contains("nicht lesbar")),
             "{:?}",
             imported.warnings
         );
+        assert!(imported.steps.len() == 1 && imported.steps[0].objects.is_empty());
         let mut parts = contour_bounds(svg);
         parts.sort_by(|a, b| a[0].total_cmp(&b[0]));
         // Part 0: rect 10..30 user units → 25..35 mm, 35..45 mm.
@@ -778,6 +810,157 @@ mod tests {
             preview.width_mm
         );
         assert!(preview.height_mm >= 45.0 && preview.height_mm < 46.0);
+    }
+
+    /// Two rectangles, red and blue, in millimetres.
+    const TWO_RECTS: &[u8] = br##"<svg xmlns="http://www.w3.org/2000/svg" width="100mm" height="50mm" viewBox="0 0 100 50"><rect x="10" y="10" width="20" height="20" fill="none" stroke="#ff0000"/><rect x="50" y="10" width="20" height="20" fill="none" stroke="#0000ff"/></svg>"##;
+
+    fn one_mapping(filter: &str, profile: &str) -> String {
+        format!(
+            r#"<com.t_oster.visicut.model.mapping.MappingSet><linked-list><default/><int>1</int><mapping>{}<b class="vectorProfile"><DPI>500.0</DPI>{profile}</b></mapping></linked-list></com.t_oster.visicut.model.mapping.MappingSet>"#,
+            if filter.is_empty() {
+                String::new()
+            } else {
+                format!(
+                    r#"<a class="filters"><linked-list><default/><int>1</int>{filter}</linked-list></a>"#
+                )
+            }
+        )
+    }
+
+    fn stroke_filter(hex_rgb: [u8; 3]) -> String {
+        let [r, g, b] = hex_rgb;
+        format!(
+            r#"<filter><inverted>false</inverted><attribute>Stroke Color</attribute><value class="awt-color"><red>{r}</red><green>{g}</green><blue>{b}</blue><alpha>255</alpha></value></filter>"#
+        )
+    }
+
+    #[test]
+    fn maps_colour_filters_and_keeps_geometry() {
+        let transform = transform_xml([1.0, 0.0, 0.0, 1.0, 0.0, 0.0]);
+        let (_mapped_dir, mapped) = write_plf(&[
+            ("a.svg", TWO_RECTS),
+            ("transform.xml", transform.as_bytes()),
+            ("mappings.xml", MAPPINGS),
+        ]);
+        let (_plain_dir, plain) = write_plf(&[
+            ("a.svg", TWO_RECTS),
+            ("transform.xml", transform.as_bytes()),
+        ]);
+        let with = read_plf(&mapped).unwrap();
+        let without = read_plf(&plain).unwrap();
+        // The geometry is the same with and without the mapping.
+        assert_eq!(with.svg, without.svg);
+        // The red rectangle is cut; the unknown filter's entry produces no step.
+        assert_eq!(with.steps.len(), 1, "{:?}", with.steps);
+        let step = &with.steps[0];
+        assert_eq!(step.operation, Operation::Cut);
+        assert_eq!(
+            step.filters,
+            Some(vec![Filter {
+                attribute: Attribute::StrokeColor,
+                value: "#ff0000".into(),
+                compare: false,
+                inverted: false,
+            }])
+        );
+        assert!(step.objects.is_empty());
+        // Laser settings are not in the file: defaults, reported.
+        assert_eq!(
+            (step.power_percent, step.speed_percent, step.passes),
+            (20.0, 100.0, 1)
+        );
+        assert!(
+            with.warnings
+                .iter()
+                .any(|w| w.starts_with("Zuordnungen übernommen: 1 ")),
+            "{:?}",
+            with.warnings
+        );
+        assert!(with.warnings.iter().any(|w| w.contains("Standardwerte")));
+        // The unknown filter is reported.
+        assert!(
+            with.warnings
+                .iter()
+                .any(|w| w.contains("Gravur-Ebene") && w.contains("nicht bekannt")),
+            "{:?}",
+            with.warnings
+        );
+        assert!(without.steps.is_empty() && without.warnings.is_empty());
+    }
+
+    #[test]
+    fn rest_and_ignore_follow_visicut() {
+        let svg = br##"<svg xmlns="http://www.w3.org/2000/svg" width="100mm" height="50mm" viewBox="0 0 100 50"><rect x="5" y="5" width="10" height="10" fill="none" stroke="#ff0000"/><rect x="20" y="5" width="10" height="10" fill="none" stroke="#0000ff"/><rect x="35" y="5" width="10" height="10" fill="none" stroke="#00ff00"/></svg>"##;
+        // red → cut, blue → ignored, everything else → mark (the rest).
+        let set = format!(
+            r#"<com.t_oster.visicut.model.mapping.MappingSet><linked-list><default/><int>3</int><mapping><a class="filters"><linked-list><default/><int>1</int>{}</linked-list></a><b class="vectorProfile"><DPI>500.0</DPI><isCut>true</isCut></b></mapping><mapping><a class="filters"><linked-list><default/><int>1</int>{}</linked-list></a></mapping><mapping><b class="vectorProfile"><DPI>500.0</DPI><isCut>false</isCut></b></mapping></linked-list></com.t_oster.visicut.model.mapping.MappingSet>"#,
+            stroke_filter([255, 0, 0]),
+            stroke_filter([0, 0, 255])
+        );
+        let transform = transform_xml([1.0, 0.0, 0.0, 1.0, 0.0, 0.0]);
+        let (_dir, path) = write_plf(&[
+            ("a.svg", svg),
+            ("transform.xml", transform.as_bytes()),
+            ("mappings.xml", set.as_bytes()),
+        ]);
+        let imported = read_plf(&path).unwrap();
+        assert_eq!(imported.steps.len(), 2, "{:?}", imported.steps);
+        assert_eq!(imported.steps[0].operation, Operation::Cut);
+        assert!(imported.steps[0].filters.is_some());
+        // Only the green rectangle (index 2) is left for the rest step.
+        assert_eq!(imported.steps[1].operation, Operation::Mark);
+        assert_eq!(imported.steps[1].objects, vec![2]);
+        assert!(imported.steps[1].filters.is_none());
+    }
+
+    #[test]
+    fn colour_rules_of_one_part_do_not_select_other_parts() {
+        // Part 1 maps red to cut; part 2 also has a red rectangle and no mapping.
+        let transform = transform_xml([1.0, 0.0, 0.0, 1.0, 0.0, 0.0]);
+        let set = one_mapping(&stroke_filter([255, 0, 0]), r#"<isCut>true</isCut>"#);
+        let (_dir, path) = write_plf(&[
+            ("a.svg", TWO_RECTS),
+            ("transform.xml", transform.as_bytes()),
+            ("mappings.xml", set.as_bytes()),
+            ("1/b.svg", TWO_RECTS),
+            ("1/transform.xml", transform.as_bytes()),
+        ]);
+        let imported = read_plf(&path).unwrap();
+        // Objects: a.svg red (0), a.svg blue (1), b.svg red (2), b.svg blue (3).
+        assert_eq!(imported.steps.len(), 1, "{:?}", imported.steps);
+        assert_eq!(imported.steps[0].operation, Operation::Cut);
+        assert!(imported.steps[0].filters.is_none());
+        assert_eq!(imported.steps[0].objects, vec![0]);
+        assert!(
+            imported
+                .warnings
+                .iter()
+                .any(|w| w.contains("b.svg") && w.contains("keine Zuordnung")),
+            "{:?}",
+            imported.warnings
+        );
+    }
+
+    #[test]
+    fn unreadable_mapping_cuts_nothing() {
+        let transform = transform_xml([1.0, 0.0, 0.0, 1.0, 0.0, 0.0]);
+        let (_dir, path) = write_plf(&[
+            ("a.svg", TWO_RECTS),
+            ("transform.xml", transform.as_bytes()),
+            ("mappings.xml", b"<wrong/>"),
+        ]);
+        let imported = read_plf(&path).unwrap();
+        // A step without objects: the whole motif is not processed by default.
+        assert_eq!(imported.steps.len(), 1);
+        assert!(imported.steps[0].objects.is_empty() && imported.steps[0].filters.is_none());
+        assert!(imported.warnings.iter().any(|w| w.contains("nicht lesbar")));
+        assert!(
+            imported
+                .warnings
+                .iter()
+                .any(|w| w.contains("Keine Zuordnung übernommen"))
+        );
     }
 
     #[test]
@@ -850,6 +1033,23 @@ mod tests {
         }
         let imported = read_plf(&path).unwrap();
         assert!(imported.svg.contains("Schlu"), "{}", &imported.svg[..300]);
+        // Only the green line mapping matches; the others match nothing in VisiCut
+        // (a filter set with three fill colours needs one object with all three,
+        // and the stroke width is stored as text).
+        assert_eq!(imported.steps.len(), 1, "{:?}", imported.steps);
+        assert_eq!(imported.steps[0].operation, Operation::Mark);
+        assert_eq!(
+            imported.steps[0].filters.as_deref().map(<[_]>::len),
+            Some(1)
+        );
+        assert!(
+            imported
+                .warnings
+                .iter()
+                .any(|w| w.contains("NEAREST") && w.contains("nicht übernommen")),
+            "{:?}",
+            imported.warnings
+        );
         let preview = crate::svg::render(&imported.svg).unwrap();
         // VisiCut placed the keyring (about 40 × 37 mm) at the bed's top left corner.
         assert!(

@@ -99,10 +99,16 @@ fn converts_vector_page_with_physical_size_and_colours() {
         .iter()
         .find(|c| c.len() == 5)
         .expect("closed rectangle");
-    let min_x = rect.iter().map(|p| p[0]).fold(f32::MAX, f32::min) - project.x_mm;
-    let max_y = rect.iter().map(|p| p[1]).fold(f32::MIN, f32::max) - project.y_mm;
-    assert!((min_x - 20.0 * MM_PER_PT).abs() < 0.01, "{min_x}");
-    assert!((max_y - (50.0 - 20.0 * MM_PER_PT)).abs() < 0.01, "{max_y}");
+    let min_x = rect.iter().map(|p| p[0]).fold(f64::MAX, f64::min) - f64::from(project.x_mm);
+    let max_y = rect.iter().map(|p| p[1]).fold(f64::MIN, f64::max) - f64::from(project.y_mm);
+    assert!(
+        (min_x - 20.0 * f64::from(MM_PER_PT)).abs() < 0.01,
+        "{min_x}"
+    );
+    assert!(
+        (max_y - (50.0 - 20.0 * f64::from(MM_PER_PT))).abs() < 0.01,
+        "{max_y}"
+    );
 }
 
 #[test]
@@ -143,12 +149,15 @@ fn converts_text_to_cuttable_outlines() {
 }
 
 #[test]
-fn warns_about_clip_paths() {
-    let clipped = "q 50 50 m 100 50 l 75 100 l h W n 0 0 0 rg 0 0 100 100 re f Q";
+fn clip_paths_are_cut_without_warning() {
+    // The clip crosses the right edge of the square: the outline is cut to the parts
+    // inside x 50..110 (top, bottom and right edge).
+    let clipped = "q 50 -10 60 120 re W n 0 0 0 rg 0 0 100 100 re f Q";
     let imported = convert(pdf(&[clipped], [0.0, 0.0, 100.0, 100.0], "")).unwrap();
     assert!(imported.svg.contains("clip-path"));
-    assert_eq!(imported.warnings.len(), 1);
-    assert!(imported.warnings[0].contains("Beschneidungspfade"));
+    assert!(imported.warnings.is_empty(), "{:?}", imported.warnings);
+    let paths = crate::geometry::contours(&project(&imported.svg)).unwrap();
+    assert!(!paths.is_empty());
     // A clip that only covers the page is dropped and stays cuttable.
     let page_clip = "q 0 0 100 100 re W n 1 0 0 RG 10 10 50 50 re S Q";
     let imported = convert(pdf(&[page_clip], [0.0, 0.0, 100.0, 100.0], "")).unwrap();
@@ -298,5 +307,36 @@ fn reports_ghostscript_errors() {
         TempPath(std::env::temp_dir().join(format!("visicut-ps-test-{}.ps", std::process::id())));
     std::fs::write(&path.0, "%!PS\nthis_is_not_an_operator\n").unwrap();
     let error = crate::import::read_file(&path.0).err().unwrap();
+    assert!(error.contains("Ghostscript"), "{error}");
+}
+
+#[test]
+fn imports_simple_eps_with_builtin_interpreter() {
+    // Path-only EPS files need no Ghostscript.
+    let eps = "%!PS-Adobe-3.0 EPSF-3.0\n%%BoundingBox: 0 0 72 36\n\
+        1 0 0 setrgbcolor 0 0 moveto 72 0 lineto 72 36 lineto closepath fill\n";
+    let path = TempPath(
+        std::env::temp_dir().join(format!("visicut-eps-builtin-{}.eps", std::process::id())),
+    );
+    std::fs::write(&path.0, eps).unwrap();
+    let imported = crate::import::read_file(&path.0).unwrap();
+    assert!(imported.svg.contains("#ff0000"), "{}", imported.svg);
+    assert!(imported.svg.contains("width=\"25.4"), "{}", imported.svg);
+}
+
+#[test]
+fn unsupported_text_without_ghostscript_names_the_operator() {
+    if ghostscript::find().is_some() {
+        return;
+    }
+    let path =
+        TempPath(std::env::temp_dir().join(format!("visicut-eps-text-{}.eps", std::process::id())));
+    std::fs::write(
+        &path.0,
+        "%!PS\n%%BoundingBox: 0 0 100 100\n10 10 moveto (Hi) show\n",
+    )
+    .unwrap();
+    let error = crate::import::read_file(&path.0).err().unwrap();
+    assert!(error.contains("„show“"), "{error}");
     assert!(error.contains("Ghostscript"), "{error}");
 }

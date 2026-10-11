@@ -16,8 +16,9 @@ Versions before 1.0 are published as development prereleases.
 | Linux x64 | `VisiCutRust-<version>-x86_64-unknown-linux-gnu.tar.gz` | Portable egui application; Ubuntu 24.04 or compatible |
 | macOS Universal (Intel + Apple Silicon) | `VisiCutRust-<version>-universal-apple-darwin.zip` | Native AppKit/SwiftUI; macOS 14+ |
 
-No Java is required. The Windows/Linux UI currently has fewer controls than
-macOS. macOS applications are ad hoc signed and not Apple-notarized.
+No Java is required. macOS uses a native AppKit/SwiftUI interface, Windows
+and Linux an egui interface in their standard style; both offer the same
+functions. macOS applications are ad hoc signed and not Apple-notarized.
 See the [implementation documentation](visicut-rust/README.md) for build
 instructions, platform requirements and features, and the
 [protocol notes](visicut-rust/PROTOCOL.md) for hardware validation status.
@@ -47,8 +48,8 @@ The tag must match the version in `visicut-rust/Cargo.toml`.
 To publish the current version from a clean checkout of `master`:
 
 ```sh
-git tag v0.3.0
-git push origin v0.3.0
+git tag v0.7.0
+git push origin v0.7.0
 ```
 
 For subsequent releases, update `Cargo.toml` and `Cargo.lock`, commit and push,
