@@ -314,6 +314,116 @@ pub fn add_objects(
     Ok((result, ids))
 }
 
+/// Turns and mirrors the motif about its centre (no shear). The new size is
+/// the bounding box of the turned motif; object numbers stay the same.
+pub fn transform(
+    project: &Project,
+    rotate_deg: f64,
+    flip_horizontal: bool,
+    flip_vertical: bool,
+) -> Result<Project, String> {
+    if project.svg.is_empty() {
+        return Err("Zuerst ein Motiv öffnen".into());
+    }
+    if !rotate_deg.is_finite() {
+        return Err("Winkel muss endlich sein".into());
+    }
+    let rotate = rotate_deg.rem_euclid(360.0);
+    if rotate == 0.0 && !flip_horizontal && !flip_vertical {
+        return Ok(project.clone());
+    }
+    let (x, y, w, h) = (
+        project.x_mm as f64,
+        project.y_mm as f64,
+        project.width_mm as f64,
+        project.height_mm as f64,
+    );
+    let (cx, cy) = (x + w / 2.0, y + h / 2.0);
+    let (sx, sy) = (
+        if flip_horizontal { -1.0 } else { 1.0 },
+        if flip_vertical { -1.0 } else { 1.0 },
+    );
+    // Exact quarter turns keep exact sizes.
+    let radians = rotate.to_radians();
+    let (sin, cos) = if rotate == 90.0 {
+        (1.0, 0.0)
+    } else if rotate == 180.0 {
+        (0.0, -1.0)
+    } else if rotate == 270.0 {
+        (-1.0, 0.0)
+    } else {
+        radians.sin_cos()
+    };
+    let (bw, bh) = (w * cos.abs() + h * sin.abs(), w * sin.abs() + h * cos.abs());
+    let body = format!(
+        r#"<g transform="translate({} {}) rotate({}) scale({} {}) translate({} {})">{}</g>"#,
+        num(cx),
+        num(cy),
+        num(rotate),
+        num(sx),
+        num(sy),
+        num(-cx),
+        num(-cy),
+        embed(project, None, None)?
+    );
+    with_document(project, &body, [cx - bw / 2.0, cy - bh / 2.0, bw, bh])
+}
+
+/// Removes objects from the motif; the remaining objects keep their order
+/// and the assignments move with them. Removing everything clears the motif.
+pub fn remove_objects(project: &Project, remove: &[usize]) -> Result<Project, String> {
+    let doc = parse(&project.svg)?;
+    let nodes = selection::selectable_nodes(&doc);
+    if remove.iter().any(|i| *i >= nodes.len()) {
+        return Err("SVG-Objekt nicht vorhanden".into());
+    }
+    let mut result = project.clone();
+    if nodes.iter().enumerate().all(|(i, _)| remove.contains(&i)) {
+        result.svg.clear();
+        result.steps.clear();
+        result.ignore_filters.clear();
+        return Ok(result);
+    }
+    let mut ranges: Vec<std::ops::Range<usize>> =
+        remove.iter().map(|i| nodes[*i].range()).collect();
+    ranges.sort_by_key(|r| r.start);
+    let mut svg = String::with_capacity(project.svg.len());
+    let mut position = 0;
+    for r in ranges {
+        if r.start < position {
+            continue;
+        }
+        svg.push_str(&project.svg[position..r.start]);
+        position = r.end;
+    }
+    svg.push_str(&project.svg[position..]);
+    result.svg = svg;
+    let kept: Vec<usize> = (0..nodes.len()).filter(|i| !remove.contains(i)).collect();
+    remap(&mut result, |old| {
+        kept.iter().position(|k| *k == old).into_iter().collect()
+    });
+    // Steps that only held removed objects go away; empty ones stay.
+    let mut index = 0;
+    result.steps.retain(|step| {
+        let before = &project.steps[index];
+        index += 1;
+        !step.objects.is_empty() || before.objects.is_empty()
+    });
+    result.validate_document()?;
+    Ok(result)
+}
+
+/// One copy of the motif next to it (to the right if it fits on the bed,
+/// otherwise below).
+pub fn duplicate(project: &Project, gap_mm: f64) -> Result<Project, String> {
+    let right = project.x_mm as f64 + 2.0 * project.width_mm as f64 + gap_mm;
+    if right <= project.bed_width_mm as f64 {
+        array(project, 2, 1, gap_mm, gap_mm)
+    } else {
+        array(project, 1, 2, gap_mm, gap_mm)
+    }
+}
+
 /// Copies of the whole motif in a grid, row by row; the original stays
 /// first. Individual assignments apply to every copy.
 pub fn array(
@@ -1275,6 +1385,68 @@ mod tests {
             ..settings
         };
         assert!(nest(&project, &tight).is_err());
+    }
+
+    #[test]
+    fn quarter_turns_and_mirroring_keep_objects_and_swap_sizes() {
+        let project = demo();
+        let count = selection::objects(&project.svg).unwrap().len();
+        let turned = transform(&project, 90.0, false, false).unwrap();
+        assert!((turned.width_mm - 60.0).abs() < 1e-3 && (turned.height_mm - 100.0).abs() < 1e-3);
+        // Turned about the centre (70, 60).
+        assert!((turned.x_mm - 40.0).abs() < 1e-3 && (turned.y_mm - 10.0).abs() < 1e-3);
+        assert_eq!(selection::objects(&turned.svg).unwrap().len(), count);
+        let mirrored = transform(&project, 0.0, true, false).unwrap();
+        assert_eq!((mirrored.width_mm, mirrored.height_mm), (100.0, 60.0));
+        assert!(mirrored.svg.contains("scale(-1 1)"));
+        let back = transform(&turned, -90.0, false, false).unwrap();
+        assert!((back.width_mm - 100.0).abs() < 1e-3);
+        ltt::prepare(&back).unwrap();
+        let diagonal = transform(&project, 45.0, false, false).unwrap();
+        assert!((diagonal.width_mm as f64 - 160.0 / 2f64.sqrt()).abs() < 1e-2);
+        assert_eq!(
+            transform(&project, 360.0, false, false).unwrap().svg,
+            project.svg
+        );
+    }
+
+    #[test]
+    fn removing_objects_renumbers_assignments() {
+        let mut project = demo();
+        let count = selection::objects(&project.svg).unwrap().len();
+        assert!(count >= 3);
+        project.steps = vec![
+            JobStep {
+                objects: vec![0],
+                ..JobStep::new(Operation::Cut)
+            },
+            JobStep {
+                objects: (1..count).collect(),
+                ..JobStep::new(Operation::Engrave)
+            },
+        ];
+        let removed = remove_objects(&project, &[0]).unwrap();
+        assert_eq!(selection::objects(&removed.svg).unwrap().len(), count - 1);
+        // The cut step lost its only object; the engraving moved down by one.
+        assert_eq!(removed.steps.len(), 1);
+        assert_eq!(removed.steps[0].objects, (0..count - 1).collect::<Vec<_>>());
+        let all: Vec<usize> = (0..count).collect();
+        let empty = remove_objects(&project, &all).unwrap();
+        assert!(empty.svg.is_empty() && empty.steps.is_empty());
+        assert!(remove_objects(&project, &[count]).is_err());
+    }
+
+    #[test]
+    fn duplicates_go_right_or_below() {
+        let project = demo();
+        let right = duplicate(&project, 5.0).unwrap();
+        assert!((right.width_mm - 205.0).abs() < 1e-3);
+        let far = Project {
+            x_mm: 850.0,
+            ..demo()
+        };
+        let below = duplicate(&far, 5.0).unwrap();
+        assert!((below.height_mm - 125.0).abs() < 1e-3);
     }
 
     #[test]

@@ -47,6 +47,14 @@ enum Command {
     Sign,
     Array,
     Nest,
+    Undo,
+    Delete,
+    Duplicate,
+    RotateLeft,
+    RotateRight,
+    RotateBy,
+    FlipHorizontal,
+    FlipVertical,
 }
 
 const COMMAND_SHIFT: Modifiers = Modifiers::COMMAND.plus(Modifiers::SHIFT);
@@ -98,6 +106,14 @@ impl Command {
             Self::Sign => "Schild …",
             Self::Array => "Kopien im Raster …",
             Self::Nest => "Teile verschachteln (Nesting) …",
+            Self::Undo => "Widerrufen",
+            Self::Delete => "Löschen",
+            Self::Duplicate => "Duplizieren",
+            Self::RotateLeft => "90° nach links drehen",
+            Self::RotateRight => "90° nach rechts drehen",
+            Self::RotateBy => "Um den Winkel drehen",
+            Self::FlipHorizontal => "Horizontal spiegeln",
+            Self::FlipVertical => "Vertikal spiegeln",
         }
     }
 
@@ -118,6 +134,10 @@ impl Command {
             Self::Materials => (COMMAND_SHIFT, Key::M),
             Self::Preview => (COMMAND_SHIFT, Key::P),
             Self::ToggleGrid => (Modifiers::COMMAND, Key::G),
+            // Nur ohne aktives Eingabefeld (siehe `keyboard`).
+            Self::Undo => (Modifiers::COMMAND, Key::Z),
+            Self::Delete => (Modifiers::NONE, Key::Delete),
+            Self::Duplicate => (Modifiers::COMMAND, Key::D),
             Self::Demo
             | Self::Vectorize
             | Self::Center
@@ -126,7 +146,12 @@ impl Command {
             | Self::Shape
             | Self::Sign
             | Self::Array
-            | Self::Nest => return None,
+            | Self::Nest
+            | Self::RotateLeft
+            | Self::RotateRight
+            | Self::RotateBy
+            | Self::FlipHorizontal
+            | Self::FlipVertical => return None,
         };
         Some(KeyboardShortcut::new(modifiers, key))
     }
@@ -177,6 +202,11 @@ struct VisiCutRust {
     jobs: jobs_ui::JobUi,
     vectorize: vectorize_ui::VectorizeUi,
     compose: compose_ui::ComposeUi,
+    /// Stand vor der letzten Werkzeug- oder Löschaktion (ein Schritt).
+    undo: Option<(Project, Option<egui::TextureHandle>)>,
+    /// Bezugspunkt für X/Y und Größenänderungen (0, ½ oder 1 je Achse).
+    reference: [f32; 2],
+    rotate_deg: f32,
     #[cfg(feature = "screenshot")]
     capture: Option<(PathBuf, u32)>,
 }
@@ -210,6 +240,9 @@ impl VisiCutRust {
             jobs,
             vectorize: vectorize_ui::VectorizeUi::default(),
             compose: compose_ui::ComposeUi::default(),
+            undo: None,
+            reference: [0.0, 0.0],
+            rotate_deg: 0.0,
             #[cfg(feature = "screenshot")]
             capture: None,
         };
@@ -429,6 +462,7 @@ impl VisiCutRust {
             Ok(preview) => preview,
             Err(e) => return self.report(e),
         };
+        self.undo = Some((self.project.clone(), self.texture.clone()));
         let old_steps = self.project.steps.len();
         let old_objects = visicut_core::selection::objects(&self.project.svg)
             .map(|o| o.len())
@@ -452,6 +486,57 @@ impl VisiCutRust {
         );
         if !notes.is_empty() {
             self.alert = Some(notes.join("\n"));
+        }
+    }
+
+    fn composed(&mut self, ctx: &egui::Context, result: Result<Project, String>) {
+        match result {
+            Ok(project) => self.apply_composed(ctx, project, Vec::new()),
+            Err(e) => self.report(e),
+        }
+    }
+
+    /// Drehen und Spiegeln um die Mitte des Motivs (ohne Verzerren).
+    fn transform(
+        &mut self,
+        ctx: &egui::Context,
+        rotate_deg: f64,
+        horizontal: bool,
+        vertical: bool,
+    ) {
+        let result =
+            visicut_core::compose::transform(&self.project, rotate_deg, horizontal, vertical);
+        self.composed(ctx, result);
+    }
+
+    /// Entfernt das Motiv; Material, Gerät und Einstellungen bleiben.
+    fn delete_motif(&mut self) {
+        if self.texture.is_none() {
+            return;
+        }
+        self.undo = Some((self.project.clone(), self.texture.take()));
+        self.project.svg.clear();
+        self.project.steps.clear();
+        self.project.ignore_filters.clear();
+        self.dirty = true;
+        self.status = "Motiv entfernt · Bearbeiten → Widerrufen stellt es wieder her".into();
+    }
+
+    /// Löscht einzelne Objekte aus dem Motiv (Objektliste).
+    fn delete_objects(&mut self, ctx: &egui::Context, objects: &[usize]) {
+        let result = visicut_core::compose::remove_objects(&self.project, objects);
+        match result {
+            Ok(project) if project.svg.is_empty() => self.delete_motif(),
+            other => self.composed(ctx, other),
+        }
+    }
+
+    fn undo_last(&mut self) {
+        if let Some((project, texture)) = self.undo.take() {
+            self.project = project;
+            self.texture = texture;
+            self.dirty = true;
+            self.status = "Letzte Änderung widerrufen".into();
         }
     }
 
@@ -591,7 +676,16 @@ impl VisiCutRust {
             | Command::Devices => !self.busy(),
             Command::Export | Command::Send | Command::Preview => self.sendable,
             Command::Text | Command::Shape | Command::Sign => !self.busy(),
-            Command::Array | Command::Nest => self.texture.is_some() && !self.busy(),
+            Command::Array
+            | Command::Nest
+            | Command::Delete
+            | Command::Duplicate
+            | Command::RotateLeft
+            | Command::RotateRight
+            | Command::RotateBy
+            | Command::FlipHorizontal
+            | Command::FlipVertical => self.texture.is_some() && !self.busy(),
+            Command::Undo => self.undo.is_some() && !self.busy(),
             Command::Center => self.texture.is_some() && !self.busy(),
             Command::ToggleCamera => self.devices.has_camera(),
             Command::RefreshCamera => self.devices.camera_shown() && !self.devices.camera_loading(),
@@ -641,6 +735,20 @@ impl VisiCutRust {
             Command::Sign => self.compose.open(compose_ui::Tool::Sign, &self.project),
             Command::Array => self.compose.open(compose_ui::Tool::Array, &self.project),
             Command::Nest => self.compose.open(compose_ui::Tool::Nest, &self.project),
+            Command::Undo => self.undo_last(),
+            Command::Delete => self.delete_motif(),
+            Command::Duplicate => {
+                let result = visicut_core::compose::duplicate(&self.project, 5.0);
+                self.composed(ctx, result);
+            }
+            Command::RotateLeft => self.transform(ctx, -90.0, false, false),
+            Command::RotateRight => self.transform(ctx, 90.0, false, false),
+            Command::RotateBy => {
+                let angle = std::mem::take(&mut self.rotate_deg) as f64;
+                self.transform(ctx, angle, false, false);
+            }
+            Command::FlipHorizontal => self.transform(ctx, 0.0, true, false),
+            Command::FlipVertical => self.transform(ctx, 0.0, false, true),
         }
     }
 
@@ -666,8 +774,32 @@ impl VisiCutRust {
         for command in commands {
             self.run(ctx, command);
         }
+        if self.busy() || ctx.memory(|m| m.focused().is_some()) {
+            return;
+        }
+        // Widerrufen, Löschen und Duplizieren nur ohne aktives Eingabefeld,
+        // damit diese Tasten dort weiter Text bearbeiten.
+        let editing = ctx.input_mut(|i| {
+            let mut commands = Vec::new();
+            if i.consume_key(Modifiers::COMMAND, Key::Z) {
+                commands.push(Command::Undo);
+            }
+            if i.consume_key(Modifiers::COMMAND, Key::D) {
+                commands.push(Command::Duplicate);
+            }
+            for modifiers in [Modifiers::NONE, Modifiers::COMMAND] {
+                if i.consume_key(modifiers, Key::Delete) || i.consume_key(modifiers, Key::Backspace)
+                {
+                    commands.push(Command::Delete);
+                }
+            }
+            commands
+        });
+        for command in editing {
+            self.run(ctx, command);
+        }
         // Pfeiltasten verschieben das Motiv, solange kein Eingabefeld aktiv ist.
-        if self.texture.is_none() || self.busy() || ctx.memory(|m| m.focused().is_some()) {
+        if self.texture.is_none() {
             return;
         }
         let (dx, dy) = ctx.input_mut(|i| {
@@ -729,6 +861,20 @@ impl VisiCutRust {
                 self.menu_item(ui, Command::Quit, &mut clicked);
             });
             ui.menu_button("Bearbeiten", |ui| {
+                self.menu_item(ui, Command::Undo, &mut clicked);
+                ui.separator();
+                self.menu_item(ui, Command::Duplicate, &mut clicked);
+                self.menu_item(ui, Command::Delete, &mut clicked);
+                ui.separator();
+                for command in [
+                    Command::RotateLeft,
+                    Command::RotateRight,
+                    Command::FlipHorizontal,
+                    Command::FlipVertical,
+                ] {
+                    self.menu_item(ui, command, &mut clicked);
+                }
+                ui.separator();
                 self.menu_item(ui, Command::Center, &mut clicked);
                 ui.add_enabled(
                     false,
@@ -782,33 +928,7 @@ impl VisiCutRust {
         ));
         ui.separator();
         ui.label(egui::RichText::new("POSITION & GRÖSSE").strong().small());
-        self.dirty |= number(ui, "X", &mut self.project.x_mm, 0.0..=10000.0, " mm");
-        self.dirty |= number(ui, "Y", &mut self.project.y_mm, 0.0..=10000.0, " mm");
-        let ratio = self.project.height_mm / self.project.width_mm;
-        if number(
-            ui,
-            "Breite",
-            &mut self.project.width_mm,
-            0.1..=10000.0,
-            " mm",
-        ) {
-            if self.proportional {
-                self.project.height_mm = self.project.width_mm * ratio;
-            }
-            self.dirty = true;
-        }
-        if number(
-            ui,
-            "Höhe",
-            &mut self.project.height_mm,
-            0.1..=10000.0,
-            " mm",
-        ) {
-            if self.proportional {
-                self.project.width_mm = self.project.height_mm / ratio;
-            }
-            self.dirty = true;
-        }
+        self.transform_panel(ui, &mut clicked);
         ui.checkbox(&mut self.proportional, "Seitenverhältnis beibehalten");
         if ui
             .add_enabled(
@@ -859,6 +979,110 @@ impl VisiCutRust {
         ui.small("Übertragung ohne Autostart · Treiber experimentell");
         ui.small("Parameter sind Entwurfswerte, keine Materialempfehlungen.");
         clicked
+    }
+
+    /// Position und Größe wie in Grafikprogrammen: Bezugspunkt, X/Y des
+    /// Bezugspunkts, Breite/Höhe um ihn herum, Drehen und Spiegeln.
+    fn transform_panel(&mut self, ui: &mut egui::Ui, clicked: &mut Option<Command>) {
+        let mut reference = self.reference;
+        let mut dirty = false;
+        let proportional = self.proportional;
+        let p = &mut self.project;
+        ui.horizontal(|ui| {
+            // 3 × 3 Bezugspunkte.
+            egui::Grid::new("reference")
+                .spacing([2.0, 2.0])
+                .min_col_width(14.0)
+                .show(ui, |ui| {
+                    for row in 0..3 {
+                        for column in 0..3 {
+                            let point = [column as f32 / 2.0, row as f32 / 2.0];
+                            let text = if reference == point { "■" } else { "□" };
+                            if ui
+                                .add(egui::Button::new(text).small().frame(false))
+                                .on_hover_text("Bezugspunkt für X/Y und Größenänderungen")
+                                .clicked()
+                            {
+                                reference = point;
+                            }
+                        }
+                        ui.end_row();
+                    }
+                });
+            let [fx, fy] = reference;
+            ui.vertical(|ui| {
+                let mut x = p.x_mm + p.width_mm * fx;
+                let mut y = p.y_mm + p.height_mm * fy;
+                if number(ui, "X", &mut x, -10000.0..=10000.0, " mm") {
+                    p.x_mm = x - p.width_mm * fx;
+                    dirty = true;
+                }
+                if number(ui, "Y", &mut y, -10000.0..=10000.0, " mm") {
+                    p.y_mm = y - p.height_mm * fy;
+                    dirty = true;
+                }
+            });
+        });
+        let [fx, fy] = reference;
+        let anchor = [p.x_mm + p.width_mm * fx, p.y_mm + p.height_mm * fy];
+        let ratio = p.height_mm / p.width_mm;
+        let mut resized = false;
+        if number(ui, "Breite", &mut p.width_mm, 0.1..=10000.0, " mm") {
+            if proportional {
+                p.height_mm = p.width_mm * ratio;
+            }
+            resized = true;
+        }
+        if number(ui, "Höhe", &mut p.height_mm, 0.1..=10000.0, " mm") {
+            if proportional {
+                p.width_mm = p.height_mm / ratio;
+            }
+            resized = true;
+        }
+        if resized {
+            // Der Bezugspunkt bleibt stehen.
+            p.x_mm = anchor[0] - p.width_mm * fx;
+            p.y_mm = anchor[1] - p.height_mm * fy;
+            dirty = true;
+        }
+        self.reference = reference;
+        self.dirty |= dirty;
+        let editable = self.texture.is_some() && !self.busy();
+        ui.horizontal(|ui| {
+            ui.label("Drehen");
+            ui.add(
+                egui::DragValue::new(&mut self.rotate_deg)
+                    .range(-360.0..=360.0)
+                    .speed(1.0)
+                    .suffix("°"),
+            );
+            if ui
+                .add_enabled(
+                    editable && self.rotate_deg != 0.0,
+                    egui::Button::new("Anwenden"),
+                )
+                .on_hover_text("Positive Winkel drehen im Uhrzeigersinn")
+                .clicked()
+            {
+                *clicked = Some(Command::RotateBy);
+            }
+        });
+        ui.horizontal(|ui| {
+            for (command, text) in [
+                (Command::RotateLeft, "⟲ 90°"),
+                (Command::RotateRight, "⟳ 90°"),
+                (Command::FlipHorizontal, "Spiegeln ↔"),
+                (Command::FlipVertical, "Spiegeln ↕"),
+            ] {
+                if ui
+                    .add_enabled(editable, egui::Button::new(text))
+                    .on_hover_text(command.title())
+                    .clicked()
+                {
+                    *clicked = Some(command);
+                }
+            }
+        });
     }
 
     fn canvas(&mut self, ui: &mut egui::Ui) -> Option<Command> {
@@ -981,8 +1205,36 @@ impl VisiCutRust {
                     egui::StrokeKind::Inside,
                 );
                 let response = ui
-                    .interact(motif.intersect(bed), ui.id().with("motif"), Sense::drag())
+                    .interact(
+                        motif.intersect(bed),
+                        ui.id().with("motif"),
+                        Sense::click_and_drag(),
+                    )
                     .on_hover_cursor(egui::CursorIcon::Grab);
+                let editable = !self.busy();
+                response.context_menu(|ui| {
+                    for group in [
+                        &[Command::Duplicate, Command::Array, Command::Nest][..],
+                        &[
+                            Command::RotateLeft,
+                            Command::RotateRight,
+                            Command::FlipHorizontal,
+                            Command::FlipVertical,
+                        ],
+                        &[Command::Center],
+                        &[Command::Delete],
+                    ] {
+                        for command in group {
+                            if ui
+                                .add_enabled(editable, egui::Button::new(command.title()))
+                                .clicked()
+                            {
+                                clicked = Some(*command);
+                            }
+                        }
+                        ui.separator();
+                    }
+                });
                 if response.dragged() && !self.busy() {
                     let delta = response.drag_delta() / scale;
                     let (x, y) = (self.project.x_mm + delta.x, self.project.y_mm + delta.y);
@@ -1334,6 +1586,9 @@ impl eframe::App for VisiCutRust {
         }
         self.keyboard(ctx);
         self.jobs.windows(ctx, &mut self.status);
+        if let Some(object) = self.jobs.take_deleted_object() {
+            self.delete_objects(ctx, &[object]);
+        }
         match self.compose.windows(ctx, &self.project) {
             Some(Ok((project, notes))) => self.apply_composed(ctx, project, notes),
             Some(Err(e)) => self.report(e),

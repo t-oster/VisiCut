@@ -3,6 +3,21 @@
 Jede Version hat einen Abschnitt `## <Version> – <Datum>`; der Release-Workflow
 übernimmt ihn als Beschreibung des GitHub-Releases.
 
+## 0.9.0 – 11.10.2026
+
+- **Transformieren** wie in Grafikprogrammen: Bezugspunkt (3 × 3) für X/Y
+  und Größenänderungen, Drehen um einen beliebigen Winkel, 90°-Schritte,
+  horizontal und vertikal spiegeln (ohne Verzerren).
+- **Rechtsklick auf das Motiv**: Duplizieren, Kopien im Raster, Nesting,
+  Drehen, Spiegeln, Zentrieren und Löschen.
+- **Löschen**: Entf/⌫ (macOS auch ⌘⌫) entfernt das Motiv, „Objekt löschen“
+  im Kontextmenü der Objektliste ein einzelnes Objekt; Zuordnungen rücken
+  nach.
+- **Widerrufen** (⌘Z/Strg+Z) für Löschen, Drehen, Spiegeln, Duplizieren und
+  die Objekt-Werkzeuge (ein Schritt).
+- **Duplizieren** (⌘D/Strg+D) legt eine Kopie rechts daneben oder darunter.
+- macOS: Der Inspektor scrollt nicht mehr unter die Fensterknöpfe.
+
 ## 0.8.0 – 11.10.2026
 
 - **Text und Formen ohne Inkscape** (Menü „Objekt“): Text mit den Schriften

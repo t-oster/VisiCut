@@ -611,6 +611,8 @@ pub struct JobUi {
     own_material: bool,
     editor: Option<Editor>,
     document: Document,
+    /// Objekt, das über das Kontextmenü gelöscht werden soll.
+    delete_object: Option<usize>,
 }
 
 impl JobUi {
@@ -625,6 +627,7 @@ impl JobUi {
             own_material: false,
             editor: None,
             document: Document::default(),
+            delete_object: None,
         };
         (ui, error)
     }
@@ -754,6 +757,11 @@ impl JobUi {
     }
 
     /// Opens the material library editor (also from the menu, Ctrl+Shift+M).
+    /// Objekt, das im Kontextmenü der Objektliste gelöscht wurde.
+    pub fn take_deleted_object(&mut self) -> Option<usize> {
+        self.delete_object.take()
+    }
+
     /// Material profile for a new step, if the library has one.
     pub fn apply_preset_to(&self, project: &mut Project, index: usize) {
         apply_step_preset(&self.library, project, index);
@@ -891,8 +899,18 @@ impl JobUi {
                                     }
                                 }
                             });
-                        ui.add(egui::Label::new(&row.label).truncate())
+                        let label = ui
+                            .add(
+                                egui::Label::new(&row.label)
+                                    .truncate()
+                                    .sense(egui::Sense::click()),
+                            )
                             .on_hover_text(&row.label);
+                        label.context_menu(|ui| {
+                            if ui.button("Objekt löschen").clicked() {
+                                self.delete_object = Some(i);
+                            }
+                        });
                     });
                 }
             });

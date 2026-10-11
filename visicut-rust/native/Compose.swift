@@ -18,6 +18,13 @@ enum ComposeTool: String, Identifiable {
 
 struct FontList: Decodable { let fonts: [String] }
 
+/// Stand vor einer Werkzeug- oder Löschaktion für „Widerrufen“.
+struct UndoState {
+    let project: Project
+    let image: NSImage?
+    let objects: [SVGObject]
+}
+
 extension AppModel {
     /// Führt ein Werkzeug im Rust-Kern aus und übernimmt das Ergebnis. Neue
     /// Schritte erhalten die Werte des Materialprofils.
@@ -26,10 +33,14 @@ extension AppModel {
         do {
             let oldSteps = project.steps.count
             let oldObjects = objects.count
+            let before = UndoState(project: project, image: image, objects: objects)
             let response: ProjectResponse = try RustCore.decode(action, project: project, values: values)
             accept(response, dirty: true)
-            for index in oldSteps..<project.steps.count where project.steps[index].objects.allSatisfy({ $0 >= oldObjects }) {
-                applyStepPreset(index)
+            remember(before)
+            if project.steps.count > oldSteps {
+                for index in oldSteps..<project.steps.count where project.steps[index].objects.allSatisfy({ $0 >= oldObjects }) {
+                    applyStepPreset(index)
+                }
             }
             refreshMapping()
             status = "Motiv aktualisiert · \(Int(project.width_mm.rounded())) × \(Int(project.height_mm.rounded())) mm"
@@ -39,6 +50,56 @@ extension AppModel {
             self.error = error.localizedDescription
             return false
         }
+    }
+
+    /// Drehen (positive Winkel im Uhrzeigersinn) und Spiegeln um die Mitte.
+    func transformArtwork(rotate: Double = 0, flipHorizontal: Bool = false, flipVertical: Bool = false) {
+        guard project.hasArtwork, !busy else { return }
+        compose("transform", values: ["rotate_deg": rotate, "flip_horizontal": flipHorizontal, "flip_vertical": flipVertical])
+    }
+
+    func duplicateArtwork() {
+        guard project.hasArtwork, !busy else { return }
+        compose("duplicate", values: [:])
+    }
+
+    /// Entfernt das Motiv; Material, Gerät und Einstellungen bleiben.
+    func deleteArtwork() {
+        guard project.hasArtwork, !busy else { return }
+        remember(UndoState(project: project, image: image, objects: objects))
+        project.svg = ""
+        project.steps = []
+        project.ignore_filters = []
+        image = nil
+        objects = []
+        dirty = true
+        refreshMapping()
+        status = "Motiv entfernt · ⌘Z stellt es wieder her"
+    }
+
+    func deleteObject(_ id: Int) {
+        guard !busy else { return }
+        compose("remove_objects", values: ["objects": [id]])
+    }
+
+    /// Merkt den Stand vor einer Aktion für ⌘Z (Fenster-UndoManager).
+    func remember(_ state: UndoState) {
+        undoState = state
+        undoManager?.removeAllActions(withTarget: self)
+        undoManager?.registerUndo(withTarget: self) { model in
+            MainActor.assumeIsolated { model.undo() }
+        }
+    }
+
+    func undo() {
+        guard let state = undoState, !busy else { return }
+        undoState = nil
+        project = state.project
+        image = state.image
+        objects = state.objects
+        dirty = true
+        refreshMapping()
+        status = "Letzte Änderung widerrufen"
     }
 
     /// Neue Elemente erscheinen rechts neben dem Motiv, sonst links oben.
@@ -281,6 +342,54 @@ struct ComposeSheet: View {
     }
 }
 
+/// 3 × 3 Bezugspunkte wie in Grafikprogrammen.
+struct ReferencePointPicker: View {
+    @Binding var x: Double
+    @Binding var y: Double
+    var body: some View {
+        Grid(horizontalSpacing: 2, verticalSpacing: 2) {
+            ForEach(0..<3, id: \.self) { row in
+                GridRow {
+                    ForEach(0..<3, id: \.self) { column in
+                        let fx = Double(column) / 2, fy = Double(row) / 2
+                        Button { x = fx; y = fy } label: {
+                            Image(systemName: x == fx && y == fy ? "square.fill" : "square")
+                                .font(.system(size: 9))
+                        }.buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+        .help("Bezugspunkt für X/Y und Größenänderungen")
+    }
+}
+
+/// Drehen um einen Winkel, 90°-Schritte und Spiegeln (kein Verzerren).
+struct TransformControls: View {
+    @ObservedObject var model: AppModel
+    @State private var angle = 0.0
+    var body: some View {
+        LabeledContent("Drehen") {
+            HStack(spacing: 6) {
+                TextField("Winkel", value: $angle, format: .number).multilineTextAlignment(.trailing)
+                    .textFieldStyle(.roundedBorder).frame(width: 60).labelsHidden()
+                Text("°").foregroundStyle(.secondary)
+                Button("Anwenden") { model.transformArtwork(rotate: angle); angle = 0 }
+                    .disabled(angle == 0 || !model.project.hasArtwork)
+                    .help("Positive Winkel drehen im Uhrzeigersinn")
+            }
+        }
+        HStack {
+            Button { model.transformArtwork(rotate: -90) } label: { Image(systemName: "rotate.left") }.help("90° nach links drehen")
+            Button { model.transformArtwork(rotate: 90) } label: { Image(systemName: "rotate.right") }.help("90° nach rechts drehen")
+            Button { model.transformArtwork(flipHorizontal: true) } label: { Image(systemName: "arrow.left.and.right") }.help("Horizontal spiegeln")
+            Button { model.transformArtwork(flipVertical: true) } label: { Image(systemName: "arrow.up.and.down") }.help("Vertikal spiegeln")
+            Spacer()
+        }
+        .disabled(!model.project.hasArtwork)
+    }
+}
+
 /// Werkzeuge: Schild auf leerem Projekt, Text dazu, Kopien und Nesting.
 @MainActor
 func testComposeTools(_ model: AppModel) throws {
@@ -303,6 +412,19 @@ func testComposeTools(_ model: AppModel) throws {
     let job: PreparedJob = try RustCore.decode("prepare", project: model.project)
     guard job.steps.contains(where: { $0.operation == .cut }), job.steps.contains(where: { $0.operation == .engrave })
     else { throw CoreError("Schild-Auftrag unvollständig") }
+    // Drehen tauscht Breite und Höhe, Widerrufen stellt den Stand wieder her.
+    let (w, h) = (model.project.width_mm, model.project.height_mm)
+    model.transformArtwork(rotate: 90)
+    guard abs(model.project.width_mm - h) < 0.01, abs(model.project.height_mm - w) < 0.01 else { throw CoreError("Drehen fehlgeschlagen") }
+    model.undo()
+    guard abs(model.project.width_mm - w) < 0.01, model.undoState == nil else { throw CoreError("Widerrufen fehlgeschlagen") }
+    model.deleteObject(0)
+    guard model.objects.count == 9 else { throw CoreError("Objekt nicht gelöscht") }
+    model.undo()
+    model.deleteArtwork()
+    guard !model.project.hasArtwork, model.objects.isEmpty else { throw CoreError("Motiv nicht gelöscht") }
+    model.undo()
+    guard model.objects.count == 10 else { throw CoreError("Löschen nicht widerrufen") }
     guard model.compose("nest", values: ["settings": ["area_mm": [5.0, 5.0, 990.0, 590.0], "gap_mm": 3.0, "quantity": 1, "rotate": true] as [String: Any]]),
           model.objects.count == 10 else { throw CoreError("Nesting fehlgeschlagen") }
 }
