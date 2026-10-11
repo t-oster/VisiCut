@@ -84,6 +84,12 @@ pub fn thicknesses(material: &Material) -> Vec<f32> {
     list
 }
 
+fn active<'a>(library: &'a Library, others: &'a [Library], set: usize) -> &'a Library {
+    set.checked_sub(1)
+        .and_then(|i| others.get(i))
+        .unwrap_or(library)
+}
+
 fn find_material<'a>(library: &'a Library, name: &str) -> Option<&'a Material> {
     library.materials.iter().find(|m| m.name == name)
 }
@@ -664,7 +670,12 @@ struct Editor {
 }
 
 pub struct JobUi {
+    /// Editable library of the LTT (FAU catalogue or the user's own).
     pub library: Library,
+    /// Read-only FAU profiles of the other lasercutters.
+    others: Vec<Library>,
+    /// Profile set in use: 0 is `library`, then `others`.
+    profile_set: usize,
     custom: bool,
     /// "Eigenes Material …" was chosen; keeps the name field while it is empty.
     own_material: bool,
@@ -682,6 +693,8 @@ impl JobUi {
         };
         let ui = Self {
             library,
+            others: Library::other_devices(),
+            profile_set: 0,
             custom,
             own_material: false,
             editor: None,
@@ -691,9 +704,52 @@ impl JobUi {
         (ui, error)
     }
 
+    /// Profiles used for presets and the material choice.
+    pub fn active(&self) -> &Library {
+        active(&self.library, &self.others, self.profile_set)
+    }
+
+    /// Profile set dropdown: the LTT library and the other FAU lasercutters.
+    fn profile_set(&mut self, ui: &mut egui::Ui, project: &mut Project, dirty: &mut bool) {
+        let names: Vec<String> = std::iter::once(&self.library)
+            .chain(&self.others)
+            .map(|l| l.device.clone())
+            .collect();
+        let before = self.profile_set;
+        ui.horizontal(|ui| {
+            ui.label("Profile");
+            egui::ComboBox::from_id_salt("profile_set")
+                .width(170.0)
+                .selected_text(names.get(self.profile_set).map_or("", |n| n.as_str()))
+                .show_ui(ui, |ui| {
+                    for (i, name) in names.iter().enumerate() {
+                        ui.selectable_value(&mut self.profile_set, i, name);
+                    }
+                });
+        })
+        .response
+        .on_hover_text("FAU-Materialprofile eines Lasercutters für Material, Stärke und Parameter");
+        if self.profile_set != before {
+            let material = project.material.clone();
+            if find_material(self.active(), &material).is_some() {
+                select_material(self.active(), project, Some(&material));
+                apply_presets(self.active(), project);
+            }
+            *dirty = true;
+        }
+        if self.profile_set > 0 {
+            ui.colored_label(
+                PROFILE,
+                "Profile eines anderen Lasercutters: Werte vor dem Lasern am LTT prüfen.",
+            );
+        }
+    }
+
     pub fn material(&mut self, ui: &mut egui::Ui, project: &mut Project, dirty: &mut bool) {
+        self.profile_set(ui, project, dirty);
         let before = (project.material.clone(), project.thickness_mm);
-        let library_material = find_material(&self.library, &project.material).is_some();
+        let library = active(&self.library, &self.others, self.profile_set);
+        let library_material = find_material(library, &project.material).is_some();
         if library_material {
             self.own_material = false;
         }
@@ -717,18 +773,18 @@ impl JobUi {
                     *dirty = true;
                 }
                 ui.separator();
-                for m in &self.library.materials {
+                for m in &library.materials {
                     if ui
                         .selectable_label(project.material == m.name, &m.name)
                         .clicked()
                     {
-                        select_material(&self.library, project, Some(&m.name));
+                        select_material(library, project, Some(&m.name));
                         *dirty = true;
                     }
                 }
                 ui.separator();
                 if ui.selectable_label(own, "Eigenes Material …").clicked() && !own {
-                    select_material(&self.library, project, None);
+                    select_material(library, project, None);
                     self.own_material = true;
                     *dirty = true;
                 }
@@ -745,7 +801,7 @@ impl JobUi {
                     .changed();
             });
         }
-        let list = find_material(&self.library, &project.material)
+        let list = find_material(library, &project.material)
             .map(thicknesses)
             .unwrap_or_default();
         if list.is_empty() {
@@ -779,12 +835,11 @@ impl JobUi {
         if (project.material.clone(), project.thickness_mm) != before {
             // Das Materialprofil ist der Standard; Abweichungen zeigt die
             // Bearbeitung orange an.
-            apply_presets(&self.library, project);
+            apply_presets(library, project);
         }
         if project.material.is_empty() {
             ui.small("Material wählen, um sein Profil zu übernehmen.");
-        } else if preset(&self.library, project, project.operation).is_none()
-            && project.steps.is_empty()
+        } else if preset(library, project, project.operation).is_none() && project.steps.is_empty()
         {
             ui.small("Kein Profil für diese Kombination; Parameter manuell eingeben.");
         }
@@ -801,7 +856,7 @@ impl JobUi {
 
     /// Material profile for a new step, if the library has one.
     pub fn apply_preset_to(&self, project: &mut Project, index: usize) {
-        apply_step_preset(&self.library, project, index);
+        apply_step_preset(self.active(), project, index);
     }
 
     pub fn open_library(&mut self) {
@@ -825,7 +880,7 @@ impl JobUi {
                         && mode != candidate
                     {
                         let count = self.document.objects.len();
-                        set_mode(&self.library, project, candidate, count);
+                        set_mode(self.active(), project, candidate, count);
                         *dirty = true;
                     }
                 }
@@ -838,10 +893,10 @@ impl JobUi {
                 ui.small("Ein Verfahren für das gesamte Motiv. Für Zuordnungen nach Strichfarbe oder anderen Merkmalen „Regeln“ wählen.");
                 if operation_selector(ui, project) {
                     // Das Materialprofil ist der Standard.
-                    apply_presets(&self.library, project);
+                    apply_presets(self.active(), project);
                     *dirty = true;
                 }
-                let profile = preset(&self.library, project, project.operation).cloned();
+                let profile = preset(self.active(), project, project.operation).cloned();
                 if project.operation == Operation::Mark && profile.is_none() {
                     ui.small("Konturen markieren. Eigene Leistung einstellen.");
                 }
@@ -914,7 +969,7 @@ impl JobUi {
             ui.small("Keine auswählbaren Objekte in der SVG.");
             return;
         }
-        let library = &self.library;
+        let library = active(&self.library, &self.others, self.profile_set);
         egui::ScrollArea::vertical()
             .id_salt("objects")
             .max_height(220.0)
@@ -966,7 +1021,7 @@ impl JobUi {
             .show_ui(ui, |ui| {
                 for p in mapping::predefined() {
                     if ui.selectable_label(false, p.name).clicked() {
-                        apply_predefined(&self.library, project, &p);
+                        apply_predefined(self.active(), project, &p);
                         *dirty = true;
                     }
                 }
@@ -982,7 +1037,7 @@ impl JobUi {
                 if ui.small_button(operation_title(operation)).clicked() {
                     let step = JobStep {
                         filters: Some(Vec::new()),
-                        ..default_step(&self.library, project, operation)
+                        ..default_step(self.active(), project, operation)
                     };
                     project.steps.push(step);
                     *dirty = true;
@@ -1003,7 +1058,7 @@ impl JobUi {
                 Err(_) if !is_rule(&project.steps[i]) => project.steps[i].objects.len(),
                 Err(_) => 0,
             };
-            let profile = preset(&self.library, project, project.steps[i].operation).cloned();
+            let profile = preset(self.active(), project, project.steps[i].operation).cloned();
             let step = &mut project.steps[i];
             egui::CollapsingHeader::new(format!(
                 "{}. {} · {} Objekte",
@@ -1395,6 +1450,23 @@ mod tests {
         select_material(&library, &mut p, None);
         assert_eq!(p.material, CUSTOM_MATERIAL);
         assert!(preset(&library, &p, Operation::Cut).is_none());
+    }
+
+    #[test]
+    fn profile_sets_switch_presets_to_the_other_lasercutter() {
+        let others = Library::other_devices();
+        let ltt = Library::bundled();
+        assert_eq!(active(&ltt, &others, 0).device, "LTT iLaser 4000");
+        assert_eq!(active(&ltt, &others, 1).device, "Epilog Zing");
+        assert_eq!(active(&ltt, &others, 9).device, "LTT iLaser 4000");
+        let mut p = Project::default();
+        select_material(&others[0], &mut p, Some("Acryl"));
+        assert_eq!(apply_presets(&others[0], &mut p), 1);
+        let epilog = preset(&others[0], &p, p.operation).unwrap();
+        assert_eq!(
+            (p.power_percent, p.speed_percent),
+            (epilog.power_percent, epilog.speed_percent)
+        );
     }
 
     #[test]

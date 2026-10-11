@@ -14,6 +14,9 @@ Jede Version hat einen Abschnitt `## <Version> – <Datum>`; der Release-Workflo
 - **Materialprofil ist der Standard**: Es wird bei Material, Stärke und
   Verfahren automatisch übernommen. Abweichende Werte sind orange markiert
   und lassen sich links vom Feld zurücksetzen.
+- **Profile anderer Lasercutter**: Dropdown „Profile“ über dem Material
+  wechselt zwischen den FAU-Profilen des LTT iLaser 4000 und des Epilog Zing
+  (42 Materialien, 128 Profile, nur lesbar, mit Hinweis zur Prüfung am LTT).
 - **Regeln** erklärt; neue erste Vorlage „Rot schneiden, Blau gravieren, Grün
   markieren“ (#ff0000, #0000ff, #00ff00).
 - **Bezugspunkt** als Rahmen mit acht verbundenen Quadraten und freiem

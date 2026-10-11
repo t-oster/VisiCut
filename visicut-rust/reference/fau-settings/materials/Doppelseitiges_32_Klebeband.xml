@@ -1,0 +1,9 @@
+<material>
+  <engraveColor>#000000</engraveColor>
+  <cutColor>#000000</cutColor>
+  <color>#ffffff</color>
+  <name>Doppelseitiges Klebeband</name>
+  <materialThicknesses>
+    <float>0.0</float>
+  </materialThicknesses>
+</material>

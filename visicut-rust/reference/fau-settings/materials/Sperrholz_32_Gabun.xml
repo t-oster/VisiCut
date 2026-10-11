@@ -1,0 +1,10 @@
+<material>
+  <engraveColor>#957955</engraveColor>
+  <cutColor>#000000</cutColor>
+  <color>#e8dacb</color>
+  <name>Sperrholz Gabun</name>
+  <materialThicknesses>
+    <float>3.0</float>
+    <float>4.0</float>
+  </materialThicknesses>
+</material>

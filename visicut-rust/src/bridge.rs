@@ -154,7 +154,8 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
             };
             Ok(
                 json!({"materials": library.materials, "source": library.source,
-                "device": library.device, "custom": custom, "error": error}),
+                "device": library.device, "custom": custom, "error": error,
+                "others": Library::other_devices()}),
             )
         }
         "save_materials" => {

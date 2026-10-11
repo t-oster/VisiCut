@@ -1,0 +1,8 @@
+<linked-list>
+  <PowerSpeedFocusFrequencyProperty>
+    <power>28</power>
+    <speed>100</speed>
+    <focus>-0.4</focus>
+    <frequency>5000</frequency>
+  </PowerSpeedFocusFrequencyProperty>
+</linked-list>

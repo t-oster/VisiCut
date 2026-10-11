@@ -212,6 +212,9 @@ final class AppModel: ObservableObject {
     let labs: [LabSetting]
     @Published var materials: [Material]
     @Published var materialsCustom = false
+    /// FAU-Profile der anderen Lasercutter; `profileSet` 0 ist die LTT-Bibliothek.
+    let otherProfiles: [MaterialLibrary]
+    @Published var profileSet = 0
     @Published var mapping: MappingInfo?
     @Published var mappingError: String?
     @Published var vectorizeSource: BitmapSource?
@@ -230,6 +233,7 @@ final class AppModel: ObservableObject {
             project = initial.project
             let catalog: MaterialCatalog = try RustCore.decode("materials")
             materials = catalog.materials
+            otherProfiles = catalog.others
             materialSource = catalog.source
             materialsCustom = catalog.custom
             project.material = ""
@@ -247,7 +251,17 @@ final class AppModel: ObservableObject {
         }
     }
 
-    var selectedMaterial: Material? { materials.first { $0.name == project.material } }
+    /// Materialien des gewählten Profilsatzes.
+    var activeMaterials: [Material] {
+        profileSet > 0 && profileSet <= otherProfiles.count ? otherProfiles[profileSet - 1].materials : materials
+    }
+    var profileSetNames: [String] { ["LTT iLaser 4000"] + otherProfiles.map(\.device) }
+    func selectProfileSet(_ index: Int) {
+        guard index != profileSet, profileSetNames.indices.contains(index) else { return }
+        profileSet = index
+        if selectedMaterial != nil { selectMaterial(project.material) }
+    }
+    var selectedMaterial: Material? { activeMaterials.first { $0.name == project.material } }
     var materialSelection: String {
         project.material.isEmpty ? "" : selectedMaterial?.name ?? "__custom"
     }
@@ -957,9 +971,20 @@ struct Inspector: View {
                 }
             }
             Section("Material") {
+                LabeledContent("Profile") {
+                    NativePopup(options: model.profileSetNames.indices.map { PopupOption(String($0), model.profileSetNames[$0]) },
+                        selection: Binding(get: { String(model.profileSet) }, set: { if let index = Int($0) { model.selectProfileSet(index) } }),
+                        identifier: "profileSetPicker")
+                        .fixedSize()
+                        .help("FAU-Materialprofile eines Lasercutters für Material, Stärke und Parameter")
+                }
+                if model.profileSet > 0 {
+                    Text("Profile eines anderen Lasercutters: Werte vor dem Lasern am LTT prüfen.")
+                        .font(.caption).foregroundStyle(.orange).fixedSize(horizontal: false, vertical: true)
+                }
                 LabeledContent("Material") {
                     NativePopup(options: [PopupOption("", "Material wählen"), .separator]
-                        + model.materials.map { PopupOption($0.name, $0.name) }
+                        + model.activeMaterials.map { PopupOption($0.name, $0.name) }
                         + [.separator, PopupOption("__custom", "Eigenes Material …")],
                         selection: material, identifier: "materialPicker")
                         .fixedSize()
@@ -1617,6 +1642,16 @@ func runUITest(_ model: AppModel) {
         model.applyPreset()
         guard model.preset != nil, model.project.power_percent == 100,
               abs(model.project.speed_percent - 9) < 0.001 else { throw CoreError("Materialprofil nicht übernommen") }
+        guard let profileButton = popupControl(root, identifier: "profileSetPicker"),
+              profileButton.indexOfItem(withTitle: "Epilog Zing") >= 0 else { throw CoreError("Profil-Dropdown fehlt") }
+        profileButton.selectItem(withTitle: "Epilog Zing")
+        guard let profileAction = profileButton.action,
+              NSApp.sendAction(profileAction, to: profileButton.target, from: profileButton),
+              model.profileSet == 1, model.project.material == "Acryl",
+              model.project.power_percent == 100, abs(model.project.speed_percent - 36) < 0.001
+        else { throw CoreError("Epilog-Profile nicht übernommen") }
+        model.selectProfileSet(0)
+        guard abs(model.project.speed_percent - 9) < 0.001 else { throw CoreError("LTT-Profile nicht wiederhergestellt") }
         model.project.operation = .engrave
         model.applyPreset()
         guard model.project.power_percent == 20, abs(model.project.speed_percent - 100) < 0.01 else { throw CoreError("Gravurprofil nicht übernommen") }
@@ -1703,7 +1738,7 @@ func runUITest(_ model: AppModel) {
         model.jobImage = nil
         model.previewJob()
         model.dirty = false
-        print("Native UI state tests passed: material, thickness, operation, presets, proportional scaling, native save / Rust reload, cut order and legacy files, bitmap vectorization, Rust export, object assignments, mixed job preview and estimate, stale preview invalidation, devices, rotary axis, camera background and calibration, rule mapping, 3D engraving, dithering, parameter sets, material library, text, sign, copies, nesting")
+        print("Native UI state tests passed: material, thickness, operation, presets, proportional scaling, native save / Rust reload, cut order and legacy files, bitmap vectorization, Rust export, object assignments, mixed job preview and estimate, stale preview invalidation, devices, rotary axis, camera background and calibration, rule mapping, 3D engraving, dithering, parameter sets, material library, profile sets, text, sign, copies, nesting")
     } catch {
         fputs("Native UI tests failed: \(error)\n", stderr)
         exit(1)

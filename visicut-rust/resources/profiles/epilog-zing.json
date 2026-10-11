@@ -1,0 +1,1154 @@
+{
+  "source": "fau-fablab/visicut-settings",
+  "device": "Epilog Zing",
+  "materials": [
+    {
+      "id": "Acryl",
+      "name": "Acryl",
+      "profiles": [
+        {
+          "thickness_mm": 0.0,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/0.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 0.0,
+          "operation": "Engrave3d",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/0.0mm/engrave3d.xml"
+        },
+        {
+          "thickness_mm": 0.8,
+          "operation": "Cut",
+          "power_percent": 28.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/0.8mm/cut.xml"
+        },
+        {
+          "thickness_mm": 0.8,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/0.8mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 0.8,
+          "operation": "Engrave3d",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/0.8mm/engrave3d.xml"
+        },
+        {
+          "thickness_mm": 1.0,
+          "operation": "Cut",
+          "power_percent": 70.0,
+          "speed_percent": 80.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/1.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 1.0,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/1.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 1.0,
+          "operation": "Engrave3d",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/1.0mm/engrave3d.xml"
+        },
+        {
+          "thickness_mm": 1.5,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 72.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/1.5mm/cut.xml"
+        },
+        {
+          "thickness_mm": 1.5,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/1.5mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 1.5,
+          "operation": "Engrave3d",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/1.5mm/engrave3d.xml"
+        },
+        {
+          "thickness_mm": 2.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 50.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/2.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 2.0,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/2.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 2.0,
+          "operation": "Mark",
+          "power_percent": 10.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/2.0mm/mark.xml"
+        },
+        {
+          "thickness_mm": 2.0,
+          "operation": "Engrave3d",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/2.0mm/engrave3d.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 36.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/3.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/3.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Mark",
+          "power_percent": 15.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/3.0mm/mark.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Engrave3d",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/3.0mm/engrave3d.xml"
+        },
+        {
+          "thickness_mm": 4.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 27.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/4.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 4.0,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/4.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 4.0,
+          "operation": "Engrave3d",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/4.0mm/engrave3d.xml"
+        },
+        {
+          "thickness_mm": 5.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 25.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/5.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 5.0,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/5.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 5.0,
+          "operation": "Engrave3d",
+          "power_percent": 20.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/5.0mm/engrave_32_3d.xml"
+        },
+        {
+          "thickness_mm": 6.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 22.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/6.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 6.0,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/6.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 6.0,
+          "operation": "Engrave3d",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/6.0mm/engrave3d.xml"
+        },
+        {
+          "thickness_mm": 8.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 10.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/8.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 8.0,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/8.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 8.0,
+          "operation": "Engrave3d",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/8.0mm/engrave3d.xml"
+        },
+        {
+          "thickness_mm": 10.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 7.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/10.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 10.0,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/10.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 10.0,
+          "operation": "Engrave3d",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/10.0mm/engrave3d.xml"
+        },
+        {
+          "thickness_mm": 12.0,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/12.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 12.0,
+          "operation": "Engrave3d",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Acryl/12.0mm/engrave3d.xml"
+        }
+      ]
+    },
+    {
+      "id": "Aluminium_32_Cermark_32_LMM-6000_32_2",
+      "name": "Aluminium Cermark LMM-6000 2",
+      "profiles": [
+        {
+          "thickness_mm": 0.0,
+          "operation": "Cut",
+          "power_percent": 0.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Aluminium_32_Cermark_32_LMM-6000_32_2/0.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 0.0,
+          "operation": "Engrave",
+          "power_percent": 100.0,
+          "speed_percent": 10.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Aluminium_32_Cermark_32_LMM-6000_32_2/0.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Balsaholz",
+      "name": "Balsaholz",
+      "profiles": [
+        {
+          "thickness_mm": 2.0,
+          "operation": "Cut",
+          "power_percent": 25.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Balsaholz/2.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 2.0,
+          "operation": "Engrave",
+          "power_percent": 60.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Balsaholz/2.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 2.0,
+          "operation": "Mark",
+          "power_percent": 3.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Balsaholz/2.0mm/mark.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Cut",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Balsaholz/3.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 5.0,
+          "operation": "Cut",
+          "power_percent": 53.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Balsaholz/5.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 6.0,
+          "operation": "Cut",
+          "power_percent": 70.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Balsaholz/6.0mm/cut.xml"
+        }
+      ]
+    },
+    {
+      "id": "carbon",
+      "name": "carbon",
+      "profiles": [
+        {
+          "thickness_mm": 3.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 10.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/carbon/3.0mm/cut.xml"
+        }
+      ]
+    },
+    {
+      "id": "Champignon",
+      "name": "Champignon",
+      "profiles": [
+        {
+          "thickness_mm": 0.0,
+          "operation": "Engrave",
+          "power_percent": 60.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Champignon/0.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Doppelseitiges_32_Klebeband",
+      "name": "Doppelseitiges Klebeband",
+      "profiles": [
+        {
+          "thickness_mm": 0.0,
+          "operation": "Cut",
+          "power_percent": 10.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Doppelseitiges_32_Klebeband/0.0mm/cut.xml"
+        }
+      ]
+    },
+    {
+      "id": "Dynamask_32_L_246_tstopplaminat",
+      "name": "Dynamask Lötstopplaminat",
+      "profiles": [
+        {
+          "thickness_mm": 0.1,
+          "operation": "Engrave",
+          "power_percent": 80.0,
+          "speed_percent": 50.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Dynamask_32_L_246_tstopplaminat/0.1mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Edelstahlblech",
+      "name": "Edelstahlblech",
+      "profiles": [
+        {
+          "thickness_mm": 0.1,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 10.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Edelstahlblech/0.1mm/cut.xml"
+        }
+      ]
+    },
+    {
+      "id": "FAU-Card",
+      "name": "FAU-Card",
+      "profiles": [
+        {
+          "thickness_mm": 1.0,
+          "operation": "Engrave",
+          "power_percent": 6.0,
+          "speed_percent": 90.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/FAU-Card/1.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Filz",
+      "name": "Filz",
+      "profiles": [
+        {
+          "thickness_mm": 3.0,
+          "operation": "Cut",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Filz/3.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Engrave",
+          "power_percent": 20.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Filz/3.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Finnpappe",
+      "name": "Finnpappe",
+      "profiles": [
+        {
+          "thickness_mm": 2.0,
+          "operation": "Cut",
+          "power_percent": 38.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Finnpappe/2.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 2.0,
+          "operation": "Engrave",
+          "power_percent": 60.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Finnpappe/2.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 2.0,
+          "operation": "Mark",
+          "power_percent": 3.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Finnpappe/2.0mm/mark.xml"
+        }
+      ]
+    },
+    {
+      "id": "Fotokarton",
+      "name": "Fotokarton",
+      "profiles": [
+        {
+          "thickness_mm": 0.5,
+          "operation": "Cut",
+          "power_percent": 15.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Fotokarton/0.5mm/cut.xml"
+        },
+        {
+          "thickness_mm": 0.5,
+          "operation": "Mark",
+          "power_percent": 1.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Fotokarton/0.5mm/mark.xml"
+        }
+      ]
+    },
+    {
+      "id": "Glas",
+      "name": "Glas",
+      "profiles": [
+        {
+          "thickness_mm": 2.0,
+          "operation": "Cut",
+          "power_percent": 0.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Glas/2.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 2.0,
+          "operation": "Engrave",
+          "power_percent": 40.0,
+          "speed_percent": 30.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Glas/2.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Graupappe",
+      "name": "Graupappe",
+      "profiles": [
+        {
+          "thickness_mm": 1.0,
+          "operation": "Cut",
+          "power_percent": 45.0,
+          "speed_percent": 90.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Graupappe/1.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 1.0,
+          "operation": "Engrave",
+          "power_percent": 45.0,
+          "speed_percent": 85.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Graupappe/1.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 2.5,
+          "operation": "Cut",
+          "power_percent": 50.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Graupappe/2.5mm/cut.xml"
+        },
+        {
+          "thickness_mm": 2.5,
+          "operation": "Engrave",
+          "power_percent": 50.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Graupappe/2.5mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Cut",
+          "power_percent": 75.0,
+          "speed_percent": 80.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Graupappe/3.0mm/cut.xml"
+        }
+      ]
+    },
+    {
+      "id": "HDF",
+      "name": "HDF",
+      "profiles": [
+        {
+          "thickness_mm": 1.5,
+          "operation": "Cut",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/HDF/1.5mm/cut.xml"
+        },
+        {
+          "thickness_mm": 1.5,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/HDF/1.5mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 25.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/HDF/3.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Engrave",
+          "power_percent": 65.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/HDF/3.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 4.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 18.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/HDF/4.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 4.0,
+          "operation": "Engrave",
+          "power_percent": 65.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/HDF/4.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 5.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 15.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/HDF/5.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 5.0,
+          "operation": "Engrave",
+          "power_percent": 65.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/HDF/5.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Holz_32_Birke",
+      "name": "Holz Birke",
+      "profiles": [
+        {
+          "thickness_mm": 4.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 40.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Holz_32_Birke/4.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 4.0,
+          "operation": "Engrave",
+          "power_percent": 100.0,
+          "speed_percent": 80.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Holz_32_Birke/4.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Holz_32_Kiefer",
+      "name": "Holz Kiefer",
+      "profiles": [
+        {
+          "thickness_mm": 4.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 40.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Holz_32_Kiefer/4.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 4.0,
+          "operation": "Engrave",
+          "power_percent": 80.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Holz_32_Kiefer/4.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Holz_32_Nussbaum",
+      "name": "Holz Nussbaum",
+      "profiles": [
+        {
+          "thickness_mm": 5.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 35.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Holz_32_Nussbaum/5.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 5.0,
+          "operation": "Engrave",
+          "power_percent": 80.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Holz_32_Nussbaum/5.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Holz_32_Pappel",
+      "name": "Holz Pappel",
+      "profiles": [
+        {
+          "thickness_mm": 3.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 90.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Holz_32_Pappel/3.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 4.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 60.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Holz_32_Pappel/4.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 5.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 40.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Holz_32_Pappel/5.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 9.2,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 20.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Holz_32_Pappel/9.2mm/cut.xml"
+        },
+        {
+          "thickness_mm": 9.2,
+          "operation": "Engrave",
+          "power_percent": 100.0,
+          "speed_percent": 80.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Holz_32_Pappel/9.2mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Kerzenverzierwachs",
+      "name": "Kerzenverzierwachs",
+      "profiles": [
+        {
+          "thickness_mm": 0.5,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 1.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Kerzenverzierwachs/0.5mm/cut.xml"
+        },
+        {
+          "thickness_mm": 0.5,
+          "operation": "Mark",
+          "power_percent": 5.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Kerzenverzierwachs/0.5mm/mark.xml"
+        }
+      ]
+    },
+    {
+      "id": "Kromapappe",
+      "name": "Kromapappe",
+      "profiles": [
+        {
+          "thickness_mm": 1.5,
+          "operation": "Mark",
+          "power_percent": 5.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Kromapappe/1.5mm/mark.xml"
+        }
+      ]
+    },
+    {
+      "id": "Laser_32_Lights_32_selbstklebend",
+      "name": "Laser Lights selbstklebend",
+      "profiles": [
+        {
+          "thickness_mm": 0.3,
+          "operation": "Cut",
+          "power_percent": 12.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Laser_32_Lights_32_selbstklebend/0.3mm/cut.xml"
+        },
+        {
+          "thickness_mm": 0.3,
+          "operation": "Engrave",
+          "power_percent": 12.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Laser_32_Lights_32_selbstklebend/0.3mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Metall_32_Cermark_32_LMM-6000",
+      "name": "Metall Cermark LMM-6000",
+      "profiles": [
+        {
+          "thickness_mm": 0.0,
+          "operation": "Cut",
+          "power_percent": 0.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Metall_32_Cermark_32_LMM-6000/0.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 0.0,
+          "operation": "Engrave",
+          "power_percent": 100.0,
+          "speed_percent": 50.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Metall_32_Cermark_32_LMM-6000/0.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Metall_32_pulverlackiert",
+      "name": "Metall pulverlackiert",
+      "profiles": [
+        {
+          "thickness_mm": 0.0,
+          "operation": "Engrave",
+          "power_percent": 100.0,
+          "speed_percent": 50.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Metall_32_pulverlackiert/0.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Moosgummi",
+      "name": "Moosgummi",
+      "profiles": [
+        {
+          "thickness_mm": 2.0,
+          "operation": "Cut",
+          "power_percent": 20.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Moosgummi/2.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 2.0,
+          "operation": "Engrave",
+          "power_percent": 33.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Moosgummi/2.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 2.0,
+          "operation": "Mark",
+          "power_percent": 4.0,
+          "speed_percent": 75.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Moosgummi/2.0mm/mark.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Cut",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Moosgummi/3.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Engrave",
+          "power_percent": 32.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Moosgummi/3.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Multiplex_32_lackiert_32_gravieren",
+      "name": "Multiplex lackiert gravieren",
+      "profiles": [
+        {
+          "thickness_mm": 10.0,
+          "operation": "Engrave",
+          "power_percent": 100.0,
+          "speed_percent": 30.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Multiplex_32_lackiert_32_gravieren/10.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Mylar",
+      "name": "Mylar",
+      "profiles": [
+        {
+          "thickness_mm": 0.0,
+          "operation": "Cut",
+          "power_percent": 5.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Mylar/0.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 0.0,
+          "operation": "Engrave",
+          "power_percent": 80.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Mylar/0.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Overheadfolie",
+      "name": "Overheadfolie",
+      "profiles": [
+        {
+          "thickness_mm": 0.0,
+          "operation": "Cut",
+          "power_percent": 5.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Overheadfolie/0.0mm/cut.xml"
+        }
+      ]
+    },
+    {
+      "id": "Paper",
+      "name": "Paper",
+      "profiles": [
+        {
+          "thickness_mm": 3.0,
+          "operation": "Cut",
+          "power_percent": 20.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Paper/3.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Paper/3.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Papier_32_250g",
+      "name": "Papier 250g",
+      "profiles": [
+        {
+          "thickness_mm": 0.0,
+          "operation": "Cut",
+          "power_percent": 8.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Papier_32_250g/0.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 0.0,
+          "operation": "Engrave",
+          "power_percent": 20.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Papier_32_250g/0.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Papier_32_80g",
+      "name": "Papier 80g",
+      "profiles": [
+        {
+          "thickness_mm": 0.0,
+          "operation": "Cut",
+          "power_percent": 5.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Papier_32_80g/0.0mm/cut.xml"
+        }
+      ]
+    },
+    {
+      "id": "PE",
+      "name": "PE",
+      "profiles": [
+        {
+          "thickness_mm": 1.0,
+          "operation": "Cut",
+          "power_percent": 70.0,
+          "speed_percent": 80.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/PE/1.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 1.0,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/PE/1.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 1.0,
+          "operation": "Engrave3d",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/PE/1.0mm/engrave3d.xml"
+        }
+      ]
+    },
+    {
+      "id": "POM",
+      "name": "POM",
+      "profiles": [
+        {
+          "thickness_mm": 3.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 36.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/POM/3.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Engrave",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/POM/3.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Mark",
+          "power_percent": 15.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/POM/3.0mm/mark.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Engrave3d",
+          "power_percent": 30.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/POM/3.0mm/engrave3d.xml"
+        }
+      ]
+    },
+    {
+      "id": "Schaumstoff",
+      "name": "Schaumstoff",
+      "profiles": [
+        {
+          "thickness_mm": 0.5,
+          "operation": "Cut",
+          "power_percent": 9.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Schaumstoff/0.5mm/cut.xml"
+        }
+      ]
+    },
+    {
+      "id": "Schiefer",
+      "name": "Schiefer",
+      "profiles": [
+        {
+          "thickness_mm": 0.0,
+          "operation": "Engrave",
+          "power_percent": 50.0,
+          "speed_percent": 60.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Schiefer/0.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Sperrholz_32_Funier",
+      "name": "Sperrholz Funier",
+      "profiles": [
+        {
+          "thickness_mm": 0.8,
+          "operation": "Cut",
+          "power_percent": 50.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Sperrholz_32_Funier/0.8mm/cut.xml"
+        },
+        {
+          "thickness_mm": 0.8,
+          "operation": "Engrave",
+          "power_percent": 100.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Sperrholz_32_Funier/0.8mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Sperrholz_32_Gabun",
+      "name": "Sperrholz Gabun",
+      "profiles": [
+        {
+          "thickness_mm": 3.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 70.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Sperrholz_32_Gabun/3.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 3.0,
+          "operation": "Engrave",
+          "power_percent": 52.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Sperrholz_32_Gabun/3.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 4.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 17.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Sperrholz_32_Gabun/4.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 4.0,
+          "operation": "Engrave",
+          "power_percent": 40.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Sperrholz_32_Gabun/4.0mm/engrave.xml"
+        },
+        {
+          "thickness_mm": 4.0,
+          "operation": "Mark",
+          "power_percent": 10.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Sperrholz_32_Gabun/4.0mm/mark.xml"
+        }
+      ]
+    },
+    {
+      "id": "Sperrholz_32_Pappel",
+      "name": "Sperrholz Pappel",
+      "profiles": [
+        {
+          "thickness_mm": 4.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 60.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Sperrholz_32_Pappel/4.0mm/cut.xml"
+        }
+      ]
+    },
+    {
+      "id": "Stempelgummi",
+      "name": "Stempelgummi",
+      "profiles": [
+        {
+          "thickness_mm": 2.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 20.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Stempelgummi/2.0mm/cut.xml"
+        },
+        {
+          "thickness_mm": 2.0,
+          "operation": "Engrave",
+          "power_percent": 100.0,
+          "speed_percent": 26.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Stempelgummi/2.0mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Thermopapier_32_Kassenzettel",
+      "name": "Thermopapier Kassenzettel",
+      "profiles": [
+        {
+          "thickness_mm": 0.0,
+          "operation": "Cut",
+          "power_percent": 5.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Thermopapier_32_Kassenzettel/0.0mm/cut.xml"
+        }
+      ]
+    },
+    {
+      "id": "Visitenkarte_95_0_95_4mm",
+      "name": "Visitenkarte_0_4mm",
+      "profiles": [
+        {
+          "thickness_mm": 0.4,
+          "operation": "Cut",
+          "power_percent": 60.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Visitenkarte_95_0_95_4mm/0.4mm/cut.xml"
+        },
+        {
+          "thickness_mm": 0.4,
+          "operation": "Engrave",
+          "power_percent": 100.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Visitenkarte_95_0_95_4mm/0.4mm/engrave.xml"
+        }
+      ]
+    },
+    {
+      "id": "Wellpappe",
+      "name": "Wellpappe",
+      "profiles": [
+        {
+          "thickness_mm": 3.0,
+          "operation": "Cut",
+          "power_percent": 100.0,
+          "speed_percent": 100.0,
+          "source": "laserprofiles/Epilog_95_Zing_95_Fablab/Wellpappe/3.0mm/cut.xml"
+        }
+      ]
+    }
+  ]
+}
