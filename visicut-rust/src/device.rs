@@ -1,5 +1,6 @@
 //! Configured LTT iLaser 4000 installations. Other cutter drivers are not
 //! supported; imports from VisiCut settings keep only LTT devices.
+use crate::project::MachineSettings;
 use serde::{Deserialize, Serialize};
 use std::{
     io::{Cursor, Read},
@@ -31,6 +32,8 @@ pub struct LaserDevice {
     pub job_sent_text: String,
     pub camera_url: String,
     pub camera_calibration: Option<CameraCalibration>,
+    /// Engrave shift table, curve acceleration and contour start dwell.
+    pub machine: MachineSettings,
 }
 
 impl Default for LaserDevice {
@@ -44,6 +47,7 @@ impl Default for LaserDevice {
             job_sent_text: String::new(),
             camera_url: String::new(),
             camera_calibration: None,
+            machine: MachineSettings::default(),
         }
     }
 }
@@ -67,6 +71,9 @@ impl LaserDevice {
                 self.name
             ));
         }
+        self.machine
+            .validate()
+            .map_err(|e| format!("{}: {e}", self.name))?;
         if let Some(c) = &self.camera_calibration {
             if c.reference_points.len() != c.view_points.len()
                 || !(c.reference_points.len() == 2 || c.reference_points.len() >= 4)
@@ -252,6 +259,28 @@ pub fn from_visicut_xml(source: &str) -> Result<LaserDevice, String> {
         }),
         None => None,
     };
+    let mut machine = MachineSettings::default();
+    if let Some(list) = child(cutter, "engraveShiftList") {
+        let values = list
+            .children()
+            .filter(|n| n.is_element())
+            .map(|n| {
+                n.text()
+                    .unwrap_or_default()
+                    .trim()
+                    .parse::<f32>()
+                    .map_err(|_| "Ungültiger Wert in engraveShiftList".to_string())
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        machine.engrave_shift = values
+            .try_into()
+            .map_err(|_| "engraveShiftList braucht zehn Werte (10 % … 100 %)")?;
+    }
+    if text(cutter, "useTangentCurves").as_deref() != Some("false")
+        && let Some(value) = number(cutter, "tangentCurveMaxAcceleration")?
+    {
+        machine.curve_acceleration_mm_s2 = value;
+    }
     let device = LaserDevice {
         name: text(root, "name")
             .filter(|n| !n.trim().is_empty())
@@ -266,6 +295,7 @@ pub fn from_visicut_xml(source: &str) -> Result<LaserDevice, String> {
         job_sent_text: text(root, "jobSentText").unwrap_or_default(),
         camera_url: text(root, "cameraURL").unwrap_or_default(),
         camera_calibration,
+        machine,
     };
     device.validate()?;
     Ok(device)
@@ -462,6 +492,27 @@ mod tests {
         assert_eq!(calibration.reference_points.len(), 6);
         assert_eq!(calibration.reference_points[0], [200.0, 120.0]);
         assert_eq!(calibration.view_points[1], [1994.0, 1759.0]);
+    }
+
+    #[test]
+    fn machine_settings_come_from_the_visicut_driver() {
+        let device = LaserDevice::fau();
+        assert_eq!(device.machine, MachineSettings::default());
+        assert_eq!(device.machine.engrave_shift[9], -23.0);
+        let xml = include_str!("../reference/FAU-LTT-iLaser-4000.xml")
+            .replace("<int>-23</int>", "<int>-11</int>")
+            .replace(
+                "<tangentCurveMaxAcceleration>2000.0",
+                "<tangentCurveMaxAcceleration>981.0",
+            );
+        let device = from_visicut_xml(&xml).unwrap();
+        assert_eq!(device.machine.engrave_shift[9], -11.0);
+        assert_eq!(device.machine.curve_acceleration_mm_s2, 981.0);
+        let short = xml.replace("<int>-11</int>", "");
+        assert!(from_visicut_xml(&short).unwrap_err().contains("zehn Werte"));
+        let mut bad = LaserDevice::fau();
+        bad.machine.curve_acceleration_mm_s2 = 100.0;
+        assert!(bad.validate().unwrap_err().contains("Kurvenbeschleunigung"));
     }
 
     #[test]

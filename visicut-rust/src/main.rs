@@ -120,6 +120,7 @@ enum Replace {
     Demo,
     Vectorized { svg: String, name: String },
     Calibration(Vec<[f64; 2]>),
+    ShiftPattern(f32),
     Quit,
 }
 
@@ -367,6 +368,7 @@ impl VisiCutRust {
                 }),
             Replace::Vectorized { svg, name } => self.import(ctx, svg, name, Vec::new()),
             Replace::Calibration(points) => self.calibration_page(ctx, &points),
+            Replace::ShiftPattern(power) => self.shift_pattern(ctx, power),
             Replace::Quit => {
                 self.allow_close = true;
                 ctx.send_viewport_cmd(egui::ViewportCommand::Close);
@@ -396,6 +398,24 @@ impl VisiCutRust {
         (self.project.x_mm, self.project.y_mm) = (0.0, 0.0);
         self.project.operation = Operation::Mark;
         self.status = "Kalibrierseite geöffnet: Material und Markier-Parameter prüfen, senden, danach Foto aufnehmen.".into();
+        Ok(())
+    }
+
+    /// Testmuster für den Zeilenversatz mit den Werten des aktiven Geräts.
+    fn shift_pattern(&mut self, ctx: &egui::Context, power: f32) -> Result<(), String> {
+        let pattern = visicut_core::shift_calibration::project(&self.project, power);
+        self.import(
+            ctx,
+            pattern.svg.clone(),
+            pattern.name.clone(),
+            pattern.steps.clone(),
+        )?;
+        self.project = Project {
+            width_mm: self.project.width_mm,
+            height_mm: self.project.height_mm,
+            ..pattern
+        };
+        self.status = "Zeilenversatz-Testmuster geöffnet: Material prüfen, senden, danach je Zeile den besten Block eintragen.".into();
         Ok(())
     }
 
@@ -1248,11 +1268,17 @@ impl eframe::App for VisiCutRust {
         if let Some((svg, name)) = self.vectorize.windows(ctx, false, &mut self.status) {
             self.request(ctx, Replace::Vectorized { svg, name });
         }
-        if let Some(devices_ui::Action::CalibrationPage(points)) =
-            self.devices
-                .windows(ctx, &mut self.project, &mut self.status)
+        match self
+            .devices
+            .windows(ctx, &mut self.project, &mut self.status)
         {
-            self.request(ctx, Replace::Calibration(points));
+            Some(devices_ui::Action::CalibrationPage(points)) => {
+                self.request(ctx, Replace::Calibration(points));
+            }
+            Some(devices_ui::Action::ShiftPattern(power)) => {
+                self.request(ctx, Replace::ShiftPattern(power));
+            }
+            None => {}
         }
         if self.show_preview {
             self.show_preview = false;

@@ -52,6 +52,11 @@ Wiederholung nach Fehlern.
   als verbundene Tangentialkurve (`PJ … PE <Tempo> PR … PF`) mit
   Geschwindigkeitsplanung bis 2000 mm/s² hinaus (`curve`,
   `curveWithKnownSpeed`, Neuinterpolation 0,9 mm, zehn Aufwärmrunden).
+  Die Grenze ist je Gerät einstellbar (`curve_acceleration_mm_s2`, auch aus
+  `tangentCurveMaxAcceleration` importiert); „Firmware 0,1 g“ (981 mm/s²)
+  plant so sanft, wie der Controller verbundene Kurven selbst rampt. Werte
+  ungleich 2000 sind experimentell und erzeugen einen Hinweis; sie gelten
+  auch für die Geschwindigkeitsgrenze der Kreisbefehle.
   Geschlossene Kreise bis 101 mm Radius nutzen den Kreisbefehl
   (`PJ PB 0 0 <Mitte> PF`) mit begrenzter Geschwindigkeit und
   proportional reduzierter Leistung; größere Kreise und Drehachsen-Jobs
@@ -127,7 +132,13 @@ Wiederholung nach Fehlern.
   BufferedImageAdapter (0,3 R + 0,59 G + 0,11 B), Helligkeitsverschiebung und
   Invertierung wie im Rasterprofil. Bidirektional (`ESC 1`, Zeile gespiegelt)
   und von unten nach oben wie `LaosEngraveProperty`. Die Zeilenverschiebung
-  folgt `getEngraveShiftPixels` einschließlich +0,5 Pixel.
+  folgt `getEngraveShiftPixels` einschließlich +0,5 Pixel, mit der Tabelle
+  des Geräts (`engrave_shift`, 1/4000 Zoll für 10 … 100 %, Standard und
+  Import aus `engraveShiftList` des FAU-Geräts). Jede Zeile wird um die
+  abgeschnittenen ganzen Pixel gegen ihre Fahrtrichtung verschoben; Werte
+  über +4 verschieben (anders als Java, das dort nichts verschiebt) in
+  Fahrtrichtung. Schritte können zusätzlich `engrave_shift_px` haben
+  (nur das Zeilenversatz-Testmuster setzt das).
   Wie VisiCuts `RasterProfile` wird nur die Bounding Box der Objekte
   (mit halber Strichbreite) gerastert, `Helper.toRect` schneidet x, y, Breite
   und Höhe einzeln ab; Rasterursprung ist deren Ecke. Gravur ohne, 3D-Gravur
@@ -254,10 +265,11 @@ Die Vorschau entsteht aus den für den Job verwendeten Konturen und
 Schwarz/Weiß-Rasterpixeln. Schnittkonturen erscheinen rot, Gravurpixel blau und Markierkonturen violett.
 Die Schätzung verwendet die quantisierten Vektorwege und die tatsächlichen
 Rasterzeilen einschließlich Overscan, nomineller Rückfahrt und Durchgängen.
-Rasterzeilen erhalten wie im Java-Treiber einen Zuschlag von 0,1 Sekunden.
+Rasterzeilen erhalten wie im Java-Treiber einen Zuschlag von 0,1 Sekunden,
+jede Kontur die Verweilzeit des Geräts am Konturstart (Standard 50 ms).
 Die Geschwindigkeiten werden für die Schätzung wie für ESC-S auf Zehntelprozent
 quantisiert. Nicht modelliert sind die exakten Beschleunigungsprofile,
-Gerätestart, Übertragungszeit und Bedienpausen. Keine Kalibrierung am Gerät.
+Gerätestart, Übertragungszeit und Bedienpausen. Keine Zeitmessung am Gerät.
 
 Projektformat 2 enthält optional `steps`: maximal je einen Schnitt-, Markier-
 und Gravurschritt, mit nullbasierten SVG-Objektindizes und eigenen Parametern.
@@ -296,6 +308,20 @@ Jeder hat eigenen Header, BYE, Prüfsumme, Länge und deaktivierten Autostart.
 Bei einer fehlgeschlagenen Übertragung stoppt die Folge; die Fehlermeldung
 nennt den betroffenen und bereits übertragenen Teil. Es gibt weder eine
 Gerätequittung noch automatisches Fortsetzen oder eine automatische Wiederholung.
+
+## Zeilenversatz kalibrieren
+
+Das Testmuster (Lasercutter → Maschine → „Zeilenversatz kalibrieren“) ist
+65 × 70 mm groß und liegt bei X 50 / Y 20 mm (35 mm Platz für den Überlauf
+bei voller Geschwindigkeit). Je Tabellen-Geschwindigkeit 10 % (oben) bis
+100 % (unten) graviert es fünf Blöcke aus je acht 0,5-mm-Balken
+bidirektional mit −2, −1, 0, +1, +2 Pixeln (je 0,05 mm) zusätzlich zur
+Tabelle; ein Dreieck markiert den mittleren Block, ein Balken links die
+Geschwindigkeit (1 mm je 10 %). Das sind 50 Schritte, ein Rasterteil je
+Block. Der Block mit den geradesten Balkenkanten wird je Zeile eingetragen;
+„Übernehmen“ setzt den Tabellenwert so, dass der Treiber genau diesen
+Versatz erzeugt. Liegt der beste Block am Rand, das Muster nach dem
+Übernehmen erneut gravieren.
 
 ## Byte-Vergleich mit Java
 
@@ -345,3 +371,74 @@ Protokollfakten. Sie gelten für den iLaser 3000 und sind für den iLaser 4000
 
 Vor einer Nutzung am iLaser 4000 muss ein beaufsichtigter Test zeigen, ob
 das Gerät `ESC A` bzw. `ZA` versteht; besser ist der Treiber des 4000.
+
+## Gerätesoftware des iLaser 4000 (Firmware-Analyse)
+
+Grundlage: ein Abbild der Steuerungs-CF-Karte eines iLaser 4000 (Stand
+24.06.2019), der Windows-Treiber „iLASER-4000“ 6.5 (Mai/Juni 2019) und
+Beschleunigungsmessungen am Gerät. Nichts davon liegt im Repository;
+festgehalten sind nur Fakten für spätere Versionen. Ein Herstellerhandbuch
+zum Format wurde zum Verständnis gelesen, aber nicht übernommen.
+
+**Aufbau.** Die Steuerung ist ein PC mit FreeDOS. `AUTOEXEC.BAT` startet
+Netzwerk, Update-Prüfung und je nach Hardware-Jumpern (Port `0x339`, Bits
+2–3) eines der Programme `ILS3A0…3.EXE` (Borland C++ 1991); das Modell
+steht in `VERSION.<n>` (z. B. 9 = `i4000ADV` → `ILS3A2.EXE`). Jedes Modell
+hat `<Modell>.CFG` (Achsen, Geschwindigkeiten, Beschleunigungen),
+`<Modell>.SFT` (Rasterversatz-Tabellen des Controllers) und `<Modell>.USR`
+(Bedienwerte wie `ArcComp`, Tickle). Aufträge kommen als Bytes über eine
+ISA-Karte (Port `0x33a`); die Software prüft `LTT` am Anfang und `ESC BYE`
+am Ende.
+
+**Befehlsauswertung (`ILS3A2.EXE`).** `ESC` + Zeichen über eine Sprungtabelle
+für `0`, `1`, `A`–`F`, `H`–`J`, `L`–`T`, `V`, `W`, `Y`, `a`, `f`, `l`, `n`,
+`v`; `P` + Zeichen für `A`–`F`, `J`, `M`, `R`, `S`, `U`, `s`; außerdem
+`G…` und `Z…`. Bestätigt sind:
+
+- `ESC S` nimmt nur 1 … 1000 an (sonst ignoriert) und speichert Wert × 4.
+- `PE` (und `PM`) speichert Wert × 4 **ohne** Grenzprüfung; VisiCutRust
+  begrenzt selbst auf 1 … 1000.
+- `PJ` setzt den Kurvenmodus, `PF` beendet ihn. Gerade Stücke (`PR`) fahren
+  im Kurvenmodus mit `PE`, sonst mit `ESC S`; beim Schneiden wird durch
+  `vspeedfactor` geteilt, beim Gravieren nicht.
+- Kreisbögen (`PB`/`PC`) nutzen **immer** `ESC S` und ignorieren `PE`.
+  LibLaserCut und VisiCutRust senden vor `PJ PB … PF` deshalb zu Recht nur
+  ein reduziertes `ESC S`.
+- Fahrten mit ausgeschaltetem Laser nutzen einen festen Freifahrt-Wert der
+  Konfiguration, nicht `ESC S`. Wie schnell genau, ist nicht ermittelt; die
+  Zeitschätzung rechnet Leerfahrten weiter wie Java.
+
+**Konfiguration `I4000ADV.CFG` (iLaser 4000).** `xypitch` 0,003175 mm
+(8000 Schritte/Zoll, der Treiber sendet 4000-DPI-Werte), Verfahrweg
+X −20 … 1020 mm, Y 0 … 600 mm, `velrange` 80, `xmaxspeed` 4000,
+`ymaxspeed` 1000, `vspeedfactor` 6. Damit sind 100 % Gravieren
+80 × 2 × 4000 × 0,003175 = 2032 mm/s und 100 % Schneiden 2032 / 6 =
+338,67 mm/s (= `nominalCuttingSpeed` des FAU-Geräts). Weitere Werte:
+`vxacc` 1,8 g, `vyacc` 0,24 g (der kleinere gilt für Start/Stopp-Vektoren),
+`vlowspeed` 0,2 %, `rxacc` 5 g, `pddelay` 50 ms (Verweilzeit nach dem
+Anfahren eines Konturstarts), `scurve` 20, `ArcComp` 1 in `I4000ADV.USR`
+(schräge Fahrten mit 0,707-facher Geschwindigkeit der längeren Achse).
+Alle Rasterversatz-Tabellen in `I4000ADV.SFT` sind 0: Der Controller
+korrigiert den Zeilenversatz nicht, das muss der Treiber tun.
+
+**Verbundene Kurven.** Gemessen und im Programm sichtbar: Zwischen zwei
+`PE`-Werten ändert der Controller die Geschwindigkeit mit fester Rampe von
+0,1 g, je zur Hälfte vor und nach dem Knoten, unabhängig von `vxacc`/
+`vyacc`. Er kennt nur das nächste Segment; reicht der Weg zum Bremsen nicht,
+bremst er härter (gemessen etwa 0,13 g), stürzt aber nicht ab. LibLaserCut
+plant mit 2000 mm/s² und sendet je Segment den Mittelwert der Knoten­
+geschwindigkeiten; am Kurvenende reicht der Bremsweg damit immer, bei langen
+Verzögerungen bremst der Controller härter als seine Rampe. Die Option
+„Firmware 0,1 g“ vermeidet das.
+
+**Treiber 6.5 (`LTTiLASER-4000_S.ini`).** `JointCurves=0` (der
+Herstellertreiber nutzt verbundene Kurven standardmäßig nicht),
+`EngraveShiftTbl_L2R/R2L` −3 … −11 und `EngraveExtraSpaceTbl`
+3,5 … 35 mm für 10 … 100 % (VisiCutRust: 3,5 … 35 mm, quadratisch, dazwischen
+gleich oder größer), Kurvenwinkel-Tabelle mit 15 Stufen bis 180°.
+Die Zeilenversatz-Tabelle unterscheidet sich von der des FAU-Geräts
+(−2 … −23); deshalb ist sie je Gerät einstellbar und kalibrierbar.
+
+**Zeitschätzung.** Seit 0.7 enthält sie die Verweilzeit am Konturstart
+(`pierce_delay_ms`, Standard 50 ms wie `pddelay`) und rechnet Gravieren mit
+dem 6-Fachen der Schneidgeschwindigkeit (Java: 6,4).

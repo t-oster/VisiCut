@@ -85,6 +85,8 @@ struct Project: Codable, Equatable {
     /// Rust serialisiert das Feld immer und setzt beim Laden älterer Dateien den Standard.
     var cut_order: CutOrder
     var remove_duplicate_lines: Bool
+    /// Vom aktiven Lasercutter übernommen (Zeilenversatz, Kurvenbeschleunigung, Verweilzeit).
+    var machine: MachineSettings
 
     var hasArtwork: Bool { !svg.isEmpty }
     var fitsBed: Bool {
@@ -127,6 +129,8 @@ struct JobStep: Codable, Equatable {
     var rest: Bool
     var raster: RasterSettings
     var additional: [ParameterSet]
+    /// Zusätzlicher Zeilenversatz in Pixeln (nur im Zeilenversatz-Testmuster).
+    var engrave_shift_px: Int? = nil
 }
 struct PreparedStep: Decodable {
     let name: String
@@ -1342,6 +1346,24 @@ func testDevicesRotaryAndCamera(_ model: AppModel) throws {
         values: ["reference_points": fau.camera_calibration!.reference_points])
     let calibrationJob: PreparedJob = try RustCore.decode("prepare", project: page.project)
     guard page.objects?.count == 1, calibrationJob.steps.first?.operation == .mark else { throw CoreError("Kalibrierseite ungültig") }
+
+    // Zeilenversatz: Testmuster mit einem Schritt je Block, Ergebnis in der Tabelle.
+    let pattern: ProjectResponse = try RustCore.decode("shift_pattern", project: model.project, values: ["power_percent": 25.0])
+    let patternJob: PreparedJob = try RustCore.decode("prepare", project: pattern.project)
+    guard pattern.project.steps.count == 50, pattern.project.steps.first?.engrave_shift_px == -2,
+          patternJob.steps.count == 50, patternJob.warnings.contains(where: { $0.contains("Zeilenversatz") })
+    else { throw CoreError("Zeilenversatz-Testmuster ungültig") }
+    var best = Array(repeating: 3, count: 10); best[9] = 5
+    guard let calibrated = model.applyShiftTest(model.device.machine, best: best),
+          calibrated.engrave_shift[0] == model.device.machine.engrave_shift[0],
+          calibrated.engrave_shift[9] != model.device.machine.engrave_shift[9]
+    else { throw CoreError("Zeilenversatz nicht übernommen") }
+    var gentle = model.project
+    gentle.machine.curve_acceleration_mm_s2 = MachineSettings.firmwareCurveAcceleration
+    gentle.steps = []; gentle.operation = .cut
+    let gentleJob: PreparedJob = try RustCore.decode("prepare", project: gentle)
+    guard gentleJob.warnings.contains(where: { $0.contains("Experimentelle Kurvenbeschleunigung") })
+    else { throw CoreError("Hinweis zur Kurvenbeschleunigung fehlt") }
 
     model.selectDevice(0)
     guard model.project.hostname == "lasercutter2" else { throw CoreError("Rückwechsel zum FAU-Gerät fehlgeschlagen") }

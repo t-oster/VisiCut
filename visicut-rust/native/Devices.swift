@@ -16,7 +16,23 @@ struct LaserDevice: Codable, Equatable {
     var job_sent_text: String
     var camera_url: String
     var camera_calibration: CameraCalibration?
+    var machine: MachineSettings
 }
+
+/// Geräteeigene Werte (visicut_core::project::MachineSettings).
+struct MachineSettings: Codable, Equatable {
+    /// Zeilenversatz für 10 % … 100 % Geschwindigkeit in 1/4000 Zoll.
+    var engrave_shift: [Double]
+    var curve_acceleration_mm_s2: Double
+    var pierce_delay_ms: Double
+
+    static let libLaserCutCurveAcceleration = 2000.0
+    static let firmwareCurveAcceleration = 981.0
+    static let standard = MachineSettings(engrave_shift: [-2, -4, -7, -10, -13, -15, -17, -19, -21, -23],
+                                          curve_acceleration_mm_s2: libLaserCutCurveAcceleration, pierce_delay_ms: 50)
+    var experimentalCurves: Bool { abs(curve_acceleration_mm_s2 - Self.libLaserCutCurveAcceleration) > 1e-9 }
+}
+struct MachineResponse: Decodable { let machine: MachineSettings }
 
 struct DeviceStore: Codable, Equatable {
     var format_version: Int
@@ -38,6 +54,28 @@ extension AppModel {
         if project.hostname != device.hostname { project.hostname = device.hostname }
         if project.port != device.port { project.port = device.port }
         if !device.rotary_axis && project.rotary_axis { project.rotary_axis = false }
+        if project.machine != device.machine { project.machine = device.machine }
+    }
+
+    /// Zeilenversatz-Testmuster des aktiven Lasercutters als neues Projekt.
+    func openShiftPattern(power: Double) {
+        guard canDiscard() else { return }
+        do {
+            let response: ProjectResponse = try RustCore.decode("shift_pattern", project: project,
+                values: ["power_percent": power])
+            accept(response, dirty: true)
+            projectURL = nil
+            status = "Zeilenversatz-Testmuster geöffnet: Material prüfen, senden, danach je Zeile den besten Block eintragen."
+        } catch { self.error = error.localizedDescription }
+    }
+
+    /// Tabelle nach dem Test; `best` enthält je Geschwindigkeit den Block 1 … 5.
+    func applyShiftTest(_ machine: MachineSettings, best: [Int]) -> MachineSettings? {
+        do {
+            let response: MachineResponse = try RustCore.decode("apply_shift_test",
+                values: ["machine": RustCore.json(machine), "best": best])
+            return response.machine
+        } catch { self.error = error.localizedDescription; return nil }
     }
 
     @discardableResult
@@ -163,6 +201,7 @@ struct DeviceSettings: View {
     @State private var draft: DeviceStore
     @State private var editing: Int
     @State private var calibrating = false
+    @State private var shiftTest = false
 
     init(model: AppModel) {
         self.model = model
@@ -216,6 +255,12 @@ struct DeviceSettings: View {
                             }
                         }
                     }
+                    Section("Maschine") {
+                        MachineSettingsView(machine: current.machine)
+                        LabeledContent("Zeilenversatz") {
+                            Button("Kalibrieren …") { shiftTest = true }
+                        }
+                    }
                     Section("Hinweis nach dem Senden") {
                         TextEditor(text: current.job_sent_text).font(.callout).frame(height: 70)
                         Text("Autofokus, Druckluft und Absaugung stellt der LTT-Treiber nicht ein; dieser Text erinnert nach dem Senden daran. $jobname wird durch die Auftragsnamen ersetzt.")
@@ -242,6 +287,12 @@ struct DeviceSettings: View {
             }.padding(12)
         }
         .frame(minWidth: 760, minHeight: 520)
+        .sheet(isPresented: $shiftTest) {
+            ShiftCalibrationView(model: model, device: current.wrappedValue,
+                                 canOpenPattern: draft == model.devices && editing == draft.selected) { machine in
+                current.wrappedValue.machine = machine
+            }
+        }
         .sheet(isPresented: $calibrating) {
             CameraCalibrationView(model: model, device: current.wrappedValue) { calibration in
                 current.wrappedValue.camera_calibration = calibration
@@ -270,6 +321,110 @@ struct DeviceSettings: View {
         draft.devices.remove(at: editing)
         if draft.selected == editing { draft.selected = 0 } else if draft.selected > editing { draft.selected -= 1 }
         editing = min(editing, draft.devices.count - 1)
+    }
+}
+
+/// Zeilenversatz-Tabelle, Kurvenbeschleunigung und Verweilzeit eines Geräts.
+struct MachineSettingsView: View {
+    @Binding var machine: MachineSettings
+
+    var body: some View {
+        LabeledContent("Zeilenversatz (1/4000 Zoll, 8 = ein Pixel)") {
+            Grid(alignment: .trailing, horizontalSpacing: 6, verticalSpacing: 4) {
+                ForEach(0..<2, id: \.self) { row in
+                    GridRow {
+                        ForEach(0..<5, id: \.self) { column in
+                            let index = row * 5 + column
+                            Text("\((index + 1) * 10) %").font(.caption).foregroundStyle(.secondary)
+                            TextField("", value: $machine.engrave_shift[index], format: .number)
+                                .frame(width: 44).multilineTextAlignment(.trailing)
+                        }
+                    }
+                }
+            }
+        }
+        LabeledContent("Kurvenbeschleunigung") {
+            HStack {
+                TextField("", value: $machine.curve_acceleration_mm_s2, format: .number.grouping(.never))
+                    .frame(width: 64).multilineTextAlignment(.trailing)
+                Text("mm/s²").foregroundStyle(.secondary)
+                Button("LibLaserCut") { machine.curve_acceleration_mm_s2 = MachineSettings.libLaserCutCurveAcceleration }
+                Button("Firmware 0,1 g") { machine.curve_acceleration_mm_s2 = MachineSettings.firmwareCurveAcceleration }
+                    .help("Rampe des Controllers bei verbundenen Kurven (experimentell)")
+            }
+        }
+        if machine.experimentalCurves {
+            Text("Experimentell: Kurven werden anders geplant als in VisiCut.").font(.caption).foregroundStyle(.secondary)
+        }
+        LabeledContent("Verweilzeit am Konturstart") {
+            HStack {
+                TextField("", value: $machine.pierce_delay_ms, format: .number)
+                    .frame(width: 64).multilineTextAlignment(.trailing)
+                Text("ms").foregroundStyle(.secondary)
+            }
+        }
+        HStack {
+            Text("pddelay der Gerätekonfiguration; nur für die Zeitschätzung.").font(.caption).foregroundStyle(.secondary)
+            Spacer()
+            Button("Standardwerte") { machine = .standard }
+        }
+    }
+}
+
+/// Testmuster für den Zeilenversatz gravieren und je Geschwindigkeit den
+/// besten Block in die Tabelle übernehmen.
+struct ShiftCalibrationView: View {
+    @ObservedObject var model: AppModel
+    let device: LaserDevice
+    let canOpenPattern: Bool
+    let apply: (MachineSettings) -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var power = 30.0
+    @State private var best = Array(repeating: 3, count: 10)
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Zeilenversatz kalibrieren · \(device.name)").font(.title2).bold()
+            Text("1. Testmuster öffnen, senden und gravieren. Je Geschwindigkeit (10 % oben bis 100 % unten, Balken links = Tempo) entstehen fünf Blöcke mit −2 … +2 Pixeln Versatz; Block 3 unter dem Dreieck nutzt die aktuelle Tabelle.")
+                .fixedSize(horizontal: false, vertical: true)
+            HStack {
+                TextField("Leistung", value: $power, format: .number).frame(width: 60)
+                Text("%")
+                Button("Testmuster öffnen") {
+                    let value = power
+                    dismiss()
+                    DispatchQueue.main.async { model.openShiftPattern(power: value) }
+                }
+                .disabled(!canOpenPattern || !(1.0...100.0).contains(power))
+                if !canOpenPattern {
+                    Text("Nur für den aktiven, gesicherten Lasercutter").font(.caption).foregroundStyle(.secondary)
+                }
+            }
+            Divider()
+            Text("2. Je Zeile den Block mit den geradesten Balkenkanten wählen. Liegt er am Rand, übernehmen und das Testmuster erneut gravieren.")
+                .fixedSize(horizontal: false, vertical: true)
+            Grid(alignment: .leading, verticalSpacing: 4) {
+                ForEach(0..<10, id: \.self) { index in
+                    GridRow {
+                        Text("\((index + 1) * 10) %").monospacedDigit()
+                        Picker("", selection: $best[index]) {
+                            ForEach(1...5, id: \.self) { Text("\($0)").tag($0) }
+                        }.pickerStyle(.segmented).labelsHidden().frame(width: 220)
+                    }
+                }
+            }
+            HStack {
+                Spacer()
+                Button("Abbrechen") { dismiss() }.keyboardShortcut(.cancelAction)
+                Button("In die Tabelle übernehmen") {
+                    if let machine = model.applyShiftTest(device.machine, best: best) {
+                        apply(machine)
+                        dismiss()
+                    }
+                }.keyboardShortcut(.defaultAction)
+            }
+        }
+        .padding(20).frame(width: 520)
     }
 }
 

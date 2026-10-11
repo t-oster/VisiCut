@@ -7,7 +7,7 @@ Erster Ziel-Lasercutter: LTT iLaser 4000 des FAU FabLabs.
 ## Starten
 
 Die lokal gebaute App befindet sich in `dist/VisiCutRust.app`.
-Version 0.6.0 benötigt macOS 14 oder neuer, weder Java noch Maven.
+Version 0.7.0 benötigt macOS 14 oder neuer, weder Java noch Maven.
 Die macOS-App wird nur für Apple Silicon
 gebaut und veröffentlicht; Intel-Macs werden nicht unterstützt.
 
@@ -36,7 +36,8 @@ egui-Oberfläche im üblichen Stil der Plattform (Kürzel mit Strg statt ⌘).
 Beide nutzen denselben Rust-Kern und bieten dieselben Funktionen:
 Menüleiste, Zoom und Lineale, Einzel- und Regelzuordnung mit Wertvorschlägen,
 Materialbibliothek, Parametersätze, Bitmap-Vektorisierung, Schnittreihenfolge,
-Vorschau mit Zeitschätzung und Zeitslider, Geräte, Drehachse und Kamera.
+Vorschau mit Zeitschätzung und Zeitslider, Geräte mit Maschinenwerten und
+Zeilenversatz-Kalibrierung, Drehachse und Kamera.
 
 Der Workflow **VisiCutRust releases** baut drei native Ziele auf GitHub-gehosteten Runnern:
 
@@ -235,6 +236,13 @@ Die Auswahl im Inspektor bestimmt Ziel und verfügbare Funktionen.
 - Die Geräteliste liegt unter `~/Library/Application Support/VisiCutRust`
   (Windows `%APPDATA%\VisiCutRust`, Linux `~/.config/visicut-rust`);
   `VISICUT_RUST_CONFIG_DIR` setzt einen anderen Ordner.
+- **Maschine**: Zeilenversatz-Tabelle für die bidirektionale Gravur
+  (10 … 100 %, 1/4000 Zoll), Kurvenbeschleunigung (LibLaserCut 2000 mm/s²
+  oder experimentell „Firmware 0,1 g“) und Verweilzeit am Konturstart für die
+  Zeitschätzung. VisiCut-Gerätedateien liefern Tabelle und Beschleunigung mit.
+- **Zeilenversatz kalibrieren**: Testmuster öffnen und gravieren, je
+  Geschwindigkeit den Block mit den geradesten Kanten wählen und in die
+  Tabelle übernehmen (siehe [PROTOCOL.md](PROTOCOL.md)).
 - **Drehachse**: Bei Geräten mit Drehachse lässt sie sich je Projekt mit
   Werkstückdurchmesser einschalten (siehe [PROTOCOL.md](PROTOCOL.md)).
 - **Autofokus, Druckluft, Absaugung** steuert der LTT-Treiber nicht – auch
@@ -285,7 +293,7 @@ und die automatische Ungültigkeit alter Vorschauen. Abschließend öffnet er
 die Auftragsvorschau über die reguläre asynchrone Vorbereitung. Der Test
 bewegt den echten nativen Slider vorwärts/rückwärts und prüft Interpolation,
 Durchgangswechsel, Ende der Wiedergabe sowie drei getrennte Aufträge.
-Er prüft außerdem Regel-Zuordnung mit Rest und Ignorierregeln, 3D-Gravur, Rasterverfahren, Parametersätze und die Materialbibliothek (Sichern, doppelte Einträge, Wiederherstellen). Außerdem prüft er Geräteliste und Gerätewechsel in einem temporären Einstellungsordner, Drehachsen-Aufträge, Kamerahintergrund aus einer lokalen Bilddatei und die Kalibrierseite. Rust-Tests prüfen drei unabhängige TCP-Verbindungen ausschließlich lokal. Er sendet keinen
+Er prüft außerdem Regel-Zuordnung mit Rest und Ignorierregeln, 3D-Gravur, Rasterverfahren, Parametersätze und die Materialbibliothek (Sichern, doppelte Einträge, Wiederherstellen). Außerdem prüft er Geräteliste und Gerätewechsel in einem temporären Einstellungsordner, Drehachsen-Aufträge, Kamerahintergrund aus einer lokalen Bilddatei, die Kalibrierseite, das Zeilenversatz-Testmuster mit Übernahme in die Tabelle und den Hinweis zur experimentellen Kurvenbeschleunigung. Rust-Tests prüfen drei unabhängige TCP-Verbindungen ausschließlich lokal. Er sendet keinen
 Job an den Lasercutter. Der normale Start enthält keinen Selbsttest.
 
 `tests/java_parity.rs` vergleicht die erzeugten LTT-Aufträge Byte für Byte
