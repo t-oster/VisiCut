@@ -193,6 +193,12 @@ final class AppModel: ObservableObject {
     @Published var status = "SVG importieren, um einen Job vorzubereiten."
     @Published var error: String?
     @Published var keepProportions = true
+    /// Bezugspunkt für X/Y und Größenänderungen (0, 0,5 oder 1 je Achse).
+    @Published var referenceX = 0.0
+    @Published var referenceY = 0.0
+    /// Stand vor der letzten Werkzeug- oder Löschaktion (ein Schritt).
+    @Published var undoState: UndoState?
+    weak var undoManager: UndoManager?
     @Published var zoom = 1.0
     @Published var showGrid = true
     @Published var devices: DeviceStore
@@ -273,13 +279,26 @@ final class AppModel: ObservableObject {
 
     func changeWidth(_ width: Double) {
         guard width.isFinite, width > 0 else { return }
+        let anchor = referencePoint
         if keepProportions { project.height_mm *= width / project.width_mm }
         project.width_mm = width
+        keepReference(anchor)
     }
     func changeHeight(_ height: Double) {
         guard height.isFinite, height > 0 else { return }
+        let anchor = referencePoint
         if keepProportions { project.width_mm *= height / project.height_mm }
         project.height_mm = height
+        keepReference(anchor)
+    }
+    /// Lage des Bezugspunkts auf dem Arbeitsbett.
+    var referencePoint: (Double, Double) {
+        (project.x_mm + project.width_mm * referenceX, project.y_mm + project.height_mm * referenceY)
+    }
+    /// Größenänderungen lassen den Bezugspunkt stehen.
+    private func keepReference(_ anchor: (Double, Double)) {
+        project.x_mm = anchor.0 - project.width_mm * referenceX
+        project.y_mm = anchor.1 - project.height_mm * referenceY
     }
     func center() {
         project.x_mm = max(0, (project.bed_width_mm - project.width_mm) / 2)
@@ -580,8 +599,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
     func showWorkspace() {
         if let window = workspaceWindow { window.makeKeyAndOrderFront(nil); return }
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1240, height: 820),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView], backing: .buffered, defer: false)
+            // Ohne .fullSizeContentView: Der Inspektor scrollt sonst unter die Fensterknöpfe.
+            styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
         window.contentView = NSHostingView(rootView: Workspace(model: model))
+        // Widerrufen von Werkzeug- und Löschaktionen über Bearbeiten → Widerrufen.
+        model.undoManager = window.undoManager
         window.minSize = NSSize(width: 960, height: 700)
         window.isReleasedWhenClosed = false
         window.delegate = self
@@ -651,6 +673,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
         for (title, selector, key) in [("Widerrufen", "undo:", "z"), ("Ausschneiden", "cut:", "x"), ("Kopieren", "copy:", "c"), ("Einsetzen", "paste:", "v"), ("Alles auswählen", "selectAll:", "a")] {
             let item = menuItem(title, action: Selector(selector), key: key); item.target = nil; edit.addItem(item)
         }
+        edit.addItem(.separator())
+        edit.addItem(menuItem("Duplizieren", action: #selector(duplicateArtwork), key: "d"))
+        edit.addItem(menuItem("Motiv löschen", action: #selector(deleteArtwork)))
         let object = submenu("Objekt")
         object.addItem(menuItem("Text …", action: #selector(insertText)))
         object.addItem(menuItem("Form …", action: #selector(insertShape)))
@@ -658,6 +683,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
         object.addItem(.separator())
         object.addItem(menuItem("Kopien im Raster …", action: #selector(arrayCopies)))
         object.addItem(menuItem("Teile verschachteln (Nesting) …", action: #selector(nestParts)))
+        object.addItem(.separator())
+        object.addItem(menuItem("90° nach links drehen", action: #selector(rotateLeft)))
+        object.addItem(menuItem("90° nach rechts drehen", action: #selector(rotateRight)))
+        object.addItem(menuItem("Horizontal spiegeln", action: #selector(flipHorizontal)))
+        object.addItem(menuItem("Vertikal spiegeln", action: #selector(flipVertical)))
         let view = submenu("Darstellung")
         view.addItem(menuItem("Ansicht einpassen", action: #selector(fitView), key: "0"))
         view.addItem(menuItem("Raster anzeigen", action: #selector(toggleGrid)))
@@ -694,7 +724,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
         case #selector(vectorizeBitmap): return !model.busy && !model.showJobPreview && model.vectorizeSource == nil
         case #selector(insertText), #selector(insertShape), #selector(insertSign):
             return !model.busy && !model.showJobPreview && model.composeTool == nil
-        case #selector(arrayCopies), #selector(nestParts):
+        case #selector(arrayCopies), #selector(nestParts), #selector(duplicateArtwork), #selector(deleteArtwork),
+             #selector(rotateLeft), #selector(rotateRight), #selector(flipHorizontal), #selector(flipVertical):
             return model.project.hasArtwork && !model.busy && !model.showJobPreview && model.composeTool == nil
         default: return true
         }
@@ -712,6 +743,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
     @objc func insertSign() { showWorkspace(); model.composeTool = .sign }
     @objc func arrayCopies() { showWorkspace(); model.composeTool = .array }
     @objc func nestParts() { showWorkspace(); model.composeTool = .nest }
+    @objc func duplicateArtwork() { model.duplicateArtwork() }
+    @objc func deleteArtwork() { model.deleteArtwork() }
+    @objc func rotateLeft() { model.transformArtwork(rotate: -90) }
+    @objc func rotateRight() { model.transformArtwork(rotate: 90) }
+    @objc func flipHorizontal() { model.transformArtwork(flipHorizontal: true) }
+    @objc func flipVertical() { model.transformArtwork(flipVertical: true) }
     @objc func saveProject() { model.save() }
     @objc func saveAs() { model.save(asCopy: true) }
     @objc func exportJob() { model.export() }
@@ -939,6 +976,7 @@ struct Inspector: View {
                                     AssignmentMenu(selection: Binding(get: { model.assignment(object.id) },
                                         set: { model.assign(object.id, to: $0) }))
                                 }
+                                .contextMenu { Button("Objekt löschen") { model.deleteObject(object.id) } }
 
                             }
                         }.padding(.vertical, 4)
@@ -997,11 +1035,19 @@ struct Inspector: View {
                 }
             }
             Section("Position und Größe") {
-                NumberField("X", value: $model.project.x_mm, unit: "mm")
-                NumberField("Y", value: $model.project.y_mm, unit: "mm")
+                HStack(alignment: .center, spacing: 12) {
+                    ReferencePointPicker(x: $model.referenceX, y: $model.referenceY)
+                    VStack(spacing: 6) {
+                        NumberField("X", value: Binding(get: { model.referencePoint.0 },
+                            set: { model.project.x_mm = $0 - model.project.width_mm * model.referenceX }), unit: "mm")
+                        NumberField("Y", value: Binding(get: { model.referencePoint.1 },
+                            set: { model.project.y_mm = $0 - model.project.height_mm * model.referenceY }), unit: "mm")
+                    }
+                }
                 NumberField("Breite", value: Binding(get: { model.project.width_mm }, set: { model.changeWidth($0) }), unit: "mm")
                 NumberField("Höhe", value: Binding(get: { model.project.height_mm }, set: { model.changeHeight($0) }), unit: "mm")
                 Toggle("Seitenverhältnis beibehalten", isOn: $model.keepProportions)
+                TransformControls(model: model)
                 Button("Auf dem Arbeitsbett zentrieren") { model.center() }.disabled(!model.project.hasArtwork)
             }
             Section {
@@ -1323,9 +1369,48 @@ final class BedView: NSView {
         case 124: model.project.x_mm = min(max(0, model.project.bed_width_mm - model.project.width_mm), model.project.x_mm + step)
         case 125: model.project.y_mm = min(max(0, model.project.bed_height_mm - model.project.height_mm), model.project.y_mm + step)
         case 126: model.project.y_mm = max(0, model.project.y_mm - step)
+        // ⌫, ⌘⌫ und Entf löschen das Motiv (⌘Z widerruft).
+        case 51, 117: model.deleteArtwork()
         default: super.keyDown(with: event)
         }
     }
+    override func menu(for event: NSEvent) -> NSMenu? {
+        let point = convert(event.locationInWindow, from: nil)
+        guard !model.busy, model.project.hasArtwork, motif.contains(point) else { return nil }
+        window?.makeFirstResponder(self)
+        let menu = NSMenu()
+        func item(_ title: String, _ action: Selector) {
+            let entry = NSMenuItem(title: title, action: action, keyEquivalent: "")
+            entry.target = self
+            menu.addItem(entry)
+        }
+        item("Duplizieren", #selector(duplicateArtwork))
+        item("Kopien im Raster …", #selector(arrayCopies))
+        item("Teile verschachteln (Nesting) …", #selector(nestParts))
+        menu.addItem(.separator())
+        item("90° nach links drehen", #selector(rotateLeft))
+        item("90° nach rechts drehen", #selector(rotateRight))
+        item("Horizontal spiegeln", #selector(flipHorizontal))
+        item("Vertikal spiegeln", #selector(flipVertical))
+        menu.addItem(.separator())
+        item("Auf dem Arbeitsbett zentrieren", #selector(centerArtwork))
+        menu.addItem(.separator())
+        item("Löschen", #selector(deleteArtwork))
+        return menu
+    }
+    @objc func duplicateArtwork() { model.duplicateArtwork() }
+    @objc func arrayCopies() { model.composeTool = .array }
+    @objc func nestParts() { model.composeTool = .nest }
+    @objc func rotateLeft() { model.transformArtwork(rotate: -90) }
+    @objc func rotateRight() { model.transformArtwork(rotate: 90) }
+    @objc func flipHorizontal() { model.transformArtwork(flipHorizontal: true) }
+    @objc func flipVertical() { model.transformArtwork(flipVertical: true) }
+    @objc func centerArtwork() { model.center() }
+    @objc func deleteArtwork() { model.deleteArtwork() }
+}
+
+extension BedView: NSMenuItemValidation {
+    func validateMenuItem(_ item: NSMenuItem) -> Bool { model.project.hasArtwork && !model.busy }
 }
 
 /// Device list, rotary jobs and the camera pipeline, using an isolated

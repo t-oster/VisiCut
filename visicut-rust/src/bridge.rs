@@ -308,6 +308,30 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
             let (project, _) = crate::compose::add_objects(&project, &objects)?;
             composed(project, Vec::new())
         }
+        "transform" => {
+            let project = crate::compose::transform(
+                &get_project(request)?,
+                request["rotate_deg"].as_f64().unwrap_or(0.0),
+                request["flip_horizontal"].as_bool().unwrap_or(false),
+                request["flip_vertical"].as_bool().unwrap_or(false),
+            )?;
+            composed(project, Vec::new())
+        }
+        "duplicate" => composed(
+            crate::compose::duplicate(&get_project(request)?, 5.0)?,
+            Vec::new(),
+        ),
+        "remove_objects" => {
+            let objects: Vec<usize> = get(request, "objects")?;
+            let project = crate::compose::remove_objects(&get_project(request)?, &objects)?;
+            if project.svg.is_empty() {
+                let objects: Vec<crate::selection::Object> = Vec::new();
+                return Ok(
+                    json!({"project": project, "objects": objects, "warnings": Vec::<String>::new()}),
+                );
+            }
+            composed(project, Vec::new())
+        }
         "array" => {
             let number = |key: &str| request[key].as_f64().ok_or(format!("{key} fehlt"));
             let project = crate::compose::array(
@@ -472,6 +496,17 @@ mod tests {
             "columns": 2, "rows": 1, "gap_x_mm": 5.0, "gap_y_mm": 5.0}))
         .unwrap();
         assert_eq!(copies["objects"].as_array().unwrap().len(), 14);
+        let turned =
+            execute(&json!({"action": "transform", "project": project, "rotate_deg": 90.0}))
+                .unwrap();
+        let turned: Project = serde_json::from_value(turned["project"].clone()).unwrap();
+        assert!((turned.width_mm - project.height_mm).abs() < 1e-3);
+        let fewer =
+            execute(&json!({"action": "remove_objects", "project": project, "objects": [6]}))
+                .unwrap();
+        assert_eq!(fewer["objects"].as_array().unwrap().len(), 6);
+        let twice = execute(&json!({"action": "duplicate", "project": project})).unwrap();
+        assert_eq!(twice["objects"].as_array().unwrap().len(), 14);
         let nested = execute(&json!({"action": "nest", "project": project,
             "settings": {"area_mm": [0.0, 0.0, 300.0, 60.0], "quantity": 3}}))
         .unwrap();

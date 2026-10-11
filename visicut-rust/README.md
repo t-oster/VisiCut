@@ -7,7 +7,7 @@ Erster Ziel-Lasercutter: LTT iLaser 4000 des FAU FabLabs.
 ## Starten
 
 Die lokal gebaute App befindet sich in `dist/VisiCutRust.app`.
-Version 0.8.0 benötigt macOS 14 oder neuer, weder Java noch Maven.
+Version 0.9.0 benötigt macOS 14 oder neuer, weder Java noch Maven.
 Die macOS-App wird nur für Apple Silicon
 gebaut und veröffentlicht; Intel-Macs werden nicht unterstützt.
 
@@ -249,6 +249,17 @@ Das Menü **Objekt** ergänzt das Motiv ohne Umweg über Inkscape:
   Umrissrechtecken auf eine Fläche verteilt (größte zuerst, freie Rechtecke,
   optional um 90° gedreht). Teile, die nicht passen, werden gemeldet. Echte
   Konturverschachtelung ist nicht enthalten.
+
+**Position und Größe** arbeiten wie in Grafikprogrammen: Der Bezugspunkt
+(3 × 3 Kästchen) legt fest, auf welchen Punkt des Motivs sich X/Y beziehen
+und welcher Punkt bei Größenänderungen stehen bleibt. Darunter lässt sich das
+Motiv um einen Winkel (positiv im Uhrzeigersinn) oder in 90°-Schritten drehen
+und horizontal oder vertikal spiegeln; Verzerren gibt es bewusst nicht.
+Der **Rechtsklick auf das Motiv** bietet Duplizieren, Kopien im Raster,
+Nesting, Drehen, Spiegeln, Zentrieren und Löschen. **Entf/⌫** (macOS auch
+⌘⌫) löscht das Motiv, sobald das Arbeitsbett aktiv ist; einzelne Objekte
+löscht der Rechtsklick in der Objektliste. **Widerrufen** (⌘Z/Strg+Z)
+nimmt die letzte dieser Aktionen zurück.
 
 Das bisherige Motiv bleibt dabei unverändert als eingebettetes SVG erhalten,
 Objektnummern und Regeln bleiben gültig. Ein SVG mit DTD-Entitäten
