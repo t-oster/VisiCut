@@ -386,6 +386,18 @@ fn append_part(
     match part.operation {
         Operation::Cut | Operation::Mark => {
             let paths = geometry::contours(&source)?;
+            // Optional: parts that run along an earlier line of this step are
+            // cut once (passes and parameter sets still repeat everything).
+            let (paths, duplicates) = if project.remove_duplicate_lines {
+                crate::overlap::remove_duplicates(paths)
+            } else {
+                (paths, crate::overlap::Removed::default())
+            };
+            if paths.is_empty() {
+                return Err(
+                    "Nach dem Entfernen doppelter Linien bleibt nichts zu schneiden".into(),
+                );
+            }
             let passes: usize = part.sets.iter().map(|s| s.passes as usize).sum();
             let estimated_bytes = paths
                 .iter()
@@ -510,6 +522,12 @@ fn append_part(
             );
             if circles + curves > 0 {
                 text += &format!(" · {circles} Kreisbefehle · {curves} Kurven");
+            }
+            if duplicates.pieces > 0 {
+                text += &format!(
+                    " · {} doppelte Abschnitte ({:.0} mm) entfernt",
+                    duplicates.pieces, duplicates.length_mm
+                );
             }
             description = text;
         }
@@ -1263,6 +1281,48 @@ mod tests {
             default_job.estimated_seconds
         );
         assert_framing(&job.jobs[0].bytes);
+    }
+
+    #[test]
+    fn duplicate_lines_are_cut_once_only_when_enabled() {
+        // Two adjacent squares share their middle edge.
+        let project = Project {
+            width_mm: 60.0,
+            height_mm: 30.0,
+            svg: r#"<svg xmlns="http://www.w3.org/2000/svg" width="60mm" height="30mm" viewBox="0 0 60 30"><rect x="5" y="5" width="20" height="20" fill="none" stroke="red"/><rect x="25" y="5" width="20" height="20" fill="none" stroke="red"/></svg>"#.into(),
+            ..Default::default()
+        };
+        let plain = prepare(&project).unwrap();
+        assert!(!plain.steps[0].description.contains("doppelte"));
+        let deduped = prepare(&Project {
+            remove_duplicate_lines: true,
+            ..project.clone()
+        })
+        .unwrap();
+        assert!(
+            deduped.steps[0]
+                .description
+                .contains("1 doppelte Abschnitte (20 mm) entfernt"),
+            "{}",
+            deduped.steps[0].description
+        );
+        assert!(deduped.estimated_seconds < plain.estimated_seconds);
+        assert_framing(&deduped.jobs[0].bytes);
+        // Without duplicates the option changes nothing.
+        let single = Project {
+            svg: project.svg.replace(r#"<rect x="25""#, r#"<rect x="35""#),
+            ..project
+        };
+        assert_eq!(
+            prepare(&single).unwrap().jobs[0].bytes,
+            prepare(&Project {
+                remove_duplicate_lines: true,
+                ..single.clone()
+            })
+            .unwrap()
+            .jobs[0]
+                .bytes
+        );
     }
 
     fn three_modes() -> Project {

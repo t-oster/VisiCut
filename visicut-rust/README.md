@@ -139,7 +139,10 @@ lokal nach einem Build für die jeweilige Host-Architektur.
    **Schnittreihenfolge** „Wie VisiCut“ (Standard, byte-gleich mit Java) oder
    „Kürzeste Leerfahrten (experimentell)“: weiterhin innen zuerst, dann
    jeweils der nächstgelegene Pfad; deutlich weniger Leerfahrt, aber am Gerät
-   noch nicht erprobt, daher mit Hinweis. **Gravieren**
+   noch nicht erprobt, daher mit Hinweis. **Doppelte Linien entfernen**
+   schneidet Abschnitte, die genau auf einer schon geschnittenen Linie
+   desselben Schritts liegen (gemeinsame Kanten, doppelt platzierte Objekte),
+   nur einmal; die Schrittbeschreibung nennt, wie viel entfernt wurde. **Gravieren**
    rastert mit 500 DPI und wählbarem Verfahren (Standard „Halbton
    aufgehellt“ wie im FAU-Profil, außerdem
    Floyd-Steinberg, Halbton, Geordnet, Mittelwert, Raster, Zufall, Schwellwert),
