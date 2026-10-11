@@ -22,9 +22,10 @@ Java-Treibers und werden dort nicht gespiegelt.
 
 Das veröffentlichte FAU-Profil verwendet `lasercutter2:9100`,
 1000 × 600 mm, 4000 Maschinen-DPI, 500 Job-DPI und 338,677 mm/s
-nominale Schnittgeschwindigkeit. Der Faktor zwischen Raster- und
-Schnittgeschwindigkeit ist 6,4 wie im Java-Treiber. Die Raster-Verschiebetabelle
-ist [-2, -4, -7, -10, -13, -15, -17, -19, -21, -23].
+nominale Schnittgeschwindigkeit. Für die Zeitschätzung ist Gravieren 6-mal so
+schnell wie Schneiden (`vspeedfactor` des Geräts; Java schätzt 6,4). Die
+Raster-Verschiebetabelle des FAU-Geräts ist
+[-2, -4, -7, -10, -13, -15, -17, -19, -21, -23] (je Gerät einstellbar).
 
 Seit Version 0.2.1 ist die eingestellte Geschwindigkeit ein Prozentwert
 von 0,1 bis 100 %, wie im ursprünglichen LTT-Treiber und in den FAU-Profilen.
