@@ -6,7 +6,7 @@ mod vector;
 
 use crate::{
     geometry,
-    project::{CutOrder, Operation, ParameterSet, Project},
+    project::{CutOrder, MachineSettings, Operation, ParameterSet, Project},
     raster::{Raster, RasterSettings},
     timeline::{MotionKind, Program, Timeline},
 };
@@ -23,12 +23,11 @@ const BED_HEIGHT: f64 = 600.0;
 const BED_WIDTH: f64 = 1000.0;
 /// Cutting speed at 100 % (FAU device profile, nominalCuttingSpeed).
 const NOMINAL_CUT_SPEED: f64 = 338.677;
-/// Full engrave speed relative to full cutting speed (Java driver).
-const ENGRAVE_SPEED_FACTOR: f64 = 6.4;
-/// Engrave shift table of the FAU device for 10 %, 20 %, …, 100 % speed.
-const ENGRAVE_SHIFT: [f32; 10] = [
-    -2.0, -4.0, -7.0, -10.0, -13.0, -15.0, -17.0, -19.0, -21.0, -23.0,
-];
+/// Full engrave speed relative to full cutting speed, only for the time
+/// estimate. The controller divides the vector speed by `vspeedfactor` = 6
+/// (iLaser 4000 configuration) and not the raster speed; the Java driver
+/// estimated 6.4.
+const ENGRAVE_SPEED_FACTOR: f64 = 6.0;
 
 fn raw(mm: f64) -> u32 {
     (mm * MACHINE_DPI / 25.4).round() as u32
@@ -151,6 +150,8 @@ struct Part {
     svg: String,
     raster: RasterSettings,
     sets: Vec<ParameterSet>,
+    /// Extra engrave shift in pixels (test pattern).
+    shift_px: i32,
 }
 
 fn overscan(operation: Operation, speed_percent: f32) -> f32 {
@@ -188,6 +189,7 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
                 speed_percent: project.speed_percent,
                 passes: project.passes,
             }],
+            shift_px: 0,
         });
     } else {
         let selections = crate::mapping::resolve(project)?;
@@ -200,6 +202,7 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
                 svg: crate::selection::filter(&project.svg, &selected)?,
                 raster: step.raster,
                 sets: step.parameters(),
+                shift_px: step.engrave_shift_px,
             });
         }
     }
@@ -241,6 +244,17 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
         warnings.push(
             "Experimentelle Schnittreihenfolge „Kürzeste Leerfahrten“: weicht von VisiCut ab und ist am Gerät nicht erprobt; den ersten Auftrag beaufsichtigen"
                 .into(),
+        );
+    }
+    if project.machine.experimental_curves() && parts.iter().any(|p| !p.operation.is_raster()) {
+        warnings.push(format!(
+            "Experimentelle Kurvenbeschleunigung {:.0} mm/s² (LibLaserCut: 2000): Kurven und Kreise werden anders geplant als in VisiCut; den ersten Auftrag beaufsichtigen",
+            project.machine.curve_acceleration_mm_s2
+        ));
+    }
+    if project.steps.iter().any(|s| s.engrave_shift_px != 0) {
+        warnings.push(
+            "Zeilenversatz-Testmuster: einzelne Schritte haben einen zusätzlichen Versatz".into(),
         );
     }
     // Finishing operations first, cutting last; one LTT file per operation
@@ -492,6 +506,8 @@ fn append_part(
                     Some(&mut program),
                     kind,
                 );
+                encoder.curve_acceleration = project.machine.curve_acceleration_mm_s2;
+                encoder.pierce_delay = project.machine.pierce_delay_ms / 1000.0;
                 let mut current: Option<order::SetKey> = None;
                 for element in &ordered {
                     let key = keys[element.set];
@@ -560,15 +576,7 @@ fn append_part(
             for set in &part.sets {
                 let mut program = Program::new(part.operation);
                 let encoded;
-                (encoded, lines) = raster_code(
-                    project,
-                    area,
-                    part.operation,
-                    &raster,
-                    &part.raster,
-                    set,
-                    &mut program,
-                )?;
+                (encoded, lines) = raster_code(project, area, part, &raster, set, &mut program)?;
                 // Java adds one RasterPart per pass; each sends the colour
                 // code and its settings and starts again to the right.
                 for _ in 0..set.passes {
@@ -941,36 +949,35 @@ fn content_bounds(group: &usvg::Group) -> Option<tiny_skia::Rect> {
 }
 
 /// getEngraveShiftPixels: line offset in raster pixels for the given speed.
-fn engrave_shift_pixels(speed: f32) -> f64 {
-    let value = if speed < 10.0 {
-        ENGRAVE_SHIFT[0]
-    } else if speed >= 100.0 {
-        ENGRAVE_SHIFT[9]
-    } else {
-        let low = (speed / 10.0) as usize - 1;
-        let alpha = (speed - (low + 1) as f32 * 10.0) / 10.0;
-        ENGRAVE_SHIFT[low] * (1.0 - alpha) + ENGRAVE_SHIFT[low + 1] * alpha
-    };
-    value as f64 * RASTER_DPI / MACHINE_DPI + 0.5
+fn engrave_shift_pixels(machine: &MachineSettings, speed: f32) -> f64 {
+    machine.engrave_shift_at(speed) as f64 * RASTER_DPI / MACHINE_DPI + 0.5
+}
+
+/// Whole pixels every engrave line is moved against its travel direction:
+/// the Java driver's truncated offset plus the extra shift of a step.
+/// Negative values move the line in travel direction.
+pub fn engrave_shift_px(machine: &MachineSettings, speed: f32, extra: i32) -> i32 {
+    (-engrave_shift_pixels(machine, speed)).trunc() as i32 + extra
 }
 
 /// The raster lines of one RasterPart and their count.
 fn raster_code(
     project: &Project,
     area: RasterArea,
-    operation: Operation,
+    part: &Part,
     raster: &Raster,
-    options: &RasterSettings,
     set: &ParameterSet,
     program: &mut Program,
 ) -> Result<(Vec<u8>, usize), String> {
+    let (operation, options, extra_shift_px) = (part.operation, &part.raster, part.shift_px);
     let speed = set.speed_percent;
-    let offset = engrave_shift_pixels(speed);
+    let offset = engrave_shift_pixels(&project.machine, speed);
     let per_byte = (8 / raster.bits_per_pixel) as i32;
     // Shift by whole pixels for 3D rows so power values stay intact; for
     // 1-bit rows this equals the Java driver's bit shift.
-    let shift = (-offset) as usize * raster.bits_per_pixel as usize;
-    let spare = offset.abs().ceil() as i32;
+    let shift_px = engrave_shift_px(&project.machine, speed, extra_shift_px);
+    let shift = shift_px * raster.bits_per_pixel as i32;
+    let spare = (offset.abs().ceil() as i32).max(shift_px.abs());
     let (origin_x, origin_y) = (area.x, area.y);
     let max_x = px(BED_WIDTH);
     let overscan_bytes = (px(overscan(operation, speed) as f64) + per_byte - 1) / per_byte;
@@ -1027,7 +1034,11 @@ fn raster_code(
                 data.iter_mut().for_each(|b| *b = b.reverse_bits());
             }
         }
-        left_shift(&mut data, shift);
+        if shift >= 0 {
+            left_shift(&mut data, shift as usize);
+        } else {
+            right_shift(&mut data, shift.unsigned_abs() as usize);
+        }
         let compressed = compress(&data);
         encoded.extend(if right { [0x1b, 0x30] } else { [0x1b, 0x31] });
         dword(&mut encoded, compressed.len() as u32 + 8);
@@ -1047,6 +1058,25 @@ fn raster_code(
         return Err("Gravurjob ist größer als 256 MB".into());
     }
     Ok((encoded, count))
+}
+
+/// Shift towards the end, filling with zeros (custom shift tables).
+fn right_shift(bytes: &mut [u8], bits: usize) {
+    let whole = (bits / 8).min(bytes.len());
+    bytes.rotate_right(whole);
+    bytes[..whole].fill(0);
+    let bits = bits % 8;
+    if bits == 0 {
+        return;
+    }
+    for i in (0..bytes.len()).rev() {
+        let carry = if i == 0 {
+            0
+        } else {
+            bytes[i - 1] << (8 - bits)
+        };
+        bytes[i] = (bytes[i] >> bits) | carry;
+    }
 }
 
 /// ByteArrayList.leftShiftBits: shift towards the start, filling with zeros.
@@ -1475,18 +1505,25 @@ mod tests {
         let mut p = Project { x_mm: 0.0, y_mm: 0.0, width_mm: 100.0, height_mm: 10.0,
             speed_percent: 10.0,
             svg: r#"<svg xmlns="http://www.w3.org/2000/svg" width="100mm" height="10mm" viewBox="0 0 100 10"><path d="M0 0L100 0" stroke="black"/></svg>"#.into(), ..Default::default() };
-        // Java estimate: distance plus acceleration distance v²/a at 2000 mm/s².
-        let expected = |v: f64| (100.0 + (v * v / 2000.0).sqrt()) / v;
+        // Java estimate: distance plus acceleration distance v²/a at 2000 mm/s²,
+        // plus the controller's dwell at the start of the contour.
+        let pierce = p.machine.pierce_delay_ms / 1000.0;
+        assert!(pierce > 0.0);
+        let expected = |v: f64| (100.0 + (v * v / 2000.0).sqrt()) / v + pierce;
         let one = prepare(&p).unwrap().estimated_seconds;
         assert!((one - expected(33.8677)).abs() < 0.003, "{one}");
         p.speed_percent = 20.0;
         let faster = prepare(&p).unwrap().estimated_seconds;
         assert!((faster - expected(67.7354)).abs() < 0.003, "{faster}");
         // Java joins the line and its second pass into one path there and
-        // back: no travel in between, the reversal is a corner.
+        // back: no travel in between, the reversal is a corner, one start.
         p.passes = 2;
         let twice = prepare(&p).unwrap().estimated_seconds;
-        assert!((twice - 2.0 * faster).abs() < 0.003, "{twice}");
+        assert!((twice - (2.0 * faster - pierce)).abs() < 0.003, "{twice}");
+        p.machine.pierce_delay_ms = 0.0;
+        p.passes = 1;
+        let without = prepare(&p).unwrap().estimated_seconds;
+        assert!((faster - without - pierce).abs() < 1e-9);
     }
 
     #[test]
@@ -1794,5 +1831,71 @@ mod tests {
         });
         transmit("127.0.0.1", port, b"test job").unwrap();
         assert_eq!(receiver.join().unwrap(), b"test job");
+    }
+
+    #[test]
+    fn right_shift_moves_bits_towards_the_end() {
+        let mut bytes = [0b1000_0001, 0b1111_0000, 0];
+        right_shift(&mut bytes, 3);
+        assert_eq!(bytes, [0b0001_0000, 0b0011_1110, 0]);
+        let mut bytes = [1, 2, 3];
+        right_shift(&mut bytes, 8);
+        assert_eq!(bytes, [0, 1, 2]);
+        let mut back = [0b0001_0000, 0b0011_1110, 0];
+        left_shift(&mut back, 3);
+        assert_eq!(back, [0b1000_0001, 0b1111_0000, 0]);
+    }
+
+    #[test]
+    fn machine_table_and_step_shift_move_engrave_lines() {
+        let machine = MachineSettings::default();
+        // FAU table: truncated like getEngraveShiftPixels in the Java driver.
+        assert_eq!(engrave_shift_px(&machine, 10.0, 0), 0);
+        assert_eq!(engrave_shift_px(&machine, 100.0, 0), 2);
+        assert_eq!(engrave_shift_px(&machine, 100.0, -3), -1);
+        let svg = r#"<svg xmlns="http://www.w3.org/2000/svg" width="20mm" height="2mm" viewBox="0 0 20 2"><rect x="5" width="5" height="2"/></svg>"#;
+        let project = |shift: [f32; 10]| Project {
+            svg: svg.into(),
+            x_mm: 100.0,
+            y_mm: 100.0,
+            width_mm: 20.0,
+            height_mm: 2.0,
+            operation: Operation::Engrave,
+            speed_percent: 100.0,
+            raster: RasterSettings {
+                dithering: crate::raster::Dithering::Threshold,
+                ..RasterSettings::default()
+            },
+            machine: MachineSettings {
+                engrave_shift: shift,
+                ..MachineSettings::default()
+            },
+            ..Default::default()
+        };
+        let fau = prepare(&project(crate::project::FAU_ENGRAVE_SHIFT)).unwrap();
+        let none = prepare(&project([-4.0; 10])).unwrap();
+        let forward = prepare(&project([8.0; 10])).unwrap();
+        assert_ne!(fau.jobs[0].bytes, none.jobs[0].bytes);
+        assert_ne!(none.jobs[0].bytes, forward.jobs[0].bytes);
+    }
+
+    #[test]
+    fn curve_acceleration_is_configurable_and_experimental() {
+        let mut p = Project {
+            svg: r#"<svg xmlns="http://www.w3.org/2000/svg" width="60mm" height="40mm" viewBox="0 0 60 40"><path d="M5 20C5 0 55 0 55 20S5 40 5 20" fill="none" stroke="black"/></svg>"#.into(),
+            x_mm: 10.0,
+            y_mm: 10.0,
+            width_mm: 60.0,
+            height_mm: 40.0,
+            speed_percent: 100.0,
+            ..Default::default()
+        };
+        let standard = prepare(&p).unwrap();
+        assert!(standard.warnings.is_empty());
+        p.machine.curve_acceleration_mm_s2 = crate::project::FIRMWARE_CURVE_ACCELERATION;
+        let gentle = prepare(&p).unwrap();
+        assert!(gentle.warnings[0].contains("Experimentelle Kurvenbeschleunigung"));
+        assert_ne!(standard.jobs[0].bytes, gentle.jobs[0].bytes);
+        assert!(gentle.estimated_seconds > standard.estimated_seconds);
     }
 }

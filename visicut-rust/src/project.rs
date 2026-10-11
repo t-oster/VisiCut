@@ -42,6 +42,87 @@ pub struct Project {
     /// Cut lines that run along an earlier line of the same step only once.
     #[serde(default)]
     pub remove_duplicate_lines: bool,
+    /// Machine-specific settings, copied from the selected device.
+    #[serde(default)]
+    pub machine: MachineSettings,
+}
+
+/// Engrave shift table of the FAU device (`engraveShiftList`) for 10 %, 20 %,
+/// …, 100 % speed, in 1/4000 inch.
+pub const FAU_ENGRAVE_SHIFT: [f32; 10] = [
+    -2.0, -4.0, -7.0, -10.0, -13.0, -15.0, -17.0, -19.0, -21.0, -23.0,
+];
+/// LibLaserCut's `tangentCurveMaxAcceleration` of the FAU device (mm/s²).
+pub const LIBLASERCUT_CURVE_ACCELERATION: f64 = 2000.0;
+/// Fixed ramp of the controller for joint curves: 0.1 g (mm/s²).
+pub const FIRMWARE_CURVE_ACCELERATION: f64 = 981.0;
+
+/// Settings that belong to one machine rather than to a job.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct MachineSettings {
+    /// Line shift of engraving per speed 10 %, 20 %, …, 100 % in 1/4000 inch
+    /// (8 units = one 500-DPI pixel). Each line is moved against its travel
+    /// direction; the controller of an iLaser 4000 does not correct it itself.
+    pub engrave_shift: [f32; 10],
+    /// Acceleration for the speed planning of joint curves and the speed
+    /// limit of circles (mm/s²). Values other than LibLaserCut's are
+    /// experimental.
+    pub curve_acceleration_mm_s2: f64,
+    /// Dwell of the controller after reaching the start of a contour
+    /// (`pddelay`), only used for the time estimate (ms).
+    pub pierce_delay_ms: f64,
+}
+
+impl Default for MachineSettings {
+    fn default() -> Self {
+        Self {
+            engrave_shift: FAU_ENGRAVE_SHIFT,
+            curve_acceleration_mm_s2: LIBLASERCUT_CURVE_ACCELERATION,
+            pierce_delay_ms: 50.0,
+        }
+    }
+}
+
+impl MachineSettings {
+    pub fn validate(&self) -> Result<(), String> {
+        if self
+            .engrave_shift
+            .iter()
+            .any(|v| !v.is_finite() || !(-400.0..=400.0).contains(v))
+        {
+            return Err("Zeilenversatz muss zwischen −400 und 400 (1/4000 Zoll) liegen".into());
+        }
+        if !self.curve_acceleration_mm_s2.is_finite()
+            || !(500.0..=5000.0).contains(&self.curve_acceleration_mm_s2)
+        {
+            return Err("Kurvenbeschleunigung muss zwischen 500 und 5000 mm/s² liegen".into());
+        }
+        if !self.pierce_delay_ms.is_finite() || !(0.0..=1000.0).contains(&self.pierce_delay_ms) {
+            return Err("Verweilzeit am Konturstart muss zwischen 0 und 1000 ms liegen".into());
+        }
+        Ok(())
+    }
+
+    /// The curve acceleration differs from LibLaserCut's (experimental).
+    pub fn experimental_curves(&self) -> bool {
+        (self.curve_acceleration_mm_s2 - LIBLASERCUT_CURVE_ACCELERATION).abs() > 1e-9
+    }
+
+    /// Interpolated table value for a speed, as `getEngraveShiftPixels` does
+    /// before converting to pixels (1/4000 inch).
+    pub fn engrave_shift_at(&self, speed_percent: f32) -> f32 {
+        let table = &self.engrave_shift;
+        if speed_percent < 10.0 {
+            table[0]
+        } else if speed_percent >= 100.0 {
+            table[9]
+        } else {
+            let low = (speed_percent / 10.0) as usize - 1;
+            let alpha = (speed_percent - (low + 1) as f32 * 10.0) / 10.0;
+            table[low] * (1.0 - alpha) + table[low + 1] * alpha
+        }
+    }
 }
 
 /// Order of the vector paths of a step.
@@ -84,6 +165,14 @@ pub struct JobStep {
     pub raster: RasterSettings,
     #[serde(default)]
     pub additional: Vec<ParameterSet>,
+    /// Extra line shift of an engraving in 500-DPI pixels on top of the
+    /// machine table; used by the engrave shift test pattern.
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub engrave_shift_px: i32,
+}
+
+fn is_zero(value: &i32) -> bool {
+    *value == 0
 }
 
 impl JobStep {
@@ -98,6 +187,7 @@ impl JobStep {
             rest: false,
             raster: RasterSettings::default(),
             additional: Vec::new(),
+            engrave_shift_px: 0,
         }
     }
 
@@ -166,6 +256,8 @@ struct ProjectFile {
     cut_order: CutOrder,
     #[serde(default)]
     remove_duplicate_lines: bool,
+    #[serde(default)]
+    machine: MachineSettings,
 }
 
 impl TryFrom<ProjectFile> for Project {
@@ -212,6 +304,7 @@ impl TryFrom<ProjectFile> for Project {
             ignore_filters: file.ignore_filters,
             cut_order: file.cut_order,
             remove_duplicate_lines: file.remove_duplicate_lines,
+            machine: file.machine,
         })
     }
 }
@@ -286,6 +379,7 @@ impl Default for Project {
             ignore_filters: Vec::new(),
             cut_order: CutOrder::VisiCut,
             remove_duplicate_lines: false,
+            machine: MachineSettings::default(),
         }
     }
 }
@@ -344,6 +438,7 @@ impl Project {
             return Err("Position muss endlich sein".into());
         }
         self.raster.validate()?;
+        self.machine.validate()?;
         if self.steps.len() > 64 {
             return Err("Höchstens 64 Bearbeitungsschritte sind zulässig".into());
         }
@@ -360,6 +455,11 @@ impl Project {
                 set.validate()?;
             }
             step.raster.validate()?;
+            if !(-50..=50).contains(&step.engrave_shift_px) {
+                return Err(
+                    "Zusätzlicher Zeilenversatz muss zwischen −50 und 50 Pixeln liegen".into(),
+                );
+            }
             if (step.rest || step.filters.is_some()) && !step.objects.is_empty() {
                 return Err(
                     "Regelschritte dürfen keine einzeln gewählten Objekte enthalten".into(),

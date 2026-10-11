@@ -290,6 +290,22 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
                 json!({"project": project, "preview": image, "objects": crate::selection::objects(&project.svg)?}),
             )
         }
+        "shift_pattern" => {
+            let power = request["power_percent"].as_f64().ok_or("Leistung fehlt")? as f32;
+            if !(1.0..=100.0).contains(&power) {
+                return Err("Leistung muss zwischen 1 und 100 % liegen".into());
+            }
+            let project = crate::shift_calibration::project(&get_project(request)?, power);
+            let image = preview(&project.svg)?;
+            Ok(
+                json!({"project": project, "preview": image, "objects": crate::selection::objects(&project.svg)?}),
+            )
+        }
+        "apply_shift_test" => {
+            let machine: crate::project::MachineSettings = get(request, "machine")?;
+            let best: [usize; 10] = get(request, "best")?;
+            Ok(json!({"machine": crate::shift_calibration::apply(&machine, &best)?}))
+        }
         "validate_document" => {
             get_project(request)?.validate_document()?;
             Ok(json!({}))
@@ -368,6 +384,33 @@ mod tests {
             assert_eq!(value["ok"], false);
             visicut_free(response);
         }
+    }
+    #[test]
+    fn shift_test_pattern_and_result_roundtrip_through_the_bridge() {
+        let result = execute(
+            &json!({"action": "shift_pattern", "project": Project::default(), "power_percent": 25.0}),
+        )
+        .unwrap();
+        let project: Project = serde_json::from_value(result["project"].clone()).unwrap();
+        assert_eq!(project.steps.len(), 50);
+        assert_eq!(project.steps[0].engrave_shift_px, -2);
+        assert!(
+            result["project"]["steps"][2]
+                .get("engrave_shift_px")
+                .is_none()
+        );
+        assert!(
+            execute(&json!({"action": "shift_pattern", "project": Project::default(), "power_percent": 0.0}))
+                .is_err()
+        );
+        let machine = crate::project::MachineSettings::default();
+        let result = execute(&json!({"action": "apply_shift_test", "machine": machine,
+            "best": [3, 3, 3, 3, 3, 3, 3, 3, 3, 5]}))
+        .unwrap();
+        let new: crate::project::MachineSettings =
+            serde_json::from_value(result["machine"].clone()).unwrap();
+        assert_eq!(new.engrave_shift[..9], machine.engrave_shift[..9]);
+        assert_ne!(new.engrave_shift[9], machine.engrave_shift[9]);
     }
     #[test]
     fn demo_bridge_produces_a_decodable_png() {
