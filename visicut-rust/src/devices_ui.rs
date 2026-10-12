@@ -136,6 +136,12 @@ impl DeviceUi {
         }
     }
 
+    /// Rulers and Y count from the bottom left corner of the bed (display
+    /// only, VisiCut `originBottomLeft`).
+    pub fn origin_bottom_left(&self) -> bool {
+        self.device().origin_bottom_left
+    }
+
     pub fn has_camera(&self) -> bool {
         !self.device().camera_url.is_empty()
     }
@@ -473,6 +479,16 @@ impl DeviceUi {
                             ui.end_row();
                             ui.label(tr("Rotationseinheit"));
                             ui.checkbox(&mut device.rotary_axis, tr("vorhanden"));
+                            ui.end_row();
+                            ui.label(tr("Koordinaten"));
+                            ui.checkbox(
+                                &mut device.origin_bottom_left,
+                                tr("Nullpunkt unten links"),
+                            )
+                            .on_hover_text(tr(
+                                "Lineale und Y-Koordinate zählen von unten links wie am Gerät; \
+                                 ändert den Auftrag nicht",
+                            ));
                             ui.end_row();
                             ui.label(tr("Kalibrierung"));
                             ui.horizontal(|ui| {

@@ -12,9 +12,22 @@ Jede Version hat einen Abschnitt `## <Version> – <Datum>`; der Release-Workflo
   Material“, „Neues Material“, Schildtext, Namen neuer Formen) entstehen in
   der gewählten Sprache. Ein Test stellt sicher, dass jeder Text in jeder
   Sprache mit denselben Platzhaltern übersetzt ist.
-- **Zuletzt geöffnet** (egui): **Datei → Zuletzt geöffnet** listet die zehn
-  zuletzt geöffneten oder gesicherten Dateien; Sprache und Liste stehen in
-  `app-settings.json` im Einstellungsordner.
+- **Mehrere Teile** (egui und macOS) wie die PlfParts in VisiCut: Jede
+  hinzugefügte Datei ist ein eigenes Teil mit eigener Position, Größe,
+  Drehung und Zuordnung (Gesamt, Einzeln, Regeln; PLF-Dateien behalten ihre
+  Zuordnung). Teile-Liste in der Seitenleiste, Klick auf ein Teil wählt es,
+  **Datei → Hinzufügen …** (Strg/⌘+Umschalt+O), Ablegen mehrerer Dateien,
+  **Teil duplizieren** und **Löschen** des gewählten Teils. Beim Senden werden
+  alle Teile zusammengeführt, weiterhin ein LTT-Auftrag je Verfahren; die
+  Vorschau zeigt alle Teile. Ältere Projekte öffnen unverändert als ein Teil.
+- **Nullpunkt unten links** (VisiCut `originBottomLeft`, egui und macOS):
+  Geräteoption, wird aus VisiCut-Geräten übernommen; Lineale und die
+  Y-Koordinate zählen dann von unten links, der Bezugspunkt steht unten
+  links. Nur Anzeige, der Auftrag ändert sich nicht.
+- **Zuletzt geöffnet** (egui und macOS): **Datei/Ablage → Zuletzt geöffnet**
+  listet die zehn zuletzt geöffneten oder gesicherten Dateien; unter
+  Windows/Linux stehen Sprache und Liste in `app-settings.json` im
+  Einstellungsordner, unter macOS in den Benutzereinstellungen.
 - **Oberfläche wie unter macOS** (egui): Werkzeugleiste mit Öffnen, Sichern,
   Vorschau, Export und Senden statt Knöpfen am Ende der Seitenleiste;
   Seitenleiste in der Reihenfolge der macOS-App (Projekt, Rotationseinheit,

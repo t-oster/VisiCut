@@ -449,7 +449,10 @@ impl Project {
                 || part.width_mm <= 0.0
                 || part.height_mm <= 0.0
             {
-                return Err(tr!("Teil „{name}“ ist leer oder hat keine Größe", name = part.name));
+                return Err(tr!(
+                    "Teil „{name}“ ist leer oder hat keine Größe",
+                    name = part.name
+                ));
             }
             if !self.fits_bed(part.x_mm, part.y_mm, part.width_mm, part.height_mm) {
                 return Err(tr!(
@@ -624,12 +627,11 @@ impl Project {
     /// Bounding box `[x, y, width, height]` of all parts in mm (the active
     /// part's box without other parts).
     pub fn bounds(&self) -> [f32; 4] {
-        let rects = std::iter::once([self.x_mm, self.y_mm, self.width_mm, self.height_mm])
-            .chain(
-                self.parts
-                    .iter()
-                    .map(|p| [p.x_mm, p.y_mm, p.width_mm, p.height_mm]),
-            );
+        let rects = std::iter::once([self.x_mm, self.y_mm, self.width_mm, self.height_mm]).chain(
+            self.parts
+                .iter()
+                .map(|p| [p.x_mm, p.y_mm, p.width_mm, p.height_mm]),
+        );
         let mut min = [f32::INFINITY; 2];
         let mut max = [f32::NEG_INFINITY; 2];
         for [x, y, w, h] in rects {

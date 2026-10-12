@@ -33,11 +33,14 @@ extension AppModel {
         do {
             let oldSteps = project.steps.count
             let oldObjects = objects.count
+            // Nach einem Teilwechsel gehören Schritte und Objektnummern zu einem
+            // anderen Teil; Dateien als Teile behalten ihre eigenen Zuordnungen.
+            let switchesPart = ["append", "select_part", "remove_part", "duplicate_part"].contains(action)
             let before = UndoState(project: project, image: image, objects: objects)
             let response: ProjectResponse = try RustCore.decode(action, project: project, values: values)
             accept(response, dirty: true)
             remember(before)
-            if project.steps.count > oldSteps {
+            if !switchesPart && project.steps.count > oldSteps {
                 for index in oldSteps..<project.steps.count where project.steps[index].objects.allSatisfy({ $0 >= oldObjects }) {
                     applyStepPreset(index)
                 }
@@ -63,9 +66,14 @@ extension AppModel {
         compose("duplicate", values: [:])
     }
 
-    /// Entfernt das Motiv; Material, Gerät und Einstellungen bleiben.
+    /// Entfernt das Motiv; Material, Gerät und Einstellungen bleiben. Gibt es
+    /// weitere Teile, entfällt nur das aktive Teil.
     func deleteArtwork() {
         guard project.hasArtwork, !busy else { return }
+        if !project.parts.isEmpty {
+            if compose("remove_part", values: [:]) { status = tr("Teil entfernt · ⌘Z stellt es wieder her") }
+            return
+        }
         remember(UndoState(project: project, image: image, objects: objects))
         project.svg = ""
         project.steps = []
@@ -82,8 +90,9 @@ extension AppModel {
         compose("remove_objects", values: ["objects": [id]])
     }
 
-    /// Abgelegte Dateien: Grafiken kommen neben das vorhandene Motiv (ohne
-    /// Motiv öffnet die erste), ein einzelnes Projekt wird geöffnet.
+    /// Abgelegte Dateien: jede Grafik wird ein eigenes Teil neben den
+    /// vorhandenen Teilen (ohne Motiv öffnet die erste), ein einzelnes
+    /// Projekt wird geöffnet.
     func dropFiles(_ urls: [URL]) {
         guard !busy else { return }
         let isProject = { (url: URL) in ["vcr", "json"].contains(url.pathExtension.lowercased()) }
@@ -99,7 +108,7 @@ extension AppModel {
             guard project.hasArtwork else { return }
         }
         if !graphics.isEmpty, compose("append", values: ["paths": graphics.map(\.path)]) {
-            status = tr("{count} Datei(en) hinzugefügt · {width} × {height} mm · ⌘Z widerruft", ["count": count, "width": Int(project.width_mm.rounded()), "height": Int(project.height_mm.rounded())])
+            status = tr("{count} Datei(en) als Teile hinzugefügt · ⌘Z widerruft", ["count": count])
         }
         if !skipped.isEmpty {
             error = ([error].compactMap { $0 } + skipped).joined(separator: "\n")
@@ -295,8 +304,10 @@ struct ComposeSheet: View {
             } footer: {
                 let w = Double(columns) * model.project.width_mm + Double(columns - 1) * gapX
                 let h = Double(rows) * model.project.height_mm + Double(rows - 1) * gapY
-                Text(tr("{count} Exemplare · {width} × {height} mm; Zuordnungen gelten für alle Kopien.", ["count": columns * rows, "width": Int(w.rounded()), "height": Int(h.rounded())]))
-                    .font(.caption).foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(tr("{count} Exemplare · {width} × {height} mm; Zuordnungen gelten für alle Kopien.", ["count": columns * rows, "width": Int(w.rounded()), "height": Int(h.rounded())]))
+                    if !model.project.parts.isEmpty { Text(tr("Wirkt nur auf das aktive Teil.")) }
+                }.font(.caption).foregroundStyle(.secondary)
             }
         case .nest:
             Section {
@@ -316,8 +327,10 @@ struct ComposeSheet: View {
                     }
                 }
             } header: { Text(tr("Fläche")) } footer: {
-                Text(tr("Teile sind die Objekte der obersten Ebene (bzw. einer Inkscape-Ebene); sie werden nach ihren Umrissrechtecken angeordnet, größte zuerst."))
-                    .font(.caption).foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(tr("Teile sind die Objekte der obersten Ebene (bzw. einer Inkscape-Ebene); sie werden nach ihren Umrissrechtecken angeordnet, größte zuerst."))
+                    if !model.project.parts.isEmpty { Text(tr("Wirkt nur auf das aktive Teil.")) }
+                }.font(.caption).foregroundStyle(.secondary)
             }
         }
     }

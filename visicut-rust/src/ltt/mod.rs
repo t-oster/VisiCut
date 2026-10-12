@@ -270,8 +270,7 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
             })
             .fold(0.0, f32::max);
         let left = frame.width / 2.0 + overscan.min(frame.x);
-        let right =
-            frame.width / 2.0 + overscan.min(BED_WIDTH as f32 - frame.x - frame.width);
+        let right = frame.width / 2.0 + overscan.min(BED_WIDTH as f32 - frame.x - frame.width);
         warnings.push(tr!(
             "Rotationseinheit aktiv: Am Gerät mit „Adjust rotary temp“ die Mitte der Gravur einstellen. \
              Der Laserkopf muss {left} mm nach links und {right} mm nach rechts \

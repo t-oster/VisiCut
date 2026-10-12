@@ -30,6 +30,8 @@ const WARNING: Color32 = Color32::from_rgb(180, 75, 40);
 enum Command {
     New,
     Open,
+    /// Grafiken als neue Teile hinzufügen.
+    AddPart,
     Demo,
     Vectorize,
     Save,
@@ -55,6 +57,8 @@ enum Command {
     Undo,
     Delete,
     Duplicate,
+    /// Das gewählte Teil als neues Teil kopieren.
+    DuplicatePart,
     RotateLeft,
     RotateRight,
     RotateBy,
@@ -72,7 +76,8 @@ const COMMAND_SHIFT: Modifiers = Modifiers::COMMAND.plus(Modifiers::SHIFT);
 impl Command {
     /// Reihenfolge der Tastaturprüfung: Kürzel mit Umschalt zuerst, weil egui
     /// zusätzliche Umschalttasten beim Vergleich ignoriert.
-    const KEYBOARD: [Command; 15] = [
+    const KEYBOARD: [Command; 16] = [
+        Self::AddPart,
         Self::SaveAs,
         Self::Export,
         Self::Materials,
@@ -94,6 +99,7 @@ impl Command {
         match self {
             Self::New => tr("Neues Projekt"),
             Self::Open => tr("Öffnen …"),
+            Self::AddPart => tr("Hinzufügen …"),
             Self::Demo => tr("Beispiel öffnen"),
             Self::Vectorize => tr("Bitmap vektorisieren …"),
             Self::Save => tr("Sichern"),
@@ -119,6 +125,7 @@ impl Command {
             Self::Undo => tr("Widerrufen"),
             Self::Delete => tr("Löschen"),
             Self::Duplicate => tr("Duplizieren"),
+            Self::DuplicatePart => tr("Teil duplizieren"),
             Self::RotateLeft => tr("90° nach links drehen"),
             Self::RotateRight => tr("90° nach rechts drehen"),
             Self::RotateBy => tr("Um den Winkel drehen"),
@@ -134,6 +141,7 @@ impl Command {
         let (modifiers, key) = match self {
             Self::New => (Modifiers::COMMAND, Key::N),
             Self::Open => (Modifiers::COMMAND, Key::O),
+            Self::AddPart => (COMMAND_SHIFT, Key::O),
             Self::Save => (Modifiers::COMMAND, Key::S),
             Self::SaveAs => (COMMAND_SHIFT, Key::S),
             Self::Export => (COMMAND_SHIFT, Key::E),
@@ -160,6 +168,7 @@ impl Command {
             | Self::Sign
             | Self::Array
             | Self::Nest
+            | Self::DuplicatePart
             | Self::RotateLeft
             | Self::RotateRight
             | Self::RotateBy
@@ -191,9 +200,42 @@ struct PendingExport {
     jobs: Vec<OutputJob>,
 }
 
-struct VisiCutRust {
+/// Stand vor einer Werkzeug- oder Löschaktion: Projekt mit allen Teilen und
+/// deren Texturen.
+struct Snapshot {
     project: Project,
     texture: Option<egui::TextureHandle>,
+    part_textures: Vec<Option<egui::TextureHandle>>,
+}
+
+/// Name eines Teils für Listen; ohne Namen „Teil 2“ (Position in der Liste).
+fn part_title(name: &str, index: usize) -> String {
+    if name.trim().is_empty() {
+        tr!("Teil {number}", number = index + 1)
+    } else {
+        name.to_owned()
+    }
+}
+
+/// Name und Größe des Teils an `index` (Listenreihenfolge) ohne Kopie der
+/// Grafik.
+fn part_summary(project: &Project, index: usize) -> (&str, f32, f32) {
+    if index == project.active_part {
+        return (&project.part_name, project.width_mm, project.height_mm);
+    }
+    let part = &project.parts[index - usize::from(index > project.active_part)];
+    (&part.name, part.width_mm, part.height_mm)
+}
+
+struct VisiCutRust {
+    project: Project,
+    /// Textur des gewählten Teils.
+    texture: Option<egui::TextureHandle>,
+    /// Texturen der übrigen Teile, parallel zu `project.parts`.
+    part_textures: Vec<Option<egui::TextureHandle>>,
+    /// Nullpunkt des Geräts beim letzten Bild (unten links?); ein Wechsel
+    /// setzt den Standard-Bezugspunkt.
+    origin_bottom_left: Option<bool>,
     status: String,
     /// Deutlich sichtbarer Hinweis (Fehler, Importwarnungen) in einem Dialog.
     alert: Option<String>,
@@ -219,7 +261,7 @@ struct VisiCutRust {
     vectorize: vectorize_ui::VectorizeUi,
     compose: compose_ui::ComposeUi,
     /// Stand vor der letzten Werkzeug- oder Löschaktion (ein Schritt).
-    undo: Option<(Project, Option<egui::TextureHandle>)>,
+    undo: Option<Snapshot>,
     /// Bezugspunkt für X/Y und Größenänderungen (0, ½ oder 1 je Achse).
     reference: [f32; 2],
     rotate_deg: f32,
@@ -242,6 +284,8 @@ impl VisiCutRust {
         let mut app = Self {
             project: Project::default(),
             texture: None,
+            part_textures: Vec::new(),
+            origin_bottom_left: None,
             status: tr("Datei öffnen, hierher ziehen oder das Beispiel öffnen").into(),
             alert: None,
             project_path: None,
@@ -338,8 +382,132 @@ impl VisiCutRust {
         self.project.material.clear();
         self.devices.apply(&mut self.project);
         self.texture = None;
+        self.part_textures.clear();
         self.project_path = None;
         self.dirty = false;
+    }
+
+    fn snapshot(&self) -> Snapshot {
+        Snapshot {
+            project: self.project.clone(),
+            texture: self.texture.clone(),
+            part_textures: self.part_textures.clone(),
+        }
+    }
+
+    /// Texturen aller Teile in Listenreihenfolge.
+    fn all_textures(&self) -> Vec<Option<egui::TextureHandle>> {
+        let mut all = self.part_textures.clone();
+        if self.project.has_artwork() {
+            all.insert(
+                self.project.active_part.min(all.len()),
+                self.texture.clone(),
+            );
+        }
+        all
+    }
+
+    /// Verteilt Texturen in Listenreihenfolge nach einer Umordnung der Teile
+    /// (Wählen, Hinzufügen, Entfernen) auf das gewählte und die übrigen Teile.
+    fn arrange_textures(&mut self, mut all: Vec<Option<egui::TextureHandle>>) {
+        if !self.project.has_artwork() || all.is_empty() {
+            self.texture = None;
+            self.part_textures.clear();
+            return;
+        }
+        let active = self.project.active_part.min(all.len() - 1);
+        self.texture = all.remove(active);
+        self.part_textures = all;
+    }
+
+    /// Texturen für alle Teile von `project`; Grafiken, die schon angezeigt
+    /// werden, behalten ihre Textur, die übrigen werden gezeichnet.
+    #[allow(clippy::type_complexity)]
+    fn textures_for(
+        &self,
+        ctx: &egui::Context,
+        project: &Project,
+    ) -> Result<
+        (
+            Option<egui::TextureHandle>,
+            Vec<Option<egui::TextureHandle>>,
+        ),
+        String,
+    > {
+        let existing: Vec<(&str, &egui::TextureHandle)> = std::iter::once(&self.texture)
+            .chain(&self.part_textures)
+            .zip(
+                std::iter::once(self.project.svg.as_str())
+                    .chain(self.project.parts.iter().map(|p| p.svg.as_str())),
+            )
+            .filter_map(|(texture, svg)| texture.as_ref().map(|t| (svg, t)))
+            .collect();
+        let texture = |svg: &str| -> Result<Option<egui::TextureHandle>, String> {
+            if svg.is_empty() {
+                return Ok(None);
+            }
+            if let Some((_, texture)) = existing.iter().find(|(s, _)| *s == svg) {
+                return Ok(Some((*texture).clone()));
+            }
+            let preview = svg::render(svg)?;
+            Ok(Some(ctx.load_texture(
+                "SVG",
+                preview.image,
+                egui::TextureOptions::LINEAR,
+            )))
+        };
+        let active = texture(&project.svg)?;
+        let others = project
+            .parts
+            .iter()
+            .map(|part| texture(&part.svg).map_err(|e| format!("{}: {e}", part.name)))
+            .collect::<Result<_, _>>()?;
+        Ok((active, others))
+    }
+
+    /// Wählt das Teil an `index` (Listenreihenfolge) zum Bearbeiten.
+    fn select_part(&mut self, index: usize) {
+        if index == self.project.active_part || index >= self.project.part_count() {
+            return;
+        }
+        let all = self.all_textures();
+        self.project.select_part(index);
+        self.arrange_textures(all);
+        self.status = tr!(
+            "Teil „{name}“ gewählt",
+            name = part_title(&self.project.part_name, index)
+        );
+    }
+
+    /// Kopiert das gewählte Teil um 5 mm versetzt als neues Teil.
+    fn duplicate_part(&mut self) {
+        if self.texture.is_none() {
+            return;
+        }
+        self.undo = Some(self.snapshot());
+        let mut all = self.all_textures();
+        all.push(self.texture.clone());
+        let mut part = self.project.active();
+        part.x_mm += 5.0;
+        part.y_mm += 5.0;
+        self.project.add_part(part);
+        self.arrange_textures(all);
+        self.dirty = true;
+        self.status = tr("Teil dupliziert · Bearbeiten › Widerrufen macht es rückgängig").into();
+    }
+
+    /// Grafiken über den Dateidialog als neue Teile hinzufügen.
+    fn choose_parts(&mut self, ctx: &egui::Context) {
+        if self.busy() {
+            return;
+        }
+        if let Some(paths) = rfd::FileDialog::new()
+            .set_title(tr("Grafiken als Teile hinzufügen"))
+            .add_filter(tr("Grafik"), import::EXTENSIONS)
+            .pick_files()
+        {
+            self.drop_files(ctx, paths);
+        }
     }
 
     /// Übernimmt eine Grafik. Wie bei jedem Import gelten alte Schritte und
@@ -353,11 +521,16 @@ impl VisiCutRust {
     ) -> Result<(), String> {
         let preview = svg::render(&source)?;
         self.project.svg = source;
+        self.project.part_name = name.clone();
         self.project.name = name;
         self.project.width_mm = preview.width_mm;
         self.project.height_mm = preview.height_mm;
         self.project.steps = steps;
         self.project.ignore_filters.clear();
+        // Die neue Grafik ersetzt alle Teile.
+        self.project.parts.clear();
+        self.project.active_part = 0;
+        self.part_textures.clear();
         self.texture = Some(ctx.load_texture("SVG", preview.image, egui::TextureOptions::LINEAR));
         self.project_path = None;
         self.dirty = true;
@@ -395,12 +568,7 @@ impl VisiCutRust {
                 .map_err(|e| tr!("Ungültiges Projekt: {error}", error = e))?;
             // Entwürfe ohne Motiv oder außerhalb des Betts lassen sich öffnen.
             project.validate_document()?;
-            self.texture = if project.svg.is_empty() {
-                None
-            } else {
-                let preview = svg::render(&project.svg)?;
-                Some(ctx.load_texture("SVG", preview.image, egui::TextureOptions::LINEAR))
-            };
+            (self.texture, self.part_textures) = self.textures_for(ctx, &project)?;
             self.project = project;
             if visicut_core::i18n::is_default_text("Material wählen", &self.project.material) {
                 self.project.material.clear();
@@ -414,8 +582,8 @@ impl VisiCutRust {
         }
     }
 
-    /// Abgelegte Dateien: Grafiken kommen zum vorhandenen Motiv hinzu (ohne
-    /// Motiv öffnet die erste), ein einzelnes Projekt wird geöffnet.
+    /// Abgelegte Dateien: Grafiken kommen als neue Teile hinzu (ohne Motiv
+    /// öffnet die erste), ein einzelnes Projekt wird geöffnet.
     fn drop_files(&mut self, ctx: &egui::Context, mut paths: Vec<PathBuf>) {
         if self.busy() {
             self.status = tr("Bitte die laufende Übertragung abwarten").into();
@@ -450,17 +618,20 @@ impl VisiCutRust {
             }
         }
         if !rest.is_empty() {
-            match visicut_core::compose::append_files(&self.project, rest) {
+            // Jede Datei wird ein eigenes Teil mit eigener Lage und Zuordnung.
+            let before = self.project.part_count();
+            match visicut_core::compose::add_files_as_parts(&self.project, rest) {
                 Ok((project, more)) => {
                     notes.extend(more);
                     self.apply_composed(ctx, project, Vec::new());
-                    self.status = tr!(
-                        "{count} Datei(en) hinzugefügt · {width} × {height} mm · \
-                         Bearbeiten › Widerrufen macht es rückgängig",
-                        count = graphics.len(),
-                        width = format!("{:.0}", self.project.width_mm),
-                        height = format!("{:.0}", self.project.height_mm)
-                    );
+                    let added = self.project.part_count().saturating_sub(before);
+                    if added > 0 {
+                        self.status = tr!(
+                            "{count} Datei(en) als Teile hinzugefügt · \
+                             Bearbeiten › Widerrufen macht es rückgängig",
+                            count = added
+                        );
+                    }
                 }
                 Err(e) => notes.push(e),
             }
@@ -562,17 +733,26 @@ impl VisiCutRust {
 
     /// Übernimmt das Ergebnis eines Objekt-Werkzeugs; neue Schritte erhalten
     /// die Werte der Materialbibliothek.
+    /// Andere Teile bleiben erhalten; neue Teile (Hinzufügen) bringen ihre
+    /// eigenen Schritte mit.
     fn apply_composed(&mut self, ctx: &egui::Context, project: Project, notes: Vec<String>) {
-        let preview = match svg::render(&project.svg) {
-            Ok(preview) => preview,
+        let textures = match self.textures_for(ctx, &project) {
+            Ok(textures) => textures,
             Err(e) => return self.report(e),
         };
-        self.undo = Some((self.project.clone(), self.texture.clone()));
-        let old_steps = self.project.steps.len();
+        self.undo = Some(self.snapshot());
+        let same_part = project.active_part == self.project.active_part
+            && project.parts.len() == self.project.parts.len();
+        let old_steps = if same_part {
+            self.project.steps.len()
+        } else {
+            project.steps.len()
+        };
         let old_objects = visicut_core::selection::objects(&self.project.svg)
             .map(|o| o.len())
             .unwrap_or(0);
         self.project = project;
+        (self.texture, self.part_textures) = textures;
         for index in old_steps..self.project.steps.len() {
             // Steps of the existing motif keep its parameters.
             if self.project.steps[index]
@@ -583,7 +763,6 @@ impl VisiCutRust {
                 self.jobs.apply_preset_to(&mut self.project, index);
             }
         }
-        self.texture = Some(ctx.load_texture("SVG", preview.image, egui::TextureOptions::LINEAR));
         self.dirty = true;
         self.status = tr!(
             "Motiv aktualisiert · {width} × {height} mm",
@@ -615,32 +794,42 @@ impl VisiCutRust {
         self.composed(ctx, result);
     }
 
-    /// Entfernt das Motiv; Material, Gerät und Einstellungen bleiben.
-    fn delete_motif(&mut self) {
+    /// Entfernt das gewählte Teil; das folgende wird gewählt. Ohne weitere
+    /// Teile bleibt ein leeres Projekt, Material, Gerät und Einstellungen
+    /// bleiben.
+    fn delete_part(&mut self) {
         if self.texture.is_none() {
             return;
         }
-        self.undo = Some((self.project.clone(), self.texture.take()));
-        self.project.svg.clear();
-        self.project.steps.clear();
-        self.project.ignore_filters.clear();
+        self.undo = Some(self.snapshot());
+        let several = self.project.part_count() > 1;
+        let mut all = self.all_textures();
+        all.remove(self.project.active_part.min(all.len() - 1));
+        self.project.remove_active_part();
+        self.arrange_textures(all);
         self.dirty = true;
-        self.status = tr("Motiv entfernt · Bearbeiten › Widerrufen stellt es wieder her").into();
+        self.status = if several {
+            tr("Teil entfernt · Bearbeiten › Widerrufen stellt es wieder her")
+        } else {
+            tr("Motiv entfernt · Bearbeiten › Widerrufen stellt es wieder her")
+        }
+        .into();
     }
 
     /// Löscht einzelne Objekte aus dem Motiv (Objektliste).
     fn delete_objects(&mut self, ctx: &egui::Context, objects: &[usize]) {
         let result = visicut_core::compose::remove_objects(&self.project, objects);
         match result {
-            Ok(project) if project.svg.is_empty() => self.delete_motif(),
+            Ok(project) if project.svg.is_empty() => self.delete_part(),
             other => self.composed(ctx, other),
         }
     }
 
     fn undo_last(&mut self) {
-        if let Some((project, texture)) = self.undo.take() {
-            self.project = project;
-            self.texture = texture;
+        if let Some(snapshot) = self.undo.take() {
+            self.project = snapshot.project;
+            self.texture = snapshot.texture;
+            self.part_textures = snapshot.part_textures;
             self.dirty = true;
             self.status = tr("Letzte Änderung widerrufen").into();
         }
@@ -658,6 +847,11 @@ impl VisiCutRust {
         self.project = Project {
             width_mm: self.project.width_mm,
             height_mm: self.project.height_mm,
+            // Das Muster ersetzt alle Teile (`pattern` übernimmt sie sonst
+            // aus dem bisherigen Projekt).
+            part_name: self.project.part_name.clone(),
+            active_part: 0,
+            parts: Vec::new(),
             ..pattern
         };
         self.status = tr(
@@ -780,6 +974,7 @@ impl VisiCutRust {
         match command {
             Command::New
             | Command::Open
+            | Command::AddPart
             | Command::Demo
             | Command::Vectorize
             | Command::Devices => !self.busy(),
@@ -789,6 +984,7 @@ impl VisiCutRust {
             | Command::Nest
             | Command::Delete
             | Command::Duplicate
+            | Command::DuplicatePart
             | Command::RotateLeft
             | Command::RotateRight
             | Command::RotateBy
@@ -819,6 +1015,7 @@ impl VisiCutRust {
         match command {
             Command::New => self.request(ctx, Replace::New),
             Command::Open => self.choose_file(ctx),
+            Command::AddPart => self.choose_parts(ctx),
             Command::Demo => self.request(ctx, Replace::Demo),
             Command::Vectorize => self.vectorize.pick(&mut self.status),
             Command::Save | Command::SaveAs => {
@@ -848,7 +1045,8 @@ impl VisiCutRust {
             Command::Array => self.compose.open(compose_ui::Tool::Array, &self.project),
             Command::Nest => self.compose.open(compose_ui::Tool::Nest, &self.project),
             Command::Undo => self.undo_last(),
-            Command::Delete => self.delete_motif(),
+            Command::Delete => self.delete_part(),
+            Command::DuplicatePart => self.duplicate_part(),
             Command::Duplicate => {
                 let result = visicut_core::compose::duplicate(&self.project, 5.0);
                 self.composed(ctx, result);
@@ -974,6 +1172,7 @@ impl VisiCutRust {
                 for command in [
                     Command::New,
                     Command::Open,
+                    Command::AddPart,
                     Command::Demo,
                     Command::Vectorize,
                 ] {
@@ -1011,6 +1210,7 @@ impl VisiCutRust {
                 self.menu_item(ui, Command::Undo, &mut clicked);
                 ui.separator();
                 self.menu_item(ui, Command::Duplicate, &mut clicked);
+                self.menu_item(ui, Command::DuplicatePart, &mut clicked);
                 self.menu_item(ui, Command::Delete, &mut clicked);
                 ui.separator();
                 for command in [
@@ -1136,6 +1336,9 @@ impl VisiCutRust {
             self.devices
                 .sidebar(ui, &mut self.project, &mut self.dirty, &mut self.status);
         });
+        if self.project.has_artwork() {
+            form::section(ui, tr("Teile"), |ui| self.parts_panel(ui, &mut clicked));
+        }
         if self.devices.device().rotary_axis {
             form::section(ui, tr("Rotationseinheit"), |ui| {
                 self.devices.rotary(ui, &mut self.project, &mut self.dirty);
@@ -1153,25 +1356,82 @@ impl VisiCutRust {
         clicked
     }
 
+    /// Liste der Teile wie VisiCuts Objektliste: Klick wählt das Teil, dessen
+    /// Lage und Zuordnung die Abschnitte darunter bearbeiten.
+    fn parts_panel(&mut self, ui: &mut egui::Ui, clicked: &mut Option<Command>) {
+        let mut select = None;
+        for index in 0..self.project.part_count() {
+            let (name, width, height) = part_summary(&self.project, index);
+            let active = index == self.project.active_part;
+            let title = egui::RichText::new(part_title(name, index));
+            ui.horizontal(|ui| {
+                let title = if active { title.strong() } else { title };
+                if ui.selectable_label(active, title).clicked() {
+                    select = Some(index);
+                }
+                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                    ui.weak(format!("{width:.0} × {height:.0} mm"));
+                });
+            });
+        }
+        if let Some(index) = select {
+            self.select_part(index);
+        }
+        ui.add_space(2.0);
+        // Umbrechen statt die Seitenleiste zu verbreitern (längere Übersetzungen).
+        ui.horizontal_wrapped(|ui| {
+            for (command, text, hover) in [
+                (
+                    Command::AddPart,
+                    tr("Datei hinzufügen …"),
+                    Command::AddPart.title(),
+                ),
+                (
+                    Command::DuplicatePart,
+                    tr("Duplizieren"),
+                    Command::DuplicatePart.title(),
+                ),
+                (Command::Delete, tr("Entfernen"), tr("Teil entfernen")),
+            ] {
+                let mut hover = hover.trim_end_matches(" …").to_owned();
+                if let Some(shortcut) = command.shortcut() {
+                    hover += &format!(" ({})", ui.ctx().format_shortcut(&shortcut));
+                }
+                if ui
+                    .add_enabled(self.enabled(command), egui::Button::new(text))
+                    .on_hover_text(hover)
+                    .clicked()
+                {
+                    *clicked = Some(command);
+                }
+            }
+        });
+    }
+
     /// Position und Größe wie in Grafikprogrammen: Bezugspunkt, X/Y des
     /// Bezugspunkts, Breite/Höhe um ihn herum, Drehen und Spiegeln.
     fn transform_panel(&mut self, ui: &mut egui::Ui, clicked: &mut Option<Command>) {
         let mut reference = self.reference;
         let mut dirty = false;
         let proportional = self.proportional;
+        // Nullpunkt unten links: Y zählt wie am Gerät von der unteren
+        // Bettkante nach oben (nur Anzeige, der Auftrag bleibt gleich).
+        let bottom = self.devices.origin_bottom_left();
         let p = &mut self.project;
         ui.horizontal(|ui| {
             reference_picker(ui, &mut reference);
             let [fx, fy] = reference;
             ui.vertical(|ui| {
                 let mut x = p.x_mm + p.width_mm * fx;
-                let mut y = p.y_mm + p.height_mm * fy;
+                let top = p.y_mm + p.height_mm * fy;
+                let mut y = if bottom { p.bed_height_mm - top } else { top };
                 if number(ui, "X", &mut x, -10000.0..=10000.0, " mm") {
                     p.x_mm = x - p.width_mm * fx;
                     dirty = true;
                 }
                 if number(ui, "Y", &mut y, -10000.0..=10000.0, " mm") {
-                    p.y_mm = y - p.height_mm * fy;
+                    let top = if bottom { p.bed_height_mm - y } else { y };
+                    p.y_mm = top - p.height_mm * fy;
                     dirty = true;
                 }
             });
@@ -1445,7 +1705,7 @@ impl VisiCutRust {
                         .line_segment([Pos2::new(x, bed.top()), Pos2::new(x, bed.bottom())], grid);
                 }
                 for y in workspace::ruler_marks(bed_mm.y, step) {
-                    let y = bed.top() + y * scale;
+                    let y = self.ruler_y(bed, scale, y);
                     painter
                         .line_segment([Pos2::new(bed.left(), y), Pos2::new(bed.right(), y)], grid);
                 }
@@ -1457,17 +1717,65 @@ impl VisiCutRust {
                 egui::StrokeKind::Inside,
             );
             if let Some(texture) = &self.texture {
-                let motif = Rect::from_min_size(
-                    bed.min + Vec2::new(self.project.x_mm, self.project.y_mm) * scale,
-                    Vec2::new(self.project.width_mm, self.project.height_mm) * scale,
-                );
-                painter.image(
-                    texture.id(),
-                    motif,
-                    Rect::from_min_max(Pos2::ZERO, Pos2::new(1.0, 1.0)),
-                    Color32::WHITE,
-                );
-                self.preview.overlay(&painter, motif);
+                let to_screen = |[x, y, w, h]: [f32; 4]| {
+                    Rect::from_min_size(bed.min + Vec2::new(x, y) * scale, Vec2::new(w, h) * scale)
+                };
+                let uv = Rect::from_min_max(Pos2::ZERO, Pos2::new(1.0, 1.0));
+                // Die übrigen Teile unter dem gewählten, mit dünnem grauem Rahmen.
+                let others: Vec<(usize, Rect)> = self
+                    .project
+                    .parts
+                    .iter()
+                    .enumerate()
+                    .map(|(k, part)| {
+                        let index = k + usize::from(k >= self.project.active_part);
+                        let rect = to_screen([part.x_mm, part.y_mm, part.width_mm, part.height_mm]);
+                        match self.part_textures.get(k).and_then(Option::as_ref) {
+                            Some(texture) => {
+                                painter.image(texture.id(), rect, uv, Color32::WHITE);
+                            }
+                            None => {
+                                painter.rect_filled(rect, 0.0, Color32::from_gray(235));
+                            }
+                        }
+                        (index, rect)
+                    })
+                    .collect();
+                let motif = to_screen([
+                    self.project.x_mm,
+                    self.project.y_mm,
+                    self.project.width_mm,
+                    self.project.height_mm,
+                ]);
+                painter.image(texture.id(), motif, uv, Color32::WHITE);
+                // Die Auftragsvorschau umfasst alle Teile.
+                self.preview
+                    .overlay(&painter, to_screen(self.project.bounds()));
+                let mut select = None;
+                for (index, rect) in others {
+                    painter.rect_stroke(
+                        rect,
+                        0.0,
+                        Stroke::new(1.0, Color32::from_gray(150)),
+                        egui::StrokeKind::Inside,
+                    );
+                    let (name, _, _) = part_summary(&self.project, index);
+                    let response = ui
+                        .interact(
+                            rect.intersect(bed),
+                            ui.id().with(("part", index)),
+                            Sense::click(),
+                        )
+                        .on_hover_cursor(egui::CursorIcon::PointingHand)
+                        .on_hover_text(part_title(name, index));
+                    if response.clicked() {
+                        select = Some(index);
+                    }
+                }
+                if let Some(index) = select {
+                    self.select_part(index);
+                    return;
+                }
                 painter.rect_stroke(
                     motif,
                     0.0,
@@ -1484,7 +1792,12 @@ impl VisiCutRust {
                 let editable = !self.busy();
                 response.context_menu(|ui| {
                     for group in [
-                        &[Command::Duplicate, Command::Array, Command::Nest][..],
+                        &[
+                            Command::Duplicate,
+                            Command::DuplicatePart,
+                            Command::Array,
+                            Command::Nest,
+                        ][..],
                         &[
                             Command::RotateLeft,
                             Command::RotateRight,
@@ -1529,6 +1842,16 @@ impl VisiCutRust {
         });
     }
 
+    /// Senkrechte Bildschirmposition einer Lineal- oder Rastermarke `y` mm;
+    /// mit Nullpunkt unten links zählt sie von der unteren Bettkante.
+    fn ruler_y(&self, bed: Rect, scale: f32, y: f32) -> f32 {
+        if self.devices.origin_bottom_left() {
+            bed.bottom() - y * scale
+        } else {
+            bed.top() + y * scale
+        }
+    }
+
     /// Lineale mit mm-Beschriftung oben und links vom Bett.
     fn rulers(&self, painter: &egui::Painter, bed: Rect, scale: f32) {
         let step = workspace::ruler_step_mm(scale);
@@ -1550,7 +1873,7 @@ impl VisiCutRust {
             );
         }
         for y in workspace::ruler_marks(self.project.bed_height_mm, step) {
-            let py = bed.top() + y * scale;
+            let py = self.ruler_y(bed, scale, y);
             painter.line_segment(
                 [Pos2::new(bed.left() - 6.0, py), Pos2::new(bed.left(), py)],
                 tick,
@@ -1868,6 +2191,20 @@ impl eframe::App for VisiCutRust {
         self.capture(ctx);
         self.poll_send(ctx);
         self.sendable = !self.busy() && self.project.validate().is_ok();
+        // Nullpunkt unten links: Bezugspunkt standardmäßig unten links, wie
+        // am Gerät; eine eigene Wahl bleibt erhalten.
+        let bottom = self.devices.origin_bottom_left();
+        if self.origin_bottom_left != Some(bottom) {
+            let (from, to) = if bottom {
+                ([0.0, 0.0], [0.0, 1.0])
+            } else {
+                ([0.0, 1.0], [0.0, 0.0])
+            };
+            if self.origin_bottom_left.is_none() || self.reference == from {
+                self.reference = to;
+            }
+            self.origin_bottom_left = Some(bottom);
+        }
         if ctx.input(|i| i.viewport().close_requested()) && !self.allow_close {
             if self.busy() {
                 ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
@@ -1995,4 +2332,33 @@ fn main() -> eframe::Result {
         options,
         Box::new(|cc| Ok(Box::new(VisiCutRust::new(cc)))),
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use visicut_core::project::Part;
+
+    #[test]
+    fn part_summary_follows_list_order() {
+        let mut project = Project {
+            svg: "<svg/>".into(),
+            part_name: "A".into(),
+            width_mm: 10.0,
+            ..Project::default()
+        };
+        project.add_part(Part {
+            name: String::new(),
+            width_mm: 20.0,
+            ..project.active()
+        });
+        project.select_part(0);
+        assert_eq!(part_summary(&project, 0).0, "A");
+        assert_eq!(part_summary(&project, 1).1, 20.0);
+        project.select_part(1);
+        assert_eq!(part_summary(&project, 0).0, "A");
+        assert_eq!(part_summary(&project, 1).1, 20.0);
+        assert!(part_title(part_summary(&project, 1).0, 1).contains('2'));
+        assert_eq!(part_title("A", 0), "A");
+    }
 }

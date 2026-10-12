@@ -266,7 +266,7 @@ mod tests {
     }
 
     /// Hilfe zum Übersetzen: schreibt je Sprache die fehlenden Texte nach
-    /// `target/i18n/missing-<code>.json`.
+    /// `target/i18n/missing-<code>.json`, alle Schlüssel nach `keys.json`.
     /// `cargo test --lib i18n::tests::export_missing -- --ignored`
     #[test]
     #[ignore]
@@ -274,6 +274,11 @@ mod tests {
         let keys = keys();
         let dir = concat!(env!("CARGO_MANIFEST_DIR"), "/target/i18n");
         std::fs::create_dir_all(dir).unwrap();
+        std::fs::write(
+            format!("{dir}/keys.json"),
+            serde_json::to_string_pretty(&keys).unwrap(),
+        )
+        .unwrap();
         for language in &Language::ALL[1..] {
             let table = language.table().unwrap();
             let missing: std::collections::BTreeMap<_, _> = keys

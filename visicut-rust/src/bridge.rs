@@ -328,7 +328,8 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
         }
         "append" => {
             let paths: Vec<std::path::PathBuf> = get(request, "paths")?;
-            let (project, notes) = crate::compose::add_files_as_parts(&get_project(request)?, &paths)?;
+            let (project, notes) =
+                crate::compose::add_files_as_parts(&get_project(request)?, &paths)?;
             composed(project, notes)
         }
         // Parts (one per imported file): choose, remove, duplicate, and
@@ -344,7 +345,9 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
             if project.has_artwork() {
                 composed(project, Vec::new())
             } else {
-                Ok(json!({"project": project, "preview": Value::Null, "objects": [], "warnings": []}))
+                Ok(
+                    json!({"project": project, "preview": Value::Null, "objects": [], "warnings": []}),
+                )
             }
         }
         "duplicate_part" => {
@@ -645,8 +648,8 @@ mod tests {
         assert_eq!(result["project"]["parts"].as_array().unwrap().len(), 2);
         assert_eq!(result["project"]["active_part"], 2);
         assert!((result["project"]["x_mm"].as_f64().unwrap() - 40.0).abs() < 1e-3);
-        let previews = execute(&json!({"action": "part_previews", "project": result["project"]}))
-            .unwrap();
+        let previews =
+            execute(&json!({"action": "part_previews", "project": result["project"]})).unwrap();
         assert_eq!(previews["parts"].as_array().unwrap().len(), 3);
         assert!((previews["bounds"][2].as_f64().unwrap() - 40.0).abs() < 1e-3);
         let warnings = result["warnings"].as_array().unwrap();
