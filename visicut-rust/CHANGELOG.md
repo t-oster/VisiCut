@@ -3,15 +3,8 @@
 Jede Version hat einen Abschnitt `## <Version> – <Datum>`; der Release-Workflow
 übernimmt ihn als Beschreibung des GitHub-Releases.
 
-## 0.12.0 – 12.10.2026
+## 0.13.0 – 12.10.2026
 
-- **Sprachen** (egui und macOS): Oberfläche, Meldungen des Rust-Kerns und der
-  Importfilter auf Deutsch, Englisch, Französisch, Italienisch und
-  Niederländisch; Auswahl unter **Darstellung → Sprache**, ohne Auswahl gilt
-  die Systemsprache. Neu angelegte Standardwerte (Projektname, „Eigenes
-  Material“, „Neues Material“, Schildtext, Namen neuer Formen) entstehen in
-  der gewählten Sprache. Ein Test stellt sicher, dass jeder Text in jeder
-  Sprache mit denselben Platzhaltern übersetzt ist.
 - **Mehrere Teile** (egui und macOS) wie die PlfParts in VisiCut: Jede
   hinzugefügte Datei ist ein eigenes Teil mit eigener Position, Größe,
   Drehung und Zuordnung (Gesamt, Einzeln, Regeln; PLF-Dateien behalten ihre
@@ -24,10 +17,21 @@ Jede Version hat einen Abschnitt `## <Version> – <Datum>`; der Release-Workflo
   Geräteoption, wird aus VisiCut-Geräten übernommen; Lineale und die
   Y-Koordinate zählen dann von unten links, der Bezugspunkt steht unten
   links. Nur Anzeige, der Auftrag ändert sich nicht.
-- **Zuletzt geöffnet** (egui und macOS): **Datei/Ablage → Zuletzt geöffnet**
-  listet die zehn zuletzt geöffneten oder gesicherten Dateien; unter
-  Windows/Linux stehen Sprache und Liste in `app-settings.json` im
-  Einstellungsordner, unter macOS in den Benutzereinstellungen.
+- **Zuletzt geöffnet auch unter macOS**: **Ablage → Zuletzt geöffnet** listet
+  die zehn zuletzt geöffneten oder gesicherten Dateien.
+
+## 0.12.0 – 12.10.2026
+
+- **Sprachen** (egui und macOS): Oberfläche, Meldungen des Rust-Kerns und der
+  Importfilter auf Deutsch, Englisch, Französisch, Italienisch und
+  Niederländisch; Auswahl unter **Darstellung → Sprache**, ohne Auswahl gilt
+  die Systemsprache. Neu angelegte Standardwerte (Projektname, „Eigenes
+  Material“, „Neues Material“, Schildtext, Namen neuer Formen) entstehen in
+  der gewählten Sprache. Ein Test stellt sicher, dass jeder Text in jeder
+  Sprache mit denselben Platzhaltern übersetzt ist.
+- **Zuletzt geöffnet** (egui): **Datei → Zuletzt geöffnet** listet die zehn
+  zuletzt geöffneten oder gesicherten Dateien; Sprache und Liste stehen in
+  `app-settings.json` im Einstellungsordner.
 - **Oberfläche wie unter macOS** (egui): Werkzeugleiste mit Öffnen, Sichern,
   Vorschau, Export und Senden statt Knöpfen am Ende der Seitenleiste;
   Seitenleiste in der Reihenfolge der macOS-App (Projekt, Rotationseinheit,
