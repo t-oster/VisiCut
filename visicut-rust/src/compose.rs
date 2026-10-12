@@ -607,6 +607,252 @@ pub fn nest(project: &Project, settings: &NestSettings) -> Result<Nested, String
     })
 }
 
+/// Adds another drawing beside the motif in its original size: to the right
+/// if it fits on the bed, otherwise below. Existing objects keep their
+/// numbers and assignments; the new ones follow. Returns German notes.
+pub fn append(project: &Project, source: &str) -> Result<(Project, Vec<String>), String> {
+    if project.svg.is_empty() {
+        return Err("Zuerst ein Motiv öffnen".into());
+    }
+    let source = scope_names(&project.svg, source)?;
+    let tree = usvg::Tree::from_str(&source, &svg::options())
+        .map_err(|e| format!("SVG konnte nicht gelesen werden: {e}"))?;
+    let (w, h) = (
+        tree.size().width() as f64 * 25.4 / 96.0,
+        tree.size().height() as f64 * 25.4 / 96.0,
+    );
+    let (px, py, pw, ph) = (
+        project.x_mm as f64,
+        project.y_mm as f64,
+        project.width_mm as f64,
+        project.height_mm as f64,
+    );
+    let mut notes = Vec::new();
+    let (x, y) = if px + pw + APPEND_GAP_MM + w <= project.bed_width_mm as f64 {
+        (px + pw + APPEND_GAP_MM, py)
+    } else if py + ph + APPEND_GAP_MM + h <= project.bed_height_mm as f64 {
+        (px, py + ph + APPEND_GAP_MM)
+    } else {
+        notes.push(
+            "Kein freier Platz neben dem Motiv: Teile liegen außerhalb des Betts, bitte verschieben oder verschachteln".into(),
+        );
+        (px + pw + APPEND_GAP_MM, py)
+    };
+    let part = Project {
+        svg: source,
+        x_mm: x as f32,
+        y_mm: y as f32,
+        width_mm: w as f32,
+        height_mm: h as f32,
+        ..project.clone()
+    };
+    let existing = selection::objects(&project.svg)?.len();
+    let added = selection::objects(&part.svg)?.len();
+    let body = embed(project, None, None)? + &embed(&part, None, None)?;
+    let bounds = union(motif_bounds(project), Some([x, y, w, h])).unwrap();
+    let result = with_document(project, &body, bounds)?;
+    if individual(project) && added > 0 {
+        notes.push(format!(
+            "{added} neue Objekte (Nr. {}–{}) sind noch keinem Schritt zugeordnet",
+            existing + 1,
+            existing + added
+        ));
+    }
+    Ok((result, notes))
+}
+
+const APPEND_GAP_MM: f64 = 5.0;
+
+/// Imports files one after another with [`append`]. Unreadable files are
+/// reported in the notes; fails only if none could be added.
+pub fn append_files(
+    project: &Project,
+    paths: &[std::path::PathBuf],
+) -> Result<(Project, Vec<String>), String> {
+    let mut result = project.clone();
+    let mut notes = Vec::new();
+    let mut added = 0;
+    for path in paths {
+        let name = path.file_name().unwrap_or_default().to_string_lossy();
+        let appended = crate::import::read_file(path).and_then(|imported| {
+            let (next, more) = append(&result, &imported.svg)?;
+            Ok((next, imported, more))
+        });
+        match appended {
+            Ok((next, imported, more)) => {
+                result = next;
+                added += 1;
+                notes.extend(
+                    imported
+                        .warnings
+                        .into_iter()
+                        .map(|w| format!("{name}: {w}")),
+                );
+                if !imported.steps.is_empty() {
+                    notes.push(format!(
+                        "{name}: Zuordnungen der Datei wurden nicht übernommen"
+                    ));
+                }
+                notes.extend(more.into_iter().map(|n| format!("{name}: {n}")));
+            }
+            Err(e) => notes.push(format!("{name}: {e}")),
+        }
+    }
+    if added == 0 {
+        return Err(notes.join("\n"));
+    }
+    Ok((result, notes))
+}
+
+/// Renames ids and classes of `source` that also occur in `existing` (as
+/// attributes or in style sheets), including references and selectors, so
+/// both drawings keep their own definitions and styles in one document.
+fn scope_names(existing: &str, source: &str) -> Result<String, String> {
+    use std::collections::{HashMap, HashSet};
+    let old = parse(existing)?;
+    let mut taken: HashSet<String> = HashSet::new();
+    for node in old.descendants().filter(|n| n.is_element()) {
+        if let Some(id) = node.attribute("id") {
+            taken.insert(id.to_string());
+        }
+        if let Some(class) = node.attribute("class") {
+            taken.extend(class.split_whitespace().map(String::from));
+        }
+        if node.tag_name().name() == "style" {
+            for text in node.children().filter_map(|c| c.text()) {
+                css_tokens(text, &mut taken);
+            }
+        }
+    }
+    let doc = parse(source)?;
+    let mut own: HashSet<String> = HashSet::new();
+    for node in doc.descendants().filter(|n| n.is_element()) {
+        own.extend(node.attribute("id").map(String::from));
+        if let Some(class) = node.attribute("class") {
+            own.extend(class.split_whitespace().map(String::from));
+        }
+    }
+    let mut renamed: HashMap<String, String> = HashMap::new();
+    let mut fresh = |name: &str, renamed: &mut HashMap<String, String>| {
+        if taken.contains(name) && !renamed.contains_key(name) {
+            let new = (2..)
+                .map(|k| format!("{name}-{k}"))
+                .find(|n| !taken.contains(n) && !own.contains(n))
+                .unwrap();
+            taken.insert(new.clone());
+            renamed.insert(name.to_string(), new);
+        }
+    };
+    for node in doc.descendants().filter(|n| n.is_element()) {
+        if let Some(id) = node.attribute("id") {
+            fresh(id, &mut renamed);
+        }
+        if let Some(class) = node.attribute("class") {
+            for token in class.split_whitespace() {
+                fresh(token, &mut renamed);
+            }
+        }
+    }
+    if renamed.is_empty() {
+        return Ok(source.to_string());
+    }
+    let mut edits: Vec<(std::ops::Range<usize>, String)> = Vec::new();
+    for node in doc.descendants().filter(|n| n.is_element()) {
+        for attribute in node.attributes() {
+            let Some(value) = value_range(source, attribute.range()) else {
+                continue;
+            };
+            let text = &source[value.clone()];
+            let replacement = match (attribute.namespace(), attribute.name()) {
+                (None, "id") => renamed.get(text).cloned(),
+                (None, "class") => Some(
+                    text.split_whitespace()
+                        .map(|t| renamed.get(t).map_or(t, String::as_str))
+                        .collect::<Vec<_>>()
+                        .join(" "),
+                ),
+                (_, "href") => text
+                    .strip_prefix('#')
+                    .and_then(|id| renamed.get(id))
+                    .map(|id| format!("#{id}")),
+                _ => None,
+            };
+            if let Some(replacement) = replacement.filter(|r| r != text) {
+                edits.push((value, replacement));
+            }
+        }
+        if node.tag_name().name() == "style" {
+            let range = node.range();
+            if let Some(start) = start_tag_end(source, range.start)
+                && let Some(end) = source[range.clone()].rfind("</").map(|i| range.start + i)
+                && start <= end
+            {
+                edits.push((start..end, rename_css(&source[start..end], &renamed)));
+            }
+        }
+    }
+    edits.sort_by_key(|(r, _)| r.start);
+    let mut text = String::with_capacity(source.len() + 64);
+    let mut position = 0;
+    for (r, replacement) in edits {
+        text.push_str(&source[position..r.start]);
+        text.push_str(&replacement);
+        position = r.end;
+    }
+    text.push_str(&source[position..]);
+    // References in presentation attributes and style attributes.
+    for (old, new) in &renamed {
+        for quote in ["", "'", "\""] {
+            text = text.replace(
+                &format!("url({quote}#{old}{quote})"),
+                &format!("url({quote}#{new}{quote})"),
+            );
+        }
+    }
+    Ok(text)
+}
+
+fn is_name_char(c: char) -> bool {
+    c.is_ascii_alphanumeric() || c == '_' || c == '-'
+}
+
+/// Names after `#` and `.` in a style sheet.
+fn css_tokens(css: &str, names: &mut std::collections::HashSet<String>) {
+    for (i, c) in css.char_indices() {
+        if c == '#' || c == '.' {
+            let rest = &css[i + 1..];
+            let len = rest.find(|c: char| !is_name_char(c)).unwrap_or(rest.len());
+            if len > 0 {
+                names.insert(rest[..len].to_string());
+            }
+        }
+    }
+}
+
+/// Style sheet with `#id` and `.class` names renamed.
+fn rename_css(css: &str, renamed: &std::collections::HashMap<String, String>) -> String {
+    let mut text = String::with_capacity(css.len());
+    let mut position = 0;
+    let mut i = 0;
+    while i < css.len() {
+        let c = css[i..].chars().next().unwrap();
+        if c == '#' || c == '.' {
+            let rest = &css[i + 1..];
+            let len = rest.find(|c: char| !is_name_char(c)).unwrap_or(rest.len());
+            if let Some(new) = renamed.get(&rest[..len]) {
+                text.push_str(&css[position..=i]);
+                text.push_str(new);
+                position = i + 1 + len;
+            }
+            i += 1 + len;
+        } else {
+            i += c.len_utf8();
+        }
+    }
+    text.push_str(&css[position..]);
+    text
+}
+
 /// A nestable part: its selectable objects, bounds on the bed and where its
 /// source text lies.
 struct Part {
@@ -1352,6 +1598,63 @@ mod tests {
             height_mm: 60.0,
             ..Default::default()
         }
+    }
+
+    const STYLED: &str = r##"<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40mm" height="20mm" viewBox="0 0 40 20"><defs><style>.cls-1{fill:#00ff00}</style><linearGradient id="g"><stop offset="0" stop-color="#000"/></linearGradient></defs><rect id="r" class="cls-1" width="10" height="10"/><rect width="10" height="10" x="20" fill="url(#g)"/><use xlink:href="#r" x="12"/></svg>"##;
+
+    #[test]
+    fn appending_places_drawing_beside_and_keeps_assignments() {
+        let mut project = Project {
+            svg: STYLED.into(),
+            x_mm: 10.0,
+            y_mm: 10.0,
+            width_mm: 40.0,
+            height_mm: 20.0,
+            ..Default::default()
+        };
+        project.steps.push(JobStep {
+            objects: vec![0, 1],
+            ..JobStep::new(Operation::Cut)
+        });
+        let before = selection::objects(&project.svg).unwrap().len();
+        let (result, notes) = append(&project, STYLED).unwrap();
+        assert_eq!(selection::objects(&result.svg).unwrap().len(), 2 * before);
+        assert_eq!(result.steps[0].objects, vec![0, 1]);
+        assert!(notes[0].contains("keinem Schritt"));
+        assert_eq!((result.x_mm, result.y_mm), (10.0, 10.0));
+        assert!((result.width_mm - 85.0).abs() < 1e-3 && (result.height_mm - 20.0).abs() < 1e-3);
+        // Names of the second drawing no longer collide.
+        assert!(result.svg.contains(r#"id="r-2""#) && result.svg.contains(r##"href="#r-2""##));
+        assert!(result.svg.contains(".cls-1-2{") && result.svg.contains(r#"class="cls-1-2""#));
+        assert!(result.svg.contains("url(#g-2)") && result.svg.contains(r#"id="g-2""#));
+        svg::render(&result.svg).unwrap();
+    }
+
+    #[test]
+    fn appending_moves_below_when_the_right_side_is_full() {
+        let project = Project {
+            svg: STYLED.into(),
+            x_mm: 940.0,
+            y_mm: 10.0,
+            width_mm: 40.0,
+            height_mm: 20.0,
+            ..Default::default()
+        };
+        let (result, notes) = append(&project, STYLED).unwrap();
+        assert!(notes.is_empty());
+        assert!((result.height_mm - 45.0).abs() < 1e-3 && (result.width_mm - 40.0).abs() < 1e-3);
+        assert!(append(&Project::default(), STYLED).is_err());
+    }
+
+    #[test]
+    fn unrelated_names_stay_unchanged() {
+        let other = STYLED
+            .replace("cls-1", "x")
+            .replace("\"r\"", "\"q\"")
+            .replace("#r", "#q")
+            .replace("\"g\"", "\"h\"")
+            .replace("#g", "#h");
+        assert_eq!(scope_names(STYLED, &other).unwrap(), other);
     }
 
     #[test]

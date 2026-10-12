@@ -1,0 +1,10 @@
+<material>
+  <description>Wachspättchen zum Verzieren von Kerzen</description>
+  <engraveColor>#ffffff</engraveColor>
+  <cutColor>#000000</cutColor>
+  <color>#ffffff</color>
+  <name>Kerzenverzierwachs</name>
+  <materialThicknesses>
+    <float>0.5</float>
+  </materialThicknesses>
+</material>

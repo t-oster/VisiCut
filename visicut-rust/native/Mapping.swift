@@ -84,6 +84,8 @@ enum AssignmentMode: String, CaseIterable, Identifiable {
 struct MaterialLibrary: Codable { var source: String; var device: String; var materials: [Material] }
 struct MaterialCatalog: Decodable {
     let materials: [Material]; let source: String; let device: String; let custom: Bool; let error: String?
+    /// FAU-Profile der anderen Lasercutter (nur lesbar).
+    let others: [MaterialLibrary]
 }
 struct MaterialImport: Decodable { let library: MaterialLibrary; let imported: Int }
 struct MaterialReset: Decodable { let library: MaterialLibrary }

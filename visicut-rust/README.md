@@ -89,6 +89,11 @@ lokal nach einem Build für die jeweilige Host-Architektur.
 ## Workflow
 
 1. Eine SVG über **Öffnen** (⌘O) importieren oder **Beispiel** wählen.
+   Dateien lassen sich auch ins Fenster ziehen, mehrere auf einmal: Ist
+   schon ein Motiv geladen, kommen sie in Originalgröße rechts daneben (sonst
+   darunter) hinzu; gleichnamige IDs und CSS-Klassen werden umbenannt, damit
+   sich die Dateien nicht gegenseitig umfärben. Widerrufen nimmt das ganze
+   Ablegen zurück.
    Verknüpfte Bilddateien (PNG, JPEG, GIF, WebP, SVG) werden dabei relativ zur
    SVG geladen und in das Projekt eingebettet; Webadressen werden nicht
    abgerufen, fehlende Bilder werden als Hinweis gemeldet.
@@ -116,7 +121,10 @@ lokal nach einem Build für die jeweilige Host-Architektur.
    verschieben das vergrößerte Bett.
 3. **Material** und **Stärke** aus den nativen Auswahlmenüs wählen.
    Die Bibliothek enthält 31 Materialien und 115 Schnitt-, Gravur-, Markier-
-   und 3D-Profile aus den öffentlichen FAU-LTT-Einstellungen.
+   und 3D-Profile aus den öffentlichen FAU-LTT-Einstellungen. Über das
+   Dropdown **Profile** lassen sich stattdessen die FAU-Profile des anderen
+   Lasercutters wählen (Epilog Zing: 42 Materialien, 128 Profile). Sie sind
+   am Epilog ermittelt und nur lesbar; die Werte vor dem Lasern am LTT prüfen.
    **Job → Materialbibliothek …** (⇧⌘M) bearbeitet Materialien und Profile,
    importiert/exportiert sie als JSON und stellt die FAU-Bibliothek wieder her;
    eigene Änderungen liegen im Einstellungsordner (siehe unten). Das Profil
@@ -348,7 +356,8 @@ Job an den Lasercutter. Der normale Start enthält keinen Selbsttest.
 mit Referenzen aus dem originalen Java-VisiCut; neu erzeugt werden sie mit
 `scripts/java-parity/generate.sh` (siehe `scripts/java-parity/README.md`).
 
-Die Materialdaten sind in `resources/materials.json` eingebettet.
+Die Materialdaten sind in `resources/materials.json` eingebettet, die
+Profile der anderen FAU-Lasercutter in `resources/profiles/`.
 Originaldateien liegen unter `reference/fau-settings`.
 Der Import lässt sich mit `scripts/import-fau-materials.py` aus einem
 lokalen Checkout der FAU-Einstellungen wiederholen. 0 mm bedeutet in

@@ -1,0 +1,10 @@
+<material>
+  <engraveColor>#000000</engraveColor>
+  <cutColor>#ff0033</cutColor>
+  <color>#019835</color>
+  <name>Filz</name>
+  <materialThicknesses>
+    <float>3.0</float>
+    <float>5.0</float>
+  </materialThicknesses>
+</material>

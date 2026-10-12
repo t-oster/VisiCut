@@ -82,6 +82,30 @@ extension AppModel {
         compose("remove_objects", values: ["objects": [id]])
     }
 
+    /// Abgelegte Dateien: Grafiken kommen neben das vorhandene Motiv (ohne
+    /// Motiv öffnet die erste), ein einzelnes Projekt wird geöffnet.
+    func dropFiles(_ urls: [URL]) {
+        guard !busy else { return }
+        let isProject = { (url: URL) in ["vcr", "json"].contains(url.pathExtension.lowercased()) }
+        var graphics = urls.filter { !isProject($0) }
+        let skipped = urls.filter(isProject).map { "\($0.lastPathComponent): Projekte lassen sich nicht hinzufügen, nur öffnen" }
+        guard !graphics.isEmpty else {
+            if let first = urls.first { open(first) }
+            return
+        }
+        let count = graphics.count
+        if !project.hasArtwork {
+            open(graphics.removeFirst())
+            guard project.hasArtwork else { return }
+        }
+        if !graphics.isEmpty, compose("append", values: ["paths": graphics.map(\.path)]) {
+            status = "\(count) Datei(en) hinzugefügt · \(Int(project.width_mm.rounded())) × \(Int(project.height_mm.rounded())) mm · ⌘Z widerruft"
+        }
+        if !skipped.isEmpty {
+            error = ([error].compactMap { $0 } + skipped).joined(separator: "\n")
+        }
+    }
+
     /// Merkt den Stand vor einer Aktion für ⌘Z (Fenster-UndoManager).
     func remember(_ state: UndoState) {
         undoState = state

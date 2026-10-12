@@ -1,0 +1,9 @@
+<material>
+  <engraveColor>#000000</engraveColor>
+  <cutColor>#ff0600</cutColor>
+  <color>#ffffff</color>
+  <name>Glas</name>
+  <materialThicknesses>
+    <float>2.0</float>
+  </materialThicknesses>
+</material>

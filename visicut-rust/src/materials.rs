@@ -41,6 +41,15 @@ impl Library {
             .expect("bundled material catalogue must parse")
     }
 
+    /// FAU profiles of the other lasercutters (Epilog Zing), selectable as
+    /// profile set; read-only and measured on that device, not on the LTT.
+    pub fn other_devices() -> Vec<Self> {
+        vec![
+            serde_json::from_str(include_str!("../resources/profiles/epilog-zing.json"))
+                .expect("bundled Epilog catalogue must parse"),
+        ]
+    }
+
     /// The user's library, or the bundled one; `true` if it is customised.
     pub fn load(dir: &Path) -> Result<(Self, bool), String> {
         let path = dir.join(FILE);
@@ -144,6 +153,17 @@ impl Library {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn other_device_catalogues_are_valid() {
+        let others = Library::other_devices();
+        assert_eq!(others[0].device, "Epilog Zing");
+        for library in &others {
+            library.validate().unwrap();
+            assert!(library.materials.len() > 30);
+            assert!(library.materials.iter().any(|m| m.name == "Acryl"));
+        }
+    }
 
     #[test]
     fn bundled_catalogue_includes_mark_and_3d_profiles() {
