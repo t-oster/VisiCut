@@ -3,6 +3,7 @@ use super::colors::aci;
 use super::geom::{Affine, P, PathBuilder, Seg, full_turn};
 use super::reader::{Document, Entity, Pair, number};
 use super::text;
+use crate::{i18n::tr, tr};
 use std::collections::{BTreeMap, BTreeSet};
 use std::f64::consts::TAU;
 
@@ -125,25 +126,25 @@ pub fn convert(doc: &Document, unit_mm: f64) -> Result<Converted, String> {
             .iter()
             .map(|(kind, n)| format!("{kind} ({n})"))
             .collect();
-        warnings.push(format!(
-            "Nicht unterstützte DXF-Objekte wurden ausgelassen: {}",
-            list.join(", ")
+        warnings.push(tr!(
+            "Nicht unterstützte DXF-Objekte wurden ausgelassen: {list}",
+            list = list.join(", ")
         ));
     }
     if converter.hidden > 0 {
-        warnings.push(format!(
-            "{} Objekte auf ausgeschalteten oder gefrorenen Ebenen wurden ausgelassen",
-            converter.hidden
+        warnings.push(tr!(
+            "{count} Objekte auf ausgeschalteten oder gefrorenen Ebenen wurden ausgelassen",
+            count = converter.hidden
         ));
     }
     for name in &converter.missing_blocks {
-        warnings.push(format!("Block „{name}“ fehlt in der DXF-Datei"));
+        warnings.push(tr!("Block „{name}“ fehlt in der DXF-Datei", name = name));
     }
     if converter.pattern_hatch {
-        warnings.push("Schraffurmuster werden als gefüllte Flächen übernommen".into());
+        warnings.push(tr("Schraffurmuster werden als gefüllte Flächen übernommen").into());
     }
     if converter.too_deep {
-        warnings.push("Zu tief verschachtelte Blöcke wurden ausgelassen".into());
+        warnings.push(tr("Zu tief verschachtelte Blöcke wurden ausgelassen").into());
     }
     Ok(Converted {
         prims: converter.prims,
@@ -441,7 +442,7 @@ impl Converter<'_> {
 
     fn push(&mut self, prim: Prim) -> Result<(), String> {
         if self.prims.len() >= MAX_PRIMITIVES {
-            return Err("DXF-Datei enthält zu viele Objekte".into());
+            return Err(tr("DXF-Datei enthält zu viele Objekte").into());
         }
         self.prims.push(prim);
         Ok(())
@@ -556,7 +557,7 @@ impl Converter<'_> {
             "POLYLINE" => {
                 let flags = e.int(70).unwrap_or(0);
                 if flags & (16 | 64) != 0 {
-                    self.unsupported("POLYLINE (Netz)");
+                    self.unsupported(tr("POLYLINE (Netz)"));
                     return Ok(());
                 }
                 let is_3d = flags & 8 != 0;
@@ -648,7 +649,7 @@ impl Converter<'_> {
             "DIMENSION" => {
                 let block = e.str(2).unwrap_or_default();
                 if self.doc.block(block).is_none() {
-                    self.unsupported("DIMENSION (ohne Block)");
+                    self.unsupported(tr("DIMENSION (ohne Block)"));
                     return Ok(());
                 }
                 let at = point(e, 12);
@@ -712,7 +713,7 @@ impl Converter<'_> {
         let columns = e.int(70).unwrap_or(1).max(1);
         let rows = e.int(71).unwrap_or(1).max(1);
         if columns.saturating_mul(rows) > 100_000 {
-            return Err("DXF-Datei enthält zu viele Blockreferenzen".into());
+            return Err(tr("DXF-Datei enthält zu viele Blockreferenzen").into());
         }
         let (dx, dy) = (e.fd(44, 0.0), e.fd(45, 0.0));
         let placement = ocs(e, e.fd(30, 0.0)).then(Affine::translate(at[0], at[1]));

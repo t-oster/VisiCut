@@ -10,29 +10,28 @@ use visicut_core::{
     raster::{Dithering, RasterSettings},
     selection,
 };
+use visicut_core::{i18n::tr, tr};
 
-/// Name given to a material that is not part of the library.
-const CUSTOM_MATERIAL: &str = "Eigenes Material";
 const WARNING: egui::Color32 = egui::Color32::from_rgb(180, 75, 40);
 
 pub fn operation_title(operation: Operation) -> &'static str {
     match operation {
-        Operation::Cut => "Schneiden",
-        Operation::Engrave => "Gravieren",
-        Operation::Engrave3d => "3D-Gravur",
-        Operation::Mark => "Markieren",
+        Operation::Cut => tr("Schneiden"),
+        Operation::Engrave => tr("Gravieren"),
+        Operation::Engrave3d => tr("3D-Gravur"),
+        Operation::Mark => tr("Markieren"),
     }
 }
 
 /// Assignment of an object in the individual mode; `None` ignores it.
 fn assignment_title(operation: Option<Operation>) -> &'static str {
-    operation.map_or("Ignorieren", operation_title)
+    operation.map_or_else(|| tr("Ignorieren"), operation_title)
 }
 
 pub fn cut_order_title(order: CutOrder) -> &'static str {
     match order {
-        CutOrder::VisiCut => "Wie VisiCut",
-        CutOrder::ShortestTravel => "Kürzeste Leerfahrten (experimentell)",
+        CutOrder::VisiCut => tr("Wie VisiCut"),
+        CutOrder::ShortestTravel => tr("Kürzeste Leerfahrten (experimentell)"),
     }
 }
 
@@ -51,9 +50,9 @@ impl AssignmentMode {
     pub const ALL: [AssignmentMode; 3] = [Self::Whole, Self::Objects, Self::Rules];
     pub fn title(self) -> &'static str {
         match self {
-            Self::Whole => "Gesamt",
-            Self::Objects => "Einzeln",
-            Self::Rules => "Regeln",
+            Self::Whole => tr("Gesamt"),
+            Self::Objects => tr("Einzeln"),
+            Self::Rules => tr("Regeln"),
         }
     }
 }
@@ -246,7 +245,9 @@ pub fn apply_presets(library: &Library, project: &mut Project) -> usize {
 /// `None` chooses an own material that is not part of the library.
 pub fn select_material(library: &Library, project: &mut Project, name: Option<&str>) {
     let Some(name) = name else {
-        project.material = CUSTOM_MATERIAL.into();
+        // Name given to a material that is not part of the library; it is
+        // stored in the project, so it is created in the chosen language.
+        project.material = tr("Eigenes Material").into();
         return;
     };
     project.material = name.into();
@@ -282,7 +283,7 @@ fn unique_id(materials: &[Material]) -> String {
 pub fn new_material(materials: &mut Vec<Material>) -> usize {
     materials.push(Material {
         id: unique_id(materials),
-        name: unique_name(materials, "Neues Material"),
+        name: unique_name(materials, tr("Neues Material")),
         profiles: Vec::new(),
     });
     materials.len() - 1
@@ -309,6 +310,36 @@ pub fn parse_color(value: &str) -> Option<egui::Color32> {
         channel(2)?,
         channel(4)?,
     ))
+}
+
+/// Farbtabelle der Vorlage „Farben“: Strichfarbe und Verfahren.
+fn color_legend(ui: &mut egui::Ui) {
+    egui::Grid::new("color_legend")
+        .num_columns(3)
+        .spacing([10.0, 4.0])
+        .show(ui, |ui| {
+            for (name, hex, operation) in [
+                (tr("Rot"), "#ff0000", Operation::Cut),
+                (tr("Blau"), "#0000ff", Operation::Engrave),
+                (tr("Grün"), "#00ff00", Operation::Mark),
+            ] {
+                ui.horizontal(|ui| {
+                    swatch(ui, parse_color(hex));
+                    ui.label(name);
+                });
+                ui.label(
+                    egui::RichText::new(hex)
+                        .monospace()
+                        .color(egui::Color32::from_gray(90)),
+                );
+                ui.label(
+                    egui::RichText::new(operation_title(operation))
+                        .strong()
+                        .color(crate::preview_ui::operation_color(operation)),
+                );
+                ui.end_row();
+            }
+        });
 }
 
 fn swatch(ui: &mut egui::Ui, color: Option<egui::Color32>) {
@@ -411,12 +442,15 @@ impl Document {
 
 fn operation_selector(ui: &mut egui::Ui, project: &mut Project) -> bool {
     let mut changed = false;
-    ui.horizontal_wrapped(|ui| {
+    ui.horizontal(|ui| {
+        ui.spacing_mut().item_spacing.x = 5.0;
+        let count = Operation::ALL.len() as f32;
+        let width = (ui.available_width() - 5.0 * (count - 1.0)) / count;
         for candidate in Operation::ALL {
-            if ui
-                .selectable_label(project.operation == candidate, operation_title(candidate))
-                .clicked()
-                && project.operation != candidate
+            let selected = project.operation == candidate;
+            let color = crate::preview_ui::operation_color(candidate);
+            if crate::form::tinted_choice(ui, operation_title(candidate), color, selected, width)
+                && !selected
             {
                 select_operation(project, candidate);
                 changed = true;
@@ -434,32 +468,33 @@ fn raster_options(
 ) -> bool {
     let mut changed = false;
     if operation == Operation::Engrave {
-        egui::ComboBox::from_id_salt(("dithering", id))
-            .selected_text(settings.dithering.title())
-            .show_ui(ui, |ui| {
-                for d in Dithering::ALL {
-                    changed |= ui
-                        .selectable_value(&mut settings.dithering, d, d.title())
-                        .changed();
-                }
-            });
+        crate::form::row(ui, tr("Rasterung"), |ui| {
+            egui::ComboBox::from_id_salt(("dithering", id))
+                .selected_text(settings.dithering.title())
+                .show_ui(ui, |ui| {
+                    for d in Dithering::ALL {
+                        changed |= ui
+                            .selectable_value(&mut settings.dithering, d, d.title())
+                            .changed();
+                    }
+                });
+        });
     } else {
-        ui.small("Graustufen: Leistung folgt der Helligkeit.");
+        ui.small(tr("Graustufen: Leistung folgt der Helligkeit."));
     }
-    ui.horizontal(|ui| {
-        ui.label("Helligkeit");
+    crate::form::row(ui, tr("Helligkeit"), |ui| {
         changed |= ui
             .add(egui::DragValue::new(&mut settings.color_shift).range(-255..=255))
             .changed();
     });
     changed |= ui
-        .checkbox(&mut settings.invert, "Farben invertieren")
+        .checkbox(&mut settings.invert, tr("Farben invertieren"))
         .changed();
     changed |= ui
-        .checkbox(&mut settings.bidirectional, "Bidirektional")
+        .checkbox(&mut settings.bidirectional, tr("Bidirektional"))
         .changed();
     changed |= ui
-        .checkbox(&mut settings.bottom_up, "Von unten nach oben")
+        .checkbox(&mut settings.bottom_up, tr("Von unten nach oben"))
         .changed();
     changed
 }
@@ -475,21 +510,12 @@ fn profiled(
 ) -> bool {
     let deviates = profile.is_some_and(|p| (p - *value).abs() > 1e-4);
     let mut changed = false;
-    ui.horizontal(|ui| {
-        if deviates {
-            ui.colored_label(PROFILE, label);
-        } else {
-            ui.label(label);
-        }
-        if let Some(p) = profile.filter(|_| deviates)
-            && ui
-                .add(egui::Button::new(egui::RichText::new("⟳").color(PROFILE)).frame(false))
-                .on_hover_text(format!("Auf den Profilwert {p} % zurücksetzen"))
-                .clicked()
-        {
-            *value = p;
-            changed = true;
-        }
+    let text = if deviates {
+        egui::RichText::new(label).color(PROFILE)
+    } else {
+        egui::RichText::new(label)
+    };
+    crate::form::row(ui, text, |ui| {
         changed |= ui
             .add(
                 egui::DragValue::new(value)
@@ -498,6 +524,15 @@ fn profiled(
                     .suffix(" %"),
             )
             .changed();
+        if let Some(p) = profile.filter(|_| deviates)
+            && ui
+                .add(egui::Button::new(egui::RichText::new("⟳").color(PROFILE)).frame(false))
+                .on_hover_text(tr!("Auf den Profilwert {value} % zurücksetzen", value = p))
+                .clicked()
+        {
+            *value = p;
+            changed = true;
+        }
     });
     changed
 }
@@ -514,20 +549,19 @@ fn parameters(
 ) -> bool {
     let mut changed = profiled(
         ui,
-        "Leistung",
+        tr("Leistung"),
         power,
         0.0..=100.0,
         profile.map(|p| p.power_percent),
     );
     changed |= profiled(
         ui,
-        "Geschwindigkeit",
+        tr("Geschwindigkeit"),
         speed,
         0.1..=100.0,
         profile.map(|p| p.speed_percent),
     );
-    ui.horizontal(|ui| {
-        ui.label("Durchgänge");
+    crate::form::row(ui, tr("Durchgänge"), |ui| {
         changed |= ui
             .add(egui::DragValue::new(passes).range(1..=100))
             .changed();
@@ -554,7 +588,7 @@ fn filters(
     let mut changed = false;
     let mut remove = None;
     if filters.is_empty() {
-        ui.small("Ohne Bedingung: alle Objekte");
+        ui.small(tr("Ohne Bedingung: alle Objekte"));
     }
     for (i, filter) in filters.iter_mut().enumerate() {
         ui.horizontal(|ui| {
@@ -605,7 +639,7 @@ fn filters(
                 });
             if ui
                 .small_button("🗑")
-                .on_hover_text("Bedingung entfernen")
+                .on_hover_text(tr("Bedingung entfernen"))
                 .clicked()
             {
                 remove = Some(i);
@@ -618,13 +652,13 @@ fn filters(
             changed |= ui
                 .add(
                     egui::TextEdit::singleline(&mut filter.value)
-                        .hint_text("Wert")
+                        .hint_text(tr("Wert"))
                         .desired_width(110.0),
                 )
                 .changed();
             let suggestions = document.suggestions(filter.attribute);
             if !suggestions.is_empty() {
-                ui.menu_button("Werte", |ui| {
+                ui.menu_button(tr("Werte"), |ui| {
                     egui::ScrollArea::vertical()
                         .max_height(260.0)
                         .show(ui, |ui| {
@@ -643,7 +677,7 @@ fn filters(
                         });
                 })
                 .response
-                .on_hover_text("Werte aus der SVG");
+                .on_hover_text(tr("Werte aus der SVG"));
             }
         });
     }
@@ -651,7 +685,7 @@ fn filters(
         filters.remove(i);
         changed = true;
     }
-    if ui.small_button("Bedingung hinzufügen").clicked() {
+    if ui.small_button(tr("Bedingung hinzufügen")).clicked() {
         filters.push(Filter {
             attribute: Attribute::Color,
             value: document.first_color("#000000"),
@@ -716,19 +750,19 @@ impl JobUi {
             .map(|l| l.device.clone())
             .collect();
         let before = self.profile_set;
-        ui.horizontal(|ui| {
-            ui.label("Profile");
+        crate::form::row(ui, tr("Profile"), |ui| {
             egui::ComboBox::from_id_salt("profile_set")
-                .width(170.0)
+                .width(190.0)
                 .selected_text(names.get(self.profile_set).map_or("", |n| n.as_str()))
                 .show_ui(ui, |ui| {
                     for (i, name) in names.iter().enumerate() {
                         ui.selectable_value(&mut self.profile_set, i, name);
                     }
-                });
-        })
-        .response
-        .on_hover_text("FAU-Materialprofile eines Lasercutters für Material, Stärke und Parameter");
+                })
+                .response
+                .on_hover_text(tr("\
+                    FAU-Materialprofile eines Lasercutters für Material, Stärke und Parameter"));
+        });
         if self.profile_set != before {
             let material = project.material.clone();
             if find_material(self.active(), &material).is_some() {
@@ -738,9 +772,14 @@ impl JobUi {
             *dirty = true;
         }
         if self.profile_set > 0 {
-            ui.colored_label(
-                PROFILE,
-                "Profile eines anderen Lasercutters: Werte vor dem Lasern am LTT prüfen.",
+            ui.add(
+                egui::Label::new(
+                    egui::RichText::new(tr("\
+                        Profile eines anderen Lasercutters: Werte vor dem Lasern am LTT prüfen."))
+                    .size(11.5)
+                    .color(PROFILE),
+                )
+                .wrap(),
             );
         }
     }
@@ -754,49 +793,53 @@ impl JobUi {
             self.own_material = false;
         }
         let own = !library_material && (self.own_material || !project.material.is_empty());
-        egui::ComboBox::from_id_salt("material")
-            .width(200.0)
-            .selected_text(if own {
-                "Eigenes Material …"
-            } else if project.material.is_empty() {
-                "Material wählen"
-            } else {
-                &project.material
-            })
-            .show_ui(ui, |ui| {
-                if ui
-                    .selectable_label(!own && project.material.is_empty(), "Material wählen")
-                    .clicked()
-                {
-                    project.material.clear();
-                    self.own_material = false;
-                    *dirty = true;
-                }
-                ui.separator();
-                for m in &library.materials {
+        crate::form::row(ui, tr("Material"), |ui| {
+            egui::ComboBox::from_id_salt("material")
+                .width(190.0)
+                .selected_text(if own {
+                    tr("Eigenes Material …")
+                } else if project.material.is_empty() {
+                    tr("Material wählen")
+                } else {
+                    &project.material
+                })
+                .show_ui(ui, |ui| {
                     if ui
-                        .selectable_label(project.material == m.name, &m.name)
+                        .selectable_label(
+                            !own && project.material.is_empty(),
+                            tr("Material wählen"),
+                        )
                         .clicked()
                     {
-                        select_material(library, project, Some(&m.name));
+                        project.material.clear();
+                        self.own_material = false;
                         *dirty = true;
                     }
-                }
-                ui.separator();
-                if ui.selectable_label(own, "Eigenes Material …").clicked() && !own {
-                    select_material(library, project, None);
-                    self.own_material = true;
-                    *dirty = true;
-                }
-            });
+                    ui.separator();
+                    for m in &library.materials {
+                        if ui
+                            .selectable_label(project.material == m.name, &m.name)
+                            .clicked()
+                        {
+                            select_material(library, project, Some(&m.name));
+                            *dirty = true;
+                        }
+                    }
+                    ui.separator();
+                    if ui.selectable_label(own, tr("Eigenes Material …")).clicked() && !own {
+                        select_material(library, project, None);
+                        self.own_material = true;
+                        *dirty = true;
+                    }
+                });
+        });
         if own {
-            ui.horizontal(|ui| {
-                ui.label("Bezeichnung");
+            crate::form::row(ui, tr("Bezeichnung"), |ui| {
                 *dirty |= ui
                     .add(
                         egui::TextEdit::singleline(&mut project.material)
-                            .hint_text(CUSTOM_MATERIAL)
-                            .desired_width(150.0),
+                            .hint_text(tr("Eigenes Material"))
+                            .desired_width(190.0),
                     )
                     .changed();
             });
@@ -805,17 +848,22 @@ impl JobUi {
             .map(thicknesses)
             .unwrap_or_default();
         if list.is_empty() {
-            *dirty |= crate::number(ui, "Stärke", &mut project.thickness_mm, 0.0..=1000.0, " mm");
+            *dirty |= crate::number(
+                ui,
+                tr("Stärke"),
+                &mut project.thickness_mm,
+                0.0..=1000.0,
+                " mm",
+            );
         } else {
             let title = |t: f32| {
                 if t == 0.0 {
-                    "Nicht festgelegt".to_string()
+                    tr("Nicht festgelegt").to_string()
                 } else {
                     format!("{t} mm")
                 }
             };
-            ui.horizontal(|ui| {
-                ui.label("Stärke");
+            crate::form::row(ui, tr("Stärke"), |ui| {
                 egui::ComboBox::from_id_salt("thickness")
                     .width(130.0)
                     .selected_text(title(project.thickness_mm))
@@ -838,13 +886,13 @@ impl JobUi {
             apply_presets(library, project);
         }
         if project.material.is_empty() {
-            ui.small("Material wählen, um sein Profil zu übernehmen.");
+            crate::form::caption(ui, tr("Material wählen, um sein Profil zu übernehmen."));
         } else if preset(library, project, project.operation).is_none() && project.steps.is_empty()
         {
-            ui.small("Kein Profil für diese Kombination; Parameter manuell eingeben.");
-        }
-        if ui.button("Materialbibliothek …").clicked() {
-            self.open_library();
+            crate::form::caption(
+                ui,
+                tr("Kein Profil für diese Kombination; Parameter manuell eingeben."),
+            );
         }
     }
 
@@ -868,96 +916,139 @@ impl JobUi {
         }
     }
 
+    /// Abschnitte wie im macOS-Inspektor: Objektzuordnung, bei Regeln
+    /// „Regeln“ und „Ignorieren“, danach die Bearbeitung (gesamtes Motiv
+    /// oder ein Abschnitt je Schritt).
     pub fn processing(&mut self, ui: &mut egui::Ui, project: &mut Project, dirty: &mut bool) {
         self.document.refresh(&project.svg);
-        let mode = assignment_mode(project);
-        ui.add_enabled_ui(!project.svg.is_empty(), |ui| {
-            ui.horizontal(|ui| {
-                for candidate in AssignmentMode::ALL {
-                    if ui
-                        .selectable_label(mode == candidate, candidate.title())
-                        .clicked()
-                        && mode != candidate
-                    {
-                        let count = self.document.objects.len();
-                        set_mode(self.active(), project, candidate, count);
-                        *dirty = true;
-                    }
-                }
-            });
-        });
-        // A click above may have changed the mode.
-        let mode = assignment_mode(project);
-        match mode {
-            AssignmentMode::Whole => {
-                ui.small("Ein Verfahren für das gesamte Motiv. Für Zuordnungen nach Strichfarbe oder anderen Merkmalen „Regeln“ wählen.");
-                if operation_selector(ui, project) {
-                    // Das Materialprofil ist der Standard.
-                    apply_presets(self.active(), project);
-                    *dirty = true;
-                }
-                let profile = preset(self.active(), project, project.operation).cloned();
-                if project.operation == Operation::Mark && profile.is_none() {
-                    ui.small("Konturen markieren. Eigene Leistung einstellen.");
-                }
-                *dirty |= parameters(
+        crate::form::section(ui, tr("Objektzuordnung"), |ui| {
+            let mode = assignment_mode(project);
+            let options = AssignmentMode::ALL.map(|m| (m, m.title()));
+            let chosen = ui
+                .add_enabled_ui(!project.svg.is_empty(), |ui| {
+                    crate::form::segmented(ui, mode, &options)
+                })
+                .inner;
+            if let Some(candidate) = chosen {
+                let count = self.document.objects.len();
+                set_mode(self.active(), project, candidate, count);
+                *dirty = true;
+            }
+            // A click above may have changed the mode.
+            match assignment_mode(project) {
+                AssignmentMode::Whole => crate::form::caption(
                     ui,
-                    &mut project.power_percent,
-                    &mut project.speed_percent,
-                    &mut project.passes,
-                    profile.as_ref(),
-                );
-                if project.operation.is_raster() {
-                    *dirty |= raster_options(ui, "whole", &mut project.raster, project.operation);
+                    tr("\
+                        Ein Verfahren für das gesamte Motiv. Für Zuordnungen nach Strichfarbe \
+                     oder anderen Merkmalen „Regeln“ wählen."),
+                ),
+                AssignmentMode::Objects => {
+                    crate::form::caption(
+                        ui,
+                        tr("Schneiden, gravieren, markieren oder ignorieren."),
+                    );
+                    self.objects(ui, project, dirty);
+                }
+                AssignmentMode::Rules => {
+                    crate::form::caption(
+                        ui,
+                        tr("\
+                            Regeln ordnen Objekte nach Merkmalen zu, z. B. nach Strichfarbe \
+                         (Vorlage „Farben“):"),
+                    );
+                    color_legend(ui);
+                    crate::form::caption(
+                        ui,
+                        tr("\
+                            Vorlage wählen oder Bedingungen (Farbe, Linienstärke, Ebene, Typ, ID) \
+                         anpassen; „Rest“ erfasst alle übrigen Objekte."),
+                    );
                 }
             }
-            AssignmentMode::Objects => {
-                ui.small("Schneiden, gravieren, markieren oder ignorieren.");
-                self.objects(ui, project, dirty);
-            }
-            AssignmentMode::Rules => {
-                ui.small(
-                    "Regeln ordnen Objekte nach Merkmalen zu, z. B. nach Strichfarbe: Rot (#ff0000) → Schneiden, Blau (#0000ff) → Gravieren, Grün (#00ff00) → Markieren. Vorlage wählen oder Bedingungen (Farbe, Linienstärke, Ebene, Typ, ID) anpassen; „Rest“ erfasst alle übrigen Objekte.",
+            if assignment_mode(project) != AssignmentMode::Whole {
+                crate::form::caption(
+                    ui,
+                    tr("Ein LTT-Auftrag je Verfahren: Engrav › Eng3D › Mark › Cut"),
                 );
-                self.rules_header(ui, project, dirty);
             }
-        }
-        if mode != AssignmentMode::Whole {
-            ui.small("Ein LTT-Auftrag je Verfahren: Engrav › Eng3D › Mark › Cut");
-            self.steps(ui, project, dirty);
-        }
-        if mode == AssignmentMode::Rules {
-            self.ignore_rules(ui, project, dirty);
-        }
-        ui.add_space(6.0);
-        ui.label("Schnittreihenfolge");
-        egui::ComboBox::from_id_salt("cut_order")
-            .width(240.0)
-            .selected_text(cut_order_title(project.cut_order))
-            .show_ui(ui, |ui| {
-                for order in [CutOrder::VisiCut, CutOrder::ShortestTravel] {
-                    *dirty |= ui
-                        .selectable_value(&mut project.cut_order, order, cut_order_title(order))
-                        .changed();
-                }
+            crate::form::row(ui, tr("Schnittreihenfolge"), |ui| {
+                egui::ComboBox::from_id_salt("cut_order")
+                    .width(150.0)
+                    .selected_text(cut_order_title(project.cut_order))
+                    .show_ui(ui, |ui| {
+                        for order in [CutOrder::VisiCut, CutOrder::ShortestTravel] {
+                            *dirty |= ui
+                                .selectable_value(
+                                    &mut project.cut_order,
+                                    order,
+                                    cut_order_title(order),
+                                )
+                                .changed();
+                        }
+                    });
             });
-        if project.cut_order == CutOrder::ShortestTravel {
-            ui.colored_label(
-                WARNING,
-                "Experimentell: Die Reihenfolge der Schnitte weicht von VisiCut ab. \
-                 Den Auftrag am Gerät beaufsichtigen.",
-            );
+            if project.cut_order == CutOrder::ShortestTravel {
+                ui.add(
+                    egui::Label::new(
+                        egui::RichText::new(tr("\
+                            Experimentell: Die Reihenfolge der Schnitte weicht von VisiCut ab. \
+                             Den Auftrag am Gerät beaufsichtigen."))
+                        .size(11.5)
+                        .color(WARNING),
+                    )
+                    .wrap(),
+                );
+            } else {
+                crate::form::caption(ui, tr("Innere Konturen zuerst, Reihenfolge wie VisiCut."));
+            }
+            *dirty |= ui
+                .checkbox(
+                    &mut project.remove_duplicate_lines,
+                    tr("Doppelte Linien entfernen"),
+                )
+                .on_hover_text(tr("\
+                    Linien, die genau auf einer bereits geschnittenen Linie desselben Schritts \
+                     liegen (z. B. gemeinsame Kanten), nur einmal schneiden"))
+                .changed();
+        });
+        match assignment_mode(project) {
+            AssignmentMode::Whole => {
+                crate::form::section(ui, tr("Bearbeitung · gesamtes Motiv"), |ui| {
+                    self.whole(ui, project, dirty);
+                });
+            }
+            AssignmentMode::Objects => self.steps(ui, project, dirty),
+            AssignmentMode::Rules => {
+                crate::form::section(ui, tr("Regeln"), |ui| self.rules_header(ui, project, dirty));
+                crate::form::section(ui, tr("Ignorieren"), |ui| {
+                    self.ignore_rules(ui, project, dirty);
+                });
+                self.steps(ui, project, dirty);
+            }
         }
-        *dirty |= ui
-            .checkbox(
-                &mut project.remove_duplicate_lines,
-                "Doppelte Linien entfernen",
-            )
-            .on_hover_text(
-                "Linien, die genau auf einer bereits geschnittenen Linie desselben Schritts \
-                 liegen (z. B. gemeinsame Kanten), nur einmal schneiden",
-            )
-            .changed();
+    }
+
+    /// One operation and its parameters for the whole motif.
+    fn whole(&mut self, ui: &mut egui::Ui, project: &mut Project, dirty: &mut bool) {
+        if operation_selector(ui, project) {
+            // Das Materialprofil ist der Standard.
+            apply_presets(self.active(), project);
+            *dirty = true;
+        }
+        let profile = preset(self.active(), project, project.operation).cloned();
+        if project.operation == Operation::Mark && profile.is_none() {
+            crate::form::caption(ui, tr("Konturen markieren. Eigene Leistung einstellen."));
+        }
+        *dirty |= parameters(
+            ui,
+            &mut project.power_percent,
+            &mut project.speed_percent,
+            &mut project.passes,
+            profile.as_ref(),
+        );
+        if project.operation.is_raster() {
+            *dirty |= raster_options(ui, "whole", &mut project.raster, project.operation);
+        }
     }
 
     /// Individual assignment: one row per SVG object.
@@ -966,7 +1057,7 @@ impl JobUi {
             ui.colored_label(WARNING, e);
         }
         if self.document.objects.is_empty() {
-            ui.small("Keine auswählbaren Objekte in der SVG.");
+            ui.small(tr("Keine auswählbaren Objekte in der SVG."));
             return;
         }
         let library = active(&self.library, &self.others, self.profile_set);
@@ -1005,7 +1096,7 @@ impl JobUi {
                             )
                             .on_hover_text(&row.label);
                         label.context_menu(|ui| {
-                            if ui.button("Objekt löschen").clicked() {
+                            if ui.button(tr("Objekt löschen")).clicked() {
                                 self.delete_object = Some(i);
                             }
                         });
@@ -1015,35 +1106,35 @@ impl JobUi {
     }
 
     fn rules_header(&mut self, ui: &mut egui::Ui, project: &mut Project, dirty: &mut bool) {
-        egui::ComboBox::from_id_salt("predefined")
-            .width(240.0)
-            .selected_text("Vorlage übernehmen …")
-            .show_ui(ui, |ui| {
+        ui.horizontal(|ui| {
+            ui.menu_button(tr("Vorlage übernehmen"), |ui| {
                 for p in mapping::predefined() {
-                    if ui.selectable_label(false, p.name).clicked() {
+                    if ui.button(p.name).clicked() {
                         apply_predefined(self.active(), project, &p);
                         *dirty = true;
                     }
                 }
             });
-        ui.small(
-            "Jeder Schritt bearbeitet die Objekte, die alle Bedingungen erfüllen. \
-             Ein Objekt kann mehrere Schritte durchlaufen; „Rest“ erfasst alles, \
-             was sonst nicht bearbeitet oder ignoriert wird.",
-        );
-        ui.horizontal_wrapped(|ui| {
-            ui.label("Schritt hinzufügen:");
-            for operation in Operation::ALL {
-                if ui.small_button(operation_title(operation)).clicked() {
-                    let step = JobStep {
-                        filters: Some(Vec::new()),
-                        ..default_step(self.active(), project, operation)
-                    };
-                    project.steps.push(step);
-                    *dirty = true;
+            ui.menu_button(tr("Schritt hinzufügen"), |ui| {
+                for operation in Operation::ALL {
+                    if ui.button(operation_title(operation)).clicked() {
+                        let step = JobStep {
+                            filters: Some(Vec::new()),
+                            ..default_step(self.active(), project, operation)
+                        };
+                        project.steps.push(step);
+                        *dirty = true;
+                    }
                 }
-            }
+            });
         });
+        crate::form::caption(
+            ui,
+            tr("\
+                Jeder Schritt bearbeitet die Objekte, die alle Bedingungen erfüllen. \
+             Ein Objekt kann mehrere Schritte durchlaufen; „Rest“ erfasst alles, \
+             was sonst nicht bearbeitet oder ignoriert wird."),
+        );
     }
 
     fn steps(&mut self, ui: &mut egui::Ui, project: &mut Project, dirty: &mut bool) {
@@ -1060,18 +1151,30 @@ impl JobUi {
             };
             let profile = preset(self.active(), project, project.steps[i].operation).cloned();
             let step = &mut project.steps[i];
-            egui::CollapsingHeader::new(format!(
-                "{}. {} · {} Objekte",
-                i + 1,
-                operation_title(step.operation),
-                objects
-            ))
-            .id_salt(("step", i))
-            .default_open(true)
-            .show(ui, |ui| {
-                if is_rule(step) {
+            crate::form::section(ui, &tr!("Schritt {number}", number = i + 1), |ui| {
+                let rule = is_rule(step);
+                ui.horizontal(|ui| {
+                    ui.label(
+                        egui::RichText::new(operation_title(step.operation))
+                            .strong()
+                            .color(crate::preview_ui::operation_color(step.operation)),
+                    );
+                    ui.weak(tr!("{count} Objekte", count = objects));
+                    if rule {
+                        ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                            if ui
+                                .add(egui::Button::new("🗑").frame(false))
+                                .on_hover_text(tr("Schritt entfernen"))
+                                .clicked()
+                            {
+                                remove = Some(i);
+                            }
+                        });
+                    }
+                });
+                if rule {
                     if ui
-                        .checkbox(&mut step.rest, "Rest: alle übrigen Objekte")
+                        .checkbox(&mut step.rest, tr("Rest: alle übrigen Objekte"))
                         .changed()
                     {
                         step.filters = if step.rest { None } else { Some(Vec::new()) };
@@ -1083,7 +1186,10 @@ impl JobUi {
                     }
                 }
                 if step.operation == Operation::Mark && step.power_percent == 0.0 {
-                    ui.small("Zum Markieren zuerst eine eigene Leistung einstellen.");
+                    crate::form::caption(
+                        ui,
+                        tr("Zum Markieren zuerst eine eigene Leistung einstellen."),
+                    );
                 }
                 *dirty |= parameters(
                     ui,
@@ -1099,7 +1205,7 @@ impl JobUi {
                 };
                 let mut drop = None;
                 for (j, set) in step.additional.iter_mut().enumerate() {
-                    ui.label(format!("Parametersatz {}", j + 2));
+                    ui.label(tr!("Parametersatz {number}", number = j + 2));
                     *dirty |= parameters(
                         ui,
                         &mut set.power_percent,
@@ -1107,7 +1213,7 @@ impl JobUi {
                         &mut set.passes,
                         None,
                     );
-                    if ui.small_button("Parametersatz entfernen").clicked() {
+                    if ui.small_button(tr("Parametersatz entfernen")).clicked() {
                         drop = Some(j);
                     }
                 }
@@ -1115,16 +1221,14 @@ impl JobUi {
                     step.additional.remove(j);
                     *dirty = true;
                 }
-                if step.additional.len() < 15 && ui.small_button("Weiteren Parametersatz").clicked()
+                if step.additional.len() < 15
+                    && ui.small_button(tr("Weiteren Parametersatz")).clicked()
                 {
                     step.additional.push(first);
                     *dirty = true;
                 }
                 if step.operation.is_raster() {
                     *dirty |= raster_options(ui, ("step", i), &mut step.raster, step.operation);
-                }
-                if is_rule(step) && ui.small_button("Schritt entfernen").clicked() {
-                    remove = Some(i);
                 }
             });
         }
@@ -1135,22 +1239,23 @@ impl JobUi {
     }
 
     fn ignore_rules(&mut self, ui: &mut egui::Ui, project: &mut Project, dirty: &mut bool) {
-        ui.label("Ignorieren");
         let mut remove = None;
         for (i, list) in project.ignore_filters.iter_mut().enumerate() {
-            ui.horizontal(|ui| {
-                ui.label(format!("Regel {}", i + 1));
-                if ui.small_button("Ignorierregel entfernen").clicked() {
-                    remove = Some(i);
-                }
+            let removed = crate::form::row(ui, tr!("Regel {number}", number = i + 1), |ui| {
+                ui.add(egui::Button::new("🗑").frame(false))
+                    .on_hover_text(tr("Ignorierregel entfernen"))
+                    .clicked()
             });
+            if removed {
+                remove = Some(i);
+            }
             *dirty |= filters(ui, ("ignore", i), list, &self.document);
         }
         if let Some(i) = remove {
             project.ignore_filters.remove(i);
             *dirty = true;
         }
-        if ui.small_button("Ignorierregel hinzufügen").clicked() {
+        if ui.small_button(tr("Ignorierregel hinzufügen")).clicked() {
             project.ignore_filters.push(vec![Filter {
                 attribute: Attribute::Color,
                 value: self.document.first_color("#0000ff"),
@@ -1171,7 +1276,8 @@ impl JobUi {
         };
         let mut open = true;
         let mut keep = true;
-        egui::Window::new("Materialbibliothek")
+        egui::Window::new(tr("Materialbibliothek"))
+            .id(egui::Id::new("material_library"))
             .open(&mut open)
             .default_size([700.0, 460.0])
             .show(ctx, |ui| {
@@ -1187,20 +1293,23 @@ impl JobUi {
                                 }
                             });
                         ui.horizontal_wrapped(|ui| {
-                            if ui.button("Neu").clicked() {
+                            if ui.button(tr("Neu")).clicked() {
                                 selected = new_material(&mut draft);
                             }
                             if ui
                                 .add_enabled(
                                     selected < draft.len(),
-                                    egui::Button::new("Duplizieren"),
+                                    egui::Button::new(tr("Duplizieren")),
                                 )
                                 .clicked()
                             {
                                 selected = duplicate_material(&mut draft, selected);
                             }
                             if ui
-                                .add_enabled(selected < draft.len(), egui::Button::new("Entfernen"))
+                                .add_enabled(
+                                    selected < draft.len(),
+                                    egui::Button::new(tr("Entfernen")),
+                                )
                                 .clicked()
                             {
                                 draft.remove(selected);
@@ -1211,7 +1320,7 @@ impl JobUi {
                     ui.separator();
                     ui.vertical(|ui| {
                         let Some(material) = draft.get_mut(selected) else {
-                            ui.label("Material auswählen");
+                            ui.label(tr("Material auswählen"));
                             return;
                         };
                         ui.text_edit_singleline(&mut material.name);
@@ -1221,10 +1330,10 @@ impl JobUi {
                             .max_height(320.0)
                             .show(ui, |ui| {
                                 egui::Grid::new("profiles").num_columns(5).show(ui, |ui| {
-                                    ui.label("Stärke");
-                                    ui.label("Verfahren");
-                                    ui.label("Leistung");
-                                    ui.label("Geschwindigkeit");
+                                    ui.label(tr("Stärke"));
+                                    ui.label(tr("Verfahren"));
+                                    ui.label(tr("Leistung"));
+                                    ui.label(tr("Geschwindigkeit"));
                                     ui.end_row();
                                     for (j, p) in material.profiles.iter_mut().enumerate() {
                                         ui.add(
@@ -1255,7 +1364,7 @@ impl JobUi {
                                         );
                                         if ui
                                             .small_button("🗑")
-                                            .on_hover_text("Profil entfernen")
+                                            .on_hover_text(tr("Profil entfernen"))
                                             .clicked()
                                         {
                                             drop = Some(j);
@@ -1267,7 +1376,7 @@ impl JobUi {
                         if let Some(j) = drop {
                             material.profiles.remove(j);
                         }
-                        if ui.button("Profil hinzufügen").clicked() {
+                        if ui.button(tr("Profil hinzufügen")).clicked() {
                             let thickness =
                                 material.profiles.last().map_or(3.0, |p| p.thickness_mm);
                             material.profiles.push(MaterialProfile {
@@ -1278,17 +1387,17 @@ impl JobUi {
                                 source: None,
                             });
                         }
-                        ui.small(
-                            "Leistung und Geschwindigkeit in Prozent wie am LTT. Je Stärke ist \
+                        ui.small(tr("\
+                            Leistung und Geschwindigkeit in Prozent wie am LTT. Je Stärke ist \
                              ein Profil pro Verfahren möglich; 0 % Leistung gilt als \
-                             „nicht übernehmbar“.",
-                        );
+                             „nicht übernehmbar“."));
                     });
                 });
                 ui.separator();
                 ui.horizontal(|ui| {
-                    if ui.button("Importieren …").clicked()
+                    if ui.button(tr("Importieren …")).clicked()
                         && let Some(path) = rfd::FileDialog::new()
+                            .set_title(tr("Materialbibliothek importieren"))
                             .add_filter("JSON", &["json"])
                             .pick_file()
                     {
@@ -1301,15 +1410,16 @@ impl JobUi {
                             .and_then(|b| Library::import(&b))
                         {
                             Ok(other) => {
-                                *status =
-                                    format!("{} Materialien importiert", library.merge(other));
+                                let count = library.merge(other);
+                                *status = tr!("{count} Materialien importiert", count = count);
                                 draft = library.materials;
                             }
                             Err(e) => *status = e,
                         }
                     }
-                    if ui.button("Exportieren …").clicked()
+                    if ui.button(tr("Exportieren …")).clicked()
                         && let Some(path) = rfd::FileDialog::new()
+                            .set_title(tr("Materialbibliothek exportieren"))
                             .add_filter("JSON", &["json"])
                             .set_file_name("Materialien.json")
                             .save_file()
@@ -1319,12 +1429,12 @@ impl JobUi {
                             ..self.library.clone()
                         };
                         *status = match library.export(&path) {
-                            Ok(()) => "Materialbibliothek exportiert".into(),
+                            Ok(()) => tr("Materialbibliothek exportiert").into(),
                             Err(e) => e,
                         };
                     }
                     if ui
-                        .add_enabled(self.custom, egui::Button::new("FAU wiederherstellen"))
+                        .add_enabled(self.custom, egui::Button::new(tr("FAU wiederherstellen")))
                         .clicked()
                     {
                         match Library::reset(&device::config_dir()) {
@@ -1333,27 +1443,27 @@ impl JobUi {
                                 selected = 0;
                                 self.library = library;
                                 self.custom = false;
-                                *status = "FAU-Materialbibliothek wiederhergestellt".into();
+                                *status = tr("FAU-Materialbibliothek wiederhergestellt").into();
                             }
                             Err(e) => *status = e,
                         }
                     }
                     ui.small(if self.custom {
-                        "Eigene Bibliothek"
+                        tr("Eigene Bibliothek")
                     } else {
-                        "FAU-Bibliothek"
+                        tr("FAU-Bibliothek")
                     });
                     let changed = draft != self.library.materials;
                     if ui
-                        .add_enabled(changed, egui::Button::new("Verwerfen"))
-                        .on_hover_text("Ungesicherte Änderungen verwerfen")
+                        .add_enabled(changed, egui::Button::new(tr("Verwerfen")))
+                        .on_hover_text(tr("Ungesicherte Änderungen verwerfen"))
                         .clicked()
                     {
                         draft = self.library.materials.clone();
                         selected = selected.min(draft.len().saturating_sub(1));
                     }
                     if ui
-                        .add_enabled(changed, egui::Button::new("Sichern"))
+                        .add_enabled(changed, egui::Button::new(tr("Sichern")))
                         .clicked()
                     {
                         let library = Library {
@@ -1364,12 +1474,12 @@ impl JobUi {
                             Ok(()) => {
                                 self.library = library;
                                 self.custom = true;
-                                *status = "Materialbibliothek gesichert".into();
+                                *status = tr("Materialbibliothek gesichert").into();
                             }
                             Err(e) => *status = e,
                         }
                     }
-                    if ui.button("Schließen").clicked() {
+                    if ui.button(tr("Schließen")).clicked() {
                         keep = false;
                     }
                 });
@@ -1448,7 +1558,7 @@ mod tests {
         select_material(&library, &mut p, Some("Pappel"));
         assert_eq!(p.thickness_mm, 0.0);
         select_material(&library, &mut p, None);
-        assert_eq!(p.material, CUSTOM_MATERIAL);
+        assert_eq!(p.material, "Eigenes Material");
         assert!(preset(&library, &p, Operation::Cut).is_none());
     }
 

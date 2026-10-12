@@ -5,6 +5,7 @@
 //! imported, relative to the SVG file's directory (like VisiCut's Java
 //! importer). Only the affected attribute values are replaced; the rest of the
 //! document stays byte-identical. Network URLs are never fetched.
+use crate::{i18n::tr, tr};
 use base64::Engine;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -31,7 +32,7 @@ pub struct Imported {
 pub fn read_svg_file(path: &Path) -> Result<Imported, String> {
     let meta = std::fs::metadata(path).map_err(|e| e.to_string())?;
     if meta.len() > 25 * 1024 * 1024 {
-        return Err("Datei ist größer als 25 MB".into());
+        return Err(tr("Datei ist größer als 25 MB").into());
     }
     let source = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
     Ok(embed_external_images(
@@ -76,13 +77,18 @@ pub fn embed_external_images(source: &str, base_dir: &Path) -> Imported {
             let candidates = match classify(href) {
                 Href::Skip => continue,
                 Href::Remote => {
-                    warnings.push(format!(
-                        "Bild „{shown}“ wird nicht aus dem Netz geladen; bitte als Datei speichern und neu verknüpfen"
+                    warnings.push(tr!(
+                        "Bild „{name}“ wird nicht aus dem Netz geladen; \
+                         bitte als Datei speichern und neu verknüpfen",
+                        name = shown
                     ));
                     continue;
                 }
                 Href::Unsupported => {
-                    warnings.push(format!("Bild „{shown}“: Adresse wird nicht unterstützt"));
+                    warnings.push(tr!(
+                        "Bild „{name}“: Adresse wird nicht unterstützt",
+                        name = shown
+                    ));
                     continue;
                 }
                 Href::Paths(paths) => paths,
@@ -92,8 +98,9 @@ pub fn embed_external_images(source: &str, base_dir: &Path) -> Imported {
                 .chain(absref.map(PathBuf::from))
                 .map(|path| base_dir.join(path));
             let Some(path) = candidates.find(|path| path.is_file()) else {
-                warnings.push(format!(
-                    "Bild „{shown}“ nicht gefunden und nicht eingebettet"
+                warnings.push(tr!(
+                    "Bild „{name}“ nicht gefunden und nicht eingebettet",
+                    name = shown
                 ));
                 continue;
             };
@@ -104,7 +111,11 @@ pub fn embed_external_images(source: &str, base_dir: &Path) -> Imported {
             let uri = match embedded {
                 Ok(uri) => uri,
                 Err(reason) => {
-                    warnings.push(format!("Bild „{shown}“ nicht eingebettet: {reason}"));
+                    warnings.push(tr!(
+                        "Bild „{name}“ nicht eingebettet: {reason}",
+                        name = shown,
+                        reason = reason
+                    ));
                     continue;
                 }
             };
@@ -113,8 +124,9 @@ pub fn embed_external_images(source: &str, base_dir: &Path) -> Imported {
             };
             let grown = length - range.len() + uri.len();
             if grown > MAX_SVG_BYTES {
-                warnings.push(format!(
-                    "Bild „{shown}“ nicht eingebettet: Die SVG würde größer als 20 MB"
+                warnings.push(tr!(
+                    "Bild „{name}“ nicht eingebettet: Die SVG würde größer als 20 MB",
+                    name = shown
                 ));
                 continue;
             }
@@ -246,11 +258,12 @@ fn percent_decode(text: &str) -> Option<PathBuf> {
 fn data_uri(path: &Path) -> Result<String, String> {
     let size = std::fs::metadata(path).map_err(|e| e.to_string())?.len();
     if size > MAX_IMAGE_BYTES {
-        return Err("Die Datei ist größer als 10 MB".into());
+        return Err(tr("Die Datei ist größer als 10 MB").into());
     }
     let data = std::fs::read(path).map_err(|e| e.to_string())?;
-    let mime = mime_type(&data)
-        .ok_or("Format wird nicht unterstützt (nur PNG, JPEG, GIF, WebP oder SVG)")?;
+    let mime = mime_type(&data).ok_or(tr(
+        "Format wird nicht unterstützt (nur PNG, JPEG, GIF, WebP oder SVG)",
+    ))?;
     Ok(format!(
         "data:{mime};base64,{}",
         base64::engine::general_purpose::STANDARD.encode(&data)

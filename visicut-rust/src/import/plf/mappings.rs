@@ -37,6 +37,7 @@
 use crate::mapping::{Attribute, Filter, ObjectAttributes};
 use crate::project::{JobStep, Operation};
 use crate::raster::{Dithering, RasterSettings};
+use crate::{i18n::tr, tr};
 use roxmltree::Node;
 
 /// Höchstzahl der Bearbeitungsschritte in einem Projekt (`Project::validate`).
@@ -121,9 +122,9 @@ pub fn parse(bytes: &[u8]) -> Result<Vec<Entry>, String> {
     let document = roxmltree::Document::parse(&text).map_err(|e| e.to_string())?;
     let root = document.root_element();
     if !root.tag_name().name().ends_with("MappingSet") {
-        return Err("kein Zuordnungssatz".into());
+        return Err(tr("kein Zuordnungssatz").into());
     }
-    let list = child(root, "linked-list").ok_or("Liste der Zuordnungen fehlt")?;
+    let list = child(root, "linked-list").ok_or(tr("Liste der Zuordnungen fehlt"))?;
     list.children()
         .filter(|n| n.is_element() && n.has_tag_name("mapping"))
         .map(parse_entry)
@@ -133,7 +134,7 @@ pub fn parse(bytes: &[u8]) -> Result<Vec<Entry>, String> {
 fn parse_entry(node: Node) -> Result<Entry, String> {
     let filters = match child(node, "a") {
         Some(set) => {
-            let list = child(set, "linked-list").ok_or("Filtersatz ohne Liste")?;
+            let list = child(set, "linked-list").ok_or(tr("Filtersatz ohne Liste"))?;
             Some(
                 list.children()
                     .filter(|n| n.is_element() && n.has_tag_name("filter"))
@@ -148,8 +149,8 @@ fn parse_entry(node: Node) -> Result<Entry, String> {
 }
 
 fn parse_filter(node: Node) -> Result<JavaFilter, String> {
-    let attribute = text(child(node, "attribute")).ok_or("Filter ohne Attribut")?;
-    let value = child(node, "value").ok_or("Filter ohne Wert")?;
+    let attribute = text(child(node, "attribute")).ok_or(tr("Filter ohne Attribut"))?;
+    let value = child(node, "value").ok_or(tr("Filter ohne Wert"))?;
     Ok(JavaFilter {
         attribute,
         value: parse_value(value),
@@ -212,7 +213,7 @@ fn parse_profile(node: Node) -> Result<Profile, String> {
             invert: flag(node, "invertColors", false),
             color_shift: int(node, "colorShift"),
         }),
-        other => Err(format!("Profil „{other}“ ist unbekannt")),
+        other => Err(tr!("Profil „{other}“ ist unbekannt", other = other)),
     }
 }
 
@@ -271,7 +272,7 @@ pub fn translate(parts: &[Placed], composed: Result<Vec<ObjectAttributes>, Strin
         Ok(objects) => objects,
         Err(error) => {
             out.warnings
-                .push(format!("Zuordnungen nicht übernommen: {error}"));
+                .push(tr!("Zuordnungen nicht übernommen: {error}", error = error));
             return out;
         }
     };
@@ -279,9 +280,9 @@ pub fn translate(parts: &[Placed], composed: Result<Vec<ObjectAttributes>, Strin
     let mut total = 0;
     for part in parts {
         let Some(objects) = &part.objects else {
-            out.warnings.push(format!(
-                "Zuordnungen nicht übernommen: Objekte von „{}“ sind nicht lesbar",
-                part.name
+            out.warnings.push(tr!(
+                "Zuordnungen nicht übernommen: Objekte von „{name}“ sind nicht lesbar",
+                name = part.name
             ));
             return out;
         };
@@ -290,33 +291,37 @@ pub fn translate(parts: &[Placed], composed: Result<Vec<ObjectAttributes>, Strin
     }
     if total != composed.len() {
         out.warnings.push(
-            "Zuordnungen nicht übernommen: Das zusammengesetzte Motiv hat andere Objekte als die Teile"
-                .into(),
+            tr("Zuordnungen nicht übernommen: \
+                Das zusammengesetzte Motiv hat andere Objekte als die Teile")
+            .into(),
         );
         return out;
     }
     for (part, offset) in parts.iter().zip(offsets) {
         let entries = match &part.mapping {
             None => {
-                out.warnings.push(format!(
-                    "Teil „{}“ hat keine Zuordnung; seine Objekte werden nicht bearbeitet",
-                    part.name
+                out.warnings.push(tr!(
+                    "Teil „{name}“ hat keine Zuordnung; seine Objekte werden nicht bearbeitet",
+                    name = part.name
                 ));
                 continue;
             }
             Some(Err(error)) => {
-                out.warnings.push(format!(
-                    "Zuordnung von Teil „{}“ nicht lesbar ({error}); seine Objekte werden nicht bearbeitet",
-                    part.name
+                out.warnings.push(tr!(
+                    "Zuordnung von Teil „{name}“ nicht lesbar ({error}); \
+                     seine Objekte werden nicht bearbeitet",
+                    name = part.name,
+                    error = error
                 ));
                 continue;
             }
             Some(Ok(entries)) => entries,
         };
         if !part.svg {
-            out.warnings.push(format!(
-                "Zuordnung von Teil „{}“ nicht übernommen: Nur SVG-Teile lassen sich zuordnen; seine Objekte werden nicht bearbeitet",
-                part.name
+            out.warnings.push(tr!(
+                "Zuordnung von Teil „{name}“ nicht übernommen: Nur SVG-Teile lassen sich \
+                 zuordnen; seine Objekte werden nicht bearbeitet",
+                name = part.name
             ));
             continue;
         }
@@ -326,8 +331,10 @@ pub fn translate(parts: &[Placed], composed: Result<Vec<ObjectAttributes>, Strin
     }
     if out.steps.len() > MAX_STEPS {
         out.steps.truncate(MAX_STEPS);
-        out.warnings.push(format!(
-            "Mehr als {MAX_STEPS} Bearbeitungsschritte; die übrigen Zuordnungen wurden nicht übernommen"
+        out.warnings.push(tr!(
+            "Mehr als {count} Bearbeitungsschritte; \
+             die übrigen Zuordnungen wurden nicht übernommen",
+            count = MAX_STEPS
         ));
     }
     if out.steps.is_empty() {
@@ -335,18 +342,26 @@ pub fn translate(parts: &[Placed], composed: Result<Vec<ObjectAttributes>, Strin
         // Schritt verhindert das, wie VisiCut keine Objekte ohne Zuordnung schneidet.
         out.steps.push(JobStep::new(Operation::Cut));
         out.warnings.push(
-            "Keine Zuordnung übernommen: Ohne Bearbeitungsschritt wird kein Objekt bearbeitet; bitte Schritte anlegen"
-                .into(),
+            tr(
+                "Keine Zuordnung übernommen: Ohne Bearbeitungsschritt wird kein Objekt \
+                bearbeitet; bitte Schritte anlegen",
+            )
+            .into(),
         );
     } else {
         let count = match out.steps.len() {
-            1 => "1 Bearbeitungsschritt".to_string(),
-            n => format!("{n} Bearbeitungsschritte"),
+            1 => tr("1 Bearbeitungsschritt").to_string(),
+            n => tr!("{count} Bearbeitungsschritte", count = n),
         };
         out.warnings.insert(
             0,
-            format!(
-                "Zuordnungen übernommen: {count}. Laser-Einstellungen (Leistung, Geschwindigkeit, Durchgänge) stehen nicht in der PLF-Datei, sondern lokal in VisiCut pro Gerät, Material und Stärke; die Schritte verwenden die Standardwerte 20 % Leistung, 100 % Geschwindigkeit, 1 Durchgang und müssen angepasst werden."
+            tr!(
+                "Zuordnungen übernommen: {count}. Laser-Einstellungen (Leistung, \
+                 Geschwindigkeit, Durchgänge) stehen nicht in der PLF-Datei, sondern lokal \
+                 in VisiCut pro Gerät, Material und Stärke; die Schritte verwenden die \
+                 Standardwerte 20 % Leistung, 100 % Geschwindigkeit, 1 Durchgang und müssen \
+                 angepasst werden.",
+                count = count
             ),
         );
     }
@@ -375,8 +390,10 @@ fn translate_part(
         .collect();
     for result in &converted {
         if let Err(error) = result {
-            out.warnings.push(format!(
-                "Zuordnung in Teil „{name}“ nicht übernommen: {error}"
+            out.warnings.push(tr!(
+                "Zuordnung in Teil „{name}“ nicht übernommen: {error}",
+                name = name,
+                error = error
             ));
         }
     }
@@ -388,8 +405,10 @@ fn translate_part(
     let rest: Option<Vec<usize>> = if !rest_wanted {
         None
     } else if converted.iter().any(Result::is_err) {
-        out.warnings.push(format!(
-            "Rest von Teil „{name}“ nicht übernommen: Ein Filter ist unbekannt, der Rest ließe sich nicht bestimmen"
+        out.warnings.push(tr!(
+            "Rest von Teil „{name}“ nicht übernommen: Ein Filter ist unbekannt, \
+             der Rest ließe sich nicht bestimmen",
+            name = name
         ));
         None
     } else {
@@ -421,8 +440,9 @@ fn translate_part(
             ),
         };
         if selected.is_empty() {
-            out.warnings.push(format!(
-                "Teil „{name}“: Eine Zuordnung trifft kein Objekt und wurde nicht übernommen"
+            out.warnings.push(tr!(
+                "Teil „{name}“: Eine Zuordnung trifft kein Objekt und wurde nicht übernommen",
+                name = name
             ));
             continue;
         }
@@ -435,8 +455,10 @@ fn translate_part(
             // im ganzen Motiv dieselben Objekte treffen wie in diesem Teil.
             Some(list) if matching(&list, composed) == expected => step.filters = Some(list),
             Some(_) => {
-                out.warnings.push(format!(
-                    "Teil „{name}“: Die Bedingungen würden auch Objekte anderer Teile treffen; die Objekte dieses Teils wurden fest übernommen"
+                out.warnings.push(tr!(
+                    "Teil „{name}“: Die Bedingungen würden auch Objekte anderer Teile \
+                     treffen; die Objekte dieses Teils wurden fest übernommen",
+                    name = name
                 ));
                 step.objects = expected;
             }
@@ -469,7 +491,12 @@ fn convert(filter: &JavaFilter, part: &str, warnings: &mut Vec<String>) -> Resul
         "Type" => Attribute::Type,
         "Id" | "ID" => Attribute::Id,
         "Group" => Attribute::Group,
-        other => return Err(format!("Filter „{other}“ ist in VisiCutRust nicht bekannt")),
+        other => {
+            return Err(tr!(
+                "Filter „{other}“ ist in VisiCutRust nicht bekannt",
+                other = other
+            ));
+        }
     };
     let value = match (&filter.value, attribute) {
         (Value::Color([r, g, b]), Attribute::StrokeColor | Attribute::FillColor) => {
@@ -480,19 +507,22 @@ fn convert(filter: &JavaFilter, part: &str, warnings: &mut Vec<String>) -> Resul
         (Value::Text(text), Attribute::StrokeWidth) => {
             let width: f64 = text
                 .parse()
-                .map_err(|_| format!("Linienstärke „{text}“ ist keine Zahl"))?;
+                .map_err(|_| tr!("Linienstärke „{text}“ ist keine Zahl", text = text))?;
             // VisiCut vergleicht eine Zeichenkette nie mit der Zahl und trifft
             // daher nichts. Übernommen wird der erkennbare Wert.
-            warnings.push(format!(
-                "Teil „{part}“: Die Linienstärke {text} ist als Text gespeichert; VisiCut wendet einen solchen Filter nicht an, übernommen als Zahl"
+            warnings.push(tr!(
+                "Teil „{part}“: Die Linienstärke {text} ist als Text gespeichert; \
+                 VisiCut wendet einen solchen Filter nicht an, übernommen als Zahl",
+                part = part,
+                text = text
             ));
             width.to_string()
         }
         (Value::Text(text), _) => text.clone(),
         _ => {
-            return Err(format!(
-                "Wert des Filters „{}“ wird nicht unterstützt",
-                filter.attribute
+            return Err(tr!(
+                "Wert des Filters „{name}“ wird nicht unterstützt",
+                name = filter.attribute
             ));
         }
     };
@@ -512,15 +542,22 @@ fn profile_settings(
 ) -> (Operation, RasterSettings) {
     let dpi_check = |dpi: f64, warnings: &mut Vec<String>| {
         if (dpi - SUPPORTED_DPI).abs() > 1e-6 {
-            warnings.push(format!(
-                "Teil „{part}“: Auflösung {dpi} DPI wird nicht übernommen; VisiCutRust rastert mit {SUPPORTED_DPI} DPI"
+            warnings.push(tr!(
+                "Teil „{part}“: Auflösung {dpi} DPI wird nicht übernommen; \
+                 VisiCutRust rastert mit {supported} DPI",
+                part = part,
+                dpi = dpi,
+                supported = SUPPORTED_DPI
             ));
         }
     };
     let color_shift = |value: i32, warnings: &mut Vec<String>| {
         if !(-255..=255).contains(&value) {
-            warnings.push(format!(
-                "Teil „{part}“: Helligkeitsverschiebung {value} auf den zulässigen Bereich begrenzt"
+            warnings.push(tr!(
+                "Teil „{part}“: Helligkeitsverschiebung {value} auf den zulässigen Bereich \
+                 begrenzt",
+                part = part,
+                value = value
             ));
         }
         value.clamp(-255, 255)
@@ -534,13 +571,17 @@ fn profile_settings(
         } => {
             dpi_check(*dpi, warnings);
             if *use_outline {
-                warnings.push(format!(
-                    "Teil „{part}“: Konturversatz (Außenkontur) wird nicht übernommen"
+                warnings.push(tr!(
+                    "Teil „{part}“: Konturversatz (Außenkontur) wird nicht übernommen",
+                    part = part
                 ));
             }
             if order != "INNER_FIRST" {
-                warnings.push(format!(
-                    "Teil „{part}“: Sortierung „{order}“ wird nicht übernommen; VisiCutRust sortiert nach Verschachtelung"
+                warnings.push(tr!(
+                    "Teil „{part}“: Sortierung „{order}“ wird nicht übernommen; \
+                     VisiCutRust sortiert nach Verschachtelung",
+                    part = part,
+                    order = order
                 ));
             }
             let operation = if *is_cut {
@@ -561,8 +602,11 @@ fn profile_settings(
             let dithering = match dithering.as_deref() {
                 None => default.dithering,
                 Some(name) => dithering_named(name).unwrap_or_else(|| {
-                    warnings.push(format!(
-                        "Teil „{part}“: Rasterverfahren „{name}“ ist unbekannt; Halbton aufgehellt wird verwendet"
+                    warnings.push(tr!(
+                        "Teil „{part}“: Rasterverfahren „{name}“ ist unbekannt; \
+                         Halbton aufgehellt wird verwendet",
+                        part = part,
+                        name = name
                     ));
                     default.dithering
                 }),

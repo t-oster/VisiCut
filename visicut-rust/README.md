@@ -321,6 +321,27 @@ Die Auswahl im Inspektor bestimmt Ziel und verfügbare Funktionen.
 
 Windows und Linux bieten dieselben Funktionen in der egui-Oberfläche mit
 Menüleiste Datei, Bearbeiten, Darstellung und Job.
+
+Beide Oberflächen gibt es auf Deutsch, Englisch, Französisch, Italienisch
+und Niederländisch (**Darstellung → Sprache**), einschließlich der Meldungen
+des Rust-Kerns und der Importfilter. Ohne Auswahl folgt die Sprache dem
+System; nicht unterstützte Systemsprachen ergeben Englisch. Neu angelegte
+Standardwerte (Projektname, „Eigenes Material“, „Neues Material“, Schildtext,
+Namen neuer Formen) entstehen in der gewählten Sprache; bereits gespeicherte
+Werte bleiben unverändert. Unter Windows und Linux listet **Datei → Zuletzt
+geöffnet** die zehn zuletzt geöffneten oder gesicherten Dateien; Sprache und
+Liste stehen in `app-settings.json` im Einstellungsordner neben der
+Geräteliste. Die macOS-App speichert die Sprache in den Benutzereinstellungen;
+der UI-Test läuft immer auf Deutsch.
+
+Übersetzungen: Der deutsche Text ist der Schlüssel (`tr("…")` in Rust und
+Swift, mit Platzhaltern `tr!("… {name}", name = …)` bzw.
+`tr("… {name}", ["name": …])`); die Tabellen liegen in
+`resources/i18n/<sprache>.json` und werden in den Rust-Kern einkompiliert,
+die macOS-App holt sie über die Brückenaktion `set_language`. Ein Test prüft,
+dass jeder Text aus `src/` und `native/` in jeder Sprache mit denselben
+Platzhaltern übersetzt ist und keine veralteten Einträge bleiben. `cargo test --lib i18n::tests::export_missing -- --ignored`
+schreibt fehlende Texte nach `target/i18n/missing-<sprache>.json`.
 Die native macOS-Menüleiste bietet Ablage, Bearbeiten, Darstellung und Job.
 Die Oberfläche verwendet Systemschrift, Systemfarben, native Werkzeugleiste,
 Systemdialoge und automatische Hell-/Dunkel-Darstellung.

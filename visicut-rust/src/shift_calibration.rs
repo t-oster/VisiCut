@@ -5,6 +5,7 @@
 //! vertical bars with −2 … +2 pixels on top of the current table. The block
 //! with the straightest bar edges shows the correction for that speed.
 use crate::{
+    i18n::tr,
     ltt::engrave_shift_px,
     project::{JobStep, MachineSettings, Operation, Project},
     raster::{Dithering, RasterSettings},
@@ -111,7 +112,7 @@ pub fn project(base: &Project, power_percent: f32) -> Project {
         }
     }
     Project {
-        name: "Zeilenversatz-Test".into(),
+        name: tr("Zeilenversatz-Test").into(),
         svg,
         // Room for the overscan of 35 mm at full speed on both sides.
         x_mm: 50.0,
@@ -146,7 +147,7 @@ pub fn apply(machine: &MachineSettings, best: &[usize; 10]) -> Result<MachineSet
     for (i, block) in best.iter().enumerate() {
         let offset = *OFFSETS
             .get(block.wrapping_sub(1))
-            .ok_or("Block muss zwischen 1 und 5 liegen")?;
+            .ok_or(tr("Block muss zwischen 1 und 5 liegen"))?;
         if offset != 0 {
             let shift = engrave_shift_px(machine, SPEEDS[i], offset);
             result.engrave_shift[i] = table_value(shift);

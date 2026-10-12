@@ -2,6 +2,7 @@
 //! A homography maps bed positions (mm) to camera pixels; the corrected image
 //! samples the camera picture for every bed position.
 use crate::device::{CameraCalibration, LaserDevice};
+use crate::{i18n::tr, tr};
 use image::RgbaImage;
 use std::{io::Read, time::Duration};
 
@@ -30,7 +31,7 @@ pub fn fetch(url: &str, limit: u64) -> Result<Vec<u8>, String> {
         .read_to_end(&mut bytes)
         .map_err(|e| e.to_string())?;
     if bytes.len() as u64 > limit {
-        return Err(format!("{path}: Datei ist zu groß"));
+        return Err(tr!("{path}: Datei ist zu groß", path = path));
     }
     Ok(bytes)
 }
@@ -139,13 +140,13 @@ fn spans_plane(points: &[[f64; 2]]) -> bool {
 pub fn homography(calibration: &CameraCalibration) -> Result<Matrix, String> {
     let (reference, view) = (&calibration.reference_points, &calibration.view_points);
     if reference.len() != view.len() || !(reference.len() == 2 || reference.len() >= 4) {
-        return Err("Kamerakalibrierung benötigt 2 oder mindestens 4 Punktpaare".into());
+        return Err(tr("Kamerakalibrierung benötigt 2 oder mindestens 4 Punktpaare").into());
     }
     if reference.len() == 2 {
         let sx = (view[1][0] - view[0][0]) / (reference[1][0] - reference[0][0]);
         let sy = (view[1][1] - view[0][1]) / (reference[1][1] - reference[0][1]);
         if !sx.is_finite() || !sy.is_finite() || sx == 0.0 || sy == 0.0 {
-            return Err("Kalibrierpunkte dürfen nicht auf einer Achse liegen".into());
+            return Err(tr("Kalibrierpunkte dürfen nicht auf einer Achse liegen").into());
         }
         return Ok([
             [sx, 0.0, view[0][0] - sx * reference[0][0]],
@@ -154,7 +155,7 @@ pub fn homography(calibration: &CameraCalibration) -> Result<Matrix, String> {
         ]);
     }
     if !spans_plane(reference) || !spans_plane(view) {
-        return Err("Kalibrierpunkte liegen alle auf einer Linie".into());
+        return Err(tr("Kalibrierpunkte liegen alle auf einer Linie").into());
     }
     let (tr, _) = normalisation(reference);
     let (tv, tv_inverse) = normalisation(view);
@@ -198,7 +199,10 @@ pub fn homography(calibration: &CameraCalibration) -> Result<Matrix, String> {
     let normalised = [[h[0], h[1], h[2]], [h[3], h[4], h[5]], [h[6], h[7], h[8]]];
     let result = multiply(&multiply(&tv_inverse, &normalised), &tr);
     if result.iter().flatten().any(|v| !v.is_finite()) || result[2][2].abs() < 1e-300 {
-        return Err("Kalibrierpunkte sind degeneriert (z. B. drei auf einer Linie)".into());
+        return Err(crate::i18n::tr(
+            "Kalibrierpunkte sind degeneriert (z. B. drei auf einer Linie)",
+        )
+        .into());
     }
     let scale = result[2][2];
     Ok(result.map(|row| row.map(|v| v / scale)))
@@ -243,12 +247,15 @@ pub fn encode_png(image: &RgbaImage) -> Result<Vec<u8>, String> {
 pub fn decode(bytes: &[u8]) -> Result<RgbaImage, String> {
     image::load_from_memory(bytes)
         .map(|i| i.to_rgba8())
-        .map_err(|e| format!("Kamerabild nicht lesbar: {e}"))
+        .map_err(|e| tr!("Kamerabild nicht lesbar: {error}", error = e))
 }
 
 pub fn capture(device: &LaserDevice) -> Result<RgbaImage, String> {
     if device.camera_url.trim().is_empty() {
-        return Err(format!("{}: keine Kamera-URL eingetragen", device.name));
+        return Err(tr!(
+            "{device}: keine Kamera-URL eingetragen",
+            device = device.name
+        ));
     }
     decode(&fetch(device.camera_url.trim(), 30 * 1024 * 1024)?)
 }
@@ -262,7 +269,7 @@ pub fn background_image(
     let calibration = device
         .camera_calibration
         .as_ref()
-        .ok_or("Kamera ist noch nicht kalibriert")?;
+        .ok_or(tr("Kamera ist noch nicht kalibriert"))?;
     let h = homography(calibration)?;
     Ok(correct(
         &capture(device)?,

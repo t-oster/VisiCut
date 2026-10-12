@@ -9,6 +9,7 @@ use visicut_core::{
     },
     shift_calibration,
 };
+use visicut_core::{i18n::tr, tr};
 
 type Pending = Receiver<Result<image::RgbaImage, String>>;
 type Download = Receiver<Result<Vec<LaserDevice>, String>>;
@@ -36,7 +37,7 @@ fn poll(
             ctx.request_repaint_after(std::time::Duration::from_millis(100));
             return None;
         }
-        Err(TryRecvError::Disconnected) => Err("Kamera unerwartet abgebrochen".into()),
+        Err(TryRecvError::Disconnected) => Err(tr("Kamera unerwartet abgebrochen").into()),
     };
     *pending = None;
     Some(result)
@@ -92,7 +93,7 @@ impl DeviceUi {
             Ok(store) => (store, None),
             Err(e) => (
                 DeviceStore::default(),
-                Some(format!("Geräteliste nicht lesbar: {e}")),
+                Some(tr!("Geräteliste nicht lesbar: {error}", error = e)),
             ),
         };
         let ui = Self {
@@ -173,11 +174,11 @@ impl DeviceUi {
             self.show_camera = false;
         }
         self.apply(project);
-        *status = format!(
-            "Lasercutter: {} ({}:{})",
-            self.device().name,
-            self.device().hostname,
-            self.device().port
+        *status = tr!(
+            "Lasercutter: {name} ({host}:{port})",
+            name = self.device().name,
+            host = self.device().hostname,
+            port = self.device().port
         );
         true
     }
@@ -198,16 +199,17 @@ impl DeviceUi {
         dirty: &mut bool,
         status: &mut String,
     ) {
-        ui.label("Lasercutter");
         let mut selected = self.store.selected;
-        egui::ComboBox::from_id_salt("device")
-            .width(200.0)
-            .selected_text(&self.device().name)
-            .show_ui(ui, |ui| {
-                for (i, device) in self.store.devices.iter().enumerate() {
-                    ui.selectable_value(&mut selected, i, &device.name);
-                }
-            });
+        crate::form::row(ui, tr("Lasercutter"), |ui| {
+            egui::ComboBox::from_id_salt("device")
+                .width(190.0)
+                .selected_text(&self.device().name)
+                .show_ui(ui, |ui| {
+                    for (i, device) in self.store.devices.iter().enumerate() {
+                        ui.selectable_value(&mut selected, i, &device.name);
+                    }
+                });
+        });
         if selected != self.store.selected {
             let mut store = self.store.clone();
             store.selected = selected;
@@ -215,42 +217,46 @@ impl DeviceUi {
                 *dirty = true;
             }
         }
-        ui.small(format!("{}:{}", self.device().hostname, self.device().port));
-        if ui.button("Lasercutter verwalten …").clicked() {
+        let address = format!("{}:{}", self.device().hostname, self.device().port);
+        let manage = crate::form::row(
+            ui,
+            egui::RichText::new(address)
+                .size(11.5)
+                .color(egui::Color32::from_gray(95)),
+            |ui| {
+                ui.small_button(tr("Verwalten …"))
+                    .on_hover_text(tr("Lasercutter verwalten"))
+                    .clicked()
+            },
+        );
+        if manage {
             self.open_manager();
         }
-        if self.device().rotary_axis {
-            *dirty |= ui
-                .checkbox(&mut project.rotary_axis, "Rotationseinheit verwenden")
-                .changed();
-            if project.rotary_axis {
-                *dirty |= crate::number(
-                    ui,
-                    "Durchmesser",
-                    &mut project.rotary_diameter_mm,
-                    5.0..=1000.0,
-                    " mm",
-                );
-                ui.small(format!(
-                    "Y = Umfang ({:.1} mm). Schritte je Umdrehung aus LibLaserCut, am Gerät nicht validiert.",
-                    std::f32::consts::PI * project.rotary_diameter_mm
-                ));
-            }
-        }
-        if !self.device().camera_url.is_empty() {
-            ui.horizontal(|ui| {
-                if ui.checkbox(&mut self.show_camera, "Kamerabild").changed()
-                    && self.show_camera
-                    && self.camera.is_none()
-                {
-                    self.refresh_camera(project);
-                }
-                if self.camera_loading.is_some() {
-                    ui.spinner();
-                } else if self.show_camera && ui.button("Aktualisieren").clicked() {
-                    self.refresh_camera(project);
-                }
-            });
+    }
+
+    /// Rotationseinheit (nur bei Geräten, die eine haben). Das Kamerabild
+    /// schaltet die Leiste über dem Arbeitsbett.
+    pub fn rotary(&self, ui: &mut egui::Ui, project: &mut Project, dirty: &mut bool) {
+        *dirty |= ui
+            .checkbox(&mut project.rotary_axis, tr("Rotationseinheit verwenden"))
+            .changed();
+        if project.rotary_axis {
+            *dirty |= crate::number(
+                ui,
+                tr("Durchmesser"),
+                &mut project.rotary_diameter_mm,
+                5.0..=1000.0,
+                " mm",
+            );
+            crate::form::caption(
+                ui,
+                tr!(
+                    "Y entspricht dem Umfang ({circumference} mm). Gravur zentriert am Gerät \
+                     ausrichten. Schritte je Umdrehung aus LibLaserCut, am Gerät nicht validiert.",
+                    circumference =
+                        format!("{:.1}", std::f32::consts::PI * project.rotary_diameter_mm)
+                ),
+            );
         }
     }
 
@@ -279,11 +285,11 @@ impl DeviceUi {
         match poll(&mut self.camera_loading, ctx) {
             Some(Ok(image)) => {
                 self.camera = Some(texture(ctx, "Kamera", &image));
-                *status = "Kamerabild aktualisiert".into();
+                *status = tr("Kamerabild aktualisiert").into();
             }
             Some(Err(e)) => {
                 self.show_camera = false;
-                *status = format!("Kamerabild: {e}");
+                *status = tr!("Kamerabild: {error}", error = e);
             }
             None => {}
         }
@@ -330,7 +336,7 @@ impl DeviceUi {
                     Ok(machine) => {
                         device.machine = machine;
                         test.best = [shift_calibration::CENTER_BLOCK; 10];
-                        *status = "Zeilenversatz übernommen · zum Übernehmen sichern".into();
+                        *status = tr("Zeilenversatz übernommen · zum Übernehmen sichern").into();
                     }
                     Err(e) => *status = e,
                 }
@@ -351,7 +357,10 @@ impl DeviceUi {
             let _ = tx.send(device::download(url));
         });
         self.download = Some((name.to_owned(), rx));
-        *status = format!("Einstellungen von „{name}“ werden heruntergeladen …");
+        *status = tr!(
+            "Einstellungen von „{name}“ werden heruntergeladen …",
+            name = name
+        );
     }
 
     /// Übernimmt fertige Downloads in den Entwurf der Verwaltung.
@@ -365,7 +374,7 @@ impl DeviceUi {
                 ctx.request_repaint_after(std::time::Duration::from_millis(100));
                 return;
             }
-            Err(TryRecvError::Disconnected) => Err("Download unerwartet abgebrochen".into()),
+            Err(TryRecvError::Disconnected) => Err(tr("Download unerwartet abgebrochen").into()),
         };
         let name = name.clone();
         self.download = None;
@@ -375,12 +384,20 @@ impl DeviceUi {
                 if let Some((draft, editing)) = &mut self.draft {
                     let added = draft.merge(devices);
                     *editing = draft.devices.len() - 1;
-                    *status = format!(
-                        "{added} LTT iLaser 4000 von „{name}“ importiert · zum Übernehmen sichern"
+                    *status = tr!(
+                        "{added} LTT iLaser 4000 von „{name}“ importiert · zum Übernehmen sichern",
+                        added = added,
+                        name = name
                     );
                 }
             }
-            Err(e) => *status = format!("Download von „{name}“ fehlgeschlagen: {e}"),
+            Err(e) => {
+                *status = tr!(
+                    "Download von „{name}“ fehlgeschlagen: {error}",
+                    name = name,
+                    error = e
+                )
+            }
         }
     }
 
@@ -394,7 +411,8 @@ impl DeviceUi {
         let mut shift_test = false;
         let mut download = None;
         let downloading = self.download.as_ref().map(|(name, _)| name.clone());
-        egui::Window::new("Lasercutter verwalten")
+        egui::Window::new(tr("Lasercutter verwalten"))
+            .id(egui::Id::new("device_manager"))
             .open(&mut open)
             .default_size([640.0, 420.0])
             .show(ctx, |ui| {
@@ -403,14 +421,14 @@ impl DeviceUi {
                         ui.set_width(170.0);
                         for (i, device) in draft.devices.iter().enumerate() {
                             let label = if i == draft.selected {
-                                format!("{} (aktiv)", device.name)
+                                tr!("{name} (aktiv)", name = device.name)
                             } else {
                                 device.name.clone()
                             };
                             ui.selectable_value(&mut editing, i, label);
                         }
                         ui.horizontal(|ui| {
-                            if ui.button("Kopie").clicked() {
+                            if ui.button(tr("Kopie")).clicked() {
                                 let mut copy = draft.devices[editing].clone();
                                 let base = copy.name.clone();
                                 let mut n = 2;
@@ -424,7 +442,7 @@ impl DeviceUi {
                             if ui
                                 .add_enabled(
                                     draft.devices.len() > 1,
-                                    egui::Button::new("Entfernen"),
+                                    egui::Button::new(tr("Entfernen")),
                                 )
                                 .clicked()
                             {
@@ -441,48 +459,48 @@ impl DeviceUi {
                         let device = &mut draft.devices[editing];
                         egui::Grid::new("device").num_columns(2).show(ui, |ui| {
                             for (label, value) in [
-                                ("Name", &mut device.name),
-                                ("Beschreibung", &mut device.description),
-                                ("Hostname / IP", &mut device.hostname),
-                                ("Kamera-URL", &mut device.camera_url),
+                                (tr("Name"), &mut device.name),
+                                (tr("Beschreibung"), &mut device.description),
+                                (tr("Hostname / IP"), &mut device.hostname),
+                                (tr("Kamera-URL"), &mut device.camera_url),
                             ] {
                                 ui.label(label);
                                 ui.text_edit_singleline(value);
                                 ui.end_row();
                             }
-                            ui.label("Port");
+                            ui.label(tr("Port"));
                             ui.add(egui::DragValue::new(&mut device.port).range(1..=65535));
                             ui.end_row();
-                            ui.label("Rotationseinheit");
-                            ui.checkbox(&mut device.rotary_axis, "vorhanden");
+                            ui.label(tr("Rotationseinheit"));
+                            ui.checkbox(&mut device.rotary_axis, tr("vorhanden"));
                             ui.end_row();
-                            ui.label("Kalibrierung");
+                            ui.label(tr("Kalibrierung"));
                             ui.horizontal(|ui| {
                                 ui.label(
                                     device
                                         .camera_calibration
                                         .as_ref()
-                                        .map_or("keine".into(), |c| {
-                                            format!("{} Punkte", c.reference_points.len())
+                                        .map_or(tr("keine").into(), |c| {
+                                            tr!("{count} Punkte", count = c.reference_points.len())
                                         }),
                                 );
                                 calibrate = ui
                                     .add_enabled(
                                         !device.camera_url.is_empty(),
-                                        egui::Button::new("Kalibrieren …"),
+                                        egui::Button::new(tr("Kalibrieren …")),
                                     )
                                     .clicked();
                             });
                             ui.end_row();
                         });
-                        ui.label("Hinweis nach dem Senden ($jobname = Auftragsnamen):");
+                        ui.label(tr("Hinweis nach dem Senden ($jobname = Auftragsnamen):"));
                         ui.add(
                             egui::TextEdit::multiline(&mut device.job_sent_text).desired_rows(4),
                         );
-                        ui.small(
+                        ui.small(tr(
                             "Autofokus, Druckluft und Absaugung stellt der LTT-Treiber nicht ein.",
-                        );
-                        egui::CollapsingHeader::new("Maschine")
+                        ));
+                        egui::CollapsingHeader::new(tr("Maschine"))
                             .id_salt("machine")
                             .show(ui, |ui| {
                                 shift_test |= machine_settings(ui, &mut device.machine);
@@ -491,10 +509,10 @@ impl DeviceUi {
                 });
                 ui.separator();
                 ui.horizontal(|ui| {
-                    if ui.button("Importieren …").clicked()
+                    if ui.button(tr("Importieren …")).clicked()
                         && let Some(path) = rfd::FileDialog::new()
                             .add_filter(
-                                "VisiCut-Einstellungen",
+                                tr("VisiCut-Einstellungen"),
                                 &["xml", "vcsettings", "zip", "vcrdevices", "json"],
                             )
                             .pick_file()
@@ -504,8 +522,10 @@ impl DeviceUi {
                             .and_then(|b| device::import_bytes(&b))
                         {
                             Ok(devices) => {
-                                *status =
-                                    format!("{} LTT iLaser 4000 importiert", draft.merge(devices));
+                                *status = tr!(
+                                    "{count} LTT iLaser 4000 importiert",
+                                    count = draft.merge(devices)
+                                );
                                 editing = draft.devices.len() - 1;
                             }
                             Err(e) => *status = e,
@@ -513,7 +533,7 @@ impl DeviceUi {
                     }
                     ui.add_enabled_ui(downloading.is_none(), |ui| {
                         egui::ComboBox::from_id_salt("labs")
-                            .selected_text("Herunterladen")
+                            .selected_text(tr("Herunterladen"))
                             .show_ui(ui, |ui| {
                                 for (name, url) in device::LAB_SETTINGS {
                                     if ui.selectable_label(false, *name).clicked() {
@@ -523,23 +543,27 @@ impl DeviceUi {
                             });
                     });
                     if let Some(name) = &downloading {
-                        ui.spinner().on_hover_text(format!("Lädt „{name}“ …"));
+                        ui.spinner()
+                            .on_hover_text(tr!("Lädt „{name}“ …", name = name));
                     }
-                    if ui.button("Exportieren …").clicked()
+                    if ui.button(tr("Exportieren …")).clicked()
                         && let Some(path) = rfd::FileDialog::new()
-                            .add_filter("VisiCutRust-Lasercutter", &["vcrdevices"])
+                            .add_filter(tr("VisiCutRust-Lasercutter"), &["vcrdevices"])
                             .set_file_name("Lasercutter.vcrdevices")
                             .save_file()
                     {
                         *status = match device::export(&path, &draft.devices) {
-                            Ok(()) => format!("{} Lasercutter exportiert", draft.devices.len()),
+                            Ok(()) => tr!(
+                                "{count} Lasercutter exportiert",
+                                count = draft.devices.len()
+                            ),
                             Err(e) => e,
                         };
                     }
                     if ui
                         .add_enabled(
                             editing != draft.selected,
-                            egui::Button::new("Aktiv verwenden"),
+                            egui::Button::new(tr("Aktiv verwenden")),
                         )
                         .clicked()
                     {
@@ -547,15 +571,15 @@ impl DeviceUi {
                     }
                     let changed = draft != self.store;
                     if ui
-                        .add_enabled(changed, egui::Button::new("Verwerfen"))
-                        .on_hover_text("Ungesicherte Änderungen an der Geräteliste verwerfen")
+                        .add_enabled(changed, egui::Button::new(tr("Verwerfen")))
+                        .on_hover_text(tr("Ungesicherte Änderungen an der Geräteliste verwerfen"))
                         .clicked()
                     {
                         draft = self.store.clone();
                         editing = editing.min(draft.devices.len() - 1);
                     }
                     save = ui
-                        .add_enabled(changed, egui::Button::new("Sichern"))
+                        .add_enabled(changed, egui::Button::new(tr("Sichern")))
                         .clicked();
                 });
             });
@@ -605,7 +629,9 @@ impl DeviceUi {
 /// Zeilenversatz, Kurvenbeschleunigung und Verweilzeit eines Geräts;
 /// `true`, wenn die Kalibrierung geöffnet werden soll.
 fn machine_settings(ui: &mut egui::Ui, machine: &mut MachineSettings) -> bool {
-    ui.label("Zeilenversatz beim Gravieren (1/4000 Zoll, 8 = ein Pixel)");
+    ui.label(tr(
+        "Zeilenversatz beim Gravieren (1/4000 Zoll, 8 = ein Pixel)",
+    ));
     egui::Grid::new("engrave_shift").show(ui, |ui| {
         for (row, values) in machine.engrave_shift.chunks_mut(5).enumerate() {
             for (i, value) in values.iter_mut().enumerate() {
@@ -615,9 +641,9 @@ fn machine_settings(ui: &mut egui::Ui, machine: &mut MachineSettings) -> bool {
             ui.end_row();
         }
     });
-    let calibrate = ui.button("Zeilenversatz kalibrieren …").clicked();
+    let calibrate = ui.button(tr("Zeilenversatz kalibrieren …")).clicked();
     ui.horizontal(|ui| {
-        ui.label("Kurvenbeschleunigung");
+        ui.label(tr("Kurvenbeschleunigung"));
         ui.add(
             egui::DragValue::new(&mut machine.curve_acceleration_mm_s2)
                 .range(500.0..=5000.0)
@@ -627,26 +653,32 @@ fn machine_settings(ui: &mut egui::Ui, machine: &mut MachineSettings) -> bool {
             machine.curve_acceleration_mm_s2 = LIBLASERCUT_CURVE_ACCELERATION;
         }
         if ui
-            .button("Firmware 0,1 g")
-            .on_hover_text("Rampe des Controllers bei verbundenen Kurven (experimentell)")
+            .button(tr("Firmware 0,1 g"))
+            .on_hover_text(tr(
+                "Rampe des Controllers bei verbundenen Kurven (experimentell)",
+            ))
             .clicked()
         {
             machine.curve_acceleration_mm_s2 = FIRMWARE_CURVE_ACCELERATION;
         }
     });
     if machine.experimental_curves() {
-        ui.small("Experimentell: Kurven werden anders geplant als in VisiCut.");
+        ui.small(tr(
+            "Experimentell: Kurven werden anders geplant als in VisiCut.",
+        ));
     }
     ui.horizontal(|ui| {
-        ui.label("Verweilzeit am Konturstart");
+        ui.label(tr("Verweilzeit am Konturstart"));
         ui.add(
             egui::DragValue::new(&mut machine.pierce_delay_ms)
                 .range(0.0..=1000.0)
                 .suffix(" ms"),
         );
     });
-    ui.small("pddelay der Gerätekonfiguration; nur für die Zeitschätzung.");
-    if ui.button("Standardwerte").clicked() {
+    ui.small(tr(
+        "pddelay der Gerätekonfiguration; nur für die Zeitschätzung.",
+    ));
+    if ui.button(tr("Standardwerte")).clicked() {
         *machine = MachineSettings::default();
     }
     calibrate
@@ -660,48 +692,52 @@ fn shift_test_window(
     apply: &mut bool,
     action: &mut Option<Action>,
 ) {
-    egui::Window::new(format!("Zeilenversatz kalibrieren · {}", test.device))
-        .open(open)
-        .default_width(420.0)
-        .show(ctx, |ui| {
-            ui.label(
-                "1. Testmuster öffnen, senden und gravieren. Je Geschwindigkeit (10 % oben bis \
+    egui::Window::new(tr!(
+        "Zeilenversatz kalibrieren · {device}",
+        device = test.device
+    ))
+    .id(egui::Id::new(("shift_test", &test.device)))
+    .open(open)
+    .default_width(420.0)
+    .show(ctx, |ui| {
+        ui.label(tr(
+            "1. Testmuster öffnen, senden und gravieren. Je Geschwindigkeit (10 % oben bis \
                  100 % unten, Balken links = Tempo) entstehen fünf Blöcke mit −2 … +2 Pixeln \
                  Versatz; Block 3 unter dem Dreieck nutzt die aktuelle Tabelle.",
+        ));
+        ui.horizontal(|ui| {
+            ui.label(tr("Leistung"));
+            ui.add(
+                egui::DragValue::new(&mut test.power)
+                    .range(1.0..=100.0)
+                    .suffix(" %"),
             );
-            ui.horizontal(|ui| {
-                ui.label("Leistung");
-                ui.add(
-                    egui::DragValue::new(&mut test.power)
-                        .range(1.0..=100.0)
-                        .suffix(" %"),
-                );
-                if ui
-                    .add_enabled(active, egui::Button::new("Testmuster öffnen"))
-                    .on_disabled_hover_text(
-                        "Nur für den aktiven Lasercutter ohne ungesicherte Änderungen",
-                    )
-                    .clicked()
-                {
-                    *action = Some(Action::ShiftPattern(test.power));
-                }
-            });
-            ui.separator();
-            ui.label(
-                "2. Je Zeile den Block mit den geradesten Balkenkanten wählen. Liegt er am \
-                 Rand, übernehmen und das Testmuster erneut gravieren.",
-            );
-            egui::Grid::new("shift_best").show(ui, |ui| {
-                for (speed, best) in shift_calibration::SPEEDS.iter().zip(&mut test.best) {
-                    ui.label(format!("{speed} %"));
-                    for block in 1..=shift_calibration::OFFSETS.len() {
-                        ui.radio_value(best, block, block.to_string());
-                    }
-                    ui.end_row();
-                }
-            });
-            *apply = ui.button("In die Tabelle übernehmen").clicked();
+            if ui
+                .add_enabled(active, egui::Button::new(tr("Testmuster öffnen")))
+                .on_disabled_hover_text(tr(
+                    "Nur für den aktiven Lasercutter ohne ungesicherte Änderungen",
+                ))
+                .clicked()
+            {
+                *action = Some(Action::ShiftPattern(test.power));
+            }
         });
+        ui.separator();
+        ui.label(tr(
+            "2. Je Zeile den Block mit den geradesten Balkenkanten wählen. Liegt er am \
+                 Rand, übernehmen und das Testmuster erneut gravieren.",
+        ));
+        egui::Grid::new("shift_best").show(ui, |ui| {
+            for (speed, best) in shift_calibration::SPEEDS.iter().zip(&mut test.best) {
+                ui.label(format!("{speed} %"));
+                for block in 1..=shift_calibration::OFFSETS.len() {
+                    ui.radio_value(best, block, block.to_string());
+                }
+                ui.end_row();
+            }
+        });
+        *apply = ui.button(tr("In die Tabelle übernehmen")).clicked();
+    });
 }
 
 fn calibration_window(
@@ -727,7 +763,8 @@ fn calibration_window(
         None => {}
     }
     let mut open = true;
-    egui::Window::new(format!("Kamera kalibrieren · {}", c.device.name))
+    egui::Window::new(tr!("Kamera kalibrieren · {device}", device = c.device.name))
+        .id(egui::Id::new(("camera_calibration", &c.device.name)))
         .open(&mut open)
         .default_size([900.0, 560.0])
         .show(ctx, |ui| {
@@ -768,11 +805,11 @@ fn calibration_window(
                     }
                 } else {
                     painter.text(rect.center(), egui::Align2::CENTER_CENTER,
-                        if c.loading.is_some() { "Foto wird aufgenommen …" } else { "Kein Kamerabild" },
+                        if c.loading.is_some() { tr("Foto wird aufgenommen …") } else { tr("Kein Kamerabild") },
                         egui::FontId::proportional(16.0), Color32::from_gray(120));
                 }
                 ui.vertical(|ui| {
-                    ui.label("Marker auf dem Bett (mm)");
+                    ui.label(tr("Marker auf dem Bett (mm)"));
                     for (i, r) in c.points.reference_points.iter_mut().enumerate() {
                         ui.horizontal(|ui| {
                             ui.selectable_value(&mut c.selected, i, (i + 1).to_string());
@@ -781,13 +818,13 @@ fn calibration_window(
                         });
                     }
                     ui.horizontal(|ui| {
-                        if ui.add_enabled(c.picture.is_some(), egui::Button::new("Punkt +")).clicked() {
+                        if ui.add_enabled(c.picture.is_some(), egui::Button::new(tr("Punkt +"))).clicked() {
                             let size = c.picture.as_ref().unwrap().1;
                             c.points.reference_points.push([500.0, 300.0]);
                             c.points.view_points.push([size.x as f64 / 2.0, size.y as f64 / 2.0]);
                             c.selected = c.points.reference_points.len() - 1;
                         }
-                        if ui.add_enabled(c.points.reference_points.len() > 2, egui::Button::new("Punkt −")).clicked() {
+                        if ui.add_enabled(c.points.reference_points.len() > 2, egui::Button::new(tr("Punkt −"))).clicked() {
                             c.points.reference_points.remove(c.selected);
                             if c.selected < c.points.view_points.len() {
                                 c.points.view_points.remove(c.selected);
@@ -795,22 +832,22 @@ fn calibration_window(
                             c.selected = c.selected.saturating_sub(1);
                         }
                     });
-                    ui.small("1. Kalibrierseite öffnen und markieren.\n2. Foto aufnehmen.\n3. Marker auf die Kreuze ziehen (Nummer = Anzahl Striche).\nMindestens 4 Punkte.");
+                    ui.small(tr("1. Kalibrierseite öffnen und markieren.\n2. Foto aufnehmen.\n3. Marker auf die Kreuze ziehen (Nummer = Anzahl Striche).\nMindestens 4 Punkte."));
                     if let Some(problem) = &c.problem {
                         ui.colored_label(Color32::from_rgb(180, 75, 40), problem);
                     }
                 });
             });
             ui.horizontal(|ui| {
-                if ui.add_enabled(c.loading.is_none(), egui::Button::new("Foto aufnehmen")).clicked() {
+                if ui.add_enabled(c.loading.is_none(), egui::Button::new(tr("Foto aufnehmen"))).clicked() {
                     let device = c.device.clone();
                     c.problem = None;
                     c.loading = Some(spawn(move || camera::capture(&device)));
                 }
-                if ui.button("Kalibrierseite als Projekt öffnen").clicked() {
+                if ui.button(tr("Kalibrierseite als Projekt öffnen")).clicked() {
                     *action = Some(Action::CalibrationPage(c.points.reference_points.clone()));
                 }
-                if ui.add_enabled(c.points.view_points.len() == c.points.reference_points.len(), egui::Button::new("Übernehmen")).clicked() {
+                if ui.add_enabled(c.points.view_points.len() == c.points.reference_points.len(), egui::Button::new(tr("Übernehmen"))).clicked() {
                     match camera::homography(&c.points) {
                         Ok(_) => {
                             *apply = Some(c.points.clone());

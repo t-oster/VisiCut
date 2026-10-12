@@ -6,6 +6,7 @@
 //! the fallback.
 use super::Imported;
 use crate::svg_import::MAX_SVG_BYTES;
+use crate::{i18n::tr, tr};
 use base64::Engine;
 use image::{DynamicImage, ImageDecoder, ImageFormat, ImageReader, metadata::Orientation};
 use std::io::Cursor;
@@ -15,7 +16,9 @@ use std::path::Path;
 const DEFAULT_DPI: f64 = 72.0;
 /// Resolutions outside this range are treated as missing.
 const DPI_RANGE: std::ops::RangeInclusive<f64> = 1.0..=100_000.0;
-const DAMAGED: &str = "Bilddatei ist beschädigt oder hat ein nicht unterstütztes Format";
+fn damaged() -> &'static str {
+    tr("Bilddatei ist beschädigt oder hat ein nicht unterstütztes Format")
+}
 
 pub fn read(path: &Path) -> Result<Imported, String> {
     let data = std::fs::read(path).map_err(|e| e.to_string())?;
@@ -23,26 +26,28 @@ pub fn read(path: &Path) -> Result<Imported, String> {
 }
 
 fn from_bytes(data: Vec<u8>) -> Result<Imported, String> {
-    let format = image::guess_format(&data).map_err(|_| DAMAGED.to_string())?;
+    let format = image::guess_format(&data).map_err(|_| damaged().to_string())?;
     let (stored_dpi, cmyk) = match format {
         ImageFormat::Png => (png_dpi(&data), false),
         ImageFormat::Jpeg => jpeg_info(&data),
         ImageFormat::Bmp => (bmp_dpi(&data), false),
         ImageFormat::Gif => (None, false),
-        _ => return Err(DAMAGED.into()),
+        _ => return Err(damaged().into()),
     };
     let mut decoder = ImageReader::with_format(Cursor::new(&data), format)
         .into_decoder()
-        .map_err(|e| format!("{DAMAGED}: {e}"))?;
+        .map_err(|e| format!("{}: {e}", damaged()))?;
     let orientation = decoder.orientation().unwrap_or(Orientation::NoTransforms);
     let exif = decoder.exif_metadata().ok().flatten();
-    let mut image = DynamicImage::from_decoder(decoder).map_err(|e| format!("{DAMAGED}: {e}"))?;
+    let mut image =
+        DynamicImage::from_decoder(decoder).map_err(|e| format!("{}: {e}", damaged()))?;
     let stored_dpi = stored_dpi.or_else(|| exif.as_deref().and_then(exif_dpi));
 
     let mut warnings = Vec::new();
     let (mut dpi_x, mut dpi_y) = stored_dpi.unwrap_or_else(|| {
-        warnings.push(format!(
-            "Bild enthält keine Auflösung; {DEFAULT_DPI:.0} DPI angenommen (wie VisiCut)"
+        warnings.push(tr!(
+            "Bild enthält keine Auflösung; {dpi} DPI angenommen (wie VisiCut)",
+            dpi = format!("{DEFAULT_DPI:.0}")
         ));
         (DEFAULT_DPI, DEFAULT_DPI)
     });
@@ -78,9 +83,9 @@ fn from_bytes(data: Vec<u8>) -> Result<Imported, String> {
     let (width, height) = (image.width(), image.height());
     let encoded_len = bytes.len().div_ceil(3) * 4;
     if encoded_len + 512 > MAX_SVG_BYTES {
-        return Err(format!(
-            "Bild ist eingebettet größer als {} MB; bitte verkleinern oder stärker komprimieren",
-            MAX_SVG_BYTES / (1024 * 1024)
+        return Err(tr!(
+            "Bild ist eingebettet größer als {size} MB; bitte verkleinern oder stärker komprimieren",
+            size = MAX_SVG_BYTES / (1024 * 1024)
         ));
     }
     let mut svg = String::with_capacity(encoded_len + 512);

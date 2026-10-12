@@ -2,6 +2,7 @@
 //! `line(x, y)` in millimetres, like VisiCut's `LaserScriptImporter` and
 //! LibLaserCut's `LaserScriptBootstrap.js`.
 use super::script::{self, Engine};
+use crate::{i18n::tr, tr};
 use boa_engine::{
     Context, JsArgs, JsNativeError, JsResult, JsString, JsValue, NativeFunction, js_string,
 };
@@ -68,16 +69,17 @@ fn execute(engine: &mut Engine, source: &str, max_points: usize) -> Result<Drawi
     let result = engine.eval(source);
     let state = STATE.with(|s| std::mem::take(&mut *s.borrow_mut()));
     if state.overflow {
-        return Err(format!(
-            "LaserScript zeichnet mehr als {max_points} Punkte; Import abgebrochen"
+        return Err(tr!(
+            "LaserScript zeichnet mehr als {count} Punkte; Import abgebrochen",
+            count = max_points
         ));
     }
     result.map_err(|e| format!("LaserScript: {e}"))?;
     let mut messages = state.messages;
     if state.dropped_messages > 0 {
-        messages.push(format!(
-            "LaserScript: {} weitere Ausgaben ausgelassen",
-            state.dropped_messages
+        messages.push(tr!(
+            "LaserScript: {count} weitere Ausgaben ausgelassen",
+            count = state.dropped_messages
         ));
     }
     Ok(Drawing {
@@ -167,9 +169,9 @@ fn message(text: String) {
 
 fn js_echo(_: &JsValue, args: &[JsValue], context: &mut Context) -> JsResult<JsValue> {
     let text = args.get_or_undefined(0).to_string(context)?;
-    message(format!(
-        "LaserScript-Ausgabe: {}",
-        text.to_std_string_escaped()
+    message(tr!(
+        "LaserScript-Ausgabe: {text}",
+        text = text.to_std_string_escaped()
     ));
     Ok(JsValue::undefined())
 }
@@ -183,10 +185,10 @@ fn js_prompt(_: &JsValue, args: &[JsValue], context: &mut Context) -> JsResult<J
     } else {
         default.to_string(context)?
     };
-    message(format!(
-        "LaserScript-Eingabe „{}“: Vorgabewert „{}“ verwendet",
-        title.to_std_string_escaped(),
-        answer.to_std_string_escaped()
+    message(tr!(
+        "LaserScript-Eingabe „{title}“: Vorgabewert „{value}“ verwendet",
+        title = title.to_std_string_escaped(),
+        value = answer.to_std_string_escaped()
     ));
     Ok(answer.into())
 }
@@ -204,13 +206,14 @@ pub fn number(value: f64) -> String {
 /// keeps its position relative to the laser's origin.
 pub fn to_svg(drawing: &Drawing) -> Result<(String, Vec<String>), String> {
     let Some([x0, y0, x1, y1]) = drawing.bounds.filter(|_| drawing.lines > 0) else {
-        return Err("LaserScript hat keine Linien gezeichnet".into());
+        return Err(tr("LaserScript hat keine Linien gezeichnet").into());
     };
     let mut warnings = Vec::new();
     if x0 < 0.0 || y0 < 0.0 {
         warnings.push(
-            "LaserScript zeichnet links oder oberhalb des Nullpunkts; die Grafik beginnt deshalb dort"
-                .into(),
+            tr("LaserScript zeichnet links oder oberhalb des Nullpunkts; \
+                die Grafik beginnt deshalb dort")
+            .into(),
         );
     }
     let left = x0.min(0.0);

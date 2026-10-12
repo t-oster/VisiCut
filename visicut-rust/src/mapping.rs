@@ -2,6 +2,7 @@
 //! VisiCut's MappingSet/FilterSet/MappingFilter and SVG attribute rules
 //! (SVGShape/SVGObject.getAttributeValues).
 use crate::project::{JobStep, Operation, Project};
+use crate::{i18n::tr, tr};
 use resvg::usvg::{self, roxmltree};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
@@ -31,13 +32,13 @@ impl Attribute {
     ];
     pub fn title(self) -> &'static str {
         match self {
-            Self::Color => "Farbe",
-            Self::StrokeColor => "Linienfarbe",
-            Self::FillColor => "Füllfarbe",
-            Self::StrokeWidth => "Linienstärke (mm)",
-            Self::Type => "Typ",
+            Self::Color => tr("Farbe"),
+            Self::StrokeColor => tr("Linienfarbe"),
+            Self::FillColor => tr("Füllfarbe"),
+            Self::StrokeWidth => tr("Linienstärke (mm)"),
+            Self::Type => tr("Typ"),
             Self::Id => "ID",
-            Self::Group => "Gruppe/Ebene",
+            Self::Group => tr("Gruppe/Ebene"),
         }
     }
 }
@@ -85,7 +86,10 @@ impl Filter {
         if self.attribute == Attribute::StrokeWidth
             && !self.value.trim().parse::<f64>().is_ok_and(f64::is_finite)
         {
-            return Err(format!("Linienstärke „{}“ ist keine Zahl", self.value));
+            return Err(tr!(
+                "Linienstärke „{value}“ ist keine Zahl",
+                value = self.value
+            ));
         }
         Ok(())
     }
@@ -380,7 +384,7 @@ pub fn predefined() -> Vec<Predefined> {
     let mut list = vec![
         // Reine RGB-Farben wie in vielen Laser-Workflows.
         Predefined {
-            name: "Farben: Rot schneiden, Blau gravieren, Grün markieren",
+            name: tr("Farben: Rot schneiden, Blau gravieren, Grün markieren"),
             rules: vec![
                 (Operation::Engrave, Some(color("#0000ff")), false),
                 (Operation::Mark, Some(color("#00ff00")), false),
@@ -390,7 +394,7 @@ pub fn predefined() -> Vec<Predefined> {
         },
         // fau-fablab/visicut-settings/mappings
         Predefined {
-            name: "FAU: rot schneiden, grün markieren, blau ignorieren, Rest gravieren",
+            name: tr("FAU: rot schneiden, grün markieren, blau ignorieren, Rest gravieren"),
             rules: vec![
                 (Operation::Mark, Some(color("#00ff00")), false),
                 (Operation::Cut, Some(color("#ff0000")), false),
@@ -399,7 +403,7 @@ pub fn predefined() -> Vec<Predefined> {
             ignore: vec![color("#0000ff")],
         },
         Predefined {
-            name: "FAU: grün markieren, rot und blau ignorieren, Rest gravieren",
+            name: tr("FAU: grün markieren, rot und blau ignorieren, Rest gravieren"),
             rules: vec![
                 (Operation::Mark, Some(color("#00ff00")), false),
                 (Operation::Engrave, None, true),
@@ -407,7 +411,7 @@ pub fn predefined() -> Vec<Predefined> {
             ignore: vec![color("#0000ff"), color("#ff0000")],
         },
         Predefined {
-            name: "Rot schneiden, Rest gravieren",
+            name: tr("Rot schneiden, Rest gravieren"),
             rules: vec![
                 (Operation::Cut, Some(color("#ff0000")), false),
                 (Operation::Engrave, None, true),
@@ -418,10 +422,10 @@ pub fn predefined() -> Vec<Predefined> {
     for operation in Operation::ALL {
         list.push(Predefined {
             name: match operation {
-                Operation::Cut => "Alles schneiden",
-                Operation::Engrave => "Alles gravieren",
-                Operation::Engrave3d => "Alles 3D-gravieren",
-                Operation::Mark => "Alles markieren",
+                Operation::Cut => tr("Alles schneiden"),
+                Operation::Engrave => tr("Alles gravieren"),
+                Operation::Engrave3d => tr("Alles 3D-gravieren"),
+                Operation::Mark => tr("Alles markieren"),
             },
             rules: vec![(operation, Some(Vec::new()), false)],
             ignore: vec![],

@@ -15,6 +15,7 @@ mod tests;
 mod text;
 
 use super::Imported;
+use crate::{i18n::tr, tr};
 use convert::Prim;
 use geom::{Affine, BBox, Seg};
 use std::fmt::Write as _;
@@ -31,23 +32,24 @@ fn from_bytes(bytes: &[u8]) -> Result<Imported, String> {
     let units = doc.header_f("$INSUNITS", 70).map_or(0, |u| u as i64);
     let unit_mm = unit_mm(units).unwrap_or_else(|| {
         warnings.push(
-            "DXF-Datei ohne Einheitenangabe ($INSUNITS); Koordinaten werden als Millimeter übernommen"
-                .into(),
+            tr("DXF-Datei ohne Einheitenangabe ($INSUNITS); \
+                Koordinaten werden als Millimeter übernommen")
+            .into(),
         );
         1.0
     });
     let converted = convert::convert(&doc, unit_mm)?;
     warnings.extend(converted.warnings);
     if converted.prims.is_empty() {
-        return Err("DXF-Datei enthält keine darstellbaren Objekte".into());
+        return Err(tr("DXF-Datei enthält keine darstellbaren Objekte").into());
     }
     let layer_order: Vec<String> = doc.layers.iter().map(|l| l.name.clone()).collect();
     let (svg, [width, height]) = write_svg(&converted.prims, &layer_order)?;
     if width > 5000.0 || height > 5000.0 {
-        warnings.push(format!(
-            "DXF-Zeichnung ist sehr groß ({} × {} mm); Einheiten prüfen",
-            num(width),
-            num(height)
+        warnings.push(tr!(
+            "DXF-Zeichnung ist sehr groß ({width} × {height} mm); Einheiten prüfen",
+            width = num(width),
+            height = num(height)
         ));
     }
     Ok(Imported {
@@ -232,15 +234,15 @@ fn write_svg(prims: &[Prim], layer_order: &[String]) -> Result<(String, [f64; 2]
         }
     }
     if bbox.is_empty() || !bbox.min.iter().chain(&bbox.max).all(|v| v.is_finite()) {
-        return Err("DXF-Datei enthält keine darstellbaren Objekte".into());
+        return Err(tr("DXF-Datei enthält keine darstellbaren Objekte").into());
     }
     let width = (bbox.max[0] - bbox.min[0]).max(0.01);
     let height = (bbox.max[1] - bbox.min[1]).max(0.01);
     if width > 1e7 || height > 1e7 {
-        return Err(format!(
-            "DXF-Zeichnung ist zu groß ({} × {} mm); Einheiten prüfen",
-            num(width),
-            num(height)
+        return Err(tr!(
+            "DXF-Zeichnung ist zu groß ({width} × {height} mm); Einheiten prüfen",
+            width = num(width),
+            height = num(height)
         ));
     }
     // World (Y up) → SVG (Y down, origin at the top-left of the drawing).

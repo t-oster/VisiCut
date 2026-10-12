@@ -1,4 +1,5 @@
 use crate::project::Project;
+use crate::{i18n::tr, tr};
 use resvg::{tiny_skia, usvg};
 use std::sync::{Arc, Mutex};
 
@@ -33,9 +34,10 @@ fn contours_with_fonts(
                 )
             })
         {
-            return Err(
-                "SVG enthält Rasterbilder; zuerst in Pfade umwandeln oder Gravieren wählen".into(),
-            );
+            return Err(tr(
+                "SVG enthält Rasterbilder; zuerst in Pfade umwandeln oder Gravieren wählen",
+            )
+            .into());
         }
     }
     check_clip_references(&document)?;
@@ -61,10 +63,10 @@ fn contours_with_fonts(
     let mut result = Vec::new();
     visit(tree.root(), project, tree.size(), &[], &mut result)?;
     if result.is_empty() {
-        return Err("Keine schneidbaren Vektorpfade in der SVG".into());
+        return Err(tr("Keine schneidbaren Vektorpfade in der SVG").into());
     }
     if result.iter().map(Vec::len).sum::<usize>() > 1_000_000 {
-        return Err("Zu viele Vektorpunkte".into());
+        return Err(tr("Zu viele Vektorpunkte").into());
     }
     Ok(result)
 }
@@ -82,9 +84,10 @@ fn outline_fonts(missing: &Mutex<Vec<String>>) -> usvg::FontResolver<'_> {
             let id = select(font, db);
             if id.is_none() {
                 let families: Vec<String> = font.families().iter().map(|f| f.to_string()).collect();
-                report(format!(
-                    "Schriftart für Text nicht gefunden ({}); Schriftart installieren oder Text in Pfade umwandeln",
-                    families.join(", ")
+                report(tr!(
+                    "Schriftart für Text nicht gefunden ({fonts}); Schriftart installieren \
+                     oder Text in Pfade umwandeln",
+                    fonts = families.join(", ")
                 ));
             }
             id
@@ -95,9 +98,11 @@ fn outline_fonts(missing: &Mutex<Vec<String>>) -> usvg::FontResolver<'_> {
                 || c.is_control()
                 || matches!(c, '\u{200B}'..='\u{200F}' | '\u{202A}'..='\u{202E}' | '\u{2060}'..='\u{206F}' | '\u{FE00}'..='\u{FE0F}' | '\u{FEFF}');
             if id.is_none() && !invisible {
-                report(format!(
-                    "Zeichen „{c}“ (U+{:04X}) ist in keiner Schriftart enthalten; Schriftart installieren oder Text in Pfade umwandeln",
-                    c as u32
+                report(tr!(
+                    "Zeichen „{character}“ (U+{code}) ist in keiner Schriftart enthalten; \
+                     Schriftart installieren oder Text in Pfade umwandeln",
+                    character = c,
+                    code = format!("{:04X}", c as u32)
                 ));
             }
             id
@@ -115,20 +120,46 @@ fn contains_text(group: &usvg::Group) -> bool {
 
 /// Masks and filters cannot be cut: a mask only sets transparency and a filter
 /// changes the picture, so neither defines a cut line.
-const MASK_REJECTED: &str = "Masken können nicht geschnitten werden, weil sie nur Transparenz festlegen und keine Schnittlinie ergeben; Maske entfernen oder Objekt vorher in Pfade umwandeln";
-const FILTER_REJECTED: &str = "Filter wie Weichzeichnen oder Schlagschatten verändern das Motiv nur als Pixelbild und ergeben keine Schnittlinie; Filter entfernen oder Objekt vorher in Pfade umwandeln";
-const NESTED_CLIP: &str = "Verschachtelte Clip-Pfade (Clipping auf einem Clip-Pfad oder innerhalb eines Clip-Pfads) werden beim Schneiden nicht unterstützt";
-const EMPTY_CLIP: &str = "Clip-Pfad ist leer, daher bliebe nichts zu schneiden; Clip-Pfad mit Formen füllen oder Clipping entfernen";
-const CLIP_IMAGE: &str = "Rasterbild im Clip-Pfad: Schneiden unterstützt keine Rasterbilder; Clip-Pfad nur mit Vektorformen verwenden";
-const CLIP_TEXT: &str =
-    "Text im Clip-Pfad wird beim Schneiden nicht unterstützt; Text vorher in Pfade umwandeln";
+fn mask_rejected() -> &'static str {
+    tr(
+        "Masken können nicht geschnitten werden, weil sie nur Transparenz festlegen und keine \
+        Schnittlinie ergeben; Maske entfernen oder Objekt vorher in Pfade umwandeln",
+    )
+}
+fn filter_rejected() -> &'static str {
+    tr(
+        "Filter wie Weichzeichnen oder Schlagschatten verändern das Motiv nur als Pixelbild und \
+        ergeben keine Schnittlinie; Filter entfernen oder Objekt vorher in Pfade umwandeln",
+    )
+}
+fn nested_clip() -> &'static str {
+    tr(
+        "Verschachtelte Clip-Pfade (Clipping auf einem Clip-Pfad oder innerhalb eines \
+        Clip-Pfads) werden beim Schneiden nicht unterstützt",
+    )
+}
+fn empty_clip() -> &'static str {
+    tr(
+        "Clip-Pfad ist leer, daher bliebe nichts zu schneiden; Clip-Pfad mit Formen füllen \
+        oder Clipping entfernen",
+    )
+}
+fn clip_image() -> &'static str {
+    tr(
+        "Rasterbild im Clip-Pfad: Schneiden unterstützt keine Rasterbilder; Clip-Pfad nur mit \
+        Vektorformen verwenden",
+    )
+}
+fn clip_text() -> &'static str {
+    tr("Text im Clip-Pfad wird beim Schneiden nicht unterstützt; Text vorher in Pfade umwandeln")
+}
 
 fn reject_effects(group: &usvg::Group) -> Result<(), String> {
     if group.mask().is_some() {
-        return Err(MASK_REJECTED.into());
+        return Err(mask_rejected().into());
     }
     if !group.filters().is_empty() {
-        return Err(FILTER_REJECTED.into());
+        return Err(filter_rejected().into());
     }
     Ok(())
 }
@@ -246,10 +277,9 @@ fn clip_contour(contour: &Contour, clips: &[Clip]) -> Result<Vec<Contour>, Strin
         .flat_map(|ring| ring.windows(2).map(|w| (w[0], w[1])))
         .collect();
     if edges.len().saturating_mul(contour.len()) > CLIP_WORK_LIMIT {
-        return Err(
-            "Clip-Pfad ist zu komplex für die Schnittberechnung; Clip vereinfachen oder Objekt in Pfade umwandeln"
-                .into(),
-        );
+        return Err(tr("Clip-Pfad ist zu komplex für die Schnittberechnung; \
+                       Clip vereinfachen oder Objekt in Pfade umwandeln")
+        .into());
     }
     let inside = |p: Point| clips.iter().all(|clip| clip.contains(p));
     let mut pieces: Vec<Contour> = Vec::new();
@@ -305,15 +335,17 @@ fn check_clip_references(document: &usvg::roxmltree::Document) -> Result<(), Str
             .find(|n| n.is_element() && n.attribute("id") == Some(id.as_str()));
         match target {
             None => {
-                return Err(format!(
-                    "Clip-Pfad „#{id}“ ist nicht vorhanden; Clipping entfernen oder Objekt vorher in Pfade umwandeln"
+                return Err(tr!(
+                    "Clip-Pfad „#{id}“ ist nicht vorhanden; Clipping entfernen oder Objekt \
+                     vorher in Pfade umwandeln",
+                    id = id
                 ));
             }
             Some(target) if target.tag_name().name() != "clipPath" => {
-                return Err(format!("„#{id}“ ist kein Clip-Pfad"));
+                return Err(tr!("„#{id}“ ist kein Clip-Pfad", id = id));
             }
             Some(target) if !target.children().any(|child| child.is_element()) => {
-                return Err(EMPTY_CLIP.into());
+                return Err(empty_clip().into());
             }
             Some(_) => {}
         }
@@ -347,7 +379,7 @@ fn clip_region(
     size: usvg::Size,
 ) -> Result<Clip, String> {
     if clip.clip_path().is_some() {
-        return Err(NESTED_CLIP.into());
+        return Err(nested_clip().into());
     }
     let mut shapes = Vec::new();
     clip_shapes(
@@ -358,7 +390,7 @@ fn clip_region(
         &mut shapes,
     )?;
     if shapes.is_empty() {
-        return Err(EMPTY_CLIP.into());
+        return Err(empty_clip().into());
     }
     Ok(Clip { shapes })
 }
@@ -372,7 +404,7 @@ fn clip_shapes(
 ) -> Result<(), String> {
     reject_effects(group)?;
     if group.clip_path().is_some() {
-        return Err(NESTED_CLIP.into());
+        return Err(nested_clip().into());
     }
     for node in group.children() {
         match node {
@@ -403,8 +435,8 @@ fn clip_shapes(
                     shapes.push(ClipShape::new(rings, even_odd));
                 }
             }
-            usvg::Node::Image(_) => return Err(CLIP_IMAGE.into()),
-            usvg::Node::Text(_) => return Err(CLIP_TEXT.into()),
+            usvg::Node::Image(_) => return Err(clip_image().into()),
+            usvg::Node::Text(_) => return Err(clip_text().into()),
             _ => {}
         }
     }
@@ -471,12 +503,12 @@ fn visit(
             }
             usvg::Node::Image(_) => {
                 return Err(
-                    "Schneiden unterstützt keine Rasterbilder; bitte Gravieren wählen".into(),
+                    tr("Schneiden unterstützt keine Rasterbilder; bitte Gravieren wählen").into(),
                 );
             }
             // `contours` re-imports text as paths before visiting.
             usvg::Node::Text(_) => {
-                return Err("Text konnte nicht in Pfade umgewandelt werden".into());
+                return Err(tr("Text konnte nicht in Pfade umgewandelt werden").into());
             }
             _ => {}
         }
@@ -615,7 +647,7 @@ fn dash_contour(
     }
     let estimate = (total / period).ceil() * (pattern.len() / 2) as f64 + 1.0;
     if !estimate.is_finite() || result.len() as f64 + estimate > MAX_DASH_CONTOURS as f64 {
-        return Err("Strichmuster erzeugt zu viele Vektorpunkte".into());
+        return Err(tr("Strichmuster erzeugt zu viele Vektorpunkte").into());
     }
 
     let mut index = 0;

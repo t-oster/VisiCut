@@ -3,9 +3,11 @@
 //! new document whose user units are bed millimetres, so object numbers,
 //! assignments and rules keep working; new elements are appended after it.
 use crate::{
+    i18n::tr,
     project::{JobStep, Operation, Project},
     selection, svg,
     svg_import::value_range,
+    tr,
 };
 use resvg::{tiny_skia, usvg};
 use serde::{Deserialize, Serialize};
@@ -111,7 +113,7 @@ impl Default for Sign {
             holes: 2,
             hole_diameter_mm: 4.0,
             hole_inset_mm: 8.0,
-            text: "Schild".into(),
+            text: tr("Schild").into(),
             font: "sans-serif".into(),
             size_mm: 18.0,
             bold: true,
@@ -171,7 +173,7 @@ pub fn font_families() -> Vec<String> {
 /// The elements of a sign, ready for [`add_objects`].
 pub fn sign(sign: &Sign) -> Result<Vec<NewObject>, String> {
     if !(sign.width_mm > 0.0 && sign.height_mm > 0.0) {
-        return Err("Schild braucht Breite und Höhe".into());
+        return Err(tr("Schild braucht Breite und Höhe").into());
     }
     let (x, y, w, h) = (sign.x_mm, sign.y_mm, sign.width_mm, sign.height_mm);
     let mut objects = vec![NewObject {
@@ -187,7 +189,7 @@ pub fn sign(sign: &Sign) -> Result<Vec<NewObject>, String> {
     if sign.frame_inset_mm > 0.0 {
         let inset = sign.frame_inset_mm;
         if 2.0 * inset >= w.min(h) {
-            return Err("Rahmenabstand ist zu groß für das Schild".into());
+            return Err(tr("Rahmenabstand ist zu groß für das Schild").into());
         }
         objects.push(NewObject {
             shape: Shape::Rectangle {
@@ -210,7 +212,7 @@ pub fn sign(sign: &Sign) -> Result<Vec<NewObject>, String> {
             (x + inset, y + h - inset),
             (x + w - inset, y + h - inset),
         ],
-        _ => return Err("Ein Schild hat 0, 2 oder 4 Löcher".into()),
+        _ => return Err(tr("Ein Schild hat 0, 2 oder 4 Löcher").into()),
     };
     if !centres.is_empty()
         && (d <= 0.0
@@ -218,7 +220,7 @@ pub fn sign(sign: &Sign) -> Result<Vec<NewObject>, String> {
             || 2.0 * inset >= w
             || (sign.holes == 4 && 2.0 * inset >= h))
     {
-        return Err("Löcher passen nicht auf das Schild".into());
+        return Err(tr("Löcher passen nicht auf das Schild").into());
     }
     for (cx, cy) in centres {
         objects.push(NewObject {
@@ -261,7 +263,7 @@ pub fn add_objects(
     objects: &[NewObject],
 ) -> Result<(Project, Vec<usize>), String> {
     if objects.is_empty() {
-        return Err("Keine Elemente zum Einfügen".into());
+        return Err(tr("Keine Elemente zum Einfügen").into());
     }
     let existing = selection::objects(&project.svg)?.len();
     let mut body = String::new();
@@ -323,10 +325,10 @@ pub fn transform(
     flip_vertical: bool,
 ) -> Result<Project, String> {
     if project.svg.is_empty() {
-        return Err("Zuerst ein Motiv öffnen".into());
+        return Err(tr("Zuerst ein Motiv öffnen").into());
     }
     if !rotate_deg.is_finite() {
-        return Err("Winkel muss endlich sein".into());
+        return Err(tr("Winkel muss endlich sein").into());
     }
     let rotate = rotate_deg.rem_euclid(360.0);
     if rotate == 0.0 && !flip_horizontal && !flip_vertical {
@@ -375,7 +377,7 @@ pub fn remove_objects(project: &Project, remove: &[usize]) -> Result<Project, St
     let doc = parse(&project.svg)?;
     let nodes = selection::selectable_nodes(&doc);
     if remove.iter().any(|i| *i >= nodes.len()) {
-        return Err("SVG-Objekt nicht vorhanden".into());
+        return Err(tr("SVG-Objekt nicht vorhanden").into());
     }
     let mut result = project.clone();
     if nodes.iter().enumerate().all(|(i, _)| remove.contains(&i)) {
@@ -434,14 +436,14 @@ pub fn array(
     gap_y_mm: f64,
 ) -> Result<Project, String> {
     if project.svg.is_empty() {
-        return Err("Zuerst ein Motiv öffnen".into());
+        return Err(tr("Zuerst ein Motiv öffnen").into());
     }
     let copies = columns as usize * rows as usize;
     if !(2..=MAX_COPIES).contains(&copies) {
-        return Err(format!("2 bis {MAX_COPIES} Exemplare sind möglich"));
+        return Err(tr!("2 bis {max} Exemplare sind möglich", max = MAX_COPIES));
     }
     if !gap_x_mm.is_finite() || !gap_y_mm.is_finite() {
-        return Err("Abstand muss endlich sein".into());
+        return Err(tr("Abstand muss endlich sein").into());
     }
     let (w, h) = (project.width_mm as f64, project.height_mm as f64);
     let objects = selection::objects(&project.svg)?.len();
@@ -473,25 +475,25 @@ pub fn array(
 /// free-rectangle method; parts may be turned by 90°.
 pub fn nest(project: &Project, settings: &NestSettings) -> Result<Nested, String> {
     if project.svg.is_empty() {
-        return Err("Zuerst ein Motiv öffnen".into());
+        return Err(tr("Zuerst ein Motiv öffnen").into());
     }
     let [ax, ay, aw, ah] = settings.area_mm;
     if !settings.area_mm.iter().all(|v| v.is_finite()) || aw <= 0.0 || ah <= 0.0 {
-        return Err("Fläche braucht eine positive Breite und Höhe".into());
+        return Err(tr("Fläche braucht eine positive Breite und Höhe").into());
     }
     if !settings.gap_mm.is_finite() || settings.gap_mm < 0.0 {
-        return Err("Abstand darf nicht negativ sein".into());
+        return Err(tr("Abstand darf nicht negativ sein").into());
     }
     let shared = parts(project)?;
     let parts = &shared.parts;
     if parts.is_empty() {
-        return Err("Keine Teile im Motiv".into());
+        return Err(tr("Keine Teile im Motiv").into());
     }
     let mut instances: Vec<usize> = (0..parts.len())
         .flat_map(|p| std::iter::repeat_n(p, settings.quantity.max(1) as usize))
         .collect();
     if instances.len() > MAX_COPIES {
-        return Err(format!("Höchstens {MAX_COPIES} Teile sind möglich"));
+        return Err(tr!("Höchstens {max} Teile sind möglich", max = MAX_COPIES));
     }
     // Largest first; ties keep the drawing order.
     instances.sort_by(|a, b| {
@@ -534,7 +536,7 @@ pub fn nest(project: &Project, settings: &NestSettings) -> Result<Nested, String
         split(&mut free, used);
     }
     if placements.is_empty() {
-        return Err("Kein Teil passt in die Fläche".into());
+        return Err(tr("Kein Teil passt in die Fläche").into());
     }
     // Output in drawing order of the parts so object numbers stay ordered.
     placements.sort_by_key(|p| p.0);
@@ -612,11 +614,11 @@ pub fn nest(project: &Project, settings: &NestSettings) -> Result<Nested, String
 /// numbers and assignments; the new ones follow. Returns German notes.
 pub fn append(project: &Project, source: &str) -> Result<(Project, Vec<String>), String> {
     if project.svg.is_empty() {
-        return Err("Zuerst ein Motiv öffnen".into());
+        return Err(tr("Zuerst ein Motiv öffnen").into());
     }
     let source = scope_names(&project.svg, source)?;
     let tree = usvg::Tree::from_str(&source, &svg::options())
-        .map_err(|e| format!("SVG konnte nicht gelesen werden: {e}"))?;
+        .map_err(|e| tr!("SVG konnte nicht gelesen werden: {error}", error = e))?;
     let (w, h) = (
         tree.size().width() as f64 * 25.4 / 96.0,
         tree.size().height() as f64 * 25.4 / 96.0,
@@ -634,7 +636,7 @@ pub fn append(project: &Project, source: &str) -> Result<(Project, Vec<String>),
         (px, py + ph + APPEND_GAP_MM)
     } else {
         notes.push(
-            "Kein freier Platz neben dem Motiv: Teile liegen außerhalb des Betts, bitte verschieben oder verschachteln".into(),
+            tr("Kein freier Platz neben dem Motiv: Teile liegen außerhalb des Betts, bitte verschieben oder verschachteln").into(),
         );
         (px + pw + APPEND_GAP_MM, py)
     };
@@ -652,10 +654,11 @@ pub fn append(project: &Project, source: &str) -> Result<(Project, Vec<String>),
     let bounds = union(motif_bounds(project), Some([x, y, w, h])).unwrap();
     let result = with_document(project, &body, bounds)?;
     if individual(project) && added > 0 {
-        notes.push(format!(
-            "{added} neue Objekte (Nr. {}–{}) sind noch keinem Schritt zugeordnet",
-            existing + 1,
-            existing + added
+        notes.push(tr!(
+            "{added} neue Objekte (Nr. {first}–{last}) sind noch keinem Schritt zugeordnet",
+            added = added,
+            first = existing + 1,
+            last = existing + added
         ));
     }
     Ok((result, notes))
@@ -689,8 +692,9 @@ pub fn append_files(
                         .map(|w| format!("{name}: {w}")),
                 );
                 if !imported.steps.is_empty() {
-                    notes.push(format!(
-                        "{name}: Zuordnungen der Datei wurden nicht übernommen"
+                    notes.push(tr!(
+                        "{name}: Zuordnungen der Datei wurden nicht übernommen",
+                        name = name
                     ));
                 }
                 notes.extend(more.into_iter().map(|n| format!("{name}: {n}")));
@@ -939,7 +943,7 @@ fn parts(project: &Project) -> Result<Parts, String> {
         }
     }
     let tree = usvg::Tree::from_str(source, &svg::options())
-        .map_err(|e| format!("SVG konnte nicht gelesen werden: {e}"))?;
+        .map_err(|e| tr!("SVG konnte nicht gelesen werden: {error}", error = e))?;
     let size = tree.size();
     let root_start = root_start(source, root, size)?;
     let (sx, sy) = (
@@ -968,7 +972,8 @@ fn parts(project: &Project) -> Result<Parts, String> {
             .collect();
         for ancestor in ancestors.iter().rev() {
             let range = ancestor.range();
-            let end = start_tag_end(source, range.start).ok_or("SVG-Gruppe ist unvollständig")?;
+            let end =
+                start_tag_end(source, range.start).ok_or(tr("SVG-Gruppe ist unvollständig"))?;
             opening.push(range.start..end);
             let close = source[range.clone()].rfind("</").map(|i| range.start + i);
             closing.push(close.map_or(String::new(), |c| source[c..range.end].to_string()));
@@ -1026,7 +1031,7 @@ fn parts(project: &Project) -> Result<Parts, String> {
 /// The root start tag with the canvas size in pixels and visible overflow.
 fn root_start(source: &str, root: roxmltree::Node, size: usvg::Size) -> Result<String, String> {
     let range = root.range();
-    let end = start_tag_end(source, range.start).ok_or("SVG-Wurzel ist unvollständig")?;
+    let end = start_tag_end(source, range.start).ok_or(tr("SVG-Wurzel ist unvollständig"))?;
     let mut text = String::new();
     let mut position = range.start;
     for attribute in root.attributes() {
@@ -1124,18 +1129,41 @@ fn style(operation: Operation) -> (&'static str, &'static str) {
 }
 
 fn unique_id(svg: &str, shape: &Shape, number: usize) -> String {
-    let base = match shape {
-        Shape::Rectangle { .. } => "Rechteck",
-        Shape::Ellipse { .. } => "Ellipse",
-        Shape::Polygon { .. } => "Vieleck",
-        Shape::Star { .. } => "Stern",
-        Shape::Text { .. } => "Text",
-    };
+    // The id names the object in the object list, so it uses the chosen
+    // language; it is stored in the document and stays when the language
+    // changes.
+    let base = id_base(match shape {
+        Shape::Rectangle { .. } => tr("Rechteck"),
+        Shape::Ellipse { .. } => tr("Ellipse"),
+        Shape::Polygon { .. } => tr("Vieleck"),
+        Shape::Star { .. } => tr("Stern"),
+        Shape::Text { .. } => tr("Text"),
+    });
     let mut n = number + 1;
     while svg.contains(&format!("id=\"{base}{n}\"")) {
         n += 1;
     }
     format!("{base}{n}")
+}
+
+/// A (translated) name as the start of an XML id: letters, digits, `-` and
+/// `_` stay, everything else becomes `-`; it starts with a letter or `_`.
+fn id_base(name: &str) -> String {
+    let mut base: String = name
+        .trim()
+        .chars()
+        .map(|c| {
+            if c.is_alphanumeric() || c == '-' || c == '_' {
+                c
+            } else {
+                '-'
+            }
+        })
+        .collect();
+    if !base.starts_with(|c: char| c.is_alphabetic() || c == '_') {
+        base.insert(0, '_');
+    }
+    base
 }
 
 fn union(a: Option<[f64; 4]>, b: Option<[f64; 4]>) -> Option<[f64; 4]> {
@@ -1163,9 +1191,10 @@ fn motif_bounds(project: &Project) -> Option<[f64; 4]> {
 
 fn check_size(body: &str) -> Result<(), String> {
     if body.len() > MAX_SVG_BYTES {
-        return Err(
-            "Ergebnis wäre größer als 20 MB; weniger Kopien oder kleinere Bilder verwenden".into(),
-        );
+        return Err(tr(
+            "Ergebnis wäre größer als 20 MB; weniger Kopien oder kleinere Bilder verwenden",
+        )
+        .into());
     }
     Ok(())
 }
@@ -1174,7 +1203,7 @@ fn check_size(body: &str) -> Result<(), String> {
 fn with_document(project: &Project, body: &str, bounds: [f64; 4]) -> Result<Project, String> {
     let [x, y, w, h] = bounds;
     if !(w > 0.0 && h > 0.0) {
-        return Err("Ergebnis hat keine Fläche".into());
+        return Err(tr("Ergebnis hat keine Fläche").into());
     }
     let document = format!(
         r#"<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{}mm" height="{}mm" viewBox="{} {} {} {}">{body}</svg>"#,
@@ -1195,7 +1224,7 @@ fn with_document(project: &Project, body: &str, bounds: [f64; 4]) -> Result<Proj
         ..project.clone()
     };
     if result.name.is_empty() {
-        result.name = "Schild".into();
+        result.name = tr("Schild").into();
     }
     result.validate_document()?;
     Ok(result)
@@ -1203,10 +1232,10 @@ fn with_document(project: &Project, body: &str, bounds: [f64; 4]) -> Result<Proj
 
 fn parse(source: &str) -> Result<roxmltree::Document<'_>, String> {
     if source.contains("<!ENTITY") {
-        return Err(
-            "SVG mit DTD-Entitäten lässt sich nicht erweitern; bitte als normales SVG speichern"
-                .into(),
-        );
+        return Err(tr(
+            "SVG mit DTD-Entitäten lässt sich nicht erweitern; bitte als normales SVG speichern",
+        )
+        .into());
     }
     let options = roxmltree::ParsingOptions {
         allow_dtd: true,
@@ -1225,7 +1254,7 @@ fn embed(
     visible: Option<&[usize]>,
 ) -> Result<String, String> {
     let tree = usvg::Tree::from_str(&project.svg, &svg::options())
-        .map_err(|e| format!("SVG konnte nicht gelesen werden: {e}"))?;
+        .map_err(|e| tr!("SVG konnte nicht gelesen werden: {error}", error = e))?;
     let size = tree.size();
     let source = match visible {
         Some(objects) => selection::filter(&project.svg, objects)?,
@@ -1234,7 +1263,8 @@ fn embed(
     let doc = parse(&source)?;
     let root = doc.root_element();
     let range = root.range();
-    let start_end = start_tag_end(&source, range.start).ok_or("SVG-Wurzel ist unvollständig")?;
+    let start_end =
+        start_tag_end(&source, range.start).ok_or(tr("SVG-Wurzel ist unvollständig"))?;
     let mut edits: Vec<(std::ops::Range<usize>, String)> = Vec::new();
     for attribute in root.attributes() {
         if attribute.namespace().is_none()
@@ -1333,7 +1363,7 @@ fn outline(shape: &Shape) -> Result<(String, [f64; 4]), String> {
             corner_mm: r,
         } => {
             if !positive(*w) || !positive(*h) || !r.is_finite() || *r < 0.0 {
-                return Err("Rechteck braucht positive Maße".into());
+                return Err(tr("Rechteck braucht positive Maße").into());
             }
             let r = r.min(w / 2.0).min(h / 2.0);
             let d = if r > 0.0 {
@@ -1354,7 +1384,7 @@ fn outline(shape: &Shape) -> Result<(String, [f64; 4]), String> {
             height_mm: h,
         } => {
             if !positive(*w) || !positive(*h) {
-                return Err("Ellipse braucht positive Maße".into());
+                return Err(tr("Ellipse braucht positive Maße").into());
             }
             let (rx, ry) = (w / 2.0, h / 2.0);
             Ok((
@@ -1364,7 +1394,7 @@ fn outline(shape: &Shape) -> Result<(String, [f64; 4]), String> {
         }
         Shape::Polygon { sides, diameter_mm } => {
             if !(3..=100).contains(sides) || !positive(*diameter_mm) {
-                return Err("Vieleck braucht 3 bis 100 Ecken und einen Durchmesser".into());
+                return Err(tr("Vieleck braucht 3 bis 100 Ecken und einen Durchmesser").into());
             }
             Ok(polygon(
                 (0..*sides).map(|i| (diameter_mm / 2.0, i as f64 / *sides as f64)),
@@ -1379,7 +1409,7 @@ fn outline(shape: &Shape) -> Result<(String, [f64; 4]), String> {
                 || !positive(*diameter_mm)
                 || !(5.0..=95.0).contains(inner_percent)
             {
-                return Err("Stern braucht 3 bis 100 Zacken und 5–95 % Innenradius".into());
+                return Err(tr("Stern braucht 3 bis 100 Zacken und 5–95 % Innenradius").into());
             }
             let outer = diameter_mm / 2.0;
             let inner = outer * inner_percent / 100.0;
@@ -1443,14 +1473,14 @@ fn text_outline(shape: &Shape) -> Result<(String, [f64; 4]), String> {
         unreachable!()
     };
     if !size_mm.is_finite() || !(0.5..=1000.0).contains(size_mm) {
-        return Err("Schriftgröße muss zwischen 0,5 und 1000 mm liegen".into());
+        return Err(tr("Schriftgröße muss zwischen 0,5 und 1000 mm liegen").into());
     }
     if !line_spacing.is_finite() || !(0.5..=5.0).contains(line_spacing) {
-        return Err("Zeilenabstand muss zwischen 0,5 und 5 liegen".into());
+        return Err(tr("Zeilenabstand muss zwischen 0,5 und 5 liegen").into());
     }
     let lines: Vec<&str> = text.lines().collect();
     if lines.iter().all(|l| l.trim().is_empty()) || text.chars().count() > 2000 {
-        return Err("Text fehlt oder ist länger als 2000 Zeichen".into());
+        return Err(tr("Text fehlt oder ist länger als 2000 Zeichen").into());
     }
     let anchor = match align {
         Align::Left => "start",
@@ -1478,7 +1508,9 @@ fn text_outline(shape: &Shape) -> Result<(String, [f64; 4]), String> {
     let mut d = String::new();
     let mut bounds: Option<tiny_skia::Rect> = None;
     collect(tree.root(), &mut d, &mut bounds);
-    let b = bounds.ok_or("Der Text ergibt keine Umrisse (Schrift ohne passende Zeichen?)")?;
+    let b = bounds.ok_or(tr(
+        "Der Text ergibt keine Umrisse (Schrift ohne passende Zeichen?)",
+    ))?;
     Ok((
         d,
         [

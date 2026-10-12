@@ -11,6 +11,7 @@ use std::{
     process::Command,
     time::Duration,
 };
+use visicut_core::{i18n::tr, tr};
 
 struct Options {
     bind: String,
@@ -20,9 +21,13 @@ struct Options {
     command: Vec<String>,
 }
 
-const USAGE: &str = "Aufruf: visicut-cameraserver [--bind ADRESSE] [--port 8088] \
-[--rotate 0|90|180|270] [--output DATEI] -- AUFNAHMEBEFEHL [ARGUMENTE …]\n\
-Ohne --output muss der Befehl das Bild (JPEG oder PNG) auf stdout schreiben.";
+fn usage() -> &'static str {
+    tr(
+        "Aufruf: visicut-cameraserver [--bind ADRESSE] [--port 8088] \
+        [--rotate 0|90|180|270] [--output DATEI] -- AUFNAHMEBEFEHL [ARGUMENTE …]\n\
+        Ohne --output muss der Befehl das Bild (JPEG oder PNG) auf stdout schreiben.",
+    )
+}
 
 fn parse(args: impl Iterator<Item = String>) -> Result<Options, String> {
     let mut options = Options {
@@ -34,24 +39,33 @@ fn parse(args: impl Iterator<Item = String>) -> Result<Options, String> {
     };
     let mut args = args.peekable();
     while let Some(arg) = args.next() {
-        let mut value = || args.next().ok_or(format!("{arg} benötigt einen Wert"));
+        let mut value = || {
+            args.next()
+                .ok_or_else(|| tr!("{option} benötigt einen Wert", option = arg))
+        };
         match arg.as_str() {
             "--bind" => options.bind = value()?,
-            "--port" => options.port = value()?.parse().map_err(|_| "Ungültiger Port")?,
+            "--port" => options.port = value()?.parse().map_err(|_| tr("Ungültiger Port"))?,
             "--rotate" => {
-                options.rotate = value()?.parse().map_err(|_| "Ungültige Drehung")?;
+                options.rotate = value()?.parse().map_err(|_| tr("Ungültige Drehung"))?;
                 if ![0, 90, 180, 270].contains(&options.rotate) {
-                    return Err("Drehung muss 0, 90, 180 oder 270 sein".into());
+                    return Err(tr("Drehung muss 0, 90, 180 oder 270 sein").into());
                 }
             }
             "--output" => options.output = Some(value()?),
             "--" => options.command = args.by_ref().collect(),
-            "-h" | "--help" => return Err(USAGE.into()),
-            other => return Err(format!("Unbekannte Option {other}\n{USAGE}")),
+            "-h" | "--help" => return Err(usage().into()),
+            other => {
+                return Err(format!(
+                    "{}\n{}",
+                    tr!("Unbekannte Option {option}", option = other),
+                    usage()
+                ));
+            }
         }
     }
     if options.command.is_empty() {
-        return Err(USAGE.into());
+        return Err(usage().into());
     }
     Ok(options)
 }
@@ -65,10 +79,10 @@ fn capture(options: &Options) -> Result<Vec<u8>, String> {
         .output()
         .map_err(|e| format!("{}: {e}", options.command[0]))?;
     if !result.status.success() {
-        return Err(format!(
-            "Aufnahmebefehl fehlgeschlagen ({}): {}",
-            result.status,
-            String::from_utf8_lossy(&result.stderr).trim()
+        return Err(tr!(
+            "Aufnahmebefehl fehlgeschlagen ({status}): {error}",
+            status = result.status,
+            error = String::from_utf8_lossy(&result.stderr).trim()
         ));
     }
     match &options.output {
@@ -79,7 +93,7 @@ fn capture(options: &Options) -> Result<Vec<u8>, String> {
 
 /// Returns the response body and content type, rotating like `mogrify -rotate`.
 fn image_response(bytes: Vec<u8>, rotate: u16) -> Result<(Vec<u8>, &'static str), String> {
-    let format = image::guess_format(&bytes).map_err(|_| "Aufnahme ist kein Bild")?;
+    let format = image::guess_format(&bytes).map_err(|_| tr("Aufnahme ist kein Bild"))?;
     if rotate == 0 {
         return Ok((bytes, format.to_mime_type()));
     }
@@ -143,6 +157,8 @@ fn handle(
 }
 
 fn main() {
+    // Ohne Einstellungen der Oberfläche gilt die Systemsprache.
+    visicut_core::i18n::set_language(visicut_core::i18n::Language::system());
     let options = match parse(std::env::args().skip(1)) {
         Ok(options) => options,
         Err(message) => {
@@ -158,18 +174,25 @@ fn main() {
         }
     };
     println!(
-        "Kameraserver läuft. Kamera-URL in VisiCutRust: http://<dieser Rechner>:{}/visicam.jpg",
-        options.port
+        "{}",
+        tr!(
+            "Kameraserver läuft. Kamera-URL in VisiCutRust: \
+             http://<dieser Rechner>:{port}/visicam.jpg",
+            port = options.port
+        )
     );
     // One request at a time: a camera can only take one photo at once.
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
                 if let Err(error) = handle(stream, || capture(&options), options.rotate) {
-                    eprintln!("Anfrage fehlgeschlagen: {error}");
+                    eprintln!("{}", tr!("Anfrage fehlgeschlagen: {error}", error = error));
                 }
             }
-            Err(error) => eprintln!("Verbindung fehlgeschlagen: {error}"),
+            Err(error) => eprintln!(
+                "{}",
+                tr!("Verbindung fehlgeschlagen: {error}", error = error)
+            ),
         }
     }
 }

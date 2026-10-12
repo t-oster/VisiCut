@@ -1,6 +1,7 @@
 //! Configured LTT iLaser 4000 installations. Other cutter drivers are not
 //! supported; imports from VisiCut settings keep only LTT devices.
 use crate::project::MachineSettings;
+use crate::{i18n::tr, tr};
 use serde::{Deserialize, Serialize};
 use std::{
     io::{Cursor, Read},
@@ -63,12 +64,12 @@ impl LaserDevice {
 
     pub fn validate(&self) -> Result<(), String> {
         if self.name.trim().is_empty() {
-            return Err("Gerätename fehlt".into());
+            return Err(tr("Gerätename fehlt").into());
         }
         if self.hostname.trim().is_empty() || self.port == 0 {
-            return Err(format!(
-                "{}: Hostname und Port müssen gesetzt sein",
-                self.name
+            return Err(tr!(
+                "{device}: Hostname und Port müssen gesetzt sein",
+                device = self.name
             ));
         }
         self.machine
@@ -78,14 +79,17 @@ impl LaserDevice {
             if c.reference_points.len() != c.view_points.len()
                 || !(c.reference_points.len() == 2 || c.reference_points.len() >= 4)
             {
-                return Err(format!(
-                    "{}: Kamerakalibrierung benötigt 2 oder mindestens 4 Punktpaare",
-                    self.name
+                return Err(tr!(
+                    "{device}: Kamerakalibrierung benötigt 2 oder mindestens 4 Punktpaare",
+                    device = self.name
                 ));
             }
             let finite = |p: &[f64; 2]| p.iter().all(|v| v.is_finite());
             if !c.reference_points.iter().chain(&c.view_points).all(finite) {
-                return Err(format!("{}: Kamerapunkte müssen endlich sein", self.name));
+                return Err(tr!(
+                    "{device}: Kamerapunkte müssen endlich sein",
+                    device = self.name
+                ));
             }
         }
         Ok(())
@@ -113,20 +117,20 @@ impl Default for DeviceStore {
 impl DeviceStore {
     pub fn validate(&self) -> Result<(), String> {
         if self.format_version != 1 {
-            return Err("Unbekannte Version der Geräteliste".into());
+            return Err(tr("Unbekannte Version der Geräteliste").into());
         }
         if self.devices.is_empty() {
-            return Err("Mindestens ein Lasercutter muss eingerichtet sein".into());
+            return Err(tr("Mindestens ein Lasercutter muss eingerichtet sein").into());
         }
         if self.selected >= self.devices.len() {
-            return Err("Ausgewählter Lasercutter existiert nicht".into());
+            return Err(tr("Ausgewählter Lasercutter existiert nicht").into());
         }
         for (i, device) in self.devices.iter().enumerate() {
             device.validate()?;
             if self.devices[..i].iter().any(|d| d.name == device.name) {
-                return Err(format!(
-                    "Gerätename „{}“ ist doppelt vorhanden",
-                    device.name
+                return Err(tr!(
+                    "Gerätename „{name}“ ist doppelt vorhanden",
+                    name = device.name
                 ));
             }
         }
@@ -154,8 +158,13 @@ impl DeviceStore {
             return Ok(Self::default());
         }
         let source = std::fs::read_to_string(&path).map_err(|e| e.to_string())?;
-        let store: Self = serde_json::from_str(&source)
-            .map_err(|e| format!("Geräteliste {} ist beschädigt: {e}", path.display()))?;
+        let store: Self = serde_json::from_str(&source).map_err(|e| {
+            tr!(
+                "Geräteliste {path} ist beschädigt: {error}",
+                path = path.display(),
+                error = e
+            )
+        })?;
         store.validate()?;
         Ok(store)
     }
@@ -202,7 +211,7 @@ fn number(node: roxmltree::Node, name: &str) -> Result<Option<f64>, String> {
         .map(|t| {
             t.trim()
                 .parse()
-                .map_err(|_| format!("Ungültiger Wert für {name}"))
+                .map_err(|_| tr!("Ungültiger Wert für {name}", name = name))
         })
         .transpose()
 }
@@ -229,13 +238,13 @@ pub fn from_visicut_xml(source: &str) -> Result<LaserDevice, String> {
     let doc = roxmltree::Document::parse(source).map_err(|e| e.to_string())?;
     let root = doc.root_element();
     if !root.has_tag_name("laserDevice") {
-        return Err("Keine VisiCut-Gerätedatei".into());
+        return Err(tr("Keine VisiCut-Gerätedatei").into());
     }
-    let cutter = child(root, "laserCutter").ok_or("Gerätedatei ohne Lasercutter")?;
+    let cutter = child(root, "laserCutter").ok_or(tr("Gerätedatei ohne Lasercutter"))?;
     if cutter.attribute("class") != Some(LTT_CLASS) {
-        return Err(format!(
-            "Nur der LTT iLaser 4000 wird unterstützt (Treiber: {})",
-            cutter.attribute("class").unwrap_or("unbekannt")
+        return Err(tr!(
+            "Nur der LTT iLaser 4000 wird unterstützt (Treiber: {driver})",
+            driver = cutter.attribute("class").unwrap_or(tr("unbekannt"))
         ));
     }
     for (name, expected) in [
@@ -246,8 +255,11 @@ pub fn from_visicut_xml(source: &str) -> Result<LaserDevice, String> {
         if let Some(value) = number(cutter, name)?
             && (value - expected).abs() > 0.01
         {
-            return Err(format!(
-                "{name} = {value} weicht vom LTT iLaser 4000 ab ({expected}); nicht unterstützt"
+            return Err(tr!(
+                "{name} = {value} weicht vom LTT iLaser 4000 ab ({expected}); nicht unterstützt",
+                name = name,
+                value = value,
+                expected = expected
             ));
         }
     }
@@ -269,12 +281,12 @@ pub fn from_visicut_xml(source: &str) -> Result<LaserDevice, String> {
                     .unwrap_or_default()
                     .trim()
                     .parse::<f32>()
-                    .map_err(|_| "Ungültiger Wert in engraveShiftList".to_string())
+                    .map_err(|_| tr("Ungültiger Wert in engraveShiftList").to_string())
             })
             .collect::<Result<Vec<_>, _>>()?;
         machine.engrave_shift = values
             .try_into()
-            .map_err(|_| "engraveShiftList braucht zehn Werte (10 % … 100 %)")?;
+            .map_err(|_| tr("engraveShiftList braucht zehn Werte (10 % … 100 %)"))?;
     }
     if text(cutter, "useTangentCurves").as_deref() != Some("false")
         && let Some(value) = number(cutter, "tangentCurveMaxAcceleration")?
@@ -288,7 +300,7 @@ pub fn from_visicut_xml(source: &str) -> Result<LaserDevice, String> {
         description: text(root, "description").unwrap_or_default(),
         hostname: text(cutter, "hostname").unwrap_or(defaults.hostname),
         port: match text(cutter, "port") {
-            Some(p) => p.trim().parse().map_err(|_| "Ungültiger Port")?,
+            Some(p) => p.trim().parse().map_err(|_| tr("Ungültiger Port"))?,
             None => defaults.port,
         },
         rotary_axis: text(cutter, "rotaryAxisSupported").as_deref() == Some("true"),
@@ -307,7 +319,7 @@ pub fn import_bytes(bytes: &[u8]) -> Result<Vec<LaserDevice>, String> {
     if bytes.starts_with(b"PK") {
         return import_archive(bytes);
     }
-    let source = std::str::from_utf8(bytes).map_err(|_| "Datei ist kein Text")?;
+    let source = std::str::from_utf8(bytes).map_err(|_| tr("Datei ist kein Text"))?;
     if source.trim_start().starts_with('{') {
         let store: DeviceStore = serde_json::from_str(source).map_err(|e| e.to_string())?;
         store.validate()?;
@@ -338,11 +350,11 @@ fn import_archive(bytes: &[u8]) -> Result<Vec<LaserDevice>, String> {
     }
     if devices.is_empty() {
         return Err(if skipped.is_empty() {
-            "Archiv enthält keine VisiCut-Geräte".into()
+            tr("Archiv enthält keine VisiCut-Geräte").into()
         } else {
-            format!(
-                "Archiv enthält keinen LTT iLaser 4000 (übersprungen: {})",
-                skipped.join(", ")
+            tr!(
+                "Archiv enthält keinen LTT iLaser 4000 (übersprungen: {skipped})",
+                skipped = skipped.join(", ")
             )
         });
     }

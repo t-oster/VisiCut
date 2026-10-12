@@ -2,6 +2,7 @@
 //! editors). The bundled FAU catalogue is used until the user saves own
 //! changes to the settings directory.
 use crate::project::Operation;
+use crate::{i18n::tr, tr};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
@@ -57,8 +58,13 @@ impl Library {
             return Ok((Self::bundled(), false));
         }
         let source = std::fs::read_to_string(&path).map_err(|e| e.to_string())?;
-        let library: Self = serde_json::from_str(&source)
-            .map_err(|e| format!("Materialbibliothek {} ist beschädigt: {e}", path.display()))?;
+        let library: Self = serde_json::from_str(&source).map_err(|e| {
+            tr!(
+                "Materialbibliothek {path} ist beschädigt: {error}",
+                path = path.display(),
+                error = e
+            )
+        })?;
         library.validate()?;
         Ok((library, true))
     }
@@ -83,40 +89,44 @@ impl Library {
 
     pub fn validate(&self) -> Result<(), String> {
         if self.materials.len() > 10_000 {
-            return Err("Zu viele Materialien".into());
+            return Err(tr("Zu viele Materialien").into());
         }
         for (i, material) in self.materials.iter().enumerate() {
             if material.name.trim().is_empty() {
-                return Err("Materialname fehlt".into());
+                return Err(tr("Materialname fehlt").into());
             }
             if self.materials[..i].iter().any(|m| m.name == material.name) {
-                return Err(format!(
-                    "Material „{}“ ist doppelt vorhanden",
-                    material.name
+                return Err(tr!(
+                    "Material „{name}“ ist doppelt vorhanden",
+                    name = material.name
                 ));
             }
             for (j, p) in material.profiles.iter().enumerate() {
                 let label = format!("{}, {} mm", material.name, p.thickness_mm);
                 if !p.thickness_mm.is_finite() || !(0.0..=1000.0).contains(&p.thickness_mm) {
-                    return Err(format!(
-                        "{label}: Stärke muss zwischen 0 und 1000 mm liegen"
+                    return Err(tr!(
+                        "{label}: Stärke muss zwischen 0 und 1000 mm liegen",
+                        label = label
                     ));
                 }
                 if !p.power_percent.is_finite() || !(0.0..=100.0).contains(&p.power_percent) {
-                    return Err(format!(
-                        "{label}: Leistung muss zwischen 0 und 100 % liegen"
+                    return Err(tr!(
+                        "{label}: Leistung muss zwischen 0 und 100 % liegen",
+                        label = label
                     ));
                 }
                 if !p.speed_percent.is_finite() || !(0.0..=100.0).contains(&p.speed_percent) {
-                    return Err(format!(
-                        "{label}: Geschwindigkeit muss zwischen 0 und 100 % liegen"
+                    return Err(tr!(
+                        "{label}: Geschwindigkeit muss zwischen 0 und 100 % liegen",
+                        label = label
                     ));
                 }
                 if material.profiles[..j].iter().any(|q| {
                     q.operation == p.operation && (q.thickness_mm - p.thickness_mm).abs() < 1e-4
                 }) {
-                    return Err(format!(
-                        "{label}: Profil für dieses Verfahren doppelt vorhanden"
+                    return Err(tr!(
+                        "{label}: Profil für dieses Verfahren doppelt vorhanden",
+                        label = label
                     ));
                 }
             }

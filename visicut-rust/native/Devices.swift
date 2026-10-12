@@ -65,7 +65,7 @@ extension AppModel {
                 values: ["power_percent": power])
             accept(response, dirty: true)
             projectURL = nil
-            status = "Zeilenversatz-Testmuster geöffnet: Material prüfen, senden, danach je Zeile den besten Block eintragen."
+            status = tr("Zeilenversatz-Testmuster geöffnet: Material prüfen, senden, danach je Zeile den besten Block eintragen.")
         } catch { self.error = error.localizedDescription }
     }
 
@@ -98,13 +98,13 @@ extension AppModel {
         guard index != devices.selected, devices.devices.indices.contains(index) else { return }
         var store = devices
         store.selected = index
-        if saveDevices(store) { status = "Lasercutter: \(device.name) (\(device.hostname):\(device.port))" }
+        if saveDevices(store) { status = tr("Lasercutter: {name} ({host}:{port})", ["name": device.name, "host": device.hostname, "port": device.port]) }
     }
 
     /// Imports into the saved list and returns the added devices.
     func importDevices() -> [LaserDevice] {
         let panel = NSOpenPanel()
-        panel.title = "Lasercutter importieren (VisiCut-Gerät, .vcsettings oder Export)"
+        panel.title = tr("Lasercutter importieren (VisiCut-Gerät, .vcsettings oder Export)")
         panel.allowedContentTypes = [.xml, .json, .zip, UTType(filenameExtension: "vcsettings") ?? .data,
                                      UTType(filenameExtension: "vcrdevices") ?? .json]
         guard panel.runModal() == .OK, let url = panel.url else { return [] }
@@ -121,7 +121,7 @@ extension AppModel {
             request["store"] = try RustCore.json(devices)
             let result: DeviceImport = try RustCore.decode(action, values: request)
             devices = result.store
-            status = "\(result.imported) LTT iLaser 4000 importiert."
+            status = tr("{count} LTT iLaser 4000 importiert", ["count": result.imported])
             return Array(result.store.devices.suffix(result.imported))
         } catch {
             self.error = error.localizedDescription
@@ -131,20 +131,20 @@ extension AppModel {
 
     func exportDevices(_ devices: [LaserDevice]) {
         let panel = NSSavePanel()
-        panel.title = "Lasercutter exportieren"
+        panel.title = tr("Lasercutter exportieren")
         panel.allowedContentTypes = [UTType(filenameExtension: "vcrdevices") ?? .json]
         panel.nameFieldStringValue = "Lasercutter.vcrdevices"
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
             _ = try RustCore.call("export_devices", path: url.path, values: ["devices": RustCore.json(devices)])
-            status = "\(devices.count) Lasercutter exportiert."
+            status = tr("{count} Lasercutter exportiert", ["count": devices.count])
         } catch { self.error = error.localizedDescription }
     }
 
     func refreshCamera() {
         guard !cameraLoading else { return }
         cameraLoading = true
-        status = "Kamerabild wird geladen …"
+        status = tr("Kamerabild wird geladen …")
         let device = self.device, project = self.project
         DispatchQueue.global(qos: .userInitiated).async {
             let result = Result { () throws -> CameraBackground in
@@ -155,11 +155,11 @@ extension AppModel {
                 switch result {
                 case .success(let background):
                     self.cameraImage = NSImage(data: Data(background.png))
-                    self.status = "Kamerabild aktualisiert."
+                    self.status = tr("Kamerabild aktualisiert")
                 case .failure(let error):
                     self.showCamera = false
-                    self.error = "Kamerabild: " + error.localizedDescription
-                    self.status = "Kamerabild nicht verfügbar."
+                    self.error = tr("Kamerabild: {error}", ["error": error.localizedDescription])
+                    self.status = tr("Kamerabild nicht verfügbar.")
                 }
             }
         }
@@ -178,7 +178,7 @@ extension AppModel {
                 values: ["reference_points": points])
             accept(response, dirty: true)
             projectURL = nil
-            status = "Kalibrierseite geöffnet: Material und Markier-Parameter prüfen, senden, danach Foto aufnehmen."
+            status = tr("Kalibrierseite geöffnet: Material und Markier-Parameter prüfen, senden, danach Foto aufnehmen.")
         } catch { self.error = error.localizedDescription }
     }
 
@@ -187,7 +187,7 @@ extension AppModel {
         let text = device.job_sent_text.replacingOccurrences(of: "$jobname", with: names.joined(separator: ", "))
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, !CommandLine.arguments.contains("--ui-test") else { return }
         let alert = NSAlert()
-        alert.messageText = "An \(device.name) übertragen"
+        alert.messageText = tr("An {name} übertragen", ["name": device.name])
         alert.informativeText = text
         alert.runModal()
     }
@@ -222,15 +222,15 @@ struct DeviceSettings: View {
                         ForEach(draft.devices.indices, id: \.self) { index in
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(draft.devices[index].name).lineLimit(1)
-                                Text(index == draft.selected ? "Aktiv · \(draft.devices[index].hostname)" : draft.devices[index].hostname)
+                                Text(index == draft.selected ? tr("Aktiv · {host}", ["host": draft.devices[index].hostname]) : draft.devices[index].hostname)
                                     .font(.caption).foregroundStyle(.secondary).lineLimit(1)
                             }.tag(index)
                         }
                     }
                     Divider()
                     HStack(spacing: 2) {
-                        Button { duplicate() } label: { Image(systemName: "plus") }.help("Kopie anlegen")
-                        Button { remove() } label: { Image(systemName: "minus") }.help("Entfernen")
+                        Button { duplicate() } label: { Image(systemName: "plus") }.help(tr("Kopie anlegen"))
+                        Button { remove() } label: { Image(systemName: "minus") }.help(tr("Entfernen"))
                             .disabled(draft.devices.count < 2)
                         Spacer()
                     }.buttonStyle(.borderless).padding(6)
@@ -238,51 +238,51 @@ struct DeviceSettings: View {
                 Divider()
                 Form {
                     Section("LTT iLaser 4000 · 1000 × 600 mm") {
-                        TextField("Name", text: current.name)
-                        TextField("Beschreibung", text: current.description)
-                        TextField("Hostname / IP", text: current.hostname)
-                        TextField("Port", value: current.port, format: .number.grouping(.never))
-                        Toggle("Rotationseinheit vorhanden", isOn: current.rotary_axis)
+                        TextField(tr("Name"), text: current.name)
+                        TextField(tr("Beschreibung"), text: current.description)
+                        TextField(tr("Hostname / IP"), text: current.hostname)
+                        TextField(tr("Port"), value: current.port, format: .number.grouping(.never))
+                        Toggle(tr("Rotationseinheit vorhanden"), isOn: current.rotary_axis)
                     }
-                    Section("Kamera") {
-                        TextField("Kamera-URL", text: current.camera_url, prompt: Text("http://…/visicam.jpg"))
-                        LabeledContent("Kalibrierung") {
+                    Section(tr("Kamera")) {
+                        TextField(tr("Kamera-URL"), text: current.camera_url, prompt: Text("http://…/visicam.jpg"))
+                        LabeledContent(tr("Kalibrierung")) {
                             HStack {
-                                Text(current.wrappedValue.camera_calibration.map { "\($0.reference_points.count) Punkte" } ?? "Nicht kalibriert")
+                                Text(current.wrappedValue.camera_calibration.map { tr("{count} Punkte", ["count": $0.reference_points.count]) } ?? tr("Nicht kalibriert"))
                                     .foregroundStyle(.secondary)
-                                Button("Kalibrieren …") { calibrating = true }
+                                Button(tr("Kalibrieren …")) { calibrating = true }
                                     .disabled(current.wrappedValue.camera_url.isEmpty)
                             }
                         }
                     }
-                    Section("Maschine") {
+                    Section(tr("Maschine")) {
                         MachineSettingsView(machine: current.machine)
-                        LabeledContent("Zeilenversatz") {
-                            Button("Kalibrieren …") { shiftTest = true }
+                        LabeledContent(tr("Zeilenversatz")) {
+                            Button(tr("Kalibrieren …")) { shiftTest = true }
                         }
                     }
-                    Section("Hinweis nach dem Senden") {
+                    Section(tr("Hinweis nach dem Senden")) {
                         TextEditor(text: current.job_sent_text).font(.callout).frame(height: 70)
-                        Text("Autofokus, Druckluft und Absaugung stellt der LTT-Treiber nicht ein; dieser Text erinnert nach dem Senden daran. $jobname wird durch die Auftragsnamen ersetzt.")
+                        Text(tr("Autofokus, Druckluft und Absaugung stellt der LTT-Treiber nicht ein; dieser Text erinnert nach dem Senden daran. $jobname wird durch die Auftragsnamen ersetzt."))
                             .font(.caption).foregroundStyle(.secondary)
                     }
                 }.formStyle(.grouped)
             }
             Divider()
             HStack {
-                Button("Importieren …") { adopt(model.importDevices()) }
-                Menu("Herunterladen") {
+                Button(tr("Importieren …")) { adopt(model.importDevices()) }
+                Menu(tr("Herunterladen")) {
                     ForEach(model.labs, id: \.url) { lab in
                         Button(lab.name) { adopt(model.downloadDevices(lab)) }
                     }
                 }.fixedSize()
-                Button("Exportieren …") { model.exportDevices(draft.devices) }
+                Button(tr("Exportieren …")) { model.exportDevices(draft.devices) }
                 Spacer()
-                Button("Als aktiven Lasercutter verwenden") { draft.selected = editing }
+                Button(tr("Als aktiven Lasercutter verwenden")) { draft.selected = editing }
                     .disabled(editing == draft.selected)
-                Button("Verwerfen") { draft = model.devices; editing = min(editing, draft.devices.count - 1) }
+                Button(tr("Verwerfen")) { draft = model.devices; editing = min(editing, draft.devices.count - 1) }
                     .disabled(draft == model.devices)
-                Button("Sichern") { model.saveDevices(draft) }
+                Button(tr("Sichern")) { model.saveDevices(draft) }
                     .keyboardShortcut(.defaultAction).disabled(draft == model.devices)
             }.padding(12)
         }
@@ -329,7 +329,7 @@ struct MachineSettingsView: View {
     @Binding var machine: MachineSettings
 
     var body: some View {
-        LabeledContent("Zeilenversatz (1/4000 Zoll, 8 = ein Pixel)") {
+        LabeledContent(tr("Zeilenversatz (1/4000 Zoll, 8 = ein Pixel)")) {
             Grid(alignment: .trailing, horizontalSpacing: 6, verticalSpacing: 4) {
                 ForEach(0..<2, id: \.self) { row in
                     GridRow {
@@ -343,20 +343,20 @@ struct MachineSettingsView: View {
                 }
             }
         }
-        LabeledContent("Kurvenbeschleunigung") {
+        LabeledContent(tr("Kurvenbeschleunigung")) {
             HStack {
                 TextField("", value: $machine.curve_acceleration_mm_s2, format: .number.grouping(.never))
                     .frame(width: 64).multilineTextAlignment(.trailing)
                 Text("mm/s²").foregroundStyle(.secondary)
                 Button("LibLaserCut") { machine.curve_acceleration_mm_s2 = MachineSettings.libLaserCutCurveAcceleration }
-                Button("Firmware 0,1 g") { machine.curve_acceleration_mm_s2 = MachineSettings.firmwareCurveAcceleration }
-                    .help("Rampe des Controllers bei verbundenen Kurven (experimentell)")
+                Button(tr("Firmware 0,1 g")) { machine.curve_acceleration_mm_s2 = MachineSettings.firmwareCurveAcceleration }
+                    .help(tr("Rampe des Controllers bei verbundenen Kurven (experimentell)"))
             }
         }
         if machine.experimentalCurves {
-            Text("Experimentell: Kurven werden anders geplant als in VisiCut.").font(.caption).foregroundStyle(.secondary)
+            Text(tr("Experimentell: Kurven werden anders geplant als in VisiCut.")).font(.caption).foregroundStyle(.secondary)
         }
-        LabeledContent("Verweilzeit am Konturstart") {
+        LabeledContent(tr("Verweilzeit am Konturstart")) {
             HStack {
                 TextField("", value: $machine.pierce_delay_ms, format: .number)
                     .frame(width: 64).multilineTextAlignment(.trailing)
@@ -364,9 +364,9 @@ struct MachineSettingsView: View {
             }
         }
         HStack {
-            Text("pddelay der Gerätekonfiguration; nur für die Zeitschätzung.").font(.caption).foregroundStyle(.secondary)
+            Text(tr("pddelay der Gerätekonfiguration; nur für die Zeitschätzung.")).font(.caption).foregroundStyle(.secondary)
             Spacer()
-            Button("Standardwerte") { machine = .standard }
+            Button(tr("Standardwerte")) { machine = .standard }
         }
     }
 }
@@ -384,24 +384,24 @@ struct ShiftCalibrationView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Zeilenversatz kalibrieren · \(device.name)").font(.title2).bold()
-            Text("1. Testmuster öffnen, senden und gravieren. Je Geschwindigkeit (10 % oben bis 100 % unten, Balken links = Tempo) entstehen fünf Blöcke mit −2 … +2 Pixeln Versatz; Block 3 unter dem Dreieck nutzt die aktuelle Tabelle.")
+            Text(tr("Zeilenversatz kalibrieren · {device}", ["device": device.name])).font(.title2).bold()
+            Text(tr("1. Testmuster öffnen, senden und gravieren. Je Geschwindigkeit (10 % oben bis 100 % unten, Balken links = Tempo) entstehen fünf Blöcke mit −2 … +2 Pixeln Versatz; Block 3 unter dem Dreieck nutzt die aktuelle Tabelle."))
                 .fixedSize(horizontal: false, vertical: true)
             HStack {
-                TextField("Leistung", value: $power, format: .number).frame(width: 60)
+                TextField(tr("Leistung"), value: $power, format: .number).frame(width: 60)
                 Text("%")
-                Button("Testmuster öffnen") {
+                Button(tr("Testmuster öffnen")) {
                     let value = power
                     dismiss()
                     DispatchQueue.main.async { model.openShiftPattern(power: value) }
                 }
                 .disabled(!canOpenPattern || !(1.0...100.0).contains(power))
                 if !canOpenPattern {
-                    Text("Nur für den aktiven, gesicherten Lasercutter").font(.caption).foregroundStyle(.secondary)
+                    Text(tr("Nur für den aktiven Lasercutter ohne ungesicherte Änderungen")).font(.caption).foregroundStyle(.secondary)
                 }
             }
             Divider()
-            Text("2. Je Zeile den Block mit den geradesten Balkenkanten wählen. Liegt er am Rand, übernehmen und das Testmuster erneut gravieren.")
+            Text(tr("2. Je Zeile den Block mit den geradesten Balkenkanten wählen. Liegt er am Rand, übernehmen und das Testmuster erneut gravieren."))
                 .fixedSize(horizontal: false, vertical: true)
             Grid(alignment: .leading, verticalSpacing: 4) {
                 ForEach(0..<10, id: \.self) { index in
@@ -415,8 +415,8 @@ struct ShiftCalibrationView: View {
             }
             HStack {
                 Spacer()
-                Button("Abbrechen") { dismiss() }.keyboardShortcut(.cancelAction)
-                Button("In die Tabelle übernehmen") {
+                Button(tr("Abbrechen")) { dismiss() }.keyboardShortcut(.cancelAction)
+                Button(tr("In die Tabelle übernehmen")) {
                     if let machine = model.applyShiftTest(device.machine, best: best) {
                         apply(machine)
                         dismiss()
@@ -450,7 +450,7 @@ struct CameraCalibrationView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Kamera kalibrieren · \(device.name)").font(.title2).bold()
+            Text(tr("Kamera kalibrieren · {device}", ["device": device.name])).font(.title2).bold()
             HStack(alignment: .top, spacing: 16) {
                 GeometryReader { geometry in
                     let scale = min(geometry.size.width / pictureSize.width, geometry.size.height / pictureSize.height)
@@ -478,13 +478,13 @@ struct CameraCalibrationView: View {
                         } else {
                             VStack(spacing: 8) {
                                 if loading { ProgressView() }
-                                Text(loading ? "Foto wird aufgenommen …" : "Noch kein Kamerabild").foregroundStyle(.secondary)
+                                Text(loading ? tr("Foto wird aufgenommen …") : tr("Kein Kamerabild")).foregroundStyle(.secondary)
                             }.frame(maxWidth: .infinity, maxHeight: .infinity)
                         }
                     }.coordinateSpace(name: "picture")
                 }
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Marker auf dem Bett (mm)").font(.headline)
+                    Text(tr("Marker auf dem Bett (mm)")).font(.headline)
                     ScrollView {
                         VStack(spacing: 6) {
                             ForEach(calibration.reference_points.indices, id: \.self) { index in
@@ -500,32 +500,32 @@ struct CameraCalibrationView: View {
                         }
                     }
                     HStack {
-                        Button("Punkt hinzufügen") {
+                        Button(tr("Punkt hinzufügen")) {
                             calibration.reference_points.append([500, 300])
                             calibration.view_points.append([pictureSize.width / 2, pictureSize.height / 2])
                             selected = calibration.reference_points.count - 1
                         }.disabled(picture == nil)
-                        Button("Entfernen") {
+                        Button(tr("Entfernen")) {
                             calibration.reference_points.remove(at: selected)
                             if calibration.view_points.indices.contains(selected) { calibration.view_points.remove(at: selected) }
                             selected = max(0, selected - 1)
                         }.disabled(calibration.reference_points.count <= 2)
                     }.controlSize(.small)
-                    Text("1. Kalibrierseite als Projekt öffnen und auf Restmaterial markieren.\n2. Foto aufnehmen.\n3. Nummerierte Marker auf die Kreuze ziehen (Nummer = Anzahl Striche).\nMindestens 4 Punkte, nicht auf einer Linie.")
+                    Text(tr("1. Kalibrierseite als Projekt öffnen und auf Restmaterial markieren.\n2. Foto aufnehmen.\n3. Nummerierte Marker auf die Kreuze ziehen (Nummer = Anzahl Striche).\nMindestens 4 Punkte, nicht auf einer Linie."))
                         .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                     if let problem { Text(problem).font(.caption).foregroundStyle(.orange) }
                 }.frame(width: 240)
             }
             HStack {
-                Button("Foto aufnehmen", systemImage: "camera") { capture() }.disabled(loading)
-                Button("Kalibrierseite als Projekt öffnen …") {
+                Button(tr("Foto aufnehmen"), systemImage: "camera") { capture() }.disabled(loading)
+                Button(tr("Kalibrierseite als Projekt öffnen …")) {
                     let points = calibration.reference_points
                     dismiss()
                     DispatchQueue.main.async { model.openCalibrationPage(points) }
                 }
                 Spacer()
-                Button("Abbrechen") { dismiss() }.keyboardShortcut(.cancelAction)
-                Button("Übernehmen") { save() }.keyboardShortcut(.defaultAction)
+                Button(tr("Abbrechen")) { dismiss() }.keyboardShortcut(.cancelAction)
+                Button(tr("Übernehmen")) { save() }.keyboardShortcut(.defaultAction)
                     .disabled(calibration.view_points.count != calibration.reference_points.count)
             }
         }

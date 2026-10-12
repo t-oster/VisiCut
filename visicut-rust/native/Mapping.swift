@@ -8,14 +8,14 @@ enum Dithering: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .brightenedHalftone: return "Halbton aufgehellt"
+        case .brightenedHalftone: return tr("Halbton aufgehellt")
         case .floydSteinberg: return "Floyd-Steinberg"
-        case .halftone: return "Halbton"
-        case .ordered: return "Geordnet"
-        case .average: return "Mittelwert"
-        case .grid: return "Raster"
-        case .random: return "Zufall"
-        case .threshold: return "Schwellwert 50 %"
+        case .halftone: return tr("Halbton")
+        case .ordered: return tr("Geordnet")
+        case .average: return tr("Mittelwert")
+        case .grid: return tr("Raster")
+        case .random: return tr("Zufall")
+        case .threshold: return tr("Schwellwert 50 %")
         }
     }
 }
@@ -35,12 +35,12 @@ enum FilterAttribute: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .color: return "Farbe"
-        case .strokeColor: return "Linienfarbe"
-        case .fillColor: return "Füllfarbe"
-        case .strokeWidth: return "Linienstärke (mm)"
-        case .group: return "Gruppe/Ebene"
-        case .type: return "Typ"
+        case .color: return tr("Farbe")
+        case .strokeColor: return tr("Linienfarbe")
+        case .fillColor: return tr("Füllfarbe")
+        case .strokeWidth: return tr("Linienstärke (mm)")
+        case .group: return tr("Gruppe/Ebene")
+        case .type: return tr("Typ")
         case .id: return "ID"
         }
     }
@@ -77,7 +77,7 @@ enum AssignmentMode: String, CaseIterable, Identifiable {
     case whole, objects, rules
     var id: String { rawValue }
     var title: String {
-        switch self { case .whole: return "Gesamt"; case .objects: return "Einzeln"; case .rules: return "Regeln" }
+        switch self { case .whole: return tr("Gesamt"); case .objects: return tr("Einzeln"); case .rules: return tr("Regeln") }
     }
 }
 
@@ -124,7 +124,7 @@ extension AppModel {
         }
         project.ignore_filters = mapping.ignore
         self.project = project
-        status = "Zuordnung „\(mapping.name)“ übernommen."
+        status = tr("Zuordnung „{name}“ übernommen.", ["name": mapping.name])
     }
 
     func addRuleStep(_ operation: Operation) {
@@ -176,7 +176,7 @@ extension AppModel {
         do {
             _ = try RustCore.call("save_materials", values: ["library": RustCore.json(library)])
             adoptMaterials(library, custom: true)
-            status = "Materialbibliothek gesichert."
+            status = tr("Materialbibliothek gesichert")
             return true
         } catch { self.error = error.localizedDescription; return false }
     }
@@ -185,32 +185,32 @@ extension AppModel {
         do {
             let result: MaterialReset = try RustCore.decode("reset_materials")
             adoptMaterials(result.library, custom: false)
-            status = "FAU-Materialbibliothek wiederhergestellt."
+            status = tr("FAU-Materialbibliothek wiederhergestellt")
         } catch { self.error = error.localizedDescription }
     }
 
     func importMaterials() {
         let panel = NSOpenPanel()
-        panel.title = "Materialbibliothek importieren"
+        panel.title = tr("Materialbibliothek importieren")
         panel.allowedContentTypes = [.json]
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
             let result: MaterialImport = try RustCore.decode("import_materials", path: url.path,
                 values: ["library": RustCore.json(materialLibrary)])
             adoptMaterials(result.library, custom: true)
-            status = "\(result.imported) Materialien importiert."
+            status = tr("{count} Materialien importiert", ["count": result.imported])
         } catch { self.error = error.localizedDescription }
     }
 
     func exportMaterials() {
         let panel = NSSavePanel()
-        panel.title = "Materialbibliothek exportieren"
+        panel.title = tr("Materialbibliothek exportieren")
         panel.allowedContentTypes = [.json]
         panel.nameFieldStringValue = "Materialien.json"
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
             _ = try RustCore.call("export_materials", path: url.path, values: ["library": RustCore.json(materialLibrary)])
-            status = "Materialbibliothek exportiert."
+            status = tr("Materialbibliothek exportiert")
         } catch { self.error = error.localizedDescription }
     }
 }
@@ -221,21 +221,21 @@ struct RasterOptions: View {
     let operation: Operation
     var body: some View {
         if operation == .engrave {
-            LabeledContent("Rasterung") {
+            LabeledContent(tr("Rasterung")) {
                 NativePopup(options: Dithering.allCases.map { PopupOption($0.rawValue, $0.title) },
                     selection: Binding(get: { settings.dithering.rawValue },
                                        set: { if let d = Dithering(rawValue: $0) { settings.dithering = d } }),
                     identifier: "ditheringPicker").frame(width: 170)
             }
         } else {
-            Text("Graustufen: Die Laserleistung folgt der Helligkeit (dunkel = tief).")
+            Text(tr("Graustufen: Die Laserleistung folgt der Helligkeit (dunkel = tief)."))
                 .font(.caption).foregroundStyle(.secondary)
         }
-        NumberField("Helligkeit", value: Binding(get: { Double(settings.color_shift) },
+        NumberField(tr("Helligkeit"), value: Binding(get: { Double(settings.color_shift) },
                                                  set: { settings.color_shift = Int(max(-255, min(255, $0))) }), unit: "±255")
-        Toggle("Farben invertieren", isOn: $settings.invert)
-        Toggle("Bidirektional gravieren", isOn: $settings.bidirectional)
-        Toggle("Von unten nach oben", isOn: $settings.bottom_up)
+        Toggle(tr("Farben invertieren"), isOn: $settings.invert)
+        Toggle(tr("Bidirektional"), isOn: $settings.bidirectional)
+        Toggle(tr("Von unten nach oben"), isOn: $settings.bottom_up)
     }
 }
 
@@ -249,20 +249,20 @@ struct ParameterSets: View {
         ForEach(sets.indices, id: \.self) { index in
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    Text("Parametersatz \(index + 2)").font(.callout).fontWeight(.medium)
+                    Text(tr("Parametersatz {number}", ["number": index + 2])).font(.callout).fontWeight(.medium)
                     Spacer()
                     Button { if sets.indices.contains(index) { sets.remove(at: index) } } label: { Image(systemName: "minus.circle") }
-                        .buttonStyle(.borderless).help("Parametersatz entfernen")
+                        .buttonStyle(.borderless).help(tr("Parametersatz entfernen"))
                 }
                 let set = $sets.safe(index, default: sets[index])
-                NumberField("Leistung", value: set.power_percent, unit: "%")
-                NumberField("Geschwindigkeit", value: set.speed_percent, unit: "%")
+                NumberField(tr("Leistung"), value: set.power_percent, unit: "%")
+                NumberField(tr("Geschwindigkeit"), value: set.speed_percent, unit: "%")
                 Stepper(value: set.passes, in: 1...100) {
-                    LabeledContent("Durchgänge", value: String(set.wrappedValue.passes))
+                    LabeledContent(tr("Durchgänge"), value: String(set.wrappedValue.passes))
                 }
             }
         }
-        Button("Weiteren Parametersatz", systemImage: "plus") { sets.append(first) }
+        Button(tr("Weiteren Parametersatz"), systemImage: "plus") { sets.append(first) }
             .disabled(sets.count >= 15)
         }
     }
@@ -275,7 +275,7 @@ struct FilterSetEditor: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
         if filters.isEmpty {
-            Text("Ohne Bedingung: alle Objekte").font(.caption).foregroundStyle(.secondary)
+            Text(tr("Ohne Bedingung: alle Objekte")).font(.caption).foregroundStyle(.secondary)
         }
         ForEach(filters.indices, id: \.self) { index in
             FilterRow(filter: $filters.safe(index, default: filters[index]),
@@ -283,7 +283,7 @@ struct FilterSetEditor: View {
                 if filters.indices.contains(index) { filters.remove(at: index) }
             }
         }
-        Button("Bedingung hinzufügen", systemImage: "plus") {
+        Button(tr("Bedingung hinzufügen"), systemImage: "plus") {
             let value = mapping?.suggestions(.color).first?.value ?? "#000000"
             filters.append(Filter(attribute: .color, value: value, compare: false, inverted: false))
         }
@@ -313,21 +313,21 @@ struct FilterRow: View {
                     + (filter.attribute == .strokeWidth ? [PopupOption("le", "≤"), PopupOption("le!", ">")] : []),
                     selection: comparison, identifier: "filterComparison").frame(width: 56)
                 Spacer()
-                Button(action: remove) { Image(systemName: "trash") }.buttonStyle(.borderless).help("Bedingung entfernen")
+                Button(action: remove) { Image(systemName: "trash") }.buttonStyle(.borderless).help(tr("Bedingung entfernen"))
             }
             HStack(spacing: 6) {
                 if filter.attribute.isColor, let color = swatch(filter.value) {
                     RoundedRectangle(cornerRadius: 3).fill(color).frame(width: 14, height: 14)
                         .overlay(RoundedRectangle(cornerRadius: 3).stroke(.secondary.opacity(0.5)))
                 }
-                TextField("Wert", text: $filter.value).textFieldStyle(.roundedBorder)
+                TextField(tr("Wert"), text: $filter.value).textFieldStyle(.roundedBorder)
                 if !suggestions.isEmpty {
                     Menu {
                         ForEach(suggestions, id: \.self) { item in
                             Button("\(item.value) (\(item.count))") { filter.value = item.value }
                         }
                     } label: { Image(systemName: "list.bullet") }
-                        .menuStyle(.borderlessButton).fixedSize().help("Werte aus der SVG")
+                        .menuStyle(.borderlessButton).fixedSize().help(tr("Werte aus der SVG"))
                 }
             }
         }.padding(.vertical, 2)
@@ -342,17 +342,17 @@ struct FilterRow: View {
 struct RulesSection: View {
     @ObservedObject var model: AppModel
     var body: some View {
-        Section("Regeln") {
+        Section(tr("Regeln")) {
             if let mapping = model.mapping {
-                Menu("Vorlage übernehmen") {
+                Menu(tr("Vorlage übernehmen")) {
                     ForEach(mapping.predefined, id: \.name) { item in
                         Button(item.name) { model.applyPredefined(item) }
                     }
                 }
             }
-            Text("Jeder Schritt bearbeitet die Objekte, die alle Bedingungen erfüllen. Ein Objekt kann mehrere Schritte durchlaufen; „Rest“ erfasst alles, was sonst nicht bearbeitet oder ignoriert wird.")
+            Text(tr("Jeder Schritt bearbeitet die Objekte, die alle Bedingungen erfüllen. Ein Objekt kann mehrere Schritte durchlaufen; „Rest“ erfasst alles, was sonst nicht bearbeitet oder ignoriert wird."))
                 .font(.caption).foregroundStyle(.secondary)
-            Menu("Schritt hinzufügen") {
+            Menu(tr("Schritt hinzufügen")) {
                 ForEach(Operation.allCases) { operation in
                     Button { model.addRuleStep(operation) } label: { Label(operation.title, systemImage: operation.symbol) }
                 }
@@ -361,19 +361,19 @@ struct RulesSection: View {
                 Label(error, systemImage: "exclamationmark.triangle").font(.caption).foregroundStyle(.orange)
             }
         }
-        Section("Ignorieren") {
+        Section(tr("Ignorieren")) {
             ForEach(model.project.ignore_filters.indices, id: \.self) { index in
                 VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("Regel \(index + 1)").font(.callout).fontWeight(.medium)
+                    Text(tr("Regel {number}", ["number": index + 1])).font(.callout).fontWeight(.medium)
                     Spacer()
                     Button { if model.project.ignore_filters.indices.contains(index) { model.project.ignore_filters.remove(at: index) } } label: { Image(systemName: "minus.circle") }
-                        .buttonStyle(.borderless).help("Ignorierregel entfernen")
+                        .buttonStyle(.borderless).help(tr("Ignorierregel entfernen"))
                 }
                 FilterSetEditor(filters: $model.project.ignore_filters.safe(index, default: model.project.ignore_filters[index]), mapping: model.mapping)
                 }
             }
-            Button("Ignorierregel hinzufügen", systemImage: "plus") {
+            Button(tr("Ignorierregel hinzufügen"), systemImage: "plus") {
                 let value = model.mapping?.suggestions(.color).first?.value ?? "#0000ff"
                 model.project.ignore_filters.append([Filter(attribute: .color, value: value, compare: false, inverted: false)])
             }
@@ -404,11 +404,11 @@ struct MaterialEditor: View {
                     }
                     Divider()
                     HStack(spacing: 2) {
-                        Button { add() } label: { Image(systemName: "plus") }.help("Material hinzufügen")
+                        Button { add() } label: { Image(systemName: "plus") }.help(tr("Material hinzufügen"))
                         Button { duplicate() } label: { Image(systemName: "plus.square.on.square") }
-                            .help("Material duplizieren").disabled(selection == nil)
+                            .help(tr("Material duplizieren")).disabled(selection == nil)
                         Button { remove() } label: { Image(systemName: "minus") }
-                            .help("Material entfernen").disabled(selection == nil)
+                            .help(tr("Material entfernen")).disabled(selection == nil)
                         Spacer()
                     }.buttonStyle(.borderless).padding(6)
                 }.frame(width: 220)
@@ -416,20 +416,20 @@ struct MaterialEditor: View {
                 if let index = selection, draft.indices.contains(index) {
                     MaterialProfilesEditor(material: $draft[index])
                 } else {
-                    Text("Material auswählen").foregroundStyle(.secondary).frame(maxWidth: .infinity, maxHeight: .infinity)
+                    Text(tr("Material auswählen")).foregroundStyle(.secondary).frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
             Divider()
             HStack {
-                Button("Importieren …") { model.importMaterials(); draft = model.materials }
-                Button("Exportieren …") { model.exportMaterials() }
-                Button("FAU-Bibliothek wiederherstellen") {
+                Button(tr("Importieren …")) { model.importMaterials(); draft = model.materials }
+                Button(tr("Exportieren …")) { model.exportMaterials() }
+                Button(tr("FAU-Bibliothek wiederherstellen")) {
                     model.resetMaterials(); draft = model.materials; selection = draft.isEmpty ? nil : 0
                 }.disabled(!model.materialsCustom)
                 Spacer()
-                Text(model.materialsCustom ? "Eigene Bibliothek" : "FAU-Bibliothek").font(.caption).foregroundStyle(.secondary)
-                Button("Verwerfen") { draft = model.materials }.disabled(draft == model.materials)
-                Button("Sichern") { model.saveMaterials(draft) }
+                Text(model.materialsCustom ? tr("Eigene Bibliothek") : tr("FAU-Bibliothek")).font(.caption).foregroundStyle(.secondary)
+                Button(tr("Verwerfen")) { draft = model.materials }.disabled(draft == model.materials)
+                Button(tr("Sichern")) { model.saveMaterials(draft) }
                     .keyboardShortcut(.defaultAction).disabled(draft == model.materials)
             }.padding(12)
         }.frame(minWidth: 820, minHeight: 520)
@@ -441,7 +441,7 @@ struct MaterialEditor: View {
         return name
     }
     private func add() {
-        draft.append(Material(id: UUID().uuidString, name: uniqueName("Neues Material"), profiles: []))
+        draft.append(Material(id: UUID().uuidString, name: uniqueName(tr("Neues Material")), profiles: []))
         selection = draft.count - 1
     }
     private func duplicate() {
@@ -463,12 +463,12 @@ struct MaterialProfilesEditor: View {
     @Binding var material: Material
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            TextField("Name", text: $material.name).textFieldStyle(.roundedBorder).font(.title3)
+            TextField(tr("Name"), text: $material.name).textFieldStyle(.roundedBorder).font(.title3)
             HStack {
-                Text("Stärke").frame(width: 90, alignment: .leading)
-                Text("Verfahren").frame(width: 130, alignment: .leading)
-                Text("Leistung").frame(width: 90, alignment: .leading)
-                Text("Geschwindigkeit").frame(width: 110, alignment: .leading)
+                Text(tr("Stärke")).frame(width: 90, alignment: .leading)
+                Text(tr("Verfahren")).frame(width: 130, alignment: .leading)
+                Text(tr("Leistung")).frame(width: 90, alignment: .leading)
+                Text(tr("Geschwindigkeit")).frame(width: 110, alignment: .leading)
             }.font(.caption).foregroundStyle(.secondary)
             ScrollView {
                 VStack(spacing: 6) {
@@ -482,18 +482,18 @@ struct MaterialProfilesEditor: View {
                             field($material.profiles[index].power_percent, unit: "%").frame(width: 90)
                             field($material.profiles[index].speed_percent, unit: "%").frame(width: 110)
                             Button { material.profiles.remove(at: index) } label: { Image(systemName: "trash") }
-                                .buttonStyle(.borderless).help("Profil entfernen")
+                                .buttonStyle(.borderless).help(tr("Profil entfernen"))
                             Spacer()
                         }
                     }
                 }
             }
-            Button("Profil hinzufügen", systemImage: "plus") {
+            Button(tr("Profil hinzufügen"), systemImage: "plus") {
                 let last = material.profiles.last
                 material.profiles.append(MaterialProfile(thickness_mm: last?.thickness_mm ?? 3, operation: .cut,
                     power_percent: 100, speed_percent: 10, source: nil))
             }
-            Text("Leistung und Geschwindigkeit in Prozent wie am LTT. Je Stärke ist ein Profil pro Verfahren möglich; 0 % Leistung gilt als „nicht übernehmbar“.")
+            Text(tr("Leistung und Geschwindigkeit in Prozent wie am LTT. Je Stärke ist ein Profil pro Verfahren möglich; 0 % Leistung gilt als „nicht übernehmbar“."))
                 .font(.caption).foregroundStyle(.secondary)
         }.padding(16).frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }

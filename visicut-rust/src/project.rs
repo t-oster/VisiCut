@@ -1,4 +1,4 @@
-use crate::{mapping::Filter, raster::RasterSettings};
+use crate::{i18n::tr, mapping::Filter, raster::RasterSettings};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -91,15 +91,15 @@ impl MachineSettings {
             .iter()
             .any(|v| !v.is_finite() || !(-400.0..=400.0).contains(v))
         {
-            return Err("Zeilenversatz muss zwischen −400 und 400 (1/4000 Zoll) liegen".into());
+            return Err(tr("Zeilenversatz muss zwischen −400 und 400 (1/4000 Zoll) liegen").into());
         }
         if !self.curve_acceleration_mm_s2.is_finite()
             || !(500.0..=5000.0).contains(&self.curve_acceleration_mm_s2)
         {
-            return Err("Kurvenbeschleunigung muss zwischen 500 und 5000 mm/s² liegen".into());
+            return Err(tr("Kurvenbeschleunigung muss zwischen 500 und 5000 mm/s² liegen").into());
         }
         if !self.pierce_delay_ms.is_finite() || !(0.0..=1000.0).contains(&self.pierce_delay_ms) {
-            return Err("Verweilzeit am Konturstart muss zwischen 0 und 1000 ms liegen".into());
+            return Err(tr("Verweilzeit am Konturstart muss zwischen 0 und 1000 ms liegen").into());
         }
         Ok(())
     }
@@ -211,7 +211,7 @@ impl ParameterSet {
             || !(0.1..=100.0).contains(&self.speed_percent)
             || !(1..=100).contains(&self.passes)
         {
-            return Err("Ungültige Parameter in einem Bearbeitungsschritt".into());
+            return Err(tr("Ungültige Parameter in einem Bearbeitungsschritt").into());
         }
         Ok(())
     }
@@ -275,9 +275,9 @@ impl TryFrom<ProjectFile> for Project {
                 mm_s / (338.677 * factor) * 100.0
             }
             (1 | 2, _, _) => {
-                return Err("Geschwindigkeitseinheit passt nicht zur Projektversion".into());
+                return Err(tr("Geschwindigkeitseinheit passt nicht zur Projektversion").into());
             }
-            _ => return Err("Unbekannte Projektversion".into()),
+            _ => return Err(tr("Unbekannte Projektversion").into()),
         };
         Ok(Self {
             format_version: 2,
@@ -356,7 +356,7 @@ impl Default for Project {
     fn default() -> Self {
         Self {
             format_version: 2,
-            name: "Neues Projekt".into(),
+            name: tr("Neues Projekt").into(),
             svg: String::new(),
             bed_width_mm: 1000.0,
             bed_height_mm: 600.0,
@@ -392,10 +392,10 @@ impl Project {
             || self.x_mm + self.width_mm > self.bed_width_mm + 0.001
             || self.y_mm + self.height_mm > self.bed_height_mm + 0.001
         {
-            return Err("Das Motiv liegt außerhalb des Arbeitsbetts".into());
+            return Err(tr("Das Motiv liegt außerhalb des Arbeitsbetts").into());
         }
         if self.svg.is_empty() {
-            return Err("Zuerst eine SVG-Datei importieren".into());
+            return Err(tr("Zuerst eine SVG-Datei importieren").into());
         }
         Ok(())
     }
@@ -404,45 +404,58 @@ impl Project {
     /// stricter requirements; drafts still need to survive a save/open cycle.
     pub fn validate_document(&self) -> Result<(), String> {
         if self.format_version != 2 {
-            return Err("Unbekannte Projektversion".into());
+            return Err(tr("Unbekannte Projektversion").into());
         }
-        for (name, value) in [
-            ("Bettbreite", self.bed_width_mm),
-            ("Betthöhe", self.bed_height_mm),
-            ("Motivbreite", self.width_mm),
-            ("Motivhöhe", self.height_mm),
+        for (message, value) in [
+            (
+                tr("Bettbreite muss positiv und höchstens 100000 sein"),
+                self.bed_width_mm,
+            ),
+            (
+                tr("Betthöhe muss positiv und höchstens 100000 sein"),
+                self.bed_height_mm,
+            ),
+            (
+                tr("Motivbreite muss positiv und höchstens 100000 sein"),
+                self.width_mm,
+            ),
+            (
+                tr("Motivhöhe muss positiv und höchstens 100000 sein"),
+                self.height_mm,
+            ),
         ] {
             if !value.is_finite() || value <= 0.0 || value > 100_000.0 {
-                return Err(format!("{name} muss positiv und höchstens 100000 sein"));
+                return Err(message.into());
             }
         }
         if !self.thickness_mm.is_finite() || !(0.0..=100_000.0).contains(&self.thickness_mm) {
-            return Err("Materialstärke muss nichtnegativ und endlich sein".into());
+            return Err(tr("Materialstärke muss nichtnegativ und endlich sein").into());
         }
         if !self.power_percent.is_finite() || !(0.0..=100.0).contains(&self.power_percent) {
-            return Err("Leistung muss zwischen 0 und 100 % liegen".into());
+            return Err(tr("Leistung muss zwischen 0 und 100 % liegen").into());
         }
         if !self.speed_percent.is_finite() || !(0.1..=100.0).contains(&self.speed_percent) {
-            return Err("Geschwindigkeit muss zwischen 0,1 und 100 % liegen".into());
+            return Err(tr("Geschwindigkeit muss zwischen 0,1 und 100 % liegen").into());
         }
         if !(1..=100).contains(&self.passes) {
-            return Err("Durchgänge müssen zwischen 1 und 100 liegen".into());
+            return Err(tr("Durchgänge müssen zwischen 1 und 100 liegen").into());
         }
         // The LTT driver requires at least 5 mm and stores the radius in 0.01 mm.
         if !self.rotary_diameter_mm.is_finite()
             || !(5.0..=1000.0).contains(&self.rotary_diameter_mm)
         {
-            return Err(
-                "Durchmesser für die Rotationseinheit muss zwischen 5 und 1000 mm liegen".into(),
-            );
+            return Err(tr(
+                "Durchmesser für die Rotationseinheit muss zwischen 5 und 1000 mm liegen",
+            )
+            .into());
         }
         if !self.x_mm.is_finite() || !self.y_mm.is_finite() {
-            return Err("Position muss endlich sein".into());
+            return Err(tr("Position muss endlich sein").into());
         }
         self.raster.validate()?;
         self.machine.validate()?;
         if self.steps.len() > 64 {
-            return Err("Höchstens 64 Bearbeitungsschritte sind zulässig".into());
+            return Err(tr("Höchstens 64 Bearbeitungsschritte sind zulässig").into());
         }
         let count = if self.steps.iter().any(|s| s.filters.is_none() && !s.rest) {
             crate::selection::objects(&self.svg)?.len()
@@ -451,24 +464,25 @@ impl Project {
         };
         for step in &self.steps {
             if step.additional.len() > 15 {
-                return Err("Höchstens 16 Parametersätze je Schritt".into());
+                return Err(tr("Höchstens 16 Parametersätze je Schritt").into());
             }
             for set in step.parameters() {
                 set.validate()?;
             }
             step.raster.validate()?;
             if !(-50..=50).contains(&step.engrave_shift_px) {
-                return Err(
-                    "Zusätzlicher Zeilenversatz muss zwischen −50 und 50 Pixeln liegen".into(),
-                );
+                return Err(tr(
+                    "Zusätzlicher Zeilenversatz muss zwischen −50 und 50 Pixeln liegen",
+                )
+                .into());
             }
             if (step.rest || step.filters.is_some()) && !step.objects.is_empty() {
                 return Err(
-                    "Regelschritte dürfen keine einzeln gewählten Objekte enthalten".into(),
+                    tr("Regelschritte dürfen keine einzeln gewählten Objekte enthalten").into(),
                 );
             }
             if step.rest && step.filters.is_some() {
-                return Err("Ein Restschritt hat keine Filter".into());
+                return Err(tr("Ein Restschritt hat keine Filter").into());
             }
             for filter in step
                 .filters
@@ -479,7 +493,7 @@ impl Project {
                 filter.validate()?;
             }
             if step.objects.iter().any(|id| *id >= count) {
-                return Err("Zuordnung verweist auf ein nicht vorhandenes SVG-Objekt".into());
+                return Err(tr("Zuordnung verweist auf ein nicht vorhandenes SVG-Objekt").into());
             }
         }
         Ok(())

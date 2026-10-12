@@ -7,6 +7,7 @@
 use super::{Axis, NOMINAL_CUT_SPEED, RASTER_DPI, word};
 use crate::project::LIBLASERCUT_CURVE_ACCELERATION;
 use crate::timeline::{MotionKind, Program};
+use crate::{i18n::tr, tr};
 
 /// Acceleration of the time estimate for straight moves: the FAU device's
 /// tangentCurveMaxAcceleration as in Java (the controller ramps start/stop
@@ -354,7 +355,7 @@ impl<'a> Encoder<'a> {
         while changed || warmup > 0 {
             iterations += 1;
             if iterations > 100_000 {
-                return Err("Kurvenplanung konvergiert nicht".into());
+                return Err(tr("Kurvenplanung konvergiert nicht").into());
             }
             if warmup > 0 {
                 warmup -= 1;
@@ -388,13 +389,13 @@ impl<'a> Encoder<'a> {
                 let mut max_for_accel = a * cos + root;
                 let min_for_accel = a * cos - root;
                 if min_for_accel.is_nan() || max_for_accel.is_nan() {
-                    return Err("Kurvenplanung: kein gültiger Geschwindigkeitsbereich".into());
+                    return Err(tr("Kurvenplanung: kein gültiger Geschwindigkeitsbereich").into());
                 }
                 if max_for_accel > max_speed {
                     if min_for_accel < max_speed {
                         max_for_accel = max_speed;
                     } else {
-                        return Err("Kurvenplanung: Geschwindigkeitsbereich ungültig".into());
+                        return Err(tr("Kurvenplanung: Geschwindigkeitsbereich ungültig").into());
                     }
                 }
                 if p.speed > max_for_accel {
@@ -408,7 +409,7 @@ impl<'a> Encoder<'a> {
                     let new_min = (b * cos - root).max(0.0);
                     let new_a = new_max * safety + new_min * (1.0 - safety);
                     if new_a.is_nan() {
-                        return Err("Kurvenplanung: Bremsgeschwindigkeit ungültig".into());
+                        return Err(tr("Kurvenplanung: Bremsgeschwindigkeit ungültig").into());
                     }
                     points[i - 1].speed = new_a;
                     changed = true;
@@ -450,7 +451,7 @@ impl<'a> Encoder<'a> {
             let speed = points[i].speed;
             let before = points[i - 1].speed;
             if self.x == x && self.y == y {
-                return Err("Kurve enthält einen doppelten Punkt".into());
+                return Err(tr("Kurve enthält einen doppelten Punkt").into());
             }
             let dx = px_to_mm(x - self.x);
             let dy = px_to_mm(y - self.y);
@@ -465,7 +466,10 @@ impl<'a> Encoder<'a> {
             let tolerance = 1.00001;
             let limit = self.curve_acceleration * tolerance;
             if ax.is_nan() || ax > limit || ay.is_nan() || ay > limit || ax.hypot(ay) > limit {
-                return Err(format!("Beschleunigung im Kurvensegment {i} zu hoch"));
+                return Err(tr!(
+                    "Beschleunigung im Kurvensegment {segment} zu hoch",
+                    segment = i
+                ));
             }
             (vx, vy, v) = (new_vx, new_vy, new_v);
             self.out.extend(b"PE");

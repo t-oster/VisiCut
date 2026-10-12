@@ -12,6 +12,7 @@
 //! comments in `(…)` and after `;`.
 use super::Imported;
 use crate::svg_import::MAX_SVG_BYTES;
+use crate::{i18n::tr, tr};
 use std::f64::consts::{FRAC_PI_2, PI, TAU};
 use std::fmt::Write;
 use std::path::Path;
@@ -63,7 +64,7 @@ fn convert(text: &str) -> Result<Imported, String> {
     for (index, line) in text.lines().enumerate() {
         converter.line(index + 1, line);
         if converter.data.len() > MAX_SVG_BYTES {
-            return Err("G-Code ergibt eine SVG über 20 MB".into());
+            return Err(tr("G-Code ergibt eine SVG über 20 MB").into());
         }
     }
     converter.finish()
@@ -107,8 +108,10 @@ fn words(line: &str, number: usize, warnings: &mut Vec<String>) -> Vec<(char, f6
             Ok(parsed) if parsed.is_finite() => result.push((letter, parsed)),
             _ => {
                 if warnings.len() < MAX_WARNINGS {
-                    warnings.push(format!(
-                        "Ungültiger G-Code in Zeile {number}: {letter}{value}"
+                    warnings.push(tr!(
+                        "Ungültiger G-Code in Zeile {number}: {code}",
+                        number = number,
+                        code = format!("{letter}{value}")
                     ));
                 }
             }
@@ -185,16 +188,18 @@ impl Converter {
         let (dx, dy) = (target.0 - sx, target.1 - sy);
         let chord = dx.hypot(dy);
         if chord < EPSILON {
-            self.warn(format!(
-                "G-Code-Zeile {number}: Vollkreis mit R ist nicht eindeutig und wird übersprungen"
+            self.warn(tr!(
+                "G-Code-Zeile {number}: Vollkreis mit R ist nicht eindeutig und wird übersprungen",
+                number = number
             ));
             return None;
         }
         let mut height = 4.0 * radius * radius - chord * chord;
         if height < 0.0 {
             if (2.0 * radius.abs() - chord) < -RADIUS_TOLERANCE_MM {
-                self.warn(format!(
-                    "G-Code-Zeile {number}: Radius ist kleiner als der halbe Abstand der Endpunkte"
+                self.warn(tr!(
+                    "G-Code-Zeile {number}: Radius ist kleiner als der halbe Abstand der Endpunkte",
+                    number = number
                 ));
             }
             height = 0.0;
@@ -214,7 +219,10 @@ impl Converter {
         let (cx, cy) = center;
         let radius = (sx - cx).hypot(sy - cy);
         if radius < EPSILON {
-            self.warn(format!("G-Code-Zeile {number}: Kreisbogen ohne Radius"));
+            self.warn(tr!(
+                "G-Code-Zeile {number}: Kreisbogen ohne Radius",
+                number = number
+            ));
             if target != self.position {
                 self.pen_down();
                 self.write('L', &[target]);
@@ -222,8 +230,9 @@ impl Converter {
             return;
         }
         if (radius - (target.0 - cx).hypot(target.1 - cy)).abs() >= RADIUS_TOLERANCE_MM {
-            self.warn(format!(
-                "G-Code-Zeile {number}: Kreisbogen hat unterschiedliche Start- und Endradien"
+            self.warn(tr!(
+                "G-Code-Zeile {number}: Kreisbogen hat unterschiedliche Start- und Endradien",
+                number = number
             ));
         }
         let start = (sy - cy).atan2(sx - cx);
@@ -300,7 +309,7 @@ impl Converter {
 
     fn finish(self) -> Result<Imported, String> {
         if !self.drawn {
-            return Err("G-Code enthält keine Bahnen (G1, G2 oder G3 mit Koordinaten)".into());
+            return Err(tr("G-Code enthält keine Bahnen (G1, G2 oder G3 mit Koordinaten)").into());
         }
         let width = (self.max.0 - self.min.0).max(STROKE_MM);
         let height = (self.max.1 - self.min.1).max(STROKE_MM);
@@ -313,7 +322,7 @@ impl Converter {
             d = self.data,
         );
         if svg.len() > MAX_SVG_BYTES {
-            return Err("G-Code ergibt eine SVG über 20 MB".into());
+            return Err(tr("G-Code ergibt eine SVG über 20 MB").into());
         }
         Ok(Imported {
             svg,

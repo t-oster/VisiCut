@@ -10,6 +10,7 @@ mod pdf;
 mod plf;
 mod raster;
 
+use crate::i18n::tr;
 pub use crate::svg_import::Imported;
 use std::path::Path;
 
@@ -30,7 +31,7 @@ pub fn is_importable(path: &Path) -> bool {
 pub fn read_file(path: &Path) -> Result<Imported, String> {
     let meta = std::fs::metadata(path).map_err(|e| e.to_string())?;
     if meta.len() > MAX_FILE_BYTES {
-        return Err("Datei ist größer als 25 MB".into());
+        return Err(tr("Datei ist größer als 25 MB").into());
     }
     let name = path
         .file_name()
@@ -50,7 +51,7 @@ pub fn read_file(path: &Path) -> Result<Imported, String> {
         Some("nc" | "gcode") => gcode::read(path),
         Some("plf") => plf::read_plf(path),
         Some("ls") => plf::read_laser_script(path),
-        _ => Err("Unbekanntes Dateiformat".into()),
+        _ => Err(tr("Unbekanntes Dateiformat").into()),
     }
 }
 
