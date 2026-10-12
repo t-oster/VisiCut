@@ -154,6 +154,17 @@ struct Part {
     sets: Vec<ParameterSet>,
     /// Extra engrave shift in pixels (test pattern).
     shift_px: i32,
+    /// Index of the project part (see `Project::part_view`) it comes from.
+    source: usize,
+}
+
+/// Area of the bed the preview image covers (all parts), in mm.
+#[derive(Clone, Copy)]
+struct Frame {
+    x: f32,
+    y: f32,
+    width: f32,
+    height: f32,
 }
 
 fn overscan(operation: Operation, speed_percent: f32) -> f32 {
@@ -171,8 +182,17 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
     {
         return Err(tr("Das FAU-LTT-Profil benötigt ein Arbeitsbett von 1000 × 600 mm").into());
     }
+    // All parts together: the preview covers their bounding box, rotary
+    // limits apply to the whole layout.
+    let [frame_x, frame_y, frame_width, frame_height] = project.bounds();
+    let frame = Frame {
+        x: frame_x,
+        y: frame_y,
+        width: frame_width,
+        height: frame_height,
+    };
     if project.rotary_axis
-        && project.height_mm > std::f32::consts::PI * project.rotary_diameter_mm + 0.001
+        && frame.height > std::f32::consts::PI * project.rotary_diameter_mm + 0.001
     {
         return Err(tr!(
             "Motiv ist höher als der Umfang des Werkstücks ({circumference} mm bei {diameter} mm Durchmesser)",
@@ -180,32 +200,50 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
             diameter = format!("{:.1}", project.rotary_diameter_mm)
         ));
     }
+    // Each project part on its own (shared settings plus that part), in
+    // list order; their steps are merged into one LTT job per operation.
+    let views: Vec<Project> = project
+        .all_parts()
+        .iter()
+        .map(|part| project.part_view(part))
+        .collect();
     let mut parts = Vec::new();
-    if project.steps.is_empty() {
-        parts.push(Part {
-            operation: project.operation,
-            svg: project.svg.clone(),
-            raster: project.raster,
-            sets: vec![ParameterSet {
-                power_percent: project.power_percent,
-                speed_percent: project.speed_percent,
-                passes: project.passes,
-            }],
-            shift_px: 0,
-        });
-    } else {
-        let selections = crate::mapping::resolve(project)?;
-        for (step, selected) in project.steps.iter().zip(selections) {
-            if selected.is_empty() {
-                continue;
+    for (source, view) in views.iter().enumerate() {
+        view.validate().map_err(|e| {
+            if views.len() > 1 {
+                format!("{}: {e}", view.part_name)
+            } else {
+                e
             }
+        })?;
+        if view.steps.is_empty() {
             parts.push(Part {
-                operation: step.operation,
-                svg: crate::selection::filter(&project.svg, &selected)?,
-                raster: step.raster,
-                sets: step.parameters(),
-                shift_px: step.engrave_shift_px,
+                operation: view.operation,
+                svg: view.svg.clone(),
+                raster: view.raster,
+                sets: vec![ParameterSet {
+                    power_percent: view.power_percent,
+                    speed_percent: view.speed_percent,
+                    passes: view.passes,
+                }],
+                shift_px: 0,
+                source,
             });
+        } else {
+            let selections = crate::mapping::resolve(view)?;
+            for (step, selected) in view.steps.iter().zip(selections) {
+                if selected.is_empty() {
+                    continue;
+                }
+                parts.push(Part {
+                    operation: step.operation,
+                    svg: crate::selection::filter(&view.svg, &selected)?,
+                    raster: step.raster,
+                    sets: step.parameters(),
+                    shift_px: step.engrave_shift_px,
+                    source,
+                });
+            }
         }
     }
     if parts.is_empty() {
@@ -213,10 +251,10 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
     }
     let mut jobs = Vec::new();
     let mut total_bytes: usize = 0;
-    let scale = 1600.0 / project.width_mm.max(project.height_mm);
+    let scale = 1600.0 / frame.width.max(frame.height);
     let mut preview = tiny_skia::Pixmap::new(
-        (project.width_mm * scale).ceil().max(1.0) as u32,
-        (project.height_mm * scale).ceil().max(1.0) as u32,
+        (frame.width * scale).ceil().max(1.0) as u32,
+        (frame.height * scale).ceil().max(1.0) as u32,
     )
     .ok_or(tr("Vorschau konnte nicht erstellt werden"))?;
     let mut steps = Vec::new();
@@ -231,9 +269,9 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
                     .map(|s| overscan(p.operation, s.speed_percent))
             })
             .fold(0.0, f32::max);
-        let left = project.width_mm / 2.0 + overscan.min(project.x_mm);
-        let right = project.width_mm / 2.0
-            + overscan.min(BED_WIDTH as f32 - project.x_mm - project.width_mm);
+        let left = frame.width / 2.0 + overscan.min(frame.x);
+        let right =
+            frame.width / 2.0 + overscan.min(BED_WIDTH as f32 - frame.x - frame.width);
         warnings.push(tr!(
             "Rotationseinheit aktiv: Am Gerät mit „Adjust rotary temp“ die Mitte der Gravur einstellen. \
              Der Laserkopf muss {left} mm nach links und {right} mm nach rechts \
@@ -256,7 +294,7 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
             acceleration = format!("{:.0}", project.machine.curve_acceleration_mm_s2)
         ));
     }
-    if project.steps.iter().any(|s| s.engrave_shift_px != 0) {
+    if parts.iter().any(|p| p.shift_px != 0) {
         warnings.push(
             tr("Zeilenversatz-Testmuster: einzelne Schritte haben einen zusätzlichen Versatz")
                 .into(),
@@ -284,11 +322,11 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
                 &mut body,
                 &mut state,
                 &mut warnings,
-                project,
+                &views[part.source],
                 part,
                 index == 0,
                 &name,
-                &mut preview,
+                (&mut preview, frame),
                 &mut timeline,
             )?;
             steps.push(step);
@@ -389,7 +427,7 @@ fn append_part(
     part: &Part,
     first_in_file: bool,
     name: &str,
-    preview: &mut tiny_skia::Pixmap,
+    (preview, frame): (&mut tiny_skia::Pixmap, Frame),
     timeline: &mut Timeline,
 ) -> Result<(PreparedStep, Bounds), String> {
     if part.sets.iter().any(|s| s.power_percent < 0.1) {
@@ -427,7 +465,7 @@ fn append_part(
             if estimated_bytes > 256 * 1024 * 1024 {
                 return Err(tr("Vektorjob ist größer als 256 MB").into());
             }
-            draw_contours(preview, project, &paths, part.operation);
+            draw_contours(preview, frame, &paths, part.operation);
             for point in paths.iter().flatten() {
                 if !point[0].is_finite()
                     || !point[1].is_finite()
@@ -577,7 +615,7 @@ fn append_part(
             };
             drop(pixmap);
             let color = operation_color(part.operation);
-            draw_raster(preview, project, &raster, area, color);
+            draw_raster(preview, frame, &raster, area, color);
             let raster_png = raster_preview(&raster, color)?;
             if first_in_file && raster.bits_per_pixel == 8 {
                 // Job mode: eight bits per pixel ("engrave 3D").
@@ -714,7 +752,7 @@ fn raster_pixmap(raster: &Raster, color: [u8; 3]) -> Result<tiny_skia::Pixmap, S
 
 fn draw_raster(
     preview: &mut tiny_skia::Pixmap,
-    project: &Project,
+    frame: Frame,
     raster: &Raster,
     area: RasterArea,
     color: [u8; 3],
@@ -723,15 +761,15 @@ fn draw_raster(
         return;
     };
     // Raster pixels → mm on the bed → preview pixels of the motif.
-    let scale_x = preview.width() as f64 / project.width_mm as f64 / geometry::PX_PER_MM;
-    let scale_y = preview.height() as f64 / project.height_mm as f64 / geometry::PX_PER_MM;
+    let scale_x = preview.width() as f64 / frame.width as f64 / geometry::PX_PER_MM;
+    let scale_y = preview.height() as f64 / frame.height as f64 / geometry::PX_PER_MM;
     let transform = tiny_skia::Transform::from_row(
         scale_x as f32,
         0.0,
         0.0,
         scale_y as f32,
-        ((area.x as f64 - project.x_mm as f64 * geometry::PX_PER_MM) * scale_x) as f32,
-        ((area.y as f64 - project.y_mm as f64 * geometry::PX_PER_MM) * scale_y) as f32,
+        ((area.x as f64 - frame.x as f64 * geometry::PX_PER_MM) * scale_x) as f32,
+        ((area.y as f64 - frame.y as f64 * geometry::PX_PER_MM) * scale_y) as f32,
     );
     preview.draw_pixmap(
         0,
@@ -769,12 +807,12 @@ fn raster_preview(raster: &Raster, color: [u8; 3]) -> Result<Vec<u8>, String> {
 
 fn draw_contours(
     preview: &mut tiny_skia::Pixmap,
-    project: &Project,
+    frame: Frame,
     paths: &[geometry::Contour],
     operation: Operation,
 ) {
-    let sx = preview.width() as f32 / project.width_mm;
-    let sy = preview.height() as f32 / project.height_mm;
+    let sx = preview.width() as f32 / frame.width;
+    let sy = preview.height() as f32 / frame.height;
     let mut paint = tiny_skia::Paint::default();
     let [r, g, b] = operation_color(operation);
     paint.set_color_rgba8(r, g, b, 255);
@@ -782,8 +820,8 @@ fn draw_contours(
     for path in paths {
         let mut builder = tiny_skia::PathBuilder::new();
         for (i, point) in path.iter().enumerate() {
-            let x = (px(point[0]) as f32 * 25.4 / RASTER_DPI as f32 - project.x_mm) * sx;
-            let y = (px(point[1]) as f32 * 25.4 / RASTER_DPI as f32 - project.y_mm) * sy;
+            let x = (px(point[0]) as f32 * 25.4 / RASTER_DPI as f32 - frame.x) * sx;
+            let y = (px(point[1]) as f32 * 25.4 / RASTER_DPI as f32 - frame.y) * sy;
             if i == 0 {
                 builder.move_to(x, y);
             } else {
@@ -1255,6 +1293,58 @@ mod tests {
         for (a, b) in job.jobs.iter().zip(&reloaded.jobs) {
             assert_eq!(a.bytes, b.bytes);
         }
+    }
+
+    #[test]
+    fn parts_keep_their_own_place_and_assignment_and_share_one_job_per_operation() {
+        // Part 1: the mixed drawing (engrave + cut steps) at 10/10; part 2:
+        // a plain rectangle cut as a whole at 200/100.
+        let mut p = mixed();
+        p.part_name = "gemischt".into();
+        let single = mixed();
+        let job_single = prepare(&single).unwrap();
+        p.add_part(crate::project::Part {
+            name: "rechteck".into(),
+            svg: r#"<svg xmlns="http://www.w3.org/2000/svg" width="20mm" height="10mm" viewBox="0 0 20 10"><rect x="1" y="1" width="18" height="8" fill="none" stroke="red"/></svg>"#.into(),
+            x_mm: 200.0,
+            y_mm: 100.0,
+            width_mm: 20.0,
+            height_mm: 10.0,
+            operation: Operation::Cut,
+            power_percent: 60.0,
+            speed_percent: 5.0,
+            passes: 1,
+            steps: Vec::new(),
+            raster: RasterSettings::default(),
+            ignore_filters: Vec::new(),
+        });
+        assert_eq!(p.part_count(), 2);
+        assert_eq!(p.active_part, 1);
+        let job = prepare(&p).unwrap();
+        // Still one engrave and one cut job; the cut job holds both parts.
+        assert_eq!(job.jobs.len(), 2);
+        assert_eq!(job.jobs[1].operation, Operation::Cut);
+        assert_eq!(job.steps.len(), 3);
+        assert!(job.jobs[1].bytes.len() > job_single.jobs[1].bytes.len());
+        // The preview covers both parts (10..220 × 10..110 mm).
+        let image = tiny_skia::Pixmap::decode_png(&job.preview_png).unwrap();
+        let ratio = image.width() as f32 / image.height() as f32;
+        assert!((ratio - 210.0 / 100.0).abs() < 0.05, "{ratio}");
+        // Selecting the first part swaps the assignments back.
+        p.select_part(0);
+        assert_eq!(p.part_name, "gemischt");
+        assert_eq!(p.steps.len(), 2);
+        assert_eq!(p.parts[0].name, "rechteck");
+        let reloaded: Project = serde_json::from_str(&serde_json::to_string(&p).unwrap()).unwrap();
+        assert_eq!(prepare(&reloaded).unwrap().jobs[1].bytes, job.jobs[1].bytes);
+        // A part outside the bed blocks sending and names the part.
+        p.parts[0].x_mm = 990.0;
+        assert!(prepare(&p).err().unwrap().contains("rechteck"));
+        p.remove_active_part();
+        assert_eq!(p.part_name, "rechteck");
+        assert!(p.parts.is_empty());
+        p.remove_active_part();
+        assert!(!p.has_artwork());
     }
 
     #[test]

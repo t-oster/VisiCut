@@ -82,6 +82,11 @@ fn replace_artwork(
     warnings: Vec<String>,
     name: String,
 ) -> Result<Value, String> {
+    // A new drawing replaces all parts of the project.
+    project.parts.clear();
+    project.active_part = 0;
+    project.part_name = name.clone();
+    project.ignore_filters.clear();
     project.svg = svg;
     project.steps = steps;
     let image = preview(&project.svg)?;
@@ -323,8 +328,49 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
         }
         "append" => {
             let paths: Vec<std::path::PathBuf> = get(request, "paths")?;
-            let (project, notes) = crate::compose::append_files(&get_project(request)?, &paths)?;
+            let (project, notes) = crate::compose::add_files_as_parts(&get_project(request)?, &paths)?;
             composed(project, notes)
+        }
+        // Parts (one per imported file): choose, remove, duplicate, and
+        // previews of all parts for drawing them on the bed.
+        "select_part" => {
+            let mut project = get_project(request)?;
+            project.select_part(get(request, "index")?);
+            composed(project, Vec::new())
+        }
+        "remove_part" => {
+            let mut project = get_project(request)?;
+            project.remove_active_part();
+            if project.has_artwork() {
+                composed(project, Vec::new())
+            } else {
+                Ok(json!({"project": project, "preview": Value::Null, "objects": [], "warnings": []}))
+            }
+        }
+        "duplicate_part" => {
+            let mut project = get_project(request)?;
+            let mut part = project.active();
+            part.x_mm += 5.0;
+            part.y_mm += 5.0;
+            project.add_part(part);
+            composed(project, Vec::new())
+        }
+        "part_previews" => {
+            let project = get_project(request)?;
+            let mut parts = Vec::new();
+            for (index, part) in project.all_parts().iter().enumerate() {
+                parts.push(json!({
+                    "index": index,
+                    "name": part.name,
+                    "x_mm": part.x_mm,
+                    "y_mm": part.y_mm,
+                    "width_mm": part.width_mm,
+                    "height_mm": part.height_mm,
+                    "active": index == project.active_part,
+                    "preview": preview(&part.svg)?,
+                }));
+            }
+            Ok(json!({"parts": parts, "bounds": project.bounds()}))
         }
         "duplicate" => composed(
             crate::compose::duplicate(&get_project(request)?, 5.0)?,
@@ -594,8 +640,15 @@ mod tests {
             "paths": [path, dir.join("fehlt.svg"), path]}));
         std::fs::remove_dir_all(&dir).unwrap();
         let result = result.unwrap();
-        assert_eq!(result["objects"].as_array().unwrap().len(), 3);
-        assert!((result["project"]["width_mm"].as_f64().unwrap() - 40.0).abs() < 1e-3);
+        // Each file is its own part; the last one added is active.
+        assert_eq!(result["objects"].as_array().unwrap().len(), 1);
+        assert_eq!(result["project"]["parts"].as_array().unwrap().len(), 2);
+        assert_eq!(result["project"]["active_part"], 2);
+        assert!((result["project"]["x_mm"].as_f64().unwrap() - 40.0).abs() < 1e-3);
+        let previews = execute(&json!({"action": "part_previews", "project": result["project"]}))
+            .unwrap();
+        assert_eq!(previews["parts"].as_array().unwrap().len(), 3);
+        assert!((previews["bounds"][2].as_f64().unwrap() - 40.0).abs() < 1e-3);
         let warnings = result["warnings"].as_array().unwrap();
         assert_eq!(warnings.len(), 1);
         assert!(warnings[0].as_str().unwrap().starts_with("fehlt.svg"));

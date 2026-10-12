@@ -1,4 +1,4 @@
-use crate::{i18n::tr, mapping::Filter, raster::RasterSettings};
+use crate::{i18n::tr, mapping::Filter, raster::RasterSettings, tr};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -45,6 +45,41 @@ pub struct Project {
     /// Machine-specific settings, copied from the selected device.
     #[serde(default)]
     pub machine: MachineSettings,
+    /// Name of the active part (the file it came from). The fields `svg`,
+    /// position, size, operation, parameters, `steps`, `raster` and
+    /// `ignore_filters` above always belong to the active part.
+    #[serde(default)]
+    pub part_name: String,
+    /// Position of the active part in the list of all parts.
+    #[serde(default)]
+    pub active_part: usize,
+    /// The other parts, in list order without the active one. Like VisiCut's
+    /// PlfParts each has its own position, size and assignment; all parts
+    /// are lasered together, one LTT job per operation.
+    #[serde(default)]
+    pub parts: Vec<Part>,
+}
+
+/// One imported file on the bed with its own placement and assignment.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Part {
+    pub name: String,
+    pub svg: String,
+    pub x_mm: f32,
+    pub y_mm: f32,
+    pub width_mm: f32,
+    pub height_mm: f32,
+    pub operation: Operation,
+    pub power_percent: f32,
+    pub speed_percent: f32,
+    pub passes: u32,
+    #[serde(default)]
+    pub steps: Vec<JobStep>,
+    #[serde(default = "RasterSettings::legacy")]
+    pub raster: RasterSettings,
+    #[serde(default)]
+    pub ignore_filters: Vec<Vec<Filter>>,
 }
 
 /// Engrave shift table of the FAU device (`engraveShiftList`) for 10 %, 20 %,
@@ -258,6 +293,12 @@ struct ProjectFile {
     remove_duplicate_lines: bool,
     #[serde(default)]
     machine: MachineSettings,
+    #[serde(default)]
+    part_name: String,
+    #[serde(default)]
+    active_part: usize,
+    #[serde(default)]
+    parts: Vec<Part>,
 }
 
 impl TryFrom<ProjectFile> for Project {
@@ -305,6 +346,9 @@ impl TryFrom<ProjectFile> for Project {
             cut_order: file.cut_order,
             remove_duplicate_lines: file.remove_duplicate_lines,
             machine: file.machine,
+            part_name: file.part_name,
+            active_part: file.active_part.min(file.parts.len()),
+            parts: file.parts,
         })
     }
 }
@@ -380,6 +424,9 @@ impl Default for Project {
             cut_order: CutOrder::VisiCut,
             remove_duplicate_lines: false,
             machine: MachineSettings::default(),
+            part_name: String::new(),
+            active_part: 0,
+            parts: Vec::new(),
         }
     }
 }
@@ -387,17 +434,209 @@ impl Default for Project {
 impl Project {
     pub fn validate(&self) -> Result<(), String> {
         self.validate_document()?;
-        if self.x_mm < 0.0
-            || self.y_mm < 0.0
-            || self.x_mm + self.width_mm > self.bed_width_mm + 0.001
-            || self.y_mm + self.height_mm > self.bed_height_mm + 0.001
-        {
+        if !self.fits_bed(self.x_mm, self.y_mm, self.width_mm, self.height_mm) {
             return Err(tr("Das Motiv liegt außerhalb des Arbeitsbetts").into());
         }
         if self.svg.is_empty() {
             return Err(tr("Zuerst eine SVG-Datei importieren").into());
         }
+        // Other parts: placement only; their documents are checked in full
+        // when the job is prepared (see `part_view`).
+        for part in &self.parts {
+            if part.svg.is_empty()
+                || !part.width_mm.is_finite()
+                || !part.height_mm.is_finite()
+                || part.width_mm <= 0.0
+                || part.height_mm <= 0.0
+            {
+                return Err(tr!("Teil „{name}“ ist leer oder hat keine Größe", name = part.name));
+            }
+            if !self.fits_bed(part.x_mm, part.y_mm, part.width_mm, part.height_mm) {
+                return Err(tr!(
+                    "Teil „{name}“ liegt außerhalb des Arbeitsbetts",
+                    name = part.name
+                ));
+            }
+        }
         Ok(())
+    }
+
+    fn fits_bed(&self, x: f32, y: f32, width: f32, height: f32) -> bool {
+        x.is_finite()
+            && y.is_finite()
+            && x >= 0.0
+            && y >= 0.0
+            && x + width <= self.bed_width_mm + 0.001
+            && y + height <= self.bed_height_mm + 0.001
+    }
+
+    /// Whether any part has artwork (the active part is never empty while
+    /// other parts exist).
+    pub fn has_artwork(&self) -> bool {
+        !self.svg.is_empty()
+    }
+
+    /// Number of parts including the active one.
+    pub fn part_count(&self) -> usize {
+        if self.svg.is_empty() {
+            0
+        } else {
+            self.parts.len() + 1
+        }
+    }
+
+    /// The active part's own fields.
+    pub fn active(&self) -> Part {
+        Part {
+            name: self.part_name.clone(),
+            svg: self.svg.clone(),
+            x_mm: self.x_mm,
+            y_mm: self.y_mm,
+            width_mm: self.width_mm,
+            height_mm: self.height_mm,
+            operation: self.operation,
+            power_percent: self.power_percent,
+            speed_percent: self.speed_percent,
+            passes: self.passes,
+            steps: self.steps.clone(),
+            raster: self.raster,
+            ignore_filters: self.ignore_filters.clone(),
+        }
+    }
+
+    fn set_active(&mut self, part: Part) {
+        self.part_name = part.name;
+        self.svg = part.svg;
+        self.x_mm = part.x_mm;
+        self.y_mm = part.y_mm;
+        self.width_mm = part.width_mm;
+        self.height_mm = part.height_mm;
+        self.operation = part.operation;
+        self.power_percent = part.power_percent;
+        self.speed_percent = part.speed_percent;
+        self.passes = part.passes;
+        self.steps = part.steps;
+        self.raster = part.raster;
+        self.ignore_filters = part.ignore_filters;
+    }
+
+    /// All parts in list order (empty without artwork).
+    pub fn all_parts(&self) -> Vec<Part> {
+        if self.svg.is_empty() {
+            return Vec::new();
+        }
+        let mut all = self.parts.clone();
+        all.insert(self.active_part.min(all.len()), self.active());
+        all
+    }
+
+    fn set_all_parts(&mut self, mut all: Vec<Part>, active: usize) {
+        if all.is_empty() {
+            let empty = Part {
+                name: String::new(),
+                svg: String::new(),
+                steps: Vec::new(),
+                ignore_filters: Vec::new(),
+                ..self.active()
+            };
+            self.set_active(empty);
+            self.parts.clear();
+            self.active_part = 0;
+            return;
+        }
+        let active = active.min(all.len() - 1);
+        let part = all.remove(active);
+        self.set_active(part);
+        self.parts = all;
+        self.active_part = active;
+    }
+
+    /// Makes the part at `index` (list order) the active one.
+    pub fn select_part(&mut self, index: usize) {
+        if index != self.active_part && index < self.part_count() {
+            let all = self.all_parts();
+            self.set_all_parts(all, index);
+        }
+    }
+
+    /// Appends a part and makes it active.
+    pub fn add_part(&mut self, part: Part) {
+        let mut all = self.all_parts();
+        all.push(part);
+        let index = all.len() - 1;
+        self.set_all_parts(all, index);
+    }
+
+    /// Removes the active part; the following (or last) part becomes active.
+    pub fn remove_active_part(&mut self) {
+        let mut all = self.all_parts();
+        if all.is_empty() {
+            return;
+        }
+        let index = self.active_part.min(all.len() - 1);
+        all.remove(index);
+        self.set_all_parts(all, index);
+    }
+
+    /// Replaces all parts, e.g. after undo or a tool that works on all of
+    /// them; `active` is clamped.
+    pub fn replace_parts(&mut self, all: Vec<Part>, active: usize) {
+        self.set_all_parts(all, active);
+    }
+
+    /// This project with only `part`: shared settings plus that part. Used
+    /// to prepare, check and preview each part on its own.
+    pub fn part_view(&self, part: &Part) -> Project {
+        let mut view = Project {
+            format_version: self.format_version,
+            name: self.name.clone(),
+            svg: String::new(),
+            bed_width_mm: self.bed_width_mm,
+            bed_height_mm: self.bed_height_mm,
+            x_mm: 0.0,
+            y_mm: 0.0,
+            width_mm: 0.0,
+            height_mm: 0.0,
+            material: self.material.clone(),
+            thickness_mm: self.thickness_mm,
+            operation: self.operation,
+            power_percent: 0.0,
+            speed_percent: 0.0,
+            passes: 1,
+            hostname: self.hostname.clone(),
+            port: self.port,
+            steps: Vec::new(),
+            rotary_axis: self.rotary_axis,
+            rotary_diameter_mm: self.rotary_diameter_mm,
+            raster: self.raster,
+            ignore_filters: Vec::new(),
+            cut_order: self.cut_order,
+            remove_duplicate_lines: self.remove_duplicate_lines,
+            machine: self.machine.clone(),
+            part_name: String::new(),
+            active_part: 0,
+            parts: Vec::new(),
+        };
+        view.set_active(part.clone());
+        view
+    }
+
+    /// Bounding box `[x, y, width, height]` of all parts in mm (the active
+    /// part's box without other parts).
+    pub fn bounds(&self) -> [f32; 4] {
+        let rects = std::iter::once([self.x_mm, self.y_mm, self.width_mm, self.height_mm])
+            .chain(
+                self.parts
+                    .iter()
+                    .map(|p| [p.x_mm, p.y_mm, p.width_mm, p.height_mm]),
+            );
+        let mut min = [f32::INFINITY; 2];
+        let mut max = [f32::NEG_INFINITY; 2];
+        for [x, y, w, h] in rects {
+            min = [min[0].min(x), min[1].min(y)];
+            max = [max[0].max(x + w), max[1].max(y + h)];
+        }
+        [min[0], min[1], max[0] - min[0], max[1] - min[1]]
     }
 
     /// Documents may contain unfinished placement or no artwork. Sending has

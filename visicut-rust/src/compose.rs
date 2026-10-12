@@ -666,8 +666,94 @@ pub fn append(project: &Project, source: &str) -> Result<(Project, Vec<String>),
 
 const APPEND_GAP_MM: f64 = 5.0;
 
-/// Imports files one after another with [`append`]. Unreadable files are
-/// reported in the notes; fails only if none could be added.
+/// Adds a drawing as a new part (like VisiCut's PlfPart) in its original
+/// size beside all existing parts: to the right if it fits on the bed,
+/// otherwise below. The part keeps its own position and assignment; `steps`
+/// come from the file (PLF), otherwise it starts with the current operation
+/// and parameters. The new part becomes the active one.
+pub fn add_part(
+    project: &Project,
+    name: &str,
+    source: &str,
+    steps: Vec<crate::project::JobStep>,
+) -> Result<(Project, Vec<String>), String> {
+    let tree = usvg::Tree::from_str(source, &svg::options())
+        .map_err(|e| tr!("SVG konnte nicht gelesen werden: {error}", error = e))?;
+    let (w, h) = (
+        tree.size().width() as f64 * 25.4 / 96.0,
+        tree.size().height() as f64 * 25.4 / 96.0,
+    );
+    let mut notes = Vec::new();
+    let (x, y) = if project.has_artwork() {
+        let [bx, by, bw, bh] = project.bounds().map(f64::from);
+        if bx + bw + APPEND_GAP_MM + w <= project.bed_width_mm as f64 {
+            (bx + bw + APPEND_GAP_MM, by)
+        } else if by + bh + APPEND_GAP_MM + h <= project.bed_height_mm as f64 {
+            (bx, by + bh + APPEND_GAP_MM)
+        } else {
+            notes.push(
+                tr("Kein freier Platz neben dem Motiv: Teile liegen außerhalb des Betts, bitte verschieben oder verschachteln").into(),
+            );
+            (bx + bw + APPEND_GAP_MM, by)
+        }
+    } else {
+        (project.x_mm as f64, project.y_mm as f64)
+    };
+    let mut result = project.clone();
+    result.add_part(crate::project::Part {
+        name: name.to_owned(),
+        svg: source.to_owned(),
+        x_mm: x as f32,
+        y_mm: y as f32,
+        width_mm: w as f32,
+        height_mm: h as f32,
+        operation: project.operation,
+        power_percent: project.power_percent,
+        speed_percent: project.speed_percent,
+        passes: project.passes,
+        steps,
+        raster: project.raster,
+        ignore_filters: Vec::new(),
+    });
+    Ok((result, notes))
+}
+
+/// Imports files one after another as new parts with [`add_part`].
+/// Unreadable files are reported in the notes; fails only if none could be
+/// added.
+pub fn add_files_as_parts(
+    project: &Project,
+    paths: &[std::path::PathBuf],
+) -> Result<(Project, Vec<String>), String> {
+    let mut result = project.clone();
+    let mut notes = Vec::new();
+    let mut added = 0;
+    for path in paths {
+        let name = path.file_name().unwrap_or_default().to_string_lossy();
+        let stem = path.file_stem().unwrap_or_default().to_string_lossy();
+        let appended = crate::import::read_file(path).and_then(|imported| {
+            let (next, more) = add_part(&result, &stem, &imported.svg, imported.steps)?;
+            Ok((next, imported.warnings, more))
+        });
+        match appended {
+            Ok((next, warnings, more)) => {
+                result = next;
+                added += 1;
+                notes.extend(warnings.into_iter().map(|w| format!("{name}: {w}")));
+                notes.extend(more.into_iter().map(|n| format!("{name}: {n}")));
+            }
+            Err(e) => notes.push(format!("{name}: {e}")),
+        }
+    }
+    if added == 0 {
+        return Err(notes.join("\n"));
+    }
+    Ok((result, notes))
+}
+
+/// Imports files one after another with [`append`] into the active part.
+/// Unreadable files are reported in the notes; fails only if none could be
+/// added.
 pub fn append_files(
     project: &Project,
     paths: &[std::path::PathBuf],
