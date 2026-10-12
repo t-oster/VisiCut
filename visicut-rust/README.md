@@ -90,10 +90,18 @@ lokal nach einem Build für die jeweilige Host-Architektur.
 
 1. Eine SVG über **Öffnen** (⌘O) importieren oder **Beispiel** wählen.
    Dateien lassen sich auch ins Fenster ziehen, mehrere auf einmal: Ist
-   schon ein Motiv geladen, kommen sie in Originalgröße rechts daneben (sonst
-   darunter) hinzu; gleichnamige IDs und CSS-Klassen werden umbenannt, damit
-   sich die Dateien nicht gegenseitig umfärben. Widerrufen nimmt das ganze
-   Ablegen zurück.
+   schon ein Motiv geladen, kommt jede Datei als eigenes **Teil** in
+   Originalgröße rechts neben die vorhandenen (sonst darunter); ebenso
+   **Datei → Hinzufügen …** (Strg/⌘+Umschalt+O). Wie die PlfParts in VisiCut
+   hat jedes Teil eigene Position, Größe, Drehung und Zuordnung; PLF-Dateien
+   behalten ihre Zuordnung. Die Seitenleiste listet die Teile, ein Klick auf
+   ein Teil (in der Liste oder auf dem Bett) wählt es, und alle Einstellungen
+   für Position, Bearbeitung und Zuordnung gelten für das gewählte Teil.
+   **Teil duplizieren** legt eine versetzte Kopie an, **Löschen** entfernt das
+   gewählte Teil. Beim Senden werden alle Teile zusammengeführt, je Verfahren
+   ein LTT-Auftrag; die Vorschau zeigt alle Teile. Widerrufen nimmt das ganze
+   Ablegen zurück. Text, Formen, Kopien und Nesting wirken auf das gewählte
+   Teil.
    Verknüpfte Bilddateien (PNG, JPEG, GIF, WebP, SVG) werden dabei relativ zur
    SVG geladen und in das Projekt eingebettet; Webadressen werden nicht
    abgerufen, fehlende Bilder werden als Hinweis gemeldet.
@@ -280,8 +288,11 @@ Objektnummern und Regeln bleiben gültig. Ein SVG mit DTD-Entitäten
 ## Lasercutter, Rotationseinheit und Kamera
 
 **VisiCutRust → Lasercutter …** (⌘,) verwaltet mehrere LTT iLaser 4000:
-Name, Hostname, Port, Rotationseinheit, Kamera-URL, Kamerakalibrierung und den
-Hinweis nach dem Senden. Andere Lasercutter-Typen werden nicht unterstützt.
+Name, Hostname, Port, Rotationseinheit, Kamera-URL, Kamerakalibrierung,
+Nullpunkt unten links und den Hinweis nach dem Senden. Andere
+Lasercutter-Typen werden nicht unterstützt. **Nullpunkt unten links** (VisiCut
+`originBottomLeft`) lässt Lineale und die Y-Koordinate von unten links zählen
+und setzt den Bezugspunkt nach unten links; der Auftrag ändert sich nicht.
 Beim ersten Start ist das FAU-Gerät aus den VisiCut-Einstellungen eingerichtet.
 Die Auswahl im Inspektor bestimmt Ziel und verfügbare Funktionen.
 

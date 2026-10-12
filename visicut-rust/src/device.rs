@@ -33,6 +33,10 @@ pub struct LaserDevice {
     pub job_sent_text: String,
     pub camera_url: String,
     pub camera_calibration: Option<CameraCalibration>,
+    /// Coordinates are shown from the bottom left corner of the bed (VisiCut
+    /// `originBottomLeft`): rulers and Y count upwards. Display only; the
+    /// job output does not change.
+    pub origin_bottom_left: bool,
     /// Engrave shift table, curve acceleration and contour start dwell.
     pub machine: MachineSettings,
 }
@@ -48,6 +52,7 @@ impl Default for LaserDevice {
             job_sent_text: String::new(),
             camera_url: String::new(),
             camera_calibration: None,
+            origin_bottom_left: false,
             machine: MachineSettings::default(),
         }
     }
@@ -307,6 +312,7 @@ pub fn from_visicut_xml(source: &str) -> Result<LaserDevice, String> {
         job_sent_text: text(root, "jobSentText").unwrap_or_default(),
         camera_url: text(root, "cameraURL").unwrap_or_default(),
         camera_calibration,
+        origin_bottom_left: text(root, "originBottomLeft").as_deref() == Some("true"),
         machine,
     };
     device.validate()?;

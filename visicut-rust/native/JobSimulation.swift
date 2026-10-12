@@ -101,6 +101,16 @@ private func interpolate(_ a: [Double], _ b: [Double], _ fraction: Double) -> CG
     CGPoint(x: a[0] + (b[0] - a[0]) * fraction, y: a[1] + (b[1] - a[1]) * fraction)
 }
 
+extension Project {
+    /// Umschließendes Rechteck aller Teile in Bett-mm: aktives Teil und
+    /// `parts`, wie `Project::bounds` im Kern.
+    var partsBounds: CGRect {
+        parts.reduce(CGRect(x: x_mm, y: y_mm, width: width_mm, height: height_mm)) { bounds, part in
+            bounds.union(CGRect(x: part.x_mm, y: part.y_mm, width: part.width_mm, height: part.height_mm))
+        }
+    }
+}
+
 func simulationTime(_ seconds: Double) -> String {
     let tenths = max(0, Int((seconds * 10).rounded()))
     let total = tenths / 10
@@ -240,7 +250,7 @@ private struct SimulationCanvas: NSViewRepresentable {
     func updateNSView(_ view: SimulationView, context: Context) { view.canvas = self; view.needsDisplay = true }
 
     private var viewport: CGRect {
-        var bounds = CGRect(x: project.x_mm, y: project.y_mm, width: project.width_mm, height: project.height_mm)
+        var bounds = project.partsBounds
         if let drawing, !drawing.motionBounds.isNull { bounds = bounds.union(drawing.motionBounds) }
         return bounds.insetBy(dx: -max(2, bounds.width * 0.05), dy: -max(2, bounds.height * 0.05))
     }
@@ -251,7 +261,8 @@ private struct SimulationCanvas: NSViewRepresentable {
         let offset = CGPoint(x: (size.width - viewport.width * scale) / 2 - viewport.minX * scale,
             y: (size.height - viewport.height * scale) / 2 - viewport.minY * scale)
         let transform = CGAffineTransform(a: scale, b: 0, c: 0, d: scale, tx: offset.x, ty: offset.y)
-        let artwork = CGRect(x: project.x_mm, y: project.y_mm, width: project.width_mm, height: project.height_mm)
+        // Die Auftragsvorschau (preview_png) deckt alle Teile ab.
+        let artwork = project.partsBounds
         func stroke(_ path: Path, _ color: Color, _ width: CGFloat, dash: [CGFloat] = []) {
             context.addPath(path.cgPath)
             context.setStrokeColor(NSColor(color).cgColor)

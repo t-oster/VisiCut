@@ -169,14 +169,15 @@ impl PreviewUi {
         }
     }
 
-    /// Paints the processing preview over the motif on the bed.
-    pub fn overlay(&self, painter: &egui::Painter, motif: Rect) {
+    /// Paints the processing preview over the bed area of all parts
+    /// (`Project::bounds`, mapped to the screen).
+    pub fn overlay(&self, painter: &egui::Painter, area: Rect) {
         if !self.show_processing {
             return;
         }
         if let Some(texture) = self.ready().and_then(|r| r.preview.as_ref()) {
-            painter.rect_filled(motif, 0.0, Color32::from_white_alpha(170));
-            painter.image(texture.id(), motif, full_uv(), Color32::WHITE);
+            painter.rect_filled(area, 0.0, Color32::from_white_alpha(170));
+            painter.image(texture.id(), area, full_uv(), Color32::WHITE);
         }
     }
 
@@ -443,14 +444,10 @@ fn motion_bounds(timeline: &Timeline) -> Option<[f64; 4]> {
     )
 }
 
-/// Visible bed section in mm: motif and motions with a margin.
+/// Visible bed section in mm: all parts and motions with a margin.
 pub fn viewport(project: &Project, motions: Option<[f64; 4]>) -> [f64; 4] {
-    let mut b = [
-        project.x_mm as f64,
-        project.y_mm as f64,
-        (project.x_mm + project.width_mm) as f64,
-        (project.y_mm + project.height_mm) as f64,
-    ];
+    let [x, y, w, h] = project.bounds().map(f64::from);
+    let mut b = [x, y, x + w, y + h];
     if let Some(m) = motions {
         b = [
             b[0].min(m[0]),
@@ -951,12 +948,8 @@ fn paint_simulation(
         Stroke::new(1.0, Color32::from_gray(160)),
         egui::StrokeKind::Outside,
     );
-    let artwork = view.rect([
-        project.x_mm as f64,
-        project.y_mm as f64,
-        project.width_mm as f64,
-        project.height_mm as f64,
-    ]);
+    // The job preview covers all parts.
+    let artwork = view.rect(project.bounds().map(f64::from));
     // Planned processing, faint.
     if let Some(texture) = &ready.preview {
         painter.image(

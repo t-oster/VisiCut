@@ -16,6 +16,8 @@ struct LaserDevice: Codable, Equatable {
     var job_sent_text: String
     var camera_url: String
     var camera_calibration: CameraCalibration?
+    /// VisiCut `originBottomLeft`: Lineale und Y zählen von unten links; nur Anzeige.
+    var origin_bottom_left: Bool = false
     var machine: MachineSettings
 }
 
@@ -243,6 +245,8 @@ struct DeviceSettings: View {
                         TextField(tr("Hostname / IP"), text: current.hostname)
                         TextField(tr("Port"), value: current.port, format: .number.grouping(.never))
                         Toggle(tr("Rotationseinheit vorhanden"), isOn: current.rotary_axis)
+                        Toggle(tr("Nullpunkt unten links"), isOn: current.origin_bottom_left)
+                            .help(tr("Lineale und Y-Koordinate zählen von unten links wie am Gerät; ändert den Auftrag nicht"))
                     }
                     Section(tr("Kamera")) {
                         TextField(tr("Kamera-URL"), text: current.camera_url, prompt: Text("http://…/visicam.jpg"))

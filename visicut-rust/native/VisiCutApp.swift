@@ -123,12 +123,103 @@ struct Project: Codable, Equatable {
     var remove_duplicate_lines: Bool
     /// Vom aktiven Lasercutter übernommen (Zeilenversatz, Kurvenbeschleunigung, Verweilzeit).
     var machine: MachineSettings
+    /// Name des aktiven Teils. Die Felder oben (SVG, Lage, Größe, Verfahren,
+    /// Parameter, Schritte, Raster, Ignorierregeln) gehören immer zum aktiven Teil.
+    var part_name: String = ""
+    /// Index des aktiven Teils in der Liste aller Teile.
+    var active_part: Int = 0
+    /// Die übrigen Teile in Listenreihenfolge, ohne das aktive.
+    var parts: [ProjectPart] = []
 
     var hasArtwork: Bool { !svg.isEmpty }
     var fitsBed: Bool {
-        x_mm.isFinite && y_mm.isFinite && width_mm.isFinite && height_mm.isFinite &&
-        x_mm >= 0 && y_mm >= 0 && width_mm > 0 && height_mm > 0 &&
-        x_mm + width_mm <= bed_width_mm + 0.001 && y_mm + height_mm <= bed_height_mm + 0.001
+        func fits(_ x: Double, _ y: Double, _ width: Double, _ height: Double) -> Bool {
+            x.isFinite && y.isFinite && width.isFinite && height.isFinite &&
+            x >= 0 && y >= 0 && width > 0 && height > 0 &&
+            x + width <= bed_width_mm + 0.001 && y + height <= bed_height_mm + 0.001
+        }
+        return fits(x_mm, y_mm, width_mm, height_mm) &&
+            parts.allSatisfy { fits($0.x_mm, $0.y_mm, $0.width_mm, $0.height_mm) }
+    }
+    /// Namen aller Teile in Listenreihenfolge (leer ohne Motiv).
+    var partNames: [String] {
+        guard hasArtwork else { return [] }
+        var names = parts.map(\.name)
+        names.insert(part_name, at: min(max(0, active_part), names.count))
+        return names
+    }
+    /// Die nicht aktiven Teile mit ihrem Index in der Liste aller Teile.
+    var inactiveParts: [(index: Int, part: ProjectPart)] {
+        parts.enumerated().map { entry -> (index: Int, part: ProjectPart) in
+            (index: entry.offset < active_part ? entry.offset : entry.offset + 1, part: entry.element)
+        }
+    }
+}
+
+/// Ein weiteres Teil (eine importierte Datei) mit eigener Lage und
+/// Zuordnung (visicut_core::project::Part).
+struct ProjectPart: Codable, Equatable {
+    var name: String
+    var svg: String
+    var x_mm: Double
+    var y_mm: Double
+    var width_mm: Double
+    var height_mm: Double
+    var operation: Operation
+    var power_percent: Double
+    var speed_percent: Double
+    var passes: Int
+    var steps: [JobStep]
+    var raster: RasterSettings
+    var ignore_filters: [[Filter]]
+}
+
+/// Antwort von `part_previews`: Vorschaubilder aller Teile.
+struct PartPreviewList: Decodable {
+    struct Entry: Decodable {
+        let index: Int
+        let name: String
+        let x_mm: Double
+        let y_mm: Double
+        let width_mm: Double
+        let height_mm: Double
+        let active: Bool
+        let preview: Preview
+    }
+    let parts: [Entry]
+}
+
+/// Vorschaubild eines Teils zum Zeichnen auf dem Arbeitsbett.
+struct PartImage {
+    let index: Int
+    let name: String
+    /// Lage und Größe in Bett-mm.
+    let rect: CGRect
+    let active: Bool
+    let image: NSImage?
+}
+
+/// Zuletzt geöffnete oder gesicherte Dateien (neueste zuerst), wie unter Windows/Linux.
+enum RecentFiles {
+    private static let key = "recentFiles"
+    private static let limit = 10
+    /// Der UI-Test verändert die Liste der Benutzerin nicht.
+    private static var enabled: Bool { !CommandLine.arguments.contains("--ui-test") }
+    static var paths: [String] { UserDefaults.standard.stringArray(forKey: key) ?? [] }
+    static func add(_ url: URL) {
+        guard enabled else { return }
+        let path = url.path
+        var list = paths.filter { $0 != path }
+        list.insert(path, at: 0)
+        UserDefaults.standard.set(Array(list.prefix(limit)), forKey: key)
+    }
+    static func remove(_ path: String) {
+        guard enabled else { return }
+        UserDefaults.standard.set(paths.filter { $0 != path }, forKey: key)
+    }
+    static func clear() {
+        guard enabled else { return }
+        UserDefaults.standard.removeObject(forKey: key)
     }
 }
 
@@ -211,6 +302,9 @@ final class AppModel: ObservableObject {
         if oldValue.svg != project.svg || oldValue.steps != project.steps || oldValue.ignore_filters != project.ignore_filters {
             scheduleMappingRefresh()
         }
+        if oldValue.parts != project.parts || oldValue.active_part != project.active_part {
+            refreshPartImages()
+        }
         if preparedJob != nil { status = tr("Auftrag geändert. Vorschau und Zeit neu berechnen.") }
         preparedJob = nil
         jobImage = nil
@@ -241,7 +335,14 @@ final class AppModel: ObservableObject {
     func zoomBy(_ factor: Double) { zoom = min(8, max(0.5, zoom * factor)); if zoom <= 1 { pan = .zero } }
     func fitZoom() { zoom = 1; pan = .zero }
     @Published var showGrid = true
-    @Published var devices: DeviceStore
+    /// Vorschaubilder aller Teile; nur bei mehreren Teilen gefüllt (sonst genügt `image`).
+    @Published var partImages: [PartImage] = []
+    private var partImageGeneration = 0
+    @Published var devices: DeviceStore { didSet {
+        // Nullpunkt unten links: Bezugspunkt standardmäßig unten links.
+        let wasBottomLeft = oldValue.devices.indices.contains(oldValue.selected) && oldValue.devices[oldValue.selected].origin_bottom_left
+        if wasBottomLeft != originBottomLeft { referenceY = originBottomLeft ? 1 : 0 }
+    } }
     @Published var showCamera = false
     @Published var cameraImage: NSImage?
     @Published var cameraLoading = false
@@ -279,6 +380,7 @@ final class AppModel: ObservableObject {
             fatalError("Rust-Kern konnte nicht initialisiert werden: \(error)")
         }
         applyDevice()
+        if originBottomLeft { referenceY = 1 }
         replacing = false
         if CommandLine.arguments.contains("--demo") || CommandLine.arguments.contains("--ui-test") {
             demo()
@@ -371,6 +473,90 @@ final class AppModel: ObservableObject {
         project.x_mm = max(0, (project.bed_width_mm - project.width_mm) / 2)
         project.y_mm = max(0, (project.bed_height_mm - project.height_mm) / 2)
     }
+    /// Der Lasercutter misst Y vom unteren Bettrand aus (nur Anzeige; der Auftrag bleibt gleich).
+    var originBottomLeft: Bool { device.origin_bottom_left }
+    /// Y des Bezugspunkts wie angezeigt: bei Nullpunkt unten links vom unteren Bettrand aus.
+    var displayY: Double {
+        let y = referencePoint.1
+        return originBottomLeft ? project.bed_height_mm - y : y
+    }
+    func setDisplayY(_ value: Double) {
+        guard value.isFinite else { return }
+        let y = originBottomLeft ? project.bed_height_mm - value : value
+        project.y_mm = y - project.height_mm * referenceY
+    }
+
+    // MARK: Teile
+
+    /// Lädt die Vorschaubilder der Teile im Hintergrund (nur bei mehreren Teilen).
+    func refreshPartImages() {
+        partImageGeneration += 1
+        let generation = partImageGeneration
+        guard project.hasArtwork, !project.parts.isEmpty else {
+            if !partImages.isEmpty { partImages = [] }
+            return
+        }
+        let snapshot = project
+        DispatchQueue.global(qos: .userInitiated).async {
+            let result = Result { try RustCore.decode("part_previews", project: snapshot) as PartPreviewList }
+            DispatchQueue.main.async {
+                guard generation == self.partImageGeneration, case .success(let list) = result else { return }
+                self.partImages = list.parts.map { entry in
+                    PartImage(index: entry.index, name: entry.name,
+                              rect: CGRect(x: entry.x_mm, y: entry.y_mm, width: entry.width_mm, height: entry.height_mm),
+                              active: entry.active, image: NSImage(data: Data(entry.preview.png)))
+                }
+            }
+        }
+    }
+
+    /// Anzeigename eines Teils (Dateiname oder „Teil 2“).
+    func partTitle(_ index: Int) -> String {
+        let names = project.partNames
+        guard names.indices.contains(index), !names[index].isEmpty else { return tr("Teil {number}", ["number": index + 1]) }
+        return names[index]
+    }
+
+    /// Macht ein anderes Teil aktiv. Kein Widerrufschritt: Die Auswahl ändert keinen Inhalt.
+    func selectPart(_ index: Int) {
+        guard !busy, project.hasArtwork, index != project.active_part, index >= 0, index <= project.parts.count else { return }
+        do {
+            let response: ProjectResponse = try RustCore.decode("select_part", project: project, values: ["index": index])
+            accept(response, dirty: dirty)
+            refreshMapping()
+            status = tr("Teil „{name}“ gewählt", ["name": partTitle(project.active_part)])
+            if let warnings = response.warnings, !warnings.isEmpty { error = warnings.joined(separator: "\n") }
+        } catch { self.error = error.localizedDescription }
+    }
+
+    func duplicatePart() {
+        guard project.hasArtwork, !busy else { return }
+        if compose("duplicate_part", values: [:]) { status = tr("Teil dupliziert · ⌘Z widerruft") }
+    }
+
+    static let graphicExtensions = ["svg", "psvg", "dxf", "eps", "ps", "pdf", "png", "jpg", "jpeg", "bmp", "gif", "nc", "gcode", "plf", "ls"]
+
+    /// Weitere Grafiken als eigene Teile hinzufügen (wie Ablegen auf dem Fenster).
+    func chooseAdditionalFiles() {
+        guard !busy else { return }
+        let panel = NSOpenPanel()
+        panel.title = tr("Grafiken als Teile hinzufügen")
+        panel.allowedContentTypes = Self.graphicExtensions.compactMap { UTType(filenameExtension: $0) }
+        panel.allowsMultipleSelection = true
+        guard panel.runModal() == .OK, !panel.urls.isEmpty else { return }
+        dropFiles(panel.urls)
+    }
+
+    /// Öffnet eine Datei aus „Zuletzt geöffnet“; fehlende Dateien verschwinden aus der Liste.
+    func openRecent(_ path: String) {
+        guard !busy else { return }
+        guard FileManager.default.fileExists(atPath: path) else {
+            RecentFiles.remove(path)
+            error = tr("Datei nicht gefunden: {path}", ["path": path])
+            return
+        }
+        open(URL(fileURLWithPath: path))
+    }
 
     func accept(_ response: ProjectResponse, dirty: Bool) {
         replacing = true
@@ -407,8 +593,7 @@ final class AppModel: ObservableObject {
         guard !busy else { return }
         let panel = NSOpenPanel()
         panel.title = tr("Grafik oder VisiCutRust-Projekt öffnen")
-        let graphics = ["svg", "psvg", "dxf", "eps", "ps", "pdf", "png", "jpg", "jpeg", "bmp", "gif", "nc", "gcode", "plf", "ls"]
-        panel.allowedContentTypes = (graphics + ["vcr"]).compactMap { UTType(filenameExtension: $0) } + [.json]
+        panel.allowedContentTypes = (Self.graphicExtensions + ["vcr"]).compactMap { UTType(filenameExtension: $0) } + [.json]
         panel.allowsMultipleSelection = false
         if panel.runModal() == .OK, let url = panel.url { open(url) }
     }
@@ -420,6 +605,7 @@ final class AppModel: ObservableObject {
             let response: ProjectResponse = try RustCore.decode(isSVG ? "import" : "load", project: project, path: url.path)
             accept(response, dirty: isSVG)
             projectURL = isSVG ? nil : url
+            RecentFiles.add(url)
             status = isSVG ? tr("{file} importiert · Originalmaße übernommen", ["file": url.lastPathComponent]) : tr("Projekt geöffnet")
             if let warnings = response.warnings, !warnings.isEmpty { self.error = warnings.joined(separator: "\n") }
         } catch { self.error = error.localizedDescription }
@@ -443,6 +629,7 @@ final class AppModel: ObservableObject {
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             try encoder.encode(project).write(to: url, options: .atomic)
             projectURL = url
+            RecentFiles.add(url)
             dirty = false
             status = tr("Projekt gespeichert.")
             return true
@@ -637,11 +824,13 @@ func format(_ value: Double) -> String {
 }
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSToolbarDelegate, NSMenuItemValidation, NSToolbarItemValidation {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSToolbarDelegate, NSMenuItemValidation, NSToolbarItemValidation, NSMenuDelegate {
     var model: AppModel!
     var workspaceWindow: NSWindow?
     var settingsWindow: NSWindow?
     var materialsWindow: NSWindow?
+    /// Untermenü „Zuletzt geöffnet“ (wird bei jedem Aufklappen neu gefüllt).
+    private var recentMenu: NSMenu?
     private var changes: AnyCancellable?
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
@@ -740,6 +929,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
         let file = submenu(tr("Ablage"))
         file.addItem(menuItem(tr("Neues Projekt"), action: #selector(newProject), key: "n"))
         file.addItem(menuItem(tr("Öffnen …"), action: #selector(openFile), key: "o"))
+        // Zuletzt geöffnete Dateien; die Einträge entstehen beim Aufklappen (menuNeedsUpdate).
+        let recent = NSMenu(title: tr("Zuletzt geöffnet"))
+        recent.delegate = self
+        fillRecentMenu(recent)
+        recentMenu = recent
+        let recentItem = NSMenuItem(title: tr("Zuletzt geöffnet"), action: nil, keyEquivalent: "")
+        recentItem.submenu = recent
+        file.addItem(recentItem)
+        file.addItem(menuItem(tr("Hinzufügen …"), action: #selector(addFiles), key: "o", modifiers: [.command, .shift]))
         file.addItem(menuItem(tr("Beispiel öffnen"), action: #selector(openDemo)))
         file.addItem(menuItem(tr("Bitmap vektorisieren …"), action: #selector(vectorizeBitmap)))
         file.addItem(.separator())
@@ -757,6 +955,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
         }
         edit.addItem(.separator())
         edit.addItem(menuItem(tr("Duplizieren"), action: #selector(duplicateArtwork), key: "d"))
+        edit.addItem(menuItem(tr("Teil duplizieren"), action: #selector(duplicatePart)))
+        // Entfernt das aktive Teil (bei nur einem Teil das ganze Motiv).
         edit.addItem(menuItem(tr("Motiv löschen"), action: #selector(deleteArtwork)))
         let object = submenu(tr("Objekt"))
         object.addItem(menuItem(tr("Text …"), action: #selector(insertText)))
@@ -805,6 +1005,40 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
         NSApp.mainMenu = bar
     }
 
+    /// Einträge von „Zuletzt geöffnet“: je Datei ihr Name (Pfad als Tooltip), danach „Liste leeren“.
+    private func fillRecentMenu(_ menu: NSMenu) {
+        menu.removeAllItems()
+        let paths = RecentFiles.paths
+        if paths.isEmpty {
+            // Ohne Aktion ist der Eintrag deaktiviert.
+            menu.addItem(NSMenuItem(title: tr("Keine Dateien"), action: nil, keyEquivalent: ""))
+            return
+        }
+        for path in paths {
+            let item = menuItem(URL(fileURLWithPath: path).lastPathComponent, action: #selector(openRecent(_:)))
+            item.toolTip = path
+            item.representedObject = path
+            menu.addItem(item)
+        }
+        menu.addItem(.separator())
+        menu.addItem(menuItem(tr("Liste leeren"), action: #selector(clearRecent)))
+    }
+
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        if menu === recentMenu { fillRecentMenu(menu) }
+    }
+
+    @objc func openRecent(_ sender: NSMenuItem) {
+        guard let path = sender.representedObject as? String else { return }
+        showWorkspace()
+        // Erst nach dem Schließen des Menüs öffnen (Rückfrage, Liste wird neu sortiert).
+        DispatchQueue.main.async { self.model.openRecent(path) }
+    }
+    @objc func clearRecent() {
+        RecentFiles.clear()
+        if let recentMenu { fillRecentMenu(recentMenu) }
+    }
+
     /// Wechselt die Sprache und baut Menüs, Symbolleiste, Fenstertitel und
     /// SwiftUI-Ansichten neu auf (die Auswahl bleibt in UserDefaults gespeichert).
     @objc func chooseLanguage(_ sender: NSMenuItem) {
@@ -841,7 +1075,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
         case #selector(toggleGrid): item.state = model.showGrid ? .on : .off; return true
         case #selector(toggleCamera): item.state = model.showCamera ? .on : .off; return !model.device.camera_url.isEmpty
         case #selector(refreshCamera): return model.showCamera && !model.cameraLoading
-        case #selector(openFile), #selector(openDemo), #selector(newProject), #selector(showSettings): return !model.busy
+        case #selector(openFile), #selector(openDemo), #selector(newProject), #selector(showSettings), #selector(openRecent(_:)): return !model.busy
+        case #selector(clearRecent): return !RecentFiles.paths.isEmpty
+        case #selector(addFiles): return !model.busy && !model.showJobPreview && model.composeTool == nil
+        case #selector(duplicatePart):
+            return model.project.hasArtwork && !model.busy && !model.showJobPreview && model.composeTool == nil
         case #selector(vectorizeBitmap): return !model.busy && !model.showJobPreview && model.vectorizeSource == nil
         case #selector(insertText), #selector(insertShape), #selector(insertSign):
             return !model.busy && !model.showJobPreview && model.composeTool == nil
@@ -865,6 +1103,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
     @objc func arrayCopies() { showWorkspace(); model.composeTool = .array }
     @objc func nestParts() { showWorkspace(); model.composeTool = .nest }
     @objc func duplicateArtwork() { model.duplicateArtwork() }
+    @objc func duplicatePart() { model.duplicatePart() }
+    @objc func addFiles() { showWorkspace(); model.chooseAdditionalFiles() }
     @objc func deleteArtwork() { model.deleteArtwork() }
     @objc func rotateLeft() { model.transformArtwork(rotate: -90) }
     @objc func rotateRight() { model.transformArtwork(rotate: 90) }
@@ -1112,6 +1352,9 @@ struct Inspector: View {
                     NumberField(tr("Stärke"), value: $model.project.thickness_mm, unit: "mm")
                 }
             }
+            if model.project.hasArtwork {
+                PartsSection(model: model)
+            }
             Section(tr("Objektzuordnung")) {
                 Picker(tr("Zuordnung"), selection: Binding(get: { model.assignmentMode }, set: { model.setAssignmentMode($0) })) {
                     ForEach(AssignmentMode.allCases) { Text($0.title).tag($0) }
@@ -1192,9 +1435,12 @@ struct Inspector: View {
                     VStack(spacing: 6) {
                         NumberField("X", value: Binding(get: { model.referencePoint.0 },
                             set: { model.project.x_mm = $0 - model.project.width_mm * model.referenceX }), unit: "mm")
-                        NumberField("Y", value: Binding(get: { model.referencePoint.1 },
-                            set: { model.project.y_mm = $0 - model.project.height_mm * model.referenceY }), unit: "mm")
+                        // Bei Nullpunkt unten links vom unteren Bettrand aus gemessen.
+                        NumberField("Y", value: Binding(get: { model.displayY }, set: { model.setDisplayY($0) }), unit: "mm")
                     }
+                }
+                if model.originBottomLeft {
+                    Text(tr("Nullpunkt unten links")).font(.caption).foregroundStyle(.secondary)
                 }
                 NumberField(tr("Breite"), value: Binding(get: { model.project.width_mm }, set: { model.changeWidth($0) }), unit: "mm")
                 NumberField(tr("Höhe"), value: Binding(get: { model.project.height_mm }, set: { model.changeHeight($0) }), unit: "mm")
@@ -1205,6 +1451,36 @@ struct Inspector: View {
         .formStyle(.grouped)
         .disabled(model.busy)
         .navigationTitle(tr("Job vorbereiten"))
+    }
+}
+
+/// Liste aller Teile (eine importierte Datei je Teil); Klick wählt das aktive Teil.
+struct PartsSection: View {
+    @ObservedObject var model: AppModel
+    var body: some View {
+        Section(tr("Teile")) {
+            ForEach(model.project.partNames.indices, id: \.self) { index in
+                let active = index == model.project.active_part
+                Button { model.selectPart(index) } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: active ? "checkmark.circle.fill" : "circle")
+                            .foregroundStyle(active ? Color.accentColor : Color.secondary)
+                        Text(model.partTitle(index)).fontWeight(active ? .semibold : .regular).lineLimit(1)
+                        Spacer(minLength: 0)
+                    }.contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(active ? .isSelected : [])
+            }
+            HStack {
+                Button(tr("Datei hinzufügen …")) { model.chooseAdditionalFiles() }
+                Spacer()
+                Button { model.duplicatePart() } label: { Image(systemName: "plus.square.on.square") }
+                    .help(tr("Teil duplizieren"))
+                Button { model.deleteArtwork() } label: { Image(systemName: "trash") }
+                    .help(tr("Teil entfernen"))
+            }.buttonStyle(.borderless)
+        }
     }
 }
 
@@ -1321,7 +1597,10 @@ struct JobPreview: View {
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                         Text(tr("Rot: Schneiden · Blau: Gravieren · Orange: 3D-Gravur · Violett: Markieren"))
                             .font(.caption).foregroundStyle(.secondary)
-                        Text("\(format(model.project.width_mm)) × \(format(model.project.height_mm)) mm · X \(format(model.project.x_mm)) / Y \(format(model.project.y_mm)) mm")
+                        // Umschließendes Rechteck aller Teile (wie das Vorschaubild).
+                        let bounds = model.project.partsBounds
+                        let shownY: Double = model.originBottomLeft ? model.project.bed_height_mm - Double(bounds.maxY) : Double(bounds.minY)
+                        Text("\(format(Double(bounds.width))) × \(format(Double(bounds.height))) mm · X \(format(Double(bounds.minX))) / Y \(format(shownY)) mm")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                     ScrollView {
@@ -1500,9 +1779,24 @@ final class BedView: NSView {
     override func magnify(with event: NSEvent) {
         zoom(by: 1 + event.magnification, at: convert(event.locationInWindow, from: nil))
     }
+    /// Rechteck in Bett-mm als Ansichtskoordinaten.
+    private func viewRect(_ x: Double, _ y: Double, _ width: Double, _ height: Double) -> NSRect {
+        let origin = self.bed.origin, factor = self.scale
+        return NSRect(x: origin.x + x * factor, y: origin.y + y * factor, width: width * factor, height: height * factor)
+    }
+    private func viewRect(_ mm: CGRect) -> NSRect {
+        viewRect(Double(mm.minX), Double(mm.minY), Double(mm.width), Double(mm.height))
+    }
+    /// Das aktive Teil.
     private var motif: NSRect {
         let p = model.project
-        return NSRect(x: bed.minX + p.x_mm * scale, y: bed.minY + p.y_mm * scale, width: p.width_mm * scale, height: p.height_mm * scale)
+        return viewRect(p.x_mm, p.y_mm, p.width_mm, p.height_mm)
+    }
+    /// Index (in der Liste aller Teile) des obersten nicht aktiven Teils unter dem Punkt.
+    private func inactivePart(at point: NSPoint) -> Int? {
+        model.project.inactiveParts.reversed().first { entry in
+            viewRect(entry.part.x_mm, entry.part.y_mm, entry.part.width_mm, entry.part.height_mm).contains(point)
+        }?.index
     }
     override func draw(_ dirtyRect: NSRect) {
         // The bed is document content: keep a white paper surface so black SVG
@@ -1530,19 +1824,44 @@ final class BedView: NSView {
         for x in stride(from: 0.0, through: model.project.bed_width_mm, by: 100.0) {
             (String(Int(x)) as NSString).draw(at: NSPoint(x: bed.minX + x * scale - 8, y: 10), withAttributes: attributes)
         }
+        // Bei Nullpunkt unten links zählt die Y-Skala vom unteren Bettrand aufwärts.
+        let bottomLeft = model.originBottomLeft
         for y in stride(from: 0.0, through: model.project.bed_height_mm, by: 100.0) {
-            (String(Int(y)) as NSString).draw(at: NSPoint(x: 2, y: bed.minY + y * scale - 6), withAttributes: attributes)
+            let position = bottomLeft ? model.project.bed_height_mm - y : y
+            (String(Int(y)) as NSString).draw(at: NSPoint(x: 2, y: bed.minY + position * scale - 6), withAttributes: attributes)
         }
         NSGraphicsContext.saveGraphicsState()
         NSBezierPath(rect: bed).addClip()
-        (model.showProcessing ? model.jobImage ?? model.image : model.image)?.draw(in: motif, from: .zero, operation: .sourceOver, fraction: 1, respectFlipped: true, hints: [.interpolation: NSImageInterpolation.high])
+        let hints: [NSImageRep.HintKey: Any] = [.interpolation: NSImageInterpolation.high]
+        if model.showProcessing, let job = model.jobImage {
+            // Die Auftragsvorschau umfasst alle Teile.
+            job.draw(in: viewRect(model.project.partsBounds), from: .zero, operation: .sourceOver, fraction: 1, respectFlipped: true, hints: hints)
+        } else {
+            for part in model.partImages where !part.active {
+                part.image?.draw(in: viewRect(part.rect), from: .zero, operation: .sourceOver, fraction: 1, respectFlipped: true, hints: hints)
+            }
+            model.image?.draw(in: motif, from: .zero, operation: .sourceOver, fraction: 1, respectFlipped: true, hints: hints)
+        }
+        // Nicht aktive Teile mit dünnem grauen Rahmen, das aktive in Akzentfarbe.
+        NSColor(calibratedWhite: 0.6, alpha: 1).setStroke()
+        for entry in model.project.inactiveParts {
+            let frame = NSBezierPath(rect: viewRect(entry.part.x_mm, entry.part.y_mm, entry.part.width_mm, entry.part.height_mm))
+            frame.lineWidth = 0.75
+            frame.stroke()
+        }
         let selection = NSBezierPath(rect: motif); selection.lineWidth = 1.5
         NSColor.controlAccentColor.setStroke(); selection.stroke()
         NSGraphicsContext.restoreGraphicsState()
     }
     override func mouseDown(with event: NSEvent) {
         let point = convert(event.locationInWindow, from: nil)
-        guard !model.busy, motif.contains(point) else { return }
+        guard !model.busy else { return }
+        if !motif.contains(point) {
+            // Klick auf ein anderes Teil wählt es aus; Ziehen verschiebt dann dieses Teil.
+            guard let index = inactivePart(at: point) else { return }
+            model.selectPart(index)
+            guard model.project.active_part == index, motif.contains(point) else { return }
+        }
         window?.makeFirstResponder(self)
         dragStart = point
         originalPosition = NSPoint(x: model.project.x_mm, y: model.project.y_mm)
@@ -1574,7 +1893,13 @@ final class BedView: NSView {
     }
     override func menu(for event: NSEvent) -> NSMenu? {
         let point = convert(event.locationInWindow, from: nil)
-        guard !model.busy, model.project.hasArtwork, motif.contains(point) else { return nil }
+        guard !model.busy, model.project.hasArtwork else { return nil }
+        if !motif.contains(point) {
+            // Rechtsklick auf ein anderes Teil wählt es zuerst aus.
+            guard let index = inactivePart(at: point) else { return nil }
+            model.selectPart(index)
+            guard model.project.active_part == index else { return nil }
+        }
         window?.makeFirstResponder(self)
         let menu = NSMenu()
         func item(_ title: String, _ action: Selector) {
@@ -1583,6 +1908,7 @@ final class BedView: NSView {
             menu.addItem(entry)
         }
         item(tr("Duplizieren"), #selector(duplicateArtwork))
+        item(tr("Teil duplizieren"), #selector(duplicatePart))
         item(tr("Kopien im Raster …"), #selector(arrayCopies))
         item(tr("Teile verschachteln (Nesting) …"), #selector(nestParts))
         menu.addItem(.separator())
@@ -1591,10 +1917,11 @@ final class BedView: NSView {
         item(tr("Horizontal spiegeln"), #selector(flipHorizontal))
         item(tr("Vertikal spiegeln"), #selector(flipVertical))
         menu.addItem(.separator())
-        item(tr("Löschen"), #selector(deleteArtwork))
+        item(model.project.parts.isEmpty ? tr("Löschen") : tr("Teil entfernen"), #selector(deleteArtwork))
         return menu
     }
     @objc func duplicateArtwork() { model.duplicateArtwork() }
+    @objc func duplicatePart() { model.duplicatePart() }
     @objc func arrayCopies() { model.composeTool = .array }
     @objc func nestParts() { model.composeTool = .nest }
     @objc func rotateLeft() { model.transformArtwork(rotate: -90) }

@@ -922,6 +922,15 @@ impl JobUi {
     pub fn processing(&mut self, ui: &mut egui::Ui, project: &mut Project, dirty: &mut bool) {
         self.document.refresh(&project.svg);
         crate::form::section(ui, tr("Objektzuordnung"), |ui| {
+            if project.part_count() > 1 {
+                crate::form::caption(
+                    ui,
+                    tr!(
+                        "Gilt für das gewählte Teil „{name}“.",
+                        name = crate::part_title(&project.part_name, project.active_part)
+                    ),
+                );
+            }
             let mode = assignment_mode(project);
             let options = AssignmentMode::ALL.map(|m| (m, m.title()));
             let chosen = ui
