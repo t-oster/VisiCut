@@ -1,7 +1,7 @@
 //! Nicht-grafische Logik der egui-Arbeitsfläche: Zoom, Raster, Lineale,
 //! Verschieben des Motivs und das Schreiben von LTT-Dateien.
 use std::path::{Path, PathBuf};
-use visicut_core::{ltt::PreparedStep, project::Project};
+use visicut_core::{ltt::PreparedStep, project::Project, tr};
 
 /// Zoomstufen wie in der macOS-Oberfläche: 50 % bis 300 % in 25-%-Schritten.
 pub const ZOOM_MIN: f32 = 0.5;
@@ -126,19 +126,25 @@ fn percent(value: f32) -> String {
 
 /// Parameter eines Schritts für die Sende-Bestätigung.
 pub fn step_parameters(step: &PreparedStep) -> String {
-    let mut text = format!(
-        "Leistung {} % · Geschwindigkeit {} % · {} {}",
-        percent(step.power_percent),
-        percent(step.speed_percent),
-        step.passes,
-        if step.passes == 1 {
-            "Durchgang"
-        } else {
-            "Durchgänge"
-        }
-    );
+    let power = percent(step.power_percent);
+    let speed = percent(step.speed_percent);
+    let mut text = if step.passes == 1 {
+        tr!(
+            "Leistung {power} % · Geschwindigkeit {speed} % · 1 Durchgang",
+            power = power,
+            speed = speed
+        )
+    } else {
+        tr!(
+            "Leistung {power} % · Geschwindigkeit {speed} % · {passes} Durchgänge",
+            power = power,
+            speed = speed,
+            passes = step.passes
+        )
+    };
     if step.parameter_sets > 1 {
-        text += &format!(" · {} Parametersätze", step.parameter_sets);
+        text += " · ";
+        text += &tr!("{count} Parametersätze", count = step.parameter_sets);
     }
     text
 }

@@ -1,4 +1,5 @@
 //! SVG object selections preserve the original viewport, groups and definitions.
+use crate::i18n::tr;
 use resvg::usvg::roxmltree::{Document, Node};
 use serde::Serialize;
 
@@ -58,7 +59,7 @@ pub fn objects(svg: &str) -> Result<Vec<Object>, String> {
                 .attribute("stroke")
                 .filter(|p| *p != "none")
                 .or_else(|| node.attribute("fill"))
-                .unwrap_or("geerbt");
+                .unwrap_or(tr("geerbt"));
             Object {
                 id,
                 label: format!("{} · {} · {}", id + 1, name, paint),
@@ -71,7 +72,7 @@ pub fn filter(svg: &str, selected: &[usize]) -> Result<String, String> {
     let doc = Document::parse(svg).map_err(|e| e.to_string())?;
     let nodes: Vec<_> = doc.descendants().filter(|n| selectable(*n)).collect();
     if selected.iter().any(|id| *id >= nodes.len()) {
-        return Err("SVG-Objekt nicht vorhanden".into());
+        return Err(tr("SVG-Objekt nicht vorhanden").into());
     }
     // Keep excluded objects inside defs so local <use> references still resolve.
     // The drawing order and ancestor transforms of selected objects stay intact.

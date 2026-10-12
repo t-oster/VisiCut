@@ -1,3 +1,4 @@
+use crate::{i18n::tr, tr};
 use resvg::usvg::fontdb;
 use resvg::{tiny_skia, usvg};
 use std::sync::{Arc, OnceLock};
@@ -100,15 +101,15 @@ pub fn options() -> usvg::Options<'static> {
 
 pub fn render(source: &str) -> Result<Preview, String> {
     if source.len() > 20 * 1024 * 1024 {
-        return Err("SVG ist größer als 20 MB".into());
+        return Err(tr("SVG ist größer als 20 MB").into());
     }
     let tree = usvg::Tree::from_str(source, &options())
-        .map_err(|e| format!("SVG konnte nicht gelesen werden: {e}"))?;
+        .map_err(|e| tr!("SVG konnte nicht gelesen werden: {error}", error = e))?;
     let size = tree.size();
     let scale = (1600.0 / size.width().max(size.height())).min(2.0);
     let width = (size.width() * scale).ceil().max(1.0) as u32;
     let height = (size.height() * scale).ceil().max(1.0) as u32;
-    let mut pixmap = tiny_skia::Pixmap::new(width, height).ok_or("Vorschau zu groß")?;
+    let mut pixmap = tiny_skia::Pixmap::new(width, height).ok_or(tr("Vorschau zu groß"))?;
     resvg::render(
         &tree,
         tiny_skia::Transform::from_scale(scale, scale),

@@ -3,6 +3,27 @@
 Jede Version hat einen Abschnitt `## <Version> – <Datum>`; der Release-Workflow
 übernimmt ihn als Beschreibung des GitHub-Releases.
 
+## 0.12.0 – 12.10.2026
+
+- **Sprachen** (egui und macOS): Oberfläche, Meldungen des Rust-Kerns und der
+  Importfilter auf Deutsch, Englisch, Französisch, Italienisch und
+  Niederländisch; Auswahl unter **Darstellung → Sprache**, ohne Auswahl gilt
+  die Systemsprache. Neu angelegte Standardwerte (Projektname, „Eigenes
+  Material“, „Neues Material“, Schildtext, Namen neuer Formen) entstehen in
+  der gewählten Sprache. Ein Test stellt sicher, dass jeder Text in jeder
+  Sprache mit denselben Platzhaltern übersetzt ist.
+- **Zuletzt geöffnet** (egui): **Datei → Zuletzt geöffnet** listet die zehn
+  zuletzt geöffneten oder gesicherten Dateien; Sprache und Liste stehen in
+  `app-settings.json` im Einstellungsordner.
+- **Oberfläche wie unter macOS** (egui): Werkzeugleiste mit Öffnen, Sichern,
+  Vorschau, Export und Senden statt Knöpfen am Ende der Seitenleiste;
+  Seitenleiste in der Reihenfolge der macOS-App (Projekt, Rotationseinheit,
+  Material, Objektzuordnung, Bearbeitung, Position und Größe) als Karten mit
+  Bezeichnung links und Feld rechts; segmentierte Zuordnungswahl, farbige
+  Verfahrenswahl, ein Abschnitt je Schritt; Vorschauleiste mit Zeitschätzung
+  und Legende; Startansicht ohne Motiv wie unter macOS; besser lesbare
+  Hinweistexte und Farbtabelle für die Regelvorlage „Farben“.
+
 ## 0.11.0 – 11.10.2026
 
 - **Mehrere Dateien per Drag-and-drop hinzufügen** (egui und macOS): Ist schon

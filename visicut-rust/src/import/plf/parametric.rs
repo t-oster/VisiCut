@@ -11,6 +11,7 @@
 //! `Helper.evaluateExpression`.
 use super::script::{self, Engine};
 use super::xml;
+use crate::{i18n::tr, tr};
 use boa_engine::{JsString, JsValue, js_string};
 use roxmltree::Node;
 use std::ops::Range;
@@ -74,7 +75,7 @@ impl Value {
             Value::Integer(v) => v.to_string(),
             Value::Boolean(v) => v.to_string(),
             Value::Text(v) => format!("„{v}“"),
-            Value::Null => "leer".into(),
+            Value::Null => tr("leer").into(),
         }
     }
 }
@@ -106,7 +107,7 @@ pub fn render(
             ..Default::default()
         };
         let document = roxmltree::Document::parse_with_options(&source, options)
-            .map_err(|e| format!("SVG konnte nicht gelesen werden: {e}"))?;
+            .map_err(|e| tr!("SVG konnte nicht gelesen werden: {error}", error = e))?;
         engine.eval(BOOTSTRAP)?;
         let mut renderer = Renderer {
             engine,
@@ -186,7 +187,11 @@ impl Renderer<'_> {
                     .ok()
                     .filter(|n| !n.is_nan())
                     .ok_or_else(|| {
-                        format!("Parameter „{name}“: Vorgabe „{expression}“ ist keine Zahl")
+                        tr!(
+                            "Parameter „{name}“: Vorgabe „{expression}“ ist keine Zahl",
+                            name = name,
+                            expression = expression
+                        )
                     })?;
                 default = Some(number.to_string());
             }
@@ -195,10 +200,13 @@ impl Renderer<'_> {
             let number = |text: &Option<String>| -> Result<f64, String> {
                 match text {
                     None => Ok(0.0),
-                    Some(t) => t
-                        .trim()
-                        .parse::<f64>()
-                        .map_err(|_| format!("Parameter „{name}“: Vorgabe „{t}“ ist keine Zahl")),
+                    Some(t) => t.trim().parse::<f64>().map_err(|_| {
+                        tr!(
+                            "Parameter „{name}“: Vorgabe „{expression}“ ist keine Zahl",
+                            name = name,
+                            expression = t
+                        )
+                    }),
                 }
             };
             let value = match base {
@@ -211,8 +219,10 @@ impl Renderer<'_> {
                 ),
                 "String" => Value::Text(default.unwrap_or_default()),
                 _ => {
-                    self.warnings.push(format!(
-                        "Parameter „{name}“ hat den unbekannten Typ „{kind}“"
+                    self.warnings.push(tr!(
+                        "Parameter „{name}“ hat den unbekannten Typ „{kind}“",
+                        name = name,
+                        kind = kind
                     ));
                     Value::Null
                 }
@@ -231,7 +241,7 @@ impl Renderer<'_> {
 
     fn element(&mut self, node: Node, out: &mut String) -> Result<(), String> {
         if out.len() > crate::svg_import::MAX_SVG_BYTES {
-            return Err("Parametrische SVG würde größer als 20 MB".into());
+            return Err(tr("Parametrische SVG würde größer als 20 MB").into());
         }
         let mut th = Vec::new();
         let mut computed = Vec::new();
@@ -376,8 +386,9 @@ impl Renderer<'_> {
                 "remove" => remove = Some(value.trim().to_string()),
                 "include" | "replace" | "insert" | "substituteby" | "switch" | "case"
                 | "object" | "inline" | "block" => {
-                    self.warnings.push(format!(
-                        "Thymeleaf-Attribut „th:{name}“ wird nicht unterstützt und ignoriert"
+                    self.warnings.push(tr!(
+                        "Thymeleaf-Attribut „th:{name}“ wird nicht unterstützt und ignoriert",
+                        name = name
                     ));
                 }
                 attribute => {
@@ -499,7 +510,7 @@ impl Renderer<'_> {
         }
         self.engine
             .eval(code)
-            .map_err(|e| format!("Ausdruck „{shown}“: {e}"))
+            .map_err(|e| tr!("Ausdruck „{shown}“: {error}", shown = shown, error = e))
     }
 
     fn truthy(&mut self, expression: &str) -> Result<bool, String> {
@@ -511,15 +522,21 @@ impl Renderer<'_> {
         let code = format!("__iter({})", thymeleaf_to_js(expression)?);
         let array = self.evaluate_js(&code, expression)?;
         let context = &mut self.engine.context;
-        let object = array
-            .as_object()
-            .ok_or_else(|| format!("th:each „{expression}“ ergibt keine Liste"))?;
+        let object = array.as_object().ok_or_else(|| {
+            tr!(
+                "th:each „{expression}“ ergibt keine Liste",
+                expression = expression
+            )
+        })?;
         let length = object
             .get(js_string!("length"), context)
             .and_then(|l| l.to_length(context))
             .map_err(|e| script::describe(&e))?;
         if length > 100_000 {
-            return Err(format!("th:each „{expression}“ ergibt zu viele Elemente"));
+            return Err(tr!(
+                "th:each „{expression}“ ergibt zu viele Elemente",
+                expression = expression
+            ));
         }
         (0..length as u32)
             .map(|i| object.get(i, context).map_err(|e| script::describe(&e)))
@@ -553,7 +570,7 @@ fn psvg_template(value: &str) -> Result<String, String> {
         let close = rest[open..]
             .find('}')
             .map(|i| open + i)
-            .ok_or_else(|| format!("Ausdruck „{value}“: schließende Klammer fehlt"))?;
+            .ok_or_else(|| tr!("Ausdruck „{text}“: schließende Klammer fehlt", text = value))?;
         parts.push(format!("({})", convert(&rest[open + 1..close], true)?));
         rest = &rest[close + 1..];
     }
@@ -582,7 +599,10 @@ fn convert(text: &str, inside: bool) -> Result<String, String> {
         match c {
             '\'' | '"' => {
                 let end = string_end(&chars, i).ok_or_else(|| {
-                    format!("Ausdruck „{text}“: Anführungszeichen nicht geschlossen")
+                    tr!(
+                        "Ausdruck „{text}“: Anführungszeichen nicht geschlossen",
+                        text = text
+                    )
                 })?;
                 if c == '\'' {
                     let literal: String = chars[i + 1..end].iter().collect();
@@ -593,8 +613,9 @@ fn convert(text: &str, inside: bool) -> Result<String, String> {
                 i = end + 1;
             }
             '$' | '*' if !inside && next == Some('{') => {
-                let end = brace_end(&chars, i + 1)
-                    .ok_or_else(|| format!("Ausdruck „{text}“: schließende Klammer fehlt"))?;
+                let end = brace_end(&chars, i + 1).ok_or_else(|| {
+                    tr!("Ausdruck „{text}“: schließende Klammer fehlt", text = text)
+                })?;
                 let inner: String = chars[i + 2..end].iter().collect();
                 out.push('(');
                 out.push_str(&convert(&inner, true)?);
@@ -602,8 +623,10 @@ fn convert(text: &str, inside: bool) -> Result<String, String> {
                 i = end + 1;
             }
             '#' | '@' | '~' if !inside && next == Some('{') => {
-                return Err(format!(
-                    "Thymeleaf-Ausdruck „{c}{{…}}“ in „{text}“ wird nicht unterstützt"
+                return Err(tr!(
+                    "Thymeleaf-Ausdruck „{expression}“ in „{text}“ wird nicht unterstützt",
+                    expression = format!("{c}{{…}}"),
+                    text = text
                 ));
             }
             '#' if inside => {
@@ -617,8 +640,9 @@ fn convert(text: &str, inside: bool) -> Result<String, String> {
                         .chars()
                         .take_while(|c| *c == '#' || c.is_alphanumeric() || *c == '.')
                         .collect();
-                    return Err(format!(
-                        "Thymeleaf-Hilfsobjekt „{name}“ wird nicht unterstützt"
+                    return Err(tr!(
+                        "Thymeleaf-Hilfsobjekt „{name}“ wird nicht unterstützt",
+                        name = name
                     ));
                 }
             }
@@ -627,14 +651,14 @@ fn convert(text: &str, inside: bool) -> Result<String, String> {
                     .iter()
                     .position(|c| *c == '|')
                     .map(|p| i + 1 + p)
-                    .ok_or_else(|| format!("Ausdruck „{text}“: schließendes | fehlt"))?;
+                    .ok_or_else(|| tr!("Ausdruck „{text}“: schließendes | fehlt", text = text))?;
                 let mut parts = vec!["''".to_string()];
                 let mut literal = String::new();
                 let mut j = i + 1;
                 while j < end {
                     if chars[j] == '$' && chars.get(j + 1) == Some(&'{') {
                         let close = brace_end(&chars[..end], j + 1).ok_or_else(|| {
-                            format!("Ausdruck „{text}“: schließende Klammer fehlt")
+                            tr!("Ausdruck „{text}“: schließende Klammer fehlt", text = text)
                         })?;
                         if !literal.is_empty() {
                             parts.push(js_string_literal(&std::mem::take(&mut literal)));
@@ -787,7 +811,7 @@ fn assignments(text: &str) -> Result<Vec<(String, String)>, String> {
                 && !matches!(chars.get(i.wrapping_sub(1)), Some('=' | '!' | '<' | '>'))
         });
         let Some(position) = position else {
-            return Err(format!("Zuweisung „{part}“ ohne „=“"));
+            return Err(tr!("Zuweisung „{part}“ ohne „=“", part = part));
         };
         let name: String = chars[..position].iter().collect();
         let expression: String = chars[position + 1..].iter().collect();
@@ -800,7 +824,7 @@ fn assignments(text: &str) -> Result<Vec<(String, String)>, String> {
 fn parse_each(text: &str) -> Result<(String, String, String), String> {
     let parts = split_top_level(text, ':');
     if parts.len() < 2 {
-        return Err(format!("th:each „{text}“ ist ungültig"));
+        return Err(tr!("th:each „{text}“ ist ungültig", text = text));
     }
     let expression = parts[1..].join(":");
     let mut names = parts[0].split(',').map(str::trim);
@@ -809,7 +833,7 @@ fn parse_each(text: &str) -> Result<(String, String, String), String> {
         .next()
         .map_or_else(|| format!("{variable}Stat"), str::to_string);
     if variable.is_empty() {
-        return Err(format!("th:each „{text}“ ist ungültig"));
+        return Err(tr!("th:each „{text}“ ist ungültig", text = text));
     }
     Ok((variable, status, expression.trim().to_string()))
 }

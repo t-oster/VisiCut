@@ -1,7 +1,9 @@
 mod compose_ui;
 mod devices_ui;
+mod form;
 mod jobs_ui;
 mod preview_ui;
+mod settings;
 mod vectorize_ui;
 mod workspace;
 
@@ -9,6 +11,10 @@ use eframe::egui::{
     self, Color32, Key, KeyboardShortcut, Modifiers, Pos2, Rect, Sense, Stroke, Vec2,
 };
 use std::path::{Path, PathBuf};
+use visicut_core::{
+    i18n::{self, tr},
+    tr,
+};
 use visicut_core::{
     import,
     ltt::{self, OutputJob, PreparedJob},
@@ -54,6 +60,11 @@ enum Command {
     RotateBy,
     FlipHorizontal,
     FlipVertical,
+    /// Eintrag aus „Zuletzt geöffnet“ (Index in der Liste).
+    OpenRecent(usize),
+    ClearRecent,
+    /// Sprache der Oberfläche; `None` folgt dem System.
+    Language(Option<i18n::Language>),
 }
 
 const COMMAND_SHIFT: Modifiers = Modifiers::COMMAND.plus(Modifiers::SHIFT);
@@ -81,38 +92,41 @@ impl Command {
 
     fn title(self) -> &'static str {
         match self {
-            Self::New => "Neues Projekt",
-            Self::Open => "Öffnen …",
-            Self::Demo => "Beispiel öffnen",
-            Self::Vectorize => "Bitmap vektorisieren …",
-            Self::Save => "Sichern",
-            Self::SaveAs => "Sichern unter …",
-            Self::Export => "LTT-Job exportieren …",
-            Self::Quit => "Beenden",
-            Self::Center => "Motiv auf dem Arbeitsbett zentrieren",
-            Self::Devices => "Lasercutter verwalten …",
-            Self::ToggleGrid => "Raster anzeigen",
-            Self::ToggleCamera => "Kamerabild anzeigen",
-            Self::RefreshCamera => "Kamerabild aktualisieren",
-            Self::ZoomIn => "Vergrößern",
-            Self::ZoomOut => "Verkleinern",
-            Self::ZoomFit => "Ansicht einpassen",
-            Self::Materials => "Materialbibliothek …",
-            Self::Preview => "Vorschau & Zeit …",
-            Self::Send => "An Lasercutter senden …",
-            Self::Text => "Text …",
-            Self::Shape => "Form …",
-            Self::Sign => "Schild …",
-            Self::Array => "Kopien im Raster …",
-            Self::Nest => "Teile verschachteln (Nesting) …",
-            Self::Undo => "Widerrufen",
-            Self::Delete => "Löschen",
-            Self::Duplicate => "Duplizieren",
-            Self::RotateLeft => "90° nach links drehen",
-            Self::RotateRight => "90° nach rechts drehen",
-            Self::RotateBy => "Um den Winkel drehen",
-            Self::FlipHorizontal => "Horizontal spiegeln",
-            Self::FlipVertical => "Vertikal spiegeln",
+            Self::New => tr("Neues Projekt"),
+            Self::Open => tr("Öffnen …"),
+            Self::Demo => tr("Beispiel öffnen"),
+            Self::Vectorize => tr("Bitmap vektorisieren …"),
+            Self::Save => tr("Sichern"),
+            Self::SaveAs => tr("Sichern unter …"),
+            Self::Export => tr("LTT-Job exportieren …"),
+            Self::Quit => tr("Beenden"),
+            Self::Center => tr("Motiv auf dem Arbeitsbett zentrieren"),
+            Self::Devices => tr("Lasercutter verwalten …"),
+            Self::ToggleGrid => tr("Raster anzeigen"),
+            Self::ToggleCamera => tr("Kamerabild anzeigen"),
+            Self::RefreshCamera => tr("Kamerabild aktualisieren"),
+            Self::ZoomIn => tr("Vergrößern"),
+            Self::ZoomOut => tr("Verkleinern"),
+            Self::ZoomFit => tr("Ansicht einpassen"),
+            Self::Materials => tr("Materialbibliothek …"),
+            Self::Preview => tr("Vorschau & Zeit …"),
+            Self::Send => tr("An Lasercutter senden …"),
+            Self::Text => tr("Text …"),
+            Self::Shape => tr("Form …"),
+            Self::Sign => tr("Schild …"),
+            Self::Array => tr("Kopien im Raster …"),
+            Self::Nest => tr("Teile verschachteln (Nesting) …"),
+            Self::Undo => tr("Widerrufen"),
+            Self::Delete => tr("Löschen"),
+            Self::Duplicate => tr("Duplizieren"),
+            Self::RotateLeft => tr("90° nach links drehen"),
+            Self::RotateRight => tr("90° nach rechts drehen"),
+            Self::RotateBy => tr("Um den Winkel drehen"),
+            Self::FlipHorizontal => tr("Horizontal spiegeln"),
+            Self::FlipVertical => tr("Vertikal spiegeln"),
+            Self::OpenRecent(_) => tr("Zuletzt geöffnet"),
+            Self::ClearRecent => tr("Liste leeren"),
+            Self::Language(_) => tr("Sprache"),
         }
     }
 
@@ -150,7 +164,10 @@ impl Command {
             | Self::RotateRight
             | Self::RotateBy
             | Self::FlipHorizontal
-            | Self::FlipVertical => return None,
+            | Self::FlipVertical
+            | Self::OpenRecent(_)
+            | Self::ClearRecent
+            | Self::Language(_) => return None,
         };
         Some(KeyboardShortcut::new(modifiers, key))
     }
@@ -193,7 +210,7 @@ struct VisiCutRust {
     overwrite: Option<PendingExport>,
     confirm_send: Option<PreparedJob>,
     preview: preview_ui::PreviewUi,
-    /// „Vorschau & Zeit“ (Menü, Seitenleiste, Strg+Umschalt+P) setzt dieses
+    /// „Vorschau & Zeit“ (Menü, Werkzeugleiste, Strg+Umschalt+P) setzt dieses
     /// Feld; das Fenster liest und schließt es.
     show_preview: bool,
     send_result: Option<std::sync::mpsc::Receiver<Result<Vec<String>, String>>>,
@@ -206,13 +223,18 @@ struct VisiCutRust {
     /// Bezugspunkt für X/Y und Größenänderungen (0, ½ oder 1 je Achse).
     reference: [f32; 2],
     rotate_deg: f32,
+    /// Sprache und zuletzt geöffnete Dateien.
+    settings: settings::AppSettings,
     #[cfg(feature = "screenshot")]
     capture: Option<(PathBuf, u32)>,
 }
 
 impl VisiCutRust {
     fn new(cc: &eframe::CreationContext<'_>) -> Self {
+        let settings = settings::AppSettings::load();
+        i18n::set_language(settings.language());
         cc.egui_ctx.set_visuals(egui::Visuals::light());
+        form::apply_style(&cc.egui_ctx);
         // Strg+Plus/Minus/0 zoomen die Arbeitsfläche, nicht die Oberfläche.
         cc.egui_ctx.options_mut(|o| o.zoom_with_keyboard = false);
         let (devices, device_error) = devices_ui::DeviceUi::load();
@@ -220,7 +242,7 @@ impl VisiCutRust {
         let mut app = Self {
             project: Project::default(),
             texture: None,
-            status: "Datei öffnen, hierher ziehen oder das Beispiel öffnen".into(),
+            status: tr("Datei öffnen, hierher ziehen oder das Beispiel öffnen").into(),
             alert: None,
             project_path: None,
             dirty: false,
@@ -242,13 +264,15 @@ impl VisiCutRust {
             undo: None,
             reference: [0.0, 0.0],
             rotate_deg: 0.0,
+            settings,
             #[cfg(feature = "screenshot")]
             capture: None,
         };
         app.reset_project();
         if let Some(error) = device_error {
-            app.report(format!(
-                "Geräteliste nicht lesbar, FAU-Standard wird verwendet: {error}"
+            app.report(tr!(
+                "Geräteliste nicht lesbar, FAU-Standard wird verwendet: {error}",
+                error = error
             ));
         } else if let Some(error) = material_error {
             app.report(error);
@@ -275,6 +299,19 @@ impl VisiCutRust {
         app
     }
 
+    /// Sichert Sprache und Verlauf; ein Fehler steht nur in der Statuszeile.
+    fn save_settings(&mut self) {
+        if let Err(e) = self.settings.save() {
+            self.status = tr!("Einstellungen nicht gesichert: {error}", error = e);
+        }
+    }
+
+    /// Merkt sich eine geöffnete oder gesicherte Datei für „Zuletzt geöffnet“.
+    fn remember(&mut self, path: &Path) {
+        self.settings.remember(path);
+        self.save_settings();
+    }
+
     /// Fehler und Warnungen: Statuszeile und ein Hinweisdialog.
     fn report(&mut self, message: String) {
         self.status = message.lines().next().unwrap_or_default().to_owned();
@@ -297,6 +334,7 @@ impl VisiCutRust {
 
     fn reset_project(&mut self) {
         self.project = Project::default();
+        self.project.name = tr("Neues Projekt").into();
         self.project.material.clear();
         self.devices.apply(&mut self.project);
         self.texture = None;
@@ -323,32 +361,38 @@ impl VisiCutRust {
         self.texture = Some(ctx.load_texture("SVG", preview.image, egui::TextureOptions::LINEAR));
         self.project_path = None;
         self.dirty = true;
-        self.status = "Datei importiert · Maße aus der Datei übernommen".into();
+        self.status = tr("Datei importiert · Maße aus der Datei übernommen").into();
         Ok(())
     }
 
     fn open_path(&mut self, ctx: &egui::Context, path: &Path) -> Result<(), String> {
-        let meta = std::fs::metadata(path)
-            .map_err(|e| format!("{} ist nicht lesbar: {e}", path.display()))?;
+        let meta = std::fs::metadata(path).map_err(|e| {
+            tr!(
+                "{path} ist nicht lesbar: {error}",
+                path = path.display(),
+                error = e
+            )
+        })?;
         if meta.len() > import::MAX_FILE_BYTES {
-            return Err("Datei ist größer als 25 MB".into());
+            return Err(tr("Datei ist größer als 25 MB").into());
         }
         if import::is_importable(path) {
             let imported = import::read_file(path)?;
             let name = path.file_stem().unwrap_or_default().to_string_lossy();
             self.import(ctx, imported.svg, name.into(), imported.steps)?;
-            self.status = format!(
-                "{} importiert · Originalmaße übernommen",
-                path.file_name().unwrap_or_default().to_string_lossy()
+            self.status = tr!(
+                "{file} importiert · Originalmaße übernommen",
+                file = path.file_name().unwrap_or_default().to_string_lossy()
             );
+            self.remember(path);
             if !imported.warnings.is_empty() {
                 self.alert = Some(imported.warnings.join("\n"));
             }
             Ok(())
         } else {
             let source = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
-            let project: Project =
-                serde_json::from_str(&source).map_err(|e| format!("Ungültiges Projekt: {e}"))?;
+            let project: Project = serde_json::from_str(&source)
+                .map_err(|e| tr!("Ungültiges Projekt: {error}", error = e))?;
             // Entwürfe ohne Motiv oder außerhalb des Betts lassen sich öffnen.
             project.validate_document()?;
             self.texture = if project.svg.is_empty() {
@@ -358,13 +402,14 @@ impl VisiCutRust {
                 Some(ctx.load_texture("SVG", preview.image, egui::TextureOptions::LINEAR))
             };
             self.project = project;
-            if self.project.material == "Material wählen" {
+            if visicut_core::i18n::is_default_text("Material wählen", &self.project.material) {
                 self.project.material.clear();
             }
             self.devices.apply(&mut self.project);
             self.project_path = Some(path.to_owned());
             self.dirty = false;
-            self.status = "Projekt geöffnet".into();
+            self.status = tr("Projekt geöffnet").into();
+            self.remember(path);
             Ok(())
         }
     }
@@ -373,7 +418,7 @@ impl VisiCutRust {
     /// Motiv öffnet die erste), ein einzelnes Projekt wird geöffnet.
     fn drop_files(&mut self, ctx: &egui::Context, mut paths: Vec<PathBuf>) {
         if self.busy() {
-            self.status = "Bitte die laufende Übertragung abwarten".into();
+            self.status = tr("Bitte die laufende Übertragung abwarten").into();
             return;
         }
         let (graphics, projects): (Vec<PathBuf>, Vec<PathBuf>) =
@@ -387,9 +432,9 @@ impl VisiCutRust {
         let mut notes: Vec<String> = projects
             .iter()
             .map(|p| {
-                format!(
-                    "{}: Projekte lassen sich nicht hinzufügen, nur öffnen",
-                    p.file_name().unwrap_or_default().to_string_lossy()
+                tr!(
+                    "{file}: Projekte lassen sich nicht hinzufügen, nur öffnen",
+                    file = p.file_name().unwrap_or_default().to_string_lossy()
                 )
             })
             .collect();
@@ -409,11 +454,12 @@ impl VisiCutRust {
                 Ok((project, more)) => {
                     notes.extend(more);
                     self.apply_composed(ctx, project, Vec::new());
-                    self.status = format!(
-                        "{} Datei(en) hinzugefügt · {:.0} × {:.0} mm · Bearbeiten → Widerrufen macht es rückgängig",
-                        graphics.len(),
-                        self.project.width_mm,
-                        self.project.height_mm
+                    self.status = tr!(
+                        "{count} Datei(en) hinzugefügt · {width} × {height} mm · \
+                         Bearbeiten › Widerrufen macht es rückgängig",
+                        count = graphics.len(),
+                        width = format!("{:.0}", self.project.width_mm),
+                        height = format!("{:.0}", self.project.height_mm)
                     );
                 }
                 Err(e) => notes.push(e),
@@ -429,8 +475,8 @@ impl VisiCutRust {
         self.project.validate_document()?;
         let path = self.project_path.clone().filter(|_| !as_copy).or_else(|| {
             rfd::FileDialog::new()
-                .set_title("VisiCutRust-Projekt sichern")
-                .add_filter("VisiCutRust Projekt", &["vcr"])
+                .set_title(tr("VisiCutRust-Projekt sichern"))
+                .add_filter(tr("VisiCutRust Projekt"), &["vcr"])
                 .set_file_name(format!("{}.vcr", self.project.name))
                 .save_file()
         });
@@ -439,16 +485,17 @@ impl VisiCutRust {
         };
         let bytes = serde_json::to_vec_pretty(&self.project).map_err(|e| e.to_string())?;
         workspace::write_atomic(&path, &bytes)?;
+        self.remember(&path);
         self.project_path = Some(path);
         self.dirty = false;
-        self.status = "Projekt mit eingebetteter SVG gesichert".into();
+        self.status = tr("Projekt mit eingebetteter SVG gesichert").into();
         Ok(true)
     }
 
     /// Führt eine Aktion aus oder fragt vorher nach ungesicherten Änderungen.
     fn request(&mut self, ctx: &egui::Context, action: Replace) {
         if self.busy() && !matches!(action, Replace::Quit) {
-            self.status = "Bitte die laufende Übertragung abwarten".into();
+            self.status = tr("Bitte die laufende Übertragung abwarten").into();
         } else if self.dirty {
             self.replace = Some(action);
         } else {
@@ -460,7 +507,7 @@ impl VisiCutRust {
         let result = match action {
             Replace::New => {
                 self.reset_project();
-                self.status = "Neues Projekt. Datei öffnen, um zu beginnen.".into();
+                self.status = tr("Neues Projekt. Datei öffnen, um zu beginnen.").into();
                 Ok(())
             }
             Replace::Open(path) => self.open_path(ctx, &path),
@@ -468,11 +515,12 @@ impl VisiCutRust {
                 .import(
                     ctx,
                     include_str!("../examples/demo.svg").into(),
-                    "Beispiel".into(),
+                    tr("Beispiel").into(),
                     Vec::new(),
                 )
                 .map(|()| {
-                    self.status = "Beispiel geöffnet. Material und Bearbeitung auswählen.".into();
+                    self.status =
+                        tr("Beispiel geöffnet. Material und Bearbeitung auswählen.").into();
                 }),
             Replace::Vectorized { svg, name } => self.import(ctx, svg, name, Vec::new()),
             Replace::Calibration(points) => self.calibration_page(ctx, &points),
@@ -495,17 +543,20 @@ impl VisiCutRust {
             .iter()
             .any(|p| !(5.0..=w - 5.0).contains(&p[0]) || !(5.0..=h - 15.0).contains(&p[1]))
         {
-            return Err(
-                "Kalibrierpunkte müssen mindestens 5 mm (unten 15 mm) vom Bettrand entfernt sein"
-                    .into(),
-            );
+            return Err(tr(
+                "Kalibrierpunkte müssen mindestens 5 mm (unten 15 mm) vom Bettrand entfernt sein",
+            )
+            .into());
         }
         let svg = visicut_core::camera::calibration_svg(points, w, h);
-        self.import(ctx, svg, "Kalibrierung".into(), Vec::new())?;
+        self.import(ctx, svg, tr("Kalibrierung").into(), Vec::new())?;
         self.project.rotary_axis = false;
         (self.project.x_mm, self.project.y_mm) = (0.0, 0.0);
         self.project.operation = Operation::Mark;
-        self.status = "Kalibrierseite geöffnet: Material und Markier-Parameter prüfen, senden, danach Foto aufnehmen.".into();
+        self.status = tr(
+            "Kalibrierseite geöffnet: Material und Markier-Parameter prüfen, senden, danach Foto aufnehmen.",
+        )
+        .into();
         Ok(())
     }
 
@@ -534,9 +585,10 @@ impl VisiCutRust {
         }
         self.texture = Some(ctx.load_texture("SVG", preview.image, egui::TextureOptions::LINEAR));
         self.dirty = true;
-        self.status = format!(
-            "Motiv aktualisiert · {:.0} × {:.0} mm",
-            self.project.width_mm, self.project.height_mm
+        self.status = tr!(
+            "Motiv aktualisiert · {width} × {height} mm",
+            width = format!("{:.0}", self.project.width_mm),
+            height = format!("{:.0}", self.project.height_mm)
         );
         if !notes.is_empty() {
             self.alert = Some(notes.join("\n"));
@@ -573,7 +625,7 @@ impl VisiCutRust {
         self.project.steps.clear();
         self.project.ignore_filters.clear();
         self.dirty = true;
-        self.status = "Motiv entfernt · Bearbeiten → Widerrufen stellt es wieder her".into();
+        self.status = tr("Motiv entfernt · Bearbeiten › Widerrufen stellt es wieder her").into();
     }
 
     /// Löscht einzelne Objekte aus dem Motiv (Objektliste).
@@ -590,7 +642,7 @@ impl VisiCutRust {
             self.project = project;
             self.texture = texture;
             self.dirty = true;
-            self.status = "Letzte Änderung widerrufen".into();
+            self.status = tr("Letzte Änderung widerrufen").into();
         }
     }
 
@@ -608,7 +660,10 @@ impl VisiCutRust {
             height_mm: self.project.height_mm,
             ..pattern
         };
-        self.status = "Zeilenversatz-Testmuster geöffnet: Material prüfen, senden, danach je Zeile den besten Block eintragen.".into();
+        self.status = tr(
+            "Zeilenversatz-Testmuster geöffnet: Material prüfen, senden, danach je Zeile den besten Block eintragen.",
+        )
+        .into();
         Ok(())
     }
 
@@ -617,13 +672,13 @@ impl VisiCutRust {
             return;
         }
         if let Some(path) = rfd::FileDialog::new()
-            .set_title("Grafik oder VisiCutRust-Projekt öffnen")
+            .set_title(tr("Grafik oder VisiCutRust-Projekt öffnen"))
             .add_filter(
-                "Grafik oder VisiCutRust-Projekt",
+                tr("Grafik oder VisiCutRust-Projekt"),
                 &[import::EXTENSIONS, &["vcr", "json"]].concat(),
             )
-            .add_filter("Grafik", import::EXTENSIONS)
-            .add_filter("VisiCutRust-Projekt", &["vcr", "json"])
+            .add_filter(tr("Grafik"), import::EXTENSIONS)
+            .add_filter(tr("VisiCutRust-Projekt"), &["vcr", "json"])
             .pick_file()
         {
             self.request(ctx, Replace::Open(path));
@@ -642,23 +697,23 @@ impl VisiCutRust {
         if jobs.len() == 1 {
             let job = jobs.remove(0);
             let Some(path) = rfd::FileDialog::new()
-                .set_title("LTT-Auftrag exportieren")
-                .add_filter("LTT-Auftrag", &["ltt"])
+                .set_title(tr("LTT-Auftrag exportieren"))
+                .add_filter(tr("LTT-Auftrag"), &["ltt"])
                 .set_file_name(format!("{}.ltt", job.name))
                 .save_file()
             else {
                 return;
             };
             match workspace::write_atomic(&path, &job.bytes) {
-                Ok(()) => self.status = format!("Exportiert: {}", path.display()),
+                Ok(()) => self.status = tr!("Exportiert: {files}", files = path.display()),
                 Err(e) => self.report(e),
             }
             return;
         }
         let Some(folder) = rfd::FileDialog::new()
-            .set_title(format!(
-                "Ordner für {} getrennte LTT-Aufträge wählen",
-                jobs.len()
+            .set_title(tr!(
+                "Ordner für {count} getrennte LTT-Aufträge wählen",
+                count = jobs.len()
             ))
             .pick_folder()
         else {
@@ -683,9 +738,9 @@ impl VisiCutRust {
                 return self.report(e);
             }
         }
-        self.status = format!(
-            "Exportiert: {}",
-            pending
+        self.status = tr!(
+            "Exportiert: {files}",
+            files = pending
                 .jobs
                 .iter()
                 .map(|job| job.name.as_str())
@@ -712,7 +767,7 @@ impl VisiCutRust {
             let _ = tx.send(ltt::transmit_jobs(&host, port, &prepared.jobs));
         });
         self.send_result = Some(rx);
-        self.status = "Job wird an den Lasercutter übertragen …".into();
+        self.status = tr("Job wird an den Lasercutter übertragen …").into();
     }
 
     /// Hook für die Materialbibliothek aus jobs_ui.rs: Dort fehlt noch eine
@@ -739,6 +794,9 @@ impl VisiCutRust {
             | Command::RotateBy
             | Command::FlipHorizontal
             | Command::FlipVertical => self.texture.is_some() && !self.busy(),
+            Command::OpenRecent(_) => !self.busy(),
+            Command::ClearRecent => !self.settings.recent.is_empty(),
+            Command::Language(_) => true,
             Command::Undo => self.undo.is_some() && !self.busy(),
             Command::Center => self.texture.is_some() && !self.busy(),
             Command::ToggleCamera => self.devices.has_camera(),
@@ -803,6 +861,20 @@ impl VisiCutRust {
             }
             Command::FlipHorizontal => self.transform(ctx, 0.0, true, false),
             Command::FlipVertical => self.transform(ctx, 0.0, false, true),
+            Command::OpenRecent(index) => {
+                if let Some(path) = self.settings.recent.get(index).cloned() {
+                    self.request(ctx, Replace::Open(path));
+                }
+            }
+            Command::ClearRecent => {
+                self.settings.recent.clear();
+                self.save_settings();
+            }
+            Command::Language(language) => {
+                self.settings.language = language.map(|l| l.code().to_owned());
+                i18n::set_language(self.settings.language());
+                self.save_settings();
+            }
         }
     }
 
@@ -898,7 +970,7 @@ impl VisiCutRust {
     fn menu_bar(&self, ui: &mut egui::Ui) -> Option<Command> {
         let mut clicked = None;
         egui::MenuBar::new().ui(ui, |ui| {
-            ui.menu_button("Datei", |ui| {
+            ui.menu_button(tr("Datei"), |ui| {
                 for command in [
                     Command::New,
                     Command::Open,
@@ -907,6 +979,27 @@ impl VisiCutRust {
                 ] {
                     self.menu_item(ui, command, &mut clicked);
                 }
+                ui.menu_button(tr("Zuletzt geöffnet"), |ui| {
+                    if self.settings.recent.is_empty() {
+                        ui.add_enabled(false, egui::Button::new(tr("Keine Dateien")));
+                    }
+                    for (index, path) in self.settings.recent.iter().enumerate() {
+                        let command = Command::OpenRecent(index);
+                        let name = path.file_name().map_or_else(
+                            || path.display().to_string(),
+                            |n| n.to_string_lossy().into_owned(),
+                        );
+                        if ui
+                            .add_enabled(self.enabled(command), egui::Button::new(name))
+                            .on_hover_text(path.display().to_string())
+                            .clicked()
+                        {
+                            clicked = Some(command);
+                        }
+                    }
+                    ui.separator();
+                    self.menu_item(ui, Command::ClearRecent, &mut clicked);
+                });
                 ui.separator();
                 for command in [Command::Save, Command::SaveAs, Command::Export] {
                     self.menu_item(ui, command, &mut clicked);
@@ -914,7 +1007,7 @@ impl VisiCutRust {
                 ui.separator();
                 self.menu_item(ui, Command::Quit, &mut clicked);
             });
-            ui.menu_button("Bearbeiten", |ui| {
+            ui.menu_button(tr("Bearbeiten"), |ui| {
                 self.menu_item(ui, Command::Undo, &mut clicked);
                 ui.separator();
                 self.menu_item(ui, Command::Duplicate, &mut clicked);
@@ -932,13 +1025,13 @@ impl VisiCutRust {
                 self.menu_item(ui, Command::Center, &mut clicked);
                 ui.add_enabled(
                     false,
-                    egui::Button::new("Motiv verschieben").shortcut_text("Pfeiltasten"),
+                    egui::Button::new(tr("Motiv verschieben")).shortcut_text(tr("Pfeiltasten")),
                 )
-                .on_disabled_hover_text("1 mm je Tastendruck, mit Umschalt 10 mm");
+                .on_disabled_hover_text(tr("1 mm je Tastendruck, mit Umschalt 10 mm"));
                 ui.separator();
                 self.menu_item(ui, Command::Devices, &mut clicked);
             });
-            ui.menu_button("Objekt", |ui| {
+            ui.menu_button(tr("Objekt"), |ui| {
                 for command in [Command::Text, Command::Shape, Command::Sign] {
                     self.menu_item(ui, command, &mut clicked);
                 }
@@ -947,7 +1040,7 @@ impl VisiCutRust {
                     self.menu_item(ui, command, &mut clicked);
                 }
             });
-            ui.menu_button("Darstellung", |ui| {
+            ui.menu_button(tr("Darstellung"), |ui| {
                 for command in [Command::ZoomIn, Command::ZoomOut, Command::ZoomFit] {
                     self.menu_item(ui, command, &mut clicked);
                 }
@@ -955,8 +1048,30 @@ impl VisiCutRust {
                 ui.separator();
                 self.menu_item(ui, Command::ToggleCamera, &mut clicked);
                 self.menu_item(ui, Command::RefreshCamera, &mut clicked);
+                ui.separator();
+                ui.menu_button(tr("Sprache"), |ui| {
+                    let chosen = self
+                        .settings
+                        .language
+                        .as_deref()
+                        .and_then(i18n::Language::from_code);
+                    if ui
+                        .add(egui::Button::new(tr("Systemsprache")).selected(chosen.is_none()))
+                        .clicked()
+                    {
+                        clicked = Some(Command::Language(None));
+                    }
+                    ui.separator();
+                    for language in i18n::Language::ALL {
+                        let button = egui::Button::new(language.native_name())
+                            .selected(chosen == Some(language));
+                        if ui.add(button).clicked() {
+                            clicked = Some(Command::Language(Some(language)));
+                        }
+                    }
+                });
             });
-            ui.menu_button("Job", |ui| {
+            ui.menu_button(tr("Job"), |ui| {
                 for command in [Command::Materials, Command::Preview] {
                     self.menu_item(ui, command, &mut clicked);
                 }
@@ -967,49 +1082,74 @@ impl VisiCutRust {
         clicked
     }
 
-    fn sidebar(&mut self, ui: &mut egui::Ui) -> Option<Command> {
+    /// Werkzeugleiste wie unter macOS: Öffnen und Sichern links, die
+    /// Auftragsbefehle rechts.
+    fn toolbar(&self, ui: &mut egui::Ui) -> Option<Command> {
         let mut clicked = None;
-        ui.heading("Job vorbereiten");
-        ui.add_space(8.0);
-        ui.label("Projektname");
-        self.dirty |= ui.text_edit_singleline(&mut self.project.name).changed();
-        ui.add_space(8.0);
-        self.devices
-            .sidebar(ui, &mut self.project, &mut self.dirty, &mut self.status);
-        ui.small(format!(
-            "Arbeitsbett {} × {} mm (durch den Lasercutter festgelegt)",
-            self.project.bed_width_mm, self.project.bed_height_mm
-        ));
-        ui.separator();
-        ui.label(egui::RichText::new("POSITION & GRÖSSE").strong().small());
-        self.transform_panel(ui, &mut clicked);
-        ui.checkbox(&mut self.proportional, "Seitenverhältnis beibehalten");
-        ui.separator();
-        ui.label(
-            egui::RichText::new("MATERIAL & BEARBEITUNG")
-                .strong()
-                .small(),
-        );
-        self.jobs.material(ui, &mut self.project, &mut self.dirty);
-        ui.separator();
-        ui.label(egui::RichText::new("ZUORDNUNG").strong().small());
-        self.jobs.processing(ui, &mut self.project, &mut self.dirty);
-        ui.add_space(10.0);
-        ui.separator();
-        for command in [Command::Preview, Command::Export, Command::Send] {
-            let label = match command {
-                Command::Export => "LTT-Datei exportieren …",
-                _ => command.title(),
-            };
+        let mut tool = |ui: &mut egui::Ui, command: Command, text: &str| {
+            let mut hover = command.title().trim_end_matches(" …").to_owned();
+            if let Some(shortcut) = command.shortcut() {
+                hover += &format!(" ({})", ui.ctx().format_shortcut(&shortcut));
+            }
             if ui
-                .add_enabled(self.enabled(command), egui::Button::new(label))
+                .add_enabled(
+                    self.enabled(command),
+                    egui::Button::new(text).min_size(Vec2::new(0.0, 26.0)),
+                )
+                .on_hover_text(hover)
                 .clicked()
             {
                 clicked = Some(command);
             }
+        };
+        ui.horizontal(|ui| {
+            tool(ui, Command::Open, &format!("📂 {}", tr("Öffnen")));
+            tool(ui, Command::Save, &format!("💾 {}", tr("Sichern")));
+            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                tool(
+                    ui,
+                    Command::Send,
+                    &format!("✈ {}", tr("An Lasercutter senden")),
+                );
+                tool(ui, Command::Export, &format!("📤 {}", tr("Exportieren")));
+                tool(
+                    ui,
+                    Command::Preview,
+                    &format!("👁 {}", tr("Vorschau & Zeit")),
+                );
+            });
+        });
+        clicked
+    }
+
+    /// Seitenleiste in der Reihenfolge der macOS-Oberfläche: Projekt,
+    /// Rotationseinheit, Material, Zuordnung und Bearbeitung, Position. Die
+    /// Auftragsbefehle stehen in der Werkzeugleiste.
+    fn sidebar(&mut self, ui: &mut egui::Ui) -> Option<Command> {
+        let mut clicked = None;
+        form::section(ui, tr("Projekt"), |ui| {
+            form::row(ui, tr("Name"), |ui| {
+                self.dirty |= ui
+                    .add(egui::TextEdit::singleline(&mut self.project.name).desired_width(190.0))
+                    .changed();
+            });
+            self.devices
+                .sidebar(ui, &mut self.project, &mut self.dirty, &mut self.status);
+        });
+        if self.devices.device().rotary_axis {
+            form::section(ui, tr("Rotationseinheit"), |ui| {
+                self.devices.rotary(ui, &mut self.project, &mut self.dirty);
+            });
         }
-        ui.small("Übertragung ohne Autostart · Treiber experimentell");
-        ui.small("Parameter sind Entwurfswerte, keine Materialempfehlungen.");
+        form::section(ui, tr("Material"), |ui| {
+            self.jobs.material(ui, &mut self.project, &mut self.dirty);
+        });
+        self.jobs.processing(ui, &mut self.project, &mut self.dirty);
+        form::section(ui, tr("Position und Größe"), |ui| {
+            self.transform_panel(ui, &mut clicked);
+            ui.checkbox(&mut self.proportional, tr("Seitenverhältnis beibehalten"));
+        });
+        ui.add_space(8.0);
         clicked
     }
 
@@ -1040,13 +1180,13 @@ impl VisiCutRust {
         let anchor = [p.x_mm + p.width_mm * fx, p.y_mm + p.height_mm * fy];
         let ratio = p.height_mm / p.width_mm;
         let mut resized = false;
-        if number(ui, "Breite", &mut p.width_mm, 0.1..=10000.0, " mm") {
+        if number(ui, tr("Breite"), &mut p.width_mm, 0.1..=10000.0, " mm") {
             if proportional {
                 p.height_mm = p.width_mm * ratio;
             }
             resized = true;
         }
-        if number(ui, "Höhe", &mut p.height_mm, 0.1..=10000.0, " mm") {
+        if number(ui, tr("Höhe"), &mut p.height_mm, 0.1..=10000.0, " mm") {
             if proportional {
                 p.width_mm = p.height_mm / ratio;
             }
@@ -1061,31 +1201,31 @@ impl VisiCutRust {
         self.reference = reference;
         self.dirty |= dirty;
         let editable = self.texture.is_some() && !self.busy();
-        ui.horizontal(|ui| {
-            ui.label("Drehen");
+        form::row(ui, tr("Drehen"), |ui| {
+            if ui
+                .add_enabled(
+                    editable && self.rotate_deg != 0.0,
+                    egui::Button::new(tr("Anwenden")),
+                )
+                .on_hover_text(tr("Positive Winkel drehen im Uhrzeigersinn"))
+                .clicked()
+            {
+                *clicked = Some(Command::RotateBy);
+            }
             ui.add(
                 egui::DragValue::new(&mut self.rotate_deg)
                     .range(-360.0..=360.0)
                     .speed(1.0)
                     .suffix("°"),
             );
-            if ui
-                .add_enabled(
-                    editable && self.rotate_deg != 0.0,
-                    egui::Button::new("Anwenden"),
-                )
-                .on_hover_text("Positive Winkel drehen im Uhrzeigersinn")
-                .clicked()
-            {
-                *clicked = Some(Command::RotateBy);
-            }
         });
         ui.horizontal(|ui| {
+            // Nur Symbole wie unter macOS; der Tooltip nennt den Befehl.
             for (command, text) in [
                 (Command::RotateLeft, "⟲ 90°"),
                 (Command::RotateRight, "⟳ 90°"),
-                (Command::FlipHorizontal, "Spiegeln ↔"),
-                (Command::FlipVertical, "Spiegeln ↕"),
+                (Command::FlipHorizontal, "↔"),
+                (Command::FlipVertical, "↕"),
             ] {
                 if ui
                     .add_enabled(editable, egui::Button::new(text))
@@ -1100,22 +1240,84 @@ impl VisiCutRust {
 
     fn canvas(&mut self, ui: &mut egui::Ui) -> Option<Command> {
         let mut clicked = None;
+        let panel = ui.max_rect();
+        egui::Frame::new()
+            .inner_margin(egui::Margin::symmetric(20, 14))
+            .show(ui, |ui| self.canvas_header(ui, &mut clicked));
+        // Probleme mit der Lage des Motivs stehen rot über dem Arbeitsbett.
+        if !self.project.svg.is_empty()
+            && let Err(e) = self.project.validate()
+        {
+            egui::Frame::new()
+                .fill(Color32::from_rgb(200, 40, 40))
+                .inner_margin(egui::Margin::symmetric(20, 8))
+                .show(ui, |ui| {
+                    ui.set_width(ui.available_width());
+                    ui.colored_label(Color32::WHITE, format!("⚠ {e}"));
+                });
+        }
+        form::divider(ui);
+        egui::Frame::new()
+            .inner_margin(egui::Margin::symmetric(20, 8))
+            .show(ui, |ui| {
+                ui.set_width(ui.available_width());
+                ui.horizontal(|ui| self.preview.toolbar(ui, &self.project, &mut self.status));
+            });
+        form::divider(ui);
+        ui.painter()
+            .rect_filled(ui.available_rect_before_wrap(), 0.0, form::CANVAS);
+        if self.texture.is_none() && !self.devices.camera_shown() {
+            self.empty_state(ui, &mut clicked);
+        } else {
+            self.bed(ui, &mut clicked);
+        }
+        if ui.ctx().input(|i| !i.raw.hovered_files.is_empty()) {
+            let painter = ui.ctx().layer_painter(egui::LayerId::new(
+                egui::Order::Foreground,
+                egui::Id::new("drop"),
+            ));
+            painter.rect_filled(
+                panel,
+                6.0,
+                Color32::from_rgba_unmultiplied(52, 116, 170, 60),
+            );
+            painter.text(
+                panel.center(),
+                egui::Align2::CENTER_CENTER,
+                if self.project.svg.is_empty() {
+                    tr("Loslassen zum Öffnen")
+                } else {
+                    tr("Loslassen zum Hinzufügen")
+                },
+                egui::FontId::proportional(26.0),
+                Color32::from_rgb(30, 70, 110),
+            );
+        }
+        clicked
+    }
+
+    /// Titel, Gerät und Ansichtsschalter über dem Arbeitsbett.
+    fn canvas_header(&mut self, ui: &mut egui::Ui, clicked: &mut Option<Command>) {
         ui.horizontal(|ui| {
             ui.vertical(|ui| {
-                ui.heading(if self.texture.is_some() {
-                    self.project.name.as_str()
-                } else {
-                    "Arbeitsbereich"
-                });
-                ui.label(format!(
+                ui.label(
+                    egui::RichText::new(if self.texture.is_some() {
+                        self.project.name.as_str()
+                    } else {
+                        tr("Arbeitsbereich")
+                    })
+                    .size(20.0)
+                    .strong(),
+                );
+                ui.weak(format!(
                     "{} · {} × {} mm{}",
                     self.devices.device().name,
                     self.project.bed_width_mm,
                     self.project.bed_height_mm,
                     if self.project.rotary_axis {
-                        " · Rotationseinheit"
+                        format!(" · {}", tr("Rotationseinheit"))
                     } else {
-                        ""
+                        String::new()
                     }
                 ));
             });
@@ -1131,53 +1333,96 @@ impl VisiCutRust {
                         .then_some(command)
                 };
                 let mut chosen = Vec::new();
-                chosen.extend(tool(ui, Command::ZoomFit, "Einpassen"));
+                chosen.extend(tool(ui, Command::ZoomFit, tr("Einpassen")));
                 chosen.extend(tool(ui, Command::ZoomIn, "+"));
                 ui.label(format!("{:.0} %", self.zoom * 100.0));
                 chosen.extend(tool(ui, Command::ZoomOut, "−"));
-                ui.separator();
-                let mut grid = self.show_grid;
-                if ui.checkbox(&mut grid, "Raster").changed() {
-                    clicked = Some(Command::ToggleGrid);
-                }
+                ui.add_space(6.0);
+                // Umschalter wie die Symbolschalter unter macOS.
+                let toggle = |ui: &mut egui::Ui, command: Command, text: &str, on: bool| {
+                    ui.add_enabled(self.enabled(command), egui::Button::new(text).selected(on))
+                        .on_hover_text(command.title())
+                        .clicked()
+                        .then_some(command)
+                };
+                chosen.extend(toggle(
+                    ui,
+                    Command::ToggleGrid,
+                    tr("Raster"),
+                    self.show_grid,
+                ));
                 if self.devices.has_camera() {
                     if self.devices.camera_loading() {
                         ui.spinner();
                     } else if self.devices.camera_shown() {
-                        chosen.extend(tool(ui, Command::RefreshCamera, "Aktualisieren"));
+                        chosen.extend(tool(ui, Command::RefreshCamera, "⟳"));
                     }
-                    let mut camera = self.devices.camera_shown();
-                    if ui.checkbox(&mut camera, "Kamera").changed() {
-                        clicked = Some(Command::ToggleCamera);
-                    }
+                    let shown = self.devices.camera_shown();
+                    let camera = format!("📷 {}", tr("Kamera"));
+                    chosen.extend(toggle(ui, Command::ToggleCamera, &camera, shown));
                 }
-                ui.separator();
-                self.preview.toolbar(ui, &self.project, &mut self.status);
                 if let Some(command) = chosen.pop() {
-                    clicked = Some(command);
+                    *clicked = Some(command);
                 }
             });
         });
+    }
+
+    /// Wie unter macOS: ohne Motiv ein Einstieg statt des leeren Betts.
+    fn empty_state(&mut self, ui: &mut egui::Ui, clicked: &mut Option<Command>) {
+        let open = ui
+            .ctx()
+            .format_shortcut(&Command::Open.shortcut().expect("Öffnen hat ein Kürzel"));
+        ui.vertical_centered(|ui| {
+            ui.add_space(((ui.available_height() - 250.0) / 2.0).max(24.0));
+            ui.label(
+                egui::RichText::new("📥")
+                    .size(44.0)
+                    .color(Color32::from_gray(140)),
+            );
+            ui.add_space(8.0);
+            ui.label(
+                egui::RichText::new(tr("Mit einer SVG beginnen"))
+                    .size(20.0)
+                    .strong(),
+            );
+            ui.add_space(4.0);
+            ui.weak(tr(
+                "Importiere dein Motiv, wähle ein Material\nund bereite den Job für den Lasercutter vor.",
+            ));
+            ui.add_space(12.0);
+            if form::prominent(ui, self.enabled(Command::Open), tr("SVG importieren …")) {
+                *clicked = Some(Command::Open);
+            }
+            ui.add_space(4.0);
+            for command in [Command::Demo, Command::Vectorize] {
+                if ui
+                    .add_enabled(self.enabled(command), egui::Link::new(command.title()))
+                    .clicked()
+                {
+                    *clicked = Some(command);
+                }
+            }
+            ui.add_space(8.0);
+            ui.small(tr!(
+                "Auch PDF, DXF, EPS, Bilder und G-Code · {shortcut} · Dateien hierher ziehen",
+                shortcut = open
+            ))
+            .on_hover_text(tr(
+                "Mehrere Dateien auf einmal ablegen fügt sie nebeneinander ein",
+            ));
+        });
+    }
+
+    /// Arbeitsbett mit Linealen, Raster, Kamerabild und Motiv.
+    fn bed(&mut self, ui: &mut egui::Ui, clicked: &mut Option<Command>) {
         // Probleme mit der Lage des Motivs stehen rot über dem Arbeitsbett.
-        if !self.project.svg.is_empty()
-            && let Err(e) = self.project.validate()
-        {
-            egui::Frame::new()
-                .fill(Color32::from_rgb(200, 40, 40))
-                .inner_margin(6.0)
-                .show(ui, |ui| {
-                    ui.set_width(ui.available_width());
-                    ui.colored_label(Color32::WHITE, format!("⚠ {e}"));
-                });
-        }
-        ui.separator();
         const RULER: f32 = 30.0;
         const MARGIN: f32 = 14.0;
         let bed_mm = Vec2::new(self.project.bed_width_mm, self.project.bed_height_mm);
         let available = ui.available_size() - Vec2::splat(RULER + MARGIN);
         let scale =
             workspace::fit_scale([available.x, available.y], [bed_mm.x, bed_mm.y]) * self.zoom;
-        let panel = ui.max_rect();
         egui::ScrollArea::both().auto_shrink(false).show(ui, |ui| {
             let size = bed_mm * scale + Vec2::splat(RULER + MARGIN);
             let (rect, response) = ui.allocate_exact_size(size, Sense::click());
@@ -1253,7 +1498,7 @@ impl VisiCutRust {
                                 .add_enabled(editable, egui::Button::new(command.title()))
                                 .clicked()
                             {
-                                clicked = Some(*command);
+                                *clicked = Some(*command);
                             }
                         }
                         ui.separator();
@@ -1273,35 +1518,15 @@ impl VisiCutRust {
                 painter.text(
                     bed.center(),
                     egui::Align2::CENTER_CENTER,
-                    format!("Datei öffnen ({open}) oder hierher ziehen"),
+                    tr!(
+                        "Datei öffnen ({shortcut}) oder hierher ziehen",
+                        shortcut = open
+                    ),
                     egui::FontId::proportional(22.0),
                     Color32::from_gray(145),
                 );
             }
         });
-        if ui.ctx().input(|i| !i.raw.hovered_files.is_empty()) {
-            let painter = ui.ctx().layer_painter(egui::LayerId::new(
-                egui::Order::Foreground,
-                egui::Id::new("drop"),
-            ));
-            painter.rect_filled(
-                panel,
-                6.0,
-                Color32::from_rgba_unmultiplied(52, 116, 170, 60),
-            );
-            painter.text(
-                panel.center(),
-                egui::Align2::CENTER_CENTER,
-                if self.project.svg.is_empty() {
-                    "Loslassen zum Öffnen"
-                } else {
-                    "Loslassen zum Hinzufügen"
-                },
-                egui::FontId::proportional(26.0),
-                Color32::from_rgb(30, 70, 110),
-            );
-        }
-        clicked
     }
 
     /// Lineale mit mm-Beschriftung oben und links vom Bett.
@@ -1353,17 +1578,20 @@ impl VisiCutRust {
             let mut choice = None;
             let modal = egui::Modal::new(egui::Id::new("replace")).show(ctx, |ui| {
                 ui.set_max_width(380.0);
-                ui.heading(format!("Änderungen an „{}“ sichern?", self.project.name));
-                ui.label("Nicht gesicherte Änderungen gehen verloren.");
+                ui.heading(tr!(
+                    "Änderungen an „{name}“ sichern?",
+                    name = self.project.name
+                ));
+                ui.label(tr("Nicht gesicherte Änderungen gehen verloren."));
                 ui.add_space(8.0);
                 ui.horizontal(|ui| {
-                    if ui.button("Sichern …").clicked() {
+                    if ui.button(tr("Sichern …")).clicked() {
                         choice = Some(true);
                     }
-                    if ui.button("Nicht sichern").clicked() {
+                    if ui.button(tr("Nicht sichern")).clicked() {
                         choice = Some(false);
                     }
-                    if ui.button("Abbrechen").clicked() {
+                    if ui.button(tr("Abbrechen")).clicked() {
                         ui.close();
                     }
                 });
@@ -1372,7 +1600,7 @@ impl VisiCutRust {
                 Some(true) => match self.save(false) {
                     Ok(true) => self.perform(ctx, action),
                     Ok(false) => {}
-                    Err(e) => self.report(format!("Sichern nicht möglich: {e}")),
+                    Err(e) => self.report(tr!("Sichern nicht möglich: {error}", error = e)),
                 },
                 Some(false) => self.perform(ctx, action),
                 None if modal.should_close() => {}
@@ -1382,14 +1610,14 @@ impl VisiCutRust {
         if let Some(pending) = self.overwrite.take() {
             let mut replace = false;
             let modal = egui::Modal::new(egui::Id::new("overwrite")).show(ctx, |ui| {
-                ui.heading("Vorhandene LTT-Dateien ersetzen?");
+                ui.heading(tr("Vorhandene LTT-Dateien ersetzen?"));
                 for name in &pending.existing {
                     ui.monospace(name);
                 }
                 ui.add_space(8.0);
                 ui.horizontal(|ui| {
-                    replace = ui.button("Ersetzen").clicked();
-                    if ui.button("Abbrechen").clicked() {
+                    replace = ui.button(tr("Ersetzen")).clicked();
+                    if ui.button(tr("Abbrechen")).clicked() {
                         ui.close();
                     }
                 });
@@ -1406,8 +1634,8 @@ impl VisiCutRust {
                 self.send_summary(ui, &prepared);
                 ui.add_space(8.0);
                 ui.horizontal(|ui| {
-                    send = ui.button("Senden").clicked();
-                    if ui.button("Abbrechen").clicked() {
+                    send = ui.button(tr("Senden")).clicked();
+                    if ui.button(tr("Abbrechen")).clicked() {
                         ui.close();
                     }
                 });
@@ -1425,13 +1653,13 @@ impl VisiCutRust {
                 ui.set_max_width(460.0);
                 ui.horizontal(|ui| {
                     ui.label(egui::RichText::new("⚠").size(22.0).color(WARNING));
-                    ui.heading("Hinweis");
+                    ui.heading(tr("Hinweis"));
                 });
                 egui::ScrollArea::vertical()
                     .max_height(320.0)
                     .show(ui, |ui| ui.label(text));
                 ui.add_space(8.0);
-                close = ui.button("OK").clicked();
+                close = ui.button(tr("OK")).clicked();
             });
             if close || modal.should_close() {
                 self.alert = None;
@@ -1442,25 +1670,26 @@ impl VisiCutRust {
     fn send_summary(&self, ui: &mut egui::Ui, prepared: &PreparedJob) {
         ui.set_max_width(560.0);
         let count = prepared.jobs.len();
-        ui.heading(format!(
-            "{count} {} an den Lasercutter senden?",
-            if count == 1 { "Auftrag" } else { "Aufträge" }
-        ));
+        ui.heading(if count == 1 {
+            tr!("{count} Auftrag an den Lasercutter senden?", count = count)
+        } else {
+            tr!("{count} Aufträge an den Lasercutter senden?", count = count)
+        });
         ui.label(format!(
             "{} · {}:{}",
             self.devices.device().name,
             self.project.hostname,
             self.project.port
         ));
-        ui.label(format!(
-            "Aufträge: {} (je Verfahren ein separater Auftrag) · ca. {}",
-            prepared
+        ui.label(tr!(
+            "Aufträge: {jobs} (je Verfahren ein separater Auftrag) · ca. {time}",
+            jobs = prepared
                 .jobs
                 .iter()
                 .map(|job| job.name.as_str())
                 .collect::<Vec<_>>()
-                .join(" → "),
-            workspace::duration(prepared.estimated_seconds)
+                .join(" › "),
+            time = workspace::duration(prepared.estimated_seconds)
         ));
         ui.add_space(6.0);
         egui::ScrollArea::vertical()
@@ -1470,9 +1699,9 @@ impl VisiCutRust {
                     .num_columns(3)
                     .striped(true)
                     .show(ui, |ui| {
-                        ui.strong("Schritt");
-                        ui.strong("Parameter");
-                        ui.strong("Zeit");
+                        ui.strong(tr("Schritt"));
+                        ui.strong(tr("Parameter"));
+                        ui.strong(tr("Zeit"));
                         ui.end_row();
                         for (index, step) in prepared.steps.iter().enumerate() {
                             ui.label(format!(
@@ -1491,11 +1720,11 @@ impl VisiCutRust {
             ui.colored_label(WARNING, format!("⚠ {warning}"));
         }
         ui.add_space(6.0);
-        ui.small(
+        ui.small(tr(
             "Die Übertragung startet den Laser nicht. Aufträge am Gerät in dieser Reihenfolge \
              einzeln starten. Treiber am Gerät noch nicht validiert. Vor dem Start Material, \
              Fokus und Druckluft prüfen.",
-        );
+        ));
     }
 
     fn poll_send(&mut self, ctx: &egui::Context) {
@@ -1505,7 +1734,7 @@ impl VisiCutRust {
         let result = match receiver.try_recv() {
             Ok(result) => result,
             Err(std::sync::mpsc::TryRecvError::Disconnected) => {
-                Err("Übertragung unerwartet abgebrochen; Gerätestatus prüfen".into())
+                Err(tr("Übertragung unerwartet abgebrochen; Gerätestatus prüfen").into())
             }
             Err(std::sync::mpsc::TryRecvError::Empty) => {
                 ctx.request_repaint_after(std::time::Duration::from_millis(100));
@@ -1515,9 +1744,9 @@ impl VisiCutRust {
         self.send_result = None;
         match result {
             Ok(names) => {
-                self.status = format!(
-                    "Übertragen: {}. Aufträge am Gerät prüfen und einzeln starten.",
-                    names.join(", ")
+                self.status = tr!(
+                    "Übertragen: {jobs}. Aufträge am Gerät prüfen und einzeln starten.",
+                    jobs = names.join(", ")
                 );
                 let text = self
                     .devices
@@ -1528,7 +1757,7 @@ impl VisiCutRust {
                     self.alert = Some(text);
                 }
             }
-            Err(e) => self.report(format!("Übertragung fehlgeschlagen: {e}")),
+            Err(e) => self.report(tr!("Übertragung fehlgeschlagen: {error}", error = e)),
         }
     }
 
@@ -1576,7 +1805,7 @@ fn reference_picker(ui: &mut egui::Ui, reference: &mut [f32; 2]) {
     const SIZE: f32 = 40.0;
     const BOX: f32 = 8.0;
     let (rect, response) = ui.allocate_exact_size(Vec2::splat(SIZE), Sense::click());
-    let response = response.on_hover_text("Bezugspunkt für X/Y und Größenänderungen");
+    let response = response.on_hover_text(tr("Bezugspunkt für X/Y und Größenänderungen"));
     let painter = ui.painter_at(rect.expand(1.0));
     let line = ui.visuals().widgets.inactive.fg_stroke.color;
     let outline = Rect::from_min_size(rect.min + Vec2::splat(BOX / 2.0), Vec2::splat(SIZE - BOX));
@@ -1622,8 +1851,7 @@ fn number(
     range: std::ops::RangeInclusive<f32>,
     suffix: &str,
 ) -> bool {
-    ui.horizontal(|ui| {
-        ui.label(label);
+    form::row(ui, label, |ui| {
         ui.add(
             egui::DragValue::new(value)
                 .speed(0.1)
@@ -1632,7 +1860,6 @@ fn number(
         )
         .changed()
     })
-    .inner
 }
 
 impl eframe::App for VisiCutRust {
@@ -1644,7 +1871,7 @@ impl eframe::App for VisiCutRust {
         if ctx.input(|i| i.viewport().close_requested()) && !self.allow_close {
             if self.busy() {
                 ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
-                self.status = "Bitte die laufende Übertragung vor dem Beenden abwarten".into();
+                self.status = tr("Bitte die laufende Übertragung vor dem Beenden abwarten").into();
             } else if self.dirty {
                 ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
                 self.replace = Some(Replace::Quit);
@@ -1703,25 +1930,46 @@ impl eframe::App for VisiCutRust {
         egui::TopBottomPanel::top("menu").show(ctx, |ui| {
             commands.extend(self.menu_bar(ui));
         });
-        egui::TopBottomPanel::bottom("status").show(ctx, |ui| {
-            ui.horizontal(|ui| {
-                if self.busy() {
-                    ui.spinner();
-                }
-                ui.label(&self.status);
-                if self.dirty {
-                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                        ui.weak("geändert");
-                    });
-                }
+        egui::TopBottomPanel::top("toolbar")
+            .frame(
+                egui::Frame::side_top_panel(&ctx.style())
+                    .inner_margin(egui::Margin::symmetric(10, 6)),
+            )
+            .show(ctx, |ui| commands.extend(self.toolbar(ui)));
+        egui::TopBottomPanel::bottom("status")
+            .frame(
+                egui::Frame::side_top_panel(&ctx.style())
+                    .inner_margin(egui::Margin::symmetric(16, 6)),
+            )
+            .show(ctx, |ui| {
+                ui.horizontal(|ui| {
+                    if self.busy() {
+                        ui.spinner();
+                    } else {
+                        ui.weak("ℹ");
+                    }
+                    ui.weak(&self.status);
+                    if self.dirty {
+                        ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                            ui.weak(tr("geändert"));
+                        });
+                    }
+                });
             });
-        });
         egui::SidePanel::left("settings")
-            .exact_width(285.0)
+            .resizable(false)
+            .exact_width(340.0)
+            .frame(
+                egui::Frame::side_top_panel(&ctx.style())
+                    .fill(form::SIDEBAR)
+                    .inner_margin(egui::Margin::symmetric(10, 4)),
+            )
             .show(ctx, |ui| {
                 egui::ScrollArea::vertical().show(ui, |ui| commands.extend(self.sidebar(ui)));
             });
-        egui::CentralPanel::default().show(ctx, |ui| commands.extend(self.canvas(ui)));
+        egui::CentralPanel::default()
+            .frame(egui::Frame::central_panel(&ctx.style()).inner_margin(0.0))
+            .show(ctx, |ui| commands.extend(self.canvas(ui)));
         for command in commands {
             self.run(ctx, command);
         }

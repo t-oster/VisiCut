@@ -2,7 +2,9 @@
 use eframe::egui;
 use visicut_core::{
     compose::{self, Align, NestSettings, NewObject, Shape, Sign},
+    i18n::tr,
     project::{Operation, Project},
+    tr,
 };
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -17,11 +19,11 @@ pub enum Tool {
 impl Tool {
     fn title(self) -> &'static str {
         match self {
-            Self::Text => "Text einfügen",
-            Self::Shape => "Form einfügen",
-            Self::Sign => "Schild erstellen",
-            Self::Array => "Kopien im Raster",
-            Self::Nest => "Teile verschachteln (Nesting)",
+            Self::Text => tr("Text einfügen"),
+            Self::Shape => tr("Form einfügen"),
+            Self::Sign => tr("Schild erstellen"),
+            Self::Array => tr("Kopien im Raster"),
+            Self::Nest => tr("Teile verschachteln (Nesting)"),
         }
     }
 }
@@ -81,7 +83,7 @@ impl Default for ComposeUi {
             x_mm: 10.0,
             y_mm: 10.0,
             text: TextForm {
-                text: "Text".into(),
+                text: tr("Text").into(),
                 font: "sans-serif".into(),
                 size_mm: 10.0,
                 bold: false,
@@ -114,14 +116,14 @@ impl Default for ComposeUi {
 fn operation_choice(ui: &mut egui::Ui, id: &str, operation: &mut Operation) {
     egui::ComboBox::from_id_salt(id)
         .selected_text(match operation {
-            Operation::Cut => "Schneiden (rot)",
-            Operation::Mark => "Markieren (blau)",
-            _ => "Gravieren (schwarz)",
+            Operation::Cut => tr("Schneiden (rot)"),
+            Operation::Mark => tr("Markieren (blau)"),
+            _ => tr("Gravieren (schwarz)"),
         })
         .show_ui(ui, |ui| {
-            ui.selectable_value(operation, Operation::Engrave, "Gravieren (schwarz)");
-            ui.selectable_value(operation, Operation::Cut, "Schneiden (rot)");
-            ui.selectable_value(operation, Operation::Mark, "Markieren (blau)");
+            ui.selectable_value(operation, Operation::Engrave, tr("Gravieren (schwarz)"));
+            ui.selectable_value(operation, Operation::Cut, tr("Schneiden (rot)"));
+            ui.selectable_value(operation, Operation::Mark, tr("Markieren (blau)"));
         });
 }
 
@@ -172,6 +174,7 @@ impl ComposeUi {
         let mut open = true;
         let mut apply = false;
         egui::Window::new(tool.title())
+            .id(egui::Id::new("compose_tool"))
             .open(&mut open)
             .resizable(false)
             .show(ctx, |ui| {
@@ -184,8 +187,8 @@ impl ComposeUi {
                 }
                 ui.separator();
                 let label = match tool {
-                    Tool::Array | Tool::Nest => "Anwenden",
-                    _ => "Einfügen",
+                    Tool::Array | Tool::Nest => tr("Anwenden"),
+                    _ => tr("Einfügen"),
                 };
                 apply = ui.button(label).clicked();
             });
@@ -265,10 +268,10 @@ impl ComposeUi {
             Tool::Nest => compose::nest(project, &self.nest).map(|n| {
                 let mut notes = Vec::new();
                 if n.missing > 0 {
-                    notes.push(format!(
-                        "{} von {} Teilen passen nicht in die Fläche",
-                        n.missing,
-                        n.missing + n.placed
+                    notes.push(tr!(
+                        "{missing} von {total} Teilen passen nicht in die Fläche",
+                        missing = n.missing,
+                        total = n.missing + n.placed
                     ));
                 }
                 (n.project, notes)
@@ -277,8 +280,8 @@ impl ComposeUi {
     }
 
     fn position(&mut self, ui: &mut egui::Ui) {
-        mm(ui, "X (links)", &mut self.x_mm, 0.0..=1000.0);
-        mm(ui, "Y (oben)", &mut self.y_mm, 0.0..=600.0);
+        mm(ui, tr("X (links)"), &mut self.x_mm, 0.0..=1000.0);
+        mm(ui, tr("Y (oben)"), &mut self.y_mm, 0.0..=600.0);
     }
 
     fn text_form(&mut self, ui: &mut egui::Ui) {
@@ -288,66 +291,68 @@ impl ComposeUi {
                 .desired_width(320.0),
         );
         egui::Grid::new("text").num_columns(2).show(ui, |ui| {
-            ui.label("Schrift");
+            ui.label(tr("Schrift"));
             font_choice(ui, &self.fonts, &mut self.text.font);
             ui.end_row();
-            mm(ui, "Schriftgröße", &mut self.text.size_mm, 0.5..=1000.0);
-            ui.label("Stil");
+            mm(ui, tr("Schriftgröße"), &mut self.text.size_mm, 0.5..=1000.0);
+            ui.label(tr("Stil"));
             ui.horizontal(|ui| {
-                ui.checkbox(&mut self.text.bold, "Fett");
-                ui.checkbox(&mut self.text.italic, "Kursiv");
+                ui.checkbox(&mut self.text.bold, tr("Fett"));
+                ui.checkbox(&mut self.text.italic, tr("Kursiv"));
             });
             ui.end_row();
-            ui.label("Ausrichtung");
+            ui.label(tr("Ausrichtung"));
             ui.horizontal(|ui| {
-                ui.selectable_value(&mut self.text.align, Align::Left, "Links");
-                ui.selectable_value(&mut self.text.align, Align::Center, "Mitte");
-                ui.selectable_value(&mut self.text.align, Align::Right, "Rechts");
+                ui.selectable_value(&mut self.text.align, Align::Left, tr("Links"));
+                ui.selectable_value(&mut self.text.align, Align::Center, tr("Mitte"));
+                ui.selectable_value(&mut self.text.align, Align::Right, tr("Rechts"));
             });
             ui.end_row();
-            ui.label("Zeilenabstand");
+            ui.label(tr("Zeilenabstand"));
             ui.add(
                 egui::DragValue::new(&mut self.text.line_spacing)
                     .range(0.5..=5.0)
                     .speed(0.05),
             );
             ui.end_row();
-            ui.label("Bearbeitung");
+            ui.label(tr("Bearbeitung"));
             operation_choice(ui, "text_operation", &mut self.text.operation);
             ui.end_row();
             self.position(ui);
         });
-        ui.small("Der Text wird in Umrisse umgewandelt und ist danach nicht mehr editierbar.");
+        ui.small(tr(
+            "Der Text wird in Umrisse umgewandelt und ist danach nicht mehr editierbar.",
+        ));
     }
 
     fn shape_form(&mut self, ui: &mut egui::Ui) {
         let (s, x, y) = (&mut self.shape, &mut self.x_mm, &mut self.y_mm);
         ui.horizontal(|ui| {
-            ui.selectable_value(&mut s.kind, ShapeKind::Rectangle, "Rechteck");
-            ui.selectable_value(&mut s.kind, ShapeKind::Ellipse, "Ellipse");
-            ui.selectable_value(&mut s.kind, ShapeKind::Polygon, "Vieleck");
-            ui.selectable_value(&mut s.kind, ShapeKind::Star, "Stern");
+            ui.selectable_value(&mut s.kind, ShapeKind::Rectangle, tr("Rechteck"));
+            ui.selectable_value(&mut s.kind, ShapeKind::Ellipse, tr("Ellipse"));
+            ui.selectable_value(&mut s.kind, ShapeKind::Polygon, tr("Vieleck"));
+            ui.selectable_value(&mut s.kind, ShapeKind::Star, tr("Stern"));
         });
         egui::Grid::new("shape").num_columns(2).show(ui, |ui| {
             match s.kind {
                 ShapeKind::Rectangle | ShapeKind::Ellipse => {
-                    mm(ui, "Breite", &mut s.width_mm, 0.1..=1000.0);
-                    mm(ui, "Höhe", &mut s.height_mm, 0.1..=1000.0);
+                    mm(ui, tr("Breite"), &mut s.width_mm, 0.1..=1000.0);
+                    mm(ui, tr("Höhe"), &mut s.height_mm, 0.1..=1000.0);
                     if s.kind == ShapeKind::Rectangle {
-                        mm(ui, "Eckenradius", &mut s.corner_mm, 0.0..=500.0);
+                        mm(ui, tr("Eckenradius"), &mut s.corner_mm, 0.0..=500.0);
                     }
                 }
                 ShapeKind::Polygon | ShapeKind::Star => {
                     ui.label(if s.kind == ShapeKind::Star {
-                        "Zacken"
+                        tr("Zacken")
                     } else {
-                        "Ecken"
+                        tr("Ecken")
                     });
                     ui.add(egui::DragValue::new(&mut s.corners).range(3..=100));
                     ui.end_row();
-                    mm(ui, "Durchmesser", &mut s.diameter_mm, 0.1..=1000.0);
+                    mm(ui, tr("Durchmesser"), &mut s.diameter_mm, 0.1..=1000.0);
                     if s.kind == ShapeKind::Star {
-                        ui.label("Innenradius");
+                        ui.label(tr("Innenradius"));
                         ui.add(
                             egui::DragValue::new(&mut s.inner_percent)
                                 .range(5.0..=95.0)
@@ -357,11 +362,11 @@ impl ComposeUi {
                     }
                 }
             }
-            ui.label("Bearbeitung");
+            ui.label(tr("Bearbeitung"));
             operation_choice(ui, "shape_operation", &mut s.operation);
             ui.end_row();
-            mm(ui, "X (links)", x, 0.0..=1000.0);
-            mm(ui, "Y (oben)", y, 0.0..=600.0);
+            mm(ui, tr("X (links)"), x, 0.0..=1000.0);
+            mm(ui, tr("Y (oben)"), y, 0.0..=600.0);
         });
     }
 
@@ -373,10 +378,10 @@ impl ComposeUi {
                 .desired_width(320.0),
         );
         egui::Grid::new("sign").num_columns(2).show(ui, |ui| {
-            mm(ui, "Breite", &mut s.width_mm, 5.0..=1000.0);
-            mm(ui, "Höhe", &mut s.height_mm, 5.0..=600.0);
-            mm(ui, "Eckenradius", &mut s.corner_mm, 0.0..=300.0);
-            ui.label("Löcher");
+            mm(ui, tr("Breite"), &mut s.width_mm, 5.0..=1000.0);
+            mm(ui, tr("Höhe"), &mut s.height_mm, 5.0..=600.0);
+            mm(ui, tr("Eckenradius"), &mut s.corner_mm, 0.0..=300.0);
+            ui.label(tr("Löcher"));
             ui.horizontal(|ui| {
                 for n in [0, 2, 4] {
                     ui.selectable_value(&mut s.holes, n, n.to_string());
@@ -384,78 +389,87 @@ impl ComposeUi {
             });
             ui.end_row();
             if s.holes > 0 {
-                mm(ui, "Lochdurchmesser", &mut s.hole_diameter_mm, 0.5..=50.0);
                 mm(
                     ui,
-                    "Lochabstand zum Rand",
+                    tr("Lochdurchmesser"),
+                    &mut s.hole_diameter_mm,
+                    0.5..=50.0,
+                );
+                mm(
+                    ui,
+                    tr("Lochabstand zum Rand"),
                     &mut s.hole_inset_mm,
                     0.5..=200.0,
                 );
             }
             mm(
                 ui,
-                "Rahmen (markiert, 0 = ohne)",
+                tr("Rahmen (markiert, 0 = ohne)"),
                 &mut s.frame_inset_mm,
                 0.0..=100.0,
             );
-            ui.label("Schrift");
+            ui.label(tr("Schrift"));
             font_choice(ui, &self.fonts, &mut s.font);
             ui.end_row();
-            mm(ui, "Schriftgröße", &mut s.size_mm, 0.5..=500.0);
-            ui.label("Text");
+            mm(ui, tr("Schriftgröße"), &mut s.size_mm, 0.5..=500.0);
+            ui.label(tr("Text"));
             ui.horizontal(|ui| {
-                ui.checkbox(&mut s.bold, "Fett");
+                ui.checkbox(&mut s.bold, tr("Fett"));
                 operation_choice(ui, "sign_text", &mut s.text_operation);
             });
             ui.end_row();
-            mm(ui, "X (links)", &mut s.x_mm, 0.0..=1000.0);
-            mm(ui, "Y (oben)", &mut s.y_mm, 0.0..=600.0);
+            mm(ui, tr("X (links)"), &mut s.x_mm, 0.0..=1000.0);
+            mm(ui, tr("Y (oben)"), &mut s.y_mm, 0.0..=600.0);
         });
-        ui.small("Platte und Löcher werden geschnitten, der Text mittig gesetzt.");
+        ui.small(tr(
+            "Platte und Löcher werden geschnitten, der Text mittig gesetzt.",
+        ));
     }
 
     fn array_form(&mut self, ui: &mut egui::Ui, project: &Project) {
         egui::Grid::new("array").num_columns(2).show(ui, |ui| {
-            ui.label("Spalten");
+            ui.label(tr("Spalten"));
             ui.add(egui::DragValue::new(&mut self.columns).range(1..=50));
             ui.end_row();
-            ui.label("Zeilen");
+            ui.label(tr("Zeilen"));
             ui.add(egui::DragValue::new(&mut self.rows).range(1..=50));
             ui.end_row();
-            mm(ui, "Abstand X", &mut self.gap_x_mm, -500.0..=500.0);
-            mm(ui, "Abstand Y", &mut self.gap_y_mm, -500.0..=500.0);
+            mm(ui, tr("Abstand X"), &mut self.gap_x_mm, -500.0..=500.0);
+            mm(ui, tr("Abstand Y"), &mut self.gap_y_mm, -500.0..=500.0);
         });
         let (w, h) = (
             self.columns as f64 * project.width_mm as f64
                 + (self.columns as f64 - 1.0) * self.gap_x_mm,
             self.rows as f64 * project.height_mm as f64 + (self.rows as f64 - 1.0) * self.gap_y_mm,
         );
-        ui.small(format!(
-            "{} Exemplare · {w:.0} × {h:.0} mm; Zuordnungen gelten für alle Kopien.",
-            self.columns * self.rows
+        ui.small(tr!(
+            "{count} Exemplare · {width} × {height} mm; Zuordnungen gelten für alle Kopien.",
+            count = self.columns * self.rows,
+            width = format!("{w:.0}"),
+            height = format!("{h:.0}")
         ));
     }
 
     fn nest_form(&mut self, ui: &mut egui::Ui, project: &Project) {
         let n = &mut self.nest;
         egui::Grid::new("nest").num_columns(2).show(ui, |ui| {
-            ui.label("Anzahl je Teil");
+            ui.label(tr("Anzahl je Teil"));
             ui.add(egui::DragValue::new(&mut n.quantity).range(1..=400));
             ui.end_row();
-            mm(ui, "Abstand", &mut n.gap_mm, 0.0..=50.0);
-            ui.label("Drehen");
-            ui.checkbox(&mut n.rotate, "um 90° erlaubt");
+            mm(ui, tr("Abstand"), &mut n.gap_mm, 0.0..=50.0);
+            ui.label(tr("Drehen"));
+            ui.checkbox(&mut n.rotate, tr("um 90° erlaubt"));
             ui.end_row();
-            mm(ui, "Fläche X", &mut n.area_mm[0], 0.0..=1000.0);
-            mm(ui, "Fläche Y", &mut n.area_mm[1], 0.0..=600.0);
-            mm(ui, "Fläche Breite", &mut n.area_mm[2], 1.0..=1000.0);
-            mm(ui, "Fläche Höhe", &mut n.area_mm[3], 1.0..=600.0);
+            mm(ui, tr("Fläche X"), &mut n.area_mm[0], 0.0..=1000.0);
+            mm(ui, tr("Fläche Y"), &mut n.area_mm[1], 0.0..=600.0);
+            mm(ui, tr("Fläche Breite"), &mut n.area_mm[2], 1.0..=1000.0);
+            mm(ui, tr("Fläche Höhe"), &mut n.area_mm[3], 1.0..=600.0);
         });
         ui.horizontal(|ui| {
-            if ui.button("Ganzes Arbeitsbett").clicked() {
+            if ui.button(tr("Ganzes Arbeitsbett")).clicked() {
                 n.area_mm = NestSettings::default().area_mm;
             }
-            if ui.button("Fläche des Motivs").clicked() {
+            if ui.button(tr("Fläche des Motivs")).clicked() {
                 n.area_mm = [
                     project.x_mm as f64,
                     project.y_mm as f64,
@@ -464,9 +478,9 @@ impl ComposeUi {
                 ];
             }
         });
-        ui.small(
+        ui.small(tr(
             "Teile sind die Objekte der obersten Ebene (bzw. einer Inkscape-Ebene); \
              sie werden nach ihren Umrissrechtecken angeordnet, größte zuerst.",
-        );
+        ));
     }
 }

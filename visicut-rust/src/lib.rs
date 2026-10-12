@@ -3,6 +3,7 @@ pub mod camera;
 pub mod compose;
 pub mod device;
 pub mod geometry;
+pub mod i18n;
 pub mod import;
 pub mod ltt;
 pub mod mapping;

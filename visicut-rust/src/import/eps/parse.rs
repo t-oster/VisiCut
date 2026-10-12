@@ -2,6 +2,7 @@
 //! hex strings and nested `{ }` procedures. Every other token is an executable
 //! name that the interpreter either implements or reports as unsupported.
 use super::graphics::Matrix;
+use crate::i18n::tr;
 use std::rc::Rc;
 
 /// Deepest allowed nesting of `{ }` procedures in the source.
@@ -43,14 +44,14 @@ pub(super) fn parse(src: &[u8]) -> Result<Rc<[Obj]>, String> {
             }
             b'{' => {
                 if open.len() >= MAX_NESTING {
-                    return Err("Prozeduren sind zu tief verschachtelt".into());
+                    return Err(tr("Prozeduren sind zu tief verschachtelt").into());
                 }
                 open.push(Vec::new());
                 i += 1;
                 continue;
             }
             b'}' => {
-                let body = open.pop().ok_or("Unerwartete „}“ in der EPS-Datei")?;
+                let body = open.pop().ok_or(tr("Unerwartete „}“ in der EPS-Datei"))?;
                 (Obj::Proc(body.into()), i + 1)
             }
             b'(' => {
@@ -92,7 +93,7 @@ pub(super) fn parse(src: &[u8]) -> Result<Rc<[Obj]>, String> {
         i = next;
     }
     if !open.is_empty() {
-        return Err("Eine Prozedur „{“ in der EPS-Datei ist nicht geschlossen".into());
+        return Err(tr("Eine Prozedur „{“ in der EPS-Datei ist nicht geschlossen").into());
     }
     Ok(root.into())
 }
@@ -207,7 +208,7 @@ fn read_string(src: &[u8], start: usize) -> Result<(Vec<u8>, usize), String> {
             _ => out.push(byte),
         }
     }
-    Err("Eine Zeichenkette „(...)“ in der EPS-Datei ist nicht geschlossen".into())
+    Err(tr("Eine Zeichenkette „(...)“ in der EPS-Datei ist nicht geschlossen").into())
 }
 
 /// Reads a `< ... >` hex string starting at `start`.
@@ -228,9 +229,9 @@ fn read_hex_string(src: &[u8], start: usize) -> Result<(Vec<u8>, usize), String>
             _ if is_space(byte) => {}
             _ => match (byte as char).to_digit(16) {
                 Some(value) => nibbles.push(value as u8),
-                None => return Err("Ungültige Hex-Zeichenkette in der EPS-Datei".into()),
+                None => return Err(tr("Ungültige Hex-Zeichenkette in der EPS-Datei").into()),
             },
         }
     }
-    Err("Eine Hex-Zeichenkette „<...>“ in der EPS-Datei ist nicht geschlossen".into())
+    Err(tr("Eine Hex-Zeichenkette „<...>“ in der EPS-Datei ist nicht geschlossen").into())
 }

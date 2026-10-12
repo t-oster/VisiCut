@@ -22,7 +22,7 @@ extension AppModel {
     func chooseBitmap() {
         guard !busy, !showJobPreview, vectorizeSource == nil else { return }
         let panel = NSOpenPanel()
-        panel.title = "Bitmap zum Vektorisieren wählen"
+        panel.title = tr("Bitmap zum Vektorisieren wählen")
         panel.allowedContentTypes = ["png", "jpg", "jpeg", "bmp", "gif"].compactMap { UTType(filenameExtension: $0) }
         panel.allowsMultipleSelection = false
         if panel.runModal() == .OK, let url = panel.url { vectorizeSource = BitmapSource(url: url) }
@@ -37,7 +37,7 @@ extension AppModel {
         let response: ProjectResponse = try RustCore.decode("vectorize", project: project, path: url.path, values: values)
         accept(response, dirty: true)
         projectURL = nil
-        status = "\(url.lastPathComponent) vektorisiert. Material und Bearbeitung auswählen."
+        status = tr("{file} vektorisiert. Material und Bearbeitung auswählen.", ["file": url.lastPathComponent])
         if let warnings = response.warnings, !warnings.isEmpty { self.error = warnings.joined(separator: "\n") }
         return true
     }
@@ -68,30 +68,30 @@ struct VectorizeSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Text("Bitmap vektorisieren").font(.title2).bold()
+                Text(tr("Bitmap vektorisieren")).font(.title2).bold()
                 Spacer()
                 Text(source.url.lastPathComponent).foregroundStyle(.secondary).lineLimit(1)
             }
             HStack(alignment: .top, spacing: 20) {
-                picture(original, title: "Bitmap")
-                picture(vectors, title: "Vektorisiert")
+                picture(original, title: tr("Bitmap"))
+                picture(vectors, title: tr("Vektorisiert"))
                 VStack(alignment: .leading, spacing: 12) {
-                    LabeledContent("Schwellwert") {
+                    LabeledContent(tr("Schwellwert")) {
                         HStack(spacing: 6) {
-                            Slider(value: $threshold, in: 0...255, step: 1) { Text("Schwellwert") }
+                            Slider(value: $threshold, in: 0...255, step: 1) { Text(tr("Schwellwert")) }
                                 .labelsHidden().frame(width: 130)
                             Text(String(Int(threshold.rounded()))).monospacedDigit().frame(width: 32, alignment: .trailing)
                         }
                     }
-                    Toggle("Invertieren (helle Bereiche nachzeichnen)", isOn: $invert)
-                    NumberField("Breite", value: Binding(get: { width_mm > 0 ? width_mm : result?.width_mm ?? 0 },
+                    Toggle(tr("Invertieren (helle Bereiche nachzeichnen)"), isOn: $invert)
+                    NumberField(tr("Breite"), value: Binding(get: { width_mm > 0 ? width_mm : result?.width_mm ?? 0 },
                                                          set: { width_mm = $0 }), unit: "mm")
                     Divider()
                     status.font(.callout)
                     if let result {
-                        Text("Bild: \(result.width_px) × \(result.height_px) Pixel").font(.caption).foregroundStyle(.secondary)
+                        Text(tr("Bild: {width} × {height} Pixel", ["width": result.width_px, "height": result.height_px])).font(.caption).foregroundStyle(.secondary)
                     }
-                    Text("Bildbereiche dunkler als der Schwellwert werden als geschlossene Konturen nachgezeichnet. Übernehmen ersetzt das Motiv und die Zuordnung wie ein Import.")
+                    Text(tr("Bildbereiche dunkler als der Schwellwert werden als geschlossene Konturen nachgezeichnet. Übernehmen ersetzt das Motiv und die Zuordnung wie ein Import."))
                         .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                     Spacer(minLength: 0)
                 }.frame(width: 300)
@@ -100,8 +100,8 @@ struct VectorizeSheet: View {
             HStack {
                 if loading { ProgressView().controlSize(.small) }
                 Spacer()
-                Button("Abbrechen") { dismiss() }.keyboardShortcut(.cancelAction)
-                Button("Übernehmen") { apply() }.keyboardShortcut(.defaultAction).disabled(!ready)
+                Button(tr("Abbrechen")) { dismiss() }.keyboardShortcut(.cancelAction)
+                Button(tr("Übernehmen")) { apply() }.keyboardShortcut(.defaultAction).disabled(!ready)
             }
         }
         .padding(24).frame(width: 900, height: 440)
@@ -120,12 +120,12 @@ struct VectorizeSheet: View {
             Label(problem, systemImage: "exclamationmark.triangle").foregroundStyle(.orange)
         } else if let result {
             if result.paths > 0 {
-                Text("\(result.paths) Pfade · \(format(result.width_mm)) × \(format(result.height_mm)) mm").monospacedDigit()
+                Text(tr("{count} Pfade · {width} × {height} mm", ["count": result.paths, "width": format(result.width_mm), "height": format(result.height_mm)])).monospacedDigit()
             } else {
-                Text("Keine Kontur gefunden; Schwellwert anpassen").foregroundStyle(.orange)
+                Text(tr("Keine Kontur gefunden; Schwellwert anpassen")).foregroundStyle(.orange)
             }
         } else {
-            Text("Wird berechnet …").foregroundStyle(.secondary)
+            Text(tr("Wird berechnet …")).foregroundStyle(.secondary)
         }
     }
 

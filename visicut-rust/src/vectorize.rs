@@ -11,13 +11,20 @@
 //!
 //! Das Ergebnis ist ein SVG-Dokument wie bei jedem anderen Import und läuft
 //! deshalb über denselben Pfad wie SVG-Dateien (`import::Imported`).
+use crate::{i18n::tr, tr};
 use image::ImageReader;
 use std::fmt::Write as _;
 use std::io::Cursor;
 
 /// Größte Bitmap in Pixeln, damit Speicher und Rechenzeit begrenzt bleiben.
 pub const MAX_PIXELS: u64 = 25_000_000;
-const DAMAGED: &str = "Bilddatei ist beschädigt oder hat ein nicht unterstütztes Format";
+
+fn damaged(error: impl std::fmt::Display) -> String {
+    tr!(
+        "Bilddatei ist beschädigt oder hat ein nicht unterstütztes Format: {error}",
+        error = error
+    )
+}
 
 /// Größe des Ergebnisses. Die Höhe folgt dem Seitenverhältnis des Bildes.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -76,20 +83,19 @@ pub fn vectorize(data: &[u8], options: &Options) -> Result<Vectorized, String> {
 
 impl Bitmap {
     pub fn decode(data: &[u8]) -> Result<Self, String> {
-        let damaged = |e: image::ImageError| format!("{DAMAGED}: {e}");
         let reader = ImageReader::new(Cursor::new(data))
             .with_guessed_format()
-            .map_err(|e| format!("{DAMAGED}: {e}"))?;
+            .map_err(damaged)?;
         let (width, height) = reader.into_dimensions().map_err(damaged)?;
         if u64::from(width) * u64::from(height) > MAX_PIXELS {
-            return Err(format!(
-                "Bild hat mehr als {} Megapixel; bitte verkleinern",
-                MAX_PIXELS / 1_000_000
+            return Err(tr!(
+                "Bild hat mehr als {megapixels} Megapixel; bitte verkleinern",
+                megapixels = MAX_PIXELS / 1_000_000
             ));
         }
         let image = ImageReader::new(Cursor::new(data))
             .with_guessed_format()
-            .map_err(|e| format!("{DAMAGED}: {e}"))?
+            .map_err(damaged)?
             .decode()
             .map_err(damaged)?;
         let luma = image
@@ -119,7 +125,7 @@ impl Bitmap {
         let scale = match options.size {
             Size::WidthMm(width) if width.is_finite() && width > 0.0 => width / self.width as f64,
             Size::Dpi(dpi) if dpi.is_finite() && dpi > 0.0 => 25.4 / dpi,
-            _ => return Err("Ungültige Größe für die Vektorisierung".into()),
+            _ => return Err(tr("Ungültige Größe für die Vektorisierung").into()),
         };
         let contours = self.contours(options);
         let (width_mm, height_mm) = (self.width as f64 * scale, self.height as f64 * scale);

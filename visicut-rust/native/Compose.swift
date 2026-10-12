@@ -7,11 +7,11 @@ enum ComposeTool: String, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .text: return "Text einfügen"
-        case .shape: return "Form einfügen"
-        case .sign: return "Schild erstellen"
-        case .array: return "Kopien im Raster"
-        case .nest: return "Teile verschachteln (Nesting)"
+        case .text: return tr("Text einfügen")
+        case .shape: return tr("Form einfügen")
+        case .sign: return tr("Schild erstellen")
+        case .array: return tr("Kopien im Raster")
+        case .nest: return tr("Teile verschachteln (Nesting)")
         }
     }
 }
@@ -43,7 +43,7 @@ extension AppModel {
                 }
             }
             refreshMapping()
-            status = "Motiv aktualisiert · \(Int(project.width_mm.rounded())) × \(Int(project.height_mm.rounded())) mm"
+            status = tr("Motiv aktualisiert · {width} × {height} mm", ["width": Int(project.width_mm.rounded()), "height": Int(project.height_mm.rounded())])
             if let warnings = response.warnings, !warnings.isEmpty { error = warnings.joined(separator: "\n") }
             return true
         } catch {
@@ -74,7 +74,7 @@ extension AppModel {
         objects = []
         dirty = true
         refreshMapping()
-        status = "Motiv entfernt · ⌘Z stellt es wieder her"
+        status = tr("Motiv entfernt · ⌘Z stellt es wieder her")
     }
 
     func deleteObject(_ id: Int) {
@@ -88,7 +88,7 @@ extension AppModel {
         guard !busy else { return }
         let isProject = { (url: URL) in ["vcr", "json"].contains(url.pathExtension.lowercased()) }
         var graphics = urls.filter { !isProject($0) }
-        let skipped = urls.filter(isProject).map { "\($0.lastPathComponent): Projekte lassen sich nicht hinzufügen, nur öffnen" }
+        let skipped = urls.filter(isProject).map { tr("{file}: Projekte lassen sich nicht hinzufügen, nur öffnen", ["file": $0.lastPathComponent]) }
         guard !graphics.isEmpty else {
             if let first = urls.first { open(first) }
             return
@@ -99,7 +99,7 @@ extension AppModel {
             guard project.hasArtwork else { return }
         }
         if !graphics.isEmpty, compose("append", values: ["paths": graphics.map(\.path)]) {
-            status = "\(count) Datei(en) hinzugefügt · \(Int(project.width_mm.rounded())) × \(Int(project.height_mm.rounded())) mm · ⌘Z widerruft"
+            status = tr("{count} Datei(en) hinzugefügt · {width} × {height} mm · ⌘Z widerruft", ["count": count, "width": Int(project.width_mm.rounded()), "height": Int(project.height_mm.rounded())])
         }
         if !skipped.isEmpty {
             error = ([error].compactMap { $0 } + skipped).joined(separator: "\n")
@@ -123,7 +123,7 @@ extension AppModel {
         objects = state.objects
         dirty = true
         refreshMapping()
-        status = "Letzte Änderung widerrufen"
+        status = tr("Letzte Änderung widerrufen")
     }
 
     /// Neue Elemente erscheinen rechts neben dem Motiv, sonst links oben.
@@ -135,10 +135,10 @@ extension AppModel {
 }
 
 private func operationPicker(_ selection: Binding<Operation>) -> some View {
-    Picker("Bearbeitung", selection: selection) {
-        Text("Gravieren (schwarz)").tag(Operation.engrave)
-        Text("Schneiden (rot)").tag(Operation.cut)
-        Text("Markieren (blau)").tag(Operation.mark)
+    Picker(tr("Bearbeitung"), selection: selection) {
+        Text(tr("Gravieren (schwarz)")).tag(Operation.engrave)
+        Text(tr("Schneiden (rot)")).tag(Operation.cut)
+        Text(tr("Markieren (blau)")).tag(Operation.mark)
     }
 }
 
@@ -163,7 +163,7 @@ struct ComposeSheet: View {
     @State private var x = 10.0
     @State private var y = 10.0
     // Text
-    @State private var text = "Text"
+    @State private var text = tr("Text")
     @State private var font = "sans-serif"
     @State private var size = 10.0
     @State private var bold = false
@@ -180,7 +180,7 @@ struct ComposeSheet: View {
     @State private var diameter = 40.0
     @State private var inner = 50.0
     // Schild
-    @State private var signText = "Schild"
+    @State private var signText = tr("Schild")
     @State private var signWidth = 150.0
     @State private var signHeight = 50.0
     @State private var signCorner = 5.0
@@ -207,8 +207,8 @@ struct ComposeSheet: View {
             Form { content }.formStyle(.grouped)
             HStack {
                 Spacer()
-                Button("Abbrechen") { dismiss() }.keyboardShortcut(.cancelAction)
-                Button(tool == .array || tool == .nest ? "Anwenden" : "Einfügen") {
+                Button(tr("Abbrechen")) { dismiss() }.keyboardShortcut(.cancelAction)
+                Button(tool == .array || tool == .nest ? tr("Anwenden") : tr("Einfügen")) {
                     if model.compose(action, values: values) { dismiss() }
                 }.keyboardShortcut(.defaultAction)
             }
@@ -226,36 +226,36 @@ struct ComposeSheet: View {
         case .text:
             Section {
                 TextEditor(text: $text).font(.body).frame(height: 70)
-                Picker("Schrift", selection: $font) { ForEach(fonts, id: \.self) { Text($0).tag($0) } }
-                MillimetreField(title: "Schriftgröße", value: $size)
-                Toggle("Fett", isOn: $bold)
-                Toggle("Kursiv", isOn: $italic)
-                Picker("Ausrichtung", selection: $align) {
-                    Text("Links").tag("Left"); Text("Mitte").tag("Center"); Text("Rechts").tag("Right")
+                Picker(tr("Schrift"), selection: $font) { ForEach(fonts, id: \.self) { Text($0).tag($0) } }
+                MillimetreField(title: tr("Schriftgröße"), value: $size)
+                Toggle(tr("Fett"), isOn: $bold)
+                Toggle(tr("Kursiv"), isOn: $italic)
+                Picker(tr("Ausrichtung"), selection: $align) {
+                    Text(tr("Links")).tag("Left"); Text(tr("Mitte")).tag("Center"); Text(tr("Rechts")).tag("Right")
                 }.pickerStyle(.segmented)
-                LabeledContent("Zeilenabstand") {
+                LabeledContent(tr("Zeilenabstand")) {
                     TextField("", value: $lineSpacing, format: .number).frame(width: 70).multilineTextAlignment(.trailing)
                 }
                 operationPicker($operation)
             } footer: {
-                Text("Der Text wird in Umrisse umgewandelt und ist danach nicht mehr editierbar.").font(.caption).foregroundStyle(.secondary)
+                Text(tr("Der Text wird in Umrisse umgewandelt und ist danach nicht mehr editierbar.")).font(.caption).foregroundStyle(.secondary)
             }
             position
         case .shape:
             Section {
-                Picker("Form", selection: $shapeKind) {
-                    Text("Rechteck").tag("Rectangle"); Text("Ellipse").tag("Ellipse")
-                    Text("Vieleck").tag("Polygon"); Text("Stern").tag("Star")
+                Picker(tr("Form"), selection: $shapeKind) {
+                    Text(tr("Rechteck")).tag("Rectangle"); Text(tr("Ellipse")).tag("Ellipse")
+                    Text(tr("Vieleck")).tag("Polygon"); Text(tr("Stern")).tag("Star")
                 }.pickerStyle(.segmented)
                 if shapeKind == "Rectangle" || shapeKind == "Ellipse" {
-                    MillimetreField(title: "Breite", value: $width)
-                    MillimetreField(title: "Höhe", value: $height)
-                    if shapeKind == "Rectangle" { MillimetreField(title: "Eckenradius", value: $corner) }
+                    MillimetreField(title: tr("Breite"), value: $width)
+                    MillimetreField(title: tr("Höhe"), value: $height)
+                    if shapeKind == "Rectangle" { MillimetreField(title: tr("Eckenradius"), value: $corner) }
                 } else {
-                    Stepper("\(shapeKind == "Star" ? "Zacken" : "Ecken"): \(corners)", value: $corners, in: 3...100)
-                    MillimetreField(title: "Durchmesser", value: $diameter)
+                    Stepper("\(shapeKind == "Star" ? tr("Zacken") : tr("Ecken")): \(corners)", value: $corners, in: 3...100)
+                    MillimetreField(title: tr("Durchmesser"), value: $diameter)
                     if shapeKind == "Star" {
-                        LabeledContent("Innenradius") {
+                        LabeledContent(tr("Innenradius")) {
                             HStack(spacing: 4) {
                                 TextField("", value: $inner, format: .number).frame(width: 70).multilineTextAlignment(.trailing)
                                 Text("%").foregroundStyle(.secondary)
@@ -269,63 +269,63 @@ struct ComposeSheet: View {
         case .sign:
             Section {
                 TextEditor(text: $signText).font(.body).frame(height: 50)
-                MillimetreField(title: "Breite", value: $signWidth)
-                MillimetreField(title: "Höhe", value: $signHeight)
-                MillimetreField(title: "Eckenradius", value: $signCorner)
-                Picker("Löcher", selection: $holes) { Text("0").tag(0); Text("2").tag(2); Text("4").tag(4) }.pickerStyle(.segmented)
+                MillimetreField(title: tr("Breite"), value: $signWidth)
+                MillimetreField(title: tr("Höhe"), value: $signHeight)
+                MillimetreField(title: tr("Eckenradius"), value: $signCorner)
+                Picker(tr("Löcher"), selection: $holes) { Text("0").tag(0); Text("2").tag(2); Text("4").tag(4) }.pickerStyle(.segmented)
                 if holes > 0 {
-                    MillimetreField(title: "Lochdurchmesser", value: $holeDiameter)
-                    MillimetreField(title: "Lochabstand zum Rand", value: $holeInset)
+                    MillimetreField(title: tr("Lochdurchmesser"), value: $holeDiameter)
+                    MillimetreField(title: tr("Lochabstand zum Rand"), value: $holeInset)
                 }
-                MillimetreField(title: "Rahmen (markiert, 0 = ohne)", value: $frameInset)
-                Picker("Schrift", selection: $font) { ForEach(fonts, id: \.self) { Text($0).tag($0) } }
-                MillimetreField(title: "Schriftgröße", value: $signSize)
-                Toggle("Fett", isOn: $signBold)
+                MillimetreField(title: tr("Rahmen (markiert, 0 = ohne)"), value: $frameInset)
+                Picker(tr("Schrift"), selection: $font) { ForEach(fonts, id: \.self) { Text($0).tag($0) } }
+                MillimetreField(title: tr("Schriftgröße"), value: $signSize)
+                Toggle(tr("Fett"), isOn: $signBold)
                 operationPicker($operation)
             } footer: {
-                Text("Platte und Löcher werden geschnitten, der Text mittig gesetzt.").font(.caption).foregroundStyle(.secondary)
+                Text(tr("Platte und Löcher werden geschnitten, der Text mittig gesetzt.")).font(.caption).foregroundStyle(.secondary)
             }
             position
         case .array:
             Section {
-                Stepper("Spalten: \(columns)", value: $columns, in: 1...50)
-                Stepper("Zeilen: \(rows)", value: $rows, in: 1...50)
-                MillimetreField(title: "Abstand X", value: $gapX)
-                MillimetreField(title: "Abstand Y", value: $gapY)
+                Stepper("\(tr("Spalten")): \(columns)", value: $columns, in: 1...50)
+                Stepper("\(tr("Zeilen")): \(rows)", value: $rows, in: 1...50)
+                MillimetreField(title: tr("Abstand X"), value: $gapX)
+                MillimetreField(title: tr("Abstand Y"), value: $gapY)
             } footer: {
                 let w = Double(columns) * model.project.width_mm + Double(columns - 1) * gapX
                 let h = Double(rows) * model.project.height_mm + Double(rows - 1) * gapY
-                Text("\(columns * rows) Exemplare · \(Int(w.rounded())) × \(Int(h.rounded())) mm; Zuordnungen gelten für alle Kopien.")
+                Text(tr("{count} Exemplare · {width} × {height} mm; Zuordnungen gelten für alle Kopien.", ["count": columns * rows, "width": Int(w.rounded()), "height": Int(h.rounded())]))
                     .font(.caption).foregroundStyle(.secondary)
             }
         case .nest:
             Section {
-                Stepper("Anzahl je Teil: \(quantity)", value: $quantity, in: 1...400)
-                MillimetreField(title: "Abstand", value: $gap)
-                Toggle("Drehen um 90° erlaubt", isOn: $rotate)
+                Stepper("\(tr("Anzahl je Teil")): \(quantity)", value: $quantity, in: 1...400)
+                MillimetreField(title: tr("Abstand"), value: $gap)
+                Toggle(tr("Drehen um 90° erlaubt"), isOn: $rotate)
             }
             Section {
                 MillimetreField(title: "X", value: $area[0])
                 MillimetreField(title: "Y", value: $area[1])
-                MillimetreField(title: "Breite", value: $area[2])
-                MillimetreField(title: "Höhe", value: $area[3])
+                MillimetreField(title: tr("Breite"), value: $area[2])
+                MillimetreField(title: tr("Höhe"), value: $area[3])
                 HStack {
-                    Button("Ganzes Arbeitsbett") { area = [5, 5, 990, 590] }
-                    Button("Fläche des Motivs") {
+                    Button(tr("Ganzes Arbeitsbett")) { area = [5, 5, 990, 590] }
+                    Button(tr("Fläche des Motivs")) {
                         area = [model.project.x_mm, model.project.y_mm, model.project.width_mm, model.project.height_mm]
                     }
                 }
-            } header: { Text("Fläche") } footer: {
-                Text("Teile sind die Objekte der obersten Ebene (bzw. einer Inkscape-Ebene); sie werden nach ihren Umrissrechtecken angeordnet, größte zuerst.")
+            } header: { Text(tr("Fläche")) } footer: {
+                Text(tr("Teile sind die Objekte der obersten Ebene (bzw. einer Inkscape-Ebene); sie werden nach ihren Umrissrechtecken angeordnet, größte zuerst."))
                     .font(.caption).foregroundStyle(.secondary)
             }
         }
     }
 
     private var position: some View {
-        Section("Position") {
-            MillimetreField(title: "X (links)", value: $x)
-            MillimetreField(title: "Y (oben)", value: $y)
+        Section(tr("Position")) {
+            MillimetreField(title: tr("X (links)"), value: $x)
+            MillimetreField(title: tr("Y (oben)"), value: $y)
         }
     }
 
@@ -393,8 +393,8 @@ struct ReferencePointPicker: View {
             }
         }
         .frame(width: size, height: size)
-        .help("Bezugspunkt für X/Y und Größenänderungen")
-        .accessibilityLabel("Bezugspunkt")
+        .help(tr("Bezugspunkt für X/Y und Größenänderungen"))
+        .accessibilityLabel(tr("Bezugspunkt"))
     }
 }
 
@@ -403,21 +403,21 @@ struct TransformControls: View {
     @ObservedObject var model: AppModel
     @State private var angle = 0.0
     var body: some View {
-        LabeledContent("Drehen") {
+        LabeledContent(tr("Drehen")) {
             HStack(spacing: 6) {
-                TextField("Winkel", value: $angle, format: .number).multilineTextAlignment(.trailing)
+                TextField(tr("Winkel"), value: $angle, format: .number).multilineTextAlignment(.trailing)
                     .textFieldStyle(.roundedBorder).frame(width: 60).labelsHidden()
                 Text("°").foregroundStyle(.secondary)
-                Button("Anwenden") { model.transformArtwork(rotate: angle); angle = 0 }
+                Button(tr("Anwenden")) { model.transformArtwork(rotate: angle); angle = 0 }
                     .disabled(angle == 0 || !model.project.hasArtwork)
-                    .help("Positive Winkel drehen im Uhrzeigersinn")
+                    .help(tr("Positive Winkel drehen im Uhrzeigersinn"))
             }
         }
         HStack {
-            Button { model.transformArtwork(rotate: -90) } label: { Image(systemName: "rotate.left") }.help("90° nach links drehen")
-            Button { model.transformArtwork(rotate: 90) } label: { Image(systemName: "rotate.right") }.help("90° nach rechts drehen")
-            Button { model.transformArtwork(flipHorizontal: true) } label: { Image(systemName: "arrow.left.and.right") }.help("Horizontal spiegeln")
-            Button { model.transformArtwork(flipVertical: true) } label: { Image(systemName: "arrow.up.and.down") }.help("Vertikal spiegeln")
+            Button { model.transformArtwork(rotate: -90) } label: { Image(systemName: "rotate.left") }.help(tr("90° nach links drehen"))
+            Button { model.transformArtwork(rotate: 90) } label: { Image(systemName: "rotate.right") }.help(tr("90° nach rechts drehen"))
+            Button { model.transformArtwork(flipHorizontal: true) } label: { Image(systemName: "arrow.left.and.right") }.help(tr("Horizontal spiegeln"))
+            Button { model.transformArtwork(flipVertical: true) } label: { Image(systemName: "arrow.up.and.down") }.help(tr("Vertikal spiegeln"))
             Spacer()
         }
         .disabled(!model.project.hasArtwork)

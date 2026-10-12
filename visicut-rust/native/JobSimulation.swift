@@ -6,11 +6,11 @@ enum MotionKind: String, Decodable {
     case travel = "Travel", cut = "Cut", mark = "Mark", raster = "Raster", dwell = "Dwell"
     var title: String {
         switch self {
-        case .travel: return "Leerfahrt · Laser aus"
-        case .cut: return "Schneiden"
-        case .mark: return "Markieren"
-        case .raster: return "Gravurzeile"
-        case .dwell: return "Zeilenwechsel · Laser aus"
+        case .travel: return tr("Leerfahrt · Laser aus")
+        case .cut: return tr("Schneiden")
+        case .mark: return tr("Markieren")
+        case .raster: return tr("Gravurzeile")
+        case .dwell: return tr("Zeilenwechsel · Laser aus")
         }
     }
 }
@@ -184,14 +184,14 @@ struct JobSimulation: View {
             SimulationCanvas(timeline: job.timeline, project: project, image: image,
                 drawing: drawing, frame: frame, seconds: playback.seconds)
                 .background(.white)
-                .accessibilityLabel("Chronologische Laservorschau")
+                .accessibilityLabel(tr("Chronologische Laservorschau"))
             HStack(spacing: 10) {
                 Button { playback.seek(0, duration: job.estimated_seconds) } label: {
                     Image(systemName: "backward.end.fill")
-                }.help("Zum Anfang").accessibilityLabel("Zum Anfang")
+                }.help(tr("Zum Anfang")).accessibilityLabel(tr("Zum Anfang"))
                 Button { playback.toggle(duration: job.estimated_seconds) } label: {
                     Image(systemName: playback.playing ? "pause.fill" : "play.fill").frame(width: 16)
-                }.help("Simulation abspielen oder pausieren").accessibilityLabel(playback.playing ? "Pause" : "Abspielen")
+                }.help(tr("Simulation abspielen oder pausieren")).accessibilityLabel(playback.playing ? tr("Pause") : tr("Abspielen"))
                     .disabled(job.estimated_seconds <= 0)
                 SimulationTimeSlider(seconds: Binding(get: { playback.seconds }, set: {
                     playback.seek($0, duration: job.estimated_seconds)
@@ -199,27 +199,27 @@ struct JobSimulation: View {
                     .frame(minWidth: 100).frame(height: 20)
                 Button { playback.seek(job.estimated_seconds, duration: job.estimated_seconds) } label: {
                     Image(systemName: "forward.end.fill")
-                }.help("Zum Ende").accessibilityLabel("Zum Ende")
-                Picker("Tempo", selection: $playback.speed) {
+                }.help(tr("Zum Ende")).accessibilityLabel(tr("Zum Ende"))
+                Picker(tr("Tempo"), selection: $playback.speed) {
                     ForEach([1.0, 5, 10, 25, 100], id: \.self) { speed in
                         Text("\(Int(speed))×").tag(speed)
                     }
-                }.labelsHidden().frame(width: 72).help("Abspielgeschwindigkeit")
+                }.labelsHidden().frame(width: 72).help(tr("Abspielgeschwindigkeit"))
             }.controlSize(.small)
             HStack {
                 Text("\(simulationTime(playback.seconds)) / \(simulationTime(job.estimated_seconds))")
                     .monospacedDigit().accessibilityIdentifier("jobSimulationTime")
                 Spacer()
                 if let frame {
-                    Text(frame.finished ? "Fertig" : "\(frame.kind.title) · Durchgang \(frame.pass)")
+                    Text(frame.finished ? tr("Fertig") : tr("{motion} · Durchgang {pass}", ["motion": frame.kind.title, "pass": frame.pass]))
                         .lineLimit(1)
                 }
             }.font(.caption)
             if let frame {
-                Text("Schritt \(frame.programIndex + 1) · X \(format(frame.position.x)) / Y \(format(frame.position.y)) mm")
+                Text(tr("Schritt {step} · X {x} / Y {y} mm", ["step": frame.programIndex + 1, "x": format(frame.position.x), "y": format(frame.position.y)]))
                     .font(.caption).foregroundStyle(.secondary).monospacedDigit()
             }
-            Text("Geplant: blass · Bearbeitet: kräftig · Gelber Punkt: Laserkopf")
+            Text(tr("Geplant: blass · Bearbeitet: kräftig · Gelber Punkt: Laserkopf"))
                 .font(.caption).foregroundStyle(.secondary)
         }
         .onAppear { drawing = SimulationDrawing(timeline: job.timeline) }
@@ -339,7 +339,7 @@ private struct SimulationCanvas: NSViewRepresentable {
         context.fillEllipse(in: circle)
         stroke(Path(ellipseIn: circle), .black.opacity(0.8), 1.5)
         if raw != marker {
-            let note = NSAttributedString(string: "Anfahrt außerhalb des Ausschnitts", attributes: [
+            let note = NSAttributedString(string: tr("Anfahrt außerhalb des Ausschnitts"), attributes: [
                 .font: NSFont.preferredFont(forTextStyle: .caption2), .foregroundColor: NSColor.gray])
             let noteSize = note.size()
             note.draw(at: CGPoint(x: (size.width - noteSize.width) / 2, y: 12 - noteSize.height / 2))
@@ -368,7 +368,7 @@ struct SimulationTimeSlider: NSViewRepresentable {
             target: context.coordinator, action: #selector(Coordinator.changed(_:)))
         slider.isContinuous = true
         slider.setAccessibilityIdentifier("jobTimeSlider")
-        slider.setAccessibilityLabel("Auftragszeit")
+        slider.setAccessibilityLabel(tr("Auftragszeit"))
         return slider
     }
     func updateNSView(_ slider: NSSlider, context: Context) {

@@ -1,6 +1,7 @@
 //! Engraving rasters: greyscale conversion and dithering, ported from
 //! LibLaserCut (utils/BufferedImageAdapter.java, dithering/*.java),
 //! LGPL-3.0-or-later. Original authors: Thomas Oster, Max Gaukler.
+use crate::i18n::tr;
 use resvg::tiny_skia;
 use serde::{Deserialize, Serialize};
 
@@ -30,14 +31,14 @@ impl Dithering {
     ];
     pub fn title(self) -> &'static str {
         match self {
-            Self::Threshold => "Schwellwert 50 %",
+            Self::Threshold => tr("Schwellwert 50 %"),
             Self::FloydSteinberg => "Floyd-Steinberg",
-            Self::Average => "Mittelwert",
-            Self::Random => "Zufall",
-            Self::Ordered => "Geordnet",
-            Self::Grid => "Raster",
-            Self::Halftone => "Halbton",
-            Self::BrightenedHalftone => "Halbton aufgehellt",
+            Self::Average => tr("Mittelwert"),
+            Self::Random => tr("Zufall"),
+            Self::Ordered => tr("Geordnet"),
+            Self::Grid => tr("Raster"),
+            Self::Halftone => tr("Halbton"),
+            Self::BrightenedHalftone => tr("Halbton aufgehellt"),
         }
     }
 }
@@ -80,7 +81,7 @@ impl RasterSettings {
 
     pub fn validate(&self) -> Result<(), String> {
         if !(-255..=255).contains(&self.color_shift) {
-            return Err("Helligkeitsverschiebung muss zwischen −255 und 255 liegen".into());
+            return Err(tr("Helligkeitsverschiebung muss zwischen −255 und 255 liegen").into());
         }
         Ok(())
     }

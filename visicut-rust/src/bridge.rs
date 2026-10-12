@@ -3,10 +3,11 @@
 use crate::{
     camera,
     device::{self, DeviceStore, LaserDevice},
+    i18n::tr,
     ltt,
     materials::Library,
     project::Project,
-    svg,
+    svg, tr,
 };
 use serde_json::{Value, json};
 use std::ffi::{CStr, CString, c_char};
@@ -21,7 +22,7 @@ fn preview(source: &str) -> Result<Value, String> {
         rendered.image.size[0] as u32,
         rendered.image.size[1] as u32,
     )
-    .ok_or("Ungültige Vorschaugröße")?;
+    .ok_or(tr("Ungültige Vorschaugröße"))?;
     let pixels: Vec<u8> = rendered
         .image
         .pixels
@@ -29,7 +30,7 @@ fn preview(source: &str) -> Result<Value, String> {
         .flat_map(|pixel| pixel.to_array())
         .collect();
     let pixmap =
-        resvg::tiny_skia::Pixmap::from_vec(pixels, size).ok_or("Ungültige Vorschaupixel")?;
+        resvg::tiny_skia::Pixmap::from_vec(pixels, size).ok_or(tr("Ungültige Vorschaupixel"))?;
     let png = pixmap.encode_png().map_err(|e| e.to_string())?;
     Ok(json!({"width_mm": rendered.width_mm, "height_mm": rendered.height_mm, "png": png}))
 }
@@ -37,7 +38,7 @@ fn preview(source: &str) -> Result<Value, String> {
 fn read(path: &str) -> Result<String, String> {
     let meta = std::fs::metadata(path).map_err(|e| e.to_string())?;
     if meta.len() > 25 * 1024 * 1024 {
-        return Err("Datei ist größer als 25 MB".into());
+        return Err(tr("Datei ist größer als 25 MB").into());
     }
     std::fs::read_to_string(path).map_err(|e| e.to_string())
 }
@@ -56,7 +57,7 @@ fn composed(project: Project, warnings: Vec<String>) -> Result<Value, String> {
 fn path(request: &Value) -> Result<&str, String> {
     request["path"]
         .as_str()
-        .ok_or_else(|| "Dateipfad fehlt".into())
+        .ok_or_else(|| tr("Dateipfad fehlt").into())
 }
 
 fn merge_devices(request: &Value, devices: Vec<LaserDevice>) -> Result<Value, String> {
@@ -100,7 +101,7 @@ fn vectorize(request: &Value) -> Result<Value, String> {
     let path = std::path::Path::new(path(request)?);
     let size = std::fs::metadata(path).map_err(|e| e.to_string())?.len();
     if size > crate::import::MAX_FILE_BYTES {
-        return Err("Datei ist größer als 25 MB".into());
+        return Err(tr("Datei ist größer als 25 MB").into());
     }
     let bitmap = Bitmap::decode(&std::fs::read(path).map_err(|e| e.to_string())?)?;
     let threshold = match &request["threshold"] {
@@ -108,11 +109,11 @@ fn vectorize(request: &Value) -> Result<Value, String> {
         value => value
             .as_u64()
             .and_then(|v| u8::try_from(v).ok())
-            .ok_or("Schwellwert muss zwischen 0 und 255 liegen")?,
+            .ok_or(tr("Schwellwert muss zwischen 0 und 255 liegen"))?,
     };
     let size = match &request["width_mm"] {
         Value::Null => Size::Dpi(72.0),
-        value => Size::WidthMm(value.as_f64().ok_or("Breite muss eine Zahl sein")?),
+        value => Size::WidthMm(value.as_f64().ok_or(tr("Breite muss eine Zahl sein"))?),
     };
     let options = Options {
         threshold,
@@ -124,7 +125,7 @@ fn vectorize(request: &Value) -> Result<Value, String> {
     let (width_px, height_px) = bitmap.dimensions();
     let mut response = if request["apply"].as_bool().unwrap_or(false) {
         if result.paths == 0 {
-            return Err("Keine Kontur gefunden; Schwellwert anpassen".into());
+            return Err(tr("Keine Kontur gefunden; Schwellwert anpassen").into());
         }
         replace_artwork(
             get_project(request)?,
@@ -198,7 +199,7 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
             include_str!("../examples/demo.svg").into(),
             Vec::new(),
             Vec::new(),
-            "Beispiel".into(),
+            tr("Beispiel").into(),
         ),
         "import" => {
             let path = std::path::Path::new(path(request)?);
@@ -214,7 +215,7 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
         }
         "vectorize" => vectorize(request),
         "load" => {
-            let source = read(request["path"].as_str().ok_or("Dateipfad fehlt")?)?;
+            let source = read(request["path"].as_str().ok_or(tr("Dateipfad fehlt"))?)?;
             let project: Project = serde_json::from_str(&source).map_err(|e| e.to_string())?;
             project.validate_document()?;
             let image = if project.svg.is_empty() {
@@ -248,7 +249,7 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
         }
         "download_devices" => merge_devices(
             request,
-            device::download(request["url"].as_str().ok_or("URL fehlt")?)?,
+            device::download(request["url"].as_str().ok_or(tr("URL fehlt"))?)?,
         ),
         "export_devices" => {
             device::export(
@@ -280,14 +281,16 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
                 !(5.0..=project.bed_width_mm as f64 - 5.0).contains(&p[0])
                     || !(5.0..=project.bed_height_mm as f64 - 15.0).contains(&p[1])
             }) {
-                return Err("Kalibrierpunkte müssen mindestens 5 mm (unten 15 mm) vom Bettrand entfernt sein".into());
+                return Err(tr("Kalibrierpunkte müssen mindestens 5 mm (unten 15 mm) \
+                               vom Bettrand entfernt sein")
+                .into());
             }
             project.svg = camera::calibration_svg(
                 &points,
                 project.bed_width_mm as f64,
                 project.bed_height_mm as f64,
             );
-            project.name = "Kalibrierung".into();
+            project.name = tr("Kalibrierung").into();
             project.steps.clear();
             project.rotary_axis = false;
             (project.x_mm, project.y_mm) = (0.0, 0.0);
@@ -339,7 +342,11 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
             composed(project, Vec::new())
         }
         "array" => {
-            let number = |key: &str| request[key].as_f64().ok_or(format!("{key} fehlt"));
+            let number = |key: &str| {
+                request[key]
+                    .as_f64()
+                    .ok_or_else(|| tr!("{name} fehlt", name = key))
+            };
             let project = crate::compose::array(
                 &get_project(request)?,
                 number("columns")? as u32,
@@ -353,18 +360,20 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
             let nested = crate::compose::nest(&get_project(request)?, &get(request, "settings")?)?;
             let mut warnings = Vec::new();
             if nested.missing > 0 {
-                warnings.push(format!(
-                    "{} von {} Teilen passen nicht in die Fläche",
-                    nested.missing,
-                    nested.missing + nested.placed
+                warnings.push(tr!(
+                    "{missing} von {total} Teilen passen nicht in die Fläche",
+                    missing = nested.missing,
+                    total = nested.missing + nested.placed
                 ));
             }
             composed(nested.project, warnings)
         }
         "shift_pattern" => {
-            let power = request["power_percent"].as_f64().ok_or("Leistung fehlt")? as f32;
+            let power = request["power_percent"]
+                .as_f64()
+                .ok_or(tr("Leistung fehlt"))? as f32;
             if !(1.0..=100.0).contains(&power) {
-                return Err("Leistung muss zwischen 1 und 100 % liegen".into());
+                return Err(tr("Leistung muss zwischen 1 und 100 % liegen").into());
             }
             let project = crate::shift_calibration::project(&get_project(request)?, power);
             let image = preview(&project.svg)?;
@@ -398,7 +407,27 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
                 json!({"description": prepared.description, "sent": sent, "warnings": prepared.warnings}),
             )
         }
-        _ => Err("Unbekannte Aktion".into()),
+        // Sprache der macOS-Oberfläche: `code` wie "fr" oder null für die
+        // Systemsprache; liefert die Übersetzungstabelle (deutscher Text →
+        // Übersetzung, leer für Deutsch) und die wählbaren Sprachen.
+        "set_language" => {
+            let language = request
+                .get("code")
+                .and_then(Value::as_str)
+                .and_then(crate::i18n::Language::from_code)
+                .unwrap_or_else(crate::i18n::Language::system);
+            crate::i18n::set_language(language);
+            let languages: Vec<_> = crate::i18n::Language::ALL
+                .iter()
+                .map(|l| json!({"code": l.code(), "name": l.native_name()}))
+                .collect();
+            Ok(json!({
+                "language": language.code(),
+                "table": crate::i18n::current_table(),
+                "languages": languages,
+            }))
+        }
+        _ => Err(tr("Unbekannte Aktion").into()),
     }
 }
 
@@ -409,7 +438,7 @@ pub(crate) fn execute(request: &Value) -> Result<Value, String> {
 pub unsafe extern "C" fn visicut_execute(request: *const c_char) -> *mut c_char {
     let result = std::panic::catch_unwind(|| {
         if request.is_null() {
-            return Err("Leere Anfrage".to_string());
+            return Err(tr("Leere Anfrage").to_string());
         }
         let request = unsafe { CStr::from_ptr(request) }
             .to_str()
@@ -420,7 +449,7 @@ pub unsafe extern "C" fn visicut_execute(request: *const c_char) -> *mut c_char 
     let response = match result {
         Ok(Ok(value)) => json!({"ok": true, "result": value}),
         Ok(Err(error)) => json!({"ok": false, "error": error}),
-        Err(_) => json!({"ok": false, "error": "Rust-Verarbeitung unerwartet abgebrochen"}),
+        Err(_) => json!({"ok": false, "error": tr("Rust-Verarbeitung unerwartet abgebrochen")}),
     };
     CString::new(response.to_string())
         .expect("JSON cannot contain literal NUL")

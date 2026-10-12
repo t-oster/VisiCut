@@ -1,5 +1,6 @@
 //! Converts EPS and PostScript files to PDF with an installed Ghostscript.
 //! Used as fallback for what the built-in interpreter does not support.
+use crate::{i18n::tr, tr};
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
@@ -8,12 +9,17 @@ use std::time::{Duration, Instant};
 /// Longest a single Ghostscript conversion may take.
 const TIMEOUT: Duration = Duration::from_secs(60);
 
-pub const MISSING: &str = "Für EPS/PS-Dateien wird Ghostscript benötigt, es wurde aber nicht gefunden. \
-     Bitte Ghostscript installieren (https://ghostscript.com) oder die Datei als SVG oder PDF speichern";
+pub fn missing() -> &'static str {
+    tr(
+        "Für EPS/PS-Dateien wird Ghostscript benötigt, es wurde aber nicht gefunden. \
+        Bitte Ghostscript installieren (https://ghostscript.com) oder die Datei als SVG oder \
+        PDF speichern",
+    )
+}
 
 /// Runs `gs -sDEVICE=pdfwrite` on `path` and returns the PDF bytes.
 pub fn to_pdf(path: &Path) -> Result<Vec<u8>, String> {
-    let gs = find().ok_or(MISSING)?;
+    let gs = find().ok_or(missing())?;
     let input = std::path::absolute(path).map_err(|e| e.to_string())?;
     let output = TempFile::new();
     let mut command = Command::new(&gs);
@@ -38,9 +44,12 @@ pub fn to_pdf(path: &Path) -> Result<Vec<u8>, String> {
         .stdout(Stdio::null())
         .stderr(Stdio::piped());
     hide_console(&mut command);
-    let mut child = command
-        .spawn()
-        .map_err(|e| format!("Ghostscript konnte nicht gestartet werden: {e}"))?;
+    let mut child = command.spawn().map_err(|e| {
+        tr!(
+            "Ghostscript konnte nicht gestartet werden: {error}",
+            error = e
+        )
+    })?;
     let mut stderr = child.stderr.take();
     let reader = std::thread::spawn(move || {
         let mut text = String::new();
@@ -56,13 +65,15 @@ pub fn to_pdf(path: &Path) -> Result<Vec<u8>, String> {
             Ok(None) if started.elapsed() > TIMEOUT => {
                 let _ = child.kill();
                 let _ = child.wait();
-                return Err(
-                    "Ghostscript hat die EPS/PS-Datei nicht innerhalb von 60 Sekunden umgewandelt"
-                        .into(),
-                );
+                return Err(tr(
+                    "Ghostscript hat die EPS/PS-Datei nicht innerhalb von 60 Sekunden umgewandelt",
+                )
+                .into());
             }
             Ok(None) => std::thread::sleep(Duration::from_millis(20)),
-            Err(e) => return Err(format!("Ghostscript ist fehlgeschlagen: {e}")),
+            Err(e) => {
+                return Err(tr!("Ghostscript ist fehlgeschlagen: {error}", error = e));
+            }
         }
     };
     let messages = reader.join().unwrap_or_default();
@@ -72,9 +83,10 @@ pub fn to_pdf(path: &Path) -> Result<Vec<u8>, String> {
         let detail = lines()
             .find(|line| line.starts_with("Error:"))
             .or_else(|| lines().next())
-            .unwrap_or("keine Ausgabe");
-        return Err(format!(
-            "Ghostscript konnte die EPS/PS-Datei nicht umwandeln: {detail}"
+            .unwrap_or(tr("keine Ausgabe"));
+        return Err(tr!(
+            "Ghostscript konnte die EPS/PS-Datei nicht umwandeln: {detail}",
+            detail = detail
         ));
     }
     Ok(pdf)

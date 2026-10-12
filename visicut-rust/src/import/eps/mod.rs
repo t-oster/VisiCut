@@ -13,6 +13,7 @@ mod parse;
 #[cfg(test)]
 mod tests;
 
+use crate::i18n::tr;
 use crate::svg_import::{Imported, MAX_SVG_BYTES};
 use graphics::num;
 
@@ -25,14 +26,15 @@ const DEFAULT_BOX: [f64; 4] = [0.0, 0.0, 800.0, 600.0];
 pub(super) fn interpret(data: &[u8]) -> Result<Imported, String> {
     let mut warnings = Vec::new();
     let [llx, lly, urx, ury] = bounding_box(data).unwrap_or_else(|| {
-        warnings
-            .push("EPS-Datei ohne BoundingBox; es wird die Größe 800 × 600 pt angenommen".into());
+        warnings.push(
+            tr("EPS-Datei ohne BoundingBox; es wird die Größe 800 × 600 pt angenommen").into(),
+        );
         DEFAULT_BOX
     });
     let width = urx - llx;
     let height = ury - lly;
     if !(width > 0.0 && height > 0.0) {
-        return Err("Die BoundingBox der EPS-Datei ist leer oder ungültig".into());
+        return Err(tr("Die BoundingBox der EPS-Datei ist leer oder ungültig").into());
     }
     let program = parse::parse(data)?;
     // Maps user space to SVG device space: origin at the lower left corner of
@@ -49,7 +51,7 @@ pub(super) fn interpret(data: &[u8]) -> Result<Imported, String> {
         machine.into_elements(),
     );
     if svg.len() > MAX_SVG_BYTES {
-        return Err("EPS-Datei ist zu komplex (SVG größer als 20 MB)".into());
+        return Err(tr("EPS-Datei ist zu komplex (SVG größer als 20 MB)").into());
     }
     Ok(Imported {
         svg,

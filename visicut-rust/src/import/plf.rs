@@ -25,6 +25,7 @@ mod xml;
 
 use super::{Imported, MAX_FILE_BYTES};
 use crate::mapping::attributes;
+use crate::{i18n::tr, tr};
 use resvg::usvg;
 use std::collections::{BTreeMap, HashSet};
 use std::io::Read;
@@ -41,9 +42,12 @@ type Matrix = [f64; 6];
 pub fn read_plf(path: &Path) -> Result<Imported, String> {
     let file = std::fs::File::open(path).map_err(|e| e.to_string())?;
     let mut archive = zip::ZipArchive::new(file)
-        .map_err(|e| format!("PLF-Datei ist kein gültiges ZIP-Archiv: {e}"))?;
+        .map_err(|e| tr!("PLF-Datei ist kein gültiges ZIP-Archiv: {error}", error = e))?;
     if archive.len() > MAX_ENTRIES {
-        return Err(format!("PLF-Datei enthält mehr als {MAX_ENTRIES} Einträge"));
+        return Err(tr!(
+            "PLF-Datei enthält mehr als {count} Einträge",
+            count = MAX_ENTRIES
+        ));
     }
     let temp = TempDir::new()?;
     let mut parts: BTreeMap<u32, PartFiles> = BTreeMap::new();
@@ -51,7 +55,7 @@ pub fn read_plf(path: &Path) -> Result<Imported, String> {
     for i in 0..archive.len() {
         let mut entry = archive
             .by_index(i)
-            .map_err(|e| format!("PLF-Datei ist beschädigt: {e}"))?;
+            .map_err(|e| tr!("PLF-Datei ist beschädigt: {error}", error = e))?;
         if entry.is_dir() {
             continue;
         }
@@ -63,13 +67,22 @@ pub fn read_plf(path: &Path) -> Result<Imported, String> {
         (&mut entry)
             .take(MAX_FILE_BYTES + 1)
             .read_to_end(&mut bytes)
-            .map_err(|e| format!("„{name}“ in der PLF-Datei ist nicht lesbar: {e}"))?;
+            .map_err(|e| {
+                tr!(
+                    "„{name}“ in der PLF-Datei ist nicht lesbar: {error}",
+                    name = name,
+                    error = e
+                )
+            })?;
         if bytes.len() as u64 > MAX_FILE_BYTES {
-            return Err(format!("„{name}“ in der PLF-Datei ist größer als 25 MB"));
+            return Err(tr!(
+                "„{name}“ in der PLF-Datei ist größer als 25 MB",
+                name = name
+            ));
         }
         total += bytes.len() as u64;
         if total > MAX_TOTAL_BYTES {
-            return Err("PLF-Datei ist entpackt größer als 100 MB".into());
+            return Err(tr("PLF-Datei ist entpackt größer als 100 MB").into());
         }
         let (index, local) = split_index(&name);
         let part = parts.entry(index).or_default();
@@ -98,9 +111,9 @@ pub fn read_plf(path: &Path) -> Result<Imported, String> {
     for (index, part) in parts {
         let mapping = part.mapping.map(|bytes| mappings::parse(&bytes));
         let Some((name, file)) = part.source else {
-            warnings.push(format!(
-                "Teil {}: Grafikdatei fehlt in der PLF-Datei",
-                index + 1
+            warnings.push(tr!(
+                "Teil {number}: Grafikdatei fehlt in der PLF-Datei",
+                number = index + 1
             ));
             continue;
         };
@@ -108,15 +121,20 @@ pub fn read_plf(path: &Path) -> Result<Imported, String> {
             .extension()
             .is_some_and(|e| e.eq_ignore_ascii_case("plf"))
         {
-            warnings.push(format!(
-                "Teil „{name}“ übersprungen: PLF-Dateien in PLF-Dateien werden nicht geöffnet"
+            warnings.push(tr!(
+                "Teil „{name}“ übersprungen: PLF-Dateien in PLF-Dateien werden nicht geöffnet",
+                name = name
             ));
             continue;
         }
         let imported = match super::read_file(&file) {
             Ok(imported) => imported,
             Err(error) => {
-                warnings.push(format!("Teil „{name}“ übersprungen: {error}"));
+                warnings.push(tr!(
+                    "Teil „{name}“ übersprungen: {error}",
+                    name = name,
+                    error = error
+                ));
                 continue;
             }
         };
@@ -124,14 +142,17 @@ pub fn read_plf(path: &Path) -> Result<Imported, String> {
         let transform = match part.transform {
             Some(Ok(transform)) => Some(transform),
             Some(Err(error)) => {
-                warnings.push(format!(
-                    "Teil „{name}“: Position nicht lesbar ({error}); die Grafik liegt am Nullpunkt"
+                warnings.push(tr!(
+                    "Teil „{name}“: Position nicht lesbar ({error}); die Grafik liegt am Nullpunkt",
+                    name = name,
+                    error = error
                 ));
                 None
             }
             None => {
-                warnings.push(format!(
-                    "Teil „{name}“: keine Position gespeichert; die Grafik liegt am Nullpunkt"
+                warnings.push(tr!(
+                    "Teil „{name}“: keine Position gespeichert; die Grafik liegt am Nullpunkt",
+                    name = name
                 ));
                 None
             }
@@ -144,16 +165,20 @@ pub fn read_plf(path: &Path) -> Result<Imported, String> {
                 mapping,
                 name,
             }),
-            Err(error) => warnings.push(format!("Teil „{name}“ übersprungen: {error}")),
+            Err(error) => warnings.push(tr!(
+                "Teil „{name}“ übersprungen: {error}",
+                name = name,
+                error = error
+            )),
         }
     }
     if composer.parts.is_empty() {
         return Err(if warnings.is_empty() {
-            "PLF-Datei enthält keine Grafik".into()
+            tr("PLF-Datei enthält keine Grafik").into()
         } else {
-            format!(
-                "PLF-Datei enthält keine importierbare Grafik ({})",
-                warnings.join("; ")
+            tr!(
+                "PLF-Datei enthält keine importierbare Grafik ({warnings})",
+                warnings = warnings.join("; ")
             )
         });
     }
@@ -199,13 +224,14 @@ pub fn read_parametric_svg(path: &Path) -> Result<Imported, String> {
             .and_then(|text| parametric::read_saved_values(&text))
         {
             Ok(values) => saved = values,
-            Err(error) => warnings.push(format!(
-                "Gespeicherte Parameterwerte nicht lesbar ({error}); Standardwerte verwendet"
+            Err(error) => warnings.push(tr!(
+                "Gespeicherte Parameterwerte nicht lesbar ({error}); Standardwerte verwendet",
+                error = error
             )),
         }
     }
     let rendered = parametric::render(source, psvg, saved, script::TIME_LIMIT)
-        .map_err(|e| format!("Parametrische SVG: {e}"))?;
+        .map_err(|e| tr!("Parametrische SVG: {details}", details = e))?;
     let embedded = crate::svg_import::embed_external_images(
         &rendered.svg,
         path.parent().unwrap_or(Path::new(".")),
@@ -222,15 +248,24 @@ pub fn read_parametric_svg(path: &Path) -> Result<Imported, String> {
                 .join(", ")
         };
         let (defaults, stored) = (list(false), list(true));
-        let mut text = String::from("Parametrische SVG:");
+        let mut details = Vec::new();
         if !defaults.is_empty() {
-            text.push_str(&format!(" Standardwerte verwendet ({defaults})."));
+            details.push(tr!(
+                "Standardwerte verwendet ({values}).",
+                values = defaults
+            ));
         }
         if !stored.is_empty() {
-            text.push_str(&format!(" Gespeicherte Werte verwendet ({stored})."));
+            details.push(tr!(
+                "Gespeicherte Werte verwendet ({values}).",
+                values = stored
+            ));
         }
-        text.push_str(" Andere Werte lassen sich in VisiCutRust noch nicht eingeben.");
-        warnings.push(text);
+        details.push(tr("Andere Werte lassen sich in VisiCutRust noch nicht eingeben.").into());
+        warnings.push(tr!(
+            "Parametrische SVG: {details}",
+            details = details.join(" ")
+        ));
     }
     warnings.extend(embedded.warnings);
     Ok(Imported {
@@ -325,7 +360,7 @@ fn parse_transform(bytes: &[u8]) -> Result<Matrix, String> {
     }
     let determinant = matrix[0] * matrix[3] - matrix[1] * matrix[2];
     if !found || matrix.iter().any(|v| !v.is_finite()) || determinant.abs() < 1e-12 {
-        return Err("keine gültige Transformation".into());
+        return Err(tr("keine gültige Transformation").into());
     }
     Ok(matrix)
 }
@@ -449,7 +484,7 @@ impl Composer {
         let source = xml::strip_doctype(svg);
         let source = self.unique_ids(&source, number)?;
         let parsed = roxmltree::Document::parse(&source)
-            .map_err(|e| format!("SVG konnte nicht gelesen werden: {e}"))?;
+            .map_err(|e| tr!("SVG konnte nicht gelesen werden: {error}", error = e))?;
         let root = parsed.root_element();
         let frame = Frame::of(root);
         let matrix = match transform {
@@ -495,7 +530,7 @@ impl Composer {
             xml::escape_attribute(name)
         );
         usvg::Tree::from_str(&document(1.0, 1.0, None, &group), &crate::svg::options())
-            .map_err(|e| format!("SVG konnte nicht gelesen werden: {e}"))?;
+            .map_err(|e| tr!("SVG konnte nicht gelesen werden: {error}", error = e))?;
         self.parts.push(group);
         self.ids.insert(group_id);
         Ok(())
@@ -505,7 +540,7 @@ impl Composer {
     /// is already used by an earlier part, e.g. when a part was duplicated.
     fn unique_ids(&mut self, source: &str, number: usize) -> Result<String, String> {
         let document = roxmltree::Document::parse(source)
-            .map_err(|e| format!("SVG konnte nicht gelesen werden: {e}"))?;
+            .map_err(|e| tr!("SVG konnte nicht gelesen werden: {error}", error = e))?;
         let ids: HashSet<String> = document
             .descendants()
             .filter_map(|n| n.attribute("id"))
@@ -558,8 +593,12 @@ impl Composer {
     fn finish(&self) -> Result<(String, Vec<String>), String> {
         let body = self.parts.join("\n");
         let probe = document(1.0, 1.0, None, &body);
-        let tree = usvg::Tree::from_str(&probe, &crate::svg::options())
-            .map_err(|e| format!("PLF-Grafik konnte nicht zusammengesetzt werden: {e}"))?;
+        let tree = usvg::Tree::from_str(&probe, &crate::svg::options()).map_err(|e| {
+            tr!(
+                "PLF-Grafik konnte nicht zusammengesetzt werden: {error}",
+                error = e
+            )
+        })?;
         // The probe's 1 × 1 viewBox spans 1 mm; usvg reports pixels.
         let px = tree.size().width() as f64;
         let bounds = tree.root().abs_bounding_box();
@@ -568,9 +607,11 @@ impl Composer {
         let shift_x = -(bounds.left() as f64 / px).min(0.0);
         let shift_y = -(bounds.top() as f64 / px).min(0.0);
         let shift = (shift_x > 1e-3 || shift_y > 1e-3).then(|| {
-            warnings.push(format!(
-                "Teile lagen links oder oberhalb der Arbeitsfläche; alles wurde um {:.1} × {:.1} mm verschoben",
-                shift_x, shift_y
+            warnings.push(tr!(
+                "Teile lagen links oder oberhalb der Arbeitsfläche; \
+                 alles wurde um {x} × {y} mm verschoben",
+                x = format!("{shift_x:.1}"),
+                y = format!("{shift_y:.1}")
             ));
             (shift_x, shift_y)
         });
@@ -639,8 +680,9 @@ impl TempDir {
                 Ok(()) => return Ok(Self(path)),
                 Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {}
                 Err(e) => {
-                    return Err(format!(
-                        "Temporärer Ordner konnte nicht angelegt werden: {e}"
+                    return Err(tr!(
+                        "Temporärer Ordner konnte nicht angelegt werden: {error}",
+                        error = e
                     ));
                 }
             }

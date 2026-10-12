@@ -2,6 +2,7 @@
 //! SVG an den normalen Importpfad der Hauptansicht übergeben.
 use eframe::egui;
 use std::path::Path;
+use visicut_core::{i18n::tr, tr};
 use visicut_core::{
     import::MAX_FILE_BYTES,
     vectorize::{Bitmap, Options, Size, Vectorized},
@@ -38,7 +39,7 @@ impl VectorizeUi {
     /// Fragt nach einem Bild und öffnet den Dialog. Fehler landen in der Statuszeile.
     pub fn pick(&mut self, status: &mut String) {
         let Some(path) = rfd::FileDialog::new()
-            .add_filter("Bitmap", &["png", "jpg", "jpeg", "bmp", "gif"])
+            .add_filter(tr("Bitmap"), &["png", "jpg", "jpeg", "bmp", "gif"])
             .pick_file()
         else {
             return;
@@ -88,19 +89,20 @@ impl VectorizeUi {
         let mut open = self.open;
         let mut apply = false;
         let mut cancel = false;
-        egui::Window::new("Bitmap vektorisieren")
+        egui::Window::new(tr("Bitmap vektorisieren"))
+            .id(egui::Id::new("vectorize"))
             .open(&mut open)
             .collapsible(false)
             .resizable(false)
             .show(ctx, |ui| {
-                ui.label(format!("Bild: {}", self.name));
-                ui.add(egui::Slider::new(&mut self.threshold, 0..=255).text("Schwellwert"));
+                ui.label(tr!("Bild: {name}", name = self.name));
+                ui.add(egui::Slider::new(&mut self.threshold, 0..=255).text(tr("Schwellwert")));
                 ui.checkbox(
                     &mut self.invert,
-                    "Invertieren (helle Bereiche nachzeichnen)",
+                    tr("Invertieren (helle Bereiche nachzeichnen)"),
                 );
                 ui.horizontal(|ui| {
-                    ui.label("Breite");
+                    ui.label(tr("Breite"));
                     ui.add(
                         egui::DragValue::new(&mut self.width_mm)
                             .range(1.0..=10000.0)
@@ -111,13 +113,15 @@ impl VectorizeUi {
                 ui.separator();
                 match &self.result {
                     Some(Ok(result)) if result.paths > 0 => {
-                        ui.label(format!(
-                            "{} Pfade · {:.1} × {:.1} mm",
-                            result.paths, result.width_mm, result.height_mm
+                        ui.label(tr!(
+                            "{count} Pfade · {width} × {height} mm",
+                            count = result.paths,
+                            width = format!("{:.1}", result.width_mm),
+                            height = format!("{:.1}", result.height_mm)
                         ));
                     }
                     Some(Ok(_)) => {
-                        ui.label("Keine Kontur gefunden; Schwellwert anpassen");
+                        ui.label(tr("Keine Kontur gefunden; Schwellwert anpassen"));
                     }
                     Some(Err(error)) => {
                         ui.colored_label(egui::Color32::from_rgb(170, 40, 40), error);
@@ -127,12 +131,12 @@ impl VectorizeUi {
                 let ready = matches!(&self.result, Some(Ok(result)) if result.paths > 0);
                 ui.horizontal(|ui| {
                     if ui
-                        .add_enabled(ready, egui::Button::new("Übernehmen"))
+                        .add_enabled(ready, egui::Button::new(tr("Übernehmen")))
                         .clicked()
                     {
                         apply = true;
                     }
-                    if ui.button("Abbrechen").clicked() {
+                    if ui.button(tr("Abbrechen")).clicked() {
                         cancel = true;
                     }
                 });
@@ -143,8 +147,10 @@ impl VectorizeUi {
         }
         if dirty
             && !rfd::MessageDialog::new()
-                .set_title("Ungespeicherte Änderungen")
-                .set_description("Änderungen verwerfen und das vektorisierte Bild übernehmen?")
+                .set_title(tr("Ungespeicherte Änderungen"))
+                .set_description(tr(
+                    "Änderungen verwerfen und das vektorisierte Bild übernehmen?",
+                ))
                 .set_buttons(rfd::MessageButtons::YesNo)
                 .show()
                 .eq(&rfd::MessageDialogResult::Yes)
@@ -157,7 +163,7 @@ impl VectorizeUi {
                 Some((result.svg.clone(), self.name.clone()))
             }
             _ => {
-                *status = "Vektorisierung fehlgeschlagen".into();
+                *status = tr("Vektorisierung fehlgeschlagen").into();
                 None
             }
         }
@@ -167,7 +173,7 @@ impl VectorizeUi {
 fn load(path: &Path) -> Result<(Bitmap, String), String> {
     let size = std::fs::metadata(path).map_err(|e| e.to_string())?.len();
     if size > MAX_FILE_BYTES {
-        return Err("Datei ist größer als 25 MB".into());
+        return Err(tr("Datei ist größer als 25 MB").into());
     }
     let data = std::fs::read(path).map_err(|e| e.to_string())?;
     let name = path

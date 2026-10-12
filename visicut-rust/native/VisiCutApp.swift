@@ -18,14 +18,14 @@ enum RustCore {
         if let path { request["path"] = path }
         let json = String(decoding: try JSONSerialization.data(withJSONObject: request), as: UTF8.self)
         let data: Data = try json.withCString { pointer in
-            guard let response = rustExecute(pointer) else { throw CoreError("Rust hat keine Antwort geliefert") }
+            guard let response = rustExecute(pointer) else { throw CoreError(tr("Rust hat keine Antwort geliefert")) }
             defer { rustFree(response) }
             return Data(String(cString: response).utf8)
         }
         guard let response = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            throw CoreError("Ungültige Antwort des Rust-Kerns")
+            throw CoreError(tr("Ungültige Antwort des Rust-Kerns"))
         }
-        guard response["ok"] as? Bool == true else { throw CoreError(response["error"] as? String ?? "Verarbeitung fehlgeschlagen") }
+        guard response["ok"] as? Bool == true else { throw CoreError(response["error"] as? String ?? tr("Verarbeitung fehlgeschlagen")) }
         return try JSONSerialization.data(withJSONObject: response["result"] ?? [:])
     }
 
@@ -38,6 +38,42 @@ enum RustCore {
     }
 }
 
+/// Sprache der Oberfläche. Der deutsche Text ist der Schlüssel; die Tabellen
+/// liefert der Rust-Kern (resources/i18n, dieselben wie unter Windows/Linux).
+/// `tr(_:)` übersetzt, `tr(_:_:)` füllt zusätzlich benannte Platzhalter wie `{name}`.
+enum Localization {
+    struct Language: Decodable, Identifiable { let code: String; let name: String; var id: String { code } }
+    private struct Response: Decodable { let language: String; let table: [String: String]; let languages: [Language] }
+    private(set) static var table: [String: String] = [:]
+    private(set) static var current = "de"
+    private(set) static var languages: [Language] = []
+    /// Gewählte Sprache; nil folgt der Systemsprache.
+    static var chosen: String? { UserDefaults.standard.string(forKey: "language") }
+
+    static func choose(_ code: String?) {
+        if let code { UserDefaults.standard.set(code, forKey: "language") }
+        else { UserDefaults.standard.removeObject(forKey: "language") }
+        load()
+    }
+
+    /// Lädt die Tabelle; der UI-Test läuft immer auf Deutsch.
+    static func load() {
+        let code = CommandLine.arguments.contains("--ui-test") ? "de" : chosen
+        guard let response: Response = try? RustCore.decode("set_language", values: code.map { ["code": $0] } ?? [:]) else { return }
+        table = response.table
+        current = response.language
+        languages = response.languages
+    }
+}
+
+func tr(_ german: String) -> String { Localization.table[german] ?? german }
+
+func tr(_ german: String, _ values: [String: Any]) -> String {
+    var text = tr(german)
+    for (name, value) in values { text = text.replacingOccurrences(of: "{\(name)}", with: "\(value)") }
+    return text
+}
+
 struct CoreError: LocalizedError {
     let message: String
     init(_ message: String) { self.message = message }
@@ -48,7 +84,7 @@ enum Operation: String, Codable, CaseIterable, Identifiable {
     case cut = "Cut", engrave = "Engrave", engrave3d = "Engrave3d", mark = "Mark"
     var id: String { rawValue }
     var title: String {
-        switch self { case .cut: return "Schneiden"; case .engrave: return "Gravieren"; case .engrave3d: return "3D-Gravur"; case .mark: return "Markieren" }
+        switch self { case .cut: return tr("Schneiden"); case .engrave: return tr("Gravieren"); case .engrave3d: return tr("3D-Gravur"); case .mark: return tr("Markieren") }
     }
     var symbol: String {
         switch self { case .cut: return "scissors"; case .engrave: return "square.stack.3d.up"; case .engrave3d: return "cube"; case .mark: return "pencil.tip" }
@@ -101,7 +137,7 @@ enum CutOrder: String, Codable, CaseIterable, Identifiable {
     case visiCut = "VisiCut", shortestTravel = "ShortestTravel"
     var id: String { rawValue }
     var title: String {
-        switch self { case .visiCut: return "Wie VisiCut"; case .shortestTravel: return "Kürzeste Leerfahrten (experimentell)" }
+        switch self { case .visiCut: return tr("Wie VisiCut"); case .shortestTravel: return tr("Kürzeste Leerfahrten (experimentell)") }
     }
 }
 
@@ -175,7 +211,7 @@ final class AppModel: ObservableObject {
         if oldValue.svg != project.svg || oldValue.steps != project.steps || oldValue.ignore_filters != project.ignore_filters {
             scheduleMappingRefresh()
         }
-        if preparedJob != nil { status = "Auftrag geändert. Vorschau und Zeit neu berechnen." }
+        if preparedJob != nil { status = tr("Auftrag geändert. Vorschau und Zeit neu berechnen.") }
         preparedJob = nil
         jobImage = nil
         showJobPreview = false
@@ -190,7 +226,7 @@ final class AppModel: ObservableObject {
     @Published var image: NSImage?
     @Published var dirty = false
     @Published var busy = false
-    @Published var status = "SVG importieren, um einen Job vorzubereiten."
+    @Published var status = tr("SVG importieren, um einen Job vorzubereiten.")
     @Published var error: String?
     @Published var keepProportions = true
     /// Bezugspunkt für X/Y und Größenänderungen (0, 0,5 oder 1 je Achse).
@@ -237,8 +273,8 @@ final class AppModel: ObservableObject {
             materialSource = catalog.source
             materialsCustom = catalog.custom
             project.material = ""
-            error = list.error.map { "Geräteliste nicht lesbar, FAU-Standard wird verwendet: " + $0 }
-                ?? catalog.error.map { "Materialbibliothek nicht lesbar, FAU-Bibliothek wird verwendet: " + $0 }
+            error = list.error.map { tr("Geräteliste nicht lesbar, FAU-Standard wird verwendet: {error}", ["error": $0]) }
+                ?? catalog.error.map { tr("Materialbibliothek nicht lesbar, FAU-Bibliothek wird verwendet: {error}", ["error": $0]) }
         } catch {
             fatalError("Rust-Kern konnte nicht initialisiert werden: \(error)")
         }
@@ -272,7 +308,7 @@ final class AppModel: ObservableObject {
 
     func selectMaterial(_ selection: String) {
         if selection == "__custom" {
-            project.material = "Eigenes Material"
+            project.material = tr("Eigenes Material")
         } else {
             project.material = selection
             if let material = selectedMaterial, !material.thicknesses.contains(project.thickness_mm),
@@ -297,14 +333,15 @@ final class AppModel: ObservableObject {
     func applyPreset() {
         if !project.steps.isEmpty {
             for index in project.steps.indices { applyStepPreset(index) }
-            status = "Verfügbare FAU-Profile für alle Verfahren übernommen."
+            status = tr("Verfügbare FAU-Profile für alle Verfahren übernommen.")
             return
         }
         guard let preset else { return }
         project.power_percent = preset.power_percent
         project.speed_percent = preset.speed_percent
         project.passes = 1
-        status = "FAU-Profil für \(project.material), \(format(project.thickness_mm)) mm, \(project.operation.title) übernommen."
+        status = tr("FAU-Profil für {material}, {thickness} mm, {operation} übernommen.",
+                    ["material": project.material, "thickness": format(project.thickness_mm), "operation": project.operation.title])
     }
 
     func changeWidth(_ width: Double) {
@@ -352,7 +389,7 @@ final class AppModel: ObservableObject {
             let response: ProjectResponse = try RustCore.decode("demo", project: project)
             accept(response, dirty: true)
             projectURL = nil
-            status = "Beispiel geöffnet. Material und Bearbeitung auswählen."
+            status = tr("Beispiel geöffnet. Material und Bearbeitung auswählen.")
         } catch { self.error = error.localizedDescription }
     }
 
@@ -362,14 +399,14 @@ final class AppModel: ObservableObject {
             let response: ProjectResponse = try RustCore.decode("default")
             accept(response, dirty: false)
             projectURL = nil
-            status = "Neues Projekt. SVG importieren, um zu beginnen."
+            status = tr("Neues Projekt. Datei öffnen, um zu beginnen.")
         } catch { self.error = error.localizedDescription }
     }
 
     func chooseFile() {
         guard !busy else { return }
         let panel = NSOpenPanel()
-        panel.title = "Grafik oder VisiCutRust-Projekt öffnen"
+        panel.title = tr("Grafik oder VisiCutRust-Projekt öffnen")
         let graphics = ["svg", "psvg", "dxf", "eps", "ps", "pdf", "png", "jpg", "jpeg", "bmp", "gif", "nc", "gcode", "plf", "ls"]
         panel.allowedContentTypes = (graphics + ["vcr"]).compactMap { UTType(filenameExtension: $0) } + [.json]
         panel.allowsMultipleSelection = false
@@ -383,7 +420,7 @@ final class AppModel: ObservableObject {
             let response: ProjectResponse = try RustCore.decode(isSVG ? "import" : "load", project: project, path: url.path)
             accept(response, dirty: isSVG)
             projectURL = isSVG ? nil : url
-            status = isSVG ? "\(url.lastPathComponent) importiert. Originalmaße übernommen." : "Projekt geöffnet."
+            status = isSVG ? tr("{file} importiert · Originalmaße übernommen", ["file": url.lastPathComponent]) : tr("Projekt geöffnet")
             if let warnings = response.warnings, !warnings.isEmpty { self.error = warnings.joined(separator: "\n") }
         } catch { self.error = error.localizedDescription }
     }
@@ -395,7 +432,7 @@ final class AppModel: ObservableObject {
             var url = asCopy ? nil : projectURL
             if url == nil {
                 let panel = NSSavePanel()
-                panel.title = "VisiCutRust-Projekt speichern"
+                panel.title = tr("VisiCutRust-Projekt sichern")
                 panel.allowedContentTypes = [UTType(filenameExtension: "vcr") ?? .json]
                 panel.nameFieldStringValue = project.name + ".vcr"
                 guard panel.runModal() == .OK else { return false }
@@ -407,7 +444,7 @@ final class AppModel: ObservableObject {
             try encoder.encode(project).write(to: url, options: .atomic)
             projectURL = url
             dirty = false
-            status = "Projekt gespeichert."
+            status = tr("Projekt gespeichert.")
             return true
         } catch {
             self.error = error.localizedDescription
@@ -419,11 +456,11 @@ final class AppModel: ObservableObject {
         guard !busy else { return false }
         guard dirty else { return true }
         let alert = NSAlert()
-        alert.messageText = "Änderungen an „\(project.name)“ sichern?"
-        alert.informativeText = "Nicht gesicherte Änderungen gehen verloren."
-        alert.addButton(withTitle: "Sichern")
-        alert.addButton(withTitle: "Abbrechen")
-        alert.addButton(withTitle: "Nicht sichern")
+        alert.messageText = tr("Änderungen an „{name}“ sichern?", ["name": project.name])
+        alert.informativeText = tr("Nicht gesicherte Änderungen gehen verloren.")
+        alert.addButton(withTitle: tr("Sichern"))
+        alert.addButton(withTitle: tr("Abbrechen"))
+        alert.addButton(withTitle: tr("Nicht sichern"))
         switch alert.runModal() {
         case .alertFirstButtonReturn: return save()
         case .alertThirdButtonReturn: return true
@@ -438,34 +475,34 @@ final class AppModel: ObservableObject {
             guard let first = prepared.jobs.first else { return }
             if prepared.jobs.count == 1 {
                 let panel = NSSavePanel()
-                panel.title = "LTT-Auftrag exportieren"
+                panel.title = tr("LTT-Auftrag exportieren")
                 panel.allowedContentTypes = [UTType(filenameExtension: "ltt") ?? .data]
                 panel.nameFieldStringValue = first.name + ".ltt"
                 guard panel.runModal() == .OK, let url = panel.url else { return }
                 try Data(first.bytes).write(to: url, options: .atomic)
             } else {
                 let panel = NSOpenPanel()
-                panel.title = "Ordner für \(prepared.jobs.count) getrennte LTT-Aufträge wählen"
+                panel.title = tr("Ordner für {count} getrennte LTT-Aufträge wählen", ["count": prepared.jobs.count])
                 panel.canChooseDirectories = true
                 panel.canChooseFiles = false
                 panel.canCreateDirectories = true
-                panel.prompt = "Exportieren"
+                panel.prompt = tr("Exportieren")
                 guard panel.runModal() == .OK, let folder = panel.url else { return }
                 let existing = prepared.jobs.filter {
                     FileManager.default.fileExists(atPath: folder.appendingPathComponent($0.name + ".ltt").path)
                 }
                 if !existing.isEmpty {
                     let alert = NSAlert()
-                    alert.messageText = "Vorhandene LTT-Dateien ersetzen?"
+                    alert.messageText = tr("Vorhandene LTT-Dateien ersetzen?")
                     alert.informativeText = existing.map { $0.name + ".ltt" }.joined(separator: "\n")
-                    alert.addButton(withTitle: "Ersetzen"); alert.addButton(withTitle: "Abbrechen")
+                    alert.addButton(withTitle: tr("Ersetzen")); alert.addButton(withTitle: tr("Abbrechen"))
                     guard alert.runModal() == .alertFirstButtonReturn else { return }
                 }
                 for job in prepared.jobs {
                     try Data(job.bytes).write(to: folder.appendingPathComponent(job.name + ".ltt"), options: .atomic)
                 }
             }
-            status = "Exportiert: " + prepared.jobs.map(\.name).joined(separator: ", ")
+            status = tr("Exportiert: {files}", ["files": prepared.jobs.map(\.name).joined(separator: ", ")])
         } catch { self.error = error.localizedDescription }
     }
 
@@ -478,7 +515,7 @@ final class AppModel: ObservableObject {
             project.power_percent = 0
             project.speed_percent = 100
             project.passes = 1
-            status = "Markieren: eigene Leistung einstellen oder ein passendes Profil übernehmen."
+            status = tr("Markieren: eigene Leistung einstellen oder ein passendes Profil übernehmen.")
         }
     }
 
@@ -532,14 +569,14 @@ final class AppModel: ObservableObject {
         guard sendEnabled else { return }
         if preparedJob != nil { showJobPreview = true; return }
         busy = true
-        status = "Auftragsvorschau und Bearbeitungszeit werden berechnet …"
+        status = tr("Auftragsvorschau und Bearbeitungszeit werden berechnet …")
         let snapshot = project
         DispatchQueue.global(qos: .userInitiated).async {
             let result = Result { try RustCore.decode("prepare", project: snapshot) as PreparedJob }
             DispatchQueue.main.async {
                 self.busy = false
                 guard self.project == snapshot else {
-                    self.status = "Auftrag geändert. Vorschau bitte erneut berechnen."
+                    self.status = tr("Auftrag geändert. Vorschau und Zeit neu berechnen.")
                     return
                 }
                 switch result {
@@ -548,10 +585,10 @@ final class AppModel: ObservableObject {
                     self.preparedJob = prepared
                     self.jobImage = NSImage(data: Data(prepared.preview_png))
                     self.showJobPreview = true
-                    self.status = "Geschätzte Bearbeitungszeit: ca. \(duration(prepared.estimated_seconds))"
+                    self.status = tr("Geschätzte Bearbeitungszeit: ca. {time}", ["time": duration(prepared.estimated_seconds)])
                 case .failure(let error):
                     self.error = error.localizedDescription
-                    self.status = "Auftrag konnte nicht vorbereitet werden."
+                    self.status = tr("Auftrag konnte nicht vorbereitet werden.")
                 }
             }
         }
@@ -563,23 +600,31 @@ final class AppModel: ObservableObject {
         guard sendEnabled, let prepared = preparedJob else { return }
         let snapshot = project
         let alert = NSAlert()
-        alert.messageText = "\(prepared.jobs.count) Auftrag/Aufträge an den Lasercutter senden?"
-        alert.informativeText = "\(prepared.jobs.map(\.name).joined(separator: " → "))\nJe Verfahren ein separater Auftrag.\nCa. \(duration(prepared.estimated_seconds))\n\(device.name) · \(snapshot.hostname):\(snapshot.port)\n\n" + prepared.warnings.map { $0 + "\n\n" }.joined() + "Die Übertragung startet den Laser nicht. Aufträge am Gerät in dieser Reihenfolge einzeln starten. Treiber am Gerät noch nicht validiert. Vor dem Start Material, Fokus und Druckluft prüfen."
-        alert.addButton(withTitle: "Senden")
-        alert.addButton(withTitle: "Abbrechen")
+        let count: [String: Any] = ["count": prepared.jobs.count]
+        alert.messageText = prepared.jobs.count == 1
+            ? tr("{count} Auftrag an den Lasercutter senden?", count)
+            : tr("{count} Aufträge an den Lasercutter senden?", count)
+        let jobs = tr("Aufträge: {jobs} (je Verfahren ein separater Auftrag) · ca. {time}",
+                      ["jobs": prepared.jobs.map(\.name).joined(separator: " → "), "time": duration(prepared.estimated_seconds)])
+        let target = tr("Lasercutter: {name} ({host}:{port})",
+                        ["name": device.name, "host": snapshot.hostname, "port": String(snapshot.port)])
+        let notice = tr("Die Übertragung startet den Laser nicht. Aufträge am Gerät in dieser Reihenfolge einzeln starten. Treiber am Gerät noch nicht validiert. Vor dem Start Material, Fokus und Druckluft prüfen.")
+        alert.informativeText = ([jobs + "\n" + target] + prepared.warnings + [notice]).joined(separator: "\n\n")
+        alert.addButton(withTitle: tr("Senden"))
+        alert.addButton(withTitle: tr("Abbrechen"))
         guard alert.runModal() == .alertFirstButtonReturn, snapshot == project else { return }
         showJobPreview = false
         busy = true
-        status = "Job wird an den Lasercutter übertragen …"
+        status = tr("Job wird an den Lasercutter übertragen …")
         DispatchQueue.global(qos: .userInitiated).async {
             let result = Result { try RustCore.decode("transmit", project: snapshot) as TransmissionResponse }
             DispatchQueue.main.async {
                 self.busy = false
                 switch result {
                 case .success(let response):
-                    self.status = "Übertragen: " + response.sent.joined(separator: ", ") + ". Aufträge am Gerät prüfen und einzeln starten."
+                    self.status = tr("Übertragen: {jobs}. Aufträge am Gerät prüfen und einzeln starten.", ["jobs": response.sent.joined(separator: ", ")])
                     self.showJobSentText(response.sent)
-                case .failure(let error): self.error = error.localizedDescription; self.status = "Übertragung fehlgeschlagen. Gerätestatus prüfen."
+                case .failure(let error): self.error = error.localizedDescription; self.status = tr("Übertragung fehlgeschlagen. Gerätestatus prüfen.")
                 }
             }
         }
@@ -600,6 +645,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
     private var changes: AnyCancellable?
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
+        // Vor dem Modell und den Menüs, damit Startmeldungen und Titel übersetzt sind.
+        Localization.load()
         model = AppModel()
         installMenus()
         showWorkspace()
@@ -678,65 +725,108 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
             let menu = NSMenu(title: title); item.submenu = menu; bar.addItem(item); return menu
         }
         let app = submenu("VisiCutRust")
-        app.addItem(menuItem("Über VisiCutRust", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), target: NSApp))
+        app.addItem(menuItem(tr("Über VisiCutRust"), action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), target: NSApp))
         app.addItem(.separator())
-        app.addItem(menuItem("Lasercutter …", action: #selector(showSettings), key: ","))
+        app.addItem(menuItem(tr("Lasercutter …"), action: #selector(showSettings), key: ","))
         app.addItem(.separator())
-        let services = NSMenuItem(title: "Dienste", action: nil, keyEquivalent: "")
-        services.submenu = NSMenu(title: "Dienste"); app.addItem(services); NSApp.servicesMenu = services.submenu
+        let services = NSMenuItem(title: tr("Dienste"), action: nil, keyEquivalent: "")
+        services.submenu = NSMenu(title: tr("Dienste")); app.addItem(services); NSApp.servicesMenu = services.submenu
         app.addItem(.separator())
-        app.addItem(menuItem("VisiCutRust ausblenden", action: #selector(NSApplication.hide(_:)), key: "h", target: NSApp))
-        app.addItem(menuItem("Andere ausblenden", action: #selector(NSApplication.hideOtherApplications(_:)), key: "h", modifiers: [.command, .option], target: NSApp))
-        app.addItem(menuItem("Alle einblenden", action: #selector(NSApplication.unhideAllApplications(_:)), target: NSApp))
+        app.addItem(menuItem(tr("VisiCutRust ausblenden"), action: #selector(NSApplication.hide(_:)), key: "h", target: NSApp))
+        app.addItem(menuItem(tr("Andere ausblenden"), action: #selector(NSApplication.hideOtherApplications(_:)), key: "h", modifiers: [.command, .option], target: NSApp))
+        app.addItem(menuItem(tr("Alle einblenden"), action: #selector(NSApplication.unhideAllApplications(_:)), target: NSApp))
         app.addItem(.separator())
-        app.addItem(menuItem("VisiCutRust beenden", action: #selector(NSApplication.terminate(_:)), key: "q", target: NSApp))
-        let file = submenu("Ablage")
-        file.addItem(menuItem("Neues Projekt", action: #selector(newProject), key: "n"))
-        file.addItem(menuItem("Öffnen …", action: #selector(openFile), key: "o"))
-        file.addItem(menuItem("Beispiel öffnen", action: #selector(openDemo)))
-        file.addItem(menuItem("Bitmap vektorisieren …", action: #selector(vectorizeBitmap)))
+        app.addItem(menuItem(tr("VisiCutRust beenden"), action: #selector(NSApplication.terminate(_:)), key: "q", target: NSApp))
+        let file = submenu(tr("Ablage"))
+        file.addItem(menuItem(tr("Neues Projekt"), action: #selector(newProject), key: "n"))
+        file.addItem(menuItem(tr("Öffnen …"), action: #selector(openFile), key: "o"))
+        file.addItem(menuItem(tr("Beispiel öffnen"), action: #selector(openDemo)))
+        file.addItem(menuItem(tr("Bitmap vektorisieren …"), action: #selector(vectorizeBitmap)))
         file.addItem(.separator())
-        file.addItem(menuItem("Sichern", action: #selector(saveProject), key: "s"))
-        file.addItem(menuItem("Sichern unter …", action: #selector(saveAs), key: "s", modifiers: [.command, .shift]))
-        file.addItem(menuItem("LTT-Job exportieren …", action: #selector(exportJob), key: "e", modifiers: [.command, .shift]))
+        file.addItem(menuItem(tr("Sichern"), action: #selector(saveProject), key: "s"))
+        file.addItem(menuItem(tr("Sichern unter …"), action: #selector(saveAs), key: "s", modifiers: [.command, .shift]))
+        file.addItem(menuItem(tr("LTT-Job exportieren …"), action: #selector(exportJob), key: "e", modifiers: [.command, .shift]))
         file.addItem(.separator())
-        let close = menuItem("Fenster schließen", action: #selector(NSWindow.performClose(_:)), key: "w"); close.target = nil; file.addItem(close)
-        let edit = submenu("Bearbeiten")
-        for (title, selector, key) in [("Widerrufen", "undo:", "z"), ("Ausschneiden", "cut:", "x"), ("Kopieren", "copy:", "c"), ("Einsetzen", "paste:", "v"), ("Alles auswählen", "selectAll:", "a")] {
+        let close = menuItem(tr("Fenster schließen"), action: #selector(NSWindow.performClose(_:)), key: "w"); close.target = nil; file.addItem(close)
+        let edit = submenu(tr("Bearbeiten"))
+        let editItems: [(String, String, String)] = [
+            (tr("Widerrufen"), "undo:", "z"), (tr("Ausschneiden"), "cut:", "x"), (tr("Kopieren"), "copy:", "c"),
+            (tr("Einsetzen"), "paste:", "v"), (tr("Alles auswählen"), "selectAll:", "a")]
+        for (title, selector, key) in editItems {
             let item = menuItem(title, action: Selector(selector), key: key); item.target = nil; edit.addItem(item)
         }
         edit.addItem(.separator())
-        edit.addItem(menuItem("Duplizieren", action: #selector(duplicateArtwork), key: "d"))
-        edit.addItem(menuItem("Motiv löschen", action: #selector(deleteArtwork)))
-        let object = submenu("Objekt")
-        object.addItem(menuItem("Text …", action: #selector(insertText)))
-        object.addItem(menuItem("Form …", action: #selector(insertShape)))
-        object.addItem(menuItem("Schild …", action: #selector(insertSign)))
+        edit.addItem(menuItem(tr("Duplizieren"), action: #selector(duplicateArtwork), key: "d"))
+        edit.addItem(menuItem(tr("Motiv löschen"), action: #selector(deleteArtwork)))
+        let object = submenu(tr("Objekt"))
+        object.addItem(menuItem(tr("Text …"), action: #selector(insertText)))
+        object.addItem(menuItem(tr("Form …"), action: #selector(insertShape)))
+        object.addItem(menuItem(tr("Schild …"), action: #selector(insertSign)))
         object.addItem(.separator())
-        object.addItem(menuItem("Kopien im Raster …", action: #selector(arrayCopies)))
-        object.addItem(menuItem("Teile verschachteln (Nesting) …", action: #selector(nestParts)))
+        object.addItem(menuItem(tr("Kopien im Raster …"), action: #selector(arrayCopies)))
+        object.addItem(menuItem(tr("Teile verschachteln (Nesting) …"), action: #selector(nestParts)))
         object.addItem(.separator())
-        object.addItem(menuItem("90° nach links drehen", action: #selector(rotateLeft)))
-        object.addItem(menuItem("90° nach rechts drehen", action: #selector(rotateRight)))
-        object.addItem(menuItem("Horizontal spiegeln", action: #selector(flipHorizontal)))
-        object.addItem(menuItem("Vertikal spiegeln", action: #selector(flipVertical)))
-        let view = submenu("Darstellung")
-        view.addItem(menuItem("Ansicht einpassen", action: #selector(fitView), key: "0"))
-        view.addItem(menuItem("Raster anzeigen", action: #selector(toggleGrid)))
+        object.addItem(menuItem(tr("90° nach links drehen"), action: #selector(rotateLeft)))
+        object.addItem(menuItem(tr("90° nach rechts drehen"), action: #selector(rotateRight)))
+        object.addItem(menuItem(tr("Horizontal spiegeln"), action: #selector(flipHorizontal)))
+        object.addItem(menuItem(tr("Vertikal spiegeln"), action: #selector(flipVertical)))
+        let view = submenu(tr("Darstellung"))
+        view.addItem(menuItem(tr("Ansicht einpassen"), action: #selector(fitView), key: "0"))
+        view.addItem(menuItem(tr("Raster anzeigen"), action: #selector(toggleGrid)))
         view.addItem(.separator())
-        view.addItem(menuItem("Kamerabild anzeigen", action: #selector(toggleCamera), key: "k"))
-        view.addItem(menuItem("Kamerabild aktualisieren", action: #selector(refreshCamera), key: "k", modifiers: [.command, .shift]))
-        let job = submenu("Job")
-        job.addItem(menuItem("FAU-Materialprofil übernehmen", action: #selector(applyProfile)))
-        job.addItem(menuItem("Materialbibliothek …", action: #selector(showMaterials), key: "m", modifiers: [.command, .shift]))
-        job.addItem(menuItem("Auftragsvorschau und Zeit …", action: #selector(previewJob), key: "p", modifiers: [.command, .shift]))
+        view.addItem(menuItem(tr("Kamerabild anzeigen"), action: #selector(toggleCamera), key: "k"))
+        view.addItem(menuItem(tr("Kamerabild aktualisieren"), action: #selector(refreshCamera), key: "k", modifiers: [.command, .shift]))
+        view.addItem(.separator())
+        // Sprache der Oberfläche: Systemsprache oder eine feste Sprache (Name in der jeweiligen Sprache).
+        let languageMenu = NSMenu(title: tr("Sprache"))
+        let systemLanguage = menuItem(tr("Systemsprache"), action: #selector(chooseLanguage(_:)))
+        systemLanguage.state = Localization.chosen == nil ? .on : .off
+        languageMenu.addItem(systemLanguage)
+        languageMenu.addItem(.separator())
+        for language in Localization.languages {
+            let item = menuItem(language.name, action: #selector(chooseLanguage(_:)))
+            item.representedObject = language.code
+            item.state = Localization.chosen == language.code ? .on : .off
+            languageMenu.addItem(item)
+        }
+        let languageItem = NSMenuItem(title: tr("Sprache"), action: nil, keyEquivalent: "")
+        languageItem.submenu = languageMenu
+        view.addItem(languageItem)
+        let job = submenu(tr("Job"))
+        job.addItem(menuItem(tr("FAU-Materialprofil übernehmen"), action: #selector(applyProfile)))
+        job.addItem(menuItem(tr("Materialbibliothek …"), action: #selector(showMaterials), key: "m", modifiers: [.command, .shift]))
+        job.addItem(menuItem(tr("Auftragsvorschau und Zeit …"), action: #selector(previewJob), key: "p", modifiers: [.command, .shift]))
         job.addItem(.separator())
-        job.addItem(menuItem("An Lasercutter senden …", action: #selector(sendJob)))
-        let windows = submenu("Fenster")
-        windows.addItem(menuItem("Arbeitsbereich anzeigen", action: #selector(showMainWindow)))
-        let minimize = menuItem("Im Dock ablegen", action: #selector(NSWindow.performMiniaturize(_:)), key: "m"); minimize.target = nil; windows.addItem(minimize)
+        job.addItem(menuItem(tr("An Lasercutter senden …"), action: #selector(sendJob)))
+        let windows = submenu(tr("Fenster"))
+        windows.addItem(menuItem(tr("Arbeitsbereich anzeigen"), action: #selector(showMainWindow)))
+        let minimize = menuItem(tr("Im Dock ablegen"), action: #selector(NSWindow.performMiniaturize(_:)), key: "m"); minimize.target = nil; windows.addItem(minimize)
         NSApp.windowsMenu = windows
         NSApp.mainMenu = bar
+    }
+
+    /// Wechselt die Sprache und baut Menüs, Symbolleiste, Fenstertitel und
+    /// SwiftUI-Ansichten neu auf (die Auswahl bleibt in UserDefaults gespeichert).
+    @objc func chooseLanguage(_ sender: NSMenuItem) {
+        let code = sender.representedObject as? String
+        // Erst nach dem Schließen des Menüs ersetzen, das die Aktion ausgelöst hat.
+        DispatchQueue.main.async {
+            Localization.choose(code)
+            self.installMenus()
+            self.refreshLocalizedTexts()
+        }
+    }
+
+    private func refreshLocalizedTexts() {
+        for item in workspaceWindow?.toolbar?.items ?? [] {
+            guard let spec = toolbarSpec(item.itemIdentifier) else { continue }
+            item.label = spec.0; item.paletteLabel = spec.0; item.toolTip = spec.0
+            item.image = NSImage(systemSymbolName: spec.1, accessibilityDescription: spec.0)
+        }
+        settingsWindow?.title = tr("Lasercutter")
+        materialsWindow?.title = tr("Materialbibliothek")
+        model.objectWillChange.send()
+        refreshWindow()
     }
 
     func validateMenuItem(_ item: NSMenuItem) -> Bool {
@@ -796,7 +886,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
         if let window = materialsWindow { window.makeKeyAndOrderFront(nil); return }
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 860, height: 560), styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
         window.contentView = NSHostingView(rootView: MaterialEditor(model: model))
-        window.title = "Materialbibliothek"
+        window.title = tr("Materialbibliothek")
         window.isReleasedWhenClosed = false
         materialsWindow = window
         window.center(); window.makeKeyAndOrderFront(nil)
@@ -805,23 +895,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSTo
         if let window = settingsWindow { window.makeKeyAndOrderFront(nil); return }
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 820, height: 560), styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
         window.contentView = NSHostingView(rootView: DeviceSettings(model: model))
-        window.title = "Lasercutter"
+        window.title = tr("Lasercutter")
         window.isReleasedWhenClosed = false
         settingsWindow = window
         window.center(); window.makeKeyAndOrderFront(nil)
     }
     func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] { toolbarDefaultItemIdentifiers(toolbar) + [.space] }
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] { [.init("open"), .init("save"), .flexibleSpace, .init("preview"), .init("export"), .init("send")] }
-    func toolbar(_ toolbar: NSToolbar, itemForItemIdentifier identifier: NSToolbarItem.Identifier, willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
-        let spec: (String, String, Selector)
+    /// Beschriftung, Symbol und Aktion eines Symbolleistenelements.
+    private func toolbarSpec(_ identifier: NSToolbarItem.Identifier) -> (String, String, Selector)? {
         switch identifier.rawValue {
-        case "open": spec = ("Öffnen", "folder", #selector(openFile))
-        case "save": spec = ("Sichern", "square.and.arrow.down", #selector(saveProject))
-        case "preview": spec = ("Vorschau & Zeit", "eye", #selector(previewJob))
-        case "export": spec = ("Exportieren", "square.and.arrow.up", #selector(exportJob))
-        case "send": spec = ("An Lasercutter senden", "paperplane", #selector(sendJob))
+        case "open": return (tr("Öffnen"), "folder", #selector(openFile))
+        case "save": return (tr("Sichern"), "square.and.arrow.down", #selector(saveProject))
+        case "preview": return (tr("Vorschau & Zeit"), "eye", #selector(previewJob))
+        case "export": return (tr("Exportieren"), "square.and.arrow.up", #selector(exportJob))
+        case "send": return (tr("An Lasercutter senden"), "paperplane", #selector(sendJob))
         default: return nil
         }
+    }
+    func toolbar(_ toolbar: NSToolbar, itemForItemIdentifier identifier: NSToolbarItem.Identifier, willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
+        guard let spec = toolbarSpec(identifier) else { return nil }
         let item = NSToolbarItem(itemIdentifier: identifier)
         item.label = spec.0; item.paletteLabel = spec.0; item.toolTip = spec.0
         item.image = NSImage(systemSymbolName: spec.1, accessibilityDescription: spec.0)
@@ -850,6 +943,10 @@ enum VisiCutRustApp {
 
 struct Workspace: View {
     @ObservedObject var model: AppModel
+    private var bedSummary: String {
+        let summary = "\(model.device.name) · 1000 × 600 mm"
+        return model.project.rotary_axis ? summary + " · " + tr("Rotationseinheit") : summary
+    }
 
     var body: some View {
         NavigationSplitView {
@@ -859,28 +956,28 @@ struct Workspace: View {
             VStack(spacing: 0) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(model.project.hasArtwork ? model.project.name : "Arbeitsbereich").font(.title2).fontWeight(.semibold)
-                        Text("\(model.device.name) · 1000 × 600 mm" + (model.project.rotary_axis ? " · Rotationseinheit" : "")).foregroundStyle(.secondary)
+                        Text(model.project.hasArtwork ? model.project.name : tr("Arbeitsbereich")).font(.title2).fontWeight(.semibold)
+                        Text(bedSummary).foregroundStyle(.secondary)
                     }
                     Spacer()
                     if !model.device.camera_url.isEmpty {
                         Toggle(isOn: Binding(get: { model.showCamera }, set: { _ in model.toggleCamera() })) {
                             Image(systemName: "camera")
-                        }.toggleStyle(.button).help("Kamerabild anzeigen")
+                        }.toggleStyle(.button).help(tr("Kamerabild anzeigen"))
                         if model.showCamera {
                             if model.cameraLoading { ProgressView().controlSize(.small) }
-                            else { Button { model.refreshCamera() } label: { Image(systemName: "arrow.clockwise") }.help("Kamerabild aktualisieren") }
+                            else { Button { model.refreshCamera() } label: { Image(systemName: "arrow.clockwise") }.help(tr("Kamerabild aktualisieren")) }
                         }
                     }
                     Toggle(isOn: $model.showGrid) { Image(systemName: "grid") }
-                        .toggleStyle(.button).help("Raster anzeigen")
-                    Button { model.zoomBy(1 / 1.25) } label: { Image(systemName: "minus.magnifyingglass") }.help("Verkleinern")
+                        .toggleStyle(.button).help(tr("Raster anzeigen"))
+                    Button { model.zoomBy(1 / 1.25) } label: { Image(systemName: "minus.magnifyingglass") }.help(tr("Verkleinern"))
                     Text("\(Int(model.zoom * 100)) %").monospacedDigit().frame(width: 48)
-                    Button { model.zoomBy(1.25) } label: { Image(systemName: "plus.magnifyingglass") }.help("Vergrößern")
-                    Button("Einpassen") { model.fitZoom() }
+                    Button { model.zoomBy(1.25) } label: { Image(systemName: "plus.magnifyingglass") }.help(tr("Vergrößern"))
+                    Button(tr("Einpassen")) { model.fitZoom() }
                 }.buttonStyle(.borderless).padding(20)
                 if model.project.hasArtwork && !model.project.fitsBed {
-                    Label("Das Motiv liegt außerhalb des Arbeitsbetts und kann so nicht gesendet werden.", systemImage: "exclamationmark.triangle.fill")
+                    Label(tr("Das Motiv liegt außerhalb des Arbeitsbetts und kann so nicht gesendet werden."), systemImage: "exclamationmark.triangle.fill")
                         .font(.callout).foregroundStyle(.white)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 20).padding(.vertical, 8)
@@ -888,15 +985,15 @@ struct Workspace: View {
                 }
                 Divider()
                 HStack {
-                    Button("Vorschau & Zeit berechnen", systemImage: "eye") { model.previewJob() }
+                    Button(tr("Vorschau & Zeit berechnen"), systemImage: "eye") { model.previewJob() }
                         .disabled(!model.sendEnabled)
                     if let prepared = model.preparedJob {
-                        Text("Ca. \(duration(prepared.estimated_seconds))").monospacedDigit()
+                        Text(tr("Ca. {time}", ["time": duration(prepared.estimated_seconds)])).monospacedDigit()
                         Spacer()
-                        Toggle("Bearbeitung anzeigen", isOn: $model.showProcessing)
-                        Text("Rot: Schnitt · Blau: Gravur · Orange: 3D · Violett: Markieren").font(.caption).foregroundStyle(.secondary)
+                        Toggle(tr("Bearbeitung anzeigen"), isOn: $model.showProcessing)
+                        Text(tr("Rot: Schnitt · Blau: Gravur · Orange: 3D · Violett: Markieren")).font(.caption).foregroundStyle(.secondary)
                     } else {
-                        Text("Nach Änderungen neu berechnen").font(.caption).foregroundStyle(.secondary)
+                        Text(tr("Nach Änderungen neu berechnen")).font(.caption).foregroundStyle(.secondary)
                         Spacer()
                     }
                 }.padding(.horizontal, 20).padding(.vertical, 10)
@@ -908,12 +1005,12 @@ struct Workspace: View {
                     } else {
                         VStack(spacing: 16) {
                             Image(systemName: "square.and.arrow.down").font(.system(size: 44, weight: .light)).foregroundStyle(.secondary)
-                            Text("Mit einer SVG beginnen").font(.title2).fontWeight(.semibold)
-                            Text("Importiere dein Motiv, wähle ein Material\nund bereite den Job für den Lasercutter vor.")
+                            Text(tr("Mit einer SVG beginnen")).font(.title2).fontWeight(.semibold)
+                            Text(tr("Importiere dein Motiv, wähle ein Material\nund bereite den Job für den Lasercutter vor."))
                                 .foregroundStyle(.secondary).multilineTextAlignment(.center)
-                            Button("SVG importieren …") { model.chooseFile() }.buttonStyle(.borderedProminent)
-                            Button("Beispiel öffnen") { model.demo() }.buttonStyle(.link)
-                            Button("Bitmap vektorisieren …") { model.chooseBitmap() }.buttonStyle(.link)
+                            Button(tr("SVG importieren …")) { model.chooseFile() }.buttonStyle(.borderedProminent)
+                            Button(tr("Beispiel öffnen")) { model.demo() }.buttonStyle(.link)
+                            Button(tr("Bitmap vektorisieren …")) { model.chooseBitmap() }.buttonStyle(.link)
                         }.padding(40)
                     }
                 }
@@ -932,7 +1029,7 @@ struct Workspace: View {
         .navigationTitle(model.project.name)
         .sheet(isPresented: $model.showJobPreview) { JobPreview(model: model) }
         .alert("VisiCutRust", isPresented: Binding(get: { model.error != nil }, set: { if !$0 { model.error = nil } })) {
-            Button("OK", role: .cancel) { model.error = nil }
+            Button(tr("OK"), role: .cancel) { model.error = nil }
         } message: { Text(model.error ?? "") }
         .onDrop(of: [.fileURL], isTargeted: nil) { providers in
             guard !model.busy, !providers.isEmpty else { return false }
@@ -960,9 +1057,9 @@ struct Inspector: View {
 
     var body: some View {
         Form {
-            Section("Projekt") {
-                TextField("Name", text: $model.project.name)
-                LabeledContent("Lasercutter") {
+            Section(tr("Projekt")) {
+                TextField(tr("Name"), text: $model.project.name)
+                LabeledContent(tr("Lasercutter")) {
                     NativePopup(options: model.devices.devices.indices.map { PopupOption(String($0), model.devices.devices[$0].name) },
                         selection: Binding(get: { String(model.devices.selected) }, set: { if let index = Int($0) { model.selectDevice(index) } }),
                         identifier: "devicePicker")
@@ -970,62 +1067,64 @@ struct Inspector: View {
                 }
             }
             if model.device.rotary_axis {
-                Section("Rotationseinheit") {
-                    Toggle("Rotationseinheit verwenden", isOn: $model.project.rotary_axis)
+                Section(tr("Rotationseinheit")) {
+                    Toggle(tr("Rotationseinheit verwenden"), isOn: $model.project.rotary_axis)
                     if model.project.rotary_axis {
-                        NumberField("Durchmesser", value: $model.project.rotary_diameter_mm, unit: "mm")
-                        Text("Y entspricht dem Umfang (\(format(Double.pi * model.project.rotary_diameter_mm)) mm). Gravur zentriert am Gerät ausrichten. Schritte je Umdrehung aus LibLaserCut, am Gerät nicht validiert.")
+                        NumberField(tr("Durchmesser"), value: $model.project.rotary_diameter_mm, unit: "mm")
+                        Text(tr("Y entspricht dem Umfang ({circumference} mm). Gravur zentriert am Gerät ausrichten. Schritte je Umdrehung aus LibLaserCut, am Gerät nicht validiert.",
+                                ["circumference": format(Double.pi * model.project.rotary_diameter_mm)]))
                             .font(.caption).foregroundStyle(.secondary)
                     }
                 }
             }
-            Section("Material") {
-                LabeledContent("Profile") {
+            Section(tr("Material")) {
+                LabeledContent(tr("Profile")) {
                     NativePopup(options: model.profileSetNames.indices.map { PopupOption(String($0), model.profileSetNames[$0]) },
                         selection: Binding(get: { String(model.profileSet) }, set: { if let index = Int($0) { model.selectProfileSet(index) } }),
                         identifier: "profileSetPicker")
                         .fixedSize()
-                        .help("FAU-Materialprofile eines Lasercutters für Material, Stärke und Parameter")
+                        .help(tr("FAU-Materialprofile eines Lasercutters für Material, Stärke und Parameter"))
                 }
                 if model.profileSet > 0 {
-                    Text("Profile eines anderen Lasercutters: Werte vor dem Lasern am LTT prüfen.")
+                    Text(tr("Profile eines anderen Lasercutters: Werte vor dem Lasern am LTT prüfen."))
                         .font(.caption).foregroundStyle(.orange).fixedSize(horizontal: false, vertical: true)
                 }
-                LabeledContent("Material") {
-                    NativePopup(options: [PopupOption("", "Material wählen"), .separator]
+                LabeledContent(tr("Material")) {
+                    NativePopup(options: [PopupOption("", tr("Material wählen")), .separator]
                         + model.activeMaterials.map { PopupOption($0.name, $0.name) }
-                        + [.separator, PopupOption("__custom", "Eigenes Material …")],
+                        + [.separator, PopupOption("__custom", tr("Eigenes Material …"))],
                         selection: material, identifier: "materialPicker")
                         .fixedSize()
                 }
                 if model.materialSelection == "__custom" {
-                    TextField("Bezeichnung", text: $model.project.material)
+                    TextField(tr("Bezeichnung"), text: $model.project.material)
                 }
                 if let material = model.selectedMaterial {
-                    LabeledContent("Stärke") {
+                    LabeledContent(tr("Stärke")) {
                         NativePopup(options: material.thicknesses.map {
-                            PopupOption(String($0), $0 == 0 ? "Nicht festgelegt" : "\(format($0)) mm")
+                            PopupOption(String($0), $0 == 0 ? tr("Nicht festgelegt") : "\(format($0)) mm")
                         }, selection: Binding(get: { String(model.project.thickness_mm) }, set: {
                             if let value = Double($0) { model.selectThickness(value) }
                         }), identifier: "thicknessPicker")
                         .fixedSize()
                     }
                 } else {
-                    NumberField("Stärke", value: $model.project.thickness_mm, unit: "mm")
+                    NumberField(tr("Stärke"), value: $model.project.thickness_mm, unit: "mm")
                 }
             }
-            Section("Objektzuordnung") {
-                Picker("Zuordnung", selection: Binding(get: { model.assignmentMode }, set: { model.setAssignmentMode($0) })) {
+            Section(tr("Objektzuordnung")) {
+                Picker(tr("Zuordnung"), selection: Binding(get: { model.assignmentMode }, set: { model.setAssignmentMode($0) })) {
                     ForEach(AssignmentMode.allCases) { Text($0.title).tag($0) }
                 }.pickerStyle(.segmented).disabled(!model.project.hasArtwork)
                     .accessibilityIdentifier("assignmentMode")
                 if model.assignmentMode == .whole {
-                    Text("Ein Verfahren für das gesamte Motiv. Für Zuordnungen nach Strichfarbe oder anderen Merkmalen „Regeln“ wählen.").font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                    Text(tr("Ein Verfahren für das gesamte Motiv. Für Zuordnungen nach Strichfarbe oder anderen Merkmalen „Regeln“ wählen.")).font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 } else if model.assignmentMode == .rules {
-                    Text("Regeln ordnen Objekte nach Merkmalen zu, z. B. nach Strichfarbe: Rot (#ff0000) → Schneiden, Blau (#0000ff) → Gravieren, Grün (#00ff00) → Markieren. Vorlage wählen oder Bedingungen (Farbe, Linienstärke, Ebene, Typ, ID) anpassen; „Rest“ erfasst alle übrigen Objekte.").font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                    Text(tr("Regeln ordnen Objekte nach Merkmalen zu, z. B. nach Strichfarbe: Rot (#ff0000) → Schneiden, Blau (#0000ff) → Gravieren, Grün (#00ff00) → Markieren.")
+                         + " " + tr("Vorlage wählen oder Bedingungen (Farbe, Linienstärke, Ebene, Typ, ID) anpassen; „Rest“ erfasst alle übrigen Objekte.")).font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 }
                 if model.assignmentMode == .objects {
-                    Text("Schneiden, gravieren, markieren oder ignorieren.")
+                    Text(tr("Schneiden, gravieren, markieren oder ignorieren."))
                         .font(.caption).foregroundStyle(.secondary)
                     ScrollView {
                         VStack(alignment: .leading, spacing: 10) {
@@ -1036,16 +1135,16 @@ struct Inspector: View {
                                     AssignmentMenu(selection: Binding(get: { model.assignment(object.id) },
                                         set: { model.assign(object.id, to: $0) }))
                                 }
-                                .contextMenu { Button("Objekt löschen") { model.deleteObject(object.id) } }
+                                .contextMenu { Button(tr("Objekt löschen")) { model.deleteObject(object.id) } }
 
                             }
                         }.padding(.vertical, 4)
                     }.frame(height: min(220, Double(model.objects.count) * 38))
                 }
                 if model.assignmentMode != .whole {
-                    Text("Ein LTT-Auftrag je Verfahren: Engrav → Eng3D → Mark → Cut").font(.caption).foregroundStyle(.secondary)
+                    Text(tr("Ein LTT-Auftrag je Verfahren: Engrav › Eng3D › Mark › Cut")).font(.caption).foregroundStyle(.secondary)
                 }
-                LabeledContent("Schnittreihenfolge") {
+                LabeledContent(tr("Schnittreihenfolge")) {
                     NativePopup(options: CutOrder.allCases.map { PopupOption($0.rawValue, $0.title) },
                         selection: Binding(get: { model.project.cut_order.rawValue }, set: {
                             if let order = CutOrder(rawValue: $0) { model.project.cut_order = order }
@@ -1053,30 +1152,30 @@ struct Inspector: View {
                         .fixedSize()
                 }
                 if model.project.cut_order == .shortestTravel {
-                    Text("Experimentell: Die Reihenfolge der Schnitt- und Markierpfade weicht von VisiCut ab und ist am Gerät nicht erprobt. Den Auftrag am Gerät beaufsichtigen.")
+                    Text(tr("Experimentell: Die Reihenfolge der Schnitt- und Markierpfade weicht von VisiCut ab und ist am Gerät nicht erprobt. Den Auftrag am Gerät beaufsichtigen."))
                         .font(.caption).foregroundStyle(.orange)
                 } else {
-                    Text("Innere Konturen zuerst, Reihenfolge wie VisiCut.").font(.caption).foregroundStyle(.secondary)
+                    Text(tr("Innere Konturen zuerst, Reihenfolge wie VisiCut.")).font(.caption).foregroundStyle(.secondary)
                 }
-                Toggle("Doppelte Linien entfernen", isOn: $model.project.remove_duplicate_lines)
-                    .help("Linien, die genau auf einer bereits geschnittenen Linie desselben Schritts liegen (z. B. gemeinsame Kanten), nur einmal schneiden")
+                Toggle(tr("Doppelte Linien entfernen"), isOn: $model.project.remove_duplicate_lines)
+                    .help(tr("Linien, die genau auf einer bereits geschnittenen Linie desselben Schritts liegen (z. B. gemeinsame Kanten), nur einmal schneiden"))
             }
             if model.assignmentMode == .rules { RulesSection(model: model) }
             if model.project.steps.isEmpty {
-            Section("Bearbeitung · gesamtes Motiv") {
+            Section(tr("Bearbeitung · gesamtes Motiv")) {
                 OperationSelector(selection: Binding(get: { model.project.operation }, set: { model.selectOperation($0) }))
                 if model.project.operation == .mark && model.preset == nil {
-                    Text("Konturen markieren. Eigene Leistung einstellen; kein Schnittprofil übernehmen.")
+                    Text(tr("Konturen markieren. Eigene Leistung einstellen; kein Schnittprofil übernehmen."))
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 if model.preset == nil {
-                    Text(model.project.material.isEmpty ? "Wähle ein Material, um sein Profil zu übernehmen." : "Für diese Kombination ist kein Profil hinterlegt. Parameter manuell eingeben.")
+                    Text(model.project.material.isEmpty ? tr("Material wählen, um sein Profil zu übernehmen.") : tr("Kein Profil für diese Kombination; Parameter manuell eingeben."))
                         .font(.callout).foregroundStyle(.secondary)
                 }
-                NumberField("Leistung", value: $model.project.power_percent, unit: "%", profile: model.preset?.power_percent)
-                NumberField("Geschwindigkeit", value: $model.project.speed_percent, unit: "%", profile: model.preset?.speed_percent)
+                NumberField(tr("Leistung"), value: $model.project.power_percent, unit: "%", profile: model.preset?.power_percent)
+                NumberField(tr("Geschwindigkeit"), value: $model.project.speed_percent, unit: "%", profile: model.preset?.speed_percent)
                 Stepper(value: $model.project.passes, in: 1...100) {
-                    LabeledContent("Durchgänge", value: String(model.project.passes))
+                    LabeledContent(tr("Durchgänge"), value: String(model.project.passes))
                 }
                 if model.project.operation.isRaster {
                     RasterOptions(settings: $model.project.raster, operation: model.project.operation)
@@ -1087,7 +1186,7 @@ struct Inspector: View {
                     StepInspector(model: model, index: index)
                 }
             }
-            Section("Position und Größe") {
+            Section(tr("Position und Größe")) {
                 HStack(alignment: .center, spacing: 12) {
                     ReferencePointPicker(x: $model.referenceX, y: $model.referenceY)
                     VStack(spacing: 6) {
@@ -1097,15 +1196,15 @@ struct Inspector: View {
                             set: { model.project.y_mm = $0 - model.project.height_mm * model.referenceY }), unit: "mm")
                     }
                 }
-                NumberField("Breite", value: Binding(get: { model.project.width_mm }, set: { model.changeWidth($0) }), unit: "mm")
-                NumberField("Höhe", value: Binding(get: { model.project.height_mm }, set: { model.changeHeight($0) }), unit: "mm")
-                Toggle("Seitenverhältnis beibehalten", isOn: $model.keepProportions)
+                NumberField(tr("Breite"), value: Binding(get: { model.project.width_mm }, set: { model.changeWidth($0) }), unit: "mm")
+                NumberField(tr("Höhe"), value: Binding(get: { model.project.height_mm }, set: { model.changeHeight($0) }), unit: "mm")
+                Toggle(tr("Seitenverhältnis beibehalten"), isOn: $model.keepProportions)
                 TransformControls(model: model)
             }
         }
         .formStyle(.grouped)
         .disabled(model.busy)
-        .navigationTitle("Job vorbereiten")
+        .navigationTitle(tr("Job vorbereiten"))
     }
 }
 
@@ -1135,13 +1234,13 @@ struct AssignmentMenu: View {
                 Button { selection = operation.rawValue } label: { Label(operation.title, systemImage: operation.symbol) }
             }
             Divider()
-            Button("Ignorieren", systemImage: "eye.slash") { selection = "Ignore" }
+            Button(tr("Ignorieren"), systemImage: "eye.slash") { selection = "Ignore" }
         } label: {
-            Label(operation?.title ?? "Ignorieren", systemImage: operation?.symbol ?? "eye.slash")
+            Label(operation?.title ?? tr("Ignorieren"), systemImage: operation?.symbol ?? "eye.slash")
                 .font(.callout).foregroundStyle(operation?.color ?? .secondary)
                 .padding(.horizontal, 8).padding(.vertical, 5)
                 .background((operation?.color ?? .gray).opacity(0.12), in: RoundedRectangle(cornerRadius: 6))
-        }.menuStyle(.borderlessButton).fixedSize().accessibilityLabel("Bearbeitung zuweisen")
+        }.menuStyle(.borderlessButton).fixedSize().accessibilityLabel(tr("Bearbeitung zuweisen"))
     }
 }
 
@@ -1166,12 +1265,12 @@ struct StepInspector: View {
                 Spacer()
                 if step.isRule {
                     Button { if model.project.steps.indices.contains(index) { model.project.steps.remove(at: index) } } label: { Image(systemName: "trash") }
-                        .buttonStyle(.borderless).help("Schritt entfernen")
+                        .buttonStyle(.borderless).help(tr("Schritt entfernen"))
                 }
             }
-            Text("\(model.objectCount(index)) Objekte").foregroundStyle(.secondary)
+            Text(tr("{count} Objekte", ["count": model.objectCount(index)])).foregroundStyle(.secondary)
             if step.isRule {
-                Toggle("Rest: alle übrigen Objekte", isOn: Binding(get: { step.rest }, set: {
+                Toggle(tr("Rest: alle übrigen Objekte"), isOn: Binding(get: { step.rest }, set: {
                     binding.wrappedValue.rest = $0
                     binding.wrappedValue.filters = $0 ? nil : []
                 }))
@@ -1183,12 +1282,12 @@ struct StepInspector: View {
             }
             let profile = model.stepPreset(step.operation)
             if step.operation == .mark && step.power_percent == 0 && profile == nil {
-                Text("Zum Markieren eine eigene Leistung einstellen.").font(.caption).foregroundStyle(.secondary)
+                Text(tr("Zum Markieren zuerst eine eigene Leistung einstellen.")).font(.caption).foregroundStyle(.secondary)
             }
-            NumberField("Leistung", value: binding.power_percent, unit: "%", profile: profile?.power_percent)
-            NumberField("Geschwindigkeit", value: binding.speed_percent, unit: "%", profile: profile?.speed_percent)
+            NumberField(tr("Leistung"), value: binding.power_percent, unit: "%", profile: profile?.power_percent)
+            NumberField(tr("Geschwindigkeit"), value: binding.speed_percent, unit: "%", profile: profile?.speed_percent)
             Stepper(value: binding.passes, in: 1...100) {
-                LabeledContent("Durchgänge", value: String(step.passes))
+                LabeledContent(tr("Durchgänge"), value: String(step.passes))
             }
             ParameterSets(sets: binding.additional,
                           first: ParameterSet(power_percent: step.power_percent, speed_percent: step.speed_percent, passes: step.passes))
@@ -1201,10 +1300,17 @@ struct StepInspector: View {
 
 struct JobPreview: View {
     @ObservedObject var model: AppModel
+    /// „Ca. 2 min 5 s · 1 Durchgänge · 2 Parametersätze“ für einen Schritt.
+    private func stepSummary(_ step: PreparedStep) -> String {
+        var summary = tr("Ca. {time}", ["time": duration(step.estimated_seconds)])
+            + " · " + tr("{count} Durchgänge", ["count": step.passes])
+        if step.parameter_sets > 1 { summary += " · " + tr("{count} Parametersätze", ["count": step.parameter_sets]) }
+        return summary
+    }
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Text("Auftragsvorschau").font(.title2).bold()
+                Text(tr("Auftragsvorschau")).font(.title2).bold()
                 Spacer()
                 Text(model.project.name).foregroundStyle(.secondary)
             }
@@ -1213,15 +1319,15 @@ struct JobPreview: View {
                     VStack {
                         JobSimulation(job: prepared, project: model.project, image: model.jobImage, playback: model.playback)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        Text("Rot: Schneiden · Blau: Gravieren · Orange: 3D-Gravur · Violett: Markieren")
+                        Text(tr("Rot: Schneiden · Blau: Gravieren · Orange: 3D-Gravur · Violett: Markieren"))
                             .font(.caption).foregroundStyle(.secondary)
                         Text("\(format(model.project.width_mm)) × \(format(model.project.height_mm)) mm · X \(format(model.project.x_mm)) / Y \(format(model.project.y_mm)) mm")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                     ScrollView {
                     VStack(alignment: .leading, spacing: 14) {
-                        Text("Ca. \(duration(prepared.estimated_seconds))").font(.title).monospacedDigit()
-                        Text("Geschätzte Bearbeitungszeit").foregroundStyle(.secondary)
+                        Text(tr("Ca. {time}", ["time": duration(prepared.estimated_seconds)])).font(.title).monospacedDigit()
+                        Text(tr("Geschätzte Bearbeitungszeit")).foregroundStyle(.secondary)
                         ForEach(prepared.warnings, id: \.self) { warning in
                             Label(warning, systemImage: "exclamationmark.triangle").font(.callout).foregroundStyle(.orange)
                         }
@@ -1231,26 +1337,26 @@ struct JobPreview: View {
                                 Label("\(index + 1). \(step.operation.title)", systemImage: step.operation.symbol)
                                     .bold().foregroundStyle(step.operation.color)
                                 Text(step.name).font(.caption).monospaced()
-                                Text("Ca. \(duration(step.estimated_seconds)) · \(step.passes) Durchgänge" + (step.parameter_sets > 1 ? " · \(step.parameter_sets) Parametersätze" : ""))
-                                Text("Leistung \(format(step.power_percent)) % · Tempo \(format(step.speed_percent)) %")
+                                Text(stepSummary(step))
+                                Text(tr("Leistung {power} % · Tempo {speed} %", ["power": format(step.power_percent), "speed": format(step.speed_percent)]))
                                 Text(step.description).foregroundStyle(.secondary)
                             }.font(.callout)
                         }
-                        Text("Schätzung aus Fahrwegen, Tempo und Durchgängen; bei Gravur mit Zeilenrücklauf und Overscan. Beschleunigung und Geräteeinstellungen können die tatsächliche Dauer verändern.")
+                        Text(tr("Schätzung aus Fahrwegen, Tempo und Durchgängen; bei Gravur mit Zeilenrücklauf und Overscan. Beschleunigung und Geräteeinstellungen können die tatsächliche Dauer verändern."))
                             .font(.caption).foregroundStyle(.secondary)
                         Text("\(ByteCountFormatter.string(fromByteCount: Int64(prepared.byteCount), countStyle: .file)) · \(model.project.hostname):\(String(model.project.port))")
                             .font(.caption).foregroundStyle(.secondary)
-                        Text("\(prepared.jobs.count) Einzelaufträge · Engrav → Eng3D → Mark → Cut").font(.caption).foregroundStyle(.secondary)
+                        Text(tr("{count} Einzelaufträge · Engrav → Eng3D → Mark → Cut", ["count": prepared.jobs.count])).font(.caption).foregroundStyle(.secondary)
                     }
                     }.frame(width: 270, alignment: .leading)
                 }
             }
             Divider()
             HStack {
-                Button("Schließen") { model.showJobPreview = false }.keyboardShortcut(.cancelAction)
+                Button(tr("Schließen")) { model.showJobPreview = false }.keyboardShortcut(.cancelAction)
                 Spacer()
-                Button("LTT exportieren …") { model.export() }.disabled(!model.sendEnabled)
-                Button("An Lasercutter senden …") { model.sendReviewedJob() }
+                Button(tr("LTT exportieren …")) { model.export() }.disabled(!model.sendEnabled)
+                Button(tr("An Lasercutter senden …")) { model.sendReviewedJob() }
                     .buttonStyle(.borderedProminent).disabled(!model.sendEnabled || model.preparedJob == nil)
             }
         }.padding(24).frame(width: 940, height: 640)
@@ -1331,7 +1437,7 @@ struct NumberField: View {
                 if deviates, let profile {
                     Button { value = profile } label: { Image(systemName: "arrow.clockwise") }
                         .buttonStyle(.borderless).foregroundStyle(.orange)
-                        .help("Auf den Profilwert \(format(profile)) \(unit) zurücksetzen")
+                        .help(tr("Auf den Profilwert {value} {unit} zurücksetzen", ["value": format(profile), "unit": unit]))
                 }
                 TextField(title, value: $value, format: .number.precision(.fractionLength(0...3)))
                     .multilineTextAlignment(.trailing).textFieldStyle(.roundedBorder)
@@ -1476,16 +1582,16 @@ final class BedView: NSView {
             entry.target = self
             menu.addItem(entry)
         }
-        item("Duplizieren", #selector(duplicateArtwork))
-        item("Kopien im Raster …", #selector(arrayCopies))
-        item("Teile verschachteln (Nesting) …", #selector(nestParts))
+        item(tr("Duplizieren"), #selector(duplicateArtwork))
+        item(tr("Kopien im Raster …"), #selector(arrayCopies))
+        item(tr("Teile verschachteln (Nesting) …"), #selector(nestParts))
         menu.addItem(.separator())
-        item("90° nach links drehen", #selector(rotateLeft))
-        item("90° nach rechts drehen", #selector(rotateRight))
-        item("Horizontal spiegeln", #selector(flipHorizontal))
-        item("Vertikal spiegeln", #selector(flipVertical))
+        item(tr("90° nach links drehen"), #selector(rotateLeft))
+        item(tr("90° nach rechts drehen"), #selector(rotateRight))
+        item(tr("Horizontal spiegeln"), #selector(flipHorizontal))
+        item(tr("Vertikal spiegeln"), #selector(flipVertical))
         menu.addItem(.separator())
-        item("Löschen", #selector(deleteArtwork))
+        item(tr("Löschen"), #selector(deleteArtwork))
         return menu
     }
     @objc func duplicateArtwork() { model.duplicateArtwork() }

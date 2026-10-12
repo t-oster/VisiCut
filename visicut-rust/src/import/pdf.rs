@@ -14,6 +14,7 @@
 mod ghostscript;
 
 use super::{Imported, eps};
+use crate::{i18n::tr, tr};
 use hayro_svg::hayro_interpret::{InterpreterSettings, InterpreterWarning};
 use hayro_svg::hayro_syntax::{LoadPdfError, Pdf, PdfData};
 use std::path::Path;
@@ -26,7 +27,8 @@ const MM_PER_PT: f32 = 25.4 / 72.0;
 const HAIRLINE_MM: f32 = 0.1;
 
 pub fn read_pdf(path: &Path) -> Result<Imported, String> {
-    let data = std::fs::read(path).map_err(|e| format!("PDF konnte nicht gelesen werden: {e}"))?;
+    let data = std::fs::read(path)
+        .map_err(|e| tr!("PDF konnte nicht gelesen werden: {error}", error = e))?;
     convert(data)
 }
 
@@ -34,13 +36,17 @@ pub fn read_pdf(path: &Path) -> Result<Imported, String> {
 /// file goes to Ghostscript; without Ghostscript the message names the
 /// operator that stopped the interpreter.
 pub fn read_postscript(path: &Path) -> Result<Imported, String> {
-    let data = std::fs::read(path)
-        .map_err(|e| format!("EPS/PS-Datei konnte nicht gelesen werden: {e}"))?;
+    let data = std::fs::read(path).map_err(|e| {
+        tr!(
+            "EPS/PS-Datei konnte nicht gelesen werden: {error}",
+            error = e
+        )
+    })?;
     match eps::interpret(&data) {
         Ok(imported) => Ok(imported),
         Err(reason) => {
             if ghostscript::find().is_none() {
-                return Err(format!("{reason}. {}", ghostscript::MISSING));
+                return Err(format!("{reason}. {}", ghostscript::missing()));
             }
             convert(ghostscript::to_pdf(path)?)
         }
@@ -50,23 +56,25 @@ pub fn read_postscript(path: &Path) -> Result<Imported, String> {
 /// Converts the first page of a PDF document into an SVG sized in millimetres.
 fn convert(data: Vec<u8>) -> Result<Imported, String> {
     if !data.starts_with(b"%PDF") && !data.windows(5).take(1024).any(|w| w == b"%PDF-") {
-        return Err("Datei ist keine gültige PDF-Datei".into());
+        return Err(tr("Datei ist keine gültige PDF-Datei").into());
     }
     // hayro does not use unsafe code but may still panic on malformed input;
     // a broken file must not take the whole application down.
     std::panic::catch_unwind(move || convert_unchecked(data))
-        .unwrap_or_else(|_| Err("PDF ist beschädigt und konnte nicht gelesen werden".into()))
+        .unwrap_or_else(|_| Err(tr("PDF ist beschädigt und konnte nicht gelesen werden").into()))
 }
 
 fn convert_unchecked(data: Vec<u8>) -> Result<Imported, String> {
     let pdf = Pdf::new(PdfData::from(data)).map_err(|e| match e {
-        LoadPdfError::Decryption(_) => "PDF ist verschlüsselt oder passwortgeschützt; \
-            bitte eine ungeschützte Kopie speichern"
-            .to_string(),
-        LoadPdfError::Invalid => "PDF ist beschädigt und konnte nicht gelesen werden".to_string(),
+        LoadPdfError::Decryption(_) => tr("PDF ist verschlüsselt oder passwortgeschützt; \
+            bitte eine ungeschützte Kopie speichern")
+        .to_string(),
+        LoadPdfError::Invalid => {
+            tr("PDF ist beschädigt und konnte nicht gelesen werden").to_string()
+        }
     })?;
     let pages = pdf.pages();
-    let page = pages.first().ok_or("PDF enthält keine Seiten")?;
+    let page = pages.first().ok_or(tr("PDF enthält keine Seiten"))?;
 
     let problems = Arc::new(Mutex::new(Vec::new()));
     let sink = problems.clone();
@@ -84,14 +92,14 @@ fn convert_unchecked(data: Vec<u8>) -> Result<Imported, String> {
     let (width_pt, height_pt) = page.render_dimensions();
     let svg = postprocess(&svg, width_pt, height_pt)?;
     if svg.len() > crate::svg_import::MAX_SVG_BYTES {
-        return Err("PDF-Seite ist zu komplex (SVG größer als 20 MB)".into());
+        return Err(tr("PDF-Seite ist zu komplex (SVG größer als 20 MB)").into());
     }
 
     let mut warnings = Vec::new();
     if pages.len() > 1 {
-        warnings.push(format!(
-            "PDF enthält {} Seiten; nur Seite 1 wurde importiert",
-            pages.len()
+        warnings.push(tr!(
+            "PDF enthält {count} Seiten; nur Seite 1 wurde importiert",
+            count = pages.len()
         ));
     }
     let problems = problems.lock().map(|list| list.clone()).unwrap_or_default();
@@ -99,21 +107,24 @@ fn convert_unchecked(data: Vec<u8>) -> Result<Imported, String> {
         .iter()
         .any(|p| matches!(p, InterpreterWarning::UnsupportedFont))
     {
-        warnings.push("PDF enthält eine nicht unterstützte Schrift; Text fehlt eventuell".into());
+        warnings
+            .push(tr("PDF enthält eine nicht unterstützte Schrift; Text fehlt eventuell").into());
     }
     if problems
         .iter()
         .any(|p| matches!(p, InterpreterWarning::ImageDecodeFailure))
     {
-        warnings.push("Ein Bild im PDF konnte nicht dekodiert werden und fehlt".into());
+        warnings.push(tr("Ein Bild im PDF konnte nicht dekodiert werden und fehlt").into());
     }
     // Clip paths are cut as the intersection of the outlines (see
     // `geometry::contours`); masks cannot be cut.
     if svg.contains("mask=\"url(") {
         warnings.push(
-            "PDF enthält Masken; Masken lassen sich nicht schneiden, zum Schneiden \
-             vorher in echte Pfade umwandeln"
-                .into(),
+            tr(
+                "PDF enthält Masken; Masken lassen sich nicht schneiden, zum Schneiden \
+                vorher in echte Pfade umwandeln",
+            )
+            .into(),
         );
     }
     Ok(Imported {
@@ -130,12 +141,12 @@ fn convert_unchecked(data: Vec<u8>) -> Result<Imported, String> {
 /// millimetres while the viewBox stays in points.
 fn postprocess(svg: &str, width_pt: f32, height_pt: f32) -> Result<String, String> {
     let document = roxmltree::Document::parse(svg)
-        .map_err(|e| format!("PDF konnte nicht umgewandelt werden: {e}"))?;
+        .map_err(|e| tr!("PDF konnte nicht umgewandelt werden: {error}", error = e))?;
     let root = document.root_element();
     let body_start = svg[root.range()]
         .find('>')
         .map(|i| root.range().start + i + 1)
-        .ok_or("PDF konnte nicht umgewandelt werden")?;
+        .ok_or(tr("PDF konnte nicht umgewandelt werden"))?;
     let mut out = String::with_capacity(svg.len() + 128);
     out.push_str(&format!(
         "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" \

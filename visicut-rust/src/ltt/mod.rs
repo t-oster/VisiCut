@@ -6,9 +6,11 @@ mod vector;
 
 use crate::{
     geometry,
+    i18n::tr,
     project::{CutOrder, MachineSettings, Operation, ParameterSet, Project},
     raster::{Raster, RasterSettings},
     timeline::{MotionKind, Program, Timeline},
+    tr,
 };
 use resvg::{tiny_skia, usvg};
 use std::{
@@ -167,15 +169,15 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
     if (project.bed_width_mm - BED_WIDTH as f32).abs() > 0.01
         || (project.bed_height_mm - BED_HEIGHT as f32).abs() > 0.01
     {
-        return Err("Das FAU-LTT-Profil benötigt ein Arbeitsbett von 1000 × 600 mm".into());
+        return Err(tr("Das FAU-LTT-Profil benötigt ein Arbeitsbett von 1000 × 600 mm").into());
     }
     if project.rotary_axis
         && project.height_mm > std::f32::consts::PI * project.rotary_diameter_mm + 0.001
     {
-        return Err(format!(
-            "Motiv ist höher als der Umfang des Werkstücks ({:.1} mm bei {:.1} mm Durchmesser)",
-            std::f32::consts::PI * project.rotary_diameter_mm,
-            project.rotary_diameter_mm
+        return Err(tr!(
+            "Motiv ist höher als der Umfang des Werkstücks ({circumference} mm bei {diameter} mm Durchmesser)",
+            circumference = format!("{:.1}", std::f32::consts::PI * project.rotary_diameter_mm),
+            diameter = format!("{:.1}", project.rotary_diameter_mm)
         ));
     }
     let mut parts = Vec::new();
@@ -207,7 +209,7 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
         }
     }
     if parts.is_empty() {
-        return Err("Keine Objekte zur Bearbeitung ausgewählt".into());
+        return Err(tr("Keine Objekte zur Bearbeitung ausgewählt").into());
     }
     let mut jobs = Vec::new();
     let mut total_bytes: usize = 0;
@@ -216,7 +218,7 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
         (project.width_mm * scale).ceil().max(1.0) as u32,
         (project.height_mm * scale).ceil().max(1.0) as u32,
     )
-    .ok_or("Vorschau konnte nicht erstellt werden")?;
+    .ok_or(tr("Vorschau konnte nicht erstellt werden"))?;
     let mut steps = Vec::new();
     let mut timeline = Timeline::default();
     let mut warnings = Vec::new();
@@ -232,29 +234,32 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
         let left = project.width_mm / 2.0 + overscan.min(project.x_mm);
         let right = project.width_mm / 2.0
             + overscan.min(BED_WIDTH as f32 - project.x_mm - project.width_mm);
-        warnings.push(format!(
+        warnings.push(tr!(
             "Rotationseinheit aktiv: Am Gerät mit „Adjust rotary temp“ die Mitte der Gravur einstellen. \
-             Der Laserkopf muss {left:.0} mm nach links und {right:.0} mm nach rechts \
-             kollisionsfrei fahren können (inklusive Bremsweg)."
+             Der Laserkopf muss {left} mm nach links und {right} mm nach rechts \
+             kollisionsfrei fahren können (inklusive Bremsweg).",
+            left = format!("{left:.0}"),
+            right = format!("{right:.0}")
         ));
     }
     if project.cut_order == CutOrder::ShortestTravel
         && parts.iter().any(|p| !p.operation.is_raster())
     {
         warnings.push(
-            "Experimentelle Schnittreihenfolge „Kürzeste Leerfahrten“: weicht von VisiCut ab und ist am Gerät nicht erprobt; den ersten Auftrag beaufsichtigen"
+            tr("Experimentelle Schnittreihenfolge „Kürzeste Leerfahrten“: weicht von VisiCut ab und ist am Gerät nicht erprobt; den ersten Auftrag beaufsichtigen")
                 .into(),
         );
     }
     if project.machine.experimental_curves() && parts.iter().any(|p| !p.operation.is_raster()) {
-        warnings.push(format!(
-            "Experimentelle Kurvenbeschleunigung {:.0} mm/s² (LibLaserCut: 2000): Kurven und Kreise werden anders geplant als in VisiCut; den ersten Auftrag beaufsichtigen",
-            project.machine.curve_acceleration_mm_s2
+        warnings.push(tr!(
+            "Experimentelle Kurvenbeschleunigung {acceleration} mm/s² (LibLaserCut: 2000): Kurven und Kreise werden anders geplant als in VisiCut; den ersten Auftrag beaufsichtigen",
+            acceleration = format!("{:.0}", project.machine.curve_acceleration_mm_s2)
         ));
     }
     if project.steps.iter().any(|s| s.engrave_shift_px != 0) {
         warnings.push(
-            "Zeilenversatz-Testmuster: einzelne Schritte haben einen zusätzlichen Versatz".into(),
+            tr("Zeilenversatz-Testmuster: einzelne Schritte haben einen zusätzlichen Versatz")
+                .into(),
         );
     }
     // Finishing operations first, cutting last; one LTT file per operation
@@ -294,7 +299,7 @@ pub fn prepare(project: &Project) -> Result<PreparedJob, String> {
         finish(&mut out)?;
         total_bytes = total_bytes.saturating_add(out.len());
         if total_bytes > 256 * 1024 * 1024 {
-            return Err("Gesamtauftrag ist größer als 256 MB".into());
+            return Err(tr("Gesamtauftrag ist größer als 256 MB").into());
         }
         jobs.push(OutputJob {
             name,
@@ -336,7 +341,7 @@ fn finish(out: &mut Vec<u8>) -> Result<(), String> {
     let checksum = out
         .iter()
         .fold(0u16, |sum, byte| sum.wrapping_add(*byte as u16));
-    let length = u32::try_from(out.len() + 6).map_err(|_| "Job ist zu groß")?;
+    let length = u32::try_from(out.len() + 6).map_err(|_| tr("Job ist zu groß"))?;
     word(out, checksum);
     dword(out, length);
     Ok(())
@@ -388,7 +393,7 @@ fn append_part(
     timeline: &mut Timeline,
 ) -> Result<(PreparedStep, Bounds), String> {
     if part.sets.iter().any(|s| s.power_percent < 0.1) {
-        return Err("Leistung für einen LTT-Job muss mindestens 0,1 % sein".into());
+        return Err(tr("Leistung für einen LTT-Job muss mindestens 0,1 % sein").into());
     }
     let mut source = project.clone();
     source.svg = part.svg.clone();
@@ -409,7 +414,7 @@ fn append_part(
             };
             if paths.is_empty() {
                 return Err(
-                    "Nach dem Entfernen doppelter Linien bleibt nichts zu schneiden".into(),
+                    tr("Nach dem Entfernen doppelter Linien bleibt nichts zu schneiden").into(),
                 );
             }
             let passes: usize = part.sets.iter().map(|s| s.passes as usize).sum();
@@ -420,7 +425,7 @@ fn append_part(
                 .saturating_mul(passes)
                 .saturating_mul(12);
             if estimated_bytes > 256 * 1024 * 1024 {
-                return Err("Vektorjob ist größer als 256 MB".into());
+                return Err(tr("Vektorjob ist größer als 256 MB").into());
             }
             draw_contours(preview, project, &paths, part.operation);
             for point in paths.iter().flatten() {
@@ -432,7 +437,7 @@ fn append_part(
                     || point[1] > BED_HEIGHT
                 {
                     return Err(
-                        "SVG-Pfad liegt außerhalb des tatsächlichen LTT-Arbeitsbetts".into(),
+                        tr("SVG-Pfad liegt außerhalb des tatsächlichen LTT-Arbeitsbetts").into(),
                     );
                 }
             }
@@ -482,13 +487,13 @@ fn append_part(
                     .flat_map(|(start, moves)| std::iter::once(start).chain(moves))
                     .map(|p| [p[0] / RASTER_DPI * 25.4, p[1] / RASTER_DPI * 25.4]),
             )
-            .ok_or("Keine Vektorpfade zum Bearbeiten")?;
+            .ok_or(tr("Keine Vektorpfade zum Bearbeiten"))?;
             let ordered = order::inner_first(elements, &keys);
             let ordered = match project.cut_order {
                 CutOrder::VisiCut => ordered,
                 CutOrder::ShortestTravel => order::shortest_travel(ordered).unwrap_or_else(|o| {
                     warnings.push(
-                        "Zu viele Vektorpfade für „Kürzeste Leerfahrten“; dieser Schritt nutzt die VisiCut-Reihenfolge"
+                        tr("Zu viele Vektorpfade für „Kürzeste Leerfahrten“; dieser Schritt nutzt die VisiCut-Reihenfolge")
                             .into(),
                     );
                     o
@@ -531,18 +536,25 @@ fn append_part(
             // Passes are interleaved per path like in Java, so the timeline
             // holds the whole sequence once.
             estimated += timeline.append(program, 1);
-            let mut text = format!(
-                "{} Vektorpfade · {} Durchgänge",
-                paths.len(),
-                part.sets[0].passes
+            let mut text = tr!(
+                "{paths} Vektorpfade · {passes} Durchgänge",
+                paths = paths.len(),
+                passes = part.sets[0].passes
             );
             if circles + curves > 0 {
-                text += &format!(" · {circles} Kreisbefehle · {curves} Kurven");
+                text += " · ";
+                text += &tr!(
+                    "{circles} Kreisbefehle · {curves} Kurven",
+                    circles = circles,
+                    curves = curves
+                );
             }
             if duplicates.pieces > 0 {
-                text += &format!(
-                    " · {} doppelte Abschnitte ({:.0} mm) entfernt",
-                    duplicates.pieces, duplicates.length_mm
+                text += " · ";
+                text += &tr!(
+                    "{pieces} doppelte Abschnitte ({length} mm) entfernt",
+                    pieces = duplicates.pieces,
+                    length = format!("{:.0}", duplicates.length_mm)
                 );
             }
             description = text;
@@ -594,21 +606,22 @@ fn append_part(
                 estimated += timeline.append(program, set.passes);
             }
             if lines == 0 {
-                return Err("SVG enthält keine dunklen Gravurpixel".into());
+                return Err(tr("SVG enthält keine dunklen Gravurpixel").into());
             }
-            description = format!(
-                "{lines} Gravurzeilen · 500 DPI · {} · {} · {} Durchgänge",
-                if part.operation == Operation::Engrave3d {
-                    "Graustufen (3D)"
+            description = tr!(
+                "{lines} Gravurzeilen · 500 DPI · {dithering} · {direction} · {passes} Durchgänge",
+                lines = lines,
+                dithering = if part.operation == Operation::Engrave3d {
+                    tr("Graustufen (3D)")
                 } else {
                     part.raster.dithering.title()
                 },
-                if part.raster.bidirectional {
-                    "bidirektional"
+                direction = if part.raster.bidirectional {
+                    tr("bidirektional")
                 } else {
-                    "einseitig"
+                    tr("einseitig")
                 },
-                part.sets[0].passes
+                passes = part.sets[0].passes
             );
         }
     }
@@ -684,7 +697,7 @@ fn operation_color(operation: Operation) -> [u8; 3] {
 /// Engraved pixels in the operation colour, opacity = laser power.
 fn raster_pixmap(raster: &Raster, color: [u8; 3]) -> Result<tiny_skia::Pixmap, String> {
     let mut mask = tiny_skia::Pixmap::new(raster.width.max(1) as u32, raster.height.max(1) as u32)
-        .ok_or("Gravurvorschau konnte nicht erstellt werden")?;
+        .ok_or(tr("Gravurvorschau konnte nicht erstellt werden"))?;
     let width = raster.width;
     for (i, pixel) in mask.data_mut().chunks_exact_mut(4).enumerate() {
         let a = raster.intensity(i % width, i / width) as u32;
@@ -738,7 +751,7 @@ fn raster_preview(raster: &Raster, color: [u8; 3]) -> Result<Vec<u8>, String> {
         ((mask.width() as f32 * scale).ceil() as u32).max(1),
         ((mask.height() as f32 * scale).ceil() as u32).max(1),
     )
-    .ok_or("Gravurvorschau konnte nicht erstellt werden")?;
+    .ok_or(tr("Gravurvorschau konnte nicht erstellt werden"))?;
     let paint = tiny_skia::PixmapPaint {
         quality: tiny_skia::FilterQuality::Bilinear,
         ..Default::default()
@@ -880,7 +893,7 @@ fn render_raster(
     let f = geometry::PX_PER_MM;
     let to_px_x = |u: f32| (sx * f64::from(u) + f64::from(project.x_mm)) * f;
     let to_px_y = |u: f32| (sy * f64::from(u) + f64::from(project.y_mm)) * f;
-    let bbox = content_bounds(tree.root()).ok_or("SVG enthält keine dunklen Gravurpixel")?;
+    let bbox = content_bounds(tree.root()).ok_or(tr("SVG enthält keine dunklen Gravurpixel"))?;
     let (x0, y0) = (to_px_x(bbox.left()), to_px_y(bbox.top()));
     let (x1, y1) = (to_px_x(bbox.right()), to_px_y(bbox.bottom()));
     let area = RasterArea {
@@ -889,13 +902,13 @@ fn render_raster(
     };
     let (width, height) = ((x1 - x0) as i32, (y1 - y0) as i32);
     if width <= 0 || height <= 0 {
-        return Err("SVG enthält keine dunklen Gravurpixel".into());
+        return Err(tr("SVG enthält keine dunklen Gravurpixel").into());
     }
     if width as u64 * height as u64 > 40_000_000 {
-        return Err("Gravur ist größer als 40 Millionen Pixel; Motiv verkleinern".into());
+        return Err(tr("Gravur ist größer als 40 Millionen Pixel; Motiv verkleinern").into());
     }
     let mut pixmap = tiny_skia::Pixmap::new(width as u32, height as u32)
-        .ok_or("Gravur konnte nicht gerendert werden")?;
+        .ok_or(tr("Gravur konnte nicht gerendert werden"))?;
     pixmap.fill(tiny_skia::Color::WHITE);
     // translate(-bb) · mm2laserPx · (translate(x, y) · scale(document → mm))
     resvg::render(
@@ -1008,9 +1021,10 @@ fn raster_code(
         data.resize(data.len() + right_bytes, 0);
         let pixels = data.len() as i32 * per_byte;
         if start_x < spare || start_x + pixels > max_x - spare {
-            return Err(
-                "Gravur zu nahe am Bettrand; bitte Motiv weiter nach innen verschieben".into(),
-            );
+            return Err(tr(
+                "Gravur zu nahe am Bettrand; bitte Motiv weiter nach innen verschieben",
+            )
+            .into());
         }
         let row_mm = (origin_y + y as i32) as f64 * 25.4 / RASTER_DPI;
         let left_mm = start_x as f64 * 25.4 / RASTER_DPI;
@@ -1055,7 +1069,7 @@ fn raster_code(
         }
     }
     if encoded.len().saturating_mul(set.passes as usize) > 256 * 1024 * 1024 {
-        return Err("Gravurjob ist größer als 256 MB".into());
+        return Err(tr("Gravurjob ist größer als 256 MB").into());
     }
     Ok((encoded, count))
 }
@@ -1123,12 +1137,12 @@ fn transmit_jobs_with(
     let mut sent = Vec::new();
     for job in jobs {
         if let Err(error) = send(&job.bytes) {
-            return Err(format!(
-                "Übertragung von {} fehlgeschlagen: {}\nBereits übertragen: {}. Dieser Job kann teilweise am Gerät liegen. Weitere Aufträge wurden nicht gesendet; vor erneutem Senden Gerätespeicher prüfen.",
-                job.name,
-                error,
-                if sent.is_empty() {
-                    "keine".into()
+            return Err(tr!(
+                "Übertragung von {job} fehlgeschlagen: {error}\nBereits übertragen: {sent}. Dieser Job kann teilweise am Gerät liegen. Weitere Aufträge wurden nicht gesendet; vor erneutem Senden Gerätespeicher prüfen.",
+                job = job.name,
+                error = error,
+                sent = if sent.is_empty() {
+                    tr("keine").to_string()
                 } else {
                     sent.join(", ")
                 }
@@ -1141,11 +1155,11 @@ fn transmit_jobs_with(
 
 pub fn transmit(host: &str, port: u16, bytes: &[u8]) -> Result<(), String> {
     if host.trim().is_empty() || port == 0 {
-        return Err("Hostname und Port müssen gesetzt sein".into());
+        return Err(tr("Hostname und Port müssen gesetzt sein").into());
     }
     let addresses: Vec<_> = (host, port)
         .to_socket_addrs()
-        .map_err(|e| format!("Hostname nicht erreichbar: {e}"))?
+        .map_err(|e| tr!("Hostname nicht erreichbar: {error}", error = e))?
         .collect();
     let mut connection = None;
     for address in addresses {
@@ -1154,13 +1168,16 @@ pub fn transmit(host: &str, port: u16, bytes: &[u8]) -> Result<(), String> {
             break;
         }
     }
-    let mut stream = connection.ok_or("Keine Verbindung zum LTT möglich")?;
+    let mut stream = connection.ok_or(tr("Keine Verbindung zum LTT möglich"))?;
     stream
         .set_write_timeout(Some(Duration::from_secs(10)))
         .map_err(|e| e.to_string())?;
-    stream
-        .write_all(bytes)
-        .map_err(|e| format!("Übertragung fehlgeschlagen; Teiljob könnte am Gerät liegen: {e}"))?;
+    stream.write_all(bytes).map_err(|e| {
+        tr!(
+            "Übertragung fehlgeschlagen; Teiljob könnte am Gerät liegen: {error}",
+            error = e
+        )
+    })?;
     stream.flush().map_err(|e| e.to_string())?;
     stream
         .shutdown(Shutdown::Write)

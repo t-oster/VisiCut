@@ -6,9 +6,11 @@ use eframe::egui::{self, Color32, Pos2, Rect, Stroke, Vec2};
 use std::hash::Hasher;
 use std::sync::mpsc::{Receiver, TryRecvError};
 use visicut_core::{
+    i18n::tr,
     ltt::{self, PreparedJob},
     project::{Operation, Project},
     timeline::{MotionKind, Program, Timeline},
+    tr,
 };
 
 /// What the main window should do after the preview dialog was drawn.
@@ -118,7 +120,7 @@ impl PreviewUi {
             fingerprint: current,
             receiver,
         };
-        *status = "Auftragsvorschau und Bearbeitungszeit werden berechnet …".into();
+        *status = tr("Auftragsvorschau und Bearbeitungszeit werden berechnet …").into();
     }
 
     /// Toolbar entry: compute button, estimate and the processing toggle.
@@ -127,9 +129,11 @@ impl PreviewUi {
         if ui
             .add_enabled(
                 !computing && !project.svg.is_empty(),
-                egui::Button::new("Vorschau & Zeit …"),
+                egui::Button::new(tr("👁 Vorschau & Zeit berechnen")),
             )
-            .on_hover_text("Auftragsvorschau, Zeitschätzung und Simulation (Strg/⌘+Umschalt+P)")
+            .on_hover_text(tr(
+                "Auftragsvorschau, Zeitschätzung und Simulation (Strg/⌘+Umschalt+P)",
+            ))
             .clicked()
         {
             self.request(ui.ctx(), project, status);
@@ -139,14 +143,29 @@ impl PreviewUi {
                 ui.spinner();
             }
             State::Ready { ready, .. } => {
-                ui.label(format!("Ca. {}", duration(ready.job.estimated_seconds)));
-                ui.checkbox(&mut self.show_processing, "Bearbeitung anzeigen")
-                    .on_hover_text("Rot: Schnitt · Blau: Gravur · Orange: 3D · Violett: Markieren");
+                ui.label(tr!(
+                    "Ca. {time}",
+                    time = duration(ready.job.estimated_seconds)
+                ));
+                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                    ui.label(
+                        egui::RichText::new(tr(
+                            "Rot: Schnitt · Blau: Gravur · Orange: 3D · Violett: Markieren",
+                        ))
+                        .size(11.5)
+                        .color(Color32::from_gray(95)),
+                    );
+                    ui.checkbox(&mut self.show_processing, tr("Bearbeitung anzeigen"));
+                });
             }
-            State::Stale => {
-                ui.small("Nach Änderungen neu berechnen");
+            State::Idle | State::Stale => {
+                ui.label(
+                    egui::RichText::new(tr("Nach Änderungen neu berechnen"))
+                        .size(11.5)
+                        .color(Color32::from_gray(95)),
+                );
             }
-            State::Idle | State::Failed { .. } => {}
+            State::Failed { .. } => {}
         }
     }
 
@@ -187,7 +206,8 @@ impl PreviewUi {
         let mut open = self.open;
         let mut action = None;
         let mut recompute = false;
-        egui::Window::new("Vorschau & Zeit")
+        egui::Window::new(tr("Vorschau & Zeit"))
+            .id(egui::Id::new("preview_window"))
             .open(&mut open)
             .default_size([920.0, 640.0])
             .resizable(true)
@@ -196,21 +216,23 @@ impl PreviewUi {
                 egui::ScrollArea::vertical().show(ui, |ui| match &self.state {
                     State::Idle | State::Stale => {
                         ui.label(if matches!(self.state, State::Stale) {
-                            "Auftrag geändert. Vorschau und Zeit neu berechnen."
+                            tr("Auftrag geändert. Vorschau und Zeit neu berechnen.")
                         } else {
-                            "Noch keine Vorschau berechnet."
+                            tr("Noch keine Vorschau berechnet.")
                         });
-                        recompute = ui.button("Vorschau & Zeit berechnen").clicked();
+                        recompute = ui.button(tr("Vorschau & Zeit berechnen")).clicked();
                     }
                     State::Computing { .. } => {
                         ui.horizontal(|ui| {
                             ui.spinner();
-                            ui.label("Auftragsvorschau und Bearbeitungszeit werden berechnet …");
+                            ui.label(tr(
+                                "Auftragsvorschau und Bearbeitungszeit werden berechnet …",
+                            ));
                         });
                     }
                     State::Failed { error, .. } => {
                         ui.colored_label(WARNING, format!("⚠ {error}"));
-                        recompute = ui.button("Erneut versuchen").clicked();
+                        recompute = ui.button(tr("Erneut versuchen")).clicked();
                     }
                     State::Ready { ready, .. } => {
                         action = dialog(ui, ready, project, &mut self.playback, send_enabled);
@@ -245,9 +267,9 @@ impl PreviewUi {
         match receiver.try_recv() {
             Ok(Ok(computed)) => {
                 let ready = upload(ctx, computed);
-                *status = format!(
-                    "Geschätzte Bearbeitungszeit: ca. {}",
-                    duration(ready.job.estimated_seconds)
+                *status = tr!(
+                    "Geschätzte Bearbeitungszeit: ca. {time}",
+                    time = duration(ready.job.estimated_seconds)
                 );
                 self.playback.seek(0.0, ready.job.estimated_seconds);
                 self.state = State::Ready {
@@ -256,14 +278,14 @@ impl PreviewUi {
                 };
             }
             Ok(Err(error)) => {
-                *status = "Auftrag konnte nicht vorbereitet werden.".into();
+                *status = tr("Auftrag konnte nicht vorbereitet werden.").into();
                 self.state = State::Failed { fingerprint, error };
             }
             Err(TryRecvError::Disconnected) => {
-                *status = "Vorschauberechnung unerwartet abgebrochen.".into();
+                *status = tr("Vorschauberechnung unerwartet abgebrochen.").into();
                 self.state = State::Failed {
                     fingerprint,
-                    error: "Vorschauberechnung unerwartet abgebrochen".into(),
+                    error: tr("Vorschauberechnung unerwartet abgebrochen").into(),
                 };
             }
             Err(TryRecvError::Empty) => {
@@ -292,7 +314,7 @@ impl PreviewUi {
         if matches!(self.state, State::Failed { .. }) {
             self.state = State::Idle;
         } else {
-            *status = "Auftrag geändert. Vorschau und Zeit neu berechnen.".into();
+            *status = tr("Auftrag geändert. Vorschau und Zeit neu berechnen.").into();
             self.state = State::Stale;
         }
         self.playback.seek(0.0, 0.0);
@@ -629,7 +651,8 @@ impl Playback {
 
 const WARNING: Color32 = Color32::from_rgb(196, 98, 16);
 
-fn operation_color(operation: Operation) -> Color32 {
+/// Farbe je Verfahren (Vorschau, Legende und Seitenleiste).
+pub fn operation_color(operation: Operation) -> Color32 {
     match operation {
         Operation::Cut => Color32::from_rgb(220, 52, 52),
         Operation::Engrave => Color32::from_rgb(35, 113, 210),
@@ -640,11 +663,11 @@ fn operation_color(operation: Operation) -> Color32 {
 
 fn kind_title(kind: MotionKind) -> &'static str {
     match kind {
-        MotionKind::Travel => "Leerfahrt · Laser aus",
-        MotionKind::Cut => "Schneiden",
-        MotionKind::Mark => "Markieren",
-        MotionKind::Raster => "Gravurzeile",
-        MotionKind::Dwell => "Zeilenwechsel · Laser aus",
+        MotionKind::Travel => tr("Leerfahrt · Laser aus"),
+        MotionKind::Cut => tr("Schneiden"),
+        MotionKind::Mark => tr("Markieren"),
+        MotionKind::Raster => tr("Gravurzeile"),
+        MotionKind::Dwell => tr("Zeilenwechsel · Laser aus"),
     }
 }
 
@@ -701,20 +724,21 @@ fn dialog(
     let job = &ready.job;
     let mut action = None;
     ui.horizontal(|ui| {
-        ui.heading(format!("Ca. {}", duration(job.estimated_seconds)));
-        ui.label("geschätzte Bearbeitungszeit");
+        ui.heading(tr!("Ca. {time}", time = duration(job.estimated_seconds)));
+        ui.label(tr("geschätzte Bearbeitungszeit"));
     });
-    ui.label(format!(
-        "{} · {} Einzelaufträge ({}) · {}:{}",
-        bytes(ready.bytes),
-        job.jobs.len(),
-        job.jobs
+    ui.label(tr!(
+        "{size} · {count} Einzelaufträge ({jobs}) · {host}:{port}",
+        size = bytes(ready.bytes),
+        count = job.jobs.len(),
+        jobs = job
+            .jobs
             .iter()
             .map(|j| j.name.as_str())
             .collect::<Vec<_>>()
-            .join(" → "),
-        project.hostname,
-        project.port
+            .join(" › "),
+        host = project.hostname,
+        port = project.port
     ));
     for warning in &job.warnings {
         egui::Frame::group(ui.style())
@@ -726,20 +750,20 @@ fn dialog(
     ui.add_space(6.0);
     simulation(ui, ready, project, playback);
     ui.add_space(6.0);
-    ui.label(egui::RichText::new("SCHRITTE").strong().small());
+    ui.label(egui::RichText::new(tr("SCHRITTE")).strong().small());
     egui::Grid::new("preview_steps")
         .striped(true)
         .num_columns(8)
         .show(ui, |ui| {
             for title in [
                 "#",
-                "Name",
-                "Verfahren",
-                "Leistung",
-                "Tempo",
-                "Durchgänge",
-                "Parametersätze",
-                "Zeit",
+                tr("Name"),
+                tr("Verfahren"),
+                tr("Leistung"),
+                tr("Tempo"),
+                tr("Durchgänge"),
+                tr("Parametersätze"),
+                tr("Zeit"),
             ] {
                 ui.strong(title);
             }
@@ -755,24 +779,27 @@ fn dialog(
                 ui.label(format!("{} %", decimal(step.speed_percent as f64)));
                 ui.label(step.passes.to_string());
                 ui.label(step.parameter_sets.to_string());
-                ui.label(format!("ca. {}", duration(step.estimated_seconds)));
+                ui.label(tr!("ca. {time}", time = duration(step.estimated_seconds)));
                 ui.end_row();
             }
         });
     for (index, step) in job.steps.iter().enumerate() {
         ui.small(format!("{}. {}", index + 1, step.description));
     }
-    ui.small(
+    ui.small(tr(
         "Schätzung aus Fahrwegen, Tempo und Durchgängen; bei Gravur mit Zeilenrücklauf und \
          Overscan. Beschleunigung und Geräteeinstellungen können die tatsächliche Dauer verändern.",
-    );
+    ));
     ui.separator();
     ui.horizontal(|ui| {
-        if ui.button("LTT exportieren …").clicked() {
+        if ui.button(tr("LTT exportieren …")).clicked() {
             action = Some(Action::Export);
         }
         if ui
-            .add_enabled(send_enabled, egui::Button::new("An Lasercutter senden …"))
+            .add_enabled(
+                send_enabled,
+                egui::Button::new(tr("An Lasercutter senden …")),
+            )
             .clicked()
         {
             action = Some(Action::Send);
@@ -800,18 +827,18 @@ fn simulation(ui: &mut egui::Ui, ready: &Ready, project: &Project, playback: &mu
     );
     ui.horizontal(|ui| {
         let now = ui.input(|i| i.time);
-        if ui.button("⏮").on_hover_text("Zum Anfang").clicked() {
+        if ui.button("⏮").on_hover_text(tr("Zum Anfang")).clicked() {
             playback.seek(0.0, total);
         }
         let label = if playback.playing { "⏸" } else { "⏵" };
         if ui
             .add_enabled(total > 0.0, egui::Button::new(label))
-            .on_hover_text("Simulation abspielen oder pausieren")
+            .on_hover_text(tr("Simulation abspielen oder pausieren"))
             .clicked()
         {
             playback.toggle(total, now);
         }
-        if ui.button("⏭").on_hover_text("Zum Ende").clicked() {
+        if ui.button("⏭").on_hover_text(tr("Zum Ende")).clicked() {
             playback.seek(total, total);
         }
         egui::ComboBox::from_id_salt("preview_speed")
@@ -823,7 +850,7 @@ fn simulation(ui: &mut egui::Ui, ready: &Ready, project: &Project, playback: &mu
                 }
             })
             .response
-            .on_hover_text("Abspielgeschwindigkeit");
+            .on_hover_text(tr("Abspielgeschwindigkeit"));
         let mut seconds = playback.seconds;
         ui.spacing_mut().slider_width = ui.available_width().max(80.0);
         if ui
@@ -831,7 +858,7 @@ fn simulation(ui: &mut egui::Ui, ready: &Ready, project: &Project, playback: &mu
                 total > 0.0,
                 egui::Slider::new(&mut seconds, 0.0..=total.max(0.001)).show_value(false),
             )
-            .on_hover_text("Auftragszeit")
+            .on_hover_text(tr("Auftragszeit"))
             .changed()
         {
             playback.seek(seconds, total);
@@ -842,28 +869,28 @@ fn simulation(ui: &mut egui::Ui, ready: &Ready, project: &Project, playback: &mu
         if let Some(frame) = frame {
             ui.separator();
             if frame.finished {
-                ui.label("Fertig");
+                ui.label(tr("Fertig"));
             } else {
-                ui.label(format!(
-                    "{} · Durchgang {}",
-                    kind_title(frame.kind),
-                    frame.pass
+                ui.label(tr!(
+                    "{motion} · Durchgang {pass}",
+                    motion = kind_title(frame.kind),
+                    pass = frame.pass
                 ));
             }
             ui.separator();
-            ui.monospace(format!(
-                "Schritt {} · X {} / Y {} mm",
-                frame.program_index + 1,
-                decimal(frame.position[0]),
-                decimal(frame.position[1])
+            ui.monospace(tr!(
+                "Schritt {step} · X {x} / Y {y} mm",
+                step = frame.program_index + 1,
+                x = decimal(frame.position[0]),
+                y = decimal(frame.position[1])
             ));
         }
     });
-    ui.small(
+    ui.small(tr(
         "Geplant: blass · Bearbeitet: kräftig · Gelber Punkt: Laserkopf · \
          Rot: Schneiden · Blau: Gravieren · Orange: 3D-Gravur · Violett: Markieren · \
          Grau gestrichelt: Leerfahrt",
-    );
+    ));
 }
 
 /// Maps bed millimetres into the simulation rectangle.
@@ -1029,7 +1056,7 @@ fn paint_simulation(
         painter.text(
             Pos2::new(rect.center().x, rect.top() + 12.0),
             egui::Align2::CENTER_CENTER,
-            "Anfahrt außerhalb des Ausschnitts",
+            tr("Anfahrt außerhalb des Ausschnitts"),
             egui::FontId::proportional(11.0),
             Color32::GRAY,
         );

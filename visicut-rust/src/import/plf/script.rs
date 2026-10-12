@@ -6,6 +6,7 @@
 //! run gets a wall-clock limit (checked while the script executes), a loop
 //! iteration limit per function call and a recursion limit. Callers bound the
 //! size of what a script may produce.
+use crate::{i18n::tr, tr};
 use boa_engine::{Context, JsError, JsValue, Script, Source};
 use std::future::Future;
 use std::sync::mpsc;
@@ -99,29 +100,32 @@ where
             let mut engine = Engine::new(limit);
             let _ = sender.send(job(&mut engine));
         })
-        .map_err(|e| format!("Skript konnte nicht gestartet werden: {e}"))?;
+        .map_err(|e| tr!("Skript konnte nicht gestartet werden: {error}", error = e))?;
     match receiver.recv_timeout(limit + GRACE) {
         Ok(result) => result,
         // The worker is left behind; Boa cannot be interrupted from outside.
         Err(mpsc::RecvTimeoutError::Timeout) => Err(timeout_message(limit)),
         Err(mpsc::RecvTimeoutError::Disconnected) => {
-            Err("Skriptausführung ist unerwartet abgebrochen".into())
+            Err(tr("Skriptausführung ist unerwartet abgebrochen").into())
         }
     }
 }
 
 pub fn timeout_message(limit: Duration) -> String {
-    format!(
-        "Skript nach {} s abgebrochen (Endlosschleife oder zu aufwendig)",
-        limit.as_secs_f32()
+    tr!(
+        "Skript nach {seconds} s abgebrochen (Endlosschleife oder zu aufwendig)",
+        seconds = limit.as_secs_f32()
     )
 }
 
 pub fn describe(error: &JsError) -> String {
     if error.as_native().is_some_and(|e| e.is_runtime_limit()) {
-        return format!("Skript abgebrochen: Laufzeitgrenze überschritten ({error})");
+        return tr!(
+            "Skript abgebrochen: Laufzeitgrenze überschritten ({error})",
+            error = error
+        );
     }
-    format!("Skriptfehler: {error}")
+    tr!("Skriptfehler: {error}", error = error)
 }
 
 #[cfg(test)]
