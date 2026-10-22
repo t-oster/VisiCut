@@ -30,14 +30,14 @@ import java.util.List;
 public abstract class AbstractImporter implements Importer
 {
 
-  public PlfPart importFile(File inputFile, List<String> warnings) throws ImportException
+  public PlfPart importFile(File inputFile, boolean originIsBottomLeft, double bedHeightInMm, List<String> warnings) throws ImportException
   {
     PlfPart p = new PlfPart();
     p.setSourceFile(inputFile);
-    p.setGraphicObjects(this.importSetFromFile(inputFile, warnings));
+    p.setGraphicObjects(this.importSetFromFile(inputFile, originIsBottomLeft, bedHeightInMm, warnings));
     return p;
   }
   
-  public abstract GraphicSet importSetFromFile(File inputFile, List<String> warnings) throws ImportException;
+  public abstract GraphicSet importSetFromFile(File inputFile, boolean originIsBottomLeft, double bedHeightInMm, List<String> warnings) throws ImportException;
 
 }

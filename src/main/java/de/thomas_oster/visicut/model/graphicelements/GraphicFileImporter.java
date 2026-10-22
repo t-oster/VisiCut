@@ -69,7 +69,7 @@ public class GraphicFileImporter implements Importer
     }
   }
 
-  public PlfPart importFile(File inputFile, List<String> warnings) throws ImportException
+  public PlfPart importFile(File inputFile, boolean originIsBottomLeft, double bedHeightInMm, List<String> warnings) throws ImportException
   {
     if (inputFile == null)
     {
@@ -85,7 +85,7 @@ public class GraphicFileImporter implements Importer
       {
         if (i.getFileFilter().accept(inputFile))
         {
-          PlfPart gs = i.importFile(inputFile, warnings);
+          PlfPart gs = i.importFile(inputFile, originIsBottomLeft, bedHeightInMm, warnings);
           return gs;
         }
       }

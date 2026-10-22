@@ -37,7 +37,7 @@ import javax.swing.filechooser.FileFilter;
 public class JPGPNGImporter extends AbstractImporter
 {
 
-  public GraphicSet importSetFromFile(File inputFile, List<String> warnings) throws ImportException
+  public GraphicSet importSetFromFile(File inputFile, boolean originIsBottomLeft, double bedHeightInMm, List<String> warnings) throws ImportException
   {
     try
     {

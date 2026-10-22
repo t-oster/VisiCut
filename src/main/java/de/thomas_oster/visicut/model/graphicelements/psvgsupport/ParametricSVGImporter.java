@@ -60,6 +60,9 @@ public class ParametricSVGImporter implements Importer
 
   private static FileFilter FILTER = new ExtensionFilter(".parametric.svg", "Parametric SVG files");
   
+  private boolean originIsBottomLeft = false;
+  private double bedHeightInMm = 0; 
+  
   public Map<String, Parameter> parseParameters(File inputFile, List<String> warnings) throws ParserConfigurationException, SAXException, IOException
   {
     
@@ -178,10 +181,12 @@ public class ParametricSVGImporter implements Importer
     return FILTER;
   }
   
-  public ParametricPlfPart importFile(File inputFile, List<String> warnings) throws ImportException
+  public ParametricPlfPart importFile(File inputFile, boolean originIsBottomLeft, double bedHeightInMm, List<String> warnings) throws ImportException
   {
     try
     {
+      this.originIsBottomLeft = originIsBottomLeft;
+      this.bedHeightInMm = bedHeightInMm;
       Map<String, Parameter> parameters =  this.parseParameters(inputFile, warnings);
       if (new File(inputFile.getAbsolutePath()+".parameters").exists())
       {
@@ -246,7 +251,6 @@ public class ParametricSVGImporter implements Importer
   {
     try
     {
-      
       SVGImporter svg = new SVGImporter();
       double resolution = svg.determineResolution(inputFile, warnings);
       final PipedOutputStream out = new PipedOutputStream();
@@ -269,7 +273,7 @@ public class ParametricSVGImporter implements Importer
           }
         }
       }.start();    
-      return (new SVGImporter()).importSetFromFile(in, inputFile.getName(), resolution, warnings);
+      return (new SVGImporter()).importSetFromFile(in, inputFile.getName(), resolution, originIsBottomLeft, bedHeightInMm, warnings);
     }
     catch (Exception ex)
     {

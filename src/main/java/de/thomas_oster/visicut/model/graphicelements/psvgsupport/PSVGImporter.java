@@ -186,11 +186,11 @@ public class PSVGImporter extends ParametricSVGImporter
   }
 
   @Override
-  public ParametricPlfPart importFile(File inputFile, List<String> warnings) throws ImportException
+  public ParametricPlfPart importFile(File inputFile, boolean originIsBottomLeft, double bedHeightInMm, List<String> warnings) throws ImportException
   {
     try
     {
-      return super.importFile(translateToParametricSvg(inputFile), warnings);
+      return super.importFile(translateToParametricSvg(inputFile), originIsBottomLeft, bedHeightInMm, warnings);
     }
     catch (Exception ex)
     {

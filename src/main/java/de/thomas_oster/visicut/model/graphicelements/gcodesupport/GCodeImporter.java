@@ -94,10 +94,11 @@ public class GCodeImporter extends AbstractImporter
   }
   
   @Override
-  public GraphicSet importSetFromFile(File inputFile, List<String> warnings) throws ImportException
+  public GraphicSet importSetFromFile(File inputFile, boolean originIsBottomLeft, double bedHeightInMm, List<String> warnings) throws ImportException
   {
     try
     {
+      //TODO if originIsBottomLeft replace y with bedHeight-y everywhere (?)
       BufferedReader reader = new BufferedReader(new FileReader(inputFile));
       GraphicSet result = new GraphicSet();
       GeneralPath resultingShape = new GeneralPath();

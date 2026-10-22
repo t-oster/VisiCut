@@ -661,7 +661,7 @@ public class VisicutModel extends Component // FIXME: "extends Component" isn't 
 
   public PlfPart loadGraphicFile(File f, List<String> warnings) throws ImportException
   {
-    return this.getGraphicFileImporter().importFile(f, warnings);
+    return this.getGraphicFileImporter().importFile(f, getSelectedLaserDevice().isOriginBottomLeft(), getSelectedLaserDevice().getLaserCutter().getBedHeight(), warnings);
   }
 
 
