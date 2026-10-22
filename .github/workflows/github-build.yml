@@ -15,21 +15,28 @@ jobs:
       fail-fast: false
 
       matrix:
+        os: 
+          - ubuntu-latest
         target:
           - zip
           - windows-nsis
-          - macos-bundle
           - linux-appimage
           - linux-checkinstall
+        include:
+          - os: macos-15
+            target: macos-dmg
+          - os: macos-15-intel
+            target: macos-dmg
 
-    name: Distribute ${{ matrix.target }}
-    runs-on: ubuntu-latest
+    name: Distribute ${{ matrix.target }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: "recursive"
           fetch-depth: 0
+          fetch-tags: true
 
       - name: Build distribution
         run: |
@@ -37,12 +44,18 @@ jobs:
           # this makes uploading the artifacts a *lot* easier
           mkdir output
           pushd output
-          bash ../distribute/distribute-docker.sh ${{ matrix.target }}
+          
+          if [ "$(uname)" == "Darwin" ]; then
+            bash -x ../distribute/distribute.sh ${{ matrix.target }}
+          else
+            bash ../distribute/distribute-docker.sh ${{ matrix.target }}
+          fi
+          
 
       - name: Archive built files
         uses: actions/upload-artifact@v4.4.3
         with:
-          name: output binaries ${{ matrix.target }}
+          name: "output binaries ${{ matrix.target }}-${{ matrix.os }}"
           path: |
             output/*
 
