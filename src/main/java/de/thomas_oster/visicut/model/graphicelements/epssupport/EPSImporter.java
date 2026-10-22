@@ -25,7 +25,6 @@ import de.thomas_oster.visicut.model.graphicelements.GraphicSet;
 import de.thomas_oster.visicut.model.graphicelements.ImportException;
 import de.thomas_oster.visicut.model.graphicelements.svgsupport.SVGImporter;
 import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
@@ -57,42 +56,76 @@ public class EPSImporter extends AbstractImporter
   }
 
   /**
-   * Tries to read the BoundingBox out of the EPS file.
-   * If not successful, it returns a default BoundingBox
+   * The DSC bounding boxes of an EPS file. "%%BoundingBox: x1 y1 x2 y2"
+   * gives the corners (lower left and upper right) in whole points, not
+   * x, y, width and height; "%%HiResBoundingBox" the same with decimals.
    */
-  private Rectangle2D getBoundingBox(File epsfile)
+  private static final class BoundingBoxes
   {
-    Rectangle.Double result = new Rectangle.Double(0, 0, 800, 600);
+    /** Integer box (the page FreeHEP fits), or a default of 800 x 600. */
+    Rectangle2D page = new Rectangle2D.Double(0, 0, 800, 600);
+    /** HiResBoundingBox if present, else the integer box. */
+    Rectangle2D hires;
+  }
+
+  private static Rectangle2D.Double parseBox(String line)
+  {
     try
     {
-      BufferedReader r = new BufferedReader(new FileReader(epsfile));
-      String line = null;
+      String[] elements = line.substring(line.indexOf(':') + 1).trim().split("\\s+");
+      double x1 = Double.parseDouble(elements[0]);
+      double y1 = Double.parseDouble(elements[1]);
+      double x2 = Double.parseDouble(elements[2]);
+      double y2 = Double.parseDouble(elements[3]);
+      if (x2 > x1 && y2 > y1)
+      {
+        return new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
+      }
+    }
+    catch (NumberFormatException | ArrayIndexOutOfBoundsException e)
+    {
+      // e.g. "(atend)"
+    }
+    return null;
+  }
+
+  private BoundingBoxes getBoundingBoxes(File epsfile)
+  {
+    BoundingBoxes result = new BoundingBoxes();
+    Rectangle2D.Double lowres = null;
+    Rectangle2D.Double hires = null;
+    try (BufferedReader r = new BufferedReader(new FileReader(epsfile)))
+    {
+      String line;
       while ((line = r.readLine()) != null)
       {
-        //TODO: Get HighRes BoundingBox
-        if (line.startsWith("%%BoundingBox:") || line.startsWith("%%PageBoundingBox:"))
+        if (line.startsWith("%%HiResBoundingBox:"))
         {
-          try
+          Rectangle2D.Double box = parseBox(line);
+          if (box != null)
           {
-            String[] elements = line.split(" ");
-            result = new Rectangle.Double(
-              Integer.parseInt(elements[1]),
-              Integer.parseInt(elements[2]),
-              Integer.parseInt(elements[3]),
-              Integer.parseInt(elements[4]));
-            break;
-          }
-          catch (NumberFormatException e)
-          {
+            hires = box;
           }
         }
+        else if (lowres == null && (line.startsWith("%%BoundingBox:") || line.startsWith("%%PageBoundingBox:")))
+        {
+          lowres = parseBox(line);
+        }
       }
-      r.close();
     }
     catch (Exception ex)
     {
       Logger.getLogger(EPSImporter.class.getName()).log(Level.SEVERE, null, ex);
     }
+    if (lowres != null)
+    {
+      result.page = lowres;
+    }
+    else if (hires != null)
+    {
+      result.page = hires;
+    }
+    result.hires = hires != null ? hires : result.page;
     return result;
   }
 
@@ -111,9 +144,14 @@ public class EPSImporter extends AbstractImporter
       svgGenerator.setTransform(new AffineTransform());
       // Open input file
       PSInputFile in = new PSInputFile(inputFile.getAbsolutePath());
-      Rectangle2D bb = this.getBoundingBox(inputFile);
-      svgGenerator.setTransform(AffineTransform.getTranslateInstance(-bb.getX(), -bb.getY()));
-      Dimension d = new Dimension((int) bb.getWidth(), (int) bb.getHeight());
+      BoundingBoxes boxes = this.getBoundingBoxes(inputFile);
+      // FreeHEP reads the integer %%BoundingBox itself, scales it uniformly
+      // into the page (min of width and height ratio) with its lower left
+      // corner at the page corner, and replaces the transform of the
+      // Graphics2D by its own. A page of exactly the size of that box keeps
+      // the scale at 1; rounding up only matters for fractional boxes.
+      Rectangle2D page = boxes.page;
+      Dimension d = new Dimension((int) Math.ceil(page.getWidth()), (int) Math.ceil(page.getHeight()));
       // Create processor and associate to input and output file
       Processor processor = new Processor(svgGenerator, d, false);
       processor.setData(in);
@@ -126,7 +164,13 @@ public class EPSImporter extends AbstractImporter
       GraphicSet result = new SVGImporter().importSetFromFile(tmp, warnings);
       //Assume the EPS has been created with 72DPI (from Inkscape)
       double px2mm = Util.inch2mm(1d/72d);
-      result.setBasicTransform(AffineTransform.getScaleInstance(px2mm, px2mm));
+      AffineTransform basic = AffineTransform.getScaleInstance(px2mm, px2mm);
+      // The HiResBoundingBox names the exact corner of the drawing inside the
+      // integer box (y runs upwards in PostScript, downwards on the page):
+      // that corner becomes the origin of the imported graphic.
+      Rectangle2D hires = boxes.hires;
+      basic.translate(-(hires.getX() - page.getX()), -(page.getMaxY() - hires.getMaxY()));
+      result.setBasicTransform(basic);
       return result;
     }
     catch (Exception ex)
