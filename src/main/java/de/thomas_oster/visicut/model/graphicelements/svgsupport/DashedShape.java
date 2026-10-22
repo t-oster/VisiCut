@@ -67,8 +67,35 @@ public class DashedShape implements Shape {
 
     public DashedShape(Shape shape, float[] dashArray, float dashPhase) {
         this.shape = shape;
+        // SVG: an odd number of values is repeated to yield an even number,
+        // so "5 2 1" means 5 on, 2 off, 1 on, 5 off, 2 on, 1 off.
+        if (dashArray.length % 2 == 1) {
+            float[] even = new float[dashArray.length * 2];
+            System.arraycopy(dashArray, 0, even, 0, dashArray.length);
+            System.arraycopy(dashArray, 0, even, dashArray.length, dashArray.length);
+            dashArray = even;
+        }
         this.dashArray = dashArray;
         this.dashPhase = dashPhase;
+    }
+
+    /**
+     * Whether the dash array dashes at all. SVG renders a stroke solid when
+     * a value is negative or all values are zero; the iterator would never
+     * advance along a path with an all-zero array.
+     */
+    public static boolean isValidDashArray(float[] dashArray) {
+        if (dashArray == null || dashArray.length == 0) {
+            return false;
+        }
+        float sum = 0;
+        for (float value : dashArray) {
+            if (value < 0 || Float.isNaN(value)) {
+                return false;
+            }
+            sum += value;
+        }
+        return sum > 0;
     }
 
     public boolean contains(double x, double y, double w, double h) {
@@ -111,10 +138,8 @@ public class DashedShape implements Shape {
 
     public PathIterator getPathIterator(AffineTransform at, double flatness) {
         // we need to work against a flattened iterator, the dashed iterator
-        // cannot handle curved segments
-        if (flatness < 1) {
-            flatness = 1;
-        }
+        // cannot handle curved segments; the caller's flatness (the laser
+        // cutter's curve precision) applies like for undashed shapes
         return new DashedIterator(shape.getPathIterator(at, flatness), dashArray, dashPhase);
     }
 

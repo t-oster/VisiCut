@@ -283,10 +283,11 @@ public class SVGShape extends SVGObject implements ShapeObject
       if (getDecoratee().getStyle(styleAttrib.setName("stroke-dasharray")))
       {
           strokeDashArray = styleAttrib.getFloatList();
-          if (strokeDashArray.length == 0)
-        {
-          strokeDashArray = null;
-        }
+          if (!DashedShape.isValidDashArray(strokeDashArray))
+          {
+            // SVG: negative or all-zero values mean a solid stroke
+            strokeDashArray = null;
+          }
       }
       float strokeDashOffset = 0f;
       if (getDecoratee().getStyle(styleAttrib.setName("stroke-dashoffset")))
